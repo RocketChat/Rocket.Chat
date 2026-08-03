@@ -1352,7 +1352,7 @@
   "Mail_Message_No_messages_selected_select_all": "คุณยังไม่ได้เลือกข้อความใด ๆ",
   "Mail_Messages": "ข้อความจดหมาย",
   "Mail_Messages_Instructions": "เลือกข้อความที่คุณต้องการส่งทางอีเมลโดยคลิกที่ข้อความ",
-  "Mail_Messages_Subject": "นี่คือส่วนที่เลือกของ %s messages",
+  "Mail_Messages_Subject": "นี่คือส่วนที่เลือกของ {{roomName}} messages",
   "Mailer": "Mailer",
   "Mailer_body_tags": "คุณ <b>ต้อง</b>ใช้ [ยกเลิกการบอกรับเป็นสมาชิก] สำหรับลิงก์ยกเลิกการสมัคร <br/>คุณสามารถใช้ `[name]`, `[fname]`, `[lname]` ตามลำดับเพื่อชื่อเต็มของผู้ใช้ชื่อหรือนามสกุลตามลำดับ <br/>คุณสามารถใช้ [email] สำหรับอีเมลของผู้ใช้",
   "Mailing": "จดหมาย",

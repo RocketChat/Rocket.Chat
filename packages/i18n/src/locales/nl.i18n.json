@@ -2323,7 +2323,7 @@
   "Mail_Message_No_messages_selected_select_all": "Je hebt geen berichten geselecteerd",
   "Mail_Messages": "E-mailberichten",
   "Mail_Messages_Instructions": "Kies welke berichten u via e-mail wilt verzenden door op de berichten te klikken",
-  "Mail_Messages_Subject": "Hier is een geselecteerd gedeelte van %s berichten",
+  "Mail_Messages_Subject": "Hier is een geselecteerd gedeelte van {{roomName}} berichten",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Je <b>moet</b> [unsubscribe] gebruiken voor een unsubscribe link.<br/>Je kunt `[name]`, `[fname]`, `[lname]` gebruiken voor respectievelijk de volledige naam, voorname of achternaam van de gebruiker.<br/>Je mag [email] gebruiken voor de e-mail van de gebruiker.",
   "Mailing": "Mailing",

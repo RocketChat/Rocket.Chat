@@ -1473,7 +1473,7 @@
   "Mail_Message_No_messages_selected_select_all": "Niste odabrali nikakve poruke.",
   "Mail_Messages": "Email Poruke",
   "Mail_Messages_Instructions": "Odaberite koje poruke želite poslati putem e-maila klikom na poruke",
-  "Mail_Messages_Subject": "Evo odabrani dio %s poruka",
+  "Mail_Messages_Subject": "Evo odabrani dio {{roomName}} poruka",
   "Mailer": "Mailer",
   "Mailer_body_tags": "<b>Morate</b> koristiti [unsubscribe] za otkazivanje pretplate. <br/>Možete koristiti `[name]`, `[fname]`, `[lname]` za korisnikovo ime i prezime, ime i prezime <br/> Možete koristiti [email] za e-poštu korisnika.",
   "Mailing": "Slanje",

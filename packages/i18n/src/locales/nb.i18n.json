@@ -3271,7 +3271,7 @@
   "Mail_Message_No_messages_selected_select_all": "Du har ikke valgt noen meldinger",
   "Mail_Messages": "E-postmeldinger",
   "Mail_Messages_Instructions": "Velg hvilke meldinger du vil sende via e-post ved å klikke på meldingene",
-  "Mail_Messages_Subject": "Her er en valgt del av %s meldinger",
+  "Mail_Messages_Subject": "Her er en valgt del av {{roomName}} meldinger",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Du <b>må</b> bruke [unsubscribe] for avmeldingskoblingen.<br/>Du kan bruke `[name]`, `[fname ]`, `[lname]` for henholdsvis brukerens fulle navn, fornavn eller etternavn.<br/>Du kan bruke [email] for brukerens e-post.",
   "Mailing": "Utsendelse",

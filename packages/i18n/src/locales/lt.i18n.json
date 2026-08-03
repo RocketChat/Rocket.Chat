@@ -1406,7 +1406,7 @@
   "Mail_Message_No_messages_selected_select_all": "Jūs nepasirinkote jokių pranešimų",
   "Mail_Messages": "Pašto žinutės",
   "Mail_Messages_Instructions": "Spustelėdami pranešimus pasirinkite, kuriuos pranešimus norite siųsti el. Paštu",
-  "Mail_Messages_Subject": "Štai pasirinkta%s pranešimų dalis",
+  "Mail_Messages_Subject": "Štai pasirinkta{{roomName}} pranešimų dalis",
   "Mailer": "Maileris",
   "Mailer_body_tags": "Jūs <b>privalote</b> naudoti [unsubscribe], jei norite atsisakyti prenumeratos nuorodos.<br/>Galite naudoti `[name]`, `[fname]`, `[lname]` atitinkamai vartotojo vardą, pavardę arba pavardę.<br/>Galite naudoti [el.] Naudotojo el. Paštą.",
   "Mailing": "Pašto siuntimas",

@@ -1363,7 +1363,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nevybrali ste žiadne správy",
   "Mail_Messages": "Poštové správy",
   "Mail_Messages_Instructions": "Vyberte, ktoré správy chcete odoslať e-mailom kliknutím na správy",
-  "Mail_Messages_Subject": "Tu je vybratá časť správ%s",
+  "Mail_Messages_Subject": "Tu je vybratá časť správ{{roomName}}",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Je <b>nutné</b> použiť  [unsubscribe] pre vloženie odkazu na odhlásenie. <br/>Môžete tiež použiť `[name]`, `[fname]`, `[lname]` pre používateľské meno, krstné meno a priezvisko.<br/>Môžete použiť [email] pre e-mail používateľa.",
   "Mailing": "mailing",

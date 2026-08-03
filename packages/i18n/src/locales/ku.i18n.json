@@ -1351,7 +1351,7 @@
   "Mail_Message_No_messages_selected_select_all": "Tu peyam hatine hilbijartin ne.",
   "Mail_Messages": "Messages mail",
   "Mail_Messages_Instructions": "Hilbijartina ku mesajên ku tu dixwazî ​​bişîne via email bi tikandina messages",
-  "Mail_Messages_Subject": "Here rêjeyek hilbijartî yên %s mesajên ye",
+  "Mail_Messages_Subject": "Here rêjeyek hilbijartî yên {{roomName}} mesajên ye",
   "Mailer": "نامەبەر",
   "Mailer_body_tags": "Tu <b>divê</b> [unsubscribe] ji bo link unsubscription bi kar tînin. <br/> Dibe ku tu [name], [fname] ji bo navê bikarhêner, nav an paşnav, bi rêzê ve bi kar tînin, [lname]. <br/> Dibe ku tu [email] ji bo email bikarhêner bi kar tînin.",
   "Mailing": "Mailing",

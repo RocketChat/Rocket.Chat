@@ -2521,7 +2521,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nie wybrałeś żadnych wiadomości.",
   "Mail_Messages": "Wysyłanie wiadomości przez email",
   "Mail_Messages_Instructions": "Wybierz wiadomości, które chcesz wysłać za pośrednictwem poczty elektronicznej za pomocą kliknięcia",
-  "Mail_Messages_Subject": "Oto wybrana część wiadomości %s",
+  "Mail_Messages_Subject": "Oto wybrana część wiadomości {{roomName}}",
   "Mailer": "Wyślij email użytkownikom",
   "Mailer_body_tags": "<b>Musisz</b> użyć znacznika [unsubscribe] aby zawrzeć w treści odnośnik do rezygnacji z subskrypcji.<br/>Możesz użyć znaczników `[name]`, `[fname]`, `[lname]` by wstawić odpowiednio pełną nazwę użytkownika, jego imię, nazwisko.<br/>Możesz użyć znacznika [email] by wstawić adres email użytkownika.",
   "Mailing": "Mailing",

@@ -1357,7 +1357,7 @@
   "Mail_Message_No_messages_selected_select_all": "Ju nuk keni zgjedhur ndonjë porosi",
   "Mail_Messages": "Mesazhet Mail",
   "Mail_Messages_Instructions": "Zgjidhni cilat mesazhe ju dëshironi të dërgoni përmes emailit duke klikuar mesazhet",
-  "Mail_Messages_Subject": "Këtu është një pjesë e zgjedhur e mesazheve %s",
+  "Mail_Messages_Subject": "Këtu është një pjesë e zgjedhur e mesazheve {{roomName}}",
   "Mailer": "postues",
   "Mailer_body_tags": "Ju <b>duhet të</b> përdorni [unsubscribe] për lidhjen Çabonimi. <br/> Ju mund të përdorni `[name]`, `[fname]`, `[lname]` për emrin e plotë të përdoruesit, emrin e parë ose emrin e fundit, respektivisht. <br/> Ju mund të përdorni [email] për email të përdoruesit.",
   "Mailing": "mailing",

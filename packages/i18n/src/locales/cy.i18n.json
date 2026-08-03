@@ -1355,7 +1355,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nid ydych chi wedi dewis unrhyw negeseuon",
   "Mail_Messages": "Negeseuon Post",
   "Mail_Messages_Instructions": "Dewiswch ba negeseuon yr hoffech eu hanfon trwy e-bost trwy glicio ar y negeseuon",
-  "Mail_Messages_Subject": "Dyma ddetholiad o negeseuon %s",
+  "Mail_Messages_Subject": "Dyma ddetholiad o negeseuon {{roomName}}",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Mae'n rhaid i chi <b></b> ddefnyddio [dad-danysgrifio] ar gyfer y ddolen dadysgrifio. <br / >Gallwch ddefnyddio [enw], [fname], [lname] ar gyfer enw llawn, enw cyntaf neu enw olaf y defnyddiwr, yn y drefn honno. <br / >Gallwch ddefnyddio [e-bost] ar gyfer e-bost y defnyddiwr.",
   "Mailing": "Postio",

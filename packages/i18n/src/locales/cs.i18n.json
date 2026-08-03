@@ -1958,7 +1958,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nejsou vybrány žádné zprávy. Chcete <a href=\"#\" class=\"select-all\">vybrat všechny</a> viditelné zprávy?",
   "Mail_Messages": "Odeslat zprávy",
   "Mail_Messages_Instructions": "Kliknutím na zprávy vyberte ty, které chcete poslat e-mailem.",
-  "Mail_Messages_Subject": "Zde je vybraná část %s zpráv",
+  "Mail_Messages_Subject": "Zde je vybraná část {{roomName}} zpráv",
   "Mailer": "Odesílač mailů",
   "Mailer_body_tags": "Je <b>nutné</b> použít [unsubscribe] pro vložení odkazu na odhlášení. <br/> Můžete také použít `[name]`, `[fname]`, `[lname]` pro uživatelské jméno, křestí jméno a příjmen.<br/>Nebo [email] pro e-mail uživatele.",
   "Mailing": "Mailing",

@@ -1353,7 +1353,7 @@
   "Mail_Message_No_messages_selected_select_all": "Niste izbrali nobenih sporočil",
   "Mail_Messages": "Poštna sporočila",
   "Mail_Messages_Instructions": "S klikom na sporočilo izberite, katero sporočilo želite poslati preko e-pošte",
-  "Mail_Messages_Subject": "Tukaj je izbran delež %s  sporočil",
+  "Mail_Messages_Subject": "Tukaj je izbran delež {{roomName}}  sporočil",
   "Mailer": "Pošiljalnik",
   "Mailer_body_tags": "Če želite dostopati do povezave za odpoved naročnine, <b>morate</b> uporabiti možnost [unsubscribe]. <br/>Za uporabnikovo polno ime, ime ali priimek lahko posamezno uporabite možnosti `[name]`, `[fname]`, `[lname]`. <br/> Za uporabnikov e-naslov lahko uporabite možnost [email].",
   "Mailing": "Pošiljanje",

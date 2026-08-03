@@ -1375,7 +1375,7 @@
   "Mail_Message_No_messages_selected_select_all": "你没有选择任何消息",
   "Mail_Messages": "邮件消息",
   "Mail_Messages_Instructions": "通过单击邮件选择要通过电子邮件发送的邮件",
-  "Mail_Messages_Subject": "这是％s消息的选定部分",
+  "Mail_Messages_Subject": "这是{{roomName}}消息的选定部分",
   "Mailer": "信封",
   "Mailer_body_tags": "<b>必须</b>对取消订阅链接使用[取消订阅]。<br/>您可以分别为用户的全名，名字或姓氏使用[name]，[fname]，[lname]。 <br/>您可以将[email]用于用户的电子邮件。",
   "Mailing": "邮件",

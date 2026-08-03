@@ -3480,7 +3480,7 @@
   "Mail_Message_No_messages_selected_select_all": "You haven't selected any messages",
   "Mail_Messages": "Mail Messages",
   "Mail_Messages_Instructions": "Choose which messages you want to send via email by clicking the messages",
-  "Mail_Messages_Subject": "Here's a selected portion of %s messages",
+  "Mail_Messages_Subject": "Here's a selected portion of {{roomName}} messages",
   "Mailer": "Mailer",
   "Mailer_body_tags": "You <b>must</b> use [unsubscribe] for the unsubscription link.<br/>You may use `[name]`, `[fname]`, `[lname]` for the user's full name, first name or last name, respectively.<br/>You may use [email] for the user's email.",
   "Mailing": "Mailing",

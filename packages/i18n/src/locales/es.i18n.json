@@ -2358,7 +2358,7 @@
   "Mail_Message_No_messages_selected_select_all": "No has seleccionado ningún mensaje",
   "Mail_Messages": "Mensajes de correo",
   "Mail_Messages_Instructions": "Selecciona con clics los mensajes que quieras enviar vía correo electrónico",
-  "Mail_Messages_Subject": "Aquí hay una parte seleccionada de %s mensajes",
+  "Mail_Messages_Subject": "Aquí hay una parte seleccionada de {{roomName}} mensajes",
   "Mailer": "Formulario",
   "Mailer_body_tags": "<b>Debes</b> usar [unsubscribe] para el enlace de cancelación de suscripción.<br/>Puedes usar `[name]`, `[fname]`, `[lname]` para el nombre completo, el nombre o el apellido del usuario, respectivamente.<br/>Puedes usar [email] para el correo electrónico del usuario.",
   "Mailing": "Distribución",

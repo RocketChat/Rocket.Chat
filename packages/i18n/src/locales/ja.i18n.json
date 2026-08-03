@@ -2300,7 +2300,7 @@
   "Mail_Message_No_messages_selected_select_all": "メッセージを選択していません",
   "Mail_Messages": "メッセージのメール",
   "Mail_Messages_Instructions": "メールで送信したいメッセージをクリックして選択してください",
-  "Mail_Messages_Subject": "こちらは%sメッセージから選択された部分です",
+  "Mail_Messages_Subject": "こちらは{{roomName}}メッセージから選択された部分です",
   "Mailer": "メーラー",
   "Mailer_body_tags": "[unsubscribe]を登録解除リンクとして<b>使用する必要があります</b>。<br/>ユーザーの氏名、名、姓にそれぞれ[name]、[fname]、[lname]を使用できます。<br/>メールアドレスには、 [email] を使用できます。",
   "Mailing": "郵送",

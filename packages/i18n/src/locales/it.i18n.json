@@ -1743,7 +1743,7 @@
   "Mail_Message_No_messages_selected_select_all": "Non hai selezionato nessun messaggio.",
   "Mail_Messages": "Messaggi di posta",
   "Mail_Messages_Instructions": "Scegli quali messaggi vuoi inviare via email cliccandoci",
-  "Mail_Messages_Subject": "Ecco una porzione di %s messaggi",
+  "Mail_Messages_Subject": "Ecco una porzione di {{roomName}} messaggi",
   "Mailer": "Mailer",
   "Mailer_body_tags": "È <b>necessario</b> utilizzare il tag [unsubscribe] per il link di cancellazione. <br/> È possibile utilizzare `[name]`, `[fname]`, `[lname]` rispettivamente per il nome completo dell'utente, nome o cognome. <br/> È possibile utilizzare [email] per l'indirizzo email dell'utente.",
   "Mailing": "Mailing",

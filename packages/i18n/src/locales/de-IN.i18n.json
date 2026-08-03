@@ -1565,7 +1565,7 @@
   "Mail_Message_No_messages_selected_select_all": "Du hast keine Nachrichten ausgewählt. ",
   "Mail_Messages": "Nachrichten per E-Mail senden",
   "Mail_Messages_Instructions": "Wähle die per E-Mail zu versendenden Nachrichten aus, indem Du die Nachrichten anklickst. ",
-  "Mail_Messages_Subject": "Hier ist ein ausgewählter Teil aus %s Nachrichten",
+  "Mail_Messages_Subject": "Hier ist ein ausgewählter Teil aus {{roomName}} Nachrichten",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Du <b>musst</b> [unsubscribe] verwenden, um einen Link zum Abmelden aus dem Verteiler zur Verfügung zu stellen. <br/> Du kannst [name] für den vollständigen Namen, [fname] für den Vornamen oder [lname] für den Nachnamen des Benutzers verwenden. <br/>Ebenfalls kannst Du [email] verwenden, um die E-Mail-Adresse des Benutzers anzugeben.",
   "Mailing": "Mailing",

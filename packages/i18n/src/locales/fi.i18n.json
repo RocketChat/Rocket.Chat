@@ -2634,7 +2634,7 @@
   "Mail_Message_No_messages_selected_select_all": "Et ole valinnut yhtään viestiä",
   "Mail_Messages": "Lähetä viestit",
   "Mail_Messages_Instructions": "Valitse sähköpostitse lähetettävät viestit napsauttamalla viestejä",
-  "Mail_Messages_Subject": "Tässä on valittu osa %s viestistä",
+  "Mail_Messages_Subject": "Tässä on valittu osa {{roomName}} viestistä",
   "Mailer": "Postittaja",
   "Mailer_body_tags": "Tilauksen peruutuslinkkin paikalla <b>on käytettävä</b> arvoa [unsubscribe].<br/>Voit käyttää arvoa `[name]`, `[fname]`, `[lname]` käyttäjän koko nimen, etunimen tai sukunimen paikalla.<br/>Voit käyttää arvoa [email] käyttäjän sähköpostiosoitteen paikalla.",
   "Mailing": "Sähköpostitus",

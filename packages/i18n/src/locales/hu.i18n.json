@@ -2508,7 +2508,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nem választott ki egyetlen üzenetet sem",
   "Mail_Messages": "Levélüzenetek",
   "Mail_Messages_Instructions": "Válassza ki az üzenetekre kattintva, hogy mely üzeneteket szeretné elküldeni e-mailben.",
-  "Mail_Messages_Subject": "Itt van %s üzenetnek egy kiválasztott része",
+  "Mail_Messages_Subject": "Itt van {{roomName}} üzenetnek egy kiválasztott része",
   "Mailer": "Levelező",
   "Mailer_body_tags": "Az [unsubscribe] helykitöltőt <b>kell</b> használnia a leiratkozási hivatkozáshoz.<br/>A [name] helykitöltőt a felhasználó teljes nevéhez, a [lname] helykitöltőt a felhasználó vezetéknevéhez, a [fname] helykitöltőt a felhasználó keresztnevéhez használhatja.<br/>Az [email] helykitöltőt a felhasználó e-mail-címéhez használhatja.",
   "Mailing": "Levelezés",

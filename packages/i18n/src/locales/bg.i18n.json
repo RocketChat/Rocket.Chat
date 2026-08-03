@@ -1355,7 +1355,7 @@
   "Mail_Message_No_messages_selected_select_all": "Не сте избрали никакви съобщения",
   "Mail_Messages": "Съобщения по пощата",
   "Mail_Messages_Instructions": "Изберете кои съобщения искате да изпратите по имейл, като кликнете върху съобщенията",
-  "Mail_Messages_Subject": "Ето избрана част от съобщенията %s",
+  "Mail_Messages_Subject": "Ето избрана част от съобщенията {{roomName}}",
   "Mailer": "подател",
   "Mailer_body_tags": "Вие <b>трябва</b>да използвате [unsubscribe] за връзката за отписване. <br/><br/>Можете да използвате [имейл] за имейла на потребителя.",
   "Mailing": "Пощенски",

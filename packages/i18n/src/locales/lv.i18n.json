@@ -1372,7 +1372,7 @@
   "Mail_Message_No_messages_selected_select_all": "Jūs neesat izvēlējies nevienu ziņojumu",
   "Mail_Messages": "Pasta ziņojumi",
   "Mail_Messages_Instructions": "Izvēlieties, kurus ziņojumus vēlaties nosūtīt pa e-pastu, noklikšķinot uz ziņojumiem",
-  "Mail_Messages_Subject": "Šeit ir atlasīta %s ziņu daļa",
+  "Mail_Messages_Subject": "Šeit ir atlasīta {{roomName}} ziņu daļa",
   "Mailer": "Nosūtītājs",
   "Mailer_body_tags": "Jums <b>ir</b> jāizmanto [atcelt abonementu] abonementa atsaukuma saitei. <br/>Jūs varat lietot [vārds], [fname], [lname] attiecīgi lietotāja pilnu vārdu, vārdu vai uzvārdu. <br/>Varat izmantot [e-pastu] lietotāja e-pastam.",
   "Mailing": "Sūta",

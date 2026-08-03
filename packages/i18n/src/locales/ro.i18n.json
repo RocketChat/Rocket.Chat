@@ -1357,7 +1357,7 @@
   "Mail_Message_No_messages_selected_select_all": "Nu ați selectat niciun mesaj",
   "Mail_Messages": "Mesaje Email",
   "Mail_Messages_Instructions": "Alegeți ce mesaje doriți să trimiteți prin e-mail făcând clic pe ele",
-  "Mail_Messages_Subject": "Iată o parte din %s mesaje",
+  "Mail_Messages_Subject": "Iată o parte din {{roomName}} mesaje",
   "Mailer": "Mailer",
   "Mailer_body_tags": "<b>Trebuie</b> să folosiți [unsubscribe] pentru link-ul de unsuscribe.<br/>Puteți utiliza `[name]`, `[fname]`, `[lname]` pentru numele întreg, prenume respectiv nume.<br/>Puteți folosi [email] pentru e-mailul utilizatorului.",
   "Mailing": "Mailing",

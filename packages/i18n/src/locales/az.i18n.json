@@ -1358,7 +1358,7 @@
   "Mail_Message_No_messages_selected_select_all": "Siz heç bir mesaj seçmədiniz",
   "Mail_Messages": "Mail Mesajları",
   "Mail_Messages_Instructions": "Mesajları tıklayaraq e-poçt vasitəsilə göndərmək istədiyiniz mesajı seçin",
-  "Mail_Messages_Subject": "%s mesajlarının seçilmiş bir hissəsi",
+  "Mail_Messages_Subject": "{{roomName}} mesajlarının seçilmiş bir hissəsi",
   "Mailer": "Mailer",
   "Mailer_body_tags": "<b>Siz</b> abunə bağlantısı bağlantısı üçün [abunəlikdən] istifadə etməlisiniz.<br/>Siz istifadəçinin tam adı, soyadı və soyadı üçün [ad], [fname], [lname] istifadə edə bilərsiniz.<br/>İstifadəçinin e-poçtu üçün [email] istifadə edə bilərsiniz.",
   "Mailing": "Poçt",

@@ -1600,7 +1600,7 @@
   "Mail_Message_No_messages_selected_select_all": "Não selecionou nenhuma mensagem",
   "Mail_Messages": "Mensagens de E-mail",
   "Mail_Messages_Instructions": "Escolher as mensagens que deseja enviar via e-mail, clicando nas mensagens",
-  "Mail_Messages_Subject": "Aqui está uma parte seleccionada de %s mensagens",
+  "Mail_Messages_Subject": "Aqui está uma parte seleccionada de {{roomName}} mensagens",
   "Mailer": "Mailer",
   "Mailer_body_tags": "<b>Deve</b> usar [unsubscribe] como link para cancelar a subscrição.<br/> Pode usar `[name]`, `[fname]`, `[lname]` para utilizar o nome completo, primeiro nome ou último nome, respectivamente. <br/> Pode usar [email] para o email do utilizador.",
   "Mailing": "Correio",

@@ -1602,7 +1602,7 @@
   "Mail_Message_No_messages_selected_select_all": "هیچ پیامی انتخاب نشده است",
   "Mail_Messages": "پیام های پست الکترونیکی",
   "Mail_Messages_Instructions": "روی پیامی که می خواهید با ایمیل بفرستید کلیک کنید",
-  "Mail_Messages_Subject": "اینجا قسمتی از پیام های %s است",
+  "Mail_Messages_Subject": "اینجا قسمتی از پیام های {{roomName}} است",
   "Mailer": "ایمیل کننده",
   "Mailer_body_tags": "شما <b>باید</b> [unsubscribe] برای لینک لغو عضویت استفاده کنید. <br/> شما ممکن است [name]، [fname] برای نام کامل کاربر، نام اول یا نام خانوادگی، به ترتیب استفاده کنید، [lname]. <br/> ممکن است [email] برای ایمیل کاربر استفاده کنید.",
   "Mailing": "ایمیل کردن",

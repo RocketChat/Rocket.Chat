@@ -1630,7 +1630,7 @@
   "Mail_Message_No_messages_selected_select_all": "Herhangi bir ileti seçmediniz",
   "Mail_Messages": "Posta İletileri",
   "Mail_Messages_Instructions": "E-postayla göndermek istediğiniz iletileri tıklayarak seçin",
-  "Mail_Messages_Subject": "İşte %s mesajların seçilen bir kısım var",
+  "Mail_Messages_Subject": "İşte {{roomName}} mesajların seçilen bir kısım var",
   "Mailer": "Postacı",
   "Mailer_body_tags": "Abonelikten çıkma bağlantısı için [unsubscribe] kullanmak <b>zorundasınız</b>.<br/>Kullanıcının ad-soyadı, adı veya soyadı için sırasıyla [name], [fname] veya [lname] kullanabilirsiniz.<br/>Kullanıcının e-postası için [email] kullanabilirsiniz.",
   "Mailing": "Posta gönderiliyor",

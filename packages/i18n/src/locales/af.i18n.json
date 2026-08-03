@@ -1358,7 +1358,7 @@
   "Mail_Message_No_messages_selected_select_all": "Jy het geen boodskappe gekies nie",
   "Mail_Messages": "Pos boodskappe",
   "Mail_Messages_Instructions": "Kies watter boodskappe u per e-pos wil stuur deur op die boodskappe te klik",
-  "Mail_Messages_Subject": "Hier is 'n geselekteerde gedeelte van%s boodskappe",
+  "Mail_Messages_Subject": "Hier is 'n geselekteerde gedeelte van{{roomName}} boodskappe",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Jy <b>moet</b> gebruik vir die intekeningskripsie.<br/>Jy mag `[name]`, `[fname]`, `[lname]` vir die volle naam, voornaam of van die gebruiker gebruik.<br/>Jy mag [e-pos] gebruik vir die gebruiker se e-pos.",
   "Mailing": "Mailing",

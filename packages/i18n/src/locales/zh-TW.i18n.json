@@ -2267,7 +2267,7 @@
   "Mail_Message_No_messages_selected_select_all": "您還沒有選擇任何消息",
   "Mail_Messages": "郵件訊息",
   "Mail_Messages_Instructions": "通過點擊訊息選擇您要通過電子郵件發送哪些訊息",
-  "Mail_Messages_Subject": "這裡的 %s 訊息的選定部分",
+  "Mail_Messages_Subject": "這裡的 {{roomName}} 訊息的選定部分",
   "Mailer": "寄件人",
   "Mailer_body_tags": "您<b>必須</b>使用[unsubscribe]的退訂連接。 <br/>您可以使用[name]，[fname]，[lname]為使用者的全名，名字或姓氏，分別。 <br/>您可以使用[email]為使用者的電子郵件。",
   "Mailing": "郵件",

@@ -1359,7 +1359,7 @@
   "Mail_Message_No_messages_selected_select_all": "Anda belum memilih sebarang mesej",
   "Mail_Messages": "Mesej mail",
   "Mail_Messages_Instructions": "Pilih mesej yang anda ingin menghantar melalui e-mel dengan mengklik mesej",
-  "Mail_Messages_Subject": "Berikut adalah bahagian terpilih mesej %s",
+  "Mail_Messages_Subject": "Berikut adalah bahagian terpilih mesej {{roomName}}",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Anda <b>mesti</b> menggunakan [unsubscribe] untuk pautan langganan. <br/> Anda boleh menggunakan [nama], [fname], [lname] bagi nama penuh pengguna, nama pertama atau nama akhir, masing-masing. <br/> Anda boleh menggunakan [email] untuk e-mel pengguna.",
   "Mailing": "Mailing",

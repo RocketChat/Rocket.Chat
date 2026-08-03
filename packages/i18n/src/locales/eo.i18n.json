@@ -1356,7 +1356,7 @@
   "Mail_Message_No_messages_selected_select_all": "Vi ne elektis iujn mesaĝojn",
   "Mail_Messages": "Poŝtaj Mesaĝoj",
   "Mail_Messages_Instructions": "Elektu la mesaĝojn, kiujn vi volas sendi per retpoŝto per klakado de la mesaĝoj",
-  "Mail_Messages_Subject": "Jen elektita parto de%s mesaĝoj",
+  "Mail_Messages_Subject": "Jen elektita parto de{{roomName}} mesaĝoj",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Vi <b>devas</b> uzu [unsubscribe] por la unsubscription link.<br/>Vi povas uzi [nomo], [fname], [lname] por la nomo, plena nomo aŭ familinomo, respektive.<br/>Vi povas uzi [retpoŝton] por la retpoŝto de la uzanto.",
   "Mailing": "Sendilo",

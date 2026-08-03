@@ -1207,7 +1207,7 @@
   "Mail_Message_No_messages_selected_select_all": "Нисте изабрали ниједну поруку.",
   "Mail_Messages": "Поруке е-поште",
   "Mail_Messages_Instructions": "Изабрати које поруке желите да пошаљете путем е-маила тако што ћете кликнути поруке",
-  "Mail_Messages_Subject": "Овде је изабран део% с порука",
+  "Mail_Messages_Subject": "Овде је изабран део {{roomName}} порука",
   "Mailer": "маилер",
   "Mailer_body_tags": "<b>Морате</b> користити [unsubscribe] за Унсубсцриптион линк. <br /> Можете користити `[name]`, `[fname]`, `[lname]` за пуно име корисника, имену или презимену, респективно. <br /> Можете користити [email] е-поште корисника.",
   "Make_Admin": "Маке Админ",

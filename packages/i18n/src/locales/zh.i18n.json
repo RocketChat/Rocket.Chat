@@ -3268,7 +3268,7 @@
   "Mail_Message_No_messages_selected_select_all": "您还没有选中任何消息。",
   "Mail_Messages": "发送邮件",
   "Mail_Messages_Instructions": "通过点击消息来选择您希望通过电子邮件发送的消息",
-  "Mail_Messages_Subject": "这是从 %s 中选择的一部分消息",
+  "Mail_Messages_Subject": "这是从 {{roomName}} 中选择的一部分消息",
   "Mailer": "发件人",
   "Mailer_body_tags": "你<b>必须</b>使用 [unsubscribe] 作为取消订阅的链接。<br/>你可以使用 [name]、[fname] 和 [lname] 分别作为用户全名、名称或姓氏。<br/>你可以使用 [email] 作为用户的电子邮箱地址。",
   "Mailing": "邮件",

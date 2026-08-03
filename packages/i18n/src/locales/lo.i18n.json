@@ -1386,7 +1386,7 @@
   "Mail_Message_No_messages_selected_select_all": "ທ່ານຍັງບໍ່ໄດ້ເລືອກຂໍ້ຄວາມ",
   "Mail_Messages": "ຂໍ້ຄວາມອີເມວ",
   "Mail_Messages_Instructions": "ເລືອກຂໍ້ຄວາມທີ່ທ່ານຕ້ອງການທີ່ຈະສົ່ງຜ່ານທາງອີເມລໂດຍການຄລິກຂໍ້ຄວາມ",
-  "Mail_Messages_Subject": "ຕໍ່ໄປນີ້ແມ່ນເປັນສ່ວນການຄັດເລືອກຂອງຂໍ້ %s",
+  "Mail_Messages_Subject": "ຕໍ່ໄປນີ້ແມ່ນເປັນສ່ວນການຄັດເລືອກຂອງຂໍ້ {{roomName}}",
   "Mailer": "Mailer",
   "Mailer_body_tags": "<b>ທ່ານຕ້ອງການນໍາໃຊ້</b> [unsubscribe] ສໍາລັບການເຊື່ອມຕໍ່ unsubscription. <br/> ທ່ານອາດຈະນໍາໃຊ້ `[name]`, `[fname]`, `[lname]` ສໍາລັບຊື່ເຕັມຂອງຜູ້ໃຊ້ໄດ້, ຊື່ທໍາອິດຫຼືຊື່ສຸດທ້າຍ, ຕາມລໍາດັບ. <br/> ທ່ານອາດຈະນໍາໃຊ້ [email] ສໍາລັບອີເມລຂອງຜູ້ໃຊ້ໄດ້.",
   "Mailing": "ທາງໄປສະນີ",

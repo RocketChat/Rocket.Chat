@@ -1356,7 +1356,7 @@
   "Mail_Message_No_messages_selected_select_all": "Anda belum memilih pesan",
   "Mail_Messages": "Mail Pesan",
   "Mail_Messages_Instructions": "Memilih pesan yang Anda ingin mengirim via email dengan mengklik pesan",
-  "Mail_Messages_Subject": "Berikut adalah bagian yang terpilih dari pesan%s",
+  "Mail_Messages_Subject": "Berikut adalah bagian yang terpilih dari pesan{{roomName}}",
   "Mailer": "Pengirim",
   "Mailer_body_tags": "Anda <b>harus</b> menggunakan [unsubscribe] untuk berhenti link berlangganan. <br/> Anda dapat menggunakan [nama], [fname], [lname] untuk nama lengkap pengguna, nama pertama atau nama belakang, masing-masing. <br/> Anda dapat menggunakan [email] untuk email pengguna.",
   "Mailing": "Mailing",

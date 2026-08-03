@@ -2324,7 +2324,7 @@
   "Mail_Message_No_messages_selected_select_all": "لم تقم بتحديد أي رسائل",
   "Mail_Messages": "رسائل البريد",
   "Mail_Messages_Instructions": "تحديد الرسائل التي تريد إرسالها عبر البريد الإلكتروني عن طريق النقر فوق الرسائل",
-  "Mail_Messages_Subject": "إليك مجموعة مختارة من رسائل %s",
+  "Mail_Messages_Subject": "إليك مجموعة مختارة من رسائل {{roomName}}",
   "Mailer": "مرسل البريد",
   "Mailer_body_tags": "<b>يجب</b> عليك استخدام [unsubscribe] لرابط إلغاء الاشتراك.<br/>يمكنك استخدام [name]، [fname]، [lname] للاسم الكامل أو الاسم الأول أو اسم العائلة للمستخدم، على التوالي.<br/>يمكنك استخدام [email] للبريد الإلكتروني للمستخدم.",
   "Mailing": "‏‏مراسلة بريدية",

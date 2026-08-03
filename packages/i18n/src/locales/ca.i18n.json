@@ -2298,7 +2298,7 @@
   "Mail_Message_No_messages_selected_select_all": "No s'ha seleccionat cap missatge",
   "Mail_Messages": "Envia missatges per correu-e",
   "Mail_Messages_Instructions": "Seleccioneu els missatges que voleu enviar per correu electrònic fent clic als mateixos",
-  "Mail_Messages_Subject": "Aquí hi ha una part seleccionada de %s missatges",
+  "Mail_Messages_Subject": "Aquí hi ha una part seleccionada de {{roomName}} missatges",
   "Mailer": "Missatge correu-e",
   "Mailer_body_tags": "Vostè <b> ha de </b> utilitzar [unsubscribe] per a l'enllaç de cancel·lació de subscripció. <br/> Podeu utilitzar `[name]`, `[fname]`, `[lname]` per al nom complet, nom o cognom de l'usuari, respectivament. <br/> Podeu utilitzar [email] per al correu electrònic de l'usuari.",
   "Mailing": "Enviament",

@@ -1448,7 +1448,7 @@
   "Mail_Message_No_messages_selected_select_all": "Bạn chưa chọn bất kỳ tin nhắn nào",
   "Mail_Messages": "Mail tin nhắn",
   "Mail_Messages_Instructions": "Chọn tin nhắn bạn muốn gửi qua email bằng cách nhấp vào các tin nhắn",
-  "Mail_Messages_Subject": "Đây là một phần được chọn của%s tin nhắn",
+  "Mail_Messages_Subject": "Đây là một phần được chọn của{{roomName}} tin nhắn",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Bạn <b>phải</b> sử dụng [hủy đăng ký] đối với liên kết bỏ đăng ký.<br/>Bạn có thể sử dụng `[name]`, `[fname]`, `[lname]` cho tên, họ hoặc họ của người dùng, tương ứng.<br/> Bạn có thể sử dụng [email] cho email của người dùng.",
   "Mailing": "gửi thư",

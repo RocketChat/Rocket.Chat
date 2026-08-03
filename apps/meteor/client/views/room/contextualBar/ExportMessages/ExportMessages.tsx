@@ -63,10 +63,7 @@ const ExportMessages = () => {
 			toUsers: [],
 			additionalEmails: '',
 			messagesCount: 0,
-			subject: t('Mail_Messages_Subject', {
-				postProcess: 'sprintf',
-				sprintf: [roomName],
-			}),
+			subject: t('Mail_Messages_Subject', { roomName }),
 			format: isE2ERoom ? 'json' : 'html',
 		},
 	});

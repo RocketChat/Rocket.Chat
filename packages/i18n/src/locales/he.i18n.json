@@ -709,7 +709,7 @@
   "Mail_Message_No_messages_selected_select_all": "לא בחרת שום הודעות.",
   "Mail_Messages": "הודעות דואר אלקטרוניות",
   "Mail_Messages_Instructions": "בחר אילו הודעות אתה רוצה לשלוח בדוא\"ל, על ידי לחיצה על ההודעות",
-  "Mail_Messages_Subject": "הנה חלק נבחר של %s הודעות",
+  "Mail_Messages_Subject": "הנה חלק נבחר של {{roomName}} הודעות",
   "Mailer": "שולח",
   "Mailer_body_tags": "אתה <b>חייב</b> להשתמש ב-[unsubscribe] עבור לינק ההסרה מרשימת התפוצה.<br/>אתה יכול להשתמש ב-`[name]`, `[fname]`, `[lname]` בשביל השם המלא של המשתמש, השם הפרטי או שם המשפחה בהתאמה.<br/>אתה יכול להשתמש ב-[email] עבור כתובת המייל של המשתמש.",
   "Mailing": "תפוצה",

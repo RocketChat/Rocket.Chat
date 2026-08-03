@@ -3353,7 +3353,7 @@
   "Mail_Message_No_messages_selected_select_all": "Du har inte valt några meddelanden",
   "Mail_Messages": "E-posta meddelanden",
   "Mail_Messages_Instructions": "Välj vilka meddelanden du vill skicka via e-post genom att klicka på dem",
-  "Mail_Messages_Subject": "Här är en utvald del av %s meddelanden",
+  "Mail_Messages_Subject": "Här är en utvald del av {{roomName}} meddelanden",
   "Mailer": "E-postavsändare",
   "Mailer_body_tags": "Du <b>måste</b> använda [unsubscribe] för länken för avregistrering.<br/>Du kan använda `[name]`, `[fname]`, `[lname]` för användarens fullständiga namn, förnamn eller efternamn.<br/>Du kan använda [email] för användarens e-postadress.",
   "Mailing": "E-postutskick",

@@ -2037,7 +2037,7 @@
   "Mail_Message_No_messages_selected_select_all": "Du har ikke valgt nogen meddelelser",
   "Mail_Messages": "Mailbeskeder",
   "Mail_Messages_Instructions": "Vælg hvilke meddelelser du vil sende via e-mail ved at klikke på meddelelserne",
-  "Mail_Messages_Subject": "Her er en udvalgt del af %s meddelelser",
+  "Mail_Messages_Subject": "Her er en udvalgt del af {{roomName}} meddelelser",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Du <b>skal</b> bruge [unsubscribe] til abonnementet.<br/>Du kan muligvis bruge [navn], [fname], [lname] for brugerens fulde navn, fornavn eller efternavn.<br/>Du kan bruge [email] til brugerens email.",
   "Mailing": "Mailing",
