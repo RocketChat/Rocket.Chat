@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
-import { getConfig } from '../../../../../lib/utils/getConfig';
+import { getNumericConfig } from '../../../../../lib/utils/getConfig';
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
@@ -45,7 +45,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 	const unprocessedReadMessagesEvent = useRef<{ tmid: string; until: Date } | null>(null);
 
-	const count = parseInt(`${getConfig('threadMessagesSize', 50)}`, 10);
+	const count = getNumericConfig('threadMessagesSize', 50);
 
 	useEffect(() => {
 		const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
