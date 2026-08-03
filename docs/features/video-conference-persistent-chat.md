@@ -647,6 +647,91 @@ Not gaps — choices, recorded so they aren't mistaken for oversights.
 What remains genuinely unfinished is under [Improvement suggestions](#improvement-suggestions).
 
 
+## Planned: reaching a call without a ring
+
+Ringing is the only way into a call you didn't start, and it is a poor one: it is one-shot, it lasts seconds, and
+a conference started in a room with more than ten subscribers rings **nobody at all**. So there are calls a user
+is entitled to join with no route to them, and a call they declined is unreachable even if they change their mind
+a moment later. Two pieces of work, tracked here before either starts.
+
+### 1. Ongoing calls in the sidebar
+
+- [ ] A section listing the calls that are running *and* that this user may join, with **join** and **decline**
+      on each. Both actions already exist — `joinCall`, and `POST /v1/video-conference.decline` — and neither is
+      tied to ringing, so this needs no new actions, only a place to put them.
+- [ ] Several calls at once. The list is plural by construction; see the open decision about the call window.
+- [ ] Declining from the list **hides** the call there — declining should quiet the sidebar, or it isn't a
+      decline. Membership survives it either way, which is what leaves item 2 a route back in.
+- [ ] Calls nobody is in are not listed. `hasActiveParticipants` already knows this, and a conference only stops
+      when someone ends it or the 24h cron reaches it, so without this an abandoned call would sit there all day.
+
+### 2. Getting back a call you declined
+
+- [ ] The personal call history shows calls that are **still running** and that this user may join, including the
+      ones they declined — that is the only route back to a declined call, since the sidebar has hidden it.
+
+### Where "calls I can join" comes from
+
+Worth settling first, because both items read the same list.
+
+**Call history can't answer it as it stands.** A history item is written when a conference *stops* — that was a
+deliberate fix, since nothing ends a Jitsi conference and the write had to hang off both stopping paths. An
+ongoing call therefore has no history row at all, and `CallHistoryItemState` has no value for one.
+
+The concern behind the suggestion — *don't invent another persisted concept* — is better served by asking the
+**conference collection**, which already stores exactly this: `users[]` for membership, `endedAt` for whether it
+is still running, and `rid`/`discussionRid` for the room-access half of `canAccessConference`. Nothing new is
+stored; one new read.
+
+That leaves item 2 as a **presentation** question rather than a data one: the call-history page shows the ongoing
+list above the past one, instead of history rows being redefined to include calls that haven't finished. A
+history row keeps meaning "a call that happened", which is what the duplicate-write guard and the existing
+`direction`/`state` filters are built on.
+
+### Tasks
+
+**Server**
+
+- [ ] `VideoConfService.listJoinableCalls(uid)` — conferences with no `endedAt` that the user may join, by the
+      same rule as `canAccessConference`: a `users[]` entry, or access to `rid`/`discussionRid`. Returns enough to
+      render a row: title or room name, who is in it, and this user's own membership state.
+- [ ] An index for it. Today's are `{rid, createdAt}`, `{type, status}` and `{discussionRid, createdAt}`; a
+      membership-and-liveness lookup wants something like `{'users._id': 1, endedAt: 1}`. Measure before adding.
+- [ ] `GET /v1/video-conference.joinable`, authenticated, no parameters.
+- [ ] Liveness. A call appearing or ending has to reach the sidebar without a poll. The per-conference
+      `video-conference` stream is keyed by callId, which is no use before you know the call exists — so this
+      needs a per-user signal, most likely alongside the existing `user.video-conference` broadcast that already
+      carries `ring`.
+
+**Client**
+
+- [ ] `useJoinableCalls()` — the query plus that signal, in the shape the sidebar and the history page both want.
+- [ ] A sidebar section, following `sections/BannerSection` and `sections/NowPlayingSection` (both built on
+      `SidebarCard`), rendering one row per call with join and decline.
+- [ ] The same list at the top of the call-history page.
+- [ ] Decline from either place: `video-conference.decline`, and the row stays, marked as declined.
+
+**Tests**
+
+- [ ] Who is joinable and who isn't: a member, a room member who was never rung, someone who declined, someone
+      already in the call, a call that has ended, a user with no claim to it at all.
+- [ ] The sidebar section: several calls at once, join, decline-and-stay, and disappearing when the call ends.
+- [ ] The history page showing an ongoing call above past ones, and not confusing the two.
+
+### Settled decisions
+
+| # | Decision | What it means for the build |
+|---|---|---|
+| 1 | **One call at a time.** Joining a call while in another leaves the first. | The shared named window already replaces the first call's page, but that is not the same as leaving it: `video-conference.leave` has to be posted for the call being abandoned, or its participant stays "in" it — which would keep it listed as occupied and stop it ever emptying. Joining becomes leave-then-join, and the user should be told which call they are leaving. |
+| 2 | **A call is shown to everyone in its room, plus anyone added later.** | The audience is exactly `canAccessConference` — membership *or* room access — so the existing rule carries over with nothing new to define. In a large channel that means every subscriber sees it, which decision 3 is what keeps bearable. |
+| 3 | **Calls nobody is in are hidden.** | Filter on `hasActiveParticipants`. This is what stops a conference that nobody ended from being advertised for up to 24 hours, and it is also what makes decision 1 tidy: the call someone leaves to join another disappears on its own once it empties. |
+| 4 | **Declining hides the call from the sidebar; the call history keeps it and offers a way back.** | The decline endpoint already records on the member's own entry without ending anything, so the sidebar filters on `declined` while the history list deliberately does not. Nothing about the decline needs to change — only who honours it. |
+
+Two consequences worth holding on to while building: a call emptied by decision 1 ends after the grace period and
+then leaves both lists by itself, so nothing needs to remove it; and the sidebar's filter is therefore
+"running, not empty, not declined by me", while the history's is "running, not empty" — the same query, read
+twice with different eyes.
+
 ## Improvement suggestions
 
 What is still thinner than it looks. Everything previously listed here that has since been built — the members
