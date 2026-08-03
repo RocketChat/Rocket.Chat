@@ -1396,7 +1396,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// A subscription with a `status` (invited, banned) doesn't count as one: only an existing, plain
 		// subscription does, the same as `canAccessRoomIdAsync` would find for a private room.
-		return memberIds.filter((_id) => !statusByMember.has(_id));
+		return memberIds.filter((_id) => !statusByMember.has(_id) || statusByMember.get(_id) !== undefined);
 	}
 
 	/**

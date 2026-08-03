@@ -70,9 +70,13 @@ describe('VideoConfService.getChatAccess', () => {
 		service = new VideoConfService();
 		// Bare `sinon.stub()`s live outside sinon's default sandbox, so `sinon.resetHistory()` is a no-op for
 		// them — each has to be reset by hand or a test would silently read the previous test's calls.
-		[VideoConferenceModelMock.findOneById, RoomsMock.findOneById, canAccessRoomIdAsyncStub, findByRoomIdAndUserIdsStub, allowMemberActionStub].forEach(
-			(stub) => stub.resetHistory(),
-		);
+		[
+			VideoConferenceModelMock.findOneById,
+			RoomsMock.findOneById,
+			canAccessRoomIdAsyncStub,
+			findByRoomIdAndUserIdsStub,
+			allowMemberActionStub,
+		].forEach((stub) => stub.resetHistory());
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
 		RoomsMock.findOneById.callsFake(async () => ({ ...room }));
 		canAccessRoomIdAsyncStub.reset();
@@ -123,7 +127,10 @@ describe('VideoConfService.getChatAccess', () => {
 		fixture = buildGroupCall([buildMember({ _id: 'member' }), buildMember({ _id: 'invited' }), buildMember({ _id: 'stranger' })]);
 		room = { _id: 'room1', t: 'p', name: 'private-group', fname: 'private-group' };
 		findByRoomIdAndUserIdsStub.returns({
-			toArray: sinon.stub().resolves([{ u: { _id: 'member' }, status: undefined }, { u: { _id: 'invited' }, status: 'INVITED' }]),
+			toArray: sinon.stub().resolves([
+				{ u: { _id: 'member' }, status: undefined },
+				{ u: { _id: 'invited' }, status: 'INVITED' },
+			]),
 		});
 
 		const result = await service.getChatAccess('caller', 'call1');
