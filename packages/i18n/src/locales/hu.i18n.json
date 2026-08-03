@@ -3634,7 +3634,7 @@
   "Showing_archived_results": "<p><b>%s</b> archivált találat megjelenítése</p>",
   "Showing_online_users": "Megjelenítés: <b>{{total_showing}}</b>, elérhető: {{online}}, összesen: {{total}} felhasználó",
   "Showing_results": "<p><b>%s</b> találat megjelenítése</p>",
-  "Showing_results_of": "%s - %s / %s találat megjelenítése",
+  "Showing_results_of": "{{from}} - {{to}} / {{total}} találat megjelenítése",
   "Sidebar": "Oldalsáv",
   "Sidebar_list_mode": "Oldalsáv csatornalista mód",
   "Sign_in_to_start_talking": "Jelentkezzen be a beszélgetés elkezdéséhez",

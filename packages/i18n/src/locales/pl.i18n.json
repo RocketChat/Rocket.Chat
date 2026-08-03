@@ -3646,7 +3646,7 @@
   "Showing_current_of_total": "Wyświetlanie {{current}} z {{total}}",
   "Showing_online_users": "Pokazywanie: <b>{{total_showing}}</b>, Online: {{online}}, Ogółem: {{total}} users",
   "Showing_results": "<p>Wyświetlono <b>%s</b> wyników</p>",
-  "Showing_results_of": "Wyświetlanie wyników %s - %s z %s",
+  "Showing_results_of": "Wyświetlanie wyników {{from}} - {{to}} z {{total}}",
   "Sidebar": "Pasek boczny",
   "Sidebar_list_mode": "Tryb listy kanałów na pasku bocznym",
   "Sign_in_to_start_talking": "Zaloguj się, aby zacząć mówić",

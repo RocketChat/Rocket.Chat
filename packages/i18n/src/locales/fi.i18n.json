@@ -3870,7 +3870,7 @@
   "Showing_archived_results": "<p>Näytetään <b>%s</b> arkistoitua tulosta</p>",
   "Showing_online_users": "Näytetään: <b>{{total_showing}}</b>, Online: {{online}}, Yhteensä: {{total}} käyttäjää",
   "Showing_results": "<p>Näytetään <b>%s</b> tulosta</p>",
-  "Showing_results_of": "Näytetään tulokset %s - %s %s:stä",
+  "Showing_results_of": "Näytetään tulokset {{from}} - {{to}} {{total}}:stä",
   "Sidebar": "Sivupalkki",
   "Sidebar_list_mode": "Sivupalkin kanavaluettelon tila",
   "Sign_in_to_start_talking": "Kirjaudu ja ala puhua",

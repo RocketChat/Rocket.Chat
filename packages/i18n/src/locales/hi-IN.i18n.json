@@ -4120,7 +4120,7 @@
   "Showing_current_of_total": "{{total}} में से {{current}} दिखाया जा रहा है",
   "Showing_online_users": "दिखाया जा रहा है: <b>{{total_showing}}</b> , ऑनलाइन: {{online}}, कुल: {{total}} उपयोगकर्ता",
   "Showing_results": "<p><b>%s</b> परिणाम दिखा रहा है</p>",
-  "Showing_results_of": "%s - %s के %s परिणाम दिखा रहा है",
+  "Showing_results_of": "{{from}} - {{to}} के {{total}} परिणाम दिखा रहा है",
   "Sidebar": "साइड बार",
   "Sidebar_list_mode": "साइडबार चैनल सूची मोड",
   "Sign_in_to_start_talking": "बातचीत शुरू करने के लिए साइन इन करें",

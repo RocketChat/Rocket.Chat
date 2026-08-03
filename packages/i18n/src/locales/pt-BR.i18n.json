@@ -5003,7 +5003,7 @@
   "Showing_current_of_total": "Mostrando {{current}} de {{total}}",
   "Showing_online_users": "Mostrando <b>{{total_showing}}</b>, Online: {{online}}, Total: {{total}} usuários",
   "Showing_results": "<p>Exibindo <b>%s</b> resultados</p>",
-  "Showing_results_of": "Exibindo resultados %s - %s de %s",
+  "Showing_results_of": "Exibindo resultados {{from}} - {{to}} de {{total}}",
   "Sidebar": "Barra lateral",
   "Sidebar_Sections_Order": "Ordem das seções da barra lateral",
   "Sidebar_Sections_Order_Description": "Selecione as categorias em sua ordem preferida",

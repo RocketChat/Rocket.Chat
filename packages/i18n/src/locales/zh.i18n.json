@@ -4881,7 +4881,7 @@
   "Showing_current_of_total": "显示 {{current}} / {{total}}",
   "Showing_online_users": "显示：<b>{{total_showing}}</b>，在线：{{online}}, 总计：{{total}} 用户",
   "Showing_results": "<p>显示<b>%s</b>条结果</p>",
-  "Showing_results_of": "展示结果 %s-%s 共 %s",
+  "Showing_results_of": "展示结果 {{from}}-{{to}} 共 {{total}}",
   "Sidebar": "侧边栏",
   "Sidebar_Sections_Order": "侧边栏分区顺序",
   "Sidebar_Sections_Order_Description": "按你的偏好顺序选择分类。",

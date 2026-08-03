@@ -3364,7 +3364,7 @@
   "Showing_archived_results": "<p>Affichage de <b>%s</b> résultats archivés</p>",
   "Showing_online_users": "Affichage de <b>{{total_showing}}</b>, en ligne : {{online}}, total : {{total}} users",
   "Showing_results": "<p>Afficher <b>%s</b> résultats</p>",
-  "Showing_results_of": "Affichage des résultats %s - %s sur %s",
+  "Showing_results_of": "Affichage des résultats {{from}} - {{to}} sur {{total}}",
   "Sidebar": "Barre latérale",
   "Sidebar_list_mode": "Mode de liste de canaux de la barre latérale",
   "Sign_in_to_start_talking": "Connectez-vous pour commencer à parler",

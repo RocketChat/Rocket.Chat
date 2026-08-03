@@ -4887,7 +4887,7 @@
   "Showing_current_of_total": "Viser {{current}} av {{total}}",
   "Showing_online_users": "Viser: <b>{{total_showing}}</b>, Online: {{online}}, Totalt: {{total}} brukere",
   "Showing_results": "<p>Viser <b>%s</b> resultater</p>",
-  "Showing_results_of": "Viser resultater %s - %s av %s",
+  "Showing_results_of": "Viser resultater {{from}} - {{to}} av {{total}}",
   "Sidebar": "Sidefelt",
   "Sidebar_Sections_Order": "Rekkefølge på sidefeltseksjoner",
   "Sidebar_Sections_Order_Description": "Velg kategoriene i din foretrukne rekkefølge",

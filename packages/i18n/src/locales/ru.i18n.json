@@ -3501,7 +3501,7 @@
   "Showing_archived_results": "<p>Показано <b>%s</b> архивных результатов</p>",
   "Showing_online_users": "Показано: <b>{{total_showing}}</b>. Подключенных: {{online}}. Всего: {{total}} пользователей",
   "Showing_results": "<p>Показано <b>%s</b> результатов</p>",
-  "Showing_results_of": "Показано результатов %s - %s из %s",
+  "Showing_results_of": "Показано результатов {{from}} - {{to}} из {{total}}",
   "Sidebar": "Боковая панель",
   "Sidebar_list_mode": "Режим отображения списка каналов",
   "Sign_in_to_start_talking": "Войдите, чтобы начать разговор",

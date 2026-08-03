@@ -4989,7 +4989,7 @@
   "Showing_current_of_total": "Visar {{current}} av {{total}}",
   "Showing_online_users": "Visar: <b>{{total_showing}}</b>, online: {{online}}, totalt: {{total}} användare",
   "Showing_results": "<p>Visar <b>%s</b> resultat</p>",
-  "Showing_results_of": "Visar resultat %s-%s av %s",
+  "Showing_results_of": "Visar resultat {{from}}-{{to}} av {{total}}",
   "Sidebar": "Sidebar",
   "Sidebar_Sections_Order": "Ordning på sidofältets sektioner",
   "Sidebar_Sections_Order_Description": "Välj kategorierna i önskad ordning",

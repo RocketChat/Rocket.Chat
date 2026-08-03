@@ -3734,7 +3734,7 @@
   "Showing_archived_results": "<p>Aneigen von <b>%s</b> archivierte Räume</p>",
   "Showing_online_users": "Anzeigen von: <b>{{total_showing}}</b>, Online: {{online}}, Gesamt: {{total}} Benutzer",
   "Showing_results": "<p><b>%s</b> Ergebnisse</p>",
-  "Showing_results_of": "Anzeigen von %s - %s von %s Ergebnissen",
+  "Showing_results_of": "Anzeigen von {{from}} - {{to}} von {{total}} Ergebnissen",
   "Sidebar": "Seitenleiste",
   "Sidebar_list_mode": "Seitenleisten-Channel-Listen-Modus",
   "Sign_in_to_start_talking": "Anmelden, um mit dem Chatten zu beginnen",

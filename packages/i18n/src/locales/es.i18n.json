@@ -3458,7 +3458,7 @@
   "Showing_archived_results": "<p>Se muestran <b>%s</b> resultados archivados</p>",
   "Showing_online_users": "Se muestran: <b>{{total_showing}}</b>, en línea: {{online}}, total:{{total}} ",
   "Showing_results": "<p>Mostrando <b>%s</b> resultados</p>",
-  "Showing_results_of": "Mostrando resultados %s - %s de %s",
+  "Showing_results_of": "Mostrando resultados {{from}} - {{to}} de {{total}}",
   "Sidebar": "Barra lateral",
   "Sidebar_list_mode": "Modo de lista de Channels de la barra lateral",
   "Sign_in_to_start_talking": "Inicia sesión para empezar a hablar",

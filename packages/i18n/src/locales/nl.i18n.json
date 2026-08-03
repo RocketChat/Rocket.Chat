@@ -3369,7 +3369,7 @@
   "Showing_archived_results": "<p>Zichtbaar: <b>%s</b> gearchiveerde resultaten</p>",
   "Showing_online_users": "Toont: <b>{{total_showing}}</b>, online: {{online}}, totaal: {{total}} gebruikers",
   "Showing_results": "<p>Toon <b>%s</b> resultaten</p>",
-  "Showing_results_of": "Weergave resultaten %s - %s van %s",
+  "Showing_results_of": "Weergave resultaten {{from}} - {{to}} van {{total}}",
   "Sidebar": "Zijbalk",
   "Sidebar_list_mode": "Zijbalk kanalenlijstmodus",
   "Sign_in_to_start_talking": "Log in om te praten",

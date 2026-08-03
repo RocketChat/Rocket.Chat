@@ -3365,7 +3365,7 @@
   "Showing_archived_results": "<p>عرض <b>%s</b> نتائج مؤرشفة</p>",
   "Showing_online_users": "عرض: <b>{{total_showing}}</b>، على الإنترنت: {{online}}، المجموع: {{total}} من المستخدمين",
   "Showing_results": "<p>عرض <b>%s</b> نتائج</p>",
-  "Showing_results_of": "عرض النتائج %s -‏ %s من %s",
+  "Showing_results_of": "عرض النتائج {{from}} -‏ {{to}} من {{total}}",
   "Sidebar": "الشريط الجانبي",
   "Sidebar_list_mode": "وضع قائمة Channel في الشريط الجانبي",
   "Sign_in_to_start_talking": "تسجيل الدخول لبدء الحديث",

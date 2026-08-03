@@ -3336,7 +3336,7 @@
   "Showing_archived_results": "<p><b>%s</b> 件のアーカイブされた結果を表示中</p>",
   "Showing_online_users": "表示中：<b>{{total_showing}}</b>、オンライン：{{online}}、合計：{{total}}ユーザー",
   "Showing_results": "<p><b>%s</b>件の結果を表示中</p>",
-  "Showing_results_of": "結果%s～%s/%sを表示中",
+  "Showing_results_of": "結果{{from}}～{{to}}/{{total}}を表示中",
   "Sidebar": "サイドバー",
   "Sidebar_list_mode": "サイドバーChannel一覧モード",
   "Sign_in_to_start_talking": "ログインして会話を開始",
