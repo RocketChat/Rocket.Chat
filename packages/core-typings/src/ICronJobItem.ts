@@ -2,6 +2,8 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export type CronJobStatus = 'running' | 'scheduled' | 'failed' | 'disabled' | 'completed';
 
+export type OmnichannelJobSource = 'auto-close' | 'auto-transfer' | 'queue-inactivity';
+
 export interface ICronJobItem extends IRocketChatRecord {
 	name: string;
 	type?: 'once' | 'single' | 'normal';

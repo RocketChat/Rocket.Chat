@@ -1,9 +1,16 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ICronJobsService } from '@rocket.chat/core-services';
-import type { CronJobStatus, ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import type { CronJobStatus, ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
-import type { IAppSchedulerModel, ICronJobsModel } from '@rocket.chat/model-typings';
-import { AppScheduler, CronHistory, CronJobs } from '@rocket.chat/models';
+import type { IAppSchedulerModel, ICronJobsModel, IOmnichannelSchedulerModel } from '@rocket.chat/model-typings';
+import {
+	AppScheduler,
+	CronHistory,
+	CronJobs,
+	OmnichannelAutoCloseScheduler,
+	OmnichannelAutoTransferScheduler,
+	OmnichannelQueueInactivityScheduler,
+} from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter } from 'mongodb';
 
@@ -45,11 +52,41 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		return this.listJobs(AppScheduler, pagination);
 	}
 
+	async getOmnichannelJobs(pagination: {
+		source: OmnichannelJobSource;
+		offset?: number;
+		count?: number;
+		searchTerm?: string;
+		status?: CronJobStatus;
+	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+		const { source, ...listOptions } = pagination;
+		switch (source) {
+			case 'auto-close':
+				return this.listJobs(OmnichannelAutoCloseScheduler, listOptions);
+			case 'auto-transfer':
+				return this.listJobs(OmnichannelAutoTransferScheduler, listOptions);
+			case 'queue-inactivity':
+				return this.listJobs(OmnichannelQueueInactivityScheduler, listOptions);
+		}
+	}
+
 	async getJob(jobName: string): Promise<ICronJobItem | null> {
 		let job = await CronJobs.findOne({ name: jobName });
 
 		if (!job) {
 			job = await AppScheduler.findOne({ name: jobName });
+		}
+
+		if (!job) {
+			job = await OmnichannelAutoCloseScheduler.findOne({ name: jobName });
+		}
+
+		if (!job) {
+			job = await OmnichannelAutoTransferScheduler.findOne({ name: jobName });
+		}
+
+		if (!job) {
+			job = await OmnichannelQueueInactivityScheduler.findOne({ name: jobName });
 		}
 
 		if (!job) {
@@ -99,7 +136,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 	}
 
 	private async listJobs(
-		model: ICronJobsModel | IAppSchedulerModel,
+		model: ICronJobsModel | IAppSchedulerModel | IOmnichannelSchedulerModel,
 		pagination?: {
 			offset?: number;
 			count?: number;
