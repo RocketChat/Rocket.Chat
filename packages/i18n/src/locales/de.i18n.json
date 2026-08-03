@@ -2611,7 +2611,7 @@
   "Marketplace_error": "Keine Verbindung zum Internet oder zu Ihrem Arbeitsbereich möglich, möglicherweise handelt es sich um eine Offline-Installation.",
   "Marketplace_view_marketplace": "Marketplace anzeigen",
   "Max_Retry": "Maximale Anzahl von Versuchen, die Verbindung zum Server wiederherzustellen",
-  "Max_length_is": "Maximale Länge ist %s",
+  "Max_length_is": "Maximale Länge ist {{limit}}",
   "Max_number_incoming_livechats_displayed": "Maximale Anzahl der in der Warteschlange angezeigten Elemente",
   "Max_number_incoming_livechats_displayed_description": "(Optional) Maximale Anzahl von Elementen, die in der eingehenden Livechats-Warteschlange angezeigt werden.",
   "Max_number_of_chats_per_agent": "Maximale Anzahl von gleichzeitigen Chats",

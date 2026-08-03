@@ -2334,7 +2334,7 @@
   "Marketplace": "Mercat",
   "Marketplace_error": "No es pot connectar a Internet o el vostre espai de treball pot ser una instal·lació fora de línia.",
   "Marketplace_view_marketplace": "Veure Marketplace",
-  "Max_length_is": "La llargada màxima és %s",
+  "Max_length_is": "La llargada màxima és {{limit}}",
   "Max_number_incoming_livechats_displayed": "Nombre màxim d'elements mostrats a la cua",
   "Max_number_incoming_livechats_displayed_description": "(Opcional) Nombre màxim d'elements que es mostren a la cua entrant de LiveChat.",
   "Max_number_of_chats_per_agent": "Màxim nombre de xats simultanis",

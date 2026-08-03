@@ -2469,7 +2469,7 @@
   "Marketplace": "Магазин",
   "Marketplace_error": "Не удается подключиться к Интернету, или рабочее пространство может быть установлено в автономном режиме.",
   "Marketplace_view_marketplace": "Посмотреть торговую площадку",
-  "Max_length_is": "Максимальная длина %s",
+  "Max_length_is": "Максимальная длина {{limit}}",
   "Max_number_incoming_livechats_displayed": "Максимальное количество элементов отображаемых в очереди",
   "Max_number_incoming_livechats_displayed_description": "(Необязательно) Максимальное количество элементов, отображаемых в очереди Livechat.",
   "Max_number_of_chats_per_agent": "Максимальное число одновременных чатов",

@@ -1390,7 +1390,7 @@
   "Markdown_Parser": "Αναλυτής αντιστοίχισης",
   "Markdown_SupportSchemesForLink": "Σχέδια Markdown Υποστήριξη για Link",
   "Markdown_SupportSchemesForLink_Description": "Διαχωρισμένες με κόμμα λίστα των επιτρεπόμενων προγραμμάτων",
-  "Max_length_is": "Το μέγιστο μήκος είναι%s",
+  "Max_length_is": "Το μέγιστο μήκος είναι{{limit}}",
   "Media": "Μεσο ΜΑΖΙΚΗΣ ΕΝΗΜΕΡΩΣΗΣ",
   "Medium": "Μεσαίο",
   "Members": "Μέλη",

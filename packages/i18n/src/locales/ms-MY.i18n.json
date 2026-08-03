@@ -1387,7 +1387,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Skim Sokongan turun harga untuk Link",
   "Markdown_SupportSchemesForLink_Description": "Senarai diasingkan koma bagi skim dibenarkan",
-  "Max_length_is": "Panjang maksimum ialah%s",
+  "Max_length_is": "Panjang maksimum ialah{{limit}}",
   "Media": "Media",
   "Medium": "Sederhana",
   "Members": "Ahli",

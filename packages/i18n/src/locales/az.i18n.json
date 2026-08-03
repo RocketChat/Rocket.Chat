@@ -1386,7 +1386,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Əlaqə üçün Markdown dəstək sxemləri",
   "Markdown_SupportSchemesForLink_Description": "İzin verilən sxemlərin virgülle ayrılmış siyahısı",
-  "Max_length_is": "Maksimum uzunluq%sdir",
+  "Max_length_is": "Maksimum uzunluq{{limit}}dir",
   "Media": "Media",
   "Medium": "Orta",
   "Members_List": "İstifadəçi siyahısı",

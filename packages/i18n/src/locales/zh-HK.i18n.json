@@ -1403,7 +1403,7 @@
   "Markdown_Parser": "降价解析器",
   "Markdown_SupportSchemesForLink": "链接的Markdown支持方案",
   "Markdown_SupportSchemesForLink_Description": "逗号分隔的允许方案列表",
-  "Max_length_is": "最大长度是％s",
+  "Max_length_is": "最大长度是{{limit}}",
   "Media": "媒体",
   "Medium": "中",
   "Members": "成员",

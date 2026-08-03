@@ -1384,7 +1384,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Markdown Subteno Skemoj por Ligo",
   "Markdown_SupportSchemesForLink_Description": "Komma-disigita listo de permesitaj skemoj",
-  "Max_length_is": "Max longo estas%s",
+  "Max_length_is": "Max longo estas{{limit}}",
   "Media": "Amaskomunikiloj",
   "Medium": "Meza",
   "Members_List": "Membroj Listo",

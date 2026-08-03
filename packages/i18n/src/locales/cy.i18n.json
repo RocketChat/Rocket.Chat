@@ -1383,7 +1383,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Cynlluniau Cymorth Markdown ar gyfer Cyswllt",
   "Markdown_SupportSchemesForLink_Description": "Rhestr o gynlluniau a ganiateir wedi'u gwahanu gan gwmnïau",
-  "Max_length_is": "Hyd mwyaf yw %s",
+  "Max_length_is": "Hyd mwyaf yw {{limit}}",
   "Media": "Cyfryngau",
   "Medium": "Canolig",
   "Members_List": "Rhestr Aelodau",

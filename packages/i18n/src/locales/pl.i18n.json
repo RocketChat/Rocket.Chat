@@ -2561,7 +2561,7 @@
   "Marketplace_error": "Nie można połączyć się z Internetem lub obszar roboczy może być instalacją offline.",
   "Marketplace_view_marketplace": "Zobacz Marketplace",
   "Max_Retry": "Maksymalna ilość prób ponownego połączenia z serwerem",
-  "Max_length_is": "Maksymalna długość to %s",
+  "Max_length_is": "Maksymalna długość to {{limit}}",
   "Max_number_incoming_livechats_displayed": "Maksymalna liczba elementów wyświetlanych w kolejce",
   "Max_number_incoming_livechats_displayed_description": "(Opcjonalnie) Maksymalna liczba elementów wyświetlanych w przychodzącej kolejce Livechat.",
   "Max_number_of_chats_per_agent": "Maksymalna liczba jednoczesnych rozmów",

@@ -1476,7 +1476,7 @@
   "Markdown_Parser": "Trình phân tích Markdown",
   "Markdown_SupportSchemesForLink": "Gói Hỗ trợ Markdown cho Liên kết",
   "Markdown_SupportSchemesForLink_Description": "Danh sách các chương trình cho phép",
-  "Max_length_is": "Chiều dài tối đa là%s",
+  "Max_length_is": "Chiều dài tối đa là{{limit}}",
   "Media": "Truyền thông",
   "Medium": "Trung bình",
   "Members_List": "Danh sách thành viên",

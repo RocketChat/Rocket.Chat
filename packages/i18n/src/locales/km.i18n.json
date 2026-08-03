@@ -1641,7 +1641,7 @@
   "Markdown_Parser": "កម្មវិធីញែក Markdown",
   "Markdown_SupportSchemesForLink": "គម្រោងគាំទ្រ Markdown សម្រាប់តំណ",
   "Markdown_SupportSchemesForLink_Description": "បញ្ជីបំបែកដោយសញ្ញាក្បៀសនៃគម្រោងដែលបានអនុញ្ញាត",
-  "Max_length_is": "ប្រវែងអតិបរមាគឺ%s",
+  "Max_length_is": "ប្រវែងអតិបរមាគឺ{{limit}}",
   "Max_number_of_chats_per_agent": "អតិបរមា។ ចំនួននៃការជជែកក្នុងពេលដំណាលគ្នា",
   "Max_number_of_chats_per_agent_description": "អតិបរមា។ ចំនួននៃការជជែកក្នុងពេលដំណាលគ្នាដែលភ្នាក់ងារអាចចូលរួម",
   "Me": "ខ្ញុំ",

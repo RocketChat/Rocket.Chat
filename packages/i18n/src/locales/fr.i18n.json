@@ -2356,7 +2356,7 @@
   "Marketplace": "Marketplace",
   "Marketplace_error": "Impossible de se connecter à Internet ou votre espace de travail est peut-être une installation hors ligne.",
   "Marketplace_view_marketplace": "Voir le marketplace",
-  "Max_length_is": "La longueur maximale est %s",
+  "Max_length_is": "La longueur maximale est {{limit}}",
   "Max_number_incoming_livechats_displayed": "Nombre maximal d'éléments affichés dans la file d'attente",
   "Max_number_incoming_livechats_displayed_description": "(Facultatif) Nombre maximal d'éléments affichés dans la file d'attente omnicanale entrante.",
   "Max_number_of_chats_per_agent": "Nombre max. de chats simultanés",

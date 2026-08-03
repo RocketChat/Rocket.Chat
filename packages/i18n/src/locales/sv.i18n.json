@@ -3412,7 +3412,7 @@
   "Master_volume": "Master-volym",
   "Master_volume_hint": "Kontrollerar volymen för alla ljud som kommer från din arbetsyta",
   "Max_Retry": "Högsta antalet försök att återansluta till servern",
-  "Max_length_is": "Max längd är %s",
+  "Max_length_is": "Max längd är {{limit}}",
   "Max_logs_export": "Max (2000)",
   "Max_number_incoming_livechats_displayed": "Högsta antal objekt som visas i kön",
   "Max_number_incoming_livechats_displayed_description": "(Valfritt) Högsta antal objekt som visas i inkommande Omnichannel-kö.",

@@ -3423,7 +3423,7 @@
   "Master_volume": "Volume principal",
   "Master_volume_hint": "Controla o volume de todos os sons do seu workspace",
   "Max_Retry": "Número máximo de tentativas de conexão com o servidor",
-  "Max_length_is": "Extensão máxima é %s",
+  "Max_length_is": "Extensão máxima é {{limit}}",
   "Max_logs_export": "Max (2000)",
   "Max_number_incoming_livechats_displayed": "Número máximo de itens exibidos na fila",
   "Max_number_incoming_livechats_displayed_description": "(Opcional) Número máximo de itens exibidos na fila de entrada do omnichannel.",

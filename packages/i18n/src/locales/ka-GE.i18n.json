@@ -1882,7 +1882,7 @@
   "Markdown_Marked_Tables": "მონიშნული ცხრილების ჩართვა",
   "Markdown_SupportSchemesForLink_Description": "დაშვებული სქემების მძიმით გამოყოფილი სია",
   "Marketplace_view_marketplace": "იხილეთ მარკეტი",
-  "Max_length_is": "მაქსიმალური სიგრძე არის %s",
+  "Max_length_is": "მაქსიმალური სიგრძე არის {{limit}}",
   "Max_number_incoming_livechats_displayed": "რიგში ნაჩვენები ოქიექტების მაქსიმალური რაოდენობა",
   "Max_number_incoming_livechats_displayed_description": "(არჩევითი)  შემომავალი Omnichannel რიგში ნაჩვენები ობიექტების მაქსიმალური რაოდენობა",
   "Max_number_of_chats_per_agent": "ერთდროული ჩეთების მაქსიმალური რაოდენობა",

@@ -2549,7 +2549,7 @@
   "Marketplace_error": "Nem lehet kapcsolódni az internetre, vagy a munkaterülete kapcsolat nélküli telepítésű lehet.",
   "Marketplace_view_marketplace": "Piactér megtekintése",
   "Max_Retry": "A kiszolgálóhoz való újrakapcsolódás legtöbb kísérlete",
-  "Max_length_is": "A legnagyobb hossz %s",
+  "Max_length_is": "A legnagyobb hossz {{limit}}",
   "Max_number_incoming_livechats_displayed": "A várólistában megjelenített elemek legnagyobb száma",
   "Max_number_incoming_livechats_displayed_description": "(Nem kötelező) A bejövő összcsatornás várólistában megjelenített elemek legnagyobb száma.",
   "Max_number_of_chats_per_agent": "Egyidejű csevegések legnagyobb száma",

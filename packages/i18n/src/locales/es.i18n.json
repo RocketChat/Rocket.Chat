@@ -2396,7 +2396,7 @@
   "Marketplace_apps": "Aplicaciones de la tienda",
   "Marketplace_error": "No se puede conectar a Internet o puede que tu espacio de trabajo sea una instalación fuera de línea.",
   "Marketplace_view_marketplace": "Ver Marketplace",
-  "Max_length_is": "La longitud máxima es %s",
+  "Max_length_is": "La longitud máxima es {{limit}}",
   "Max_number_incoming_livechats_displayed": "Número máximo de elementos mostrados en la cola",
   "Max_number_incoming_livechats_displayed_description": "(Opcional) Número máximo de elementos que se muestran en la cola entrante de Omnichannel.",
   "Max_number_of_chats_per_agent": "Número máximo de chats simultáneos",

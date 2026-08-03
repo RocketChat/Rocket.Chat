@@ -1772,7 +1772,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Schemi di supporto Markdown per i link",
   "Markdown_SupportSchemesForLink_Description": "Elenco separato da virgole per i programmi consentiti",
-  "Max_length_is": "Lunghezza massima è %s",
+  "Max_length_is": "Lunghezza massima è {{limit}}",
   "Max_number_of_uses": "Max numero di utilizzi",
   "Media": "Media",
   "Medium": "Media",

@@ -1630,7 +1630,7 @@
   "Markdown_Parser": "معامله گر معکوس",
   "Markdown_SupportSchemesForLink": "طرح های پشتیبانی مدل های نشانه گذاری برای لینک",
   "Markdown_SupportSchemesForLink_Description": "جدا شده با کاما از طرح اجازه",
-  "Max_length_is": "حداکثر طول%s است",
+  "Max_length_is": "حداکثر طول{{limit}} است",
   "Max_number_incoming_livechats_displayed_description": "(اختیاری) بیشینه تعداد موارد نمایشی در صف ورودی کانال همه‌کاره",
   "Max_number_of_chats_per_agent": "حداکثر تعداد چت های همزمان",
   "Me": "من",

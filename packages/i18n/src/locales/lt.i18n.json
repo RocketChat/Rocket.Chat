@@ -1434,7 +1434,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Atsisakymo palaikymo sistemos Link",
   "Markdown_SupportSchemesForLink_Description": "Kableliais atskirtų leidžiamų schemų sąrašas",
-  "Max_length_is": "Maksimalus ilgis yra%s",
+  "Max_length_is": "Maksimalus ilgis yra{{limit}}",
   "Media": "Žiniasklaida",
   "Medium": "Vidutinis",
   "Members_List": "Narių sąrašas",

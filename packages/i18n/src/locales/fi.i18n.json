@@ -2676,7 +2676,7 @@
   "Marketplace_error": "Yhteyttä internetiin ei voi muodostaa, tai työtilasi on offline-asennus.",
   "Marketplace_view_marketplace": "Näytä kauppapaikka",
   "Max_Retry": "Yhteyden uudelleen muodostamisen palvelimeen enimmäisyritysten määrä",
-  "Max_length_is": "Maksimi pituus on %s",
+  "Max_length_is": "Maksimi pituus on {{limit}}",
   "Max_number_incoming_livechats_displayed": "Jonossa näytettävien kohteiden enimmäismäärä",
   "Max_number_incoming_livechats_displayed_description": "(Valinnainen) Saapuvan Omnichannel-jonossa näytettävien kohteiden enimmäismäärä.",
   "Max_number_of_chats_per_agent": "Samanaikaisten keskustelujen enimmäismäärä",

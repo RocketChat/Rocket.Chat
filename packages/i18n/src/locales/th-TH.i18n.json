@@ -1380,7 +1380,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "แผนการสนับสนุน Markdown สำหรับ Link",
   "Markdown_SupportSchemesForLink_Description": "รายการรายการแผนการอนุญาตที่ถูกคั่นด้วยจุลภาค",
-  "Max_length_is": "ความยาวสูงสุดคือ%s",
+  "Max_length_is": "ความยาวสูงสุดคือ{{limit}}",
   "Media": "สื่อ",
   "Medium": "ขนาดกลาง",
   "Members_List": "รายชื่อสมาชิก",

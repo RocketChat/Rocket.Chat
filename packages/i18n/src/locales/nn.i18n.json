@@ -3104,7 +3104,7 @@
   "Master_volume": "Hovedvolum",
   "Master_volume_hint": "Styrer volumet for alle lyder som kommer fra arbeidsområdet ditt",
   "Max_Retry": "Maksimalt antall forsøk på å koble til serveren på nytt",
-  "Max_length_is": "Maks lengde er%s",
+  "Max_length_is": "Maks lengde er{{limit}}",
   "Max_number_incoming_livechats_displayed": "Maks antall elementer som vises i køen",
   "Max_number_incoming_livechats_displayed_description": "(Valgfritt) Maks antall elementer som vises i den innkommende omnikanalkøen.",
   "Max_number_of_chats_per_agent": "Maks antall samtidige chatter",

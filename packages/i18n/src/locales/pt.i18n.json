@@ -1631,7 +1631,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Protocolos Suportados para Markdown de Links",
   "Markdown_SupportSchemesForLink_Description": "Lista de protocolos separados por vírgulas",
-  "Max_length_is": "O comprimento máximo é %s",
+  "Max_length_is": "O comprimento máximo é {{limit}}",
   "Media": "Média",
   "Medium": "Médio",
   "Members": "Membros",

@@ -2359,7 +2359,7 @@
   "Marketplace": "Marktplaats",
   "Marketplace_error": "Kan geen verbinding maken met internet of uw werkruimte is mogelijk offline geïnstalleerd.",
   "Marketplace_view_marketplace": "Marketplace bekijken",
-  "Max_length_is": "De maximale lengte is %s",
+  "Max_length_is": "De maximale lengte is {{limit}}",
   "Max_number_incoming_livechats_displayed": "Max. aantal items weergegeven in de wachtrij",
   "Max_number_incoming_livechats_displayed_description": "(Optioneel) Max. aantal items dat wordt weergegeven in de inkomende Omnichannel-wachtrij.",
   "Max_number_of_chats_per_agent": "Max. aantal gelijktijdige chats",

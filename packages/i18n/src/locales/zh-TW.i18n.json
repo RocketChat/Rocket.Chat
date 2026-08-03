@@ -2303,7 +2303,7 @@
   "Marketplace": "商店",
   "Marketplace_error": "無法連線到網路或是您的工作台可能是離線安裝。",
   "Marketplace_view_marketplace": "檢視商店",
-  "Max_length_is": "最大長度是 %s",
+  "Max_length_is": "最大長度是 {{limit}}",
   "Max_number_incoming_livechats_displayed": "顯示佇列裡最大數量",
   "Max_number_incoming_livechats_displayed_description": "(可選) 顯示進入的即時訊息佇列的最大數量。",
   "Max_number_of_chats_per_agent": "最大同時聊天數",

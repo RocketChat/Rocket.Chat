@@ -1383,7 +1383,7 @@
   "Markdown_Parser": "Анализатор на маркер",
   "Markdown_SupportSchemesForLink": "Схеми за поддръжка на Markdown за връзка",
   "Markdown_SupportSchemesForLink_Description": "Списък с разрешени схеми, разделени с кодове",
-  "Max_length_is": "Максималната дължина е %s",
+  "Max_length_is": "Максималната дължина е {{limit}}",
   "Media": "средства",
   "Medium": "среда",
   "Members_List": "Списък с членовете",

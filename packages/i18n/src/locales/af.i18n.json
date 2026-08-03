@@ -1386,7 +1386,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description": "Komma-geskeide lys van toegelate skemas",
-  "Max_length_is": "Maksimum lengte is%s",
+  "Max_length_is": "Maksimum lengte is{{limit}}",
   "Media": "media",
   "Medium": "medium",
   "Members_List": "Lede Lys",

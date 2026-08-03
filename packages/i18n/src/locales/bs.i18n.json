@@ -1383,7 +1383,7 @@
   "Markdown_Parser": "Ispitivač odziva",
   "Markdown_SupportSchemesForLink": "Markdown Support Sheme za poveznice",
   "Markdown_SupportSchemesForLink_Description": "Popis dozvoljenih shema, odvojenih zarezom",
-  "Max_length_is": "Maksimalna dužina je %s",
+  "Max_length_is": "Maksimalna dužina je {{limit}}",
   "Media": "media",
   "Medium": "Srednji",
   "Members_List": "Lista Članova",

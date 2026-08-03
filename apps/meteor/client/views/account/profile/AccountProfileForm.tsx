@@ -254,7 +254,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							rules={{
 								maxLength: {
 									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+									message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
 								},
 							}}
 							render={({ field }) => (
@@ -356,7 +356,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='bio'
 							rules={{
-								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) },
+								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) },
 							}}
 							render={({ field }) => (
 								<TextAreaInput

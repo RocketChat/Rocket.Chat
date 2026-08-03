@@ -1385,7 +1385,7 @@
   "Markdown_Parser": "Parserul de marcare",
   "Markdown_SupportSchemesForLink": "Scheme de sprijin pentru Markdown Link",
   "Markdown_SupportSchemesForLink_Description": "Lista de elemente separate prin virgulă de scheme permise",
-  "Max_length_is": "Lungimea maximă este%s",
+  "Max_length_is": "Lungimea maximă este{{limit}}",
   "Media": "Mass-media",
   "Medium": "Mediu",
   "Members": "Membri",

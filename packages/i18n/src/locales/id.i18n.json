@@ -1384,7 +1384,7 @@
   "Markdown_Parser": "Penurunan tekanan parser",
   "Markdown_SupportSchemesForLink": "Skema Dukungan penurunan harga untuk Link",
   "Markdown_SupportSchemesForLink_Description": "Dipisahkan koma daftar skema diperbolehkan",
-  "Max_length_is": "Panjang maks adalah%s",
+  "Max_length_is": "Panjang maks adalah{{limit}}",
   "Media": "Media",
   "Medium": "Medium",
   "Members_List": "Daftar Member",

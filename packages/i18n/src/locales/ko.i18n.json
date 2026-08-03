@@ -2052,7 +2052,7 @@
   "Markdown_SupportSchemesForLink": "Markdown 링크 지원",
   "Markdown_SupportSchemesForLink_Description": "쉼표로 구분된 허용할 스키마",
   "Marketplace_view_marketplace": " Marketplace 보기",
-  "Max_length_is": "최대 길이는 %s입니다.",
+  "Max_length_is": "최대 길이는 {{limit}}입니다.",
   "Max_number_incoming_livechats_displayed": "대기열에 표시되는 최대 항목 수",
   "Max_number_incoming_livechats_displayed_description": "(선택 사항) 수신 실시간상담 대기열에 표시되는 최대 항목 수입니다.",
   "Max_number_of_chats_per_agent": "최대 동시 대화 수",

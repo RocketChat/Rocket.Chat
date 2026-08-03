@@ -1385,7 +1385,7 @@
   "Markdown_Parser": "மார்க் டவுன் பார்ஸர்",
   "Markdown_SupportSchemesForLink": "இணைப்பு markdown ஆதரவு திட்டங்கள்",
   "Markdown_SupportSchemesForLink_Description": "அனுமதி திட்டங்கள் கமாவால் பிரிக்கப்பட்ட பட்டியல்",
-  "Max_length_is": "அதிகபட்சம்%s",
+  "Max_length_is": "அதிகபட்சம்{{limit}}",
   "Media": "ஊடகம்",
   "Medium": "நடுத்தர",
   "Members": "உறுப்பினர்கள்",

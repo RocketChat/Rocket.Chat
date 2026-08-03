@@ -1406,7 +1406,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Markdown Схемы падтрымкі для Link",
   "Markdown_SupportSchemesForLink_Description": "Падзеленых коскамі спіс дазволеных праграм",
-  "Max_length_is": "Максімальная даўжыня складае %s",
+  "Max_length_is": "Максімальная даўжыня складае {{limit}}",
   "Media": "сродкі масавай інфармацыі",
   "Medium": "серада",
   "Members_List": "карыстальнікі",

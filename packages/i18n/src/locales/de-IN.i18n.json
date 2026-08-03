@@ -1597,7 +1597,7 @@
   "Markdown_SupportSchemesForLink": "Unterstützte Markdown- Schemata für Links",
   "Markdown_SupportSchemesForLink_Description": "Kommata getrennte Liste von erlaubten Schemata",
   "Marketplace_view_marketplace": "Marketplace anzeigen",
-  "Max_length_is": "Maximale Länge ist %s",
+  "Max_length_is": "Maximale Länge ist {{limit}}",
   "Media": "Medien",
   "Medium": "Normal",
   "Members_List": "Mitglieder",

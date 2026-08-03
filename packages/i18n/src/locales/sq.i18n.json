@@ -1385,7 +1385,7 @@
   "Markdown_Parser": "Analizues i Markdown",
   "Markdown_SupportSchemesForLink": "Skemat mbështetëse markdown për Link",
   "Markdown_SupportSchemesForLink_Description": "lista të ndara me presje i skemave të lejuara",
-  "Max_length_is": "Gjatësia maksimale është %s",
+  "Max_length_is": "Gjatësia maksimale është {{limit}}",
   "Media": "Media",
   "Medium": "medium",
   "Members": "Anëtarët",

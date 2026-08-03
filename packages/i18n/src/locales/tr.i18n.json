@@ -1664,7 +1664,7 @@
   "Markdown_SupportSchemesForLink": "Bağlantı için Markdown Destek Şemaları",
   "Markdown_SupportSchemesForLink_Description": "İzin verilen şemaların virgülle ayrılmış listesi",
   "Marketplace_view_marketplace": "Marketi Görüntüle",
-  "Max_length_is": "Maksimum uzunluk%s",
+  "Max_length_is": "Maksimum uzunluk{{limit}}",
   "Max_number_of_uses": "Maksimum kullanım sayısı",
   "Maximum": "Maksimum",
   "Media": "Medya",

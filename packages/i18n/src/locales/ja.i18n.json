@@ -2336,7 +2336,7 @@
   "Marketplace": "マーケットプレイス",
   "Marketplace_error": "インターネットに接続できないか、ワークスペースがオフラインインストールである可能性があります、",
   "Marketplace_view_marketplace": "マーケットプレイスの表示",
-  "Max_length_is": "最大長は%sです",
+  "Max_length_is": "最大長は{{limit}}です",
   "Max_number_incoming_livechats_displayed": "キューに表示されるアイテムの最大数",
   "Max_number_incoming_livechats_displayed_description": "（オプション）オムニチャネル受信キューに表示されるアイテムの最大数。",
   "Max_number_of_chats_per_agent": "最大同時チャット数",

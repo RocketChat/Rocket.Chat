@@ -1414,7 +1414,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "ໂຄງການສະຫນັບສະຫນູນ markdown ສໍາລັບການເຊື່ອມຕໍ່",
   "Markdown_SupportSchemesForLink_Description": "ບັນຊີລາຍຊື່ຈຸດ, ແຍກອອກຂອງໂຄງການອະນຸຍາດ",
-  "Max_length_is": "ຄວາມຍາວສູງສຸດແມ່ນ%s",
+  "Max_length_is": "ຄວາມຍາວສູງສຸດແມ່ນ{{limit}}",
   "Media": "ສື່ມວນຊົນ",
   "Medium": "ປານກາງ",
   "Members_List": "ບັນຊີສະມາຊິກ",

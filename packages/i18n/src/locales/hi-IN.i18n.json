@@ -2790,7 +2790,7 @@
   "Marketplace_error": "इंटरनेट से कनेक्ट नहीं हो सकता या आपका कार्यक्षेत्र ऑफ़लाइन इंस्टॉल हो सकता है।",
   "Marketplace_view_marketplace": "बाज़ार देखें",
   "Max_Retry": "सर्वर से पुनः कनेक्ट करने का अधिकतम प्रयास",
-  "Max_length_is": "अधिकतम लंबाई %s है",
+  "Max_length_is": "अधिकतम लंबाई {{limit}} है",
   "Max_number_incoming_livechats_displayed": "कतार में प्रदर्शित वस्तुओं की अधिकतम संख्या",
   "Max_number_incoming_livechats_displayed_description": "(वैकल्पिक) आने वाली ओमनीचैनल कतार में प्रदर्शित आइटमों की अधिकतम संख्या।",
   "Max_number_of_chats_per_agent": "अधिकतम. एक साथ चैट की संख्या",

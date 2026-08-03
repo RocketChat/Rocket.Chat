@@ -1806,7 +1806,7 @@
   "Markdown_SupportSchemesForLink": "Markdown Схеми підтримки для Link",
   "Markdown_SupportSchemesForLink_Description": "Розділених комами список дозволених схем",
   "Marketplace_view_marketplace": "Переглянути Marketplace",
-  "Max_length_is": "Максимальна довжина %s",
+  "Max_length_is": "Максимальна довжина {{limit}}",
   "Max_number_incoming_livechats_displayed": "Максимальна кількість елементів, що відображаються у черзі",
   "Max_number_of_chats_per_agent": "Макс. кількість одночасних чатів",
   "Max_number_of_chats_per_agent_description": "Макс. кількість одночасних чатів, які агенти можуть відвідувати",

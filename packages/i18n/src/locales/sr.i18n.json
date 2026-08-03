@@ -1234,7 +1234,7 @@
   "Markdown_Parser": "Маркдовн Парсер",
   "Markdown_SupportSchemesForLink": "Маркдовн подрже шеме за Линк",
   "Markdown_SupportSchemesForLink_Description": "Зарезом одвојена листа одобрених шема",
-  "Max_length_is": "Максимална дужина је %s",
+  "Max_length_is": "Максимална дужина је {{limit}}",
   "Media": "Медији",
   "Medium": "Средње",
   "Members": "Чланови",

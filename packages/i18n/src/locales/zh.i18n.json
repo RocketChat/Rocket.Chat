@@ -3327,7 +3327,7 @@
   "Master_volume": "主音量",
   "Master_volume_hint": "控制工作区所有声音的音量",
   "Max_Retry": "重连服务器的最大尝试次数",
-  "Max_length_is": "最大长度 %s",
+  "Max_length_is": "最大长度 {{limit}}",
   "Max_logs_export": "最大（2000）",
   "Max_number_incoming_livechats_displayed": "已在队列中显示最大数量的条目",
   "Max_number_incoming_livechats_displayed_description": "(可选) Omnichannel 队列中显示的最大消息数量。",

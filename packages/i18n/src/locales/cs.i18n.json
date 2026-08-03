@@ -1992,7 +1992,7 @@
   "Markdown_SupportSchemesForLink": "Schémata používaná pro automatické odkazy markdown",
   "Markdown_SupportSchemesForLink_Description": "Čárkami oddělený seznam povolených schémat",
   "Marketplace_view_marketplace": "Zobrazit Marketplace",
-  "Max_length_is": "Maximální délka je %s",
+  "Max_length_is": "Maximální délka je {{limit}}",
   "Max_number_incoming_livechats_displayed": "Maximální počet položek zobrazených ve frontě",
   "Max_number_incoming_livechats_displayed_description": "(Volitelné) Maximální počet položek zobrazených v příchozí frontě Omnichannel.",
   "Max_number_of_chats_per_agent": "Max. počet souběžných konverzací",

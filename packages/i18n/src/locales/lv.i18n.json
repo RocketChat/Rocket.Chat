@@ -1400,7 +1400,7 @@
   "Markdown_Parser": "Parsētāja samazinājums",
   "Markdown_SupportSchemesForLink": "Siates atbalsta shēmas samazinājums",
   "Markdown_SupportSchemesForLink_Description": "Ar komatu atdalto atļauto shēmu saraksts",
-  "Max_length_is": "Maksimālais garums ir %s",
+  "Max_length_is": "Maksimālais garums ir {{limit}}",
   "Media": "Multivide",
   "Medium": "Vidējs",
   "Members_List": "Dalībnieku saraksts",

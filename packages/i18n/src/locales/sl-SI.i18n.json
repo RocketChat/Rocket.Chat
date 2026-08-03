@@ -1381,7 +1381,7 @@
   "Markdown_Parser": "Markdown razčlenjevalnik",
   "Markdown_SupportSchemesForLink": "Sheme podpore Markdown za povezavo",
   "Markdown_SupportSchemesForLink_Description": "Seznam odobrenih shem, ločen z vejicami",
-  "Max_length_is": "Maksimalna dolžina je %s",
+  "Max_length_is": "Maksimalna dolžina je {{limit}}",
   "Media": "Mediji",
   "Medium": "Srednje",
   "Members_List": "Seznam članov",

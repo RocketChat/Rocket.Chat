@@ -1391,7 +1391,7 @@
   "Markdown_Parser": "Značkovací analyzátor",
   "Markdown_SupportSchemesForLink": "Schémy podpory označovania pre odkaz",
   "Markdown_SupportSchemesForLink_Description": "Zoznam povolených schém oddelený čiarkami",
-  "Max_length_is": "Maximálna dĺžka je%s",
+  "Max_length_is": "Maximálna dĺžka je{{limit}}",
   "Media": "Media",
   "Medium": "stredná",
   "Members_List": "Zoznam členov",

@@ -1387,7 +1387,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Markdown-Support-System für Links",
   "Markdown_SupportSchemesForLink_Description": "Kommata getrennte Liste von erlaubten Systemen",
-  "Max_length_is": "Maximale Länge ist%s",
+  "Max_length_is": "Maximale Länge ist{{limit}}",
   "Media": "Medien",
   "Medium": "Mittel",
   "Members_List": "Mitglieder",

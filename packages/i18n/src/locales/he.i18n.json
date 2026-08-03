@@ -723,7 +723,7 @@
   "Markdown_Headers": "כותרות Markdown",
   "Markdown_SupportSchemesForLink": "תוכניות תמיכה Markdown עבור קישור",
   "Markdown_SupportSchemesForLink_Description": "רשימה מופרדת בפסיקים של תוכניות מותרות",
-  "Max_length_is": "אורך מקסימלי הוא %s",
+  "Max_length_is": "אורך מקסימלי הוא {{limit}}",
   "Me": "אני",
   "Media": "מדיה",
   "Medium": "בינוני",

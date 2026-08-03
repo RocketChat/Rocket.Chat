@@ -2360,7 +2360,7 @@
   "Marketplace": "السوق",
   "Marketplace_error": "يتعذّر الاتصال بالإنترنت أو قد تكون مساحة العمل الخاصة بك مثبتة من دون اتصال.",
   "Marketplace_view_marketplace": "عرض السوق",
-  "Max_length_is": "الحد الأقصى للطول هو %s",
+  "Max_length_is": "الحد الأقصى للطول هو {{limit}}",
   "Max_number_incoming_livechats_displayed": "الحد الأقصى لعدد العناصر المعروضة في قائمة الانتظار",
   "Max_number_incoming_livechats_displayed_description": "(اختياري) الحد الأقصى لعدد العناصر المعروضة في قائمة انتظار القناة متعددة الاتجاهات الواردة.",
   "Max_number_of_chats_per_agent": "الحد الأقصى لعدد الدردشات المتزامنة",

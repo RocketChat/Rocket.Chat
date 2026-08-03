@@ -1384,7 +1384,7 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Link to Markdown Support Schemes",
   "Markdown_SupportSchemesForLink_Description": "Зөвшөөрөгдсөн схемийн коммандаас тусгаарласан жагсаалт",
-  "Max_length_is": "Хамгийн их урт нь %s",
+  "Max_length_is": "Хамгийн их урт нь {{limit}}",
   "Media": "Хэвлэл мэдээлэл",
   "Medium": "Дунд",
   "Members_List": "Гишүүдийн жагсаалт",

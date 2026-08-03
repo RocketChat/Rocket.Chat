@@ -1379,7 +1379,7 @@
   "Markdown_Parser": "Parser Markmark",
   "Markdown_SupportSchemesForLink": "Schemes Support Markdown bo Link",
   "Markdown_SupportSchemesForLink_Description": "lîsteya bêhnok-cuda yên schemes destûr",
-  "Max_length_is": "Mezinahiya%s e",
+  "Max_length_is": "Mezinahiya{{limit}} e",
   "Media": "Medya",
   "Medium": "Medya",
   "Members": "ئەندامان",
