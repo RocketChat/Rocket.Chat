@@ -65,3 +65,13 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		}
 	}
 }
+
+/* Same approach as above, but for the message reactions */
+.rcx-message-reactions {
+	&__emoji:not(.emoji--custom) {
+		width: auto;
+		height: auto;
+		font-size: 1rem;
+		line-height: 1.2;
+	}
+}
