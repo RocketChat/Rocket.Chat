@@ -1,5 +1,5 @@
 import { CronJobs } from '@rocket.chat/core-services';
-import type { CronJobStatus, ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import type { CronJobStatus, ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
 import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -23,6 +23,32 @@ const isCronJobsListParams = ajvQuery.compile<{
 			nullable: true,
 		},
 	},
+	additionalProperties: false,
+});
+
+const isCronOmnichannelJobsListParams = ajvQuery.compile<{
+	source: OmnichannelJobSource;
+	offset?: number;
+	count?: number;
+	searchTerm?: string;
+	status?: CronJobStatus;
+}>({
+	type: 'object',
+	properties: {
+		source: {
+			type: 'string',
+			enum: ['auto-close', 'auto-transfer', 'queue-inactivity'],
+		},
+		offset: { type: 'number', nullable: true },
+		count: { type: 'number', nullable: true },
+		searchTerm: { type: 'string', nullable: true },
+		status: {
+			type: 'string',
+			enum: ['running', 'scheduled', 'failed', 'disabled'],
+			nullable: true,
+		},
+	},
+	required: ['source'],
 	additionalProperties: false,
 });
 
@@ -167,6 +193,38 @@ const cronJobsEndpoints = API.v1
 		},
 	)
 	.get(
+		'cron.omnichanneljobs',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-scheduled-jobs'],
+			query: isCronOmnichannelJobsListParams,
+			response: {
+				200: isCronJobsListResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const searchTerm = this.queryParams.searchTerm?.trim();
+			const { source, status } = this.queryParams;
+			const { jobs, total } = await CronJobs.getOmnichannelJobs({
+				source,
+				offset,
+				count,
+				...(searchTerm && { searchTerm }),
+				...(status && { status }),
+			});
+
+			return API.v1.success({
+				jobs,
+				count: jobs.length,
+				offset,
+				total,
+			});
+		},
+	)
+	.get(
 		'cron.job',
 		{
 			authRequired: true,
@@ -287,6 +345,6 @@ const cronJobsEndpoints = API.v1
 export type CronJobsEndpoints = ExtractRoutesFromAPI<typeof cronJobsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions
 	interface Endpoints extends CronJobsEndpoints {}
 }
