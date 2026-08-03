@@ -16,7 +16,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'r',
 		system: true,
-		text: (t, message) => t('Room_name_changed_to', { room_name: message.msg }),
+		text: (t) => t('Room_name_changed_short'),
 	});
 
 	instance.registerType({
