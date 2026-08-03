@@ -183,4 +183,15 @@ export class SDP {
 
 		return streams;
 	}
+
+	public static getStreamTagByMediaContent(content: string): string | null {
+		switch (content) {
+			case 'slides':
+				return 'screen-share';
+			case 'main':
+				return 'main';
+			default:
+				return null;
+		}
+	}
 }
