@@ -180,4 +180,40 @@ describe('VideoConfService.ringMembers', () => {
 		expect(result).to.deep.equal([]);
 		expect(ringedUserIds()).to.deep.equal([]);
 	});
+
+	// The members panel rings one person at a time, so the caller says who — everyone else absent is left alone.
+	it('rings only the members asked for', async () => {
+		fixture = buildGroupCall([
+			buildMember({ _id: 'caller' }),
+			buildMember({ _id: 'wanted', joined: false, joinedAt: undefined }),
+			buildMember({ _id: 'other', joined: false, joinedAt: undefined }),
+		]);
+
+		const result = await service.ringMembers('caller', 'call1', ['wanted']);
+
+		expect(result).to.deep.equal(['wanted']);
+		expect(ringedUserIds()).to.deep.equal(['wanted']);
+	});
+
+	// Being asked for doesn't override being present: ringing someone who is already on the call is noise.
+	it('will not ring a requested member who is in the call', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'present' })]);
+
+		const result = await service.ringMembers('caller', 'call1', ['present']);
+
+		expect(result).to.deep.equal([]);
+		expect(ringedUserIds()).to.deep.equal([]);
+	});
+
+	it('rings everyone absent when no member is named', async () => {
+		fixture = buildGroupCall([
+			buildMember({ _id: 'caller' }),
+			buildMember({ _id: 'one', joined: false, joinedAt: undefined }),
+			buildMember({ _id: 'two', joined: false, joinedAt: undefined }),
+		]);
+
+		const result = await service.ringMembers('caller', 'call1');
+
+		expect(result.sort()).to.deep.equal(['one', 'two']);
+	});
 });

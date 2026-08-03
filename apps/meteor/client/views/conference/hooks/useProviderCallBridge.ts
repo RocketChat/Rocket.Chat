@@ -36,9 +36,15 @@ const isProviderMessage = (data: unknown): data is ConferenceProviderMessage => 
 	}
 };
 
+/** The side panel currently showing, or `undefined` for none. Only one at a time — they share the same space. */
+export type ConferencePanel = 'members' | 'chat';
+
 /**
- * Owns the conference chrome state — whether our call bar and chat panel are shown — so both our own
- * controls and the embedded provider drive one source of truth.
+ * Owns the conference chrome state — whether our call bar is shown and which side panel is open — so both our
+ * own controls and the embedded provider drive one source of truth.
+ *
+ * The members list opens by default: on arriving in a call the useful question is who else is here, and for the
+ * caller of a call still ringing it is the only place that answers it.
  *
  * The iframe is cross-origin, so `event.origin` can't be allow-listed against our own origin. Instead each
  * message must have come from the very window we embedded, which no other frame or tab can forge.
@@ -46,9 +52,22 @@ const isProviderMessage = (data: unknown): data is ConferenceProviderMessage => 
  */
 export const useProviderCallBridge = (iframeRef: RefObject<HTMLIFrameElement | null>) => {
 	const [callBarVisible, setCallBarVisible] = useState(true);
-	const [chatVisible, setChatVisible] = useState(true);
+	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>('members');
 
-	const toggleChat = useCallback(() => setChatVisible((visible) => !visible), []);
+	const togglePanel = useCallback((panel: ConferencePanel) => setActivePanel((current) => (current === panel ? undefined : panel)), []);
+
+	// The provider's chat commands predate there being more than one panel, so they act on the chat and leave
+	// any other panel alone rather than closing whatever happens to be open.
+	const setChatVisible = useCallback((visible: boolean) => {
+		if (visible) {
+			setActivePanel('chat');
+			return;
+		}
+
+		setActivePanel((current) => (current === 'chat' ? undefined : current));
+	}, []);
+
+	const toggleChat = useCallback(() => togglePanel('chat'), [togglePanel]);
 
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent) => {
@@ -76,7 +95,7 @@ export const useProviderCallBridge = (iframeRef: RefObject<HTMLIFrameElement | n
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [iframeRef, toggleChat]);
+	}, [iframeRef, toggleChat, setChatVisible]);
 
-	return { callBarVisible, chatVisible, toggleChat };
+	return { callBarVisible, activePanel, togglePanel };
 };

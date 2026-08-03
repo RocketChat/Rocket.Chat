@@ -67,6 +67,16 @@ export const useConferenceEmbedded = (callId: string) => {
 		queryFn: async () => joinConference({ callId, state: { mic: true, cam: false } }),
 	});
 
+	// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription being
+	// established — which left the members list showing us as absent until something else moved.
+	useEffect(() => {
+		if (!data) {
+			return;
+		}
+
+		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+	}, [data, callId, queryClient]);
+
 	return {
 		call: {
 			// Who is associated with the call and where each of them stands — the call window uses it to tell
