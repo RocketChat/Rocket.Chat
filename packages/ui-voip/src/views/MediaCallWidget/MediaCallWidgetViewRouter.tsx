@@ -4,12 +4,12 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const MediaCallWidgetViewRouter = () => {
 	const {
-		sessionState: { state, transferredBy, peerInfo, supportedFeatures },
+		sessionState: { state, transferredBy, supportedFeatures },
 	} = useMediaCallView();
 
 	switch (state) {
 		case 'ongoing':
-			if ('username' in peerInfo && supportedFeatures.includes('screen-share')) {
+			if (supportedFeatures.includes('screen-share')) {
 				return <OngoingCallWithScreen />;
 			}
 			return <OngoingCall />;
