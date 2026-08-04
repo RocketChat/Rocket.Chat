@@ -13,7 +13,8 @@ or the [`devcontainer` CLI](https://github.com/devcontainers/cli).
 1. Open the repo in VS Code → **Dev Containers: Reopen in Container**
    (or `devcontainer up`).
    The first build takes a while — it downloads the pinned Meteor distribution.
-   Create then runs `yarn install && yarn build` for you.
+   Create then runs `yarn install && yarn build` for you (plus each declared
+   feature's own install step — Playwright's browsers, by default).
 2. Open a terminal in the container and start the app:
 
    ```bash
@@ -54,6 +55,7 @@ namespaced per worktree:
 | --- | --- |
 | Yarn package cache (`rc-devcontainer-yarn-cache`) | `node_modules` |
 | Turborepo remote cache (own compose project) | `apps/meteor/.meteor/local` |
+| Playwright browsers (`rc-devcontainer-playwright-browsers`) | |
 | `gh` + SSH and Claude Code logins, with those features enabled | |
 
 So a package built in one worktree replays as `>>> FULL TURBO` in the others, a
@@ -75,8 +77,46 @@ capabilities — disappears with it; no other file needs editing.
 | Feature | Gives you |
 | --- | --- |
 | `devcontainers-extra/features/npm-packages` | `rc-apps`, the Rocket.Chat Apps CLI (enabled by default) |
+| `postfinance/devcontainer-features/playwright-deps` | A working `yarn test:e2e`: headless-Chromium OS libraries, plus the browser build and a cache volume shared across worktrees (enabled by default) |
 | `devcontainers/features/github-cli` | `gh`, plus a shared login and SSH key across worktrees |
 | `anthropics/devcontainer-features/claude-code` | The Claude Code CLI, an egress firewall, your host skills, a shared login |
+
+### Playwright and `yarn test:e2e`
+
+Nothing to do — with the feature enabled, create leaves you able to run the e2e
+suite. Start the app in one terminal and the tests in another:
+
+```bash
+yarn dev                        # http://localhost:3000
+cd apps/meteor && yarn test:e2e
+```
+
+The split is deliberate, and worth knowing about when something breaks:
+
+- **The feature installs the OS libraries only, never Playwright.** A browser build
+  only works with the Playwright version that downloaded it, and the version that
+  matters is the one pinned in `apps/meteor/package.json`. So the browsers are
+  fetched by *that* CLI from `scripts/playwright/update-content.sh`, and there is no
+  second version to bump — same principle as the Dockerfile's pins. The features
+  that do install browsers themselves all depend on
+  `devcontainers/features/node`, which would shadow the Volta-managed Node.
+- **Chromium only**, since `playwright.config.ts` runs `channel: 'chromium'`. The
+  engine list appears twice — the feature's `install*Deps` options in
+  `devcontainer.json`, and `browsers=(...)` in
+  `scripts/playwright/update-content.sh`. Change both together.
+- **After a Playwright version bump**, `yarn install` alone isn't enough — run
+  `yarn workspace @rocket.chat/meteor playwright install chromium` to fetch the
+  matching build. Old builds stay in the volume, so you can move between branches
+  that pin different versions without re-downloading.
+- **Don't reach for `--with-deps`.** It shells out to `apt`, which the egress
+  firewall blocks once the `claude-code` feature is enabled — and it's unnecessary
+  either way, since those packages are already in the image. The download host
+  `cdn.playwright.dev` *is* allowlisted, so a plain `playwright install` works from
+  a running container.
+- **`show-report` and `--ui`** need to bind outside the container, which is why the
+  feature sets `PLAYWRIGHT_HTML_HOST=0.0.0.0`. Their ports aren't in
+  `docker-compose.yml`; VS Code forwards them on demand, and with the CLI use
+  `--ui-host 0.0.0.0` and forward the port yourself.
 
 ### Enabling Claude Code
 
@@ -140,7 +180,7 @@ HERDR_AGENT=claude npx @devcontainer/cli exec claude --dangerously-skip-permissi
 
 ## Structure
 
-Three lifecycle hooks, one entry point each. Everything below them is either
+Four lifecycle hooks, one entry point each. Everything below them is either
 unconditional or owned by a feature.
 
 | File | Purpose |
@@ -153,6 +193,7 @@ unconditional or owned by a feature.
 | `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache), its own project so one cache serves all worktrees |
 | `scripts/initialize.sh` | Host-side `initializeCommand`; runs the ensure-scripts, then merges the compose fragments |
 | `scripts/on-create.sh` | Container-side `onCreateCommand`; claims volume mount points, configures git |
+| `scripts/update-content.sh` | Container-side `updateContentCommand`; `yarn install`, the features' install steps, `yarn build` |
 | `scripts/post-start.sh` | Container-side `postStartCommand`; nothing unconditional yet |
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `scripts/init-git-identity.sh` | Host-side; passes your git author identity through to the container |
@@ -184,14 +225,15 @@ the allowlist take effect on a **restart**, no rebuild.
 A directory under `scripts/` that ships a `feature.id` file belongs to the
 feature named in it, and **nothing inside it runs unless `devcontainer.json`
 declares that feature**. Hook names match the top-level ones
-(`initialize.sh`, `on-create.sh`, `post-start.sh`) and are called from them.
-Directory names aren't derived from feature ids — `gh` owns
+(`initialize.sh`, `on-create.sh`, `update-content.sh`, `post-start.sh`) and are
+called from them. Directory names aren't derived from feature ids — `gh` owns
 `devcontainers/features/github-cli` — the file is the mapping.
 
 | Directory | Contents |
 | --- | --- |
 | `scripts/claude-code/` | Contributes the `~/.claude` mount and `NET_ADMIN`/`NET_RAW`; creates `rc-devcontainer-claude-config`; stages and installs host skills; applies `init-firewall.sh` on every start |
 | `scripts/gh/` | Contributes the `~/.config/gh` and `~/.ssh` mounts; creates `rc-devcontainer-gh-auth`, seeding `known_hosts` from `api.github.com/meta` so `git push` doesn't open with a host-key prompt |
+| `scripts/playwright/` | Contributes the `~/.cache/ms-playwright` mount; creates `rc-devcontainer-playwright-browsers`; downloads the browser build with the repo's pinned Playwright once dependencies are installed |
 
 **Why the compose file is generated.** Compose is static and
 `devcontainer.json`'s `dockerComposeFile` list can't be computed, yet two things
@@ -241,6 +283,7 @@ several mounts, and need Compose ≥ 2.26 / Engine ≥ 25.
 | Volume | Subpath | Mounted at | Holds |
 | --- | --- | --- | --- |
 | `rc-devcontainer-yarn-cache` | `berry/` | `~/.yarn/berry` | Yarn's package cache (~650MB warm) and metadata index |
+| `rc-devcontainer-playwright-browsers` | `ms-playwright/` | `~/.cache/ms-playwright` | Playwright's browser builds, one directory per version |
 | `rc-devcontainer-claude-config` | `claude/` | `~/.claude` | Claude Code credentials, settings, history, skills |
 | `rc-devcontainer-gh-auth` | `gh/` | `~/.config/gh` | `hosts.yml`, i.e. the GitHub OAuth token |
 | `rc-devcontainer-gh-auth` | `ssh/` | `~/.ssh` | The SSH key `gh auth login` generates, plus `known_hosts` |
@@ -252,8 +295,9 @@ several mounts, and need Compose ≥ 2.26 / Engine ≥ 25.
 - Canonical paths are the point, and for `gh` there's no alternative — its key
   generation is hardcoded to `$HOME/.ssh` with no flag to move it.
 - The auth volumes are created `0700` and owned by the host uid (which is the
-  container user's, since devcontainers matches them). The Yarn one is pure
-  cache: `docker volume rm rc-devcontainer-yarn-cache` costs one slow install, nothing more.
+  container user's, since devcontainers matches them). The Yarn and Playwright ones
+  are pure cache: `docker volume rm rc-devcontainer-yarn-cache` costs one slow
+  install and `rc-devcontainer-playwright-browsers` one re-download, nothing more.
 - `~/.claude` is shared *state*, not just credentials. Every worktree mounts at
   `/workspaces/rocket.chat`, so they all resolve to the same entry under
   `~/.claude/projects/` — `claude --resume` in one worktree lists sessions
