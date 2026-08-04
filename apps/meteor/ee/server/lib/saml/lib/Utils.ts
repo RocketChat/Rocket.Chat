@@ -4,7 +4,7 @@ import zlib from 'node:zlib';
 import type { Logger } from '@rocket.chat/logger';
 
 import { StatusCode } from './constants';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { ensureArray } from '../../../../../lib/utils/arrayUtils';
 import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import type { ISAMLUser } from '../definition/ISAMLUser';

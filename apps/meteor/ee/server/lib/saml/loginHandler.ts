@@ -1,11 +1,12 @@
+import { License } from '@rocket.chat/license';
 import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { i18n } from '../i18n';
+import { i18n } from '../../../../server/lib/i18n';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import { SystemLogger } from '../logger/system';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -19,6 +20,12 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		typeof loginRequest.credentialToken !== 'string' ||
 		SAMLUtils.serviceProviders.length === 0
 	) {
+		return undefined;
+	}
+
+	// providers are only loaded while the module is licensed, this covers the
+	// window between a license being removed and the providers being reloaded
+	if (!License.hasModule('saml-enterprise')) {
 		return undefined;
 	}
 

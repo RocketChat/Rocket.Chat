@@ -2,7 +2,7 @@ import '../../imports/personal-access-tokens/server/api/methods';
 
 import './auth/addOAuthService';
 import './auth/addPermissionToRole';
-import './auth/addSamlService';
+import '../../ee/server/meteor-methods/addSamlService';
 import './auth/addUserToRole';
 import './auth/afterVerifyEmail';
 import './auth/checkCodesRemaining';
@@ -15,7 +15,7 @@ import './auth/refreshOAuthService';
 import './auth/regenerateCodes';
 import './auth/removeOAuthService';
 import './auth/removeRoleFromPermission';
-import './auth/samlLogout';
+import '../../ee/server/meteor-methods/samlLogout';
 import './auth/sendConfirmationEmail';
 import './auth/sendForgotPasswordEmail';
 import './auth/validateTempToken';

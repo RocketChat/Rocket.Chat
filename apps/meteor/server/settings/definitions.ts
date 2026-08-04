@@ -16,7 +16,7 @@ import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
 import { createIRCSettings } from './irc';
 import { createLayoutSettings } from './layout';
-import { createLdapSettings } from './ldap';
+import { createLdapSettings } from '../../ee/server/settings/ldapCore';
 import { createLogSettings } from './logs';
 import { createMessageSettings } from './message';
 import { createMetaSettings } from './meta';

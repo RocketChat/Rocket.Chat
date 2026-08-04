@@ -10,7 +10,7 @@ describe('LDAP', function () {
 	before((done) => getCredentials(done));
 
 	describe('[/ldap.syncNow]', () => {
-		it('should throw an error containing totp-required error when not running EE', async function () {
+		it('should throw an error containing error-action-not-allowed when not running EE', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (process.env.IS_EE) {
@@ -23,7 +23,7 @@ describe('LDAP', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'totp-required');
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
 		});
 

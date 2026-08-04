@@ -36,13 +36,13 @@ import {
 	privateKey,
 } from './data';
 import { makeLoginResponseEnvelope, makeLogoutRequestEnvelope, makeLogoutResponseEnvelope } from './helpers';
-import { SAMLUtils } from '../../../../../server/lib/saml/lib/Utils';
-import { AuthorizeRequest } from '../../../../../server/lib/saml/lib/generators/AuthorizeRequest';
-import { LogoutRequest } from '../../../../../server/lib/saml/lib/generators/LogoutRequest';
-import { LogoutResponse } from '../../../../../server/lib/saml/lib/generators/LogoutResponse';
-import { LogoutRequestParser } from '../../../../../server/lib/saml/lib/parsers/LogoutRequest';
-import { LogoutResponseParser } from '../../../../../server/lib/saml/lib/parsers/LogoutResponse';
-import { ResponseParser } from '../../../../../server/lib/saml/lib/parsers/Response';
+import { SAMLUtils } from '../../../../../ee/server/lib/saml/lib/Utils';
+import { AuthorizeRequest } from '../../../../../ee/server/lib/saml/lib/generators/AuthorizeRequest';
+import { LogoutRequest } from '../../../../../ee/server/lib/saml/lib/generators/LogoutRequest';
+import { LogoutResponse } from '../../../../../ee/server/lib/saml/lib/generators/LogoutResponse';
+import { LogoutRequestParser } from '../../../../../ee/server/lib/saml/lib/parsers/LogoutRequest';
+import { LogoutResponseParser } from '../../../../../ee/server/lib/saml/lib/parsers/LogoutResponse';
+import { ResponseParser } from '../../../../../ee/server/lib/saml/lib/parsers/Response';
 
 const meteorStub = {
 	'meteor/meteor': {
@@ -57,9 +57,9 @@ const meteorStub = {
 
 const { ServiceProviderMetadata } = proxyquire
 	.noCallThru()
-	.load('../../../../../server/lib/saml/lib/generators/ServiceProviderMetadata', meteorStub);
+	.load('../../../../../ee/server/lib/saml/lib/generators/ServiceProviderMetadata', meteorStub);
 
-const { SAMLServiceProvider } = proxyquire.noCallThru().load('../../../../../server/lib/saml/lib/ServiceProvider', meteorStub);
+const { SAMLServiceProvider } = proxyquire.noCallThru().load('../../../../../ee/server/lib/saml/lib/ServiceProvider', meteorStub);
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -1159,7 +1159,7 @@ describe('SAML', () => {
 		};
 
 		const loadSAML = () =>
-			proxyquire.noCallThru().load('../../../../../server/lib/saml/lib/SAML', {
+			proxyquire.noCallThru().load('../../../../../ee/server/lib/saml/lib/SAML', {
 				'@rocket.chat/models': {
 					SamlUsedAssertions: { markUsed },
 					CredentialTokens: { create: credentialCreate },
@@ -1188,14 +1188,14 @@ describe('SAML', () => {
 					},
 				},
 				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
-				'../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
-				'../../logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
-				'../../rooms/addUserToRoom': { addUserToRoom: sinon.stub() },
-				'../../rooms/createRoom': { createRoom: sinon.stub() },
-				'../../users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
-				'../../../settings': { settings: { get: sinon.stub() } },
-				'../../../../app/utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
+				'../../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
+				'../../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
+				'../../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: sinon.stub() },
+				'../../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
+				'../../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
+				'../../../../../server/lib/users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
+				'../../../../../server/settings': { settings: { get: sinon.stub() } },
+				'../../../../../app/utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
 			}).SAML;
 
 		const service = { ...serviceProviderOptions } as any;

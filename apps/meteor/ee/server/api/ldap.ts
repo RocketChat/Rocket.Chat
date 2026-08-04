@@ -21,6 +21,7 @@ API.v1.post(
 		authRequired: true,
 		forceTwoFactorAuthenticationForNonEnterprise: true,
 		twoFactorRequired: true,
+		license: ['ldap-enterprise'],
 		response: {
 			200: ldapSyncNowResponseSchema,
 			400: validateBadRequestErrorResponse,

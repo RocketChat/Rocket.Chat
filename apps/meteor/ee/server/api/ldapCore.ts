@@ -1,9 +1,15 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isLdapTestSearch,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
-import { SystemLogger } from '../../lib/logger/system';
-import { settings } from '../../settings';
-import { API } from '../api';
+import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../../server/settings';
+import { API } from '../../../server/api/api';
 
 const messageResponseSchema = {
 	type: 'object' as const,
@@ -23,8 +29,10 @@ API.v1.post(
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['ldap-enterprise'],
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -56,9 +64,11 @@ API.v1.post(
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['ldap-enterprise'],
 		body: isLdapTestSearch,
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},

@@ -13,7 +13,10 @@ const samlUtilsMock = {
 };
 
 const handler = sinon.stub();
-proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
+proxyquire.noCallThru().load('../../../../../ee/server/lib/saml/loginHandler', {
+	'@rocket.chat/license': {
+		License: { hasModule: () => true },
+	},
 	'@rocket.chat/models': {
 		CredentialTokens: { removeById },
 	},
@@ -34,8 +37,8 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
 	},
-	'../i18n': { i18n: { t: sinon.stub().returns('') } },
-	'../logger/system': { SystemLogger: { error: sinon.stub() } },
+	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('') } },
+	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 
 describe('SAML loginHandler', () => {
