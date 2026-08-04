@@ -48,7 +48,7 @@ const useAvailableViewTracker = () => {
 	}, []);
 
 	return {
-		currentViews: views.currentViews,
+		currentViews: views.filteredViews,
 		registerView,
 		unregisterView,
 	};
