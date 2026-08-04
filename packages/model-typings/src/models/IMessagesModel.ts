@@ -22,6 +22,7 @@ import type {
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 type PaginatedRequest<S extends string = string> = {
 	count?: number;
@@ -31,23 +32,38 @@ type PaginatedRequest<S extends string = string> = {
 	query?: string;
 };
 export interface IMessagesModel extends IBaseModel<IMessage> {
-	findPaginatedVisibleByMentionAndRoomId(
+	findPaginatedVisibleByMentionAndRoomId<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options?: FindOptions<IMessage>,
-	): FindPaginated<FindCursor<IMessage>>;
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: IUser['username'],
+		rid: IRoom['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPaginatedByRoomIdAndType(
+	findPaginatedByRoomIdAndType<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],
-		options?: FindOptions<IMessage>,
-	): FindPaginated<FindCursor<IMessage>>;
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findDiscussionsByRoomAndText<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		text: string,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findAllNumberOfTransferredRooms(p: {
 		start: Date;
@@ -67,13 +83,17 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options?: any }): Promise<any[]>;
 
-	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
-	findLivechatMessagesWithoutTypes(
+	findLivechatClosedMessages<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		searchTerm?: string,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findLivechatMessagesWithoutTypes<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: IRoom['_id'],
 		ignoredTypes: IMessage['t'][],
 		showSystemMessages: boolean,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
@@ -84,7 +104,10 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
 
-	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findPaginatedPinnedByRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['rid'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
 
@@ -98,16 +121,22 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
 
-	findVisibleByRoomIdNotContainingTypesBeforeTs(
+	findVisibleByRoomIdNotContainingTypesBeforeTs<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
 		showSystemMessages: boolean,
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages?: boolean,
-	): FindCursor<IMessage>;
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
+	findLivechatClosingMessage<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
@@ -129,59 +158,86 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<UpdateResult | Document>;
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId: string, afterTimestamp: Date, beforeTimestamp: Date): Promise<number>;
 
-	findByMention(username: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findVisibleThreadByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findByMention<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findVisibleThreadByThreadId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		tmid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<Pick<IMessage, 'file' | 'files'>>;
-	findVisibleByIds(ids: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findVisibleByRoomIdNotContainingTypes(
+	findVisibleByIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findVisibleByRoomIdNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: string,
 		types: MessageTypesValues[],
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages?: boolean,
-	): FindCursor<IMessage>;
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number>;
-	findFilesByRoomIdPinnedTimestampAndUsers(
+	findFilesByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
 		users: string[],
 		ignoreThreads: boolean,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
-	findVisibleByRoomId<T extends IMessage = IMessage>(rid: string, options?: FindOptions<T>): FindCursor<T>;
-	findDiscussionByRoomIdPinnedTimestampAndUsers(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findVisibleByRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findDiscussionByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		rid: string,
 		excludePinned: boolean,
 		ts: Filter<IMessage>['ts'],
 		users: string[],
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
-	findVisibleByRoomIdAfterTimestamp(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findVisibleByRoomIdAfterTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
 		timestamp: Date,
 		showThreadMessages?: boolean,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: string,
 		timestamp: Date,
 		types: MessageTypesValues[],
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
-	): FindCursor<IMessage>;
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: string,
 		afterTimestamp: Date,
 		beforeTimestamp: Date,
 		types: MessageTypesValues[],
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
-	): FindCursor<IMessage>;
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 		roomId: string,
 		afterTimestamp: Date,
@@ -190,20 +246,24 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
 	): Promise<number>;
-	findVisibleByRoomIdBeforeTimestamp(
+	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
 		timestamp: Date,
 		showThreadMessages?: boolean,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;
-	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findForUpdates(
+	findByRoomIdAndMessageIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
 		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
@@ -225,7 +285,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		pinned?: boolean,
 		pinnedAt?: Date,
 	): Promise<UpdateResult>;
-	findOneByRoomIdAndMessageId(rid: string, messageId: string, options?: FindOptions<IMessage>): Promise<IMessage | null>;
+	findOneByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult>;
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(
@@ -241,10 +305,13 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 
-	findThreadsByRoomIdPinnedTimestampAndUsers(
+	findThreadsByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	removeByIdPinnedTimestampLimitAndUsers(
 		rid: string,
