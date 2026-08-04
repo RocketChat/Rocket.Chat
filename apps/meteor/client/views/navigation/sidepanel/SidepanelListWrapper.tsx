@@ -6,7 +6,9 @@ import type { Components } from 'react-virtuoso';
 
 import { useSidebarListNavigation } from '../sidebar/RoomList/useSidebarListNavigation';
 
-const SidepanelListWrapper: Components['List'] = ({ ref, ...props }: ComponentProps<NonNullable<Components['List']>>) => {
+export type SidepanelListWrapperProps = ComponentProps<NonNullable<Components['List']>>;
+
+const SidepanelListWrapper: Components['List'] = ({ ref, ...props }: SidepanelListWrapperProps) => {
 	const { t } = useTranslation();
 	const { sidebarListRef } = useSidebarListNavigation();
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);

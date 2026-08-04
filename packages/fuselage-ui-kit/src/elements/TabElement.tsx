@@ -5,15 +5,11 @@ import type { Dispatch } from 'react';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-export const TabElement = ({
-	block,
-	context,
-	surfaceRenderer,
-	index,
-	select,
-}: BlockProps<UiKit.ExperimentalTabElement> & {
+export type TabElementProps = BlockProps<UiKit.ExperimentalTabElement> & {
 	select: Dispatch<number>;
-}) => {
+};
+
+export const TabElement = ({ block, context, surfaceRenderer, index, select }: TabElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 
 	const { title, selected, disabled } = block;

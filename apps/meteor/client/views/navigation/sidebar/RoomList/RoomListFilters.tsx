@@ -6,7 +6,9 @@ import OmnichannelFilters from './OmnichannelFilters';
 import TeamCollabFilters from './TeamCollabFilters';
 import { useOmnichannelEnabled } from '../../../omnichannel/hooks/useOmnichannelEnabled';
 
-const RoomListFilters: Components['Header'] = ({ ref }: ComponentProps<NonNullable<Components['Header']>> & RefAttributes<HTMLElement>) => {
+export type RoomListFiltersProps = ComponentProps<NonNullable<Components['Header']>> & RefAttributes<HTMLElement>;
+
+const RoomListFilters = ({ ref }: RoomListFiltersProps) => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	return (

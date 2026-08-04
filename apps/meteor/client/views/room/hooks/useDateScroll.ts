@@ -10,9 +10,6 @@ type useDateScrollReturn = {
 	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
 	listStyle?: ReturnType<typeof css>;
-} & BubbleDateProps;
-
-export type BubbleDateProps = {
 	bubbleDate: string | undefined;
 	bubbleDateClassName?: ReturnType<typeof css>;
 	showBubble: boolean;
