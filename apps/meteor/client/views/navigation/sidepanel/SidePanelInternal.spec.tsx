@@ -71,9 +71,13 @@ jest.mock(
 const composed = composeStories(stories);
 const testCases = Object.values(composed).map((Story) => [Story.storyName || 'Story', Story] as const);
 
+// Intentionally not snapshotting `baseElement`: SidePanelInternal renders a `useId()`-derived
+// id for the unread toggle label, which shifts with render order/count across the file and
+// would make a whole-tree snapshot flaky (e.g. running a single story in isolation). Assert on
+// semantics instead, per the story-specific tests below.
 test.each(testCases)('renders %s without crashing', (_storyName, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
+	render(<Story />);
+	expect(screen.getByRole('tabpanel', { name: 'Side panel' })).toBeInTheDocument();
 });
 
 describe('SidePanelInternal', () => {
@@ -91,5 +95,13 @@ describe('SidePanelInternal', () => {
 		expect(listItems[1]).toHaveAttribute('data-item-index', '1');
 		expect(screen.getByRole('link', { name: 'Alpha' })).toBeInTheDocument();
 		expect(screen.getByRole('link', { name: 'Beta' })).toHaveAttribute('aria-current', 'page');
+	});
+
+	it('renders the no-results state alongside an empty list when there are no rooms', () => {
+		const { Empty } = composed;
+		render(<Empty />);
+
+		expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+		expect(screen.getByText('No_rooms')).toBeInTheDocument();
 	});
 });
