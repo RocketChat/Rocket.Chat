@@ -128,6 +128,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				callId={callId}
 				name={call.name}
 				canRename={call.canRename}
+				placing={call.placing}
 				capabilities={call.capabilities}
 				onJoin={conference.join}
 			/>

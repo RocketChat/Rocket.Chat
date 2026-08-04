@@ -175,11 +175,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		switch (data.type) {
 			case 'direct':
-				// Ring the callee, then open the call window on the click that asked for it — the same moment
-				// every other call type opens. Waiting for the answer to open it left `window.open` with no user
-				// activation behind it, which browsers are entitled to refuse, and left the caller staring at a
-				// spinner in the room instead of the call they are about to be in.
-				this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
+				// The window opens on the click that asked for it — the same moment every other call type opens.
+				// Waiting for the answer to open it left `window.open` with no user activation behind it, which
+				// browsers are entitled to refuse, and left the caller staring at a spinner in the room.
+				//
+				// Who rings, and when, depends on what that window shows. With a preflight in it, the server rings
+				// the callee once the caller has actually entered the call — ringing here would ring them while the
+				// caller is still choosing a camera. Without one there is nothing to wait for, so the caller's own
+				// client does the 1:1 handshake ring, as it always has.
+				if (!this._persistentChat) {
+					this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
+				}
 				return this.joinCall(data.callId);
 			case 'videoconference':
 				return this.joinCall(data.callId);

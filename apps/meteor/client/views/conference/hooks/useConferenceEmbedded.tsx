@@ -1,4 +1,5 @@
 import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -96,6 +97,14 @@ export const useConferenceEmbedded = (callId: string) => {
 			canRename: info?.type === 'videoconference' && info.createdBy._id === uid,
 			/** Which devices the provider can actually be told about, which is all the preflight offers. */
 			capabilities: info?.capabilities ?? {},
+			/**
+			 * A direct call this user placed whose other side has not been asked to answer yet — entering the call
+			 * is what calls them, so the preflight says so rather than pretending they are already ringing.
+			 */
+			placing:
+				info?.type === 'direct' &&
+				info.createdBy._id === uid &&
+				members.some((member) => member._id !== uid && !member.ringingAt && !hasJoinedVideoConference(member) && !member.declined),
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,

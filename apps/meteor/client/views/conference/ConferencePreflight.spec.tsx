@@ -10,9 +10,20 @@ const rename = jest.fn(() => ({ success: true }) as any);
 const bothDevices = { mic: true, cam: true };
 
 const renderPreflight = (props: Partial<Parameters<typeof ConferencePreflight>[0]> = {}) =>
-	render(<ConferencePreflight callId='call-id' name='general' canRename={false} capabilities={bothDevices} onJoin={onJoin} {...props} />, {
-		wrapper: mockAppRoot().withJohnDoe().withEndpoint('POST', '/v1/video-conference.rename', rename).build(),
-	});
+	render(
+		<ConferencePreflight
+			callId='call-id'
+			name='general'
+			canRename={false}
+			placing={false}
+			capabilities={bothDevices}
+			onJoin={onJoin}
+			{...props}
+		/>,
+		{
+			wrapper: mockAppRoot().withJohnDoe().withEndpoint('POST', '/v1/video-conference.rename', rename).build(),
+		},
+	);
 
 beforeEach(() => {
 	onJoin.mockClear();
@@ -108,5 +119,24 @@ describe('naming the call', () => {
 		await userEvent.click(screen.getByRole('button', { name: 'Join_call' }));
 
 		await waitFor(() => expect(onJoin).toHaveBeenCalled());
+	});
+});
+
+// Creating a direct call is not asking anyone to answer it: the caller lands here first, and going in is what
+// rings the other side. The screen says so, and the button is the call rather than a join.
+describe('placing the call', () => {
+	it('says the other side has not been called yet', async () => {
+		renderPreflight({ placing: true, name: 'Alice Attali' });
+
+		expect(await screen.findByText('__name__will_be_notified_when_you_start_the_call')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Call__name__' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Join_call' })).not.toBeInTheDocument();
+	});
+
+	it('offers a plain join for a call that is already under way', async () => {
+		renderPreflight({ name: 'Alice Attali' });
+
+		expect(await screen.findByRole('button', { name: 'Join_call' })).toBeInTheDocument();
+		expect(screen.queryByText('__name__will_be_notified_when_you_start_the_call')).not.toBeInTheDocument();
 	});
 });

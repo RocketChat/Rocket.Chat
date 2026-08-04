@@ -809,9 +809,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 		if (callee) {
 			await VideoConferenceModel.addMemberById(callId, { ...callee, joined: false });
-			// Their phone starts ringing now — the caller's client publishes `call` on a loop from here — so record
-			// it, or the members panel would offer to ring someone who is already being rung.
-			await VideoConferenceModel.setUsersRingingById(callId, [callee._id]);
 		}
 
 		await this.maybeCreateDiscussion(callId, user);
@@ -844,8 +841,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// Ignore errors on this timeout
 			}
 		}, 40000);
-
-		await this.sendPushNotification(call, calleeId);
 
 		return {
 			type: 'direct',
@@ -1158,6 +1153,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyConferenceMembersUpdate(call._id);
 
 		if (call.type === 'direct') {
+			await this.ringCalleeOnCallerArrival(call as IDirectVideoConference, _id);
 			return this.updateDirectCall(call, _id);
 		}
 
@@ -1367,6 +1363,37 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
 		// reaches someone who isn't looking at the app.
 		await this.notifyUsersAddedToConference(uid, memberIds, callId, rid);
+	}
+
+	/**
+	 * Rings the other side of a direct call when its caller arrives in it.
+	 *
+	 * Creating the call is not asking anyone to answer it: the caller lands on the preflight screen first, and
+	 * being rung into a call whose caller is still choosing a camera means answering to an empty room. So the
+	 * ring waits for them to actually enter — which is this moment.
+	 *
+	 * Only members who have never been rung, so rejoining doesn't ring anyone again; the call window's own
+	 * "ring again" is how a second attempt is asked for.
+	 */
+	private async ringCalleeOnCallerArrival(call: IDirectVideoConference, uid: IUser['_id']): Promise<void> {
+		if (call.createdBy._id !== uid) {
+			return;
+		}
+
+		const absent = call.users.filter((user) => user._id !== uid && !user.ringingAt && !hasJoinedVideoConference(user) && !user.declined);
+		if (!absent.length) {
+			return;
+		}
+
+		await this.ringUsers(
+			call._id,
+			call.rid,
+			uid,
+			absent.map(({ _id }) => _id),
+		);
+
+		// The in-product ring only reaches a client that is on screen; a direct call is also worth a push.
+		await Promise.all(absent.map(({ _id }) => this.sendPushNotification(call, _id)));
 	}
 
 	/**

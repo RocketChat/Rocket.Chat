@@ -1162,6 +1162,7 @@
     "one": "{{count}} call in queue",
     "other": "{{count}} calls in queue"
   },
+  "Call__name__": "Call {{name}}",
   "Call_name": "Call name",
   "Cam_off": "Cam Off",
   "Cam_on": "Cam On",
@@ -7430,6 +7431,7 @@
     "one": "{{count}} person in the call",
     "other": "{{count}} people in the call"
   },
+  "__name__will_be_notified_when_you_start_the_call": "{{name}} will be notified when you start the call",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}.",
   "__count__file_pruned": {
