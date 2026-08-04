@@ -35,7 +35,7 @@ const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number>
  * Copies the current metadata of a discussion (messages count and last message timestamp) to the
  *  message which links to it on the parent room, and notifies the change to the clients.
  */
-export const notifyDiscussionMetadataUpdate = async (room: DiscussionRoom): Promise<void> => {
+export const updateAndNotifyParentRoomWithParentMessage = async (room: DiscussionRoom): Promise<void> => {
 	room.msgs = await getDiscussionMessagesCount(room);
 
 	const parentMessage = await Messages.refreshDiscussionMetadata(room);

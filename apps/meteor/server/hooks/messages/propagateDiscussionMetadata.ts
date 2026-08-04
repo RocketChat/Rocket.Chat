@@ -1,7 +1,7 @@
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../lib/callbacks';
-import { notifyDiscussionMetadataUpdate } from '../../lib/messaging/discussions/notifyDiscussionMetadataUpdate';
+import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
 /**
@@ -27,7 +27,7 @@ callbacks.add(
 			return message;
 		}
 
-		await notifyDiscussionMetadataUpdate(room);
+		await updateAndNotifyParentRoomWithParentMessage(room);
 
 		return message;
 	},
@@ -47,7 +47,7 @@ callbacks.add(
 			});
 
 			if (room) {
-				await notifyDiscussionMetadataUpdate(room);
+				await updateAndNotifyParentRoomWithParentMessage(room);
 			}
 		}
 		if (message.drid) {
