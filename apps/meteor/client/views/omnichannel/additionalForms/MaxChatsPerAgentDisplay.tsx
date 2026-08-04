@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-const MaxChatsPerAgentDisplay = ({ maxNumberSimultaneousChat = 0 }) => {
+export type MaxChatsPerAgentDisplayProps = {
+	maxNumberSimultaneousChat?: number;
+};
+
+const MaxChatsPerAgentDisplay = ({ maxNumberSimultaneousChat = 0 }: MaxChatsPerAgentDisplayProps) => {
 	const { t } = useTranslation();
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 

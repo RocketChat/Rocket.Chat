@@ -1,3 +1,4 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,9 @@ const blogSpotStyleScriptImport = (src: string) =>
 		script.src = src;
 	});
 
-const NewZapier = ({ ...props }) => {
+export type NewZapierProps = BoxProps;
+
+const NewZapier = (props: NewZapierProps) => {
 	const { t } = useTranslation();
 	const oauthAppQuery = useOAuthAppQuery('zapier');
 	const zapierAvailable = !oauthAppQuery.isLoading && !oauthAppQuery.isError && oauthAppQuery.data;
