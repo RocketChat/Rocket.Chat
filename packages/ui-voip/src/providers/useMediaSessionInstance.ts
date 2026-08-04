@@ -291,7 +291,5 @@ export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 		};
 	}, [userId, enabled, sendSignal, getWebRTCConfig, notifyUserStream]);
 
-
-
 	return instance;
 };
