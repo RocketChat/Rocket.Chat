@@ -1,11 +1,12 @@
-import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, ToggleSwitch } from '@rocket.chat/fuselage';
 import { CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import { forwardRef, useId, useRef, type ComponentProps, type ComponentType } from 'react';
+import { useId, useRef, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtualizer } from 'virtua';
 
 import SidePanelNoResults from './SidePanelNoResults';
+import { SidePanelVirtualItem } from './SidePanelVirtualItem';
 import SidepanelListWrapper from './SidepanelListWrapper';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
@@ -16,21 +17,6 @@ const scrollViewportStyle = {
 	width: '100%',
 	overflow: 'auto',
 } as const;
-
-type SidePanelVirtualItemProps = {
-	index?: number;
-} & ComponentProps<typeof SidepanelListItem>;
-
-const sidePanelVirtualItem = forwardRef<HTMLDivElement, SidePanelVirtualItemProps>(function sidePanelVirtualItem(
-	{ children, index, style, ...props },
-	ref,
-) {
-	return (
-		<SidepanelListItem ref={ref} data-item-index={index} style={style} {...props}>
-			{children}
-		</SidepanelListItem>
-	);
-});
 
 type SidePanelProps<R = any> = {
 	title: string;
@@ -45,8 +31,7 @@ type SidePanelProps<R = any> = {
 	}>;
 };
 
-// eslint-disable-next-line react/no-multi-comp
-const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
+export const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -77,7 +62,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 				{rooms?.length === 0 && <SidePanelNoResults currentTab={currentTab} />}
 				<CustomVirtuaScrollbars>
 					<div style={scrollViewportStyle}>
-						<Virtualizer as={SidepanelListWrapper} item={sidePanelVirtualItem}>
+						<Virtualizer as={SidepanelListWrapper} item={SidePanelVirtualItem}>
 							{rooms.map((room, index) => (
 								<ItemContentComponent
 									key={(room as { _id?: string; rid?: string })._id ?? (room as { _id?: string; rid?: string }).rid ?? index}

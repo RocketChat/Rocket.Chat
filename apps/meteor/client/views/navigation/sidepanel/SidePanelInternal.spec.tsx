@@ -1,46 +1,12 @@
-import { FocusScope } from '@react-aria/focus';
+import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
-import type { ComponentProps, ElementType, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import { Children, createElement, forwardRef } from 'react';
 
-import { createSidePanel } from './SidePanelInternal';
+import * as stories from './SidePanelInternal.stories';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => (key === 'Side_panel' ? 'Side panel' : key) }),
-}));
-
-jest.mock('@rocket.chat/fuselage', () => ({
-	Box: ({
-		alignItems: _alignItems,
-		children,
-		display: _display,
-		fontScale: _fontScale,
-		h: _h,
-		htmlFor,
-		is: Component = 'div',
-		mie: _mie,
-		withTruncatedText: _withTruncatedText,
-		...props
-	}: any) => (
-		<Component htmlFor={htmlFor} {...props}>
-			{children}
-		</Component>
-	),
-	IconButton: ({ title, onClick }: any) => (
-		<button type='button' aria-label={title} onClick={onClick}>
-			{title}
-		</button>
-	),
-	Sidepanel: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-	SidepanelHeader: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-	SidepanelHeaderTitle: ({ children }: any) => <span>{children}</span>,
-	SidepanelList: forwardRef(({ children, ...props }: any, ref) => (
-		<ul ref={ref as any} {...props}>
-			{children}
-		</ul>
-	)),
-	SidepanelListItem: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-	ToggleSwitch: ({ checked, id, onChange }: any) => <input id={id} type='checkbox' checked={checked} onChange={onChange} />,
 }));
 
 jest.mock('@rocket.chat/fuselage-hooks', () => ({
@@ -102,42 +68,28 @@ jest.mock(
 	{ virtual: true },
 );
 
-const RoomItem = ({
-	room,
-	openedRoom,
-	isRoomFilter,
-}: {
-	room: { _id: string; name: string };
-	openedRoom: string | undefined;
-	isRoomFilter: boolean;
-}) => (
-	<a href={`/room/${room._id}`} aria-current={openedRoom === room._id ? 'page' : undefined} data-room-filter={isRoomFilter}>
-		{room.name}
-	</a>
-);
+const composed = composeStories(stories);
+const testCases = Object.values(composed).map((Story) => [Story.storyName || 'Story', Story] as const);
 
-const SidePanel = createSidePanel(RoomItem);
+test.each(testCases)('renders %s without crashing', (_storyName, Story) => {
+	const { baseElement } = render(<Story />);
+	expect(baseElement).toMatchSnapshot();
+});
 
-const rooms: ComponentProps<typeof SidePanel>['rooms'] = [
-	{ _id: 'room-1', name: 'Alpha' },
-	{ _id: 'room-2', name: 'Beta' },
-];
+describe('SidePanelInternal', () => {
+	it('renders side panel rooms through Virtua while preserving the list semantics', () => {
+		const { Default } = composed;
+		render(<Default />);
 
-it('renders side panel rooms through Virtua while preserving the list semantics', () => {
-	render(
-		<FocusScope>
-			<SidePanel title='Rooms' currentTab='all' unreadOnly={false} toggleUnreadOnly={jest.fn()} rooms={rooms} />
-		</FocusScope>,
-	);
+		const list = screen.getByRole('list', { name: 'Channels' });
 
-	const list = screen.getByRole('list', { name: 'Channels' });
-
-	expect(screen.getByTestId('sidepanel-virtua-list')).toBe(list);
-	const listItems = screen.getAllByRole('listitem');
-	expect(listItems).toHaveLength(2);
-	expect(listItems[0]).not.toHaveAttribute('index');
-	expect(listItems[0]).toHaveAttribute('data-item-index', '0');
-	expect(listItems[1]).toHaveAttribute('data-item-index', '1');
-	expect(screen.getByRole('link', { name: 'Alpha' })).toBeInTheDocument();
-	expect(screen.getByRole('link', { name: 'Beta' })).toHaveAttribute('aria-current', 'page');
+		expect(screen.getByTestId('sidepanel-virtua-list')).toBe(list);
+		const listItems = screen.getAllByRole('listitem');
+		expect(listItems).toHaveLength(2);
+		expect(listItems[0]).not.toHaveAttribute('index');
+		expect(listItems[0]).toHaveAttribute('data-item-index', '0');
+		expect(listItems[1]).toHaveAttribute('data-item-index', '1');
+		expect(screen.getByRole('link', { name: 'Alpha' })).toBeInTheDocument();
+		expect(screen.getByRole('link', { name: 'Beta' })).toHaveAttribute('aria-current', 'page');
+	});
 });

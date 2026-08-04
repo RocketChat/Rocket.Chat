@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Side panel"
+      class="rcx-sidepanel"
+      role="tabpanel"
+    >
+      <div
+        class="rcx-sidepanel-header-wrapper"
+      >
+        <div
+          aria-label="Rooms"
+          class="rcx-sidepanel-header"
+          role="heading"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-wvm742"
+          >
+            <div
+              class="rcx-sidepanel-header__title"
+            >
+              Rooms
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-127j9mz"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-css-qnvcp4"
+              for="_r_0_"
+            >
+              Unread
+            </label>
+            <label
+              class="rcx-box rcx-box--full rcx-toggle-switch"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                id="_r_0_"
+                type="checkbox"
+              />
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+              />
+            </label>
+          </div>
+        </div>
+        <hr
+          class="rcx-box rcx-box--full rcx-sidepanel--divider rcx-divider rcx-css-emj6cu"
+        />
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1ichk9z"
+      >
+        <div
+          style="height: 100%; width: 100%; overflow: auto;"
+        >
+          <div
+            aria-label="Channels"
+            class="rcx-sidepanel-list"
+            data-testid="sidepanel-virtua-list"
+            role="list"
+          >
+            <div
+              class="rcx-sidepanel-list__item"
+              data-item-index="0"
+              role="listitem"
+            >
+              <a
+                href="/room/room-1"
+              >
+                Alpha
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              data-item-index="1"
+              role="listitem"
+            >
+              <a
+                aria-current="page"
+                href="/room/room-2"
+              >
+                Beta
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Empty without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Side panel"
+      class="rcx-sidepanel"
+      role="tabpanel"
+    >
+      <div
+        class="rcx-sidepanel-header-wrapper"
+      >
+        <div
+          aria-label="Rooms"
+          class="rcx-sidepanel-header"
+          role="heading"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-wvm742"
+          >
+            <div
+              class="rcx-sidepanel-header__title"
+            >
+              Rooms
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-127j9mz"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-css-qnvcp4"
+              for="_r_1_"
+            >
+              Unread
+            </label>
+            <label
+              class="rcx-box rcx-box--full rcx-toggle-switch"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                id="_r_1_"
+                type="checkbox"
+              />
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+              />
+            </label>
+          </div>
+        </div>
+        <hr
+          class="rcx-box rcx-box--full rcx-sidepanel--divider rcx-divider rcx-css-emj6cu"
+        />
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1ichk9z"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-16js560"
+        >
+          <div
+            class="rcx-states"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-inbox rcx-icon rcx-css-d884y5"
+            >
+              
+            </i>
+            <h3
+              class="rcx-states__title"
+            >
+              No_rooms
+            </h3>
+            <div
+              class="rcx-states__subtitle"
+            >
+              No_rooms_description
+            </div>
+          </div>
+        </div>
+        <div
+          style="height: 100%; width: 100%; overflow: auto;"
+        >
+          <div
+            aria-label="Channels"
+            class="rcx-sidepanel-list"
+            data-testid="sidepanel-virtua-list"
+            role="list"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
