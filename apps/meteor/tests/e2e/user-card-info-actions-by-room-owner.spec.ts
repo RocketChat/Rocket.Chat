@@ -23,7 +23,11 @@ const getAvailableUserCardActions = async (page: Page): Promise<string[]> => {
 		await page.keyboard.press('Escape');
 	}
 
-	return actions.map((action) => action.trim()).filter(Boolean);
+	// Every label comes back prefixed with the icon font's Private Use Area
+	// glyph (e.g. "\uE004\nRemove from room"). trim() leaves it in place because
+	// it is not whitespace, so strip the PUA range before comparing. Icon-only
+	// buttons reduce to an empty string and are dropped by the filter.
+	return actions.map((action) => action.replace(/[\u{E000}-\u{F8FF}]/gu, '').trim()).filter(Boolean);
 };
 
 test.use({ storageState: Users.admin.state });
