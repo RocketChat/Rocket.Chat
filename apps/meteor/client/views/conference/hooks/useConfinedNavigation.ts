@@ -6,6 +6,15 @@ import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavi
 
 const OPENER_WINDOW_NAME = 'rocketchat-main';
 
+/**
+ * Whether a URL is a conference — the one place this window is allowed to go.
+ *
+ * The window starts on `/conference/new` when it is about to create a call and moves to
+ * `/conference/:callId` once it has, and that move is the whole point of the screen. Everything else is somebody
+ * else's page, and taking this window there would end the call.
+ */
+const isConference = (url: URL): boolean => url.origin === window.location.origin && url.pathname.startsWith('/conference/');
+
 // Internal app routes are sent to the window that launched the conference, so this window stays on
 // the call and the target opens as an in-app (client-side) navigation rather than a full reload:
 // - desktop app: there's no `window.opener` (the conference is a standalone Electron window), so the
@@ -81,8 +90,8 @@ export const useConfinedNavigation = () => {
 				return;
 			}
 
-			// Same page (e.g. `?jump=<msgId>` or `#hash`) — let the app handle it in place.
-			if (url.origin === window.location.origin && url.pathname === window.location.pathname) {
+			// Same page (e.g. `?jump=<msgId>` or `#hash`), or another conference — let the app handle it in place.
+			if (url.origin === window.location.origin && (url.pathname === window.location.pathname || isConference(url))) {
 				return;
 			}
 
@@ -131,8 +140,9 @@ export const useConfinedNavigation = () => {
 				return;
 			}
 
-			// Same page (search/hash change only) — allow it; otherwise keep this window on the call.
-			if (targetUrl.pathname === window.location.pathname) {
+			// Same page (search/hash change only), or the conference this window is becoming — allow it. Anything
+			// else would take the window off the call.
+			if (targetUrl.pathname === window.location.pathname || isConference(targetUrl)) {
 				original(toOrDelta, options);
 				return;
 			}

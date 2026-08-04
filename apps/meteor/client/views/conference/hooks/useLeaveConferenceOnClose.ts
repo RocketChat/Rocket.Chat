@@ -2,9 +2,7 @@ import { useCallback, useEffect } from 'react';
 
 import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
 import { baseURI } from '../../../lib/baseURI';
-
-/** How long to let `window.close` take effect before assuming it was refused. */
-const CLOSE_GRACE = 500;
+import { closeCallWindow } from '../lib/callWindow';
 
 /**
  * Reports leaving a conference — on `pagehide`, and on demand.
@@ -42,17 +40,10 @@ export const useLeaveConferenceOnClose = (callId: string) => {
 		return () => window.removeEventListener('pagehide', onPageHide);
 	}, [reportLeaving]);
 
-	/**
-	 * Leaves and closes the window, for the user who chose to leave rather than just closing it.
-	 *
-	 * `window.close` only works on a window that was opened by script, which the call window is — but a
-	 * conference reached by pasting the URL isn't, and there is no synchronous way to tell whether the close
-	 * took. So give it a moment, then fall back to leaving the page, which gets them out of the call either way.
-	 */
+	/** Leaves and closes the window, for the user who chose to leave rather than just closing it. */
 	const leaveNow = useCallback(async () => {
 		await reportLeaving();
-		window.close();
-		setTimeout(() => window.location.assign('/home'), CLOSE_GRACE);
+		closeCallWindow();
 	}, [reportLeaving]);
 
 	return { leaveNow };

@@ -184,6 +184,44 @@ describe('useConfinedNavigation', () => {
 		});
 	});
 
+	// The window is *becoming* a conference when it starts one: it opens on `/conference/new` and moves to
+	// `/conference/:callId` the moment the call exists. Sending that move to the opener left the preflight sitting
+	// on a call that had already started, in a window that was not the call's.
+	describe('the conference this window is becoming', () => {
+		it('lets a programmatic navigation to another conference through', () => {
+			window.history.replaceState({}, '', '/conference/new?rid=room-1');
+			const original = mockRouter.navigate;
+			const openInMainWindow = jest.fn();
+			(window as any).videoCallWindow = { openInMainWindow };
+
+			renderHook(() => useConfinedNavigation());
+
+			act(() => {
+				mockRouter.navigate({ pathname: '/conference/the-new-call' } as any, { replace: true });
+			});
+
+			expect(original).toHaveBeenCalledWith({ pathname: '/conference/the-new-call' }, { replace: true });
+			expect(openInMainWindow).not.toHaveBeenCalled();
+			expect(openSpy).not.toHaveBeenCalled();
+		});
+
+		it('still sends anything else away', () => {
+			window.history.replaceState({}, '', '/conference/new?rid=room-1');
+			const original = mockRouter.navigate;
+			const openInMainWindow = jest.fn();
+			(window as any).videoCallWindow = { openInMainWindow };
+
+			renderHook(() => useConfinedNavigation());
+
+			act(() => {
+				mockRouter.navigate({ pathname: '/channel/general' } as any);
+			});
+
+			expect(original).not.toHaveBeenCalled();
+			expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
+		});
+	});
+
 	describe('openInOpenerOrTab strategy order', () => {
 		it('uses the desktop bridge for internal nav without touching opener or window.open', () => {
 			const openInMainWindow = jest.fn();

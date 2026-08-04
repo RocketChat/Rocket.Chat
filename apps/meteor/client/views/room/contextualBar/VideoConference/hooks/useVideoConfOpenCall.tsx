@@ -81,7 +81,10 @@ export const useVideoConfOpenCall = () => {
 				if (!isBlocked(conferenceWindow)) {
 					let showsSameConference = false;
 					try {
-						showsSameConference = conferenceWindow?.location.pathname === target.pathname;
+						// The search too, not only the path: a conference the user is *about to start* is identified by
+						// the room in its query string, so two of those differ there and nowhere else.
+						showsSameConference =
+							conferenceWindow?.location.pathname === target.pathname && conferenceWindow?.location.search === target.search;
 					} catch {
 						// Conference window navigated cross-origin (not our in-product conference).
 					}
@@ -96,9 +99,8 @@ export const useVideoConfOpenCall = () => {
 				return conferenceWindow;
 			};
 
-			// The window is handed back so the caller can watch it: the server counts the user as being in the call
-			// from the moment the join is posted — which happens here, in the opener — so the opener is also the
-			// one place that can notice a call window closing before it ever finished loading.
+			// The window is handed back so the caller can watch it — see `useLeaveCallOnWindowClose`, which is what
+			// notices a call window disappearing before it could report its own departure.
 			const target = open();
 
 			if (!isBlocked(target)) {
