@@ -13,7 +13,7 @@ const MediaCallWidget = () => {
 
 	const widgetVisible = targetWidgetVisibility === 'open' || state !== 'none';
 
-	if (hidden || !currentViews.has('widget') || !widgetVisible) {
+	if (hidden || !currentViews.includes('widget') || !widgetVisible) {
 		return null;
 	}
 

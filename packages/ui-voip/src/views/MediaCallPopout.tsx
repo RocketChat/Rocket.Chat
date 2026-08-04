@@ -31,7 +31,7 @@ const MediaCallPopout = () => {
 
 	useEffect(() => {
 		queueMicrotask(() => {
-			if (currentViews.has('popout') && callId) {
+			if (currentViews.includes('popout') && callId) {
 				void openPopoutWindow(callId);
 				return;
 			}

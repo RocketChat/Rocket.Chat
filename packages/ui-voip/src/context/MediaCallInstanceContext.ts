@@ -17,7 +17,7 @@ export type MediaCallInstanceContextValue = {
 	audioElement: RefObject<HTMLAudioElement | null> | undefined;
 	openRoomId: string | undefined;
 
-	currentViews: Set<AvailableViews>;
+	currentViews: Array<AvailableViews>;
 	registerView: RegisterView;
 	unregisterView: UnregisterView;
 
@@ -37,7 +37,7 @@ export const defaultContextValue = {
 	openRoomId: undefined,
 	setOpenRoomId: () => undefined,
 	getAutocompleteOptions: () => Promise.resolve([]),
-	currentViews: new Set<AvailableViews>(),
+	currentViews: [],
 	registerView: () => undefined,
 	unregisterView: () => undefined,
 	openWidget: () => undefined,
