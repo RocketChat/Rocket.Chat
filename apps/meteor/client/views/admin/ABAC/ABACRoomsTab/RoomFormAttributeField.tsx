@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
 
-type ABACAttributeAutocompleteProps = {
+export type RoomFormAttributeFieldProps = {
 	labelId: string;
 	onRemove: () => void;
 	index: number;
@@ -22,7 +22,7 @@ const RoomFormAttributeField = ({
 	attributeList,
 	required = false,
 	disabled = false,
-}: ABACAttributeAutocompleteProps) => {
+}: RoomFormAttributeFieldProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();

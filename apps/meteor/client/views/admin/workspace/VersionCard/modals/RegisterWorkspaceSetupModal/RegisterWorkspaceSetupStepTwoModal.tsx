@@ -17,7 +17,7 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-type Props = {
+export type RegisterWorkspaceSetupStepTwoModalProps = {
 	email: string;
 	step: number;
 	setStep: (step: number) => void;
@@ -32,7 +32,15 @@ type Props = {
 
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);
 
-const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, intentData, onSuccess, ...props }: Props) => {
+const RegisterWorkspaceSetupStepTwoModal = ({
+	email,
+	step,
+	setStep,
+	onClose,
+	intentData,
+	onSuccess,
+	...props
+}: RegisterWorkspaceSetupStepTwoModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

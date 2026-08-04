@@ -1,7 +1,9 @@
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 
-const MessageComposerFileGroup = ({ children, style, ...props }: BoxProps) => {
+export type MessageComposerFileGroupProps = BoxProps;
+
+const MessageComposerFileGroup = ({ children, style, ...props }: MessageComposerFileGroupProps) => {
 	return (
 		<Box
 			role='group'

@@ -43,7 +43,7 @@ export type OptionProp = {
  * 	useFilteredVisibility.tsx,
  * 	RoomsTable.tsx
  */
-type DropDownProps = {
+export type MultiSelectCustomProps = {
 	dropdownOptions: OptionProp[];
 	defaultTitle: string;
 	selectedOptionsTitle: string;
@@ -60,7 +60,7 @@ export const MultiSelectCustom = ({
 	setSelectedOptions,
 	searchBarText,
 	...props
-}: DropDownProps) => {
+}: MultiSelectCustomProps) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);

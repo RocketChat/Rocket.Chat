@@ -21,7 +21,9 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
+export type ComposerContainerProps = ComposerMessageProps;
+
+const ComposerContainer = ({ children, ...props }: ComposerContainerProps) => {
 	const room = useRoom();
 
 	const canJoinWithoutCode = usePermission('join-without-join-code');

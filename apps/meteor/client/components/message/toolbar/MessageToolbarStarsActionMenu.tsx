@@ -12,13 +12,13 @@ type MessageActionSection = {
 	items: GenericMenuItemProps[];
 };
 
-type MessageActionMenuProps = {
+export type MessageToolbarStarsActionMenuProps = {
 	message: IMessage;
 	context: MessageActionContext;
 	onChangeMenuVisibility: (visible: boolean) => void;
 };
 
-const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibility }: MessageActionMenuProps) => {
+const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibility }: MessageToolbarStarsActionMenuProps) => {
 	const starsAction = useMessageActionAppsActionButtons(message, context, 'ai');
 	const { t } = useTranslation();
 	const id = useId();

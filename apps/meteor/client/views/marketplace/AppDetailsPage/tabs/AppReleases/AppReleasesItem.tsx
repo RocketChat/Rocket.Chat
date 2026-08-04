@@ -14,11 +14,11 @@ type IRelease = {
 	};
 };
 
-type ReleaseItemProps = {
+export type AppReleasesItemProps = {
 	release: IRelease;
 };
 
-const AppReleasesItem = ({ release, ...props }: ReleaseItemProps) => {
+const AppReleasesItem = ({ release, ...props }: AppReleasesItemProps) => {
 	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 

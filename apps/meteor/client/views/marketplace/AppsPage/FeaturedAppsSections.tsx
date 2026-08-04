@@ -5,12 +5,12 @@ import AppsList from '../AppsList';
 import normalizeFeaturedApps from '../helpers/normalizeFeaturedApps';
 import { useFeaturedApps } from '../hooks/useFeaturedApps';
 
-type FeaturedSectionsProps = {
+export type FeaturedAppsSectionsProps = {
 	appsResult: App[];
 	appsListId: string;
 };
 
-const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps) => {
+const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedAppsSectionsProps) => {
 	const { t, i18n } = useTranslation();
 	const featuredApps = useFeaturedApps();
 

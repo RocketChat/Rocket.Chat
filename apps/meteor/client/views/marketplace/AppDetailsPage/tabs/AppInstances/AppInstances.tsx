@@ -18,11 +18,11 @@ import GenericNoResults from '../../../../../components/GenericNoResults';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
 
-type AppInstanceProps = {
+export type AppInstancesProps = {
 	id: string;
 };
 
-const AppInstances = ({ id }: AppInstanceProps) => {
+const AppInstances = ({ id }: AppInstancesProps) => {
 	const { t } = useTranslation();
 	const { data, isSuccess, isError, isLoading } = useAppInstances({ appId: id });
 

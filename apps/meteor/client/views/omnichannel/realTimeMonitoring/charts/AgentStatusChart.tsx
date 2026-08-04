@@ -32,11 +32,11 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | un
 		Object.values(initialData),
 	);
 
-type AgentStatusChartsProps = {
+export type AgentStatusChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 } & ComponentPropsWithoutRef<typeof Box>;
 
-const AgentStatusChart = ({ departmentId, ...props }: AgentStatusChartsProps) => {
+const AgentStatusChart = ({ departmentId, ...props }: AgentStatusChartProps) => {
 	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);

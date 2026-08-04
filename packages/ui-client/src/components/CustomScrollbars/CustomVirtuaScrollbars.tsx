@@ -4,12 +4,12 @@ import { useEffect, memo, useRef } from 'react';
 
 import BaseScrollbars from './BaseScrollbars';
 
-export type CustomScrollbarsProps = {
+export type CustomVirtuaScrollbarsProps = {
 	children: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'> &
 	RefAttributes<HTMLElement>;
 
-const CustomVirtuaScrollbars = ({ ref, ...props }: CustomScrollbarsProps) => {
+const CustomVirtuaScrollbars = ({ ref, ...props }: CustomVirtuaScrollbarsProps) => {
 	const rootRef = useRef<HTMLElement | null>(null);
 
 	const [initialize] = useOverlayScrollbars({

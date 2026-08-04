@@ -8,9 +8,9 @@ import { useChannelsData } from './hooks/useChannelsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement>;
+export type MultiChannelsSelectElementProps = BlockProps<UiKit.MultiChannelsSelectElement>;
 
-const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps) => {
+const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectElementProps) => {
 	const [{ value, loading }, action] = useUiKitState(block, context);
 
 	const [filter, setFilter] = useState('');

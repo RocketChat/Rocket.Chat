@@ -5,13 +5,13 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import ThreadMetricsParticipants from '../../../../../components/message/content/ThreadMetricsParticipants';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
-type ThreadMetricsProps = {
+export type ThreadListMetricsProps = {
 	lm: Date;
 	counter: number;
 	participants: Array<string>;
 };
 
-const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) => {
+const ThreadListMetrics = ({ counter, participants, lm }: ThreadListMetricsProps) => {
 	const t = useTranslation();
 
 	const format = useTimeAgo();

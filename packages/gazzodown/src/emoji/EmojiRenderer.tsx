@@ -6,12 +6,12 @@ import { MarkupInteractionContext } from '../MarkupInteractionContext';
 import { useEmojiDescriptors } from './useEmojiDescriptors';
 import PlainSpan from '../elements/PlainSpan';
 
-type EmojiProps = MessageParser.Emoji & {
+export type EmojiRendererProps = MessageParser.Emoji & {
 	big?: boolean;
 	preview?: boolean;
 };
 
-const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps) => {
+const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiRendererProps) => {
 	const { useEmoji } = useContext(MarkupInteractionContext);
 
 	const { descriptors, sanitizedFallback } = useEmojiDescriptors(emoji);

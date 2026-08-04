@@ -21,12 +21,12 @@ const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
-type RoomOpenerProps = {
+export type RoomOpenerEmbeddedProps = {
 	type: RoomType;
 	reference: string;
 };
 
-const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
+const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerEmbeddedProps) => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');

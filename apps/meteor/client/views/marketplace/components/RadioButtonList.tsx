@@ -2,7 +2,9 @@ import { Box, Option, RadioButton, Tile } from '@rocket.chat/fuselage';
 
 import type { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
 
-const RadioButtonList = ({ group, onSelected }: RadioDropDownProps) => (
+export type RadioButtonListProps = RadioDropDownProps;
+
+const RadioButtonList = ({ group, onSelected }: RadioButtonListProps) => (
 	<Tile overflow='auto' paddingBlock={12} paddingInline={0} elevation='2' width='full' backgroundColor='light' borderRadius='x2'>
 		{group.label && (
 			<Box paddingInline={16} paddingBlockStart={8} paddingBlockEnd={4} fontScale='micro' textTransform='uppercase' color='default'>

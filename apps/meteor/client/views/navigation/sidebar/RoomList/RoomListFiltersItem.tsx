@@ -14,12 +14,12 @@ import {
 import { useUnreadGroupData } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarFiltersItemProps = {
+export type RoomListFiltersItemProps = {
 	group: SidePanelFiltersKeys;
 	icon: IconName;
 };
 
-const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
+const RoomListFiltersItem = ({ group, icon }: RoomListFiltersItemProps) => {
 	const { t } = useTranslation();
 	const switchSidePanelTab = useSwitchSidePanelTab();
 

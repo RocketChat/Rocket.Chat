@@ -9,11 +9,11 @@ import PlanCardLicenseDetails from './PlanCardLicenseDetails';
 import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 
-type PlanCardProps = {
+export type PlanCardTrialProps = {
 	licenseInformation: ILicenseV3['information'];
 };
 
-const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
+const PlanCardTrial = ({ licenseInformation }: PlanCardTrialProps) => {
 	const { t } = useTranslation();
 
 	const planName = useLicenseName();

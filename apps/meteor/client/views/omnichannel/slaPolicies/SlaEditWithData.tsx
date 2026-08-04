@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import SlaEdit from './SlaEdit';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-type SlaEditProps = {
+export type SlaEditWithDataProps = {
 	slaId: string;
 	reload: () => void;
 };
 
-function SlaEditWithData({ slaId, reload }: SlaEditProps) {
+function SlaEditWithData({ slaId, reload }: SlaEditWithDataProps) {
 	const getSLA = useEndpoint('GET', `/v1/livechat/sla/:slaId`, { slaId });
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['/v1/livechat/sla', slaId],

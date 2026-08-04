@@ -29,7 +29,7 @@ import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
-type ContactNewEditProps = {
+export type EditContactInfoProps = {
 	contactData?: Serialized<ILivechatContact> | null;
 	onClose: () => void;
 	onCancel: () => void;
@@ -51,7 +51,7 @@ const DEFAULT_VALUES = {
 	customFields: {},
 };
 
-const getInitialValues = (data: ContactNewEditProps['contactData']): ContactFormData => {
+const getInitialValues = (data: EditContactInfoProps['contactData']): ContactFormData => {
 	if (!data) {
 		return DEFAULT_VALUES;
 	}
@@ -69,7 +69,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
-const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: EditContactInfoProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

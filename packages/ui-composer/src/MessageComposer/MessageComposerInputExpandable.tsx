@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next';
 
 import MessageComposerInput from './MessageComposerInput';
 
-export type ExpandComposerButtonProps = BoxProps & {
+export type MessageComposerInputExpandableProps = BoxProps & {
 	dimensions: Readonly<{
 		inlineSize: number;
 		blockSize: number;
 	}>;
 } & RefAttributes<HTMLTextAreaElement>;
 
-const MessageComposerInputExpandable = ({ dimensions, onChange, ref, ...props }: ExpandComposerButtonProps) => {
+const MessageComposerInputExpandable = ({ dimensions, onChange, ref, ...props }: MessageComposerInputExpandableProps) => {
 	const { t } = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 

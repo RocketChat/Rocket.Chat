@@ -1,7 +1,9 @@
 import type { ButtonGroupProps } from '@rocket.chat/fuselage';
 import { ButtonGroup } from '@rocket.chat/fuselage';
 
-const VideoConfMessageActions = ({ children, ...props }: ButtonGroupProps) => (
+export type VideoConfMessageActionsProps = ButtonGroupProps;
+
+const VideoConfMessageActions = ({ children, ...props }: VideoConfMessageActionsProps) => (
 	<ButtonGroup {...props} align='end'>
 		{children}
 	</ButtonGroup>

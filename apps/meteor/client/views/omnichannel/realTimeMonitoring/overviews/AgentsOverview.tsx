@@ -12,14 +12,14 @@ const overviewInitalValue = {
 	value: '-',
 };
 
-type AgentsOverviewChartsProps = {
+export type AgentsOverviewProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;
 
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
-const AgentsOverview = ({ departmentId, dateRange, ...props }: AgentsOverviewChartsProps) => {
+const AgentsOverview = ({ departmentId, dateRange, ...props }: AgentsOverviewProps) => {
 	const getAgentsProductivityTotals = useEndpoint('GET', '/v1/livechat/analytics/dashboards/agents-productivity-totalizers');
 	const { data = initialData } = useQuery({
 		queryKey: omnichannelQueryKeys.analytics.agentsProductivityTotals(departmentId, dateRange),

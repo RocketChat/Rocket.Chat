@@ -6,13 +6,13 @@ import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefiniti
 
 // `ref` is omitted from Button's props so this component can narrow it to HTMLElement,
 // matching what forwardRef's PropsWithoutRef did.
-type RadioDropdownAnchorProps = {
+export type RadioDownAnchorProps = {
 	onClick: (event: MouseEvent<HTMLElement>) => void;
 	group: RadioDropDownGroup;
 } & Omit<ButtonProps, 'onClick' | 'ref'> &
 	RefAttributes<HTMLElement>;
 
-const RadioDownAnchor = ({ onClick, group, ref, ...props }: RadioDropdownAnchorProps) => {
+const RadioDownAnchor = ({ onClick, group, ref, ...props }: RadioDownAnchorProps) => {
 	const selected = group?.items.find((item) => item.checked)?.label;
 
 	return (

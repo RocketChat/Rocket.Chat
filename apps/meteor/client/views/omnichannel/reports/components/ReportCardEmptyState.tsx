@@ -2,12 +2,12 @@ import { States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fu
 import type { Keys } from '@rocket.chat/icons';
 import { useTranslation } from 'react-i18next';
 
-type CardEmpryStateProps = {
+export type ReportCardEmptyStateProps = {
 	icon?: Keys;
 	subtitle?: string;
 };
 
-export const ReportCardEmptyState = ({ icon, subtitle }: CardEmpryStateProps) => {
+export const ReportCardEmptyState = ({ icon, subtitle }: ReportCardEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (

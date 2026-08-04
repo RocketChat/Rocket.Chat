@@ -7,13 +7,13 @@ import { useAgentSection } from './hooks/useAgentSection';
 import { useContactSection } from './hooks/useContactSection';
 import { useCustomFieldsSection } from './hooks/useCustomFieldsSection';
 
-type PlaceholderSelectorProps = Pick<ComponentProps<typeof PlaceholderButton>, 'marginInlineStart' | 'disabled'> & {
+export type TemplatePlaceholderSelectorProps = Pick<ComponentProps<typeof PlaceholderButton>, 'marginInlineStart' | 'disabled'> & {
 	contact?: Serialized<ILivechatContact>;
 	onSelect(value: string): void;
 	onOpenChange?(isOpen: boolean): void;
 };
 
-const TemplatePlaceholderSelector = ({ contact, disabled, onSelect, onOpenChange, ...props }: PlaceholderSelectorProps) => {
+const TemplatePlaceholderSelector = ({ contact, disabled, onSelect, onOpenChange, ...props }: TemplatePlaceholderSelectorProps) => {
 	const contactSection = useContactSection({ contact, onSelect });
 	const customFieldsSection = useCustomFieldsSection({ customFields: contact?.customFields, onSelect });
 	const agentSection = useAgentSection({ onSelect });

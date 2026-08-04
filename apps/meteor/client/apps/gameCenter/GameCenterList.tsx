@@ -14,14 +14,14 @@ import { useTranslation } from 'react-i18next';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
 
-interface IGameCenterListProps {
+export type GameCenterListProps = {
 	handleClose: () => void;
 	handleOpenGame: (game: IGame) => void;
 	games?: IGame[];
 	isLoading: boolean;
-}
+};
 
-const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGameCenterListProps) => {
+const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: GameCenterListProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

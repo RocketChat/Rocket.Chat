@@ -13,7 +13,7 @@ import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
 
-type AppsLogsFilterProps = {
+export type AppLogsFilterProps = {
 	appId: string;
 	expandAll: () => void;
 	collapseAll: () => void;
@@ -22,7 +22,7 @@ type AppsLogsFilterProps = {
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLoading, noResults = false }: AppLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
