@@ -640,6 +640,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
+		if (!this.inputTrack) {
+			return;
+		}
+
 		let anyTransceiverNotSending = false;
 		const transceivers = this.getTransceivers('audio');
 
