@@ -1,13 +1,5 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type {
-	IBaseModel,
-	DefaultFields,
-	ResultFields,
-	FindPaginated,
-	InsertionModel,
-	DocumentWithProjection,
-	FindOptionsWithProjection,
-} from '@rocket.chat/model-typings';
+import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
@@ -192,17 +184,11 @@ export abstract class BaseRaw<
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
-	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
-		_id: T['_id'],
-		options?: O,
-	): Promise<DocumentWithProjection<P, O> | null> {
+	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(_id: T['_id'], options?: O): Promise<DocumentWithProjection<P, O> | null> {
 		return this.findOne<P, O>({ _id } as Filter<T>, options);
 	}
 
-	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
-		query: Filter<T> | T['_id'] = {},
-		options?: O,
-	): Promise<DocumentWithProjection<P, O> | null> {
+	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> | T['_id'] = {}, options?: O): Promise<DocumentWithProjection<P, O> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
 		if (optionsDef) {
@@ -211,18 +197,12 @@ export abstract class BaseRaw<
 		return this.col.findOne(q) as any;
 	}
 
-	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
-		query: Filter<T> = {},
-		options?: O,
-	): FindCursor<DocumentWithProjection<P, O>> {
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> = {}, options?: O): FindCursor<DocumentWithProjection<P, O>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
 		return this.col.find(query, optionsDef) as any;
 	}
 
-	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
-		query: Filter<T> = {},
-		options?: O,
-	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> = {}, options?: O): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
