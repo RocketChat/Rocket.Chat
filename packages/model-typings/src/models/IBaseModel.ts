@@ -11,8 +11,6 @@ import type {
 	EnhancedOmit,
 	Filter,
 	FindCursor,
-	FindOneAndDeleteOptions,
-	FindOneAndUpdateOptions,
 	FindOptions,
 	InsertManyResult,
 	InsertOneOptions,
@@ -24,7 +22,15 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import type { ApplyProjection, DocumentWithProjection, FindOptionsWithProjection, ProjectionSpec } from '../types/DocumentWithProjection';
+import type {
+	ApplyProjection,
+	DocumentWithDriverProjection,
+	DocumentWithProjection,
+	FindOneAndDeleteOptionsWithProjection,
+	FindOneAndUpdateOptionsWithProjection,
+	FindOptionsWithProjection,
+	ProjectionSpec,
+} from '../types/DocumentWithProjection';
 import type { Updater } from '../updater';
 
 export type DefaultFields<Base> = Partial<Record<keyof Base, 1>> | Partial<Record<keyof Base, 0>> | void;
@@ -56,9 +62,19 @@ export interface IBaseModel<
 	getUpdater(): Updater<T>;
 	updateFromUpdater(query: Filter<T>, updater: Updater<T>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
-	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
-	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<null | WithId<T>>;
+	findOneAndDelete<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
+		filter: Filter<T>,
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null>;
+	findOneAndDeleteById<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null>;
+	findOneAndUpdate<P extends Document = T, O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection>(
+		query: Filter<T>,
+		update: UpdateFilter<T> | T,
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null>;
 
 	findOneById(_id: T['_id'], options?: undefined): Promise<ResultFields<T, C> | null>;
 	findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(

@@ -2,7 +2,7 @@
  * Compile-time assertions for {@link DocumentWithProjection}. This file emits nothing; it exists so
  * that `tsc -p tsconfig.json` fails if the projection inference regresses.
  */
-import type { DocumentWithProjection, FindOptionsWithProjection } from './DocumentWithProjection';
+import type { DocumentWithDriverProjection, DocumentWithProjection, FindOptionsWithProjection } from './DocumentWithProjection';
 
 type Expect<T extends true> = T;
 
@@ -62,3 +62,20 @@ export type NonLiteralValueBailsOut = Expect<Equal<Project<{ name: number }>, Do
 export type UnknownKeyBailsOut = Expect<Equal<Project<{ name: 1; notInDoc: 1 }>, Doc>>;
 
 export type WideProjectionBailsOut = Expect<Equal<Project<Record<string, 0 | 1>>, Doc>>;
+
+// `findOneAndUpdate` / `findOneAndDelete` reach the driver directly, so they get none of BaseRaw's
+// rewriting. The two rules below are where driver semantics diverge from the `find` path.
+
+type DriverProject<P> = DocumentWithDriverProjection<Doc, { projection: P }>;
+
+export type DriverInclusion = Expect<Equivalent<DriverProject<{ username: 1 }>, Pick<Doc, '_id' | 'username'>>>;
+
+export type DriverExclusion = Expect<Equivalent<DriverProject<{ password: 0 }>, Omit<Doc, 'password'>>>;
+
+/** `find` keeps `_id` here because BaseRaw strips the `0`; the driver really drops it. */
+export type DriverExplicitIdExclusionDropsId = Expect<Equivalent<DriverProject<{ name: 1; _id: 0 }>, Pick<Doc, 'name'>>>;
+
+/** Mixing inclusion with a non-`_id` exclusion is a server error, so there is nothing to describe. */
+export type DriverGenuineMixBailsOut = Expect<Equal<DriverProject<{ name: 1; password: 0 }>, Doc>>;
+
+export type DriverNoProjectionCollapses = Expect<Equal<DocumentWithDriverProjection<Doc, undefined>, Doc>>;

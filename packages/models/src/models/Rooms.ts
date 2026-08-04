@@ -1908,7 +1908,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	insertAbacAttributeIfNotExistsById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
-		return this.findOneAndUpdate(
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.findOneAndUpdate<IRoom>(
 			{ _id, 'abacAttributes.key': { $ne: key } },
 			{ $push: { abacAttributes: { key, values } } },
 			{ returnDocument: 'after', projection: { abacAttributes: 1 } },
