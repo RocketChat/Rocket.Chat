@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { AvailableViews } from '../context/MediaCallInstanceContext';
 
@@ -13,37 +13,44 @@ const filter = (view: AvailableViews, _index: number, array: AvailableViews[]) =
 	}
 };
 
-const getViewsSetStateAction =
-	(filteredViews: AvailableViews[]) =>
-	(prev: Set<AvailableViews>): Set<AvailableViews> => {
-		if (filteredViews.length === prev.size && filteredViews.every((view) => prev.has(view))) {
-			return prev;
-		}
-		return new Set(filteredViews);
-	};
-
 const useAvailableViewTracker = () => {
-	const viewsRef = useRef<Set<AvailableViews>>(new Set<AvailableViews>());
-	const [currentViews, setCurrentViews] = useState<Set<AvailableViews>>(new Set<AvailableViews>());
+	// keep in mind views.currentViews is a stable set, so please if you are going to use it in a useEffect, make sure to create a new set from it, otherwise you will not be able to track changes in the set.
+	const [views, setViews] = useState<{
+		currentViews: Set<AvailableViews>;
+		filteredViews: Set<AvailableViews>;
+	}>({
+		currentViews: new Set<AvailableViews>(),
+		filteredViews: new Set<AvailableViews>(),
+	});
 
 	const registerView = useCallback((view: AvailableViews) => {
-		if (viewsRef.current.has(view)) return;
 
-		viewsRef.current.add(view);
-		const filteredViews = [...viewsRef.current].filter(filter);
-		setCurrentViews(getViewsSetStateAction(filteredViews));
+		setViews((prev) => {
+			if (prev.currentViews.has(view)) return prev;
+
+			prev.currentViews.add(view);
+			return {
+				currentViews: prev.currentViews,
+				filteredViews: new Set(Array.from(prev.currentViews).filter(filter)),
+			};
+		});
 	}, []);
 
 	const unregisterView = useCallback((view: AvailableViews) => {
-		if (!viewsRef.current.has(view)) return;
+		setViews((prev) => {
+			if (!prev.currentViews.has(view)) return prev;
 
-		viewsRef.current.delete(view);
-		const filteredViews = [...viewsRef.current].filter(filter);
-		setCurrentViews(getViewsSetStateAction(filteredViews));
+
+			prev.currentViews.delete(view);
+			return {
+				currentViews: prev.currentViews,
+				filteredViews: new Set(Array.from(prev.currentViews).filter(filter)),
+			};
+		});
 	}, []);
 
 	return {
-		currentViews,
+		currentViews: views.currentViews,
 		registerView,
 		unregisterView,
 	};
