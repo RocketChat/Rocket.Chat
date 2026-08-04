@@ -1,10 +1,10 @@
-import { ContextualbarV2Section } from '@rocket.chat/fuselage';
+import { ContextualbarSection as FuselageContextualbarSection } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
 
-const ContextualbarSection = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarV2Section>>(
+const ContextualbarSection = forwardRef<HTMLElement, ComponentProps<typeof FuselageContextualbarSection>>(
 	function ContextualbarSection(props, ref) {
-		return <ContextualbarV2Section ref={ref} {...props} />;
+		return <FuselageContextualbarSection ref={ref} {...props} />;
 	},
 );
 
