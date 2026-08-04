@@ -1,6 +1,6 @@
 import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOptions, IndexDescription } from 'mongodb';
+import type { IUserDataFilesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexDescription, Document } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -13,12 +13,12 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 		return [...super.modelIndexes(), { key: { userId: 1 } }];
 	}
 
-	findLastFileByUser(userId: string, options: FindOptions<IUserDataFile> = {}): Promise<IUserDataFile | null> {
+	findLastFileByUser<T extends Document = IUserDataFile, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			userId,
 		};
 
 		options.sort = { _updatedAt: -1 };
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 }
