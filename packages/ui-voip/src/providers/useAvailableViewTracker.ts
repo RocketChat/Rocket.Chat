@@ -24,7 +24,6 @@ const useAvailableViewTracker = () => {
 	});
 
 	const registerView = useCallback((view: AvailableViews) => {
-
 		setViews((prev) => {
 			if (prev.currentViews.has(view)) return prev;
 
@@ -39,7 +38,6 @@ const useAvailableViewTracker = () => {
 	const unregisterView = useCallback((view: AvailableViews) => {
 		setViews((prev) => {
 			if (!prev.currentViews.has(view)) return prev;
-
 
 			prev.currentViews.delete(view);
 			return {
