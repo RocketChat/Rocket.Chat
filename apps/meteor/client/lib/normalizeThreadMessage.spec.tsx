@@ -55,8 +55,8 @@ describe('normalizeThreadMessage', () => {
 	it('should render one block per line when the message exceeds the limit', () => {
 		mockedGetMarkdownParserLimit.mockReturnValue(5);
 
-		const message = { msg: 'line one\nline two', mentions: [], attachments: [] };
-		const result = normalizeThreadMessage(message);
+		const message = { msg: 'line one\nline two', mentions: [], attachments: [] } as unknown as IMessage;
+		const result = normalizeThreadMessage(message, t);
 
 		expect(mockedParse).not.toHaveBeenCalled();
 
