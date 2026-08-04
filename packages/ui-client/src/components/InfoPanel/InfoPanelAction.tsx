@@ -1,8 +1,9 @@
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-export type InfoPanelActionProps = Omit<ComponentProps<typeof Button>, 'label'> & {
+export type InfoPanelActionProps = Omit<ButtonProps, 'label'> & {
 	icon?: IconName;
 	label: ReactNode;
 };

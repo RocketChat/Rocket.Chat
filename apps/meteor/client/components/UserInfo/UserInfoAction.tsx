@@ -1,10 +1,10 @@
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { Button, IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ComponentProps } from 'react';
 
 export type UserInfoActionProps = {
 	icon: IconName;
-} & ComponentProps<typeof Button>;
+} & ButtonProps;
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {
 	if (!label && icon && title) {

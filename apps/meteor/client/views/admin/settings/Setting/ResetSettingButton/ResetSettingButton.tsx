@@ -1,9 +1,8 @@
-import type { Button } from '@rocket.chat/fuselage';
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type ResetSettingButtonProps = ComponentProps<typeof Button>;
+export type ResetSettingButtonProps = ButtonProps;
 
 function ResetSettingButton(props: ResetSettingButtonProps) {
 	const { t } = useTranslation();

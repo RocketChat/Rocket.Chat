@@ -1,7 +1,7 @@
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { Button } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type MessageComposerButtonProps = ComponentProps<typeof Button>;
+export type MessageComposerButtonProps = ButtonProps;
 
 const MessageComposerButton = (props: MessageComposerButtonProps) => <Button small {...props} />;
 

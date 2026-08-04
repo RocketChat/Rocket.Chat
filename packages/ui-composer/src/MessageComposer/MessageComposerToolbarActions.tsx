@@ -1,8 +1,9 @@
 import { useToolbar } from '@react-aria/toolbar';
+import type { ButtonGroupProps } from '@rocket.chat/fuselage';
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import { useRef, type ComponentProps } from 'react';
+import { useRef } from 'react';
 
-export type MessageComposerToolbarActionsProps = ComponentProps<typeof ButtonGroup>;
+export type MessageComposerToolbarActionsProps = ButtonGroupProps;
 
 const MessageComposerToolbarActions = (props: MessageComposerToolbarActionsProps) => {
 	const ref = useRef(null);

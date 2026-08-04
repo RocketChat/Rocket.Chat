@@ -1,6 +1,5 @@
-import type { Button } from '@rocket.chat/fuselage';
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
 
 import RadioDropDownAnchor from './RadioDownAnchor';
@@ -10,7 +9,7 @@ import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreven
 import DropDownListWrapper from '../DropDownListWrapper';
 import RadioButtonList from '../RadioButtonList';
 
-export type RadioDropDownProps = RadioDropDownSelection & ComponentProps<typeof Button>;
+export type RadioDropDownProps = RadioDropDownSelection & ButtonProps;
 
 const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps) => {
 	const reference = useRef<HTMLElement>(null);

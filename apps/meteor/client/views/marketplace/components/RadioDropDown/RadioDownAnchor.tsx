@@ -1,6 +1,6 @@
-import type { Button } from '@rocket.chat/fuselage';
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { forwardRef } from 'react';
 
 import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefinitions';
@@ -8,7 +8,7 @@ import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefiniti
 type RadioDropdownAnchorProps = {
 	onClick: (event: MouseEvent<HTMLElement>) => void;
 	group: RadioDropDownGroup;
-} & Omit<ComponentProps<typeof Button>, 'onClick'>;
+} & Omit<ButtonProps, 'onClick'>;
 
 const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor({ onClick, group, ...props }, ref) {
 	const selected = group?.items.find((item) => item.checked)?.label;

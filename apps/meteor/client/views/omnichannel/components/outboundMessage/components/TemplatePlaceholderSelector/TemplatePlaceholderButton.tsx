@@ -1,10 +1,10 @@
-import type { IconButton } from '@rocket.chat/fuselage';
+import type { IconButtonProps } from '@rocket.chat/fuselage';
 import { Button } from '@rocket.chat/fuselage';
-import { forwardRef, type ComponentProps } from 'react';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type TemplatePlaceholderButtonProps = Omit<ComponentProps<typeof IconButton>, 'color' | 'icon'> & {
-	icon?: ComponentProps<typeof IconButton>['icon'];
+export type TemplatePlaceholderButtonProps = Omit<IconButtonProps, 'color' | 'icon'> & {
+	icon?: IconButtonProps['icon'];
 };
 
 const TemplatePlaceholderButton = forwardRef<HTMLButtonElement, TemplatePlaceholderButtonProps>(
