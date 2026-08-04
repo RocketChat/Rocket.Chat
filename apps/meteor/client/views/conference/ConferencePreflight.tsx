@@ -1,25 +1,25 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
-import { Box, Button, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
+import { Box, Button, ButtonGroup, Field, FieldLabel, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CallBar, CallBarAction, CallBarActions } from './components';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
-import { useCameraPreview } from './hooks/useCameraPreview';
 
 type ConferencePreflightProps = {
-	callId: string;
-	/** What the call is called today: its own name, or the room it belongs to. */
+	/** What the call is called, or would be: its own name, or the room it belongs to. */
 	name: string;
-	/** Only the person who started a group call may name it, and only a group call has a name of its own. */
-	canRename: boolean;
-	/** This user is placing the call: nobody has been asked to answer it until they go in. */
-	placing: boolean;
+	/**
+	 * What confirming does. `call` places a direct call, so it says who is about to be rung; `start` opens a group
+	 * conference that doesn't exist yet; `join` walks into one that is already under way.
+	 */
+	confirm: 'call' | 'start' | 'join';
+	/** Whether this user may name the call — only a group call has a name of its own, and not everyone sets it. */
+	canName: boolean;
 	capabilities: VideoConferenceCapabilities;
-	onJoin: (preferences: CallPreferences) => void;
+	onConfirm: (preferences: CallPreferences, name: string) => void;
+	onCancel: () => void;
 };
 
 /**
@@ -28,68 +28,56 @@ type ConferencePreflightProps = {
  *
  * This is why the call window can open the moment someone asks for it and still leave the choice with them: the
  * join is what turns these preferences into the provider's URL, so it waits here rather than happening on the way
- * in. It is also the only place devices are configured, which is what let the popups in the room stop asking —
- * a choice made in a popup, seconds before a window opens, is one the user makes again anyway once they can see
- * themselves.
+ * in. It is also the only place devices are configured, which is what let the popups in the room stop asking.
+ *
+ * There is deliberately **no camera preview**. All today's providers can be told is whether to start with the
+ * camera and microphone on — not *which* devices to use — so a self-view would promise a choice this screen can't
+ * make, and would show a camera the call may not even end up using. It states what will happen instead, and says
+ * where the choice does live. A native provider is what makes a real preview honest.
  *
  * The devices sit in the same bar the call's own controls occupy, so the control that mutes the mic doesn't move
  * between deciding to join and being in the call.
  */
-const ConferencePreflight = ({ callId, name, canRename, placing, capabilities, onJoin }: ConferencePreflightProps) => {
+const confirmLabels = { call: 'Call__name__', start: 'Start_call', join: 'Join_call' } as const;
+
+const ConferencePreflight = ({ name, confirm, canName, capabilities, onConfirm, onCancel }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
-	const user = useUser();
 	const { preferences, toggle } = useCallPreferences(capabilities);
-	const { videoRef, live } = useCameraPreview(preferences.cam);
-	const dispatchToastMessage = useToastMessageDispatch();
-	const renameCall = useEndpoint('POST', '/v1/video-conference.rename');
 
 	const [title, setTitle] = useState(name);
-	const [joining, setJoining] = useState(false);
+	const [confirming, setConfirming] = useState(false);
 
-	const join = async () => {
-		setJoining(true);
-
-		// Naming is not worth failing the join over: if it doesn't take, say so and let them into the call, which
-		// is what they actually asked for.
-		const renamed = title.trim();
-		if (canRename && renamed && renamed !== name) {
-			try {
-				await renameCall({ callId, title: renamed });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		}
-
-		onJoin(preferences);
+	const handleConfirm = () => {
+		setConfirming(true);
+		onConfirm(preferences, title.trim() || name);
 	};
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
 			<Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' flexGrow={1} minHeight={0} paddingInline={24}>
-				{/* The self-view, in the shape and place the call itself will occupy. With the camera off it holds the
-				    user's avatar rather than collapsing, so turning it on and off doesn't move everything below it. */}
+				{/* Where a self-view would go, saying what will actually happen: the provider is told on or off, and
+				    nothing more, so this is the honest version of a preview until a native provider can offer one. */}
 				<Box
 					width='100%'
 					maxWidth='x480'
 					display='flex'
+					flexDirection='column'
 					alignItems='center'
 					justifyContent='center'
-					overflow='hidden'
 					borderRadius='x8'
 					backgroundColor='surface-tint'
+					paddingInline={24}
 					style={{ aspectRatio: '16 / 9' }}
 				>
-					{/* A live camera has nothing to caption. */}
-					{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-					<video
-						ref={videoRef}
-						autoPlay
-						muted
-						playsInline
-						aria-label={t('Camera')}
-						style={{ width: '100%', height: '100%', objectFit: 'cover', display: live ? 'block' : 'none' }}
-					/>
-					{!live && <UserAvatar size='x124' username={user?.username ?? ''} />}
+					<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='hint' />
+					<Box fontScale='p2b' color='hint' marginBlockStart={8} textAlign='center'>
+						{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
+					</Box>
+					{preferences.cam && (
+						<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center'>
+							{t('Which_devices_are_used_is_chosen_in_the_call')}
+						</Box>
+					)}
 				</Box>
 
 				<Box fontScale='h3' color='default' marginBlockStart={24} maxWidth='x480' withTruncatedText>
@@ -98,13 +86,13 @@ const ConferencePreflight = ({ callId, name, canRename, placing, capabilities, o
 
 				{/* Nobody's phone is ringing yet — going in is what rings it, and saying so is what makes the wait
 				    afterwards make sense. */}
-				{placing && (
+				{confirm === 'call' && (
 					<Box fontScale='p2' color='hint' marginBlockStart={8} maxWidth='x480' withTruncatedText>
 						{t('__name__will_be_notified_when_you_start_the_call', { name })}
 					</Box>
 				)}
 
-				{canRename && (
+				{canName && (
 					<Box width='100%' maxWidth='x360' marginBlockStart={16}>
 						<Field>
 							<FieldLabel htmlFor='conference-preflight-name'>{t('Call_name')}</FieldLabel>
@@ -121,9 +109,14 @@ const ConferencePreflight = ({ callId, name, canRename, placing, capabilities, o
 				)}
 
 				<Box marginBlockStart={24}>
-					<Button primary loading={joining} onClick={join}>
-						{placing ? t('Call__name__', { name }) : t('Join_call')}
-					</Button>
+					<ButtonGroup>
+						{/* Leaving is a click away here, not a window the user has to find the close button on: this
+						    screen exists precisely because they may not want the call after all. */}
+						<Button onClick={onCancel}>{t('Cancel')}</Button>
+						<Button primary loading={confirming} onClick={handleConfirm}>
+							{t(confirmLabels[confirm], { name })}
+						</Button>
+					</ButtonGroup>
 				</Box>
 			</Box>
 
