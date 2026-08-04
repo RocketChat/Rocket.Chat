@@ -146,7 +146,8 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 	}
 
 	public async findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null> {
-		return this.findOne(
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.findOne<ICalendarEvent>(
 			{
 				startTime: { $gte: startTime },
 				busy: { $ne: false },
@@ -162,7 +163,8 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 	}
 
 	public findEventsStartingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
-		return this.find(
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.find<ICalendarEvent>(
 			{
 				startTime: {
 					$gte: new Date(now.getTime() - offset),

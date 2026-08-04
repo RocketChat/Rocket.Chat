@@ -1,5 +1,5 @@
 import type { IRole, ITeamMember, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ITeamMemberModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { FindPaginated, ITeamMemberModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
 	FindCursor,
@@ -32,7 +32,16 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		];
 	}
 
-	findByUserId<P extends Document = ITeamMember, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(userId: string, options?: O): FindCursor<DocumentWithProjection<P, O>> {
+	findByUserId(userId: string): FindCursor<ITeamMember>;
+
+	findByUserId(userId: string, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
+
+	findByUserId<P extends Document>(userId: string, options: FindOptions<P>): FindCursor<P>;
+
+	findByUserId<P extends Document>(
+		userId: string,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ userId }, options) : this.col.find({ userId }, options);
 	}
 
@@ -45,12 +54,21 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 	findOneByUserIdAndTeamId<P extends Document>(
 		userId: string,
 		teamId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P | null | ITeamMember> {
 		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
 
-	findByTeamId<P extends Document = ITeamMember, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(teamId: string, options?: O): FindCursor<DocumentWithProjection<P, O>> {
+	findByTeamId(teamId: string): FindCursor<ITeamMember>;
+
+	findByTeamId(teamId: string, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
+
+	findByTeamId<P extends Document>(teamId: string, options: FindOptions<P>): FindCursor<P>;
+
+	findByTeamId<P extends Document>(
+		teamId: string,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
 
@@ -58,7 +76,16 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return this.countDocuments({ teamId });
 	}
 
-	findByTeamIds<P extends Document = ITeamMember, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(teamIds: Array<string>, options?: O): FindCursor<DocumentWithProjection<P, O>> {
+	findByTeamIds(teamIds: Array<string>): FindCursor<ITeamMember>;
+
+	findByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
+
+	findByTeamIds<P extends Document>(teamIds: Array<string>, options: FindOptions<P>): FindCursor<P>;
+
+	findByTeamIds<P extends Document>(
+		teamIds: Array<string>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
@@ -66,7 +93,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return this.countDocuments({ teamId, roles: role });
 	}
 
-	findByUserIdAndTeamIds<T extends Document = ITeamMember, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, teamIds: Array<string>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOptions<ITeamMember> = {}): FindCursor<ITeamMember> {
 		const query = {
 			userId,
 			teamId: {
@@ -83,7 +110,8 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		skip: number,
 		query?: Filter<ITeamMember>,
 	): FindPaginated<FindCursor<ITeamMember>> {
-		return this.findPaginated(
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.findPaginated<ITeamMember>(
 			{ ...query, teamId },
 			{
 				limit,

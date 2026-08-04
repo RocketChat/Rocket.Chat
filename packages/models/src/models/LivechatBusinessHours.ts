@@ -20,11 +20,17 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		super(db, 'livechat_business_hours', trash);
 	}
 
-	findOneDefaultBusinessHour<P extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(options?: O): Promise<DocumentWithProjection<P, O> | null> {
+	findOneDefaultBusinessHour<
+		P extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(options?: O): Promise<DocumentWithProjection<P, O> | null> {
 		return this.findOne<P, O>({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
-	findActiveAndOpenBusinessHoursByDay<T extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(day: string, options?: O): Promise<DocumentWithProjection<T, O>[]> {
+	findActiveAndOpenBusinessHoursByDay<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(day: string, options?: O): Promise<DocumentWithProjection<T, O>[]> {
 		return this.find<T, O>(
 			{
 				active: true,
@@ -39,7 +45,10 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		).toArray();
 	}
 
-	findActiveBusinessHours<T extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): Promise<DocumentWithProjection<T, O>[]> {
+	findActiveBusinessHours<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(options?: O): Promise<DocumentWithProjection<T, O>[]> {
 		return this.find<T, O>(
 			{
 				active: true,

@@ -1,5 +1,13 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type {
+	IBaseModel,
+	DefaultFields,
+	ResultFields,
+	FindPaginated,
+	InsertionModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
@@ -184,26 +192,38 @@ export abstract class BaseRaw<
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
-	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(_id: T['_id'], options?: O): Promise<DocumentWithProjection<P, O> | null> {
+	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		return this.findOne<P, O>({ _id } as Filter<T>, options);
 	}
 
-	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> | T['_id'] = {}, options?: O): Promise<DocumentWithProjection<P, O> | null> {
+	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> | T['_id'] = {},
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		if (optionsDef) {
 			return this.col.findOne(q, optionsDef) as any;
 		}
 		return this.col.findOne(q) as any;
 	}
 
-	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> = {}, options?: O): FindCursor<DocumentWithProjection<P, O>> {
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> = {},
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.find(query, optionsDef) as any;
 	}
 
-	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(query: Filter<T> = {}, options?: O): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> = {},
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
 		const totalCount = this.col.countDocuments(query);
@@ -303,9 +323,13 @@ export abstract class BaseRaw<
 			} as unknown as TDeleted;
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-			});
+			await this.trash?.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash },
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		if (options) {
@@ -331,9 +355,13 @@ export abstract class BaseRaw<
 			__collection__: this.name,
 		} as unknown as TDeleted;
 
-		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-			upsert: true,
-		});
+		await this.trash?.updateOne(
+			{ _id } as Filter<TDeleted>,
+			{ $set: trash },
+			{
+				upsert: true,
+			},
+		);
 
 		try {
 			await this.col.deleteOne({ _id } as Filter<T>);
@@ -342,7 +370,7 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc as WithId<T>;
+		return doc;
 	}
 
 	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
@@ -369,13 +397,17 @@ export abstract class BaseRaw<
 				__collection__: this.name,
 			} as unknown as TDeleted;
 
-			ids.push(_id as T['_id']);
+			ids.push(_id);
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-				session: options?.session,
-			});
+			await this.trash?.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash },
+				{
+					upsert: true,
+					session: options?.session,
+				},
+			);
 
 			void options?.onTrash?.(doc);
 		}

@@ -13,7 +13,10 @@ export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuth
 		return [{ key: { authCode: 1 } }, { key: { userId: 1 } }, { key: { expires: 1 }, expireAfterSeconds: 60 * 5 }];
 	}
 
-	findOneByAuthCode<T extends Document = IOAuthAuthCode, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(authCode: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByAuthCode<T extends Document = IOAuthAuthCode, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		authCode: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof authCode !== 'string' || !authCode) {
 			return Promise.resolve(null);
 		}

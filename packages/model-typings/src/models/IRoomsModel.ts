@@ -40,19 +40,32 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
-	findAllByTypesAndDiscussionAndTeam<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(filters?: {
+	findAllByTypesAndDiscussionAndTeam<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		filters?: {
 			types?: Array<IRoom['t']>;
 			discussions?: boolean;
 			teams?: boolean;
-		}, findOptions?: O): FindCursor<DocumentWithProjection<T, O>>;
+		},
+		findOptions?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
 
-	findOneByRoomIdAndUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: IRoom['_id'], uid: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByRoomIdAndUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		uid: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findManyArchivedByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findManyArchivedByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findPaginatedByIds(
 		roomIds: Array<IRoom['_id']>,
@@ -61,25 +74,71 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department?: string): Promise<Document>;
 
-	findByNameOrFnameContainingAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, types: Array<IRoom['t']>, discussion?: boolean, teams?: boolean, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findByNameOrFnameContainingAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		types: Array<IRoom['t']>,
+		discussion?: boolean,
+		teams?: boolean,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPrivateRoomsAndTeamsPaginated<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPrivateRoomsAndTeamsPaginated<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findByTeamId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findByTeamId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		teamId: ITeam['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	countByTeamId(teamId: ITeam['_id']): Promise<number>;
 
-	findPaginatedByTeamIdContainingNameAndDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], name: IRoom['name'], teamDefault: boolean, ids: Array<IRoom['_id']> | undefined, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPaginatedByTeamIdContainingNameAndDefault<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		teamId: ITeam['_id'],
+		name: IRoom['name'],
+		teamDefault: boolean,
+		ids: Array<IRoom['_id']> | undefined,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findByTeamIdAndRoomsId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findByTeamIdAndRoomsId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		teamId: ITeam['_id'],
+		rids: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findRoomsByNameOrFnameStarting<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findRoomsByNameOrFnameStarting<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findPaginatedRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, roomIds: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPaginatedRoomsWithoutDiscussionsByRoomIds<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		name: NonNullable<IRoom['name']>,
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findChannelAndGroupListWithoutTeamsByNameStartingByOwner<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'], groupsToAccept: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		name: IRoom['name'],
+		groupsToAccept: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	unsetTeamId(teamId: ITeam['_id'], options?: UpdateOptions): Promise<Document | UpdateResult>;
 
@@ -91,17 +150,24 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: IRoom['_id'], teamDefault: NonNullable<IRoom['teamDefault']>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findOneByName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
 	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	findOneByNameOrFname<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByNameOrFname<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findOneByJoinCodeAndId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(joinCode: string, rid: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByJoinCodeAndId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		joinCode: string,
+		rid: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findOneByNonValidatedName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByNonValidatedName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
@@ -111,21 +177,49 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult>;
 
-	findE2ERoomById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findE2ERoomById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	countRoomsInsideTeams(autoJoin?: boolean): Promise<number>;
 
-	findOneDirectRoomContainingAllUserIDs<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uid: IDirectMessageRoom['uids'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneDirectRoomContainingAllUserIDs<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IDirectMessageRoom['uids'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	countByType(t: IRoom['t']): Promise<number>;
 
-	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: RegExp | null, teamIds: Array<ITeam['_id']>, roomIds: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		searchTerm: RegExp | null,
+		teamIds: Array<ITeam['_id']>,
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPaginatedContainingNameOrFNameInIdsAsTeamMain<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: RegExp | null, rids: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		searchTerm: RegExp | null,
+		rids: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPaginatedByTypeAndIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findPaginatedByTypeAndIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findOneFederatedByMrid<T extends Document = IRoomFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(mrid: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneFederatedByMrid<T extends Document = IRoomFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		mrid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
 
@@ -140,7 +234,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): Promise<IRoom | null>;
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
-	findOneByIdOrName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_idOrName: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByIdOrName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<Document | UpdateResult>;
@@ -156,7 +253,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		readOnly: NonNullable<IRoom['ro']>,
 		reactWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
 	): Promise<UpdateResult | Document>;
-	getDirectConversationsByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	getDirectConversationsByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	setAllowReactingWhenReadOnlyById(
 		roomId: string,
 		allowReactingWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
@@ -169,28 +269,108 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eKeyId: string,
 		options?: Omit<FindOneAndUpdateOptions, 'returnDocument' | 'includeResultMetadata' | 'upsert'>,
 	): Promise<IRoom | null>;
-	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(importId: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		importId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
-	findOneByIdAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: IRoom['_id'], type: IRoom['t'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findOneByDisplayName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(displayName: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, type: IRoom['t'], options?: O, includeFederatedRooms?: boolean): Promise<DocumentWithProjection<T, O> | null>;
-	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findByIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rids: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findByTypeInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findPrivateRoomsByIdsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findAllPrivateRoomsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findBySubscriptionUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>>;
-	findBySubscriptionUserIdUpdatedAfter<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, updatedAfter: Date, options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>>;
-	findByNameAndTypeNotDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'] | RegExp, type: IRoom['t'], options?: O, includeFederatedRooms?: boolean): FindCursor<DocumentWithProjection<T, O>>;
-	findByNameOrFNameAndTypesNotInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'] | RegExp, types: IRoom['t'][], ids: string[], options?: O, includeFederatedRooms?: boolean): FindCursor<DocumentWithProjection<T, O>>;
-	findByDefaultAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(defaultValue: boolean, types: IRoom['t'][], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findDirectRoomContainingAllUsernames<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(usernames: string[], options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findByTypeAndNameOrId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], name: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findByTypeAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], name: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findByTypeInIdsAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: string[], name: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findGroupDMsByUids<T extends Document = IDirectMessageRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uids: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	find1On1ByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findOneByIdAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		type: IRoom['t'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByDisplayName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		displayName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		type: IRoom['t'],
+		options?: O,
+		includeFederatedRooms?: boolean,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByTypeInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findPrivateRoomsByIdsWithAbacAttributes<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findAllPrivateRoomsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findBySubscriptionUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<T, O>>>;
+	findBySubscriptionUserIdUpdatedAfter<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		updatedAfter: Date,
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<T, O>>>;
+	findByNameAndTypeNotDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: IRoom['name'] | RegExp,
+		type: IRoom['t'],
+		options?: O,
+		includeFederatedRooms?: boolean,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByNameOrFNameAndTypesNotInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: IRoom['name'] | RegExp,
+		types: IRoom['t'][],
+		ids: string[],
+		options?: O,
+		includeFederatedRooms?: boolean,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByDefaultAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		defaultValue: boolean,
+		types: IRoom['t'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findDirectRoomContainingAllUsernames<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByTypeAndNameOrId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		name: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByTypeAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		name: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByTypeInIdsAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: string[],
+		name: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findGroupDMsByUids<T extends Document = IDirectMessageRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	find1On1ByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom>;
 	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
@@ -271,5 +451,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
 	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;
-	findFederatedByIds<T extends Document = IRoomNativeFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findFederatedByIds<T extends Document = IRoomNativeFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

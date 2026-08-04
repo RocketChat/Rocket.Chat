@@ -137,7 +137,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return !!room;
 	}
 
-	findOneByRoomIdAndUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: IRoom['_id'], uid: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByRoomIdAndUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		uid: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			'_id': rid,
 			'u._id': uid,
@@ -146,7 +150,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
@@ -156,7 +163,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findManyArchivedByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findManyArchivedByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
@@ -209,7 +219,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return statistic;
 	}
 
-	findByNameOrFnameContainingAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, types: Array<IRoom['t']>, discussion = false, teams = false, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findByNameOrFnameContainingAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		types: Array<IRoom['t']>,
+		discussion = false,
+		teams = false,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const nameCondition: Filter<IRoom> = {
@@ -247,7 +263,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findPrivateRoomsAndTeamsPaginated<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPrivateRoomsAndTeamsPaginated<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const nameCondition: Filter<IRoom> = {
@@ -267,7 +286,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findByTeamId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByTeamId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		teamId: ITeam['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			teamId,
 			teamMain: {
@@ -289,7 +311,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments(query);
 	}
 
-	findPaginatedByTeamIdContainingNameAndDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], name: IRoom['name'], teamDefault: boolean, ids: Array<IRoom['_id']> | undefined, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByTeamIdContainingNameAndDefault<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		teamId: ITeam['_id'],
+		name: IRoom['name'],
+		teamDefault: boolean,
+		ids: Array<IRoom['_id']> | undefined,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IRoom> = {
 			teamId,
 			teamMain: {
@@ -303,7 +334,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findByTeamIdAndRoomsId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByTeamIdAndRoomsId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		teamId: ITeam['_id'],
+		rids: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			teamId,
 			_id: {
@@ -314,7 +349,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findRoomsByNameOrFnameStarting<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findRoomsByNameOrFnameStarting<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -334,7 +372,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -366,7 +408,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findPaginatedRoomsWithoutDiscussionsByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, roomIds: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedRoomsWithoutDiscussionsByRoomIds<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(name: NonNullable<IRoom['name']>, roomIds: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -399,7 +444,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findChannelAndGroupListWithoutTeamsByNameStartingByOwner<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'], groupsToAccept: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(name: IRoom['name'], groupsToAccept: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const nameRegex = name && new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -451,7 +499,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findOneByNameOrFname<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByNameOrFname<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			$or: [
 				{
@@ -466,7 +517,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByJoinCodeAndId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(joinCode: string, rid: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByJoinCodeAndId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		joinCode: string,
+		rid: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			_id: rid,
 			joinCode,
@@ -475,7 +530,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	async findOneByNonValidatedName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findOneByNonValidatedName(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
@@ -484,7 +539,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOneByName(name, options);
 	}
 
-	findOneByName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByName(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ name }, options);
 	}
 
@@ -567,7 +622,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findE2ERoomById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findE2ERoomById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				_id: roomId,
@@ -589,7 +647,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments({ t });
 	}
 
-	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: RegExp | null, teamIds: Array<ITeam['_id']>, roomIds: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		searchTerm: RegExp | null,
+		teamIds: Array<ITeam['_id']>,
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IRoom> = {
 			$and: [
 				{ teamMain: { $exists: false } },
@@ -635,7 +701,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findPaginatedContainingNameOrFNameInIdsAsTeamMain<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: RegExp | null, rids: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(searchTerm: RegExp | null, rids: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IRoom> = {
 			teamMain: true,
 			$and: [
@@ -671,7 +740,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findPaginatedByTypeAndIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: Array<IRoom['_id']>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByTypeAndIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IRoom> = {
 			t: type,
 			_id: {
@@ -682,7 +755,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findOneDirectRoomContainingAllUserIDs<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uid: IDirectMessageRoom['uids'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneDirectRoomContainingAllUserIDs<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IDirectMessageRoom['uids'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
@@ -694,10 +770,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				federated: 1,
 				ts: 1,
 			},
-		});
+		} as unknown as O);
 	}
 
-	findFederatedByIds<T extends Document = IRoomNativeFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findFederatedByIds<T extends Document = IRoomNativeFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
 			federated: true,
@@ -706,7 +785,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findOneFederatedByMrid<T extends Document = IRoomFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(mrid: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneFederatedByMrid<T extends Document = IRoomFederated, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		mrid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			'federated': true,
 			'federation.mrid': mrid,
@@ -782,7 +864,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.incMsgCountById(_id, -count);
 	}
 
-	findOneByIdOrName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_idOrName: IRoom['_id'] | IRoom['name'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdOrName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: IRoom['_id'] | IRoom['name'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			$or: [
 				{
@@ -797,7 +882,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByIdAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: IRoom['_id'], type: IRoom['t'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		type: IRoom['t'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ _id: roomId, t: type }, options);
 	}
 
@@ -928,7 +1017,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	getDirectConversationsByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IRoom['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	getDirectConversationsByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IRoom['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
@@ -1006,7 +1098,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after', ...options });
 	}
 
-	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = { importIds: _id };
 
 		return this.findOne<T, O>(query, options);
@@ -1021,13 +1116,21 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query);
 	}
 
-	findOneByDisplayName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(fname: IRoom['fname'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByDisplayName<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		fname: IRoom['fname'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = { fname };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: NonNullable<IRoom['name']>, type: IRoom['t'], options?: O, includeFederatedRooms = false): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: NonNullable<IRoom['name']>,
+		type: IRoom['t'],
+		options?: O,
+		includeFederatedRooms = false,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			t: type,
 			teamId: {
@@ -1042,21 +1145,34 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// FIND
-	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: IRoom['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ _id: roomId }, options);
 	}
 
-	findByIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ _id: { $in: roomIds } }, options);
 	}
 
-	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = { t: type };
 
 		return this.find<T, O>(query, options);
 	}
 
-	findByTypeInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByTypeInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -1067,7 +1183,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findPrivateRoomsByIdsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findPrivateRoomsByIdsWithAbacAttributes<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(ids: Array<IRoom['_id']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			_id: { $in: ids },
 			t: 'p',
@@ -1077,7 +1196,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findAllPrivateRoomsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findAllPrivateRoomsWithAbacAttributes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			t: 'p',
 			abacAttributes: { $exists: true, $ne: [] },
@@ -1086,7 +1207,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	async findBySubscriptionUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>> {
+	async findBySubscriptionUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<T, O>>> {
 		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query: Filter<IRoom> = {
@@ -1113,7 +1237,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	async findBySubscriptionUserIdUpdatedAfter<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], _updatedAt: IRoom['_updatedAt'], options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>> {
+	async findBySubscriptionUserIdUpdatedAfter<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(userId: IUser['_id'], _updatedAt: IRoom['_updatedAt'], options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>> {
 		const ids = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query: Filter<IRoom> = {
@@ -1143,7 +1270,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findByNameAndTypeNotDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'] | RegExp, type: IRoom['t'], options?: O, includeFederatedRooms = false): FindCursor<DocumentWithProjection<T, O>> {
+	findByNameAndTypeNotDefault<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: IRoom['name'] | RegExp,
+		type: IRoom['t'],
+		options?: O,
+		includeFederatedRooms = false,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			t: type,
 			default: {
@@ -1175,7 +1307,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 3
-	findByNameOrFNameAndTypesNotInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: IRoom['name'] | RegExp, types: Array<IRoom['t']>, ids: Array<IRoom['_id']>, options?: O, includeFederatedRooms = false): FindCursor<DocumentWithProjection<T, O>> {
+	findByNameOrFNameAndTypesNotInIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: IRoom['name'] | RegExp,
+		types: Array<IRoom['t']>,
+		ids: Array<IRoom['_id']>,
+		options?: O,
+		includeFederatedRooms = false,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const nameCondition: Filter<IRoom> = {
 			$or: [{ name }, { fname: name }],
 		};
@@ -1225,7 +1363,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findByDefaultAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(defaultValue: boolean, types: Array<IRoom['t']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByDefaultAndTypes<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		defaultValue: boolean,
+		types: Array<IRoom['t']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRoom> = {
 			t: {
 				$in: types,
@@ -1236,7 +1378,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findDirectRoomContainingAllUsernames<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(usernames: NonNullable<IRoom['usernames']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findDirectRoomContainingAllUsernames<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: NonNullable<IRoom['usernames']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			t: 'd',
 			usernames: { $size: usernames.length, $all: usernames },
@@ -1246,7 +1391,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	findByTypeAndNameOrId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], identifier: NonNullable<IRoom['name'] | IRoom['_id']>, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findByTypeAndNameOrId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		identifier: NonNullable<IRoom['name'] | IRoom['_id']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
 			t: type,
 			$or: [{ name: identifier }, { _id: identifier }],
@@ -1255,7 +1404,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
-	findByTypeAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], name: NonNullable<IRoom['name']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByTypeAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const query: Filter<IRoom> = {
@@ -1266,7 +1419,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findByTypeInIdsAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(type: IRoom['t'], ids: Array<IRoom['_id']>, name: NonNullable<IRoom['name']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByTypeInIdsAndNameContaining<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		name: NonNullable<IRoom['name']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const query: Filter<IRoom> = {
@@ -1280,7 +1438,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>(query, options);
 	}
 
-	findGroupDMsByUids<T extends Document = IDirectMessageRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uids: NonNullable<IRoom['uids']>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findGroupDMsByUids<T extends Document = IDirectMessageRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uids: NonNullable<IRoom['uids']>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				usersCount: { $gt: 2 },
@@ -1297,7 +1458,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	find1On1ByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IRoom['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	find1On1ByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IRoom['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				uids: userId,
@@ -2032,11 +2196,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
-	findAllByTypesAndDiscussionAndTeam<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(filters: {
+	findAllByTypesAndDiscussionAndTeam<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		filters: {
 			types?: Array<IRoom['t']>;
 			discussions?: boolean;
 			teams?: boolean;
-		} = {}, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		} = {},
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const { types, discussions, teams } = filters;
 
 		const query: Filter<IRoom> = {};

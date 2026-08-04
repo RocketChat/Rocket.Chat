@@ -15,7 +15,10 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
-	findNotSentByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(npsId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findNotSentByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
@@ -25,7 +28,11 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return cursor.sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(npsId: string, status: INpsVoteStatus, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByNpsIdAndStatus<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		status: INpsVoteStatus,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 			status,
@@ -36,7 +43,10 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return this.find<T, O>(query);
 	}
 
-	findByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(npsId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 		};

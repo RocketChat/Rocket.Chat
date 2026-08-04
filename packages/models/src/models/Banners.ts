@@ -34,7 +34,12 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		});
 	}
 
-	findActiveByRoleOrId<T extends Document = IBanner, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: string[], platform: BannerPlatform, bannerId?: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByRoleOrId<T extends Document = IBanner, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: string[],
+		platform: BannerPlatform,
+		bannerId?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const today = new Date();
 
 		const query = {

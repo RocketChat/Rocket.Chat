@@ -20,5 +20,8 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 
 	setFederationRoomInfo(fileId: IUpload['_id'], rid: IRoom['_id'], mrid: string): Promise<UpdateResult>;
 
-	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(originalFileId: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

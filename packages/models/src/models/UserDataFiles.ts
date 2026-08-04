@@ -13,12 +13,14 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 		return [...super.modelIndexes(), { key: { userId: 1 } }];
 	}
 
-	findLastFileByUser<T extends Document = IUserDataFile, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findLastFileByUser<T extends Document = IUserDataFile, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			userId,
 		};
 
-		options.sort = { _updatedAt: -1 };
-		return this.findOne<T, O>(query, options);
+		return this.findOne<T, O>(query, { ...options, sort: { _updatedAt: -1 } } as unknown as O);
 	}
 }

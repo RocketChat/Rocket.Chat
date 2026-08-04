@@ -13,7 +13,10 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		return [{ key: { clientId: 1, clientSecret: 1 } }, { key: { appId: 1 } }];
 	}
 
-	findOneAuthAppByIdOrClientId<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(props: { clientId: string } | { appId: string } | { _id: string }, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneAuthAppByIdOrClientId<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		props: { clientId: string } | { appId: string } | { _id: string },
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				...('_id' in props && { _id: props._id }),
@@ -24,7 +27,10 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		);
 	}
 
-	findOneActiveByClientId<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(clientId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneActiveByClientId<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		clientId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof clientId !== 'string' || !clientId) {
 			return Promise.resolve(null);
 		}
@@ -44,7 +50,10 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		return this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after' });
 	}
 
-	findOneActiveByClientIdAndClientSecret<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(clientId: string, clientSecret: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneActiveByClientIdAndClientSecret<
+		T extends Document = IOAuthApps,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(clientId: string, clientSecret: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof clientId !== 'string' || !clientId || typeof clientSecret !== 'string' || !clientSecret) {
 			return Promise.resolve(null);
 		}

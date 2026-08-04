@@ -5,8 +5,17 @@ import type { IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ICannedResponseModel extends IBaseModel<IOmnichannelCannedResponse> {
-	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(shortcut: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findByDepartmentId<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(departmentId: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		shortcut: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByDepartmentId<
+		T extends Document = IOmnichannelCannedResponse,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		departmentId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	removeById(_id: string): Promise<DeleteResult>;
 	createCannedResponse({
 		shortcut,

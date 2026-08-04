@@ -13,11 +13,18 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return [{ key: { name: 1 } }];
 	}
 
-	async findOneByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findOneByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return options ? this.findOne<T, O>({ name }, options) : this.findOne<T, O>({ name });
 	}
 
-	findOneByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, except: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		except: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -27,7 +34,10 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 	}
 
 	// find
-	findByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			name,
 		};
@@ -35,7 +45,11 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return this.find<T, O>(query, options);
 	}
 
-	findByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, except: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		except: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $nin: [except] },
 			name,

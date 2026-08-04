@@ -5,7 +5,10 @@ import type { IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
-	findOneByRoomId<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
@@ -23,7 +26,9 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'];
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
-	getQueuedInquiries<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	getQueuedInquiries<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult>;
 	queueInquiry(inquiryId: string, lastMessage?: IMessage, defaultAgent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
@@ -38,5 +43,8 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
-	findByVisitorIds<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findByVisitorIds<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

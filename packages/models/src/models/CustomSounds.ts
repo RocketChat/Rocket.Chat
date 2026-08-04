@@ -14,7 +14,11 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// find
-	findByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, exceptId?: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		exceptId?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			name,
 			...(exceptId && { _id: { $nin: [exceptId] } }),
@@ -23,7 +27,11 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 		return this.find<T, O>(query, options);
 	}
 
-	findOneByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(name: string, exceptId?: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		exceptId?: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			name,
 			...(exceptId && { _id: { $nin: [exceptId] } }),

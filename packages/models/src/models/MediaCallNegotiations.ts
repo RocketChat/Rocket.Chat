@@ -18,7 +18,10 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 		return [{ key: { callId: 1, requestTimestamp: -1 }, unique: false }];
 	}
 
-	public async findLatestByCallId<T extends Document = IMediaCallNegotiation, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(callId: IMediaCallNegotiation['callId'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	public async findLatestByCallId<
+		T extends Document = IMediaCallNegotiation,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(callId: IMediaCallNegotiation['callId'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				callId,
@@ -29,7 +32,7 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 					requestTimestamp: -1,
 				},
 				limit: 1,
-			},
+			} as unknown as O,
 		);
 	}
 

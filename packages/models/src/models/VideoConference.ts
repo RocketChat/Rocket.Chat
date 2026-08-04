@@ -39,7 +39,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
 	): FindPaginated<FindCursor<VideoConference>> {
-		return this.findPaginated(
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.findPaginated<VideoConference>(
 			{ rid },
 			{
 				sort: { createdAt: -1 },
@@ -229,7 +230,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				[`messages.${messageType}`]: messageId,
 			},
-		} as UpdateFilter<VideoConference>); // TODO: Remove this cast when TypeScript is updated
+		}); // TODO: Remove this cast when TypeScript is updated
 		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
 	}
 
