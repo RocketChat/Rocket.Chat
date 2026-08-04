@@ -1,5 +1,13 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
+import type {
+	IBaseModel,
+	DefaultFields,
+	ResultFields,
+	FindPaginated,
+	InsertionModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
@@ -184,53 +192,44 @@ export abstract class BaseRaw<
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
-	async findOneById(_id: T['_id'], options?: FindOptions<T>): Promise<T | null>;
-
-	async findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
-
-	async findOneById(_id: T['_id'], options?: any): Promise<T | null> {
-		const query: Filter<T> = { _id } as Filter<T>;
-		if (options) {
-			return this.findOne(query, options);
-		}
-		return this.findOne(query);
+	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ _id } as Filter<T>, options);
 	}
 
-	async findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
-
-	async findOne<P extends Document = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
-
-	async findOne<P>(query: Filter<T> | T['_id'] = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
+	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> | T['_id'] = {},
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
 		if (optionsDef) {
-			return this.col.findOne(q, optionsDef);
+			return this.col.findOne(q, optionsDef) as any;
 		}
-		return this.col.findOne(q);
+		return this.col.findOne(q) as any;
 	}
 
-	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
-
-	find<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
-
-	find<P extends Document>(
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		query: Filter<T> = {},
-		options?: FindOptions<P extends T ? T : P>,
-	): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		return this.col.find(query, optionsDef);
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
+		return this.col.find(query, optionsDef) as any;
 	}
 
-	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
-
-	findPaginated(query: Filter<T> = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> = {},
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as FindOptions<T> | undefined);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
 		const totalCount = this.col.countDocuments(query);
 
 		return {
-			cursor,
+			cursor: cursor as any,
 			totalCount,
 		};
 	}
