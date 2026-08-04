@@ -1,0 +1,130 @@
+packages/model-typings/src/models/INpsVoteModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-10
+packages/model-typings/src/models/ITeamModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,10,12,14,16,18,20,22
+packages/model-typings/src/models/IOAuthAppsModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,13,15,22
+packages/model-typings/src/models/ILivechatInquiryModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,26,41
+packages/model-typings/src/models/ILivechatDepartmentModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,9-10,12,15,17,38-39,41-42,52
+packages/model-typings/src/models/IRolesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 2,5,8,10,17,42
+packages/model-typings/src/models/IUploadsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 2,6,23
+packages/model-typings/src/models/ITwoFactorChallengesModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+packages/model-typings/src/models/IPushTokenModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,12-14
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/IMediaCallNegotiationsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+packages/model-typings/src/models/ILivechatCustomFieldModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-10
+packages/model-typings/src/models/ILivechatContactsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 1,3
+  s_d81a2915077aab::t_e0b9c3ad38693d 7,23,31,38,57
+packages/model-typings/src/models/IOAuthAccessTokensModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-9
+packages/model-typings/src/models/IOAuthRefreshTokensModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+packages/model-typings/src/models/IWebdavAccountsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-9,17,19
+  s_d81a2915077aab::t_6be05ad01315cb 2
+packages/model-typings/src/models/ICallHistoryModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,10,12,17
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/IAbacAttributesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+  s_d81a2915077aab::t_6be05ad01315cb 2
+packages/model-typings/src/models/IUsersModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 29
+  s_d81a2915077aab::t_bb49b0104c5f1a 33
+  s_d81a2915077aab::t_e0b9c3ad38693d 38-47,49-51,53,55,57,59,61,65-66,68,70,72,115,133,205,233,287,292,294-304,306-310,312,314-316,318-319,335,367,380,383,387
+packages/model-typings/src/models/IMediaCallsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-9,16-17
+  s_d81a2915077aab::t_a86c3fcad88a93 1-2
+packages/model-typings/src/models/IBannersDismissModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/ISubscriptionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 20
+  s_d81a2915077aab::t_e43e64006551c5 169
+  s_d81a2915077aab::t_e0b9c3ad38693d 25,27,29,31,33,53,59,61,63,65,70,137,143,147,149-150,154,157,159,161,163,165-167,174,181-182,185,189,232,258,274
+packages/model-typings/src/models/ILivechatBusinessHoursModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,18-20
+packages/model-typings/src/models/IMessagesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 25,35,37,39,41,43,63-64,75,89,91,113-114,117-125,134,137-138,160,176
+packages/model-typings/src/models/IOAuthAuthCodesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/IEmojiCustomModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-10,17
+packages/model-typings/src/models/IBaseUploadsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,14,20,26
+packages/model-typings/src/models/ISessionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 1-2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,139
+packages/model-typings/src/models/IRoomsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 26,43,47,51,53,55,64,66,68,72,74,76,78,80,82,94,100,102,104,114,118,122,124,126,128,138,154,167,169-188,269
+packages/model-typings/src/models/IIntegrationsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,24
+packages/model-typings/src/models/ILivechatVisitorsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 15,18-20,32,72,76
+packages/model-typings/src/models/ILivechatRoomsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 16,143,159,161,163-170,206,240
+packages/model-typings/src/models/ILivechatDepartmentAgentsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,10,15-16,36-37
+packages/model-typings/src/models/IUserDataFilesModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8
+packages/model-typings/src/models/ICustomUserStatusModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-11
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/ICustomSoundsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-9
+packages/model-typings/src/models/ISettingsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 6,15
+  s_d81a2915077aab::t_a86c3fcad88a93 3
+packages/model-typings/src/models/ILoginServiceConfigurationModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,13
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+packages/model-typings/src/models/IUsersSessionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,16
+packages/model-typings/src/models/ITeamMemberModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8,22,25,29
+packages/model-typings/src/models/IBannersModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,10
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "ca0cafdb22d7d23df72a020997d1cd41e65f983b",
+  "prompts": {},
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
