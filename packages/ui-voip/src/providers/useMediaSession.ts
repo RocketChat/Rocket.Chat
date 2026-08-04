@@ -17,6 +17,8 @@ const defaultSessionInfo: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
+	screenSharing: false,
+	remoteScreenSharing: false,
 	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
@@ -155,6 +157,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						hidden: false,
 						remoteHeld: false,
 						remoteMuted: false,
+						screenSharing: false,
+						remoteScreenSharing: false,
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
@@ -169,8 +173,11 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
+				localParticipant,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 			} = instanceState;
+			const localMediaStream = localParticipant.getMediaStream('screen-share');
+			const remoteMediaStream = instanceState.remoteParticipant.getMediaStream('screen-share');
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
@@ -187,6 +194,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						hidden,
 						remoteHeld,
 						remoteMuted,
+						screenSharing: Boolean(localMediaStream?.hasVideo()),
+						remoteScreenSharing: Boolean(remoteMediaStream?.hasVideo()),
 						callId,
 						startedAt,
 						supportedFeatures,
@@ -221,6 +230,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					hidden,
 					remoteHeld,
 					remoteMuted,
+					screenSharing: Boolean(localMediaStream?.hasVideo()),
+					remoteScreenSharing: Boolean(remoteMediaStream?.hasVideo()),
 					callId,
 					startedAt,
 					supportedFeatures,

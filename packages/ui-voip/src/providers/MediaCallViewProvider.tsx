@@ -113,7 +113,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			startCall(false);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			startCall(true);
+
 		}
 	};
 
@@ -128,7 +128,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 			controls.acceptCall(false);
 		} catch (error) {
-			console.error('MediaCall - onAccept - Failed to get device, procceeding without microphone', error);
+			console.error('Media Call - Error requesting device', error);
+
 			controls.acceptCall(true);
 		}
 	};
@@ -200,6 +201,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.endCall();
 	};
 
+	const onToggleScreenShare = useCallback(async () => {
+		controls.toggleScreenSharing();
+	}, [controls]);
+
 	const onSelectPeer = (peerInfo: PeerInfo) => {
 		selectPeer(peerInfo);
 	};
@@ -245,6 +250,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onForward,
 		onTone,
 		onEndCall,
+		onToggleScreenShare,
 		onCall,
 		onAccept,
 		onSelectPeer,
