@@ -29,7 +29,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination(text);
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -68,7 +68,13 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			<FilterByText
+				value={text}
+				onChange={(event) => {
+					setText(event.target.value);
+					onSetCurrent(0);
+				}}
+			/>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

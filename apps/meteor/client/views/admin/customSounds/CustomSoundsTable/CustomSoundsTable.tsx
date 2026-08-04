@@ -27,7 +27,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination(text);
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -64,7 +64,13 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			<FilterByText
+				value={text}
+				onChange={(event) => {
+					setText(event.target.value);
+					onSetCurrent(0);
+				}}
+			/>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
