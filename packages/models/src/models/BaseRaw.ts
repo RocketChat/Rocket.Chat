@@ -7,6 +7,9 @@ import type {
 	InsertionModel,
 	DocumentWithProjection,
 	FindOptionsWithProjection,
+	DocumentWithDriverProjection,
+	FindOneAndUpdateOptionsWithProjection,
+	FindOneAndDeleteOptionsWithProjection,
 } from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
@@ -179,7 +182,11 @@ export abstract class BaseRaw<
 		};
 	}
 
-	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
+	public findOneAndUpdate<P extends Document = T, O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection>(
+		query: Filter<T>,
+		update: UpdateFilter<T> | T,
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null> {
 		this.setUpdatedAt(update);
 
 		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in query)) {
@@ -189,7 +196,7 @@ export abstract class BaseRaw<
 			} as Partial<T> & { _id: string };
 		}
 
-		return this.col.findOneAndUpdate(query, update, options || {});
+		return this.col.findOneAndUpdate(query, update, (options || {}) as FindOneAndUpdateOptions) as any;
 	}
 
 	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
@@ -338,11 +345,16 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
+	async findOneAndDelete<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
+		filter: Filter<T>,
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null> {
 		if (!this.trash) {
-			return this.col.findOneAndDelete(filter, options || {});
+			return this.col.findOneAndDelete(filter, (options || {}) as FindOneAndDeleteOptions) as any;
 		}
 
+		// the trash path needs the whole document to archive it, so the projection is not applied here;
+		// returning more fields than the caller asked for is harmless
 		const doc = await this.col.findOne(filter);
 		if (!doc) {
 			return null;
@@ -370,11 +382,14 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc;
+		return doc as any;
 	}
 
-	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
-		return this.findOneAndDelete({ _id } as Filter<T>, options);
+	findOneAndDeleteById<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null> {
+		return this.findOneAndDelete<P, O>({ _id } as Filter<T>, options);
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {

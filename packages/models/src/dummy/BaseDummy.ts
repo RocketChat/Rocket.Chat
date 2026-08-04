@@ -6,6 +6,9 @@ import type {
 	FindPaginated,
 	IBaseModel,
 	InsertionModel,
+	DocumentWithDriverProjection,
+	FindOneAndUpdateOptionsWithProjection,
+	FindOneAndDeleteOptionsWithProjection,
 } from '@rocket.chat/model-typings';
 import type {
 	BulkWriteOptions,
@@ -60,15 +63,24 @@ export class BaseDummy<
 		return this.collectionName;
 	}
 
-	async findOneAndDelete(): Promise<WithId<T> | null> {
+	async findOneAndDelete<
+		P extends Document = T,
+		O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection,
+	>(): Promise<DocumentWithDriverProjection<P, O> | null> {
 		return null;
 	}
 
-	async findOneAndDeleteById(_id: T['_id']): Promise<WithId<T> | null> {
+	async findOneAndDeleteById<
+		P extends Document = T,
+		O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection,
+	>(_id: T['_id']): Promise<DocumentWithDriverProjection<P, O> | null> {
 		return null;
 	}
 
-	async findOneAndUpdate(): Promise<WithId<T> | null> {
+	async findOneAndUpdate<
+		P extends Document = T,
+		O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection,
+	>(): Promise<DocumentWithDriverProjection<P, O> | null> {
 		return null;
 	}
 

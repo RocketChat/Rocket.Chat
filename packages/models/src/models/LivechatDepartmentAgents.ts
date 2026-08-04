@@ -185,7 +185,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agentId: 1,
 			departmentId: 1,
 			username: 1,
-		};
+		} as const;
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
@@ -239,7 +239,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agentId: 1,
 			departmentId: 1,
 			username: 1,
-		};
+		} as const;
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
