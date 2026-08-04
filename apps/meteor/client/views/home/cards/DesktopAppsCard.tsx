@@ -10,7 +10,9 @@ const WINDOWS_APP_URL = links.go.desktopAppWindows;
 const LINUX_APP_URL = links.go.desktopAppLinux;
 const MAC_APP_URL = links.go.desktopAppMac;
 
-const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type DesktopAppsCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+
+const DesktopAppsCard = (props: DesktopAppsCardProps) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

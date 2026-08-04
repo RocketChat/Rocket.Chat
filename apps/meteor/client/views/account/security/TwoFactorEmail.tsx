@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 
-const TwoFactorEmail = (props: BoxProps) => {
+export type TwoFactorEmailProps = BoxProps;
+
+const TwoFactorEmail = (props: TwoFactorEmailProps) => {
 	const { t } = useTranslation();
 	const user = useUser();
 	const emailId = useId();

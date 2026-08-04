@@ -9,7 +9,9 @@ import { links } from '../../../lib/links';
 const GOOGLE_PLAY_URL = links.go.mobileAppGoogle;
 const APP_STORE_URL = links.go.mobileAppApple;
 
-const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type MobileAppsCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+
+const MobileAppsCard = (props: MobileAppsCardProps) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

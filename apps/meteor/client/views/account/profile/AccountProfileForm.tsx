@@ -38,7 +38,9 @@ import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
-const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
+export type AccountProfileFormProps = AllHTMLAttributes<HTMLFormElement>;
+
+const AccountProfileForm = (props: AccountProfileFormProps) => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();

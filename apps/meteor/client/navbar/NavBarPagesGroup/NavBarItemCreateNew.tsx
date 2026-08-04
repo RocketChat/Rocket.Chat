@@ -7,7 +7,9 @@ import { useCreateNewMenu } from './hooks/useCreateNewMenu';
 
 type CreateRoomProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarItemCreateNew = (props: CreateRoomProps) => {
+export type NavBarItemCreateNewProps = CreateRoomProps;
+
+const NavBarItemCreateNew = (props: NavBarItemCreateNewProps) => {
 	const { t } = useTranslation();
 
 	const sections = useCreateNewMenu();

@@ -1,6 +1,8 @@
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 
-const UserInfoAvatar = (props: ComponentProps<typeof UserAvatar>) => <UserAvatar size='x332' {...props} />;
+export type UserInfoAvatarProps = ComponentProps<typeof UserAvatar>;
+
+const UserInfoAvatar = (props: UserInfoAvatarProps) => <UserAvatar size='x332' {...props} />;
 
 export default UserInfoAvatar;

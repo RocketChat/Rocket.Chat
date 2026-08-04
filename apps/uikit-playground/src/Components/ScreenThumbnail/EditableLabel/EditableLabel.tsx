@@ -2,7 +2,9 @@ import './Editablelabel.scss';
 import { Box, Icon, Input } from '@rocket.chat/fuselage';
 import { type MouseEventHandler, type ComponentProps, useRef, useState } from 'react';
 
-const EditableLabel = (props: ComponentProps<typeof Input>) => {
+export type EditableLabelProps = ComponentProps<typeof Input>;
+
+const EditableLabel = (props: EditableLabelProps) => {
 	const [hover, setHover] = useState<boolean>(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 

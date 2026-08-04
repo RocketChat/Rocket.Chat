@@ -8,7 +8,9 @@ import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.documentation;
 
-const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type DocumentationCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+
+const DocumentationCard = (props: DocumentationCardProps) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

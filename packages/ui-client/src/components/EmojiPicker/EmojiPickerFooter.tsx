@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const EmojiPickerFooter = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => (
+export type EmojiPickerFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const EmojiPickerFooter = (props: EmojiPickerFooterProps) => (
 	<Box
 		{...props}
 		backgroundColor='neutral'

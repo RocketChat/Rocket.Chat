@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const EmojiPickerHeader = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'style'>) => (
+export type EmojiPickerHeaderProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'style'>;
+
+const EmojiPickerHeader = (props: EmojiPickerHeaderProps) => (
 	<Box {...props} display='flex' alignItems='center' paddingBlockStart={12} paddingInline={12} />
 );
 

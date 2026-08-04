@@ -5,7 +5,9 @@ import type { ComponentProps } from 'react';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import CreateChannelModal from '../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
 
-const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type CreateChannelsCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+
+const CreateChannelsCard = (props: CreateChannelsCardProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 

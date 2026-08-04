@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const EmojiPickerPreviewArea = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => (
+export type EmojiPickerPreviewAreaProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const EmojiPickerPreviewArea = (props: EmojiPickerPreviewAreaProps) => (
 	<Box
 		{...props}
 		padding={12}

@@ -19,7 +19,9 @@ const dragHandle = css`
 	}
 `;
 
-const WidgetHandle = (props: BoxProps) => {
+export type WidgetHandleProps = BoxProps;
+
+const WidgetHandle = (props: WidgetHandleProps) => {
 	const draggableContext = useDraggableWidget();
 	if (!draggableContext) {
 		return null;

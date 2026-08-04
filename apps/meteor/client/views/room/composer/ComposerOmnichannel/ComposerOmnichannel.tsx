@@ -11,7 +11,9 @@ import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
-const ComposerOmnichannel = (props: ComposerMessageProps) => {
+export type ComposerOmnichannelProps = ComposerMessageProps;
+
+const ComposerOmnichannel = (props: ComposerOmnichannelProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const room = useOmnichannelRoom();

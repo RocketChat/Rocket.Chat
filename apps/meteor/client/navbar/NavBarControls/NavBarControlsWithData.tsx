@@ -11,7 +11,9 @@ import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOm
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
+export type NavBarControlsWithDataProps = NavBarControlsMenuProps;
+
+const NavBarControlsWithData = (props: NavBarControlsWithDataProps) => {
 	const { t } = useTranslation();
 	const callAction = useMediaCallAction();
 

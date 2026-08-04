@@ -20,7 +20,9 @@ function getAriaDescribedbyForPassword(
 	return [passwordVerifierId, !allowPasswordChange && `${passwordId}-hint`, error && `${passwordId}-error`].filter(Boolean).join(' ');
 }
 
-const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
+export type ChangePasswordProps = AllHTMLAttributes<HTMLFormElement>;
+
+const ChangePassword = (props: ChangePasswordProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

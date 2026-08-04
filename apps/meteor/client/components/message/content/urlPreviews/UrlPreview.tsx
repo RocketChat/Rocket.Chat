@@ -7,7 +7,9 @@ import UrlPreviewResolver from './UrlPreviewResolver';
 import { useCollapse } from '../../hooks/useCollapse';
 import CollapsibleContent from '../collapsible/CollapsibleContent';
 
-const UrlPreview = (props: UrlPreviewMetadata) => {
+export type UrlPreviewProps = UrlPreviewMetadata;
+
+const UrlPreview = (props: UrlPreviewProps) => {
 	const autoLoadMedia = useAttachmentAutoLoadEmbedMedia();
 	const [collapsed, toggleCollapse] = useCollapse(!autoLoadMedia);
 	const { t } = useTranslation();

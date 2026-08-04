@@ -4,7 +4,9 @@ import type { ComponentProps } from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 
-const JoinRoomsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type JoinRoomsCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+
+const JoinRoomsCard = (props: JoinRoomsCardProps) => {
 	const t = useTranslation();
 
 	const router = useRouter();

@@ -26,7 +26,9 @@ const customAlignTop = css`
 	}
 `;
 
-const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
+export type ChatsTableRowProps = IOmnichannelRoomWithDepartment;
+
+const ChatsTableRow = (room: ChatsTableRowProps) => {
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();

@@ -3,7 +3,9 @@ import type { ComponentProps } from 'react';
 
 import UserCardDialog from './UserCardDialog';
 
-const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
+export type UserCardSkeletonProps = ComponentProps<typeof UserCardDialog>;
+
+const UserCardSkeleton = (props: UserCardSkeletonProps) => {
 	return (
 		<UserCardDialog {...props}>
 			<Box>
