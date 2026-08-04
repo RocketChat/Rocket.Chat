@@ -1,33 +1,31 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ConferencePreflight from './ConferencePreflight';
 
-const onJoin = jest.fn();
-const rename = jest.fn(() => ({ success: true }) as any);
+const onConfirm = jest.fn();
+const onCancel = jest.fn();
 
 const bothDevices = { mic: true, cam: true };
 
 const renderPreflight = (props: Partial<Parameters<typeof ConferencePreflight>[0]> = {}) =>
 	render(
 		<ConferencePreflight
-			callId='call-id'
 			name='general'
-			canRename={false}
-			placing={false}
+			confirm='join'
+			canName={false}
 			capabilities={bothDevices}
-			onJoin={onJoin}
+			onConfirm={onConfirm}
+			onCancel={onCancel}
 			{...props}
 		/>,
-		{
-			wrapper: mockAppRoot().withJohnDoe().withEndpoint('POST', '/v1/video-conference.rename', rename).build(),
-		},
+		{ wrapper: mockAppRoot().withJohnDoe().build() },
 	);
 
 beforeEach(() => {
-	onJoin.mockClear();
-	rename.mockClear();
+	onConfirm.mockClear();
+	onCancel.mockClear();
 	localStorage.clear();
 });
 
@@ -39,14 +37,14 @@ it('shows what the call is called', async () => {
 
 // The whole point of waiting here: the choices are what the provider's URL is built from, so they have to reach
 // the join rather than being applied afterwards.
-it('joins with the devices as they were left', async () => {
+it('confirms with the devices as they were left', async () => {
 	renderPreflight();
 
 	await userEvent.click(await screen.findByRole('button', { name: 'Mic_on' }));
 	await userEvent.click(screen.getByRole('button', { name: 'Cam_off' }));
 	await userEvent.click(screen.getByRole('button', { name: 'Join_call' }));
 
-	expect(onJoin).toHaveBeenCalledWith({ mic: false, cam: true });
+	expect(onConfirm).toHaveBeenCalledWith({ mic: false, cam: true }, 'general');
 });
 
 it('arrives muted and unseen unless told otherwise', async () => {
@@ -54,7 +52,7 @@ it('arrives muted and unseen unless told otherwise', async () => {
 
 	await userEvent.click(await screen.findByRole('button', { name: 'Join_call' }));
 
-	expect(onJoin).toHaveBeenCalledWith({ mic: true, cam: false });
+	expect(onConfirm).toHaveBeenCalledWith({ mic: true, cam: false }, 'general');
 });
 
 // A device the provider can't be told about is not something to offer a switch for.
@@ -70,7 +68,18 @@ it('reports a device the provider cannot be told about as off', async () => {
 
 	await userEvent.click(await screen.findByRole('button', { name: 'Join_call' }));
 
-	expect(onJoin).toHaveBeenCalledWith({ mic: true, cam: false });
+	expect(onConfirm).toHaveBeenCalledWith({ mic: true, cam: false }, 'general');
+});
+
+// This screen exists precisely because the user may not want the call after all, so leaving is a click away
+// rather than a window they have to find the close button on.
+it('can be walked away from', async () => {
+	renderPreflight();
+
+	await userEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
+
+	expect(onCancel).toHaveBeenCalled();
+	expect(onConfirm).not.toHaveBeenCalled();
 });
 
 describe('naming the call', () => {
@@ -82,59 +91,82 @@ describe('naming the call', () => {
 	});
 
 	it('starts from what the call is called today', async () => {
-		renderPreflight({ canRename: true });
+		renderPreflight({ canName: true });
 
 		expect(await screen.findByLabelText('Call_name')).toHaveValue('general');
 	});
 
-	it('names the call before joining it', async () => {
-		renderPreflight({ canRename: true });
+	it('hands the chosen name out with the devices', async () => {
+		renderPreflight({ canName: true });
 
 		await userEvent.clear(await screen.findByLabelText('Call_name'));
 		await userEvent.type(screen.getByLabelText('Call_name'), 'Release planning');
 		await userEvent.click(screen.getByRole('button', { name: 'Join_call' }));
 
-		await waitFor(() => expect(rename).toHaveBeenCalledWith({ callId: 'call-id', title: 'Release planning' }));
-		expect(onJoin).toHaveBeenCalled();
+		expect(onConfirm).toHaveBeenCalledWith({ mic: true, cam: false }, 'Release planning');
 	});
 
-	it('says nothing to the server when the name was left alone', async () => {
-		renderPreflight({ canRename: true });
-
-		await userEvent.click(await screen.findByRole('button', { name: 'Join_call' }));
-
-		expect(rename).not.toHaveBeenCalled();
-		expect(onJoin).toHaveBeenCalled();
-	});
-
-	// Naming is not worth failing the join over — the call is what they actually asked for.
-	it('joins anyway when the name would not take', async () => {
-		rename.mockImplementationOnce(() => {
-			throw new Error('error-not-allowed');
-		});
-		renderPreflight({ canRename: true });
+	// Emptying the field is not asking for a nameless call — it falls back to what the call is called already.
+	it('keeps the current name when the field is emptied', async () => {
+		renderPreflight({ canName: true });
 
 		await userEvent.clear(await screen.findByLabelText('Call_name'));
-		await userEvent.type(screen.getByLabelText('Call_name'), 'Release planning');
 		await userEvent.click(screen.getByRole('button', { name: 'Join_call' }));
 
-		await waitFor(() => expect(onJoin).toHaveBeenCalled());
+		expect(onConfirm).toHaveBeenCalledWith(expect.anything(), 'general');
 	});
 });
 
-// Creating a direct call is not asking anyone to answer it: the caller lands here first, and going in is what
+// No self-view: all a provider can be told is whether to start with the camera on, not which camera, so a preview
+// would promise a choice this screen cannot make. It says what will happen instead.
+describe('the camera', () => {
+	it('says it is off, when it is', async () => {
+		renderPreflight();
+
+		expect(await screen.findByText('Your_camera_is_turned_off')).toBeInTheDocument();
+	});
+
+	it('says it will be on, and where the devices are chosen', async () => {
+		renderPreflight();
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Cam_off' }));
+
+		expect(screen.getByText('Your_camera_will_be_on')).toBeInTheDocument();
+		expect(screen.getByText('Which_devices_are_used_is_chosen_in_the_call')).toBeInTheDocument();
+		expect(screen.queryByText('Your_camera_is_turned_off')).not.toBeInTheDocument();
+	});
+
+	it('shows no preview of it either way', async () => {
+		const { container } = renderPreflight();
+
+		expect(await screen.findByText('Your_camera_is_turned_off')).toBeInTheDocument();
+		expect(container.querySelector('video')).toBeNull();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Cam_off' }));
+
+		expect(container.querySelector('video')).toBeNull();
+	});
+});
+
+// Creating a direct call is not asking anyone to answer it: the caller lands here first, and confirming is what
 // rings the other side. The screen says so, and the button is the call rather than a join.
-describe('placing the call', () => {
-	it('says the other side has not been called yet', async () => {
-		renderPreflight({ placing: true, name: 'Alice Attali' });
+describe('what confirming does', () => {
+	it('calls the person, when that is what it is', async () => {
+		renderPreflight({ confirm: 'call', name: 'Alice Attali' });
 
 		expect(await screen.findByText('__name__will_be_notified_when_you_start_the_call')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Call__name__' })).toBeInTheDocument();
-		expect(screen.queryByRole('button', { name: 'Join_call' })).not.toBeInTheDocument();
 	});
 
-	it('offers a plain join for a call that is already under way', async () => {
-		renderPreflight({ name: 'Alice Attali' });
+	it('starts a conference that does not exist yet', async () => {
+		renderPreflight({ confirm: 'start' });
+
+		expect(await screen.findByRole('button', { name: 'Start_call' })).toBeInTheDocument();
+		expect(screen.queryByText('__name__will_be_notified_when_you_start_the_call')).not.toBeInTheDocument();
+	});
+
+	it('joins one that is already under way', async () => {
+		renderPreflight();
 
 		expect(await screen.findByRole('button', { name: 'Join_call' })).toBeInTheDocument();
 		expect(screen.queryByText('__name__will_be_notified_when_you_start_the_call')).not.toBeInTheDocument();

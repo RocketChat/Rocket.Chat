@@ -10,11 +10,20 @@ Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (requires `Discussion
 
 ## Opening a Conference
 
-1. `VideoConfManager.joinCall(callId)` emits `call/join`. Starting a group call (`startCall`) funnels into `joinCall`, so both paths behave the same.
-   - **Persistent chat enabled** — it emits `{ callId }` and posts nothing: the conference page joins for itself, once its [preflight](#the-preflight-screen) has been confirmed.
-   - **Disabled** — it posts `POST /v1/video-conference.join` first and emits `{ url, callId, providerName }`, the pre-existing behavior.
-2. `VideoConfProvider` handles `call/join`, opening `/conference/:id` (absolute URL) with persistent chat on and the provider URL without it.
-3. `useVideoConfOpenCall` opens the call window. On desktop, `openInternalVideoChatWindow` takes over.
+**Placing a call** (`startCall`) with persistent chat on posts *nothing*. It opens the call window at
+`/conference/new?rid=…`, and the conference is created there, by the [preflight](#the-preflight-screen). Without
+persistent chat it goes through `VideoConfManager.startCall` as it always has.
+
+**Joining one that exists** (`joinCall`) emits `call/join`:
+
+- **Persistent chat enabled** — `{ callId }`, and again nothing is posted: the conference page joins for itself
+  once its preflight is confirmed.
+- **Disabled** — `POST /v1/video-conference.join` first, then `{ url, callId, providerName }`, the pre-existing
+  behavior.
+
+`VideoConfProvider` handles `call/join` by opening `/conference/:id` (absolute URL) with persistent chat on, or
+the provider URL without it, and `useVideoConfOpenCall` opens the window. On desktop,
+`openInternalVideoChatWindow` takes over.
 
 ### When the call window opens
 
@@ -69,9 +78,24 @@ Opening the call window and being in the call are two different things, and the 
 until the user says otherwise is `ConferencePreflight`: a self-view, what the call is called, the devices they
 will arrive with, and — for whoever started a group call — a field to name it.
 
-This is what makes the rest of the flow honest. The window has to open on the click that asked for it, or the
-browser is entitled to refuse it; the *join*, though, is what turns mic and camera into the provider's URL and
-what marks the user as present in the call. So the join waits here:
+### Nothing exists until it is confirmed
+
+Clicking *call* in a room used to create the conference: a message in the room, a ring, a call in everyone's
+history — for a call the user might still walk away from. Now the click only opens the window, at
+`/conference/new?rid=…`, and `ConferenceStartPage` runs the preflight against the *room*: the name to offer comes
+from the reader's own subscription (which is what names a DM after the other person), the devices from
+`video-conference.capabilities`. Confirming posts `start` and then `join`, hands the join result to the conference
+page through the query cache, and replaces the URL with `/conference/:callId` — so a reload lands on the call
+rather than starting a second one, and the page doesn't ask the same questions again.
+
+**Cancel** sits beside the confirm button and closes the window. On the start screen that leaves no trace at all,
+because nothing was created; on a call that already exists it reports leaving first.
+
+### Why the join waits
+
+The window has to open on the click that asked for it, or the browser is entitled to refuse it; the *join*,
+though, is what turns mic and camera into the provider's URL and what marks the user as present in the call. So
+the join waits here:
 
 - `VideoConfManager.joinCall` posts nothing when persistent chat is on — it only opens the window. Posting there
   would throw away the URL it returns and count the user as present in a call they have not chosen to enter yet.
@@ -87,16 +111,24 @@ What is on offer is what the provider can be told: today the pair it takes, on o
 same bar the call's own controls occupy, so the control that mutes the mic doesn't move between deciding to join
 and being in the call. A native provider will put input and output selection in the same place.
 
-The camera preview is this window's own `getUserMedia` stream, stopped whenever the preview goes away — the
-camera turned off, or the screen unmounting on join. The provider asks for the same device the moment it loads, so
-a stream left running here would be a light the user can't explain and a device the call may not get. Failure to
-open one — no permission, no camera, a browser without `mediaDevices` — falls back to the same avatar the
-camera-off case shows, rather than to an error of its own.
+### No self-view, on purpose
+
+Where a preview would sit, the screen states what will happen: *your camera is turned off*, or *your camera will
+be on* plus where the devices themselves are chosen. There is no `getUserMedia`, so no permission prompt and no
+camera held open while the provider is about to ask for the same one.
+
+That is not a shortcut — a preview would be a lie about the control on offer. All a provider can be told is
+whether to start with camera and microphone on; *which* camera, which microphone, which speaker is settled inside
+the provider's own UI. A self-view would promise a choice this screen cannot make, and could show a camera the
+call never uses. A native provider, able to take a device per stream, is what makes a real preview honest — and
+the same tile is where it will go.
 
 ### Naming the call
 
-`POST /v1/video-conference.rename` sets the title of a running **group** conference, for the person who started
-it. A direct call has no title of its own — it is named after the other person, per viewer — and a title everyone
+A group conference is named on the way in: the field is prefilled with the room's name, and confirming carries it
+to `start` as the conference's title. For a call that already exists — its creator opening the preflight again —
+the same field goes to `POST /v1/video-conference.rename`, which sets the title of a running **group**
+conference, for the person who started it. A direct call has no title of its own — it is named after the other person, per viewer — and a title everyone
 in the call could rewrite is a title nobody can rely on.
 
 The name matters beyond the label: it is what the provider is told to call the meeting (`customCallTitle`, read
@@ -140,6 +172,7 @@ The panel is docked to the inline end, so its close button sits at the far end o
 | Condition | Renders | Auth |
 |-----------|---------|------|
 | `?callUrl=` present | `ConferencePage` — hands off to the provider's external URL | `guest` allowed |
+| `:id` is `new`, with `?rid=` | `ConferenceStartPage` — the preflight for a conference that doesn't exist yet | authentication required (`guest={false}`) |
 | `:id` present | `ConferenceEmbeddedPage` — call + chat split view | authentication required (`guest={false}`) |
 | neither | `ConferencePageError` | — |
 
@@ -649,7 +682,9 @@ and package-level jest.
 | The sidebar list: what it lists, what it leaves out, and the three-row cap | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
 | That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
+| That the camera is described rather than previewed | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
 | That the callee is rung when the caller arrives, and only once | `apps/meteor/tests/unit/server/services/video-conference/ringOnArrival.spec.ts` |
+| That opening the call window creates nothing, and confirming starts the call | `apps/meteor/client/views/conference/ConferenceStartPage.spec.tsx` |
 | What the preflight offers, what it joins with, and naming the call | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
 | That the join waits to be asked, and carries what it was asked with | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
 | That the main app opens the call window without joining for the user | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
