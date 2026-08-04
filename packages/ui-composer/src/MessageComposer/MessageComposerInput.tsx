@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
 const messageComposerInputStyle = css`
 	resize: none;
@@ -11,9 +11,9 @@ const messageComposerInputStyle = css`
 	}
 `;
 
-export type MessageComposerInputProps = BoxProps;
+export type MessageComposerInputProps = BoxProps & RefAttributes<HTMLTextAreaElement>;
 
-const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInputProps>(function MessageComposerInput(props, ref) {
+const MessageComposerInput = ({ ref, ...props }: MessageComposerInputProps) => {
 	return (
 		<Box
 			className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
@@ -31,6 +31,6 @@ const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInpu
 			{...props}
 		/>
 	);
-});
+};
 
 export default MessageComposerInput;

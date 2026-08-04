@@ -1,13 +1,11 @@
 import type { ButtonProps } from '@rocket.chat/fuselage';
 import { Button } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
-export type MessageFooterCalloutActionProps = ButtonProps;
+export type MessageFooterCalloutActionProps = ButtonProps & RefAttributes<HTMLButtonElement>;
 
-const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, MessageFooterCalloutActionProps>(
-	function MessageFooterCalloutAction(props, ref) {
-		return <Button marginInline={4} ref={ref} primary small flexShrink={0} {...props} />;
-	},
+const MessageFooterCalloutAction = ({ ref, ...props }: MessageFooterCalloutActionProps) => (
+	<Button marginInline={4} ref={ref} primary small flexShrink={0} {...props} />
 );
 
 export default MessageFooterCalloutAction;
