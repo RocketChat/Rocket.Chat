@@ -27,13 +27,7 @@ const SidebarFooterDefault = () => {
 	return (
 		<Footer>
 			<SidebarV2Divider />
-			<Box
-				paddingBlock={12}
-				height='x48'
-				width='auto'
-				className={sidebarFooterStyle}
-				dangerouslySetInnerHTML={dangerousLogo}
-			/>
+			<Box paddingBlock={12} height='x48' width='auto' className={sidebarFooterStyle} dangerouslySetInnerHTML={dangerousLogo} />
 			<SidebarFooterWatermark />
 		</Footer>
 	);

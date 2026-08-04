@@ -5252,6 +5252,57 @@ describe('[Users]', () => {
 		});
 	});
 
+	describe('[/api/v1/logout]', () => {
+		let user: TestUser<IUser>;
+
+		before(async () => {
+			user = await createUser();
+		});
+
+		after(() => deleteUser(user));
+
+		it('should logout the current user and invalidate the session', async () => {
+			const userCredentials = await login(user.username, password);
+
+			await request.post(api('logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200);
+
+			const meRes = await request.get(api('me')).set(userCredentials);
+			expect(meRes.statusCode).to.equal(401);
+		});
+
+		(IS_EE ? it : it.skip)('should remove the session from the list after logout', async () => {
+			const credentials = await login(user.username, password);
+			const authToken = credentials['X-Auth-Token'];
+
+			await request.post(api('login')).send({ resume: authToken }).expect(200);
+
+			const sessionsBefore = await request.get(api('sessions/list')).set(credentials).expect(200);
+			expect(sessionsBefore.body.sessions).to.have.lengthOf(1);
+			const sessionIdBefore = sessionsBefore.body.sessions[0]._id;
+
+			await request.post(api('logout')).set(credentials).expect(200);
+
+			const newCredentials = await login(user.username, password);
+			const newAuthToken = newCredentials['X-Auth-Token'];
+
+			await request.post(api('login')).send({ resume: newAuthToken }).expect(200);
+
+			const sessionsAfter = await request.get(api('sessions/list')).set(newCredentials).expect(200);
+			expect(sessionsAfter.body.sessions).to.have.lengthOf(1);
+			expect(sessionsAfter.body.sessions[0]._id).to.not.equal(sessionIdBefore);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('logout'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
 	describe('[/users.autocomplete]', () => {
 		after(() => updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']));
 
