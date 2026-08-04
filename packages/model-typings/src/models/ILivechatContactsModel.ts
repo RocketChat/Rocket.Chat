@@ -1,23 +1,10 @@
+import type { AtLeast, ILivechatContact, ILivechatContactChannel, ILivechatContactVisitorAssociation, ILivechatVisitor, } from '@rocket.chat/core-typings';
 import type {
-	AtLeast,
-	ILivechatContact,
-	ILivechatContactChannel,
-	ILivechatContactVisitorAssociation,
-	ILivechatVisitor,
-} from '@rocket.chat/core-typings';
-import type {
-	AggregationCursor,
-	Document,
-	FindCursor,
-	FindOneAndUpdateOptions,
-	FindOptions,
-	UpdateFilter,
-	UpdateOptions,
-	UpdateResult,
-} from 'mongodb';
+	AggregationCursor, Document, FindCursor, FindOneAndUpdateOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	insertContact(
@@ -33,10 +20,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact | null>;
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
-	findPaginatedContacts(
-		search: { searchText?: string; unknown?: boolean },
-		options?: FindOptions<ILivechatContact>,
-	): FindPaginated<FindCursor<ILivechatContact>>;
+	findPaginatedContacts<T extends Document = ILivechatContact, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(search: { searchText?: string; unknown?: boolean }, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 	updateLastChatById(
 		contactId: string,
 		visitor: ILivechatContactVisitorAssociation,
@@ -44,21 +28,14 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<UpdateResult>;
 	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
 	findContactByEmailAndContactManager(email: string): Promise<Pick<ILivechatContact, 'contactManager'> | null>;
-	findOneByVisitor<T extends Document = ILivechatContact>(
-		visitor: ILivechatContactVisitorAssociation,
-		options?: FindOptions<ILivechatContact>,
-	): Promise<T | null>;
+	findOneByVisitor<T extends Document = ILivechatContact, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitor: ILivechatContactVisitorAssociation, options?: O): Promise<DocumentWithProjection<T, O> | null>;
 	isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean>;
 	updateFromUpdaterByAssociation(
 		visitor: ILivechatContactVisitorAssociation,
 		contactUpdater: Updater<ILivechatContact>,
 		options?: UpdateOptions,
 	): Promise<UpdateResult>;
-	findSimilarVerifiedContacts(
-		channel: Pick<ILivechatContactChannel, 'field' | 'value'>,
-		originalContactId: string,
-		options?: FindOptions<ILivechatContact>,
-	): Promise<ILivechatContact[]>;
+	findSimilarVerifiedContacts<T extends Document = ILivechatContact, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(channel: Pick<ILivechatContactChannel, 'field' | 'value'>, originalContactId: string, options?: O): Promise<DocumentWithProjection<T, O>[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
 	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number>;
@@ -77,7 +54,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }>;
 	disableByVisitorId(visitorId: string): Promise<UpdateResult | Document>;
 	disableByContactId(contactId: string): Promise<UpdateResult>;
-	findOneEnabledById(_id: ILivechatContact['_id'], options?: FindOptions<ILivechatContact>): Promise<ILivechatContact | null>;
-	findOneEnabledById<P extends Document = ILivechatContact>(_id: P['_id'], options?: FindOptions<P>): Promise<P | null>;
-	findOneEnabledById(_id: ILivechatContact['_id'], options?: any): Promise<ILivechatContact | null>;
+	findOneEnabledById<P extends Document = ILivechatContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(_id: ILivechatContact['_id'], options?: O): Promise<DocumentWithProjection<P, O> | null>;
 }
