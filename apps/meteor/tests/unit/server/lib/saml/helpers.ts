@@ -1,4 +1,4 @@
-import type { SAMLDocumentType, SAMLPOSTEnvelope, SAMLRedirectEnvelope } from '../../../../../server/lib/saml/definition/SAMLEnvelope';
+import type { SAMLDocumentType, SAMLPOSTEnvelope, SAMLRedirectEnvelope } from '../../../../../ee/server/lib/saml/definition/SAMLEnvelope';
 
 export function makeLogoutEnvelope<T extends SAMLDocumentType>(
 	type: T,

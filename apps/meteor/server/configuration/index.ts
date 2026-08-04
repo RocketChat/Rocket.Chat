@@ -9,7 +9,7 @@ import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
 import { configurePassport } from './configurePassport';
 import { configureSMTP } from './configureSMTP';
-import { configureLDAP } from './ldap';
+import { configureLDAP } from '../../ee/server/configuration/ldapCore';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../settings/CachedSettings';

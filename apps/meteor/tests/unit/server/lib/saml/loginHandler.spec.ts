@@ -25,7 +25,10 @@ const samlUtilsMock = {
 };
 
 const handler = sinon.stub();
-proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
+proxyquire.noCallThru().load('../../../../../ee/server/lib/saml/loginHandler', {
+	'@rocket.chat/license': {
+		License: { hasModule: () => true },
+	},
 	'@rocket.chat/models': {
 		CredentialTokens: { removeById },
 	},
@@ -46,10 +49,10 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
 	},
-	'../2fa/code': { getUserForCheck },
-	'../oauth/twoFactorAuth': { doesUserRequire2FA },
-	'../i18n': { i18n: { t: sinon.stub().returns('') } },
-	'../logger/system': { SystemLogger: { error: sinon.stub() } },
+	'../../../../server/lib/2fa/code': { getUserForCheck },
+	'../../../../server/lib/oauth/twoFactorAuth': { doesUserRequire2FA },
+	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('') } },
+	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 
 describe('SAML loginHandler', () => {
