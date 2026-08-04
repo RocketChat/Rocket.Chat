@@ -11,6 +11,7 @@ import {
 	isVideoConfListProps,
 	isVideoConfAddParticipantsProps,
 	isVideoConfDeclineProps,
+	isVideoConfRenameProps,
 	isVideoConfShareChatProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
@@ -449,6 +450,39 @@ API.v1.post(
 		const added = await VideoConf.addMembers(userId, callId, users);
 
 		return API.v1.success({ added });
+	},
+);
+
+API.v1.post(
+	'video-conference.rename',
+	{
+		authRequired: true,
+		body: isVideoConfRenameProps,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, title } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await canAccessConference(call, userId)) || !userId) {
+			return API.v1.failure('invalid-params');
+		}
+
+		// Whether this particular user may *name* the call is the service's call to make — access is only the
+		// question of whether they may be here at all.
+		await VideoConf.renameCall(userId, callId, title);
+
+		return API.v1.success();
 	},
 );
 

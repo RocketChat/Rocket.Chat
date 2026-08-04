@@ -25,6 +25,9 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 
 	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
+	// The conference page joins for itself, after its preflight, so the manager must not do it on the way there.
+	useEffect(() => VideoConfManager.setPersistentChat(persistentChatEnabled), [persistentChatEnabled]);
+
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
@@ -32,10 +35,11 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 				// beside the conference's chat — instead of handing the user off to the provider's own URL.
 				const target = persistentChatEnabled
 					? handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName)
-					: handleOpenCall(url, providerName);
+					: handleOpenCall(url ?? '', providerName);
 
-				// The join has already been posted by now, so the user counts as being in the call. If that window
-				// goes away before it can report its own departure, this is what does it for them.
+				// Whoever posts the join — this window for a provider URL, the conference page after its preflight —
+				// the user then counts as being in the call. If that window goes away before it can report its own
+				// departure, this is what does it for them.
 				watchCallWindow(callId, target);
 			}),
 		[handleOpenCall, router, persistentChatEnabled, watchCallWindow],

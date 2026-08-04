@@ -11,6 +11,7 @@ import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
+import ConferencePreflight from './ConferencePreflight';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
 import { useCallOutcome } from './hooks/useCallOutcome';
@@ -55,7 +56,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const setModal = useSetModal();
 
 	useEffect(() => {
-		if (!outcome) {
+		// Not while the user is still on the preflight: they are deciding how to arrive, and "nobody answered —
+		// stay, ring again or leave" is a question about a call they are already in.
+		if (!outcome || !conference.url) {
 			return;
 		}
 
@@ -74,7 +77,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		// Anything that resolves the wait — someone answering, a fresh ring, the user choosing — clears `outcome`,
 		// and should take the modal down with it.
 		return () => setModal(null);
-	}, [outcome, others, call.canRing, callId, onRang, onDismiss, leaveNow, setModal]);
+	}, [outcome, others, call.canRing, callId, conference.url, onRang, onDismiss, leaveNow, setModal]);
 
 	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -104,12 +107,31 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		return <ConferenceUnauthorizedPage />;
 	}
 
+	if (conference.error) {
+		return <ConferencePageError />;
+	}
+
 	if (conference.loading) {
 		return <PageLoading />;
 	}
 
-	if (conference.error || !conference.url) {
-		return <ConferencePageError />;
+	// Not in the call yet: the user says how they want to arrive, and joining is what turns that into the
+	// provider's URL. Waiting for the conference to load first means the name and the devices on offer are the
+	// real ones.
+	if (!conference.url) {
+		if (room.loading) {
+			return <PageLoading />;
+		}
+
+		return (
+			<ConferencePreflight
+				callId={callId}
+				name={call.name}
+				canRename={call.canRename}
+				capabilities={call.capabilities}
+				onJoin={conference.join}
+			/>
+		);
 	}
 
 	return (

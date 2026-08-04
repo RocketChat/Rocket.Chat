@@ -27,7 +27,8 @@ type IncomingDirectCall = DirectCallParams & {
 
 type CurrentCallParams = {
 	callId: string;
-	url: string;
+	/** Absent when the call window joins for itself — see `joinCall`. */
+	url?: string;
 	providerName?: string;
 };
 
@@ -89,6 +90,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	private dismissedCalls: Set<string>;
 
 	private _preferences: CallPreferences;
+
+	private _persistentChat = false;
 
 	private _capabilities: ProviderCapabilities;
 
@@ -386,6 +389,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this._logLevel = Math.max(0, Math.min(level, 2));
 	}
 
+	/**
+	 * Whether calls open the in-product conference page, which joins for itself once the user has said how they
+	 * want to arrive. Fed from the setting, because the manager decides whether to post the join.
+	 */
+	public setPersistentChat(enabled: boolean): void {
+		this._persistentChat = enabled;
+	}
+
 	public async joinCall(callId: string): Promise<void> {
 		this.debugLog(`[VideoConf] Joining call ${callId}.`);
 
@@ -396,6 +407,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				clearTimeout(data.acceptTimeout);
 			}
 			this.removeIncomingCall(callId);
+		}
+
+		// The conference page runs a preflight and joins from there, so joining here would both throw away the URL
+		// it returns and mark the user as present in a call they have not chosen to enter yet.
+		if (this._persistentChat) {
+			this.markCurrentCallJoined(callId);
+			this.emit('call/join', { callId });
+			return;
 		}
 
 		const params = {
@@ -418,15 +437,23 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			throw new Error('Failed to get video conference URL.');
 		}
 
-		// A caller who joins while still ringing is in the call, not waiting for it. Recording that is what stops
-		// the room from showing an outgoing popup for a call the user is already sitting in.
-		if (this.currentCallData?.callId === callId) {
-			this.currentCallData.joined = true;
-			this.emit('calling/changed');
-		}
+		this.markCurrentCallJoined(callId);
 
 		this.debugLog(`[VideoConf] Opening ${url}.`);
 		this.emit('call/join', { url, callId, providerName });
+	}
+
+	/**
+	 * A caller who joins while still ringing is in the call, not waiting for it. Recording that is what stops the
+	 * room from showing an outgoing popup for a call the user is already sitting in.
+	 */
+	private markCurrentCallJoined(callId: string): void {
+		if (this.currentCallData?.callId !== callId) {
+			return;
+		}
+
+		this.currentCallData.joined = true;
+		this.emit('calling/changed');
 	}
 
 	public abortCall(): void {

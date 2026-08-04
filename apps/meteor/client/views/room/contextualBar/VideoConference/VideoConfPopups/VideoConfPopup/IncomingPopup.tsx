@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
 	VideoConfPopup,
@@ -44,8 +44,11 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 		queryFn: async () => videoConfInfo({ callId: id }),
 	});
 
-	const showMic = Boolean(data?.capabilities?.mic);
-	const showCam = Boolean(data?.capabilities?.cam);
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there.
+	const preflight = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	const showMic = !preflight && Boolean(data?.capabilities?.mic);
+	const showCam = !preflight && Boolean(data?.capabilities?.cam);
 
 	// Without the room there is nothing to name the call after until the conference itself loads.
 	// Only group conferences carry a title, and `data` is still serialized here, so narrow structurally.

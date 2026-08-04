@@ -226,3 +226,62 @@ describe('ringing again after a dismissal', () => {
 		expect(incoming('call-repeat')?.dismissed).toBe(true);
 	});
 });
+
+// The conference page runs a preflight — mic, camera, and for a group call its name — and joins from there once
+// the user says how they want to arrive. Joining on the way to that screen would both throw away the URL it
+// returns and mark the user as present in a call they have not chosen to enter yet.
+describe('when the call window joins for itself', () => {
+	beforeEach(() => {
+		// The manager is a singleton and these mocks carry every earlier test's calls, which is what an assertion
+		// about something *not* being posted would otherwise read.
+		jest.clearAllMocks();
+		manager.userId = 'my-user';
+		(sdk.rest.post as jest.Mock).mockImplementation((endpoint: string) => {
+			if (endpoint === '/v1/video-conference.start') {
+				return Promise.resolve({ data: { type: 'direct', callId: 'new-call', calleeId: 'callee-1' } });
+			}
+			return Promise.resolve({ url: 'https://call.example', providerName: 'test' });
+		});
+		VideoConfManager.setPersistentChat(true);
+	});
+
+	afterEach(() => {
+		VideoConfManager.setPersistentChat(false);
+		if (manager.currentCallHandler) {
+			clearInterval(manager.currentCallHandler);
+			manager.currentCallHandler = undefined;
+		}
+		manager.currentCallData = undefined;
+	});
+
+	it('does not join on its behalf', async () => {
+		await VideoConfManager.joinCall('some-call');
+
+		expect(sdk.rest.post).not.toHaveBeenCalledWith('/v1/video-conference.join', expect.anything());
+	});
+
+	it('still opens the window for the call', async () => {
+		const joined = jest.fn();
+		VideoConfManager.on('call/join', joined);
+
+		await VideoConfManager.joinCall('some-call');
+
+		expect(joined).toHaveBeenCalledWith(expect.objectContaining({ callId: 'some-call' }));
+
+		VideoConfManager.off('call/join', joined);
+	});
+
+	// The caller is in the call window, not waiting in the room, which is what stops the room showing an
+	// outgoing popup for a call they are already sitting in.
+	it('still stops reporting the room as calling', async () => {
+		await VideoConfManager.startCall('room-1');
+
+		expect(VideoConfManager.isCalling()).toBe(false);
+	});
+
+	it('still rings the callee', async () => {
+		await VideoConfManager.startCall('room-1');
+
+		expect(publishedActions()).toContain('call');
+	});
+});
