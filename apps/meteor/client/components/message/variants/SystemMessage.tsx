@@ -31,7 +31,7 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import { useMessageListFormatDateAndTime, useMessageListFormatTime, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
 
 const hoverUnderlineStyle = css`
 	&:hover {
@@ -60,6 +60,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -100,7 +101,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						size='x18'
 						title=''
 						style={{ cursor: 'pointer' }}
-						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 						onClick={() => openUserInfo(message.u.username)}
 						{...triggerProps}
 					/>
@@ -114,7 +115,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						tabIndex={0}
 						aria-haspopup='dialog'
 						style={{ cursor: 'pointer' }}
-						onMouseEnter={(e) => openUserCard(e, user.username)}
+						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, user.username) : undefined}
 						onClick={() => openUserInfo(user.username)}
 						onKeyDown={(e) => {
 							if (e.key === 'Enter' || e.key === ' ') {

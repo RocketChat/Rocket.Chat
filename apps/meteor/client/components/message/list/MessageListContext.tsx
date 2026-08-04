@@ -21,6 +21,12 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
+	/**
+	 * Whether hovering an author opens the user card. Lists rendered inside the
+	 * contextual bar turn it off: the card is about as wide as the bar itself,
+	 * so it covers the row it was opened from, including its actions.
+	 */
+	hoverUserCardEnabled: boolean;
 	highlights?: {
 		highlight: string;
 		regex: RegExp;

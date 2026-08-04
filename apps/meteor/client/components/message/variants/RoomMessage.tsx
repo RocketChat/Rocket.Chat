@@ -78,6 +78,7 @@ const RoomMessage = ({
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const selecting = useIsSelecting();
 
@@ -128,7 +129,7 @@ const RoomMessage = ({
 						username={message.u.username}
 						title=''
 						size='x36'
-						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						{...triggerProps}
