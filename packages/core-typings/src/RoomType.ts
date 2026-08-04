@@ -1,1 +1,1 @@
-export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
+export type RoomType = 'c' | 'd' | 'p' | 'l';

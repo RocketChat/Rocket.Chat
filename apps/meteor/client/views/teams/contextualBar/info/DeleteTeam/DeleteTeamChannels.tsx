@@ -1,11 +1,11 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDeletionTable from './ChannelDeletionTable';
-import GenericModal from '../../../../../components/GenericModal';
 
-type DeleteTeamChannelsProps = {
+export type DeleteTeamChannelsProps = {
 	rooms: Serialized<IRoom>[];
 	onCancel: () => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
@@ -33,7 +33,7 @@ const DeleteTeamChannels = ({
 			onClose={onCancel}
 			confirmText={t('Continue')}
 		>
-			<Box withRichContent mbe={16}>
+			<Box withRichContent marginBlockEnd={16}>
 				<Box is='span' color='status-font-on-danger' fontWeight='bold'>
 					{t('Team_Delete_Channel_modal_content_danger')}{' '}
 				</Box>

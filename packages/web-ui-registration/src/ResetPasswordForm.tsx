@@ -1,7 +1,6 @@
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
 
-export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => {
 	const { t } = useTranslation();
 	const emailId = useId();
 	const formLabelId = useId();
@@ -23,7 +24,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		formState: { errors, isSubmitting },
 	} = useForm<{
 		email: string;
-	}>({ mode: 'onBlur' });
+	}>();
 
 	useEffect(() => {
 		if (forgotPasswordFormRef.current) {
@@ -40,13 +41,13 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			aria-labelledby={formLabelId}
 			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit((data) => {
-				mutateAsync({ email: data.email });
+				void mutateAsync({ email: data.email });
 			})}
 		>
-			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.resetPassword')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle id={formLabelId}>{t('registration.component.resetPassword')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={emailId}>
@@ -78,13 +79,13 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' mbs={24} icon='mail'>
+						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>
 				)}
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ButtonGroup>
 					<Button type='submit' loading={isSubmitting} primary>
 						{t('registration.page.resetPassword.sendInstructions')}
@@ -97,7 +98,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				>
 					{t('registration.page.register.back')}
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

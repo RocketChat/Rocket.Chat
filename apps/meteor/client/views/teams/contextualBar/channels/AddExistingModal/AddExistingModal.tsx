@@ -1,5 +1,17 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	Field,
+	FieldLabel,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -11,12 +23,13 @@ type AddExistingModalFormData = {
 	rooms: IRoom['_id'][];
 };
 
-type AddExistingModalProps = {
+export type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
 	reload?: () => void;
 };
 
+// TODO: Use GenericModal instead of Modal
 const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -49,13 +62,16 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 	);
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
-				<Field mbe={24}>
+		<Modal
+			aria-label={t('Team_Add_existing_channels')}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}
+		>
+			<ModalHeader>
+				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
+				<Field marginBlockEnd={24}>
 					<FieldLabel>{t('Channels')}</FieldLabel>
 					<Controller
 						control={control}
@@ -63,15 +79,15 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 						render={({ field: { value, onChange } }) => <RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} />}
 					/>
 				</Field>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!isDirty} type='submit' primary>
 						{t('Add')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

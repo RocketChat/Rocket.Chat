@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { e2e } from '../../../../app/e2e/client';
+import { e2e } from '../../../lib/e2ee';
 
 export const useE2EERoom = (rid: string) => {
 	const { data } = useQuery({

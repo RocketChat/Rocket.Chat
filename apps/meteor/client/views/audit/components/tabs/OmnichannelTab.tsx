@@ -1,18 +1,17 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
+import AutoCompleteAgent from '../../../omnichannel/components/AutoCompleteAgent';
 import type { AuditFields } from '../../hooks/useAuditForm';
 import VisitorAutoComplete from '../forms/VisitorAutoComplete';
 
-type OmnichannelTabProps = {
+export type OmnichannelTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
-const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElement => {
+const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: visitorField, fieldState: visitorFieldState } = useController({

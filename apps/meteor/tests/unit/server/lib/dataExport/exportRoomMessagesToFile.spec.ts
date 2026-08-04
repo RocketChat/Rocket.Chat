@@ -35,7 +35,7 @@ const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire
 				t: stubs.translateKey,
 			},
 		},
-		'../../../app/settings/server': {
+		'../../settings': {
 			settings: stubs.settings,
 		},
 	});
@@ -87,7 +87,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should correctly reference file when exporting a message object with an attachment as html', async () => {
-		const result = await exportMessageObject('html', messagesData[1], exportMessagesMock[1].file);
+		const result = await exportMessageObject('html', messagesData[1], [exportMessagesMock[1].file]);
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
@@ -100,7 +100,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('html', messagesData[2], exportMessagesMock[2].file);
+		const result = await exportMessageObject('html', messagesData[2], [exportMessagesMock[2].file]);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;
@@ -111,6 +111,75 @@ describe('Export - exportMessageObject', () => {
 				exportMessagesMock[2].file?.name
 			}">${translationPlaceholder}</a>\n</p>`,
 		);
+	});
+});
+
+describe('Export - exportMessageObject HTML escaping (XSS prevention)', () => {
+	const ts = new Date('2020-01-01T00:00:00.000Z');
+
+	it('should escape HTML in the message body when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: '<img src=x onerror="alert(1)">',
+			username: 'attacker',
+			ts,
+		});
+
+		expect(result).to.contain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+		expect(result).to.not.contain('<img src=x');
+	});
+
+	it('should escape HTML in the username when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: 'hello',
+			username: '<script>alert(1)</script>',
+			ts,
+		});
+
+		expect(result).to.contain('&lt;script&gt;alert(1)&lt;/script&gt;');
+		expect(result).to.not.contain('<script>');
+	});
+
+	it('should escape HTML inside italicized (system) messages when exporting as html', async () => {
+		const result = await exportMessageObject('html', {
+			msg: '<img src=x onerror=alert(1)>',
+			username: 'attacker',
+			ts,
+			type: 'wm',
+		});
+
+		expect(result).to.contain('<i>&lt;img src=x onerror=alert(1)&gt;</i>');
+		expect(result).to.not.contain('<img src=x');
+	});
+
+	it('should escape HTML in the attachment description and prevent href attribute breakout', async () => {
+		const result = await exportMessageObject(
+			'html',
+			{
+				msg: 'file',
+				username: 'attacker',
+				ts,
+				attachments: [
+					{
+						type: 'file',
+						title: '<img src=x onerror=alert(1)>',
+						title_link: '/file-upload/evil-id/x',
+					},
+				] as any,
+			},
+			[{ _id: 'evil-id', name: '"><img src=x onerror=alert(1)>.png' } as any],
+		);
+
+		expect(result).to.contain('&lt;img src=x');
+		expect(result).to.not.contain('<img src=x');
+		// the crafted filename must not break out of the href="" attribute
+		expect(result).to.not.contain('"><img');
+	});
+
+	it('should not escape plain JSON exports (escaping is html-only)', async () => {
+		const messageObject = { msg: '<b>x</b>', username: 'attacker', ts };
+		const result = await exportMessageObject('json', messageObject);
+
+		expect(result).to.equal(JSON.stringify(messageObject));
 	});
 });
 
@@ -154,5 +223,57 @@ describe('Export - exportRoomMessages', () => {
 		expect(result).to.have.property('messages').that.is.an('array').of.length(exportMessagesMock.length);
 		const messagesWithFiles = exportMessagesMock.filter((message) => message.file);
 		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
+	});
+
+	it('should export multiple files and filter out thumbnails', async () => {
+		const message = {
+			_id: faker.database.mongodbObjectId(),
+			rid: 'test-rid',
+			ts: new Date(),
+			u: { _id: faker.database.mongodbObjectId(), username: 'testuser' },
+			msg: 'Message with files',
+			files: [
+				{ _id: 'file-1', name: 'photo.jpg', type: 'image/jpeg', size: 500000 },
+				{ _id: 'file-2', name: 'doc.pdf', type: 'application/pdf', size: 10000 },
+				{ _id: 'thumb-1', name: 'photo_thumb.jpg', type: 'image/jpeg', size: 5000, typeGroup: 'thumb' },
+			],
+			attachments: [{ type: 'file', title: 'photo.jpg', title_link: '/file-upload/file-1/photo.jpg' }],
+		};
+
+		stubs.findPaginatedMessagesCursor.resolves([message]);
+		stubs.findPaginatedMessagesTotal.resolves(1);
+		stubs.findPaginatedMessages.returns({
+			cursor: { toArray: stubs.findPaginatedMessagesCursor },
+			totalCount: stubs.findPaginatedMessagesTotal(),
+		});
+
+		const result = await exportRoomMessages('test-rid', 'html', 0, 100, userData);
+
+		expect(result.uploads).to.have.length(2);
+		expect(result.uploads.some((f: { typeGroup?: string }) => f.typeGroup === 'thumb')).to.be.false;
+	});
+
+	it('should fallback to msg.file when msg.files is not available', async () => {
+		const message = {
+			_id: faker.database.mongodbObjectId(),
+			rid: 'test-rid',
+			ts: new Date(),
+			u: { _id: faker.database.mongodbObjectId(), username: 'testuser' },
+			msg: 'Old format message',
+			file: { _id: 'single-file', name: 'doc.pdf', type: 'application/pdf', size: 10000 },
+			attachments: [{ type: 'file', title: 'doc.pdf', title_link: '/file-upload/single-file/doc.pdf' }],
+		};
+
+		stubs.findPaginatedMessagesCursor.resolves([message]);
+		stubs.findPaginatedMessagesTotal.resolves(1);
+		stubs.findPaginatedMessages.returns({
+			cursor: { toArray: stubs.findPaginatedMessagesCursor },
+			totalCount: stubs.findPaginatedMessagesTotal(),
+		});
+
+		const result = await exportRoomMessages('test-rid', 'html', 0, 100, userData);
+
+		expect(result.uploads).to.have.length(1);
+		expect(result.uploads[0]._id).to.equal('single-file');
 	});
 });

@@ -1,3 +1,1 @@
-import { RealAppBridges } from './bridges';
-
-export { RealAppBridges };
+export * from './bridges';

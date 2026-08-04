@@ -5,20 +5,20 @@ import type { IUser } from './IUser';
  * IPostUserUpdated event
  */
 export interface IUserUpdateContext {
-    /**
-     * The user that was affected by
-     * update
-     */
-    user: IUser;
+	/**
+	 * The user that was affected by
+	 * update
+	 */
+	user: IUser;
 
-    /**
-     * The user that performed the
-     * updates
-     */
-    performedBy?: IUser;
+	/**
+	 * The user that performed the
+	 * updates
+	 */
+	performedBy?: IUser;
 
-    /**
-     * The user before the update
-     */
-    previousData?: IUser;
+	/**
+	 * The user before the update
+	 */
+	previousData?: IUser;
 }

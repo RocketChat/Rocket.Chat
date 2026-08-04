@@ -1,10 +1,10 @@
 {
-	"extends": "../../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
-		"allowJs": true, // TODO: Remove this line
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"types": ["jest", "node"]
 	},
-	"include": ["./src/**/*", "./definition", "../../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
+	"include": ["./src/**/*", "./definition"],
 	"exclude": ["./dist", "./ecosystem.config.js"]
 }

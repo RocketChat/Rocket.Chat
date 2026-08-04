@@ -1,0 +1,21 @@
+name: Setup Playwright
+description: 'Setup Playwright binaries and dependencies'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Cache Playwright binaries
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      id: cache-playwright
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
+        key: playwright-${{ runner.arch }}-${{ runner.os }}-1.52.0
+
+    - name: Install Playwright
+      shell: bash
+      if: steps.cache-playwright.outputs.cache-hit != 'true'
+      working-directory: .
+      run: npx playwright install --with-deps

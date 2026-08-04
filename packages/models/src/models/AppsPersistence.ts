@@ -8,7 +8,7 @@ export class AppsPersistenceModel extends BaseRaw<any> implements IAppsPersisten
 		super(db, 'apps_persistence');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {

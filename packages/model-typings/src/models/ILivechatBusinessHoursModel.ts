@@ -23,7 +23,7 @@ export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusines
 	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null>;
 	findActiveAndOpenBusinessHoursByDay(day: string, options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
-	insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any>;
+	insertOne(data: Omit<ILivechatBusinessHour, '_id' | '_updatedAt'>): Promise<any>;
 	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
 
 	findActiveBusinessHoursToOpen(

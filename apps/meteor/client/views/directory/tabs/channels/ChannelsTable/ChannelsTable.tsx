@@ -1,6 +1,15 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -9,15 +18,6 @@ import { useMemo, useState } from 'react';
 import ChannelsTableRow from './ChannelsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableBody,
-	GenericTableLoadingTable,
-} from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const ChannelsTable = () => {
@@ -43,7 +43,7 @@ const ChannelsTable = () => {
 					active={sortBy === 'usersCount'}
 					onClick={setSort}
 					sort='usersCount'
-					w='100px'
+					width='100px'
 				>
 					{t('Users')}
 				</GenericTableHeaderCell>,
@@ -54,7 +54,7 @@ const ChannelsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						w='150px'
+						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
@@ -66,13 +66,13 @@ const ChannelsTable = () => {
 						active={sortBy === 'lastMessage'}
 						onClick={setSort}
 						sort='lastMessage'
-						w='150px'
+						width='150px'
 					>
 						{t('Last_Message')}
 					</GenericTableHeaderCell>
 				),
 				mediaQuery && (
-					<GenericTableHeaderCell key='belongsTo' w='150px'>
+					<GenericTableHeaderCell key='belongsTo' width='150px'>
 						{t('Belongs_To')}
 					</GenericTableHeaderCell>
 				),

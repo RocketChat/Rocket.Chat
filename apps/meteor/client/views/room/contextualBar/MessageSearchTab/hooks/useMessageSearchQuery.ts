@@ -12,7 +12,7 @@ export const useMessageSearchQuery = ({
 	limit: number;
 	globalSearch: boolean;
 }) => {
-	const uid = useUserId() ?? undefined;
+	const uid = useUserId();
 	const room = useRoom();
 
 	const t = useTranslation();

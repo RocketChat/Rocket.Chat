@@ -1,4 +1,5 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { cronJobs } from '@rocket.chat/cron';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
@@ -6,12 +7,14 @@ import polka from 'polka';
 
 const PORT = process.env.PORT || 3031;
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'presence-service', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
+
+	await cronJobs.start(db);
 
 	api.setBroker(startBroker());
 

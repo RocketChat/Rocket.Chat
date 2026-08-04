@@ -1,11 +1,11 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
 import ChannelDesertionTable from '../../../ChannelDesertionTable';
 
-type RemoveUsersFirstStepProps = {
+export type RemoveUsersFirstStepProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: () => void;
@@ -41,7 +41,7 @@ const RemoveUsersFirstStep = ({
 			onConfirm={onConfirm}
 			{...props}
 		>
-			<Box mbe={24} fontScale='p2'>
+			<Box marginBlockEnd={24} fontScale='p2'>
 				{t('Select_the_channels_you_want_the_user_to_be_removed_from')}
 			</Box>
 			<ChannelDesertionTable

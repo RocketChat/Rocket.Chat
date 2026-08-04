@@ -5,11 +5,10 @@ import { useTranslation } from 'react-i18next';
 type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; linkHref?: never };
 type ButtonProps = { buttonTitle: string; buttonAction: () => void } | { buttonTitle?: never; buttonAction?: never };
 
-type GenericNoResultsProps = {
-	icon?: IconName;
+export type GenericNoResultsProps = {
+	icon?: IconName | null;
 	title?: string;
 	description?: string;
-	buttonTitle?: string;
 } & LinkProps &
 	ButtonProps;
 
@@ -25,9 +24,9 @@ const GenericNoResults = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>
+		<Box role='group' aria-label={t('No_results_found')} display='flex' height='100%' flexDirection='column' justifyContent='center'>
 			<States>
-				<StatesIcon name={icon} />
+				{icon && <StatesIcon name={icon} />}
 				<StatesTitle>{title || t('No_results_found')}</StatesTitle>
 				{description && <StatesSubtitle>{description}</StatesSubtitle>}
 				{buttonTitle && buttonAction && (

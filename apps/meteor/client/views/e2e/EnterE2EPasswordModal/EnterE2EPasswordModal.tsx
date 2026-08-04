@@ -1,0 +1,125 @@
+import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffect, useId, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
+
+const isInvalidE2EEPasswordError = (error: unknown): boolean => error instanceof DOMException && error.name === 'OperationError';
+
+export type EnterE2EPasswordModalProps = {
+	onConfirm: (password: string) => void | Promise<void>;
+	onClose: () => void;
+	onCancel: () => void;
+};
+
+const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswordModalProps) => {
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const [confirmResetPassword, setConfirmResetPassword] = useState(false);
+	const resetE2EPassword = useResetE2EPasswordMutation({ options: { onSettled: () => onClose() } });
+
+	const {
+		handleSubmit,
+		control,
+		setFocus,
+		setError,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			password: '',
+		},
+	});
+
+	const handleValidatePassword = handleSubmit(async ({ password }) => {
+		try {
+			await onConfirm(password);
+		} catch (error) {
+			if (isInvalidE2EEPasswordError(error)) {
+				setError('password', { message: t('Incorrect_encryption_password') });
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+			onClose();
+		}
+	});
+
+	const passwordInputId = useId();
+
+	useEffect(() => {
+		setFocus('password');
+	}, [setFocus]);
+
+	if (confirmResetPassword) {
+		return (
+			<GenericModal
+				variant='warning'
+				title={t('Reset_E2EE_password')}
+				icon='warning'
+				confirmText={t('Reset_E2EE_password')}
+				onClose={onClose}
+				onCancel={onClose}
+				onConfirm={() => resetE2EPassword.mutate()}
+			>
+				<Box is='p'>{t('Reset_E2EE_password_description')}</Box>
+			</GenericModal>
+		);
+	}
+
+	return (
+		<GenericModal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleValidatePassword} {...props} />}
+			variant='warning'
+			title={t('Enter_E2E_password')}
+			icon='warning'
+			cancelText={t('Do_It_Later')}
+			confirmText={t('Enable_encryption')}
+			onClose={onClose}
+			onCancel={onCancel}
+		>
+			<Box>{t('E2E_password_request_text')}</Box>
+			<FieldGroup marginBlockStart={24} width='full'>
+				<Field>
+					<FieldRow>
+						<Controller
+							name='password'
+							control={control}
+							rules={{ required: t('Invalid_pass') }}
+							render={({ field, fieldState: { error, invalid } }) => (
+								<PasswordInput
+									{...field}
+									error={error?.message}
+									aria-invalid={invalid ? 'true' : 'false'}
+									aria-required='true'
+									aria-describedby={error ? `${passwordInputId}-error` : undefined}
+									placeholder={t('Please_enter_E2EE_password')}
+								/>
+							)}
+						/>
+					</FieldRow>
+					{errors.password && (
+						<FieldError id={`${passwordInputId}-error`} role='alert'>
+							{errors.password.message}
+						</FieldError>
+					)}
+					<FieldRow alignSelf='end'>
+						<FieldLink
+							href='#'
+							target={undefined}
+							onClick={(e) => {
+								e.preventDefault();
+								setConfirmResetPassword(true);
+							}}
+						>
+							{t('Forgot_E2EE_Password')}
+						</FieldLink>
+					</FieldRow>
+				</Field>
+			</FieldGroup>
+		</GenericModal>
+	);
+};
+
+export default EnterE2EPasswordModal;

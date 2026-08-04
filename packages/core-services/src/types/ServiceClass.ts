@@ -1,8 +1,10 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
+
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import type { IApiService } from './IApiService';
 import type { IBroker, IBrokerNode } from './IBroker';
-import type { EventSignatures } from '../events/Events';
+import type { ClientAction, EventSignatures } from '../events/Events';
 import { asyncLocalStorage } from '../lib/asyncLocalStorage';
 
 export interface IServiceContext {
@@ -26,7 +28,7 @@ export interface IServiceContext {
 }
 
 export interface IServiceClass {
-	getName(): string | undefined;
+	getName(): string;
 	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
 	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
@@ -37,6 +39,11 @@ export interface IServiceClass {
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
+	onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions?: ClientAction[],
+	): void;
 
 	isInternal(): boolean;
 
@@ -46,13 +53,17 @@ export interface IServiceClass {
 }
 
 export abstract class ServiceClass implements IServiceClass {
-	protected name?: string;
+	protected abstract name: string;
 
 	protected events = new EventEmitter();
+
+	protected settings = new EventEmitter();
 
 	protected internal = false;
 
 	protected api?: IApiService;
+
+	protected settingListenerActive = false;
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -71,9 +82,10 @@ export abstract class ServiceClass implements IServiceClass {
 
 	removeAllListeners(): void {
 		this.events.removeAllListeners();
+		this.settings.removeAllListeners();
 	}
 
-	getName(): string | undefined {
+	getName(): string {
 		return this.name;
 	}
 
@@ -91,6 +103,40 @@ export abstract class ServiceClass implements IServiceClass {
 
 	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
 		this.events.emit(event, ...args);
+	}
+
+	private registerEventListener() {
+		if (this.settingListenerActive) {
+			return;
+		}
+
+		this.settingListenerActive = true;
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			const { _id } = setting;
+
+			this.settings.emit(_id, { clientAction, setting });
+		});
+	}
+
+	public onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions: ClientAction[] = ['removed'],
+	): void {
+		this.registerEventListener();
+
+		this.settings.on(settingId, async ({ clientAction, setting }: { clientAction: ClientAction; setting: ISetting }): Promise<void> => {
+			if (ignoreActions?.includes(clientAction)) {
+				return;
+			}
+
+			try {
+				await cb({ clientAction, setting });
+			} catch {
+				// noop
+			}
+		});
 	}
 
 	async created(): Promise<void> {
@@ -111,5 +157,5 @@ export abstract class ServiceClass implements IServiceClass {
  * Services that run on their own node should use @ServiceClass instead.
  */
 export abstract class ServiceClassInternal extends ServiceClass {
-	protected internal = true;
+	protected override internal = true;
 }

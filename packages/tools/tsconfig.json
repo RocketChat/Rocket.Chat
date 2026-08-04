@@ -1,9 +1,10 @@
 {
-	"extends": "../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"lib": ["es2022"]
 	},
 	"include": ["./src/**/*"]
 }

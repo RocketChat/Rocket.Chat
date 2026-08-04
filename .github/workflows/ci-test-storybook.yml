@@ -1,0 +1,62 @@
+name: Test Storybook
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      deno-version:
+        required: true
+        type: string
+
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+      NPM_TOKEN:
+        required: false
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    name: Test Storybook
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      - uses: ./.github/actions/restore-packages
+
+      - uses: ./.github/actions/setup-playwright
+
+      - name: Run tests
+        run: yarn test-storybook
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: 1
+
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          flags: unit
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          # tests don't re-run on the develop push, so the merge queue run (same SHA
+          # that lands on develop) provides the develop coverage baseline
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}

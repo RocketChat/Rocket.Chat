@@ -13,14 +13,13 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
+import { useDefaultSettingFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
@@ -76,7 +75,7 @@ const AdminFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<Box>
 						<Margins block={24}>
 							<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
@@ -102,9 +101,9 @@ const AdminFeaturePreviewPage = () => {
 														disabled={feature.disabled || !allowFeaturePreviewSetting.value}
 													/>
 												</FieldRow>
-												{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
+												{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
 											</Field>
-											{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
+											{feature.imageUrl && <Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />}
 										</Fragment>
 									))}
 								</FieldGroup>

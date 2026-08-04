@@ -1,12 +1,5 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import type { WebdavSortOptions } from './WebdavFilePickerModal';
-import { getNodeFileSize } from './lib/getNodeFileSize';
-import { getNodeIconType } from './lib/getNodeIconType';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -15,10 +8,16 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-} from '../../../../components/GenericTable';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import type { WebdavSortOptions } from './WebdavFilePickerModal';
+import { getNodeFileSize } from './lib/getNodeFileSize';
+import { getNodeIconType } from './lib/getNodeIconType';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { timeAgo } from '../../../../lib/utils/timeAgo';
 
-type WebdavFilePickerTableProps = {
+export type WebdavFilePickerTableProps = {
 	webdavNodes: IWebdavNode[];
 	sortBy: string;
 	sortDirection: 'asc' | 'desc';
@@ -27,14 +26,7 @@ type WebdavFilePickerTableProps = {
 	isLoading: boolean;
 };
 
-const WebdavFilePickerTable = ({
-	webdavNodes,
-	sortBy,
-	sortDirection,
-	onSort,
-	onNodeClick,
-	isLoading,
-}: WebdavFilePickerTableProps): ReactElement => {
+const WebdavFilePickerTable = ({ webdavNodes, sortBy, sortDirection, onSort, onNodeClick, isLoading }: WebdavFilePickerTableProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -76,8 +68,8 @@ const WebdavFilePickerTable = ({
 
 								return (
 									<GenericTableRow key={index} onClick={(): void => onNodeClick(webdavNode)} tabIndex={index} role='link' action>
-										<GenericTableCell fontScale='p2' color='default' w='x200' display='flex' alignItems='center'>
-											<Icon mie={4} size='x20' name={icon} />
+										<GenericTableCell fontScale='p2' color='default' width='x200' display='flex' alignItems='center'>
+											<Icon marginInlineEnd={4} size='x20' name={icon} />
 											<Box withTruncatedText>{webdavNode.basename}</Box>
 										</GenericTableCell>
 										<GenericTableCell fontScale='p2' color='default'>

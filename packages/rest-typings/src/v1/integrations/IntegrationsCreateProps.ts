@@ -1,7 +1,6 @@
 import type { OutgoingIntegrationEvent, IntegrationScriptEngine } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type IntegrationsCreateProps =
 	| {
@@ -10,6 +9,7 @@ export type IntegrationsCreateProps =
 			channel: string;
 			overrideDestinationChannelEnabled?: boolean;
 			scriptEnabled: boolean;
+			skipTranspile?: boolean;
 			script?: string;
 			name: string;
 			enabled: boolean;
@@ -31,6 +31,7 @@ export type IntegrationsCreateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
+			skipTranspile?: boolean;
 			script?: string;
 			runOnEdits?: boolean;
 
@@ -69,6 +70,10 @@ const integrationsCreateSchema = {
 				scriptEnabled: {
 					type: 'boolean',
 					nullable: false,
+				},
+				skipTranspile: {
+					type: 'boolean',
+					nullable: true,
 				},
 				overrideDestinationChannelEnabled: {
 					type: 'boolean',
@@ -157,6 +162,10 @@ const integrationsCreateSchema = {
 				scriptEnabled: {
 					type: 'boolean',
 					nullable: false,
+				},
+				skipTranspile: {
+					type: 'boolean',
+					nullable: true,
 				},
 				script: {
 					type: 'string',

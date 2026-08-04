@@ -1,5 +1,0 @@
-/dist
-/storybook-static
-/node_modules
-!/.eslintrc.js
-!/.storybook

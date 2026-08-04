@@ -1,9 +1,8 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import NewImportPage from './NewImportPage';
 
 export default {
-	title: 'Admin/Import/NewImportPage',
 	component: NewImportPage,
 	parameters: {
 		layout: 'fullscreen',
@@ -11,5 +10,7 @@ export default {
 	},
 } satisfies Meta<typeof NewImportPage>;
 
-export const Default: StoryFn<typeof NewImportPage> = () => <NewImportPage />;
-Default.storyName = 'NewImportPage';
+export const Default: StoryObj<typeof NewImportPage> = {
+	render: () => <NewImportPage />,
+	name: 'NewImportPage',
+};

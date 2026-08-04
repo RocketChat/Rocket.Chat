@@ -1,24 +1,26 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
+
+import { GO_ROCKET_CHAT_PREFIX } from './links';
 
 export type Item = {
 	i18nLabel: string;
-	href?: LocationPathname | `https://go.rocket.chat/i/${string}`;
+	href?: LocationPathname | `${typeof GO_ROCKET_CHAT_PREFIX}${string}`;
 	icon?: IconName;
 	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: () => boolean;
 	pathSection?: string;
 	name?: string;
 	externalUrl?: boolean;
-	badge?: () => ReactElement;
+	badge?: () => ReactNode;
 };
 export type SidebarDivider = { divider: boolean; i18nLabel: string };
 export type SidebarItem = Item | SidebarDivider;
 export const isSidebarItem = (item: SidebarItem): item is Item => !('divider' in item);
 
-export const isGoRocketChatLink = (link: string): link is `https://go.rocket.chat/i/${string}` =>
-	link.startsWith('https://go.rocket.chat/i/');
+export const isGoRocketChatLink = (link: string): link is `${typeof GO_ROCKET_CHAT_PREFIX}${string}` =>
+	link.startsWith(GO_ROCKET_CHAT_PREFIX);
 
 export const createSidebarItems = (
 	initialItems: SidebarItem[] = [],

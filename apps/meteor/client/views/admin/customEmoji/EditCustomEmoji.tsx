@@ -11,18 +11,18 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type EditCustomEmojiProps = {
+export type EditCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 	data: {
@@ -36,9 +36,9 @@ type EditCustomEmojiProps = {
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
+	const queryClient = useQueryClient();
 	const [errors, setErrors] = useState({ name: false, aliases: false });
 
 	const { _id, name: previousName, aliases: previousAliases } = data || {};
@@ -68,7 +68,14 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload('/v1/emoji-custom.update', t('Custom_Emoji_Updated_Successfully'));
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.update', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Updated_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
+			onChange();
+			close();
+		},
+	});
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -88,30 +95,29 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		const result = (await saveAction(formData)) as { success: boolean };
-		if (result.success) {
-			onChange();
-			close();
-		}
-	}, [emojiFile, _id, name, aliases, saveAction, onChange, close, newEmojiPreview]);
+		await saveAction(formData);
+	}, [emojiFile, _id, name, aliases, saveAction, newEmojiPreview]);
 
-	const deleteAction = useEndpointAction('POST', '/v1/emoji-custom.delete');
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { mutateAsync: deleteAction } = useEndpointMutation('POST', '/v1/emoji-custom.delete', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
+		},
+		onSettled: () => {
+			onChange();
+			setModal(null);
+			close();
+		},
+	});
 
 	const handleDeleteButtonClick = useCallback(() => {
-		const handleDelete = async (): Promise<void> => {
-			try {
-				await deleteAction({ emojiId: _id });
-				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				onChange();
-				setModal(null);
-				close();
-			}
+		const handleDelete = async () => {
+			await deleteAction({ emojiId: _id });
 		};
 
-		const handleCancel = (): void => {
+		const handleCancel = () => {
 			setModal(null);
 		};
 
@@ -120,7 +126,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 				{t('Custom_Emoji_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [setModal, deleteAction, _id, dispatchToastMessage, t, onChange, close]);
+	}, [setModal, deleteAction, _id, t]);
 
 	const handleChangeAliases = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -167,9 +173,9 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 							<IconButton icon='upload' secondary onClick={clickUpload} />
 						</FieldLabel>
 						{newEmojiPreview && (
-							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
+							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
 								<Margins inline={4}>
-									<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
+									<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 								</Margins>
 							</Box>
 						)}
@@ -183,7 +189,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 							{t('Delete')}

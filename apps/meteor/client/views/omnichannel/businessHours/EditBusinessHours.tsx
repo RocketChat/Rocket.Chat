@@ -1,7 +1,9 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { canonicalizeTimezone } from '@rocket.chat/tools';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -9,12 +11,11 @@ import type { BusinessHoursFormData } from './BusinessHoursForm';
 import BusinessHoursForm from './BusinessHoursForm';
 import { defaultWorkHours } from './mapBusinessHoursForm';
 import { useIsSingleBusinessHours } from './useIsSingleBusinessHours';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useRemoveBusinessHour } from '../../../omnichannel/businessHours/useRemoveBusinessHour';
+import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 
 const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | undefined) => ({
 	name: businessHourData?.name || '',
-	timezoneName: businessHourData?.timezone?.name || 'America/Sao_Paulo',
+	timezoneName: canonicalizeTimezone(businessHourData?.timezone?.name || 'America/Sao_Paulo'),
 	daysOpen: (businessHourData?.workHours || defaultWorkHours()).filter(({ open }) => !!open).map(({ day }) => day),
 	daysTime: (businessHourData?.workHours || defaultWorkHours())
 		.filter(({ open }) => !!open)
@@ -25,11 +26,11 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 			open,
 		})),
 	departmentsToApplyBusinessHour: '',
-	active: businessHourData?.active || true,
+	active: businessHourData?.active ?? true,
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
-type EditBusinessHoursProps = {
+export type EditBusinessHoursProps = {
 	businessHourData?: Serialized<ILivechatBusinessHour>;
 	type: LivechatBusinessHourTypes;
 };
@@ -39,7 +40,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const saveBusinessHour = useMethod('livechat:saveBusinessHour');
+	const saveBusinessHour = useEndpoint('POST', '/v1/livechat/business-hours.save');
 	const handleRemove = useRemoveBusinessHour();
 
 	const router = useRouter();
@@ -51,7 +52,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 		formState: { isDirty },
 	} = methods;
 
-	const handleSave = useEffectEvent(async ({ departments, ...data }: BusinessHoursFormData) => {
+	const handleSave = useStableCallback(async ({ departments, ...data }: BusinessHoursFormData) => {
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
@@ -69,7 +70,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				})),
 			};
 
-			await saveBusinessHour(payload as any);
+			await saveBusinessHour(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
 			router.navigate('/omnichannel/businessHours');
 		} catch (error) {
@@ -92,7 +93,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' w='full' alignSelf='center'>
+				<Box maxWidth='600px' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<BusinessHoursForm type={type} />

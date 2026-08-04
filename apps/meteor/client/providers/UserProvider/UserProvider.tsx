@@ -1,50 +1,69 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { Filter, ObjectId } from 'mongodb';
+import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
 import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { Subscriptions, Rooms } from '../../../app/models/client';
-import { getUserPreference } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
+import { useIdleConnection } from '../../hooks/useIdleConnection';
+import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
+import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { settings } from '../../lib/settings';
+import { userIdStore } from '../../lib/user';
+import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
-const getUser = (): IUser | null => Meteor.user() as IUser | null;
-
-const getUserId = (): string | null => Meteor.userId();
-
-const logout = (): Promise<void> =>
-	new Promise((resolve, reject) => {
-		const user = getUser();
-
-		if (!user) {
-			return resolve();
-		}
-
-		Meteor.logout(async () => {
-			await afterLogoutCleanUpCallback.run(user);
-			sdk.call('logoutCleanUp', user).then(resolve, reject);
-		});
-	});
-
-type UserProviderProps = {
+export type UserProviderProps = {
 	children: ReactNode;
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const user = useReactiveValue(getUser);
-	const userId = useReactiveValue(getUserId);
+// Local logout broadcaster — `onLogout(cb)` consumers (e.g. e2ee cleanup) still
+// subscribe to this. The post-logout side effects that used to require a
+// `sdk.call('logoutCleanUp')` round-trip (afterLogoutCleanUpCallback +
+// Apps.IPostUserLoggedOut) now fire server-side via `Accounts.onLogout` and
+// `POST /v1/users.logout`, so this emitter is purely client-side fan-out.
+const ee = new Emitter();
+getDdpSdk().account.onLogout(() => ee.emit('logout'));
+
+const queryRoom = (
+	query: Filter<Pick<IRoom, '_id'>>,
+): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined] => {
+	const predicate = createPredicateFromFilter(query);
+	let snapshot = Rooms.state.find(predicate);
+
+	const subscribe = (onStoreChange: () => void) =>
+		Rooms.use.subscribe(() => {
+			const newSnapshot = Rooms.state.find(predicate);
+			if (newSnapshot === snapshot) return;
+			snapshot = newSnapshot;
+			onStoreChange();
+		});
+
+	const getSnapshot = () => snapshot;
+
+	return [subscribe, getSnapshot];
+};
+
+const UserProvider = ({ children }: UserProviderProps) => {
+	const userId = userIdStore();
+
+	const user = Users.use((state) => {
+		if (!userId) return null;
+		return state.get(userId) ?? null;
+	});
+
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
@@ -52,51 +71,118 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
 	const inviteTokenHash = useRouteParameter('hash');
 
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-
-	const createFontStyleElement = useCreateFontStyleElement();
-	createFontStyleElement(user?.settings?.preferences?.fontSize);
-
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
 
 	useDeleteUser();
 	useUpdateAvatar();
+	useIdleConnection(userId);
+	useReloadAfterLogin(user);
+
+	const querySubscriptions = useMemo(() => {
+		const createSubscriptionFactory =
+			<T extends SubscriptionWithRoom | IRoom>(store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>) =>
+			(
+				query: object,
+				options: FindOptions = {},
+			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]] => {
+				const predicate = createPredicateFromFilter<T>(query);
+				let snapshot = applyQueryOptions(store.getState().filter(predicate), options);
+
+				const subscribe = (onStoreChange: () => void) =>
+					store.subscribe(() => {
+						const newSnapshot = applyQueryOptions(store.getState().filter(predicate), options);
+						if (newSnapshot === snapshot) return;
+						snapshot = newSnapshot;
+						onStoreChange();
+					});
+
+				// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+				// the future, so we can live with it for now
+				const getSnapshot = () => snapshot as SubscriptionWithRoom[];
+
+				return [subscribe, getSnapshot];
+			};
+
+		return userId ? createSubscriptionFactory(Subscriptions.use) : createSubscriptionFactory(Rooms.use);
+	}, [userId]);
+
+	const querySubscription = useMemo(() => {
+		return (query: object): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom] => {
+			const predicate = createPredicateFromFilter<SubscriptionWithRoom>(query);
+			let snapshot = Subscriptions.use.getState().find(predicate);
+
+			const subscribe = (onStoreChange: () => void) =>
+				Subscriptions.use.subscribe(() => {
+					const newSnapshot = Subscriptions.use.getState().find(predicate);
+					if (newSnapshot === snapshot) return;
+					snapshot = newSnapshot;
+					onStoreChange();
+				});
+
+			// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+			// the future, so we can live with it for now
+			const getSnapshot = () => snapshot as SubscriptionWithRoom;
+
+			return [subscribe, getSnapshot];
+		};
+	}, []);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
 			userId,
 			user,
-			queryPreference: createReactiveSubscriptionFactory(
-				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
-			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
-				Subscriptions.findOne(query, { fields, sort }),
-			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
-			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
-				if (userId) {
-					return Subscriptions.find(query, options).fetch();
-				}
+			queryPreference: <T,>(
+				key: string | ObjectId,
+				defaultValue?: T,
+			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined] => {
+				const effectiveKey = String(key);
 
-				return Rooms.find(query, options).fetch();
-			}),
-			logout,
+				const subscribe = (onStoreChange: () => void): (() => void) => {
+					const unsubUsers = Users.use.subscribe(onStoreChange);
+					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${effectiveKey}`, onStoreChange);
+					return () => {
+						unsubUsers();
+						unsubSettings();
+					};
+				};
+
+				const getSnapshot = (): T | undefined => {
+					return (
+						(user?.settings?.preferences?.[effectiveKey] as T | undefined) ??
+						defaultValue ??
+						settings.peek(`Accounts_Default_User_Preferences_${effectiveKey}`)
+					);
+				};
+				return [subscribe, getSnapshot];
+			},
+			querySubscription,
+			queryRoom,
+			querySubscriptions,
+			logout: async () => Meteor.logout(),
+			onLogout: (cb) => {
+				return ee.on('logout', cb);
+			},
 		}),
-		[userId, user],
+		[userId, user, querySubscription, querySubscriptions],
 	);
 
+	// Mirror local preference changes into the live userLanguage state without hitting the server.
 	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
+		if (preferedLanguage === userLanguage) {
+			return;
 		}
 
+		setUserLanguage(preferedLanguage);
+	}, [preferedLanguage, setUserLanguage, userLanguage]);
+
+	// When the server reports a new language, overwrite both storage keys so every tab stays aligned.
+	useEffect(() => {
 		if (user?.language !== undefined && user.language !== userLanguage) {
 			setUserLanguage(user.language);
 			setPreferedLanguage(user.language);
 		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+	}, [setPreferedLanguage, setUserLanguage, user?.language, userLanguage]);
 
 	useEffect(() => {
 		if (!samlCredentialToken && !inviteTokenHash) {
@@ -114,7 +200,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		previousUserId.current = userId;
 	}, [queryClient, userId]);
 
-	return <UserContext.Provider children={children} value={contextValue} />;
+	return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export default UserProvider;

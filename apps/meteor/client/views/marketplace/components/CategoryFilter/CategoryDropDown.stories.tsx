@@ -11,7 +11,6 @@ import { useCategories } from '../../hooks/useCategories';
 import { useCategoryToggle } from '../../hooks/useCategoryToggle';
 
 export default {
-	title: 'Admin/Apps/CategoryDropDown',
 	component: CategoryDropDownAnchor,
 };
 
@@ -74,7 +73,7 @@ export const Default: StoryFn = () => {
 	const onSelected = useCategoryToggle(setData);
 
 	return (
-		<Box w='x144'>
+		<Box width='x144'>
 			<ButtonGroup>
 				<CategoryDropDown categories={data} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</ButtonGroup>

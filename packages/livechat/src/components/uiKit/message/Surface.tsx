@@ -10,18 +10,19 @@ const SurfaceContext = createContext<SurfaceContextValue>({
 	dispatchAction: () => undefined,
 });
 
-type SurfaceProps = {
+export type SurfaceProps = {
 	children: ComponentChildren;
 	dispatchAction: (action: any) => void;
 };
 
 const Surface = ({ children, dispatchAction }: SurfaceProps) => (
 	<SurfaceContext.Provider
-		children={children}
 		value={{
 			dispatchAction,
 		}}
-	/>
+	>
+		{children}
+	</SurfaceContext.Provider>
 );
 
 export const useDispatchAction = () => useContext(SurfaceContext).dispatchAction;

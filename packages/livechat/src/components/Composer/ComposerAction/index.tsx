@@ -2,10 +2,10 @@ import type { ComponentChildren } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
-type ComposerActionProps = {
+export type ComposerActionProps = {
 	text: string;
 	onClick: () => void;
 	className?: string;

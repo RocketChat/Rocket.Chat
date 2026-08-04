@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
-type VideoConfMessageRowProps = ComponentProps<typeof Box>;
+export type VideoConfMessageRowProps = ComponentProps<typeof Box>;
 
-const VideoConfMessageRow = (props: VideoConfMessageRowProps): ReactElement => (
-	<Box p={16} display='flex' justifyContent='space-between' {...props} />
+const VideoConfMessageRow = (props: VideoConfMessageRowProps) => (
+	<Box padding={16} display='flex' justifyContent='space-between' {...props} />
 );
 
 export default VideoConfMessageRow;

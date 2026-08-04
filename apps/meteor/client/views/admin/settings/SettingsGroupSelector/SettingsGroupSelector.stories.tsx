@@ -1,9 +1,8 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import SettingsGroupSelector from './SettingsGroupSelector';
 
 export default {
-	title: 'Admin/Settings/SettingsGroupSelector',
 	component: SettingsGroupSelector,
 	parameters: {
 		layout: 'fullscreen',
@@ -11,5 +10,6 @@ export default {
 	},
 } satisfies Meta<typeof SettingsGroupSelector>;
 
-export const Default: StoryFn<typeof SettingsGroupSelector> = (args) => <SettingsGroupSelector {...args} />;
-Default.storyName = 'GroupSelector';
+export const Default: StoryObj<typeof SettingsGroupSelector> = {
+	name: 'GroupSelector',
+};

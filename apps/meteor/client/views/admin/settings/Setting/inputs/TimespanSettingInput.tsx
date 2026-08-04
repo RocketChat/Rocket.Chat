@@ -1,5 +1,5 @@
-import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
-import type { FormEventHandler, Key, ReactElement } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
+import type { ChangeEventHandler, Key } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convert
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
+export type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
 };
 
@@ -39,6 +39,7 @@ function TimespanSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -48,13 +49,13 @@ function TimespanSettingInput({
 	hasResetButton,
 	onResetButtonClick,
 	packageValue,
-}: TimespanSettingInputProps): ReactElement {
+}: TimespanSettingInputProps) {
 	const { t, i18n } = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));
 	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
 
-	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		const newValue = sanitizeInputValue(Number(event.currentTarget.value));
 
 		onChangeValue?.(timeUnitToMs(timeUnit, newValue));
@@ -87,11 +88,10 @@ function TimespanSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={handleResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={handleResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<InputBox
-					data-qa-setting-id={_id}
 					id={_id}
 					type='number'
 					value={internalValue}
@@ -105,6 +105,7 @@ function TimespanSettingInput({
 			<FieldRow>
 				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

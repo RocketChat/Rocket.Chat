@@ -1,11 +1,11 @@
 import { Box, Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
 import { forwardRef } from 'react';
-import type { ReactNode, ReactElement, HTMLAttributes } from 'react';
+import type { ReactNode, HTMLAttributes } from 'react';
 
 export const VideoConfPopupContainer = styled('div', ({ position: _position, ...props }: { position?: number }) => props)`
 	width: 100%;
-	position: absolute;
+	position: relative;
 	box-shadow:
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
@@ -16,18 +16,15 @@ export const VideoConfPopupContainer = styled('div', ({ position: _position, ...
 	border-radius: 0.25rem;
 `;
 
-type VideoConfPopupProps = {
+export type VideoConfPopupProps = {
 	children: ReactNode;
 	position?: number;
 } & HTMLAttributes<HTMLElement>;
 
-const VideoConfPopup = forwardRef<HTMLDivElement, VideoConfPopupProps>(function VideoConfPopup(
-	{ children, position, ...props },
-	ref,
-): ReactElement {
+const VideoConfPopup = forwardRef<HTMLDivElement, VideoConfPopupProps>(function VideoConfPopup({ children, position, ...props }, ref) {
 	return (
 		<VideoConfPopupContainer role='dialog' ref={ref} position={position} {...props}>
-			<Box p={24} maxWidth='x276' color='default'>
+			<Box padding={24} maxWidth='x276' color='default'>
 				{children}
 			</Box>
 		</VideoConfPopupContainer>

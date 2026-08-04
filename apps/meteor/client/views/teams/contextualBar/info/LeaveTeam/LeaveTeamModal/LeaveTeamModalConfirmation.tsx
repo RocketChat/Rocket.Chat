@@ -1,10 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../../components/GenericModal';
-
-type LeaveTeamModalConfirmationProps = {
+export type LeaveTeamModalConfirmationProps = {
 	onConfirm: (selectedRooms?: { [key: string]: Serialized<IRoom> & { isLastOwner?: boolean } }) => void;
 	onClose: () => void;
 	onCancel?: () => void;
@@ -13,7 +11,7 @@ type LeaveTeamModalConfirmationProps = {
 	};
 };
 
-const LeaveTeamModalConfirmation = ({ selectedRooms, onConfirm, onCancel, onClose }: LeaveTeamModalConfirmationProps): ReactElement => {
+const LeaveTeamModalConfirmation = ({ selectedRooms, onConfirm, onCancel, onClose }: LeaveTeamModalConfirmationProps) => {
 	const { t } = useTranslation();
 
 	return (

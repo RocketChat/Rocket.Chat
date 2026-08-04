@@ -1,14 +1,13 @@
-import type { ReactElement } from 'react';
+import { HeaderTag, HeaderTagIcon } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 
-import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
-type FederatedRoomProps = {
+export type FederatedRoomOriginServerProps = {
 	room: IRoomWithFederationOriginalName;
 };
 
-const FederatedRoomOriginServer = ({ room }: FederatedRoomProps): ReactElement | null => {
+const FederatedRoomOriginServer = ({ room }: FederatedRoomOriginServerProps) => {
 	const originServerName = useMemo(() => room.federationOriginalName?.split(':')[1], [room.federationOriginalName]);
 	if (!originServerName) {
 		return null;

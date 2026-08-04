@@ -15,12 +15,12 @@ import {
 	FieldGroup,
 	Select,
 	Accordion,
+	NumberInput,
 } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
@@ -70,10 +70,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const eventOptions: SelectOption[] = useMemo(
-		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label as TranslationKey)]),
-		[t],
-	);
+	const eventOptions: SelectOption[] = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
 
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
@@ -120,7 +117,7 @@ const OutgoingWebhookForm = () => {
 	const runOnEditsField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' w='full'>
+		<Box maxWidth='x600' alignSelf='center' width='full'>
 			<Accordion>
 				<AccordionItem defaultExpanded title={t('Settings')}>
 					<FieldGroup>
@@ -169,28 +166,19 @@ const OutgoingWebhookForm = () => {
 											<TextInput
 												id={channelField}
 												{...field}
-												addon={<Icon name='at' size='x20' />}
+												endAddon={<Icon name='at' size='x20' />}
 												aria-describedby={`${channelField}-hint-1 ${channelField}-hint-2 ${channelField}-hint-3`}
 											/>
 										)}
 									/>
 								</FieldRow>
 								<FieldHint id={`${channelField}-hint-1`}>{t('Channel_to_listen_on')}</FieldHint>
-								<FieldHint
-									id={`${channelField}-hint-2`}
-									dangerouslySetInnerHTML={{
-										__html: DOMPurify.sanitize(
-											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-												postProcess: 'sprintf',
-												sprintf: ['@', '#', '@john', '#general'],
-											}),
-										),
-									}}
-								/>
-								<FieldHint
-									id={`${channelField}-hint-3`}
-									dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integrations_for_all_channels')) }}
-								/>
+								<FieldHint id={`${channelField}-hint-2`}>
+									<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
+								</FieldHint>
+								<FieldHint id={`${channelField}-hint-3`}>
+									<Trans i18nKey='Integrations_for_all_channels' />
+								</FieldHint>
 							</Field>
 						)}
 						{showTriggerWords && (
@@ -228,17 +216,9 @@ const OutgoingWebhookForm = () => {
 									/>
 								</FieldRow>
 								<FieldHint id={`${targetRoomField}-hint-1`}>{t('TargetRoom_Description')}</FieldHint>
-								<FieldHint
-									id={`${targetRoomField}-hint-2`}
-									dangerouslySetInnerHTML={{
-										__html: DOMPurify.sanitize(
-											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-												postProcess: 'sprintf',
-												sprintf: ['@', '#', '@john', '#general'],
-											}),
-										),
-									}}
-								/>
+								<FieldHint id={`${targetRoomField}-hint-2`}>
+									<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
+								</FieldHint>
 							</Field>
 						)}
 						<Field>
@@ -255,7 +235,7 @@ const OutgoingWebhookForm = () => {
 											id={urlsField}
 											{...field}
 											rows={10}
-											addon={<Icon name='permalink' size='x20' />}
+											endAddon={<Icon name='permalink' size='x20' />}
 											aria-describedby={`${urlsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.urls)}
@@ -292,7 +272,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={usernameField}
 											{...field}
-											addon={<Icon name='user' size='x20' />}
+											endAddon={<Icon name='user' size='x20' />}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}
@@ -315,7 +295,12 @@ const OutgoingWebhookForm = () => {
 									name='alias'
 									control={control}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} addon={<Icon name='edit' size='x20' />} aria-describedby={`${aliasField}-hint`} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											endAddon={<Icon name='edit' size='x20' />}
+											aria-describedby={`${aliasField}-hint`}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -331,7 +316,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={avatarField}
 											{...field}
-											addon={
+											endAddon={
 												<Icon
 													name='user-rounded'
 													size='x20'
@@ -356,7 +341,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={emojiField}
 											{...field}
-											addon={
+											endAddon={
 												<Icon name='emoji' size='x20' alignSelf='center' aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`} />
 											}
 										/>
@@ -364,10 +349,9 @@ const OutgoingWebhookForm = () => {
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint
-								id={`${emojiField}-hint-2`}
-								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
-							/>
+							<FieldHint id={`${emojiField}-hint-2`}>
+								<Trans i18nKey='Example_s' values={{ value: ':ghost:' }} components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={tokenField} required>
@@ -382,7 +366,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={tokenField}
 											{...field}
-											addon={<Icon name='key' size='x20' />}
+											endAddon={<Icon name='key' size='x20' />}
 											aria-describedby={`${tokenField}-error`}
 											aria-invalid={Boolean(errors?.token)}
 											aria-required={true}
@@ -431,7 +415,7 @@ const OutgoingWebhookForm = () => {
 									name='script'
 									control={control}
 									render={({ field }) => (
-										<TextAreaInput id={scriptField} rows={10} {...field} addon={<Icon name='code' size='x20' alignSelf='center' />} />
+										<TextAreaInput id={scriptField} rows={10} {...field} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
 									)}
 								/>
 							</FieldRow>
@@ -476,7 +460,9 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='retryCount'
 									control={control}
-									render={({ field }) => <TextInput id={retryCountField} {...field} aria-describedby={`${retryCountField}-hint`} />}
+									render={({ field }) => (
+										<NumberInput {...field} id={retryCountField} min='0' step='1' aria-describedby={`${retryCountField}-hint`} />
+									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${retryCountField}-hint`}>{t('Integration_Retry_Count_Description')}</FieldHint>
@@ -492,10 +478,9 @@ const OutgoingWebhookForm = () => {
 									)}
 								/>
 							</FieldRow>
-							<FieldHint
-								id={`${retryDelayField}-hint`}
-								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integration_Retry_Delay_Description')) }}
-							/>
+							<FieldHint id={`${retryDelayField}-hint`}>
+								<Trans i18nKey='Integration_Retry_Delay_Description' components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 						</Field>
 						{event === 'sendMessage' && (
 							<FieldGroup>

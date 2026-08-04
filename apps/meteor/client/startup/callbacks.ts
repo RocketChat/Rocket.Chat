@@ -1,10 +1,10 @@
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import { performance } from 'universal-perf-hooks';
 
-import { callbacks } from '../../lib/callbacks';
 import { getConfig } from '../lib/utils/getConfig';
 
 if ([getConfig('debug'), getConfig('timed-callbacks')].includes('true')) {
-	callbacks.setMetricsTrackers({
+	clientCallbacks.setMetricsTrackers({
 		trackCallback: ({ hook, id, stack }) => {
 			const start = performance.now();
 

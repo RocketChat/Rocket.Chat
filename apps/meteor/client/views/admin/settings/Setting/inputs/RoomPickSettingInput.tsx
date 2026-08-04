@@ -1,17 +1,17 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 
 import RoomAutoCompleteMultiple from '../../../../../components/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
+export type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
 
 function RoomPickSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	disabled,
@@ -19,7 +19,7 @@ function RoomPickSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: RoomPickSettingInputProps): ReactElement {
+}: RoomPickSettingInputProps) {
 	const parsedValue = (value || []).map(({ _id }) => _id);
 
 	const handleChange = (value: string | string[]) => {
@@ -35,7 +35,7 @@ function RoomPickSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<RoomAutoCompleteMultiple
@@ -46,6 +46,7 @@ function RoomPickSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

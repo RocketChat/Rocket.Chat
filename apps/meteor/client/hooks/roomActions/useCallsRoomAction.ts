@@ -1,15 +1,15 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RoomContext } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
 const VideoConfList = lazy(() => import('../../views/room/contextualBar/VideoConference/VideoConfList'));
 
 export const useCallsRoomAction = () => {
-	const licensed = useHasLicenseModule('videoconference-enterprise') === true;
+	const { data: licensed = false } = useHasLicenseModule('videoconference-enterprise');
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;
 	const { t } = useTranslation();

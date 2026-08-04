@@ -1,3 +1,3 @@
 export interface IVisitorPhone {
-    phoneNumber: string;
+	phoneNumber: string;
 }

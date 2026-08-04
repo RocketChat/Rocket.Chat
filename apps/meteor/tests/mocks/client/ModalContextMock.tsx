@@ -1,12 +1,12 @@
 import { ModalContext } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ContextType, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useMemo } from 'react';
 
-type ModalContextMockProps = {
+export type ModalContextMockProps = {
 	children: ReactNode;
 };
 
-const ModalContextMock = ({ children }: ModalContextMockProps): ReactElement => {
+const ModalContextMock = ({ children }: ModalContextMockProps) => {
 	const value = useMemo(
 		() => ({
 			modal: {
@@ -16,7 +16,7 @@ const ModalContextMock = ({ children }: ModalContextMockProps): ReactElement => 
 		[],
 	);
 
-	return <ModalContext.Provider children={children} value={value as unknown as ContextType<typeof ModalContext>} />;
+	return <ModalContext.Provider value={value as unknown as ContextType<typeof ModalContext>}>{children}</ModalContext.Provider>;
 };
 
 export default ModalContextMock;

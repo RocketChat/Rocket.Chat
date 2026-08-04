@@ -1,29 +1,27 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRoute } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
-} from '../../../../components/Contextualbar';
-import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
+	InfoPanel,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelText,
+} from '@rocket.chat/ui-client';
+import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { usePresence } from '../../../../hooks/usePresence';
 
-type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
-	onReload: () => void;
-};
+export type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
-const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
+const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps) => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
@@ -32,12 +30,12 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 
 	const { name: clientName, os, version: rcVersion } = device || {};
 	const { username, name } = _user || {};
-	const userPresence = usePresence(userId);
+	const userPresence = useUserPresence(userId);
 
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
@@ -64,7 +62,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 							<InfoPanelLabel>{t('User')}</InfoPanelLabel>
 							<Box>
 								<UserAvatar username={username} etag={userPresence?.avatarETag} />
-								<Box is='span' pi={8}>
+								<Box is='span' paddingInline={8}>
 									<StatusBullet status={userPresence?.status} />
 								</Box>
 								{name && <Box is='span'>{name}</Box>}
@@ -93,12 +91,12 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
+					<Button primary onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

@@ -1,26 +1,23 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
+import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
 
 type CustomUserStatusFormFormData = {
 	name: string;
 	statusType: string;
 };
 
-type CustomUserStatusFormProps = {
+export type CustomUserStatusFormProps = {
 	onClose: () => void;
 	onReload: () => void;
 	status?: IUserStatus;
 };
 
-const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps): ReactElement => {
+const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps) => {
 	const t = useTranslation();
 	const { _id } = status || {};
 	const setModal = useSetModal();
@@ -115,7 +112,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 								name='statusType'
 								control={control}
 								rules={{ required: t('Required_field', { field: t('Presence') }) }}
-								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+								render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
 							/>
 						</FieldRow>
 						{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
@@ -130,7 +127,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={handleDeleteStatus}>
 								{t('Delete')}

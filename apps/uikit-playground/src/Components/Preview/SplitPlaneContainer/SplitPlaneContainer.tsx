@@ -1,46 +1,48 @@
 import './splitPlane.css';
-import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
-import SplitPane from 'react-split-pane';
+import { Pane, SplitPane } from 'react-split-pane';
 
 import { context, previewTabsToggleAction } from '../../../Context';
 import Display from '../Display';
 import EditorPanel from '../Editor';
 
 type PreviewSizeType = {
-  blockSize: number;
-  inlineSize: number;
+	blockSize: number;
+	inlineSize: number;
 };
-const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
-  PreviewSize,
-}) => {
-  const {
-    state: { isTablet },
-    dispatch,
-  } = useContext(context);
 
-  useEffect(() => {
-    dispatch(previewTabsToggleAction(0));
-  }, [isTablet, dispatch]);
+export type SplitPlaneContainerProps = {
+	previewSize: Partial<PreviewSizeType>;
+};
 
-  const splitPaneProps = {
-    defaultSize: (PreviewSize.inlineSize || 1) * 0.5,
-    minSize: 300,
-    maxSize: (PreviewSize.inlineSize || 1) - 350,
-    allowResize: !isTablet,
-  };
+const SplitPlaneContainer = ({ previewSize }: SplitPlaneContainerProps) => {
+	const {
+		state: { isTablet },
+		dispatch,
+	} = useContext(context);
 
-  return isTablet ? (
-    <>
-      <Display />
-      <EditorPanel />
-    </>
-  ) : (
-    <SplitPane {...splitPaneProps}>
-      <Display />
-      <EditorPanel />
-    </SplitPane>
-  );
+	useEffect(() => {
+		dispatch(previewTabsToggleAction(0));
+	}, [isTablet, dispatch]);
+
+	const minSize = 300;
+	const maxSize = (previewSize.inlineSize || 1) - 350;
+
+	return isTablet ? (
+		<>
+			<Display />
+			<EditorPanel />
+		</>
+	) : (
+		<SplitPane resizable={!isTablet}>
+			<Pane minSize={minSize} maxSize={maxSize}>
+				<Display />
+			</Pane>
+			<Pane minSize={minSize} maxSize={maxSize}>
+				<EditorPanel />
+			</Pane>
+		</SplitPane>
+	);
 };
 
 export default SplitPlaneContainer;

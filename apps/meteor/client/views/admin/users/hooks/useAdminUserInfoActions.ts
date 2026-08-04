@@ -19,6 +19,7 @@ export type AdminUserAction = {
 	title?: string;
 	variant?: 'danger';
 	onClick: () => void;
+	disabled?: boolean;
 };
 
 type AdminUserMenuAction = {
@@ -89,7 +90,7 @@ export const useAdminUserInfoActions = ({
 	const canDirectMessage = usePermission('create-d');
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 
-	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
+	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onChange);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
 	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);

@@ -1,11 +1,11 @@
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import { ContextualbarSkeleton } from '../../../../components/Contextualbar';
 import ContactInfoError from '../ContactInfoError';
 import ContactInfo from './ContactInfo';
 
-type ContactInfoWithDataProps = {
+export type ContactInfoWithDataProps = {
 	id: string;
 	onClose: () => void;
 };
@@ -21,7 +21,7 @@ const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProp
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError || !data?.contact) {

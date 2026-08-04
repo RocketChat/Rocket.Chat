@@ -10,9 +10,14 @@ import type { IUser } from '../users/IUser';
  * power and "take hold" of a server, for instance.
  */
 export interface IUserUpdater {
-    updateStatusText(user: IUser, statusText: IUser['statusText']): Promise<boolean>;
-    updateStatus(user: IUser, statusText: IUser['statusText'], status: IUser['status']): Promise<boolean>;
-    updateBio(user: IUser, bio: IUser['bio']): Promise<boolean>;
-    updateCustomFields(user: IUser, customFields: IUser['customFields']): Promise<boolean>;
-    deactivate(userId: IUser['id'], confirmRelinquish: boolean): Promise<boolean>;
+	updateStatusText(user: IUser, statusText: IUser['statusText']): Promise<boolean>;
+	updateStatus(user: IUser, statusText: IUser['statusText'], status: IUser['status']): Promise<boolean>;
+	updateBio(user: IUser, bio: IUser['bio']): Promise<boolean>;
+	updateCustomFields(user: IUser, customFields: IUser['customFields']): Promise<boolean>;
+	deactivate(userId: IUser['id'], confirmRelinquish: boolean): Promise<boolean>;
+	setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
+	): Promise<void>;
+	endActiveState(userId: IUser['id'], statusId?: string): Promise<void>;
 }

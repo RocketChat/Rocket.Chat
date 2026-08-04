@@ -1,34 +1,30 @@
-import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageBlockWithBorder } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useIsSettingsContextLoading } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
 import GenericNoResults from '../../../components/GenericNoResults';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 
-const SettingsPage = (): ReactElement => {
+const SettingsPage = () => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);
 
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
-	const isLoadingGroups = useIsSettingsContextLoading();
 
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
-				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
+				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} endAddon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
-				{isLoadingGroups && <Skeleton />}
+			<PageScrollableContentWithShadow padding={0} marginInline={24} marginBlockEnd={16}>
 				<CardGrid
 					breakpoints={{
 						xs: 4,
@@ -36,11 +32,10 @@ const SettingsPage = (): ReactElement => {
 						md: 4,
 						lg: 6,
 						xl: 4,
-						p: 8,
+						padding: 8,
 					}}
 				>
-					{!isLoadingGroups &&
-						!!groups.length &&
+					{!!groups.length &&
 						groups.map((group) => (
 							<SettingsGroupCard
 								key={group._id}
@@ -51,7 +46,7 @@ const SettingsPage = (): ReactElement => {
 						))}
 				</CardGrid>
 
-				{!isLoadingGroups && !groups.length && <GenericNoResults />}
+				{!groups.length && <GenericNoResults />}
 			</PageScrollableContentWithShadow>
 		</Page>
 	);

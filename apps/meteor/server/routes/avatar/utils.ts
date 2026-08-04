@@ -1,16 +1,17 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
+import sanitizeHtml from 'sanitize-html';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { settings } from '../../../app/settings/server';
-import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
+import { FileUpload } from '../../lib/media/file-upload';
+import { getAvatarColor } from '../../lib/utils/lib/getAvatarColor';
+import { settings } from '../../settings';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
@@ -122,24 +123,23 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 	return isAuthenticated;
 }
 
-const getFirstLetter = (name: string) =>
-	name
-		.replace(/[^A-Za-z0-9]/g, '')
-		.substr(0, 1)
-		.toUpperCase();
+const getFirstLetter = (name: string) => {
+	const sanitizedName = sanitizeHtml(name);
+	return sanitizedName.substring(0, 1).toUpperCase();
+};
 
 const getInitials = (name: string) => name.split(' ').slice(0, MAX_SVG_AVATAR_INITIALS).map(getFirstLetter).join('');
 
-export const renderSVGLetters = (username: string, viewSize = 200, useAllInitials = false) => {
+export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = false) => {
 	let color = '';
 	let initials = '';
 
-	if (username === '?') {
+	if (name === '?') {
 		color = '#000';
-		initials = username;
+		initials = name;
 	} else {
-		color = getAvatarColor(username);
-		initials = !useAllInitials ? getFirstLetter(username) : getInitials(username);
+		color = getAvatarColor(name);
+		initials = !useAllInitials ? getFirstLetter(name) : getInitials(name);
 	}
 
 	const reductionFactor = initials.length > 1 ? Math.pow(initials.length, 2) / 10 : 0;

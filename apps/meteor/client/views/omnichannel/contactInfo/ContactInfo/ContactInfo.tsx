@@ -1,19 +1,25 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ReviewContactModal from './ReviewContactModal';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';
-import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
+import ContactInfoChannels from '../tabs/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
-type ContactInfoProps = {
+export type ContactInfoProps = {
 	contact: Serialized<ILivechatContact>;
 	onClose: () => void;
 };
@@ -31,21 +37,21 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
-	const customFieldEntries = useValidCustomFields(userCustomFields);
+	const customFieldEntries = useValidCustomFields(userCustomFields, 'visitor');
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='user' />
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<Box display='flex' flexDirection='column' pi={24}>
+			<Box display='flex' flexDirection='column' paddingInline={24}>
 				{name && (
-					<Box width='100%' pb={16} display='flex' alignItems='center' justifyContent='space-between'>
+					<Box width='100%' paddingBlock={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box withTruncatedText display='flex'>
 							<UserAvatar size='x40' title={name} username={name} />
-							<Box withTruncatedText mis={16} display='flex' flexDirection='column'>
+							<Box withTruncatedText marginInlineStart={16} display='flex' flexDirection='column'>
 								<Box withTruncatedText fontScale='h4'>
 									{name}
 								</Box>
@@ -63,7 +69,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				)}
 				{hasConflicts && (
 					<Callout
-						mbe={8}
+						marginBlockEnd={8}
 						alignItems='center'
 						icon='members'
 						actions={
@@ -90,6 +96,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
+					contact={contact}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
@@ -97,9 +104,9 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					customFieldEntries={customFieldEntries}
 				/>
 			)}
-			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
+			{context === 'channels' && <ContactInfoChannels contact={contact} />}
 			{context === 'history' && <ContactInfoHistory contact={contact} />}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

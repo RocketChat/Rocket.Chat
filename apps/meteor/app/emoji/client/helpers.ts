@@ -1,46 +1,84 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { EmojiCategory, EmojiItem } from '.';
-import { emoji } from './lib';
+import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
+export const CUSTOM_CATEGORY_CLASSNAME = 'emojipicker--custom';
+
+const MIXED_TONE_SUFFIX = /_tone([1-5])-[1-5]$/;
+
+type RowItem = Array<EmojiItem & { category: string }>;
+type RowDivider = { category: string; i18n: TranslationKey };
+type LoadMoreItem = { loadMore: true };
+export type EmojiPickerItem = RowItem | RowDivider | LoadMoreItem;
+
+export type CategoriesIndexes = { key: string; index: number }[];
+
+export const isRowDivider = (item: EmojiPickerItem): item is RowDivider => 'i18n' in item;
+export const isLoadMore = (item: EmojiPickerItem): item is LoadMoreItem => 'loadMore' in item;
+
+export const createEmojiListByCategorySubscription = (
+	customItemsLimit: number,
+	actualTone: number,
+	recentEmojis: string[],
+	setRecentEmojis: (emojis: string[]) => void,
+	setQuickReactions: () => void,
+): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
+	let result: ReturnType<typeof createPickerEmojis> = [[], []];
+	updateRecent(recentEmojis);
+
+	const sub = (cb: () => void) => {
+		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+		setQuickReactions();
+		return emojiEmitter.on('updated', () => {
+			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+			setQuickReactions();
+			cb();
+		});
+	};
+
+	return [sub, () => result];
+};
 
 export const createPickerEmojis = (
 	customItemsLimit: number,
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-) => {
+): [EmojiPickerItem[], CategoriesIndexes] => {
 	const categories = getCategoriesList();
+	const categoriesIndexes: CategoriesIndexes = [];
 
-	const mappedCategories = categories.map((category) => ({
-		key: category.key,
-		i18n: category.i18n,
-		emojis: {
-			list: createEmojiList(category.key, actualTone, recentEmojis, setRecentEmojis),
-			limit: category.key === CUSTOM_CATEGORY ? customItemsLimit : null,
-		},
-	}));
+	const mappedCategories = categories.reduce<EmojiPickerItem[]>((acc, category) => {
+		categoriesIndexes.push({ key: category.key, index: acc.length });
+		acc.push({ category: category.key, i18n: category.i18n });
+		acc.push(...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis));
+		return acc;
+	}, []);
 
-	return mappedCategories;
+	return [mappedCategories, categoriesIndexes];
 };
 
 export const createEmojiList = (
+	customItemsLimit: number,
 	category: string,
 	actualTone: number | null,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-) => {
-	const emojiList: EmojiItem[] = [];
-	const emojiPackages = Object.values(emoji.packages);
+): (RowItem | LoadMoreItem)[] => {
+	const items: RowItem = [];
+	const emojiPackages = Object.entries(emoji.packages);
+	let count = 0;
+	let limited = false;
 
-	emojiPackages.forEach((emojiPackage) => {
+	emojiPackages.forEach(([packageName, emojiPackage]) => {
 		if (!emojiPackage.emojisByCategory?.[category]) {
 			return;
 		}
-
-		const total = emojiPackage.emojisByCategory[category].length;
-
+		const _total = emojiPackage.emojisByCategory[category].length;
+		const total = category === CUSTOM_CATEGORY ? customItemsLimit - count : _total;
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
@@ -48,20 +86,48 @@ export const createEmojiList = (
 
 			const emojiToRender = `:${current}${tone}:`;
 
-			if (!emoji.list[emojiToRender]) {
+			const actualEmoji = emoji.list[emojiToRender];
+			if (!actualEmoji) {
 				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 				return;
 			}
 
-			const image = emojiPackage.renderPicker(emojiToRender);
+			// A custom emoji with the same name overrides the native one (including its tones), so skip the native duplicate
+			if (packageName === 'native' && emoji.list[`:${current}:`]?.emojiPackage === 'emojiCustom') {
+				continue;
+			}
+
+			const actualPackage = actualEmoji.emojiPackage;
+			const image = emoji.packages[actualPackage].renderPicker(emojiToRender);
 			if (!image) {
 				continue;
 			}
-			emojiList.push({ emoji: current, image });
+			items.push({ emoji: current, image, category });
+			count++;
+		}
+
+		if (_total > total) {
+			limited = true;
 		}
 	});
 
-	return emojiList;
+	const rowCount = 9;
+	const rowList: Array<RowItem | LoadMoreItem> = Array.from({ length: Math.ceil(items.length / rowCount) }).map(() => []);
+
+	for (let i = 0; i < rowList.length; i++) {
+		const row = items.slice(i * rowCount, i * rowCount + rowCount);
+		rowList[i] = row;
+	}
+
+	if (rowList.length === 0) {
+		rowList.push([]);
+	}
+
+	if (limited) {
+		rowList.push({ loadMore: true });
+	}
+
+	return rowList;
 };
 
 export const getCategoriesList = () => {
@@ -91,48 +157,59 @@ export const getEmojisBySearchTerm = (
 	setRecentEmojis: (emojis: string[]) => void,
 ) => {
 	const emojis = [];
+	const seenEmojis = new Set<(typeof emoji.list)[string]>();
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in emoji.list) {
-		if (!emoji.list.hasOwnProperty(current)) {
+		if (!emoji.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
 			continue;
 		}
 
-		if (searchRegExp.test(current)) {
-			const emojiObject = emoji.list[current];
-			const { emojiPackage, shortnames = [] } = emojiObject;
-			let tone = '';
-			current = current.replace(/:/g, '');
-			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
+		const emojiObject = emoji.list[current];
 
-			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {
-				tone = `_tone${actualTone}`;
-			}
+		// Skip duplicates (same emoji in different packages)
+		if (seenEmojis.has(emojiObject)) {
+			continue;
+		}
 
-			let emojiFound = false;
+		const { emojiPackage, shortnames = [], name } = emojiObject;
+		let tone = '';
+		current = current.replace(/:/g, '');
 
-			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
-						emojiFound = true;
-						break;
-					}
-				}
-			}
+		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
+			tone = `_tone${actualTone}`;
+		}
 
-			if (emojiFound) {
-				const emojiToRender = `:${current}${tone}:`;
-
-				if (!emoji.list[emojiToRender]) {
-					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-					break;
-				}
-
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
+		const isNative = emojiPackage === 'native';
+		if (isNative) {
+			const mixedTones = current.match(MIXED_TONE_SUFFIX);
+			if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
+				continue;
 			}
 		}
+
+		const categoryName = isNative ? current.replace(MIXED_TONE_SUFFIX, '') : current;
+
+		const isCategoryEmoji = Object.values(emoji.packages[emojiPackage].emojisByCategory).some(
+			(contents) => contents.indexOf(categoryName) !== -1,
+		);
+		if (!isCategoryEmoji && shortnames.length === 0) {
+			continue;
+		}
+
+		const emojiToRender = `:${current}${tone}:`;
+
+		const actualEmoji = emoji.list[emojiToRender];
+		if (!actualEmoji) {
+			removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
+			continue;
+		}
+
+		seenEmojis.add(emojiObject);
+
+		const actualPackage = actualEmoji.emojiPackage;
+
+		emojis.push({ emoji: `${current}${tone}`, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
 	}
 
 	return emojis;
@@ -149,6 +226,8 @@ export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecen
 	setRecentEmojis?.(recentEmojis);
 };
 
+// There's no need to dispatchUpdate here. This helper is called before the list is generated.
+// This means that the recent list will always be up to date by the time it is used.
 export const updateRecent = (recentList: string[]) => {
 	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
 	recentList?.forEach((_emoji) => {
@@ -162,6 +241,7 @@ export const replaceEmojiInRecent = ({ oldEmoji, newEmoji }: { oldEmoji: string;
 
 	if (pos !== -1) {
 		recentPkgList[pos] = newEmoji;
+		emoji.dispatchUpdate();
 	}
 };
 

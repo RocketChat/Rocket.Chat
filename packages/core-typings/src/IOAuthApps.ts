@@ -1,15 +1,19 @@
-export interface IOAuthApps {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IOAuthApps extends IRocketChatRecord {
 	name: string;
 	active: boolean;
 	clientId: string;
-	clientSecret: string;
+	clientSecret?: string;
 	redirectUri: string;
 	_createdAt: Date;
 	_createdBy: {
 		_id: string;
 		username: string;
 	};
-	_updatedAt: Date;
+	_updatedBy?: {
+		_id: string;
+		username?: string;
+	} | null;
 	appId?: string;
 }

@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 const pushEnabledWithoutGateway = [
 	{
@@ -19,8 +19,10 @@ export const createPushSettings = () =>
 			alert: 'Push_Setting_Requires_Restart_Alert',
 		});
 
+		// TODO: Push_UseLegacy should be removed in 8.0.0, as well as Push_gcm_project_number and Push_gcm_api_key
 		await this.add('Push_UseLegacy', false, {
 			type: 'boolean',
+			hidden: true,
 			alert: 'Push_Setting_Legacy_Warning',
 		});
 
@@ -64,14 +66,18 @@ export const createPushSettings = () =>
 			alert: 'Push_Setting_Requires_Restart_Alert',
 			enableQuery: pushEnabledWithoutGateway,
 		});
-		await this.add('Push_test_push', 'push_test', {
-			type: 'action',
-			actionText: 'Send_a_test_push_to_my_user',
-			enableQuery: {
-				_id: 'Push_enable',
-				value: true,
+		await this.add(
+			'Push_test_push',
+			{ method: 'POST', path: '/v1/push.test' },
+			{
+				type: 'action',
+				actionText: 'Send_a_test_push_to_my_user',
+				enableQuery: {
+					_id: 'Push_enable',
+					value: true,
+				},
 			},
-		});
+		);
 		await this.section('Certificates_and_Keys', async function () {
 			await this.add('Push_apn_passphrase', '', {
 				type: 'string',
@@ -109,6 +115,7 @@ export const createPushSettings = () =>
 			});
 			await this.add('Push_gcm_api_key', '', {
 				type: 'string',
+				hidden: true,
 				enableQuery: [
 					{
 						_id: 'Push_UseLegacy',
@@ -132,7 +139,7 @@ export const createPushSettings = () =>
 
 			return this.add('Push_gcm_project_number', '', {
 				type: 'string',
-				public: true,
+				hidden: true,
 				enableQuery: [
 					{
 						_id: 'Push_UseLegacy',

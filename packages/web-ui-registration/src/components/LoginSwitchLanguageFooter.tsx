@@ -4,7 +4,7 @@ import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
 import { useMemo, useEffect } from 'react';
-import type { ReactElement, UIEvent } from 'react';
+import type { UIEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 const useSuggestedLanguages = ({
@@ -29,19 +29,19 @@ const useSuggestedLanguages = ({
 	const { i18n } = useTranslation();
 
 	useEffect(() => {
-		i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
+		void i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
 	}, [i18n, suggestions]);
 
 	return { suggestions };
 };
 
-type LoginSwitchLanguageFooterProps = {
+export type LoginSwitchLanguageFooterProps = {
 	browserLanguage?: string;
 };
 
 const LoginSwitchLanguageFooter = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
-}: LoginSwitchLanguageFooterProps): ReactElement | null => {
+}: LoginSwitchLanguageFooterProps) => {
 	const loadLanguage = useLoadLanguage();
 	const { suggestions } = useSuggestedLanguages({ browserLanguage });
 
@@ -60,13 +60,20 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => (
-				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
-						Change to <strong>{suggestion.ogName}</strong>
-					</Trans>
-				</Button>
-			))}
+			{suggestions.map((suggestion) => {
+				// If suggestion is "Default", skip it
+				if (!suggestion.key) {
+					return;
+				}
+
+				return (
+					<Button secondary small marginInlineEnd={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
+							Change to <strong>{suggestion.ogName}</strong>
+						</Trans>
+					</Button>
+				);
+			})}
 		</HorizontalWizardLayoutCaption>
 	);
 };

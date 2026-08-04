@@ -1,6 +1,7 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
@@ -20,7 +21,6 @@ import {
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
@@ -208,19 +208,19 @@ function PrepareImportPage() {
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
-							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+							<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+							</TabsItem>
+							<TabsItem selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
 								{t('Contacts')} <Badge>{contactsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+							</TabsItem>
+							<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 								{t('Channels')} <Badge>{channelsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item disabled>
+							</TabsItem>
+							<TabsItem disabled>
 								{t('Messages')}
 								<Badge>{messageCount}</Badge>
-							</Tabs.Item>
+							</TabsItem>
 						</Tabs>
 					)}
 					<Margins block='x24'>
@@ -229,7 +229,7 @@ function PrepareImportPage() {
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
 										<ProgressBar percentage={Math.floor(progressRate)} />
-										<Box is='span' mis='x24'>
+										<Box is='span' marginInlineStart='x24'>
 											{numberFormat(progressRate, 0)}%
 										</Box>
 									</Box>

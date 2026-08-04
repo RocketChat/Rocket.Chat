@@ -4,9 +4,10 @@ import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
-import { updateSetting } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
@@ -20,8 +21,6 @@ describe('Apps - Video Conferences', () => {
 			type: 'p',
 			name: roomName,
 			username: undefined,
-			token: undefined,
-			agentId: undefined,
 			members: undefined,
 			credentials: undefined,
 			extraData: undefined,
@@ -251,7 +250,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -276,7 +274,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -301,7 +298,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -481,7 +477,6 @@ describe('Apps - Video Conferences', () => {
 				it('should load the video conference data successfully', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -535,7 +530,6 @@ describe('Apps - Video Conferences', () => {
 				it('should include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -560,7 +554,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created the discussion room using the configured name', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -585,7 +578,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created a subscription with open = false', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -635,7 +627,6 @@ describe('Apps - Video Conferences', () => {
 				it('should include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -660,7 +651,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created the discussion room using the configured name', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -739,7 +729,6 @@ describe('Apps - Video Conferences', () => {
 				it('should not include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -815,6 +804,41 @@ describe('Apps - Video Conferences', () => {
 							expect(call2).to.have.a.property('_id').equal(callId2);
 						});
 				});
+
+				it('should paginate video conferences list with count parameter', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({
+							roomId,
+							count: 1,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('total').that.is.greaterThanOrEqual(2);
+							expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(1);
+							expect(res.body.data[0]).to.have.a.property('_id').equal(callId2);
+						});
+				});
+
+				it('should paginate video conferences list with offset parameter', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({
+							roomId,
+							count: 1,
+							offset: 1,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('total').that.is.greaterThanOrEqual(2);
+							expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(1);
+							expect(res.body.data[0]).to.have.a.property('_id').equal(callId1);
+						});
+				});
 			});
 
 			describe('[Persistent Chat Provider]', () => {
@@ -861,7 +885,6 @@ describe('Apps - Video Conferences', () => {
 				it('should load the list of video conferences sorted by new', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -905,6 +928,84 @@ describe('Apps - Video Conferences', () => {
 							expect(call4).to.not.have.a.property('discussionRid');
 						});
 				});
+			});
+		});
+
+		describe('[Read-Only Channel]', () => {
+			let readOnlyRoomId: string;
+			let regularUser: Awaited<ReturnType<typeof createUser>>;
+			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+
+			before(async () => {
+				// Create a regular user
+				regularUser = await createUser({ username: `regular.user.${Date.now()}`, roles: ['user'] });
+				regularUserCredentials = await login(regularUser.username, password);
+
+				const readOnlyRoomRes = await createRoom({
+					type: 'c',
+					name: `read-only-channel-${Date.now()}`,
+					username: undefined,
+					members: [regularUser.username],
+					credentials,
+					readOnly: true,
+				});
+				readOnlyRoomId = readOnlyRoomRes.body.channel._id;
+
+				// Set up video conference provider
+				await updateSetting('VideoConf_Default_Provider', 'test');
+			});
+
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+			});
+
+			after(async () => {
+				await Promise.all([
+					...(readOnlyRoomId ? [deleteRoom({ type: 'c', roomId: readOnlyRoomId })] : []),
+					deleteUser(regularUser),
+					updatePermission('post-readonly', ['admin', 'owner', 'moderator']),
+				]);
+			});
+
+			it('should fail to start a call in read-only channel as a regular user', async () => {
+				await request
+					.post(api('video-conference.start'))
+					.set(regularUserCredentials)
+					.send({
+						roomId: readOnlyRoomId,
+					})
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+					});
+			});
+
+			it('should successfully start a call in read-only channel as admin', async () => {
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId: readOnlyRoomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+			});
+
+			it('should successfully start a call in read-only channel as regular user with post-readonly permission', async () => {
+				await updatePermission('post-readonly', ['admin', 'owner', 'moderator', 'user']);
+
+				await request
+					.post(api('video-conference.start'))
+					.set(regularUserCredentials)
+					.send({
+						roomId: readOnlyRoomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+					});
 			});
 		});
 	});

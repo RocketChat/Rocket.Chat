@@ -3,13 +3,13 @@ import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 
+import Store from './Store';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
-import Store from './Store';
 
 export type LivechatHiddenSytemMessageType =
 	| 'uj' // User joined
@@ -30,13 +30,8 @@ export type StoreState = {
 			offlineColor?: string;
 			position: 'left' | 'right';
 			background?: string;
+			hideExpandChat?: boolean;
 			actionLinks?: {
-				webrtc: {
-					actionLinksAlignment: string;
-					i18nLabel: string;
-					label: string;
-					method_id: string;
-				}[];
 				jitsi: {
 					icon: string;
 					i18nLabel: string;
@@ -60,6 +55,8 @@ export type StoreState = {
 			livechatLogo?: { url: string };
 			transcript?: boolean;
 			visitorsCanCloseChat?: boolean;
+			clearLocalStorageWhenChatEnded?: boolean;
+			agentHiddenInfo?: boolean;
 		};
 		online?: boolean;
 		departments: Department[];
@@ -89,6 +86,7 @@ export type StoreState = {
 			background?: string;
 			hideGuestAvatar?: boolean;
 			hideAgentAvatar?: boolean;
+			hideExpandChat?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
@@ -104,7 +102,6 @@ export type StoreState = {
 	minimized: boolean;
 	unread: any;
 	incomingCallAlert: any;
-	ongoingCall: any;
 	businessUnit: any;
 	openSessionIds?: string[];
 	triggered?: boolean;
@@ -112,17 +109,24 @@ export type StoreState = {
 	expanded?: boolean;
 	modal?: any;
 	agent?: any;
-	room?: { _id: string };
+	room?: { _id: string; servedBy?: unknown } | null;
 	noMoreMessages?: boolean;
 	loading?: boolean;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
-	queueInfo?: any;
+	queueInfo?: {
+		spot?: number;
+		estimatedWaitTimeSeconds?: number;
+		message?: { text?: string; user?: unknown };
+	};
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
 	renderedTriggers: TriggerMessage[];
+	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
+	parentMessages?: any[];
+	triggersRecords?: Record<string, any>;
 };
 
 export const initialState = (): StoreState => ({
@@ -161,9 +165,9 @@ export const initialState = (): StoreState => ({
 	minimized: true,
 	unread: null,
 	incomingCallAlert: null,
-	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 	renderedTriggers: [],
+	customFieldsQueue: {},
 });
 
 const dontPersist = [
@@ -175,7 +179,6 @@ const dontPersist = [
 	'noMoreMessages',
 	'modal',
 	'incomingCallAlert',
-	'ongoingCall',
 	'parentUrl',
 ] as Array<keyof StoreState>;
 
@@ -191,6 +194,10 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('visibilitychange', () => {
+	if (store.state.undocked) {
+		return;
+	}
+
 	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
 	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
 });
@@ -223,9 +230,9 @@ export const StoreContext = createContext<StoreContextValue>({
 });
 
 export class Provider extends Component {
-	static displayName = 'StoreProvider';
+	static override displayName = 'StoreProvider';
 
-	state = {
+	override state = {
 		...store.state,
 		dispatch: store.setState.bind(store),
 		on: store.on.bind(store),
@@ -236,11 +243,11 @@ export class Provider extends Component {
 		this.setState({ ...store.state });
 	};
 
-	componentDidMount() {
+	override componentDidMount() {
 		store.on('change', this.handleStoreChange);
 	}
 
-	componentWillUnmount() {
+	override componentWillUnmount() {
 		store.off('change', this.handleStoreChange);
 	}
 

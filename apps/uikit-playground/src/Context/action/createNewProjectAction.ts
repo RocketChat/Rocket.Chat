@@ -1,13 +1,11 @@
 import { ActionTypes } from '../reducer';
 
 export type CreateNewProjectAction = {
-  type: ActionTypes.CreateNewProject;
-  payload?: string;
+	type: ActionTypes.CreateNewProject;
+	payload?: string;
 };
 
-export const createNewProjectAction = (
-  payload?: string
-): CreateNewProjectAction => ({
-  type: ActionTypes.CreateNewProject,
-  payload,
+export const createNewProjectAction = (payload?: string): CreateNewProjectAction => ({
+	type: ActionTypes.CreateNewProject,
+	payload,
 });

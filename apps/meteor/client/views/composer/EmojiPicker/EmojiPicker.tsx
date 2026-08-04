@@ -3,16 +3,15 @@ import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuse
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
-	EmojiPickerFooter,
 	EmojiPickerPreviewArea,
 	EmojiPickerHeader,
 	EmojiPickerListArea,
 	EmojiPickerPreview,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject, UIEvent } from 'react';
+import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { useLayoutEffect, useState, useEffect, useRef } from 'react';
-import type { VirtuosoHandle } from 'react-virtuoso';
+import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
@@ -25,7 +24,7 @@ import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
-type EmojiPickerProps = {
+export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
@@ -39,7 +38,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
 
 	const [isVisibleRef, isInputVisible] = useIsVisible();
-	const textInputRef = useRef<HTMLInputElement>();
+	const textInputRef = useRef<HTMLInputElement>(undefined);
 
 	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
 
@@ -60,8 +59,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setRecentEmojis,
 		actualTone,
 		currentCategory,
-		categoriesPosition,
-		getEmojiListsByCategory,
+		categoriesIndexes,
+		emojiListByCategory,
 		customItemsLimit,
 		setActualTone,
 		setCustomItemsLimit,
@@ -113,10 +112,15 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 		let tone = '';
 
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-					tone = `_tone${actualTone}`;
+		// Custom emoji should overwrite native emoji with the same name
+		// Custom emoji with name `:point_right:` should overwrite every tone
+		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
+		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emoji.packages) {
+				if (emoji.packages.hasOwnProperty(emojiPackage)) {
+					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+						tone = `_tone${actualTone}`;
+					}
 				}
 			}
 		}
@@ -155,24 +159,29 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCustomItemsLimit(customItemsLimit + 90);
 	};
 
-	const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-		const categoryMargin = 12;
-		const { scrollTop } = event.currentTarget;
+	const handleScroll = (range: ListRange) => {
+		const { startIndex } = range;
 
-		const lastCategory = categoriesPosition.current
-			?.filter((category, index = 1) => category.top - categoryMargin * index <= scrollTop)
-			.pop();
+		const category = categoriesIndexes.find(
+			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
+		);
 
-		if (!lastCategory) {
+		if (!category) {
 			return;
 		}
 
-		setCurrentCategory(lastCategory.key);
+		setCurrentCategory(category.key);
 	};
 
-	const handleGoToCategory = (categoryIndex: number) => {
+	const handleGoToCategory = (category: string) => {
 		setSearching(false);
-		virtuosoRef.current?.scrollToIndex({ index: categoryIndex });
+		const { index } = categoriesIndexes.find((item) => item.key === category) || {};
+
+		if (index === undefined) {
+			return;
+		}
+
+		virtuosoRef.current?.scrollToIndex({ index: index > 0 ? index + 1 : 0 });
 	};
 
 	const handleGoToAddCustom = () => {
@@ -181,7 +190,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	return (
-		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
+		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement | null>} ref={emojiContainerRef}>
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
 				<EmojiPickerHeader>
 					<TextInput
@@ -190,29 +199,28 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('Search')}
 						aria-label={t('Search')}
 					/>
 				</EmojiPickerHeader>
 				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
-					{emojiCategories.map((category, index) => (
+					{emojiCategories.map((category) => (
 						<EmojiPickerCategoryItem
 							key={category.key}
-							index={index}
 							category={category}
 							active={category.key === currentCategory}
-							handleGoToCategory={handleGoToCategory}
+							handleGoToCategory={() => handleGoToCategory(category.key)}
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider mb={12} />
+				<Divider marginBlock={12} />
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (
 						<CategoriesResult
 							ref={virtuosoRef}
-							emojiListByCategory={getEmojiListsByCategory()}
+							items={emojiListByCategory}
 							customItemsLimit={customItemsLimit}
 							handleLoadMore={handleLoadMore}
 							handleSelectEmoji={handleSelectEmoji}
@@ -233,7 +241,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						<ToneSelector tone={actualTone} setTone={setActualTone} />
 					</ToneSelectorWrapper>
 				</EmojiPickerPreviewArea>
-				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 			</EmojiPickerContainer>
 		</EmojiPickerDropdown>
 	);

@@ -2,83 +2,83 @@ import type { AccessoryElements, IBlockElement, IImageElement, IInputElement } f
 import type { ITextObject } from './Objects';
 
 export enum BlockType {
-    SECTION = 'section',
-    DIVIDER = 'divider',
-    IMAGE = 'image',
-    ACTIONS = 'actions',
-    CONTEXT = 'context',
-    INPUT = 'input',
-    CONDITIONAL = 'conditional',
+	SECTION = 'section',
+	DIVIDER = 'divider',
+	IMAGE = 'image',
+	ACTIONS = 'actions',
+	CONTEXT = 'context',
+	INPUT = 'input',
+	CONDITIONAL = 'conditional',
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IBlock {
-    type: BlockType;
-    appId?: string;
-    blockId?: string;
+	type: BlockType;
+	appId?: string;
+	blockId?: string;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface ISectionBlock extends IBlock {
-    type: BlockType.SECTION;
-    text: ITextObject;
-    accessory?: AccessoryElements;
+	type: BlockType.SECTION;
+	text: ITextObject;
+	accessory?: AccessoryElements;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IImageBlock extends IBlock {
-    type: BlockType.IMAGE;
-    imageUrl: string;
-    altText: string;
-    title?: ITextObject;
+	type: BlockType.IMAGE;
+	imageUrl: string;
+	altText: string;
+	title?: ITextObject;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IDividerBlock extends IBlock {
-    type: BlockType.DIVIDER;
+	type: BlockType.DIVIDER;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IActionsBlock extends IBlock {
-    type: BlockType.ACTIONS;
-    elements: Array<IBlockElement>;
+	type: BlockType.ACTIONS;
+	elements: Array<IBlockElement>;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IContextBlock extends IBlock {
-    type: BlockType.CONTEXT;
-    elements: Array<ITextObject | IImageElement>;
+	type: BlockType.CONTEXT;
+	elements: Array<ITextObject | IImageElement>;
 }
 
 /**
  * @deprecated please prefer the rocket.chat/ui-kit components
  */
 export interface IInputBlock extends IBlock {
-    type: BlockType.INPUT;
-    element: IInputElement;
-    label: ITextObject;
-    optional?: boolean;
+	type: BlockType.INPUT;
+	element: IInputElement;
+	label: ITextObject;
+	optional?: boolean;
 }
 
 export enum ConditionalBlockFiltersEngine {
-    ROCKETCHAT = 'rocket.chat',
-    LIVECHAT = 'livechat',
+	ROCKETCHAT = 'rocket.chat',
+	LIVECHAT = 'livechat',
 }
 
 export interface IConditionalBlockFilters {
-    engine?: Array<ConditionalBlockFiltersEngine>;
+	engine?: Array<ConditionalBlockFiltersEngine>;
 }
 
 /**
@@ -102,7 +102,7 @@ export interface IConditionalBlockFilters {
  */
 
 export interface IConditionalBlock extends IBlock {
-    type: BlockType.CONDITIONAL;
-    when?: IConditionalBlockFilters;
-    render: Array<IBlock>;
+	type: BlockType.CONDITIONAL;
+	when?: IConditionalBlockFilters;
+	render: Array<IBlock>;
 }

@@ -6,8 +6,8 @@ export const useExternalComponentsQuery = () => {
 	return useQuery({
 		queryKey: ['apps/external-components'],
 
-		queryFn: async () => {
-			return (await getExternalComponents()).externalComponents;
+		queryFn: async ({ signal }) => {
+			return (await getExternalComponents(undefined, { signal })).externalComponents;
 		},
 
 		staleTime: 10_000,

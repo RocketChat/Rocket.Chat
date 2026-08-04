@@ -1,10 +1,11 @@
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { Push } from '../../app/push/server';
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import { getWorkspaceAccessToken } from '../lib/cloud';
+import { Push } from '../lib/notifications/push';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configurePushNotifications(settings: ICachedSettings): Promise<void> {
 	settings.watch<boolean>('Push_enable', async (enabled) => {
 		if (!enabled) {
+			await Push.unconfigure();
 			return;
 		}
 		const gateways =
@@ -27,10 +28,11 @@ export async function configurePushNotifications(settings: ICachedSettings): Pro
 			  }
 			| undefined;
 
+		//  TODO: this part of the code should be refactored as the deprecated GCM methods are no longer being used and FCM is preferred.
 		if (!gateways) {
 			gcm = {
-				apiKey: settings.get('Push_gcm_api_key'),
-				projectNumber: settings.get('Push_gcm_project_number'),
+				apiKey: 'TO_BE_REFACTORED',
+				projectNumber: 'TO_BE_REFACTORED',
 			};
 
 			apn = {

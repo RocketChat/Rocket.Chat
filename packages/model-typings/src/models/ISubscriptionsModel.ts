@@ -1,4 +1,4 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, IMessage, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
 import type {
 	FindOptions,
 	FindCursor,
@@ -13,9 +13,11 @@ import type {
 	DeleteOptions,
 	CountDocumentsOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
@@ -30,11 +32,11 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations?: boolean): Promise<number>;
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
+
+	countUnarchivedByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
@@ -68,10 +70,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
-	updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void>;
-
-	updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void>;
-
 	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
@@ -90,12 +88,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeByRoomId(roomId: ISubscription['rid'], options?: DeleteOptions & { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
-	findByRoomIdExcludingUserIds(
-		roomId: ISubscription['rid'],
-		userIds: ISubscription['u']['_id'][],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
-
 	findConnectedUsersExcept(
 		userId: string,
 		searchTerm: string,
@@ -113,8 +105,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
-
-	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 
 	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 
@@ -149,15 +139,15 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult>;
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
-
-	removeByVisitorToken(token: string): Promise<DeleteResult>;
-	findByToken(token: string, options?: FindOptions): FindCursor<ISubscription>;
+	updateDraftByRoomIdAndUserId(
+		rid: IRoom['_id'],
+		uid: IUser['_id'],
+		draft: string | undefined,
+		tmid?: IMessage['_id'],
+	): Promise<null | WithId<ISubscription>>;
 
 	updateMuteGroupMentions(_id: string, muteGroupMentions: boolean): Promise<UpdateResult>;
-	findByRoomIds(roomIds: ISubscription['u']['_id'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	changeDepartmentByRoomId(rid: string, department: string): Promise<UpdateResult>;
-
-	roleBaseQuery(userId: string, scope?: string): Filter<ISubscription> | void;
 
 	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]>;
 
@@ -168,10 +158,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		usersLimit?: number,
 	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }>;
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document>;
 	findByAutoTranslateAndUserId(
 		userId: ISubscription['u']['_id'],
 		autoTranslate?: ISubscription['autoTranslate'],
@@ -189,18 +178,11 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): FindCursor<ISubscription>;
 
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document>;
-	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription>;
-
-	findOneByRoomNameAndUserId(roomName: string, userId: string): Promise<ISubscription | null>;
-	findDontNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
 	findByUserIdWithoutE2E(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	resetUserE2EKey(userId: string): Promise<UpdateResult | Document>;
-	findAlwaysNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
-	findWithSendEmailByRoomId(roomId: string): FindCursor<ISubscription>;
 	findOneByRoomIdAndUsername(roomId: string, username: string, options: FindOptions<ISubscription>): Promise<ISubscription | null>;
-	findDontNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
 	findByTypeAndUserId(type: ISubscription['t'], userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
@@ -215,34 +197,38 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		typeException: ISubscription['t'],
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
+
+	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptions<P> = FindOptions<P>>(
+		roomId: string,
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
+
 	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	findByRoomIdAndUserIds(
 		roomId: ISubscription['rid'],
 		userIds: ISubscription['u']['_id'][],
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
-	findByUserIdUpdatedAfter(userId: string, updatedAt: Date, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-
-	findByRoomIdAndUserIdsOrAllMessages(roomId: string, userIds: string[]): FindCursor<ISubscription>;
 
 	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null>;
 
 	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult>;
-	findUnreadByUserId(userId: string): FindCursor<ISubscription>;
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
-	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
+	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document>;
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
-	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document>;
 
 	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
@@ -272,8 +258,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	addRoleById(_id: string, role: string): Promise<UpdateResult>;
 
 	removeRoleById(_id: string, role: string): Promise<UpdateResult>;
-	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document>;
-	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document>;
+	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document>;
+	setArchivedForDMsWithUsername(username: string, archived: boolean): Promise<UpdateResult | Document>;
 	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document>;
 	updateNotificationUserPreferences(
 		userId: string,
@@ -298,8 +284,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],
 	): Promise<InsertManyResult<ISubscription>>;
-	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
+	removeInvitedByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
 
 	removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
@@ -320,10 +306,17 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
-	countByUserId(userId: string): Promise<number>;
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
-	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
+	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
+	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
+	findOneBannedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
+	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult>;
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
+	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T>;
 }

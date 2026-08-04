@@ -22,6 +22,9 @@ export const CoreModules = [
 	'unlimited-presence',
 	'contact-id-verification',
 	'teams-voip',
+	'outbound-messaging',
+	'abac',
+	'fips',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];

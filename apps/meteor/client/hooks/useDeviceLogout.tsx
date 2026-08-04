@@ -1,58 +1,73 @@
-import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useRoute, useRouteParameter, useEndpoint, UserContext } from '@rocket.chat/ui-contexts';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useCallback, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from './useEndpointAction';
-import GenericModal from '../components/GenericModal';
+import { deviceManagementQueryKeys } from '../lib/queryKeys';
 
 export const useDeviceLogout = (
 	sessionId: string,
 	endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me',
-): ((onReload: () => void) => void) => {
-	const t = useTranslation();
+	isCurrentSession?: boolean,
+): (() => void) => {
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deviceManagementRouter = useRoute('device-management');
 	const routeId = useRouteParameter('id');
+	const { logout } = useContext(UserContext);
 
-	const logoutDevice = useEndpointAction('POST', endpoint);
+	const queryClient = useQueryClient();
+	const logoutEndpoint = useEndpoint('POST', endpoint);
 
-	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
-
+	const handleCloseContextualBar = useCallback(() => deviceManagementRouter.push({}), [deviceManagementRouter]);
 	const isContextualBarOpen = routeId === sessionId;
 
-	const handleLogoutDeviceModal = useCallback(
-		(onReload: () => void) => {
-			const closeModal = (): void => setModal(null);
+	const { mutate: logoutDevice } = useMutation({
+		mutationFn: logoutEndpoint,
+		onSuccess: () => {
+			if (isCurrentSession) return;
 
-			const handleLogoutDevice = async (): Promise<void> => {
-				try {
-					await logoutDevice({ sessionId });
-					onReload();
-					isContextualBarOpen && handleCloseContextualBar();
-					dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				} finally {
-					closeModal();
-				}
-			};
-
-			setModal(
-				<GenericModal
-					title={t('Logout_Device')}
-					variant='danger'
-					confirmText={t('Logout_Device')}
-					cancelText={t('Cancel')}
-					onConfirm={handleLogoutDevice}
-					onCancel={closeModal}
-					onClose={closeModal}
-				>
-					{t('Device_Logout_Text')}
-				</GenericModal>,
-			);
+			queryClient.invalidateQueries({ queryKey: deviceManagementQueryKeys.all });
+			if (isContextualBarOpen) {
+				handleCloseContextualBar();
+			}
+			dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
 		},
-		[setModal, t, logoutDevice, sessionId, isContextualBarOpen, handleCloseContextualBar, dispatchToastMessage],
-	);
+		onError: (error) => {
+			if (isCurrentSession) return;
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
+			setModal(null);
 
-	return handleLogoutDeviceModal;
+			if (isCurrentSession) {
+				logout();
+			}
+		},
+		throwOnError: false,
+	});
+
+	return useCallback(() => {
+		const closeModal = () => setModal(null);
+
+		const handleLogoutDevice = () => {
+			logoutDevice({ sessionId });
+		};
+
+		setModal(
+			<GenericModal
+				title={t('Logout_Device')}
+				variant='danger'
+				confirmText={t('Logout_Device')}
+				cancelText={t('Cancel')}
+				onConfirm={handleLogoutDevice}
+				onCancel={closeModal}
+				onClose={closeModal}
+			>
+				{t('Device_Logout_Text')}
+			</GenericModal>,
+		);
+	}, [setModal, t, logoutDevice, sessionId]);
 };

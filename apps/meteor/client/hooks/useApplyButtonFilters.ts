@@ -66,7 +66,7 @@ export const useApplyButtonAuthFilter = (): ((button: IUIActionButton) => boolea
 
 			const hasAllPermissionsResult = hasAllPermissions ? queryAllPermissions(hasAllPermissions)[1]() : true;
 			const hasOnePermissionResult = hasOnePermission ? queryAtLeastOnePermission(hasOnePermission)[1]() : true;
-			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(role, room?._id)) : true;
+			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(role, room?._id)[1]()) : true;
 			const hasOneRoleResult = hasOneRole ? !!uid && hasOneRole.some((role) => queryRole(role, room?._id)[1]()) : true;
 
 			return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;

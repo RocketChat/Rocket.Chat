@@ -1,6 +1,6 @@
 import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
+import type { Collection, Db, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -9,7 +9,7 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 		super(db, 'user_data_files', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [...super.modelIndexes(), { key: { userId: 1 } }];
 	}
 
@@ -20,15 +20,5 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 
 		options.sort = { _updatedAt: -1 };
 		return this.findOne(query, options);
-	}
-
-	// INSERT
-	create(data: IUserDataFile): Promise<InsertOneResult<WithId<IUserDataFile>>> {
-		const userDataFile = {
-			createdAt: new Date(),
-			...data,
-		};
-
-		return this.insertOne(userDataFile);
 	}
 }

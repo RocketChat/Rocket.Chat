@@ -9,7 +9,7 @@ export class CronHistoryRaw extends BaseRaw<ICronHistoryItem> implements ICronHi
 		super(db, 'cron_history');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { intendedAt: 1, name: 1 }, unique: true }];
 	}
 }

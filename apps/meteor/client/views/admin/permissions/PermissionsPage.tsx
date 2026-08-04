@@ -1,0 +1,91 @@
+import { Margins, Tabs, TabsItem, Button } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import CustomRoleUpsellModal from './CustomRoleUpsellModal';
+import PermissionsContextBar from './PermissionsContextBar';
+import PermissionsTable from './PermissionsTable';
+import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
+
+export type PermissionsPageProps = { isEnterprise: boolean };
+
+const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
+	const { t } = useTranslation();
+	const [filter, setFilter] = useState('');
+	const canViewPermission = usePermission('access-permissions');
+	const canViewSettingPermission = usePermission('access-setting-permissions');
+	const defaultType = canViewPermission ? 'permissions' : 'settings';
+	const [type, setType] = useState(defaultType);
+	const router = useRoute('admin-permissions');
+	const setModal = useSetModal();
+
+	const paginationData = usePagination();
+	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationData.itemsPerPage, paginationData.current);
+
+	const handlePermissionsTab = useStableCallback(() => {
+		if (type === 'permissions') {
+			return;
+		}
+		setType('permissions');
+	});
+
+	const handleSettingsTab = useStableCallback(() => {
+		if (type === 'settings') {
+			return;
+		}
+		setType('settings');
+	});
+
+	const handleAdd = useStableCallback(() => {
+		if (!isEnterprise) {
+			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
+			return;
+		}
+		router.push({
+			context: 'new',
+		});
+	});
+
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<PageHeader title={t('Permissions')}>
+					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
+						{t('New_role')}
+					</Button>
+				</PageHeader>
+				<Margins blockEnd={16}>
+					<Tabs>
+						<TabsItem
+							selected={type === 'permissions'}
+							onClick={canViewPermission ? handlePermissionsTab : undefined}
+							disabled={!canViewPermission}
+						>
+							{t('Permissions')}
+						</TabsItem>
+						<TabsItem selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
+							{t('Settings')}
+						</TabsItem>
+					</Tabs>
+				</Margins>
+				<PageContent marginBlock='neg-x8'>
+					<Margins block={8}>
+						<PermissionsTable
+							roleList={roleList}
+							permissions={permissions}
+							total={total}
+							setFilter={setFilter}
+							paginationData={paginationData}
+						/>
+					</Margins>
+				</PageContent>
+			</Page>
+			<PermissionsContextBar />
+		</Page>
+	);
+};
+
+export default PermissionsPage;

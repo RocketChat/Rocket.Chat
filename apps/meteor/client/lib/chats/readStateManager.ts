@@ -1,12 +1,12 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../app/models/client';
 import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';
 import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { Messages } from '../../stores';
+import { getUserId } from '../user';
 
 export class ReadStateManager extends Emitter {
 	private rid: IRoom['_id'];
@@ -24,12 +24,6 @@ export class ReadStateManager extends Emitter {
 		return this.rid;
 	}
 
-	// TODO: Use ref to get unreadMark
-	// private unreadMark?: HTMLElement;
-	private get unreadMark() {
-		return document.querySelector<HTMLElement>('.rcx-message-divider--unread');
-	}
-
 	public onUnreadStateChange = (callback: () => void): (() => void) => {
 		return this.on('unread-state-change', callback);
 	};
@@ -37,6 +31,10 @@ export class ReadStateManager extends Emitter {
 	public getFirstUnreadRecordId = () => {
 		return this.firstUnreadRecordId;
 	};
+
+	public subscribeToMessages() {
+		return RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+	}
 
 	public updateSubscription(subscription?: ISubscription) {
 		if (!subscription) {
@@ -46,7 +44,7 @@ export class ReadStateManager extends Emitter {
 		const firstUpdate = !this.subscription;
 
 		this.subscription = subscription;
-		LegacyRoomManager.getOpenedRoomByRid(this.rid)?.unreadSince.set(this.subscription.ls);
+		LegacyRoomManager.setPropertyByRid(this.rid, 'unreadSince', this.subscription.ls);
 
 		const { unread, alert } = this.subscription;
 		if (!unread && !alert) {
@@ -70,26 +68,16 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		const firstUnreadRecord = Messages.findOne(
-			{
-				'rid': this.subscription.rid,
-				'ts': {
-					$gt: this.subscription.ls,
-				},
-				'u._id': {
-					$ne: Meteor.userId() ?? undefined,
-				},
-			},
-			{
-				sort: {
-					ts: 1,
-				},
-			},
+		const firstUnreadRecord = Messages.state.findFirst(
+			(record) =>
+				record.rid === this.subscription?.rid &&
+				record.ts.getTime() > (this.subscription.ls?.getTime() ?? 0) &&
+				record.u._id !== getUserId() &&
+				(!record.tmid || record.tshow === true),
+			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 
 		this.setFirstUnreadRecordId(firstUnreadRecord?._id);
-
-		RoomHistoryManager.once('loaded-messages', () => this.updateFirstUnreadRecordId());
 	}
 
 	private setFirstUnreadRecordId(firstUnreadRecordId: string | undefined) {
@@ -122,12 +110,10 @@ export class ReadStateManager extends Emitter {
 		};
 	};
 
-	private isUnreadMarkVisible(): boolean {
-		if (!this.unreadMark) {
-			return false;
-		}
+	private isUnreadMarkVisible: () => boolean = () => false;
 
-		return this.unreadMark.offsetTop > (this.unreadMark.offsetParent?.scrollTop || 0);
+	public setIsUnreadMarkVisibleCallback(callback: () => boolean) {
+		this.isUnreadMarkVisible = callback;
 	}
 
 	// This will only mark as read if the unread mark is visible
@@ -141,11 +127,11 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (this.unreadMark && !this.isUnreadMarkVisible()) {
+		if (this.firstUnreadRecordId && this.isUnreadMarkVisible() === false) {
 			return;
 		}
 		// if there are unloaded unread messages, don't mark as read
-		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.get() > 0) {
+		if (RoomHistoryManager.getRoom(this.rid).unreadNotLoaded > 0) {
 			return;
 		}
 
@@ -162,12 +148,12 @@ export class ReadStateManager extends Emitter {
 
 	// this will always mark as read.
 	public async markAsRead() {
-		if (!this.rid) {
+		if (!this.rid || !this.subscription?.rid) {
 			return;
 		}
 
 		return sdk.rest.post('/v1/subscriptions.read', { rid: this.rid }).then(() => {
-			RoomHistoryManager.getRoom(this.rid).unreadNotLoaded.set(0);
+			RoomHistoryManager.updateRoom(this.rid, { unreadNotLoaded: 0 });
 		});
 	}
 }

@@ -15,6 +15,7 @@ export type AgentOverviewDataOptions = {
 	chartOptions: {
 		name: string;
 	};
+	executedBy: string;
 };
 
 export type ChartDataOptions = {
@@ -27,6 +28,7 @@ export type ChartDataOptions = {
 	chartOptions: {
 		name: string;
 	};
+	executedBy: string;
 };
 
 export type AnalyticsOverviewDataOptions = {
@@ -40,6 +42,7 @@ export type AnalyticsOverviewDataOptions = {
 	analyticsOptions: {
 		name: string;
 	};
+	executedBy: string;
 };
 
 export type ChartDataResult = {

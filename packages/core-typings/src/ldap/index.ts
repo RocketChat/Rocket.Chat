@@ -1,6 +1,6 @@
-export * from './ILDAPCallback';
-export * from './ILDAPEntry';
-export * from './ILDAPLoginRequest';
-export * from './ILDAPLoginResult';
-export * from './ILDAPOptions';
-export * from './ILDAPUniqueIdentifierField';
+export type * from './ILDAPCallback';
+export type * from './ILDAPEntry';
+export type * from './ILDAPLoginRequest';
+export type * from './ILDAPLoginResult';
+export type * from './ILDAPOptions';
+export type * from './ILDAPUniqueIdentifierField';

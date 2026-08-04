@@ -1,5 +1,6 @@
-export interface ILivechatDepartment {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface ILivechatDepartment extends IRocketChatRecord {
 	name: string;
 	enabled: boolean;
 	description?: string;
@@ -10,7 +11,6 @@ export interface ILivechatDepartment {
 	chatClosingTags?: string[];
 	offlineMessageChannelName: string;
 	numAgents: number;
-	_updatedAt?: Date;
 	businessHourId?: string;
 	fallbackForwardDepartment?: string;
 	archived?: boolean;
@@ -35,4 +35,7 @@ export type LivechatDepartmentDTO = {
 	fallbackForwardDepartment?: string | undefined;
 	departmentsAllowedToForward?: string[] | undefined;
 	allowReceiveForwardOffline?: boolean;
+	offlineMessageChannelName?: string | undefined;
+	abandonedRoomsCloseCustomMessage?: string | undefined;
+	waitingQueueMessage?: string | undefined;
 };

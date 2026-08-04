@@ -14,7 +14,7 @@ const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => 
 	data.result ? confirm(data) : cancel();
 };
 
-type IframeModalProps = {
+export type IframeModalProps = {
 	url: string;
 	confirm: (data: any) => void;
 	cancel: () => void;

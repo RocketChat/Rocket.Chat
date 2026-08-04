@@ -19,7 +19,7 @@ export const handleMessagesSent = async (message: IMessage, { room }: { room?: I
 	return message;
 };
 
-export const handleMessagesDeleted = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
+export const handleMessagesDeleted = async (message: IMessage, { room }: { room: IRoom }): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
@@ -34,11 +34,11 @@ export const handleMessagesDeleted = async (message: IMessage, room?: IRoom): Pr
 };
 
 export const fillFirstDaysOfMessagesIfNeeded = async (date: Date): Promise<void> => {
-	const messagesFromAnalytics = await Analytics.findByTypeBeforeDate({
+	const messagesFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'messages',
 		date: convertDateToInt(date),
-	}).toArray();
-	if (!messagesFromAnalytics.length) {
+	});
+	if (!messagesFromAnalytics) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
 		const messages = await Messages.getTotalOfMessagesSentByDate({
 			start: startOfPeriod,

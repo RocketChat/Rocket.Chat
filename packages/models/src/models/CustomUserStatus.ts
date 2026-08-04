@@ -9,7 +9,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		super(db, 'custom_user_status', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }];
 	}
 
@@ -19,6 +19,15 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 
 	async findOneByName(name: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
 		return options ? this.findOne({ name }, options) : this.findOne({ name });
+	}
+
+	findOneByNameExceptId(name: string, except: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
+		const query = {
+			_id: { $nin: [except] },
+			name,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	// find

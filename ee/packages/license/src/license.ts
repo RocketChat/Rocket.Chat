@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 import type {
 	ILicenseTag,
 	LicenseEvents,
@@ -14,17 +16,33 @@ import type {
 import { Emitter } from '@rocket.chat/emitter';
 
 import { getLicenseLimit } from './deprecated';
+import type { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
+import type { onLicense } from './events/deprecated';
 import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter';
+import type {
+	onBehaviorTriggered,
+	onInvalidFeature,
+	onInvalidateLicense,
+	onLimitReached,
+	onModule,
+	onToggledFeature,
+	onValidFeature,
+	onValidateLicense,
+} from './events/listeners';
+import type { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { logger } from './logger';
+import type { getModuleDefinition, hasModule } from './modules';
 import { getExternalModules, getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
+import type { getTags } from './tags';
 import { replaceTags } from './tags';
 import { decrypt } from './token';
 import { convertToV3 } from './v2/convertToV3';
 import { filterBehaviorsResult } from './validation/filterBehaviorsResult';
+import type { setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
 import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
@@ -36,7 +54,64 @@ import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
-export class LicenseManager extends Emitter<LicenseEvents> {
+// The behaviors that decide whether (and how) a license is installed. Shared between the actual
+// validation performed on apply and the dry-run preview so both stay in sync if a behavior is added.
+const licenseValidationBehaviors: LicenseBehavior[] = [
+	'invalidate_license',
+	'start_fair_policy',
+	'prevent_installation',
+	'disable_modules',
+];
+
+export abstract class LicenseManager extends Emitter<LicenseEvents> {
+	abstract validateFormat: typeof validateFormat;
+
+	abstract hasModule: typeof hasModule;
+
+	abstract getModules: typeof getModules;
+
+	abstract getModuleDefinition: typeof getModuleDefinition;
+
+	abstract getExternalModules: typeof getExternalModules;
+
+	abstract getTags: typeof getTags;
+
+	abstract overwriteClassOnLicense: typeof overwriteClassOnLicense;
+
+	abstract setLicenseLimitCounter: typeof setLicenseLimitCounter;
+
+	abstract getCurrentValueForLicenseLimit: typeof getCurrentValueForLicenseLimit;
+
+	abstract isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean>;
+
+	abstract onValidFeature: typeof onValidFeature;
+
+	abstract onInvalidFeature: typeof onInvalidFeature;
+
+	abstract onToggledFeature: typeof onToggledFeature;
+
+	abstract onModule: typeof onModule;
+
+	abstract onValidateLicense: typeof onValidateLicense;
+
+	abstract onInvalidateLicense: typeof onInvalidateLicense;
+
+	abstract onLimitReached: typeof onLimitReached;
+
+	abstract onBehaviorTriggered: typeof onBehaviorTriggered;
+
+	// Deprecated:
+	abstract onLicense: typeof onLicense;
+
+	// Deprecated:
+	abstract getMaxActiveUsers: typeof getMaxActiveUsers;
+
+	// Deprecated:
+	abstract getAppsConfig: typeof getAppsConfig;
+
+	// Deprecated:
+	abstract getUnmodifiedLicenseAndModules: typeof getUnmodifiedLicenseAndModules;
+
 	dataCounters = new Map<LicenseLimitKind, (context?: LimitContext<LicenseLimitKind>) => Promise<number>>();
 
 	pendingLicense = '';
@@ -95,6 +170,20 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	public getWorkspaceUrl() {
 		return this.workspaceUrl;
+	}
+
+	public hashWorkspaceUrl(url: string) {
+		return crypto.createHash('sha256').update(url).digest('hex');
+	}
+
+	public getHashedWorkspaceUrl() {
+		const workspaceUrl = this.getWorkspaceUrl();
+
+		if (!workspaceUrl) {
+			return undefined;
+		}
+
+		return this.hashWorkspaceUrl(workspaceUrl);
 	}
 
 	public async revalidateLicense(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {
@@ -203,7 +292,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const validationResult = await runValidation.call(this, this._license, {
-			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
+			behaviors: licenseValidationBehaviors,
 			...options,
 		});
 
@@ -246,6 +335,48 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		) {
 			this.emit('sync');
 		}
+	}
+
+	/**
+	 * Validates a license against the current workspace state without applying it.
+	 *
+	 * Runs the same validation pipeline used when a license is set (URL, periods and limits),
+	 * but does not store the license, change validity, replace modules/tags nor emit events.
+	 * It is meant to power a preview of whether a license would be accepted before committing
+	 * to it from the admin UI.
+	 *
+	 * Returns whether the license would be accepted and, when not, the behaviors that reject it.
+	 * A malformed string is reported as invalid with no reasons rather than thrown, so callers can
+	 * treat every rejected license uniformly. Mirrors the apply path in throwing
+	 * `NotReadyForValidation` while the workspace can't validate yet.
+	 */
+	public async validateLicenseForPreview(
+		encryptedLicense: string,
+	): Promise<{ valid: true } | { valid: false; reasons: BehaviorWithContext[] }> {
+		if (!isReadyForValidation.call(this)) {
+			throw new NotReadyForValidation();
+		}
+
+		let license: ILicenseV3;
+		try {
+			await validateFormat(encryptedLicense);
+
+			const decrypted = JSON.parse(await decrypt(encryptedLicense));
+			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+		} catch (err) {
+			logger.error({ msg: 'Invalid raw license provided for validation preview', err });
+			return { valid: false, reasons: [] };
+		}
+
+		const validationResult = await runValidation.call(this, license, {
+			behaviors: licenseValidationBehaviors,
+			isNewLicense: true,
+			suppressLog: true,
+		});
+
+		const reasons = filterBehaviorsResult(validationResult, ['invalidate_license', 'prevent_installation']);
+
+		return reasons.length ? { valid: false, reasons } : { valid: true };
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
@@ -291,10 +422,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			this.emit('installed');
 
 			return true;
-		} catch (e) {
-			logger.error('Invalid license');
-
-			logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
+		} catch (err) {
+			logger.error({ msg: 'Invalid raw license', encryptedLicense, err });
 
 			throw new InvalidLicenseError();
 		}
@@ -320,6 +449,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		if (this._valid && this._license) {
 			return this._license;
 		}
+
+		return undefined;
+	}
+
+	public hasOfflineLicense(): boolean {
+		return this.getLicense()?.information.offline ?? false;
 	}
 
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
@@ -344,10 +479,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const items = await Promise.all(
 			keys.map(async (limit) => {
-				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
+				const cached = this.shouldPreventActionResults.get(limit);
 
 				if (cached !== undefined) {
-					return [limit as LicenseLimitKind, cached];
+					return [limit, cached];
 				}
 
 				const fresh = license
@@ -362,9 +497,9 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 							'prevent_action',
 						]);
 
-				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
+				this.shouldPreventActionResults.set(limit, fresh);
 
-				return [limit as LicenseLimitKind, fresh];
+				return [limit, fresh];
 			}),
 		);
 
@@ -502,6 +637,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
+			hasValidLicense: this.hasValidLicense(),
 		};
 	}
 }

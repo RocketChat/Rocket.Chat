@@ -22,6 +22,7 @@ const userContextValue: ContextType<typeof UserContext> = {
 	queryRoom: () => [() => () => undefined, () => undefined],
 
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
 const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => {
@@ -31,6 +32,8 @@ const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<
 	};
 };
 
-export const MockedUserContext = ({ userPreferences, children }: { children: ReactNode; userPreferences?: Record<string, unknown> }) => {
+export type MockedUserContextProps = { children: ReactNode; userPreferences?: Record<string, unknown> };
+
+export const MockedUserContext = ({ userPreferences, children }: MockedUserContextProps) => {
 	return <UserContext.Provider value={createUserContextValue({ userPreferences })}>{children}</UserContext.Provider>;
 };

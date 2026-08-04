@@ -1,11 +1,11 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeFromNow } from '../../../hooks/useTimeFromNow';
 
@@ -17,14 +17,14 @@ const isExpired = (expires: IInvite['expires']): boolean => {
 	return false;
 };
 
-type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
+export type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
 	onRemove: (removeInvite: () => Promise<boolean>) => void;
 	_updatedAt: string;
 	createdAt: string;
 	expires: string | null;
 };
 
-const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps): ReactElement => {
+const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const removeInvite = useEndpoint('DELETE', '/v1/removeInvite/:_id', { _id });

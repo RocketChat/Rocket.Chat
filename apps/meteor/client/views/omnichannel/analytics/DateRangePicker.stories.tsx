@@ -1,9 +1,8 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import DateRangePicker from './DateRangePicker';
 
 export default {
-	title: 'Omnichannel/DateRangePicker',
 	component: DateRangePicker,
 	parameters: {
 		layout: 'centered',
@@ -12,5 +11,6 @@ export default {
 	},
 } satisfies Meta<typeof DateRangePicker>;
 
-export const Default: StoryFn<typeof DateRangePicker> = (args) => <DateRangePicker {...args} />;
-Default.storyName = 'DateRangePicker';
+export const Default: StoryObj<typeof DateRangePicker> = {
+	name: 'DateRangePicker',
+};

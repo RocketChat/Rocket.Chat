@@ -1,16 +1,16 @@
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type LanguageSettingInputProps = SettingInputProps<string, string | number>;
+export type LanguageSettingInputProps = SettingInputProps<string, string | number>;
 
 function LanguageSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -19,7 +19,7 @@ function LanguageSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LanguageSettingInputProps): ReactElement {
+}: LanguageSettingInputProps) {
 	const languages = useLanguages();
 
 	const handleChange = (value: string): void => {
@@ -32,11 +32,10 @@ function LanguageSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Select
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}
@@ -47,6 +46,7 @@ function LanguageSettingInput({
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

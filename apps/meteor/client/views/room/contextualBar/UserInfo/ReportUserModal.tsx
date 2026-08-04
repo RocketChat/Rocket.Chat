@@ -1,12 +1,11 @@
 import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useId, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal/GenericModal';
-
-type ReportUserModalProps = {
+export type ReportUserModalProps = {
 	onConfirm: (reasonForReport: string) => void;
 	onClose: () => void;
 	displayName: string;
@@ -43,9 +42,9 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box mbe={16} display='flex' alignItems='center'>
+			<Box marginBlockEnd={16} display='flex' alignItems='center'>
 				<UserAvatar username={username} />
-				<Box mis={8} fontScale='p2b'>
+				<Box marginInlineStart={8} fontScale='p2b'>
 					{displayName}
 				</Box>
 			</Box>
@@ -59,7 +58,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 							rows={3}
 							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
 							width='full'
-							mbe={4}
+							marginBlockEnd={4}
 							aria-required='true'
 							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
 						/>

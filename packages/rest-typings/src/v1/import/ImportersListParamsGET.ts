@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajvQuery } from '../Ajv';
 
 export type ImportersListParamsGET = Record<string, unknown>;
 
@@ -13,4 +9,4 @@ const ImportersListParamsGETSchema = {
 	required: [],
 };
 
-export const isImportersListParamsGET = ajv.compile<ImportersListParamsGET>(ImportersListParamsGETSchema);
+export const isImportersListParamsGET = ajvQuery.compile<ImportersListParamsGET>(ImportersListParamsGETSchema);

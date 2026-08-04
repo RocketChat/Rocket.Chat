@@ -1,0 +1,166 @@
+import { faker } from '@faker-js/faker';
+
+import { DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { Login, Registration } from './page-objects';
+import { Navbar, RoomSidebar } from './page-objects/fragments';
+import { getSettingValueById, setSettingValueById } from './utils';
+import { test, expect } from './utils/test';
+import type { ITestUser } from './utils/user-helpers';
+import { createTestUser } from './utils/user-helpers';
+
+test.describe('User - Password change required', () => {
+	let poLogin: Login;
+	let poRegistration: Registration;
+	let navbar: Navbar;
+	let sidebar: RoomSidebar;
+	let userRequiringPasswordChange: ITestUser;
+	let userNotRequiringPasswordChange: ITestUser;
+	let userNotAbleToLogin: ITestUser;
+	let settingDefaultValue: unknown;
+
+	test.beforeAll(async ({ api }) => {
+		settingDefaultValue = await getSettingValueById(api, 'Accounts_RequirePasswordConfirmation');
+		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
+		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', true);
+		userRequiringPasswordChange = await createTestUser(api, { data: { requirePasswordChange: true } });
+		userNotRequiringPasswordChange = await createTestUser(api, { data: { requirePasswordChange: false } });
+		userNotAbleToLogin = await createTestUser(api, { data: { requirePasswordChange: true } });
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poLogin = new Login(page);
+		poRegistration = new Registration(page);
+		navbar = new Navbar(page);
+		sidebar = new RoomSidebar(page);
+		await page.goto('/home');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', settingDefaultValue),
+			userRequiringPasswordChange.delete(),
+			userNotRequiringPasswordChange.delete(),
+			userNotAbleToLogin.delete(),
+			setSettingValueById(api, 'Accounts_Password_Policy_Enabled', true),
+		]);
+	});
+
+	test('should redirect to home after successful password change for new user', async ({ page }) => {
+		await test.step('login with temporary password', async () => {
+			await poLogin.login(userRequiringPasswordChange.data.username, DEFAULT_USER_CREDENTIALS.password);
+		});
+
+		await test.step('should be redirected to password change screen', async () => {
+			await expect(poRegistration.inputPassword).toBeVisible();
+			await expect(poRegistration.inputPasswordConfirm).toBeVisible();
+		});
+
+		await test.step('enter new password and confirm', async () => {
+			const newPassword = faker.internet.password();
+			await poRegistration.inputPassword.fill(newPassword);
+			await poRegistration.inputPasswordConfirm.fill(newPassword);
+		});
+
+		await test.step('click reset button', async () => {
+			await poRegistration.btnReset.click();
+		});
+
+		await test.step('verify password reset form is not visible', async () => {
+			await page.waitForURL('/home');
+			await expect(poRegistration.inputPassword).not.toBeVisible();
+			await expect(poRegistration.inputPasswordConfirm).not.toBeVisible();
+		});
+
+		await test.step('verify user is properly logged in', async () => {
+			await expect(navbar.btnUserMenu).toBeVisible();
+			await expect(sidebar.channelsList).toBeVisible();
+		});
+	});
+
+	test('should show error when password confirmation does not match', async () => {
+		await test.step('login with temporary password', async () => {
+			await poLogin.login(userNotAbleToLogin.data.username, DEFAULT_USER_CREDENTIALS.password);
+		});
+
+		await test.step('should be redirected to password change screen', async () => {
+			await expect(poRegistration.inputPassword).toBeVisible();
+			await expect(poRegistration.inputPasswordConfirm).toBeVisible();
+		});
+
+		await test.step('enter different passwords in password and confirm fields', async () => {
+			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.inputPasswordConfirm.fill(faker.internet.password());
+		});
+
+		await test.step('attempt to submit password change', async () => {
+			await poRegistration.btnReset.click();
+		});
+
+		await test.step('verify error message appears for password mismatch', async () => {
+			await expect(poRegistration.inputPasswordConfirm).toBeInvalid();
+		});
+	});
+
+	test('should show error when user tries to use the same password as current', async () => {
+		await test.step('login with temporary password', async () => {
+			await poLogin.login(userNotAbleToLogin.data.username, DEFAULT_USER_CREDENTIALS.password);
+		});
+
+		await test.step('should be redirected to password change screen', async () => {
+			await expect(poRegistration.inputPassword).toBeVisible();
+			await expect(poRegistration.inputPasswordConfirm).toBeVisible();
+		});
+
+		await test.step('enter the same password as current password', async () => {
+			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.inputPasswordConfirm.fill(DEFAULT_USER_CREDENTIALS.password);
+		});
+
+		await test.step('attempt to submit password change', async () => {
+			await poRegistration.btnReset.click();
+		});
+
+		await test.step('verify error message appears for same password', async () => {
+			await expect(poRegistration.inputPassword).toBeInvalid();
+		});
+	});
+});
+
+test.describe('User - Password change not required', () => {
+	let poLogin: Login;
+	let navbar: Navbar;
+	let sidebar: RoomSidebar;
+	let userNotRequiringPasswordChange: ITestUser;
+	let settingDefaultValue: unknown;
+
+	test.beforeAll(async ({ api }) => {
+		settingDefaultValue = await getSettingValueById(api, 'Accounts_RequirePasswordConfirmation');
+		userNotRequiringPasswordChange = await createTestUser(api, { data: { requirePasswordChange: false } });
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poLogin = new Login(page);
+		navbar = new Navbar(page);
+		sidebar = new RoomSidebar(page);
+		await page.goto('/home');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', settingDefaultValue),
+			userNotRequiringPasswordChange.delete(),
+		]);
+	});
+
+	test('should not require password change if the requirePasswordChange is disabled', async ({ page }) => {
+		await test.step('login with user not requiring password change', async () => {
+			await poLogin.login(userNotRequiringPasswordChange.data.username, DEFAULT_USER_CREDENTIALS.password);
+		});
+
+		await test.step('verify user is properly logged in', async () => {
+			await page.waitForURL('/home');
+			await expect(navbar.btnUserMenu).toBeVisible();
+			await expect(sidebar.channelsList).toBeVisible();
+		});
+	});
+});

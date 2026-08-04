@@ -9,37 +9,37 @@ import type { ISchedulerModify } from './ISchedulerModify';
 import type { IUIController } from './IUIController';
 
 export interface IModify {
-    getCreator(): IModifyCreator;
+	getCreator(): IModifyCreator;
 
-    getDeleter(): IModifyDeleter;
+	getDeleter(): IModifyDeleter;
 
-    getExtender(): IModifyExtender;
+	getExtender(): IModifyExtender;
 
-    getUpdater(): IModifyUpdater;
+	getUpdater(): IModifyUpdater;
 
-    /**
-     * Gets the accessor for sending notifications to a user or users in a room.
-     *
-     * @returns the notifier accessor
-     */
-    getNotifier(): INotifier;
-    /**
-     * Gets the accessor for interacting with the UI
-     */
-    getUiController(): IUIController;
+	/**
+	 * Gets the accessor for sending notifications to a user or users in a room.
+	 *
+	 * @returns the notifier accessor
+	 */
+	getNotifier(): INotifier;
+	/**
+	 * Gets the accessor for interacting with the UI
+	 */
+	getUiController(): IUIController;
 
-    /**
-     * Gets the accessor for creating scheduled jobs
-     */
-    getScheduler(): ISchedulerModify;
+	/**
+	 * Gets the accessor for creating scheduled jobs
+	 */
+	getScheduler(): ISchedulerModify;
 
-    /**
-     * Gets the accessor for creating OAuth apps
-     */
-    getOAuthAppsModifier(): IOAuthAppsModify;
-    /**
-     * Gets the accessor for modifying moderation
-     * @returns the moderation accessor
-     */
-    getModerationModifier(): IModerationModify;
+	/**
+	 * Gets the accessor for creating OAuth apps
+	 */
+	getOAuthAppsModifier(): IOAuthAppsModify;
+	/**
+	 * Gets the accessor for modifying moderation
+	 * @returns the moderation accessor
+	 */
+	getModerationModifier(): IModerationModify;
 }

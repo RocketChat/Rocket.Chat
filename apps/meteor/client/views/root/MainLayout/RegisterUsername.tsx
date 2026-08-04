@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { TextInput, ButtonGroup, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { VerticalWizardLayout, Form } from '@rocket.chat/layout';
+import { VerticalWizardLayout, Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle } from '@rocket.chat/layout';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useSetting,
@@ -10,7 +10,6 @@ import {
 	useUserId,
 	useToastMessageDispatch,
 	useAssetWithDarkModePath,
-	useMethod,
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -38,8 +37,8 @@ const RegisterUsername = () => {
 		throw new Error('Invalid user');
 	}
 
-	const setUsername = useMethod('setUsername');
-	const saveCustomFields = useMethod('saveCustomFields');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
+
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
 	const { data, isLoading } = useQuery({
 		queryKey: ['suggestion'],
@@ -54,9 +53,7 @@ const RegisterUsername = () => {
 		setError,
 		control,
 		formState: { errors },
-	} = useForm<RegisterUsernamePayload>({
-		mode: 'onBlur',
-	});
+	} = useForm<RegisterUsernamePayload>();
 
 	useEffect(() => {
 		if (data?.result && getValues('username') === '') {
@@ -69,11 +66,13 @@ const RegisterUsername = () => {
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
-			return Promise.all([setUsername(username), saveCustomFields({ ...customFields })]);
+			return Promise.all([setBasicInfo({ data: { username }, customFields })]);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
 			queryClient.invalidateQueries({ queryKey: ['users.info'] });
+			// Reload to redo any onLogin request that may have failed without an username
+			location.reload();
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {
@@ -95,14 +94,14 @@ const RegisterUsername = () => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
 			<Form aria-labelledby={formLabelId} onSubmit={handleSubmit((data) => registerUsernameMutation.mutate(data))}>
-				<Form.Header>
-					<Form.Title id={formLabelId}>{t('Username_title')}</Form.Title>
-					<Form.Subtitle>{t('Username_description')}</Form.Subtitle>
-				</Form.Header>
-				<Form.Container>
+				<FormHeader>
+					<FormTitle id={formLabelId}>{t('Username_title')}</FormTitle>
+					<FormSubtitle>{t('Username_description')}</FormSubtitle>
+				</FormHeader>
+				<FormContainer>
 					{!isLoading && (
 						<FieldGroup>
 							<Field>
@@ -123,15 +122,15 @@ const RegisterUsername = () => {
 					)}
 					{isLoading && t('Loading_suggestion')}
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
-				</Form.Container>
-				<Form.Footer>
+				</FormContainer>
+				<FormFooter>
 					<ButtonGroup stretch vertical>
 						<Button disabled={isLoading} type='submit' primary>
 							{t('Use_this_username')}
 						</Button>
 						<Button onClick={logout}>{t('Logout')}</Button>
 					</ButtonGroup>
-				</Form.Footer>
+				</FormFooter>
 			</Form>
 		</VerticalWizardLayout>
 	);

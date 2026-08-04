@@ -1,20 +1,17 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { ApiBridge } from '@rocket.chat/apps/dist/server/bridges/ApiBridge';
+import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
-import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
-import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { apiServer } from './router';
+import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 
-const apiServer = express();
-
-apiServer.disable('x-powered-by');
-
-WebApp.connectHandlers.use(apiServer);
+WebApp.rawConnectHandlers.use(apiServer);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;

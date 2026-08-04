@@ -2,10 +2,10 @@ import type { ComponentChildren } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
-type ComposerActionsProps = {
+export type ComposerActionsProps = {
 	className?: string;
 	style?: CSSProperties;
 	children?: ComponentChildren;

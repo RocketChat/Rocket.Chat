@@ -128,9 +128,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 
 	findAvailableSources(): AggregationCursor<Document>;
-
-	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
-	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
 	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult>;
 
 	setEmailTranscriptRequestedByRoomId(
@@ -148,7 +145,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	saveRoomById(
 		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
 	): Promise<UpdateResult | undefined>;
-	findById(_id: string, fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
 	findByIds(
 		ids: string[],
 		fields?: FindOptions<IOmnichannelRoom>['projection'],
@@ -159,21 +155,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		visitorToken: string,
 		fields?: FindOptions<IOmnichannelRoom>['projection'],
 	): Promise<IOmnichannelRoom | null>;
-	findOneByVisitorTokenAndEmailThread(
-		visitorToken: string,
-		emailThread: string[],
-		options?: FindOptions<IOmnichannelRoom>,
-	): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorTokenAndEmailThreadAndDepartment(
 		visitorToken: string,
 		emailThread: string[],
 		departmentId?: string,
 		options?: FindOptions<IOmnichannelRoom>,
-	): Promise<IOmnichannelRoom | null>;
-	findOneOpenByVisitorTokenAndEmailThread(
-		visitorToken: string,
-		emailThread: string[],
-		options: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
@@ -187,7 +173,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		association: ILivechatContactVisitorAssociation,
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
-	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	findOneOpenByVisitorToken(
+		visitorToken: string,
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
 		departmentId?: string,
@@ -200,7 +190,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
-	findByVisitorToken(visitorToken: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 	findByVisitorIdAndAgentId(
 		visitorId?: string,
 		agentId?: string,
@@ -252,18 +241,21 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		date: { gte: Date; lte: Date },
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
-	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	findOpenByAgent(
+		userId: string,
+		extraQuery?: Filter<IOmnichannelRoom>,
+		options?: FindOptions<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
 	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): Promise<number>;
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
 	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
-	removeByVisitorToken(token: string): Promise<DeleteResult>;
+	removeByVisitorId(_id: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
 	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
-	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
 	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
@@ -288,4 +280,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document>;
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null>;
 }

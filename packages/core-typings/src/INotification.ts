@@ -1,6 +1,8 @@
 import type { ICalendarEvent } from './ICalendarEvent';
 import type { IMessage } from './IMessage';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
+import type { ISubscription } from './ISubscription';
 
 export interface INotificationItemPush {
 	type: 'push';
@@ -36,8 +38,7 @@ export interface INotificationItemEmail {
 
 export type NotificationItem = INotificationItemPush | INotificationItemEmail;
 
-export interface INotification {
-	_id: string;
+export interface INotification extends IRocketChatRecord {
 	uid: string;
 	rid: string;
 	mid: string;
@@ -63,7 +64,9 @@ export interface INotificationDesktop {
 		message: {
 			msg: IMessage['msg'];
 			t?: IMessage['t'];
+			content?: IMessage['content'];
 		};
+		audioNotificationValue: ISubscription['audioNotificationValue'];
 	};
 }
 
@@ -72,5 +75,6 @@ export interface ICalendarNotification {
 	text: string;
 	payload: {
 		_id: ICalendarEvent['_id'];
+		startTimeUtc?: string;
 	};
 }

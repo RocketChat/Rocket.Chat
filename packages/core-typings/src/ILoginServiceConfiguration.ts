@@ -34,6 +34,11 @@ export type OAuthConfiguration = {
 	mergeRoles: boolean;
 	rolesToSync: string;
 	showButton: boolean;
+	addAutopublishFields?: {
+		forLoggedInUser: string[];
+		forOtherUsers: string[];
+	};
+	pkce?: boolean;
 };
 
 export type FacebookOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
@@ -62,6 +67,8 @@ export type CASConfiguration = {
 	autoclose: boolean;
 };
 
+export type SAMLSignatureAlgorithm = 'SHA1' | 'SHA256' | 'SHA384' | 'SHA512';
+
 export type SAMLConfiguration = {
 	buttonLabelText: string;
 	buttonLabelColor: string;
@@ -84,8 +91,11 @@ export type SAMLConfiguration = {
 		privateKey: string;
 		publicCert: string;
 		cert: string;
+		algorithm: SAMLSignatureAlgorithm;
 	};
-	signatureValidationType: 'All' | 'Response' | 'Assertion' | 'Either';
+	signatureValidationType: 'All' | 'Response' | 'Assertion' | 'Either' | 'None';
+	validateLogoutRequestSignature: boolean;
+	validateLogoutResponseSignature: boolean;
 	userDataFieldMap: string;
 	allowedClockDrift: number;
 	channelsAttributeUpdate: boolean;

@@ -1,10 +1,9 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import MessagesRoomsCard from './MessagesRoomsCard';
 
 export default {
-	title: 'Admin/Info/MessagesRoomsCard',
 	component: MessagesRoomsCard,
 	parameters: {
 		layout: 'centered',
@@ -24,8 +23,5 @@ export default {
 	},
 } satisfies Meta<typeof MessagesRoomsCard>;
 
-const Template: StoryFn<typeof MessagesRoomsCard> = (args) => <MessagesRoomsCard {...args} />;
-
-export const Example = Template.bind({});
-
-export const Vertical = Template.bind({});
+export const Example = {};
+export const Vertical = {};

@@ -9,7 +9,7 @@ export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implemen
 		super(db, 'integration_history');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } },
 			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 60 },

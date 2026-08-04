@@ -118,11 +118,15 @@ class MessageSearchQueryParser {
 	 * Filter image tags
 	 */
 	private consumeLabel(text: string) {
-		return text.replace(/label:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/label:*"([^"]+)"|label:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
 			this.query['attachments.0.labels'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
+
 			return '';
 		});
 	}
@@ -131,11 +135,15 @@ class MessageSearchQueryParser {
 	 * Filter on description of messages.
 	 */
 	private consumeFileDescription(text: string) {
-		return text.replace(/file-desc:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/file-desc:"([^"]+)"|file-desc:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
 			this.query['attachments.description'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
+
 			return '';
 		});
 	}
@@ -144,9 +152,12 @@ class MessageSearchQueryParser {
 	 * Filter on title of messages.
 	 */
 	private consumeFileTitle(text: string) {
-		return text.replace(/file-title:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/file-title:"([^"]+)"|file-title:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
+
 			this.query['attachments.title'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
 
@@ -239,11 +250,17 @@ class MessageSearchQueryParser {
 
 		if (/^\/.+\/[imxs]*$/.test(text)) {
 			const r = text.split('/');
+
+			// We remove the 'x' flag that JS does not support but Mongo does
+			new RegExp(r[1], r[2].replace(/x/g, ''));
+
 			this.query.msg = {
 				$regex: r[1],
 				$options: r[2],
 			};
 		} else if (this.forceRegex) {
+			new RegExp(text, 'i');
+
 			this.query.msg = {
 				$regex: text,
 				$options: 'i',

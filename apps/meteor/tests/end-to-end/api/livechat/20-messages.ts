@@ -46,7 +46,7 @@ describe('LIVECHAT - messages', () => {
 
 			const msgLink = `${siteUrl}/live/${roomId}?msg=${agentMsg._id}`;
 			const quotedMsgSentence = faker.lorem.sentence();
-			const wholeQuotedMsg = `[${msgLink}](${quotedMsgSentence})`;
+			const wholeQuotedMsg = `[${quotedMsgSentence}](${msgLink})`;
 
 			const quotedMessage = await sendMessage(roomId, wholeQuotedMsg, token);
 

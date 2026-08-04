@@ -1,10 +1,9 @@
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { getDdpSdk } from './sdk/ddpSdk';
+import { getUserId } from './user';
 
 const isLoggedIn = () => {
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	return uid !== null;
+	const uid = getUserId();
+	return !!uid;
 };
 
 export const whenLoggedIn = () => {
@@ -13,8 +12,8 @@ export const whenLoggedIn = () => {
 	}
 
 	return new Promise<void>((resolve) => {
-		const subscription = Accounts.onLogin(() => {
-			subscription.stop();
+		const stop = getDdpSdk().account.onLogin(() => {
+			stop();
 			resolve();
 		});
 	});
@@ -30,11 +29,11 @@ export const onLoggedIn = (cb: (() => () => void) | (() => Promise<() => void>) 
 		}
 	};
 
-	const subscription = Accounts.onLogin(handler);
+	const stop = getDdpSdk().account.onLogin(handler);
 	if (isLoggedIn()) handler();
 
 	return () => {
-		subscription.stop();
+		stop();
 		cleanup?.();
 	};
 };

@@ -1,4 +1,4 @@
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -6,52 +6,33 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
-import type { FieldExpression, Query } from '../../../../../lib/minimongo';
-import { createFilterFromQuery } from '../../../../../lib/minimongo';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
+import { createDeleteCriteria } from '../../../../../lib/utils/threadMessageUtils';
 import { useRoom } from '../../../contexts/RoomContext';
 
 type RoomMessagesRidEvent = IMessage;
-
-type NotifyRoomRidDeleteMessageBulkEvent = {
-	rid: IMessage['rid'];
-	excludePinned: boolean;
-	ignoreDiscussion: boolean;
-	ts: FieldExpression<Date>;
-	users: string[];
-	ids?: string[]; // message ids have priority over ts
-	showDeletedStatus?: boolean;
-};
-
-const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Query<IMessage> = {};
-
-	if (params.ids) {
-		query._id = { $in: params.ids };
-	} else {
-		query.ts = params.ts;
-	}
-
-	if (params.excludePinned) {
-		query.pinned = { $ne: true };
-	}
-
-	if (params.ignoreDiscussion) {
-		query.drid = { $exists: false };
-	}
-	if (params.users?.length) {
-		query['u.username'] = { $in: params.users };
-	}
-
-	return createFilterFromQuery<IMessage>(query);
-};
 
 const useSubscribeToMessage = () => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	return useCallback(
-		(message: IMessage, { onMutate, onDelete }: { onMutate?: (message: IMessage) => void; onDelete?: () => void }) => {
+		(
+			message: IMessage,
+			{
+				onMutate,
+				onDelete,
+				onFilesDelete,
+				onMessagesRead,
+			}: {
+				onMutate?: (message: IMessage) => void | Promise<void>;
+				onDelete?: () => void | Promise<void>;
+				onFilesDelete?: (replaceFileAttachmentsWith?: MessageAttachment) => void | Promise<void>;
+				onMessagesRead?: (event: { tmid?: string; until: Date }) => void | Promise<void>;
+			},
+		) => {
 			const unsubscribeFromRoomMessages = subscribeToRoomMessages(message.rid, (event: RoomMessagesRidEvent) => {
 				if (message._id === event._id) onMutate?.(event);
 			});
@@ -62,13 +43,23 @@ const useSubscribeToMessage = () => {
 
 			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${message.rid}/deleteMessageBulk`, (params) => {
 				const matchDeleteCriteria = createDeleteCriteria(params);
-				if (matchDeleteCriteria(message)) onDelete?.();
+				if (matchDeleteCriteria(message)) {
+					if (params.filesOnly) {
+						return onFilesDelete?.(params.replaceFileAttachmentsWith);
+					}
+					return onDelete?.();
+				}
+			});
+
+			const unsubscribeFromMessagesRead = subscribeToNotifyRoom(`${message.rid}/messagesRead`, (event) => {
+				onMessagesRead?.(event);
 			});
 
 			return () => {
 				unsubscribeFromRoomMessages();
 				unsubscribeFromDeleteMessage();
 				unsubscribeFromDeleteMessageBulk();
+				unsubscribeFromMessagesRead();
 			};
 		},
 		[subscribeToNotifyRoom, subscribeToRoomMessages],
@@ -81,11 +72,11 @@ export const useThreadMainMessageQuery = (
 ): UseQueryResult<IThreadMainMessage, Error> => {
 	const room = useRoom();
 
-	const getMessage = useGetMessageByID();
+	const getMessage = useGetMessageByID(false);
 	const subscribeToMessage = useSubscribeToMessage();
 
 	const queryClient = useQueryClient();
-	const unsubscribeRef = useRef<(() => void) | undefined>();
+	const unsubscribeRef = useRef<(() => void) | undefined>(undefined);
 
 	useEffect(() => {
 		return () => {
@@ -95,7 +86,7 @@ export const useThreadMainMessageQuery = (
 	}, [tmid]);
 
 	return useQuery({
-		queryKey: ['rooms', room._id, 'threads', tmid, 'main-message'] as const,
+		queryKey: roomsQueryKeys.threadMainMessage(room._id, tmid),
 
 		queryFn: async ({ queryKey }) => {
 			const mainMessage = await getMessage(tmid);
@@ -119,6 +110,35 @@ export const useThreadMainMessageQuery = (
 					onDelete: () => {
 						onDelete?.();
 						queryClient.invalidateQueries({ queryKey, exact: true });
+					},
+					onFilesDelete: async (replaceFileAttachmentsWith?: MessageAttachment) => {
+						const current = queryClient.getQueryData<IThreadMainMessage>(queryKey);
+						if (!current) {
+							return;
+						}
+						const updated = modifyMessageOnFilesDelete(current, replaceFileAttachmentsWith);
+
+						const msg = await onClientMessageReceived(updated);
+						queryClient.setQueryData(queryKey, () => msg);
+						debouncedInvalidate();
+					},
+					onMessagesRead: ({ tmid: eventTmid, until }) => {
+						if (eventTmid) {
+							return;
+						}
+
+						queryClient.setQueryData<IThreadMainMessage>(queryKey, (old) => {
+							if (!old?.unread) {
+								return old;
+							}
+
+							if (new Date(old.ts).getTime() <= new Date(until).getTime()) {
+								const { unread: _, ...rest } = old;
+								return rest as IThreadMainMessage;
+							}
+
+							return old;
+						});
 					},
 				});
 

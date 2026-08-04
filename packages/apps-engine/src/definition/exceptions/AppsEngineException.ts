@@ -12,21 +12,18 @@
  * join a room
  */
 export class AppsEngineException extends Error {
-    public name = 'AppsEngineException';
+	public name = 'AppsEngineException';
 
-    public static JSONRPC_ERROR_CODE = -32070;
+	public static JSONRPC_ERROR_CODE = -32070;
 
-    public message: string;
+	constructor(message?: string) {
+		super(message);
+	}
 
-    constructor(message?: string) {
-        super();
-        this.message = message;
-    }
-
-    public getErrorInfo() {
-        return {
-            name: this.name,
-            message: this.message,
-        };
-    }
+	public getErrorInfo() {
+		return {
+			name: this.name,
+			message: this.message,
+		};
+	}
 }

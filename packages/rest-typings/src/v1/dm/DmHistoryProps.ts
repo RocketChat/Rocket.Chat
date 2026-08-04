@@ -1,10 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajvQuery } from '../Ajv';
 
 export type DmHistoryProps = PaginatedRequest<{
 	roomId: string;
@@ -56,4 +51,4 @@ const DmHistoryPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isDmHistoryProps = ajv.compile<DmHistoryProps>(DmHistoryPropsSchema);
+export const isDmHistoryProps = ajvQuery.compile<DmHistoryProps>(DmHistoryPropsSchema);

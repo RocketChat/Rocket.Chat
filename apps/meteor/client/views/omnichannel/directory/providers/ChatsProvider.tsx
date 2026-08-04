@@ -5,13 +5,13 @@ import { useMemo, useRef } from 'react';
 import { ChatsContext, initialValues } from '../contexts/ChatsContext';
 import { useDisplayFilters } from '../hooks/useDisplayFilters';
 
-type ChatsProviderProps = {
+export type ChatsProviderProps = {
 	children: ReactNode;
 };
 
 const ChatsProvider = ({ children }: ChatsProviderProps) => {
 	const textInputRef = useRef<HTMLInputElement>(null);
-	const [filtersQuery, setFiltersQuery] = useLocalStorage('conversationsQuery', initialValues);
+	const [filtersQuery, setFiltersQuery] = useLocalStorage('newConversationsQuery', initialValues);
 	const displayFilters = useDisplayFilters(filtersQuery);
 
 	const contextValue = useMemo(
@@ -45,7 +45,7 @@ const ChatsProvider = ({ children }: ChatsProviderProps) => {
 		[displayFilters, filtersQuery, setFiltersQuery],
 	);
 
-	return <ChatsContext.Provider children={children} value={contextValue} />;
+	return <ChatsContext.Provider value={contextValue}>{children}</ChatsContext.Provider>;
 };
 
 export default ChatsProvider;

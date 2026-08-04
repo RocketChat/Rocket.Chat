@@ -19,7 +19,7 @@ class VersionCompiler {
 				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
 				function handleError(err) {
-					console.error(err);
+					console.error('Error getting supported versions', err);
 					// TODO remove this when we are ready to fail
 					if (process.env.NODE_ENV !== 'development') {
 						reject(err);
@@ -27,6 +27,8 @@ class VersionCompiler {
 					}
 					resolve({});
 				}
+
+				console.log('Getting supported versions from', url);
 
 				https
 					.get(url, function (response) {
@@ -130,6 +132,7 @@ class VersionCompiler {
 		};
 
 		for await (const file of files) {
+			console.log('Processing file', file.getDisplayPath());
 			switch (true) {
 				case file.getDisplayPath().endsWith('rocketchat.info'): {
 					await processFile(file);
@@ -150,6 +153,7 @@ class VersionCompiler {
 					throw new Error(`Unexpected file ${file.getDisplayPath()}`);
 				}
 			}
+			console.log('Processed file', file.getDisplayPath());
 		}
 	}
 }

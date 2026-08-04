@@ -12,7 +12,7 @@ slashCommands.add({
 		}
 
 		try {
-			await sdk.call('setUserStatus', undefined, params);
+			await sdk.rest.post('/v1/users.setStatus', { message: params });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

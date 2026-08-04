@@ -1,10 +1,10 @@
 import { License } from '@rocket.chat/license';
 import { Roles, Users } from '@rocket.chat/models';
 
-import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
-import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
-import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import type { ISAMLUser } from '../../../server/lib/saml/definition/ISAMLUser';
+import { SAMLUtils } from '../../../server/lib/saml/lib/Utils';
+import { settings } from '../../../server/settings';
 import { addSettings } from '../settings/saml';
 
 await License.onLicense('saml-enterprise', () => {
@@ -30,8 +30,11 @@ await License.onLicense('saml-enterprise', () => {
 
 	SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, any>): void => {
 		// Include ee settings on the configs object so that they can be copied to the login service too
+		const rawCustomAuthnContext = settings.get(`${service}_custom_authn_context`);
+		const customAuthnContext = typeof rawCustomAuthnContext === 'string' ? rawCustomAuthnContext.trim() : undefined;
+
 		Object.assign(configs, {
-			customAuthnContext: settings.get(`${service}_custom_authn_context`),
+			...(customAuthnContext !== undefined && { customAuthnContext }),
 			authnContextComparison: settings.get(`${service}_authn_context_comparison`),
 			identifierFormat: settings.get(`${service}_identifier_format`),
 			nameIDPolicyTemplate: settings.get(`${service}_NameId_template`),

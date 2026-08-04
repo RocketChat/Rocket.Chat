@@ -9,8 +9,11 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 		super(db, 'statistics');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { createdAt: -1 } }];
+	protected override modelIndexes(): IndexDescription[] {
+		return [
+			{ key: { createdAt: -1 } },
+			{ key: { createdAt: 1 }, expireAfterSeconds: 365 * 24 * 60 * 60 }, // expire after 1 year
+		];
 	}
 
 	async findLast(): Promise<IStats> {
@@ -28,7 +31,9 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 
 	async findLastStatsToken(): Promise<IStats['statsToken']> {
 		const records = await this.find(
-			{},
+			{
+				statsToken: { $exists: true },
+			},
 			{
 				sort: {
 					createdAt: -1,
@@ -61,5 +66,28 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 				},
 			},
 		);
+	}
+
+	async findInstallationDates() {
+		return this.col
+			.aggregate<Pick<IStats, 'version' | 'installedAt'>>([
+				{
+					$group: {
+						_id: '$version',
+						installedAt: { $min: '$installedAt' },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						version: '$_id',
+						installedAt: 1,
+					},
+				},
+				{
+					$sort: { installedAt: 1 },
+				},
+			])
+			.toArray();
 	}
 }

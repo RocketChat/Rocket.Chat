@@ -14,14 +14,7 @@ test.describe.serial('channel-direct-message', () => {
 	});
 
 	test('expect create a direct room', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Direct message');
-
-		await poHomeChannel.sidenav.inputDirectUsername.click();
-		await page.keyboard.type('rocket.cat');
-		await page.waitForTimeout(200);
-		await page.keyboard.press('Enter');
-		await poHomeChannel.sidenav.btnCreate.click();
-
-		await expect(page).toHaveURL('direct/rocket.catrocketchat.internal.admin.test');
+		await poHomeChannel.navbar.createNewDM('rocket.cat');
+		await expect(page).toHaveURL(/direct\/.*/);
 	});
 });

@@ -1,27 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	FieldError,
-	Field,
-	FieldLabel,
-	FieldRow,
-	TextAreaInput,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Icon,
-	FieldGroup,
-	Select,
-	InputBox,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Icon, InputBox, Callout } from '@rocket.chat/fuselage';
+import { FieldError, Field, FieldLabel, FieldRow, TextAreaInput, FieldGroup, Select, TextInput } from '@rocket.chat/fuselage-forms';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useContext, useEffect, useId, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useDownloadExportMutation } from './useDownloadExportMutation';
-import { useRoomExportMutation } from './useRoomExportMutation';
-import { validateEmail } from '../../../../../lib/emailValidator';
+import { validateEmail } from '@rocket.chat/tools';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -29,18 +10,26 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarFooter,
-} from '../../../../components/Contextualbar';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useContext, useEffect, useId, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
+import { useRoomExportMutation } from './useRoomExportMutation';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
 	dateFrom: string;
 	dateTo: string;
-	format: 'html' | 'json';
+	format: 'html' | 'json' | 'pdf';
 	toUsers: string[];
 	additionalEmails: string;
 	messagesCount: number;
@@ -50,6 +39,7 @@ export type ExportMessagesFormValues = {
 const ExportMessages = () => {
 	const { t } = useTranslation();
 	const { closeTab } = useRoomToolbox();
+	const pfdExportPermission = usePermission('export-messages-as-pdf');
 	const formFocus = useAutoFocus<HTMLFormElement>();
 	const room = useRoom();
 	const isE2ERoom = room.encrypted;
@@ -58,14 +48,14 @@ const ExportMessages = () => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty, isSubmitted },
 		watch,
 		register,
 		setValue,
 		handleSubmit,
 		clearErrors,
+		reset,
 	} = useForm<ExportMessagesFormValues>({
-		mode: 'onBlur',
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',
@@ -90,21 +80,46 @@ const ExportMessages = () => {
 		[t],
 	);
 
-	const outputOptions = useMemo<SelectOption[]>(
-		() => [
+	const outputOptions = useMemo<SelectOption[]>(() => {
+		const options: SelectOption[] = [
 			['html', t('HTML')],
 			['json', t('JSON')],
-		],
-		[t],
-	);
+		];
 
-	const roomExportMutation = useRoomExportMutation();
-	const downloadExportMutation = useDownloadExportMutation();
+		if (pfdExportPermission) {
+			options.push(['pdf', t('PDF')]);
+		}
+
+		return options;
+	}, [t, pfdExportPermission]);
+
+	// Remove HTML from download options
+	const downloadOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'html');
+	}, [outputOptions]);
+
+	// Remove PDF from file options
+	const fileOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'pdf');
+	}, [outputOptions]);
+
+	const { mutateAsync: exportRoom } = useRoomExportMutation();
+	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
+
+	useEffect(() => {
+		if (type === 'email') {
+			setValue('format', 'html');
+		}
+
+		if (type === 'download') {
+			setValue('format', 'json');
+		}
+	}, [type, setValue]);
 
 	useEffect(() => {
 		if (type !== 'file') {
@@ -117,37 +132,48 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		if (type === 'email') {
-			setValue('format', 'html');
-		}
+		setValue('messagesCount', messageCount, { shouldDirty: true, shouldValidate: isSubmitted });
+	}, [messageCount, setValue, isSubmitted]);
 
-		if (type === 'download') {
-			setValue('format', 'json');
-		}
+	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
-		setValue('messagesCount', messageCount);
-	}, [type, setValue, messageCount]);
-
-	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+	const handleExport = async ({
+		type,
+		toUsers,
+		dateFrom,
+		dateTo,
+		format,
+		subject,
+		additionalEmails,
+	}: ExportMessagesFormValues): Promise<void> => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
-			return downloadExportMutation.mutateAsync({
-				mids: messages,
-			});
+			if (format === 'pdf') {
+				await exportAsPDF(messages);
+				return;
+			}
+
+			if (format === 'json') {
+				await exportAndDownload({
+					mids: messages,
+				});
+				return;
+			}
 		}
 
 		if (type === 'file') {
-			return roomExportMutation.mutateAsync({
+			await exportRoom({
 				rid: room._id,
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
-				format,
+				format: format as 'html' | 'json',
 			});
+			return;
 		}
 
-		roomExportMutation.mutateAsync({
+		await exportRoom({
 			rid: room._id,
 			type: 'email',
 			toUsers,
@@ -158,16 +184,11 @@ const ExportMessages = () => {
 	};
 
 	const formId = useId();
-	const methodField = useId();
-	const formatField = useId();
-	const toUsersField = useId();
 	const dateFromField = useId();
 	const dateToField = useId();
-	const additionalEmailsField = useId();
-	const subjectField = useId();
 
 	return (
-		<>
+		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
@@ -176,40 +197,51 @@ const ExportMessages = () => {
 			<ContextualbarScrollableContent>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
-						{room.createdOTR && (
-							<Field>
-								<Callout role='alert' type='warning'>
-									{t('OTR_messages_cannot_be_exported')}
-								</Callout>
-							</Field>
-						)}
 						<Field>
-							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
+							<FieldLabel>{t('Method')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='type'
 									control={control}
 									render={({ field }) => (
-										<Select id={methodField} {...field} placeholder={t('Type')} disabled={isE2ERoom} options={exportOptions} />
+										<Select
+											data-testid='export-messages-method'
+											{...field}
+											placeholder={t('Type')}
+											disabled={isE2ERoom}
+											options={exportOptions}
+										/>
 									)}
 								/>
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={formatField}>{t('Output_format')}</FieldLabel>
+							<FieldLabel>{t('Output_format')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='format'
 									control={control}
-									render={({ field }) => (
-										<Select
-											{...field}
-											id={formatField}
-											disabled={type === 'email' || type === 'download'}
-											placeholder={t('Format')}
-											options={outputOptions}
-										/>
-									)}
+									render={({ field }) => {
+										let options: SelectOption[];
+
+										if (type === 'download') {
+											options = downloadOutputOptions;
+										} else if (type === 'file') {
+											options = fileOutputOptions;
+										} else {
+											options = outputOptions;
+										}
+
+										return (
+											<Select
+												{...field}
+												data-testid='export-messages-output-format'
+												disabled={type === 'email'}
+												placeholder={t('Format')}
+												options={options}
+											/>
+										);
+									}}
 								/>
 							</FieldRow>
 						</Field>
@@ -240,14 +272,25 @@ const ExportMessages = () => {
 						{type === 'email' && (
 							<>
 								<Field>
-									<FieldLabel htmlFor={toUsersField}>{t('To_users')}</FieldLabel>
+									<FieldLabel>{t('To_users')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='toUsers'
 											control={control}
-											render={({ field: { value, onChange, onBlur, name } }) => (
+											rules={{
+												validate: {
+													validateRecipient: (toUsers) => {
+														const additionalEmails = watch('additionalEmails');
+														if (toUsers?.length > 0 || additionalEmails !== '') {
+															return undefined;
+														}
+														return t('Mail_Message_Missing_to');
+													},
+												},
+											}}
+											render={({ field: { value, onChange, onBlur, name, ...field } }) => (
 												<UserAutoCompleteMultiple
-													id={toUsersField}
+													{...field}
 													value={value}
 													onChange={(value) => {
 														onChange(value);
@@ -255,13 +298,15 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
+													error={errors?.toUsers?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
+									{errors?.toUsers && <FieldError>{errors.toUsers.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
+									<FieldLabel>{t('To_additional_emails')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='additionalEmails'
@@ -280,7 +325,7 @@ const ExportMessages = () => {
 
 														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
 													},
-													validateToUsers: (additionalEmails) => {
+													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {
 															return undefined;
 														}
@@ -289,34 +334,30 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field }) => (
+											render={({ field: { onChange, onBlur, ...field } }) => (
 												<TextInput
-													id={additionalEmailsField}
 													{...field}
+													onChange={(e) => {
+														onChange(e);
+														clearErrors('toUsers');
+													}}
+													onBlur={onBlur}
 													placeholder={t('Email_Placeholder_any')}
-													addon={<Icon name='mail' size='x20' />}
-													aria-describedby={`${additionalEmailsField}-error`}
-													aria-invalid={Boolean(errors?.additionalEmails?.message)}
+													endAddon={<Icon name='mail' size='x20' />}
 													error={errors?.additionalEmails?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.additionalEmails && (
-										<FieldError role='alert' id={`${additionalEmailsField}-error`}>
-											{errors.additionalEmails.message}
-										</FieldError>
-									)}
+									{errors?.additionalEmails && <FieldError>{errors.additionalEmails.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={subjectField}>{t('Subject')}</FieldLabel>
+									<FieldLabel>{t('Subject')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='subject'
 											control={control}
-											render={({ field }) => (
-												<TextAreaInput rows={3} id={subjectField} {...field} addon={<Icon name='edit' size='x20' />} />
-											)}
+											render={({ field }) => <TextAreaInput rows={3} {...field} endAddon={<Icon name='edit' size='x20' />} />}
 										/>
 									</FieldRow>
 								</Field>
@@ -344,13 +385,15 @@ const ExportMessages = () => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={closeTab}>{t('Cancel')}</Button>
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
 					<Button loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

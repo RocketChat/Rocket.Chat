@@ -99,7 +99,7 @@ export class DDPSDK implements SDK {
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
 		const rest = new (class RestApiClient extends RestClient {
-			getCredentials() {
+			override getCredentials() {
 				if (!account.uid || !account.user?.token) {
 					return;
 				}
@@ -114,7 +114,7 @@ export class DDPSDK implements SDK {
 
 		connection.on('connected', () => {
 			if (account.user?.token) {
-				account.loginWithToken(account.user.token);
+				void account.loginWithToken(account.user.token);
 			}
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);

@@ -1,25 +1,26 @@
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { AdminSettings } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('settings-int', () => {
-	let poAdmin: Admin;
+	let poAdminSettings: AdminSettings;
 
 	test.beforeEach(async ({ page }) => {
-		poAdmin = new Admin(page);
+		poAdminSettings = new AdminSettings(page);
+		const pageTitle = page.getByRole('main').getByRole('heading', { level: 1, name: 'Message', exact: true });
 		await page.goto('/admin/settings/Message');
 
-		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Message');
+		await pageTitle.waitFor();
+		await expect(pageTitle).toBeVisible();
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').fill('');
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').blur();
 
-		await poAdmin.btnSaveSettings.click();
-
-		await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+		await poAdminSettings.btnSaveChanges.click();
+		await poAdminSettings.toastMessage.waitForDisplay({ type: 'error' });
 	});
 });

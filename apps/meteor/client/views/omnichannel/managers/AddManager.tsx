@@ -1,31 +1,33 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
+const AddManager = () => {
 	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const usernameFieldId = useId();
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
+	const queryClient = useQueryClient();
 
-	const handleSave = useEffectEvent(async () => {
-		try {
-			await saveAction({ username });
-			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
-			reload();
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/manager', {
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
 			setUsername('');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
+		},
+	});
+
+	const handleSave = useStableCallback(async () => {
+		await saveAction({ username });
 	});
 
 	const handleChange = (value: unknown): void => {
@@ -40,7 +42,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
 					<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
-					<Button disabled={!username} onClick={handleSave} mis={8} primary>
+					<Button disabled={!username} onClick={handleSave} marginInlineStart={8} primary>
 						{t('Add_manager')}
 					</Button>
 				</FieldRow>

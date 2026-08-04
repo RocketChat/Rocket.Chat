@@ -12,15 +12,15 @@ import {
 	ToggleSwitch,
 	Icon,
 	FieldGroup,
-	ContextualbarFooter,
 	Button,
 	Callout,
 	Skeleton,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { validateEmail } from '@rocket.chat/tools';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -30,32 +30,34 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { validateEmail } from '../../../../lib/emailValidator';
+import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
-type AdminUserFormProps = {
+export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
 	context: string;
 	refetchUserFormData?: () => void;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
+export type UserFormProps = Omit<
+	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	'fields'
+>;
 
 const getInitialValue = ({
 	data,
@@ -82,6 +84,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -117,12 +120,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
-		mode: 'onBlur',
 	});
+
+	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
-	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
+	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
 
@@ -166,7 +170,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		},
 	});
 
-	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
+	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
@@ -178,6 +182,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const nameId = useId();
 	const usernameId = useId();
+	const voiceExtensionId = useId();
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
@@ -245,15 +250,21 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow mbs={12}>
+								<FieldRow marginBlockStart={12}>
 									<Box display='flex' alignItems='center'>
-										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded} m={0}>
+										<FieldLabel htmlFor={verifiedId} padding={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon name='info-circled' size='x20' mis={4} title={t('Enable_to_bypass_email_verification')} color='default' />
+										<Icon
+											name='info-circled'
+											size='x20'
+											marginInlineStart={4}
+											title={t('Enable_to_bypass_email_verification')}
+											color='default'
+										/>
 									</Box>
 									<Controller
 										control={control}
@@ -269,18 +280,26 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									/>
 								</FieldRow>
 								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 								{!isVerificationNeeded && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{
-											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
-										}}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Email_verification_isnt_required'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Accounts' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -335,12 +354,24 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
+					{showVoipExtension && (
+						<Field>
+							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='freeSwitchExtension'
+									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} mbe={8}>
+								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
 									{t('Password')}
 								</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
@@ -405,10 +436,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
 									<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
 										{t('Send_welcome_email')}
 									</FieldLabel>
@@ -430,11 +461,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint
-										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-										mbs={0}
-									/>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -480,7 +515,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
 										flexGrow={1}
-										addon={<Icon name='edit' size='x20' alignSelf='center' />}
+										endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
 									/>
 								)}
 							/>
@@ -501,8 +536,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<>
 							<Button
 								fontScale='c2'
-								w='x140'
-								h='x28'
+								width='x140'
+								height='x28'
 								display='flex'
 								alignItems='center'
 								justifyContent='center'
@@ -516,7 +551,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 				</FieldGroup>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} w='100%'>
+				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>
 					{isNewUserPage ? t('Add_user') : t('Save_user')}
 				</Button>
 			</ContextualbarFooter>

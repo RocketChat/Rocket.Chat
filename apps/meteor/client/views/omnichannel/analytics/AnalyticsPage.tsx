@@ -1,5 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,8 +8,7 @@ import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
 import Overview from './Overview';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
 const useOptions = (type: string): SelectOption[] => {
 	const { t } = useTranslation();
@@ -55,14 +55,14 @@ const AnalyticsPage = () => {
 			<PageHeader title={t('Analytics')} />
 			<PageScrollableContentWithShadow display='flex' flexDirection='column'>
 				<Margins block={4}>
-					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
+					<Box display='flex' marginInline='neg-x4' flexWrap='wrap' flexGrow={1}>
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
-							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
-								<Label mb={4}>{t('Type')}</Label>
+							<Box display='flex' marginInline={4} flexDirection='column' flexGrow={1}>
+								<Label marginBlock={4}>{t('Type')}</Label>
 								<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
 							</Box>
-							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
-								<Label mb={4}>{t('Departments')}</Label>
+							<Box display='flex' marginInline={4} flexDirection='column' flexGrow={1}>
+								<Label marginBlock={4}>{t('Departments')}</Label>
 								<AutoCompleteDepartment
 									value={department || undefined}
 									onChange={setDepartment}
@@ -72,7 +72,7 @@ const AnalyticsPage = () => {
 								/>
 							</Box>
 						</Box>
-						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />
+						<DateRangePicker flexGrow={1} marginInline={4} onChange={setDateRange} />
 					</Box>
 					<Box>
 						<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
@@ -90,14 +90,14 @@ const AnalyticsPage = () => {
 					<Box display='flex' flexGrow={1} flexShrink={1}>
 						<InterchangeableChart
 							flexShrink={1}
-							w='66%'
-							h='100%'
+							width='66%'
+							height='100%'
 							chartName={chartName || ''}
 							departmentId={department || ''}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
-						<Box display='flex' w='33%' justifyContent='stretch' p={10} mis={4}>
+						<Box display='flex' width='33%' justifyContent='stretch' padding={10} marginInlineStart={4}>
 							<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 						</Box>
 					</Box>

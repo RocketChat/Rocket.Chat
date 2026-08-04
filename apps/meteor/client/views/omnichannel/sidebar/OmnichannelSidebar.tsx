@@ -15,8 +15,8 @@ const OmnichannelSidebar = () => {
 	const currentPath = useCurrentRoutePath();
 
 	return (
-		<SettingsProvider privileged>
-			<Sidebar>
+		<SettingsProvider>
+			<Sidebar aria-label={t('Omnichannel')}>
 				<Sidebar.Header onClose={sidebar.close} title={t('Omnichannel')} />
 				<Sidebar.Content>
 					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />

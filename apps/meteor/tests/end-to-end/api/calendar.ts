@@ -4,9 +4,12 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Calendar Events]', () => {
 	let user2: IUser;
@@ -661,6 +664,57 @@ describe('[Calendar Events]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[Calendar Events Status Sync]', () => {
+		before(async () => {
+			await request.post('/api/v1/users.setStatus').set(userCredentials).send({ status: 'online' }).expect(200);
+		});
+
+		// claim apply/clear land asynchronously, so poll instead of asserting on a fixed sleep
+		const waitForStatusSource = (
+			predicate: (source: string | undefined) => boolean,
+			{ timeout = 15000, interval = 500 } = {},
+		): Promise<string | undefined> =>
+			withTimeout(async (signal) => {
+				for (;;) {
+					const res = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+					const source = res.body.statusSource;
+					if (predicate(source) || signal.aborted) {
+						return source;
+					}
+					await sleep(interval);
+				}
+			}, timeout);
+
+		it('should apply a calendar (external) claim for an in-progress event and clear it when removed', async () => {
+			const now = new Date();
+			const startTime = new Date(now.getTime() - 1000);
+			const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+
+			const eventPayload = {
+				startTime: startTime.toISOString(),
+				endTime: endTime.toISOString(),
+				subject: 'Subject',
+				description: 'Description',
+				reminderMinutesBeforeStart: 1,
+				busy: true,
+			};
+
+			const createResponse = await request.post('/api/v1/calendar-events.create').set(userCredentials).send(eventPayload).expect(200);
+			const eventId = createResponse.body.id;
+
+			// REST-only user has no DDP session, so assert the claim via statusSource, not display status
+			expect(await waitForStatusSource((source) => source === 'external')).to.equal('external');
+
+			// the claim must carry the event's endTime as its expiry, so the presence engine can auto-clear it
+			const status = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+			expect(new Date(status.body.statusExpiresAt).getTime()).to.equal(endTime.getTime());
+
+			await request.post('/api/v1/calendar-events.delete').set(userCredentials).send({ eventId }).expect(200);
+
+			expect(await waitForStatusSource((source) => source === undefined)).to.be.undefined;
 		});
 	});
 });

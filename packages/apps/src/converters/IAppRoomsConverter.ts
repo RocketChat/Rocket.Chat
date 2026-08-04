@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import type { IAppsRoom, IAppsLivechatRoom } from '../AppsEngine';
+import type { IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '../AppsEngine';
 
 export interface IAppRoomsConverter {
 	convertById(roomId: IRoom['_id']): Promise<IAppsRoom | undefined>;
@@ -8,7 +8,10 @@ export interface IAppRoomsConverter {
 	convertRoom(room: undefined | null): Promise<undefined>;
 	convertRoom(room: IRoom): Promise<IAppsRoom | IAppsLivechatRoom>;
 	convertRoom(room: IRoom | undefined | null): Promise<IAppsRoom | IAppsLivechatRoom | undefined>;
+	convertRoomRaw(room: IRoom): Promise<IAppsRoomRaw>;
+	convertRoomRaw(room: IRoom | undefined | null): Promise<IAppsRoomRaw | undefined>;
 	convertAppRoom(room: undefined | null): Promise<undefined>;
 	convertAppRoom(room: IAppsRoom): Promise<IRoom>;
-	convertAppRoom(room: IAppsRoom | undefined | null): Promise<IRoom | undefined>;
+	convertAppRoom(room: IAppsRoom, isPartial: boolean): Promise<Partial<IRoom>>;
+	convertAppRoom(room: IAppsRoom | undefined | null, isPartial?: boolean): Promise<Partial<IRoom> | undefined>;
 }

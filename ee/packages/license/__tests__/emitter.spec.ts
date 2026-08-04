@@ -16,7 +16,7 @@ describe('Event License behaviors', () => {
 		const mocked = await new MockedLicenseBuilder();
 		const oldToken = await mocked.sign();
 
-		const newToken = await mocked.withGratedModules(['livechat-enterprise']).sign();
+		const newToken = await mocked.withGrantedModules(['livechat-enterprise']).sign();
 
 		// apply license
 		await expect(license.setLicense(oldToken)).resolves.toBe(true);
@@ -24,8 +24,8 @@ describe('Event License behaviors', () => {
 
 		await expect(license.hasModule('livechat-enterprise')).toBe(false);
 
-		await expect(validFn).not.toBeCalled();
-		await expect(invalidFn).toBeCalledTimes(1);
+		await expect(validFn).not.toHaveBeenCalled();
+		await expect(invalidFn).toHaveBeenCalledTimes(1);
 
 		// apply license containing livechat-enterprise module
 
@@ -36,8 +36,8 @@ describe('Event License behaviors', () => {
 		await expect(license.hasValidLicense()).toBe(true);
 		await expect(license.hasModule('livechat-enterprise')).toBe(true);
 
-		await expect(validFn).toBeCalledTimes(1);
-		await expect(invalidFn).toBeCalledTimes(0);
+		await expect(validFn).toHaveBeenCalledTimes(1);
+		await expect(invalidFn).toHaveBeenCalledTimes(0);
 
 		// apply the old license again
 
@@ -46,8 +46,8 @@ describe('Event License behaviors', () => {
 		await expect(license.setLicense(oldToken)).resolves.toBe(true);
 		await expect(license.hasValidLicense()).toBe(true);
 		await expect(license.hasModule('livechat-enterprise')).toBe(false);
-		await expect(validFn).toBeCalledTimes(0);
-		await expect(invalidFn).toBeCalledTimes(1);
+		await expect(validFn).toHaveBeenCalledTimes(0);
+		await expect(invalidFn).toHaveBeenCalledTimes(1);
 	});
 
 	it('should call `onValidateLicense` when a valid license is applied', async () => {
@@ -61,7 +61,7 @@ describe('Event License behaviors', () => {
 
 		await expect(license.setLicense(token)).resolves.toBe(true);
 		await expect(license.hasValidLicense()).toBe(true);
-		await expect(fn).toBeCalledTimes(1);
+		await expect(fn).toHaveBeenCalledTimes(1);
 	});
 
 	describe('behavior:prevent_action event', () => {
@@ -84,9 +84,9 @@ describe('Event License behaviors', () => {
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
-			await expect(fn).toBeCalledTimes(1);
+			await expect(fn).toHaveBeenCalledTimes(1);
 
-			await expect(fn).toBeCalledWith({
+			await expect(fn).toHaveBeenCalledWith({
 				reason: 'limit',
 				limit: 'activeUsers',
 			});
@@ -111,9 +111,9 @@ describe('Event License behaviors', () => {
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
-			await expect(fn).toBeCalledTimes(1);
+			await expect(fn).toHaveBeenCalledTimes(1);
 
-			await expect(fn).toBeCalledWith(undefined);
+			await expect(fn).toHaveBeenCalledWith(undefined);
 		});
 	});
 
@@ -145,7 +145,7 @@ describe('Event License behaviors', () => {
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
-			await expect(fn).toBeCalledTimes(1);
+			await expect(fn).toHaveBeenCalledTimes(1);
 		});
 
 		it('should not emit `sync` event when the license validation was triggered by a the sync method', async () => {
@@ -171,13 +171,13 @@ describe('Event License behaviors', () => {
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
-			await expect(fn).toBeCalledTimes(1);
+			await expect(fn).toHaveBeenCalledTimes(1);
 
 			fn.mockClear();
 
 			await expect(licenseManager.sync()).resolves.toBe(undefined);
 
-			await expect(fn).toBeCalledTimes(0);
+			await expect(fn).toHaveBeenCalledTimes(0);
 		});
 	});
 
@@ -209,10 +209,10 @@ describe('Event License behaviors', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
-			await expect(fn).toBeCalledTimes(2);
-			await expect(toggleFn).toBeCalledTimes(1);
+			await expect(fn).toHaveBeenCalledTimes(2);
+			await expect(toggleFn).toHaveBeenCalledTimes(1);
 
-			await expect(fn).toBeCalledWith({
+			await expect(fn).toHaveBeenCalledWith({
 				reason: 'limit',
 				limit: 'activeUsers',
 			});
@@ -241,10 +241,10 @@ describe('Event License behaviors', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 
-			await expect(fn).toBeCalledTimes(2);
-			await expect(toggleFn).toBeCalledTimes(0);
+			await expect(fn).toHaveBeenCalledTimes(2);
+			await expect(toggleFn).toHaveBeenCalledTimes(0);
 
-			await expect(fn).toBeCalledWith({
+			await expect(fn).toHaveBeenCalledWith({
 				reason: 'limit',
 				limit: 'activeUsers',
 			});
@@ -274,20 +274,20 @@ describe('Event License behaviors', () => {
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
-			expect(preventFn).toBeCalledTimes(0);
-			expect(preventToggleFn).toBeCalledTimes(0);
-			expect(allowFn).toBeCalledTimes(1);
-			expect(allowToggleFn).toBeCalledTimes(0);
+			expect(preventFn).toHaveBeenCalledTimes(0);
+			expect(preventToggleFn).toHaveBeenCalledTimes(0);
+			expect(allowFn).toHaveBeenCalledTimes(1);
+			expect(allowToggleFn).toHaveBeenCalledTimes(0);
 
 			preventFn.mockClear();
 			preventToggleFn.mockClear();
 			allowFn.mockClear();
 			allowToggleFn.mockClear();
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
-			expect(preventFn).toBeCalledTimes(0);
-			expect(preventToggleFn).toBeCalledTimes(0);
-			expect(allowFn).toBeCalledTimes(1);
-			expect(allowToggleFn).toBeCalledTimes(0);
+			expect(preventFn).toHaveBeenCalledTimes(0);
+			expect(preventToggleFn).toHaveBeenCalledTimes(0);
+			expect(allowFn).toHaveBeenCalledTimes(1);
+			expect(allowToggleFn).toHaveBeenCalledTimes(0);
 
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
 
@@ -296,20 +296,20 @@ describe('Event License behaviors', () => {
 			allowFn.mockClear();
 			allowToggleFn.mockClear();
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
-			expect(preventFn).toBeCalledTimes(1);
-			expect(preventToggleFn).toBeCalledTimes(1);
-			expect(allowFn).toBeCalledTimes(0);
-			expect(allowToggleFn).toBeCalledTimes(0);
+			expect(preventFn).toHaveBeenCalledTimes(1);
+			expect(preventToggleFn).toHaveBeenCalledTimes(1);
+			expect(allowFn).toHaveBeenCalledTimes(0);
+			expect(allowToggleFn).toHaveBeenCalledTimes(0);
 
 			preventFn.mockClear();
 			preventToggleFn.mockClear();
 			allowFn.mockClear();
 			allowToggleFn.mockClear();
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
-			expect(preventFn).toBeCalledTimes(1);
-			expect(preventToggleFn).toBeCalledTimes(0);
-			expect(allowFn).toBeCalledTimes(0);
-			expect(allowToggleFn).toBeCalledTimes(0);
+			expect(preventFn).toHaveBeenCalledTimes(1);
+			expect(preventToggleFn).toHaveBeenCalledTimes(0);
+			expect(allowFn).toHaveBeenCalledTimes(0);
+			expect(allowToggleFn).toHaveBeenCalledTimes(0);
 
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
 
@@ -318,10 +318,10 @@ describe('Event License behaviors', () => {
 			allowFn.mockClear();
 			allowToggleFn.mockClear();
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
-			expect(preventFn).toBeCalledTimes(0);
-			expect(preventToggleFn).toBeCalledTimes(0);
-			expect(allowFn).toBeCalledTimes(1);
-			expect(allowToggleFn).toBeCalledTimes(1);
+			expect(preventFn).toHaveBeenCalledTimes(0);
+			expect(preventToggleFn).toHaveBeenCalledTimes(0);
+			expect(allowFn).toHaveBeenCalledTimes(1);
+			expect(allowToggleFn).toHaveBeenCalledTimes(1);
 		});
 	});
 
@@ -347,10 +347,10 @@ describe('Event License behaviors', () => {
 
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 
-			await expect(fn).toBeCalledTimes(1);
-			await expect(preventFn).toBeCalledTimes(0);
+			await expect(fn).toHaveBeenCalledTimes(1);
+			await expect(preventFn).toHaveBeenCalledTimes(0);
 
-			await expect(fn).toBeCalledWith({
+			await expect(fn).toHaveBeenCalledWith({
 				reason: 'limit',
 				limit: 'activeUsers',
 			});

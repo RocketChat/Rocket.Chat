@@ -9,7 +9,7 @@ export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> implements ILi
 		super(db, 'livechat_trigger', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { enabled: 1 } }];
 	}
 

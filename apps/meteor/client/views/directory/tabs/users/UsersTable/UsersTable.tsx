@@ -1,26 +1,30 @@
-import type { IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
-import { useCallback, useMemo, useState } from 'react';
-
-import UsersTableRow from './UsersTableRow';
-import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+
+import UsersTableRow from './UsersTableRow';
+import FilterByText from '../../../../../components/FilterByText';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
-const UsersTable = ({ workspace = 'local' }): ReactElement => {
+export type UsersTableProps = {
+	workspace?: 'external' | 'local';
+};
+
+const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -117,7 +121,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 									key={user._id}
 									onClick={handleClick}
 									mediaQuery={mediaQuery}
-									user={user as unknown as Serialized<IUser>}
+									user={user as unknown as Serialized<IDirectoryUserResult>}
 									federation={federation}
 									canViewFullOtherUserInfo={canViewFullOtherUserInfo}
 								/>

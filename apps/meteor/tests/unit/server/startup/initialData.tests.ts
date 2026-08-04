@@ -31,16 +31,15 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 			startup: sinon.stub(),
 		},
 	},
-	'../../app/file-upload/server': {},
-	'../../app/file/server': {},
-	'../../app/lib/server/functions/addUserToDefaultChannels': {},
-	'../../app/lib/server/functions/checkUsernameAvailability': {
+	'../lib/media/file-upload': {},
+	'../lib/rooms/addUserToDefaultChannels': {},
+	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
 	},
-	'../../app/settings/server': {
+	'../settings': {
 		settings: { get: settingsGet },
 	},
-	'../../lib/emailValidator': {
+	'@rocket.chat/tools': {
 		validateEmail,
 	},
 	'../lib/roles/addUserRoles': {

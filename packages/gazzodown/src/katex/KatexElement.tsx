@@ -1,13 +1,13 @@
 import katex from 'katex';
-import { ReactElement, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import 'katex/dist/katex.css';
 
-type KatexElementProps = {
+export type KatexElementProps = {
 	code: string;
 };
 
-const KatexElement = ({ code }: KatexElementProps): ReactElement => {
+const KatexElement = ({ code }: KatexElementProps) => {
 	const html = useMemo(
 		() =>
 			katex.renderToString(code, {

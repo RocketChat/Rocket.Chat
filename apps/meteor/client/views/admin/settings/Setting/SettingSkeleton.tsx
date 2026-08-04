@@ -1,15 +1,14 @@
-import { Field, FieldLabel, FieldRow, Flex, InputBox, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Field, FieldLabel, FieldRow, FlexItem, InputBoxSkeleton, Skeleton } from '@rocket.chat/fuselage';
 
-const SettingSkeleton = (): ReactElement => (
+const SettingSkeleton = () => (
 	<Field>
-		<Flex.Item align='stretch'>
+		<FlexItem align='stretch'>
 			<FieldLabel>
 				<Skeleton width='25%' />
 			</FieldLabel>
-		</Flex.Item>
+		</FlexItem>
 		<FieldRow>
-			<InputBox.Skeleton />
+			<InputBoxSkeleton />
 		</FieldRow>
 	</Field>
 );

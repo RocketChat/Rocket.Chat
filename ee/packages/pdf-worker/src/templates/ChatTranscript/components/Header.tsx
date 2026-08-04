@@ -49,7 +49,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const Header = ({ title, subtitle, values }: { title: string; subtitle: string; values: { key: string; value: string }[] }) => (
+export type HeaderProps = { title: string; subtitle: string; values: { key: string; value: string }[] };
+
+export const Header = ({ title, subtitle, values }: HeaderProps) => (
 	<View style={styles.header} fixed>
 		<View style={styles.headerText}>
 			<Text style={styles.title}>{title}</Text>

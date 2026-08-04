@@ -1,20 +1,18 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { ComponentProps, ReactElement } from 'react';
+import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '@rocket.chat/ui-client';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import GenericNoResults from '../../GenericNoResults/GenericNoResults';
-import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '../../GenericTable';
 
-type DeviceManagementTableProps<T> = {
-	data?: Serialized<PaginatedResult<{ sessions: T[] }>>;
-	phase?: Partial<AsyncStatePhase>;
-	error?: Error;
-	reload?: () => void;
-	headers: (ReactElement | false)[];
-	renderRow: (data: Serialized<T>) => ReactElement;
+// FIXME: this tight coupling with the query result is not ideal; it indicates visual components should not be tightly
+// coupled with data fetching logic.
+type DeviceManagementTableProps<T> = UseQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
+	headers: ReactNode[];
+	renderRow: (data: Serialized<T>) => ReactNode;
 	current?: ComponentProps<typeof Pagination>['current'];
 	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
 	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
@@ -24,10 +22,12 @@ type DeviceManagementTableProps<T> = {
 
 // TODO: Missing error state
 const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagementPopulatedSession>({
-	data,
-	phase,
+	isPending,
+	isError,
 	error,
-	reload,
+	isSuccess,
+	data,
+	refetch,
 	headers,
 	renderRow,
 	current,
@@ -35,19 +35,19 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	setCurrent,
 	setItemsPerPage,
 	paginationProps,
-}: DeviceManagementTableProps<T>): ReactElement => {
+}: DeviceManagementTableProps<T>) => {
 	const { t } = useTranslation();
 
-	if (!data && phase === AsyncStatePhase.REJECTED) {
+	if (isError) {
 		return (
 			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
-					<StatesSubtitle>{error?.message}</StatesSubtitle>
+					<StatesSubtitle>{error.message}</StatesSubtitle>
 					<StatesActions>
-						<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
+						<StatesAction onClick={refetch}>{t('Retry')}</StatesAction>
 					</StatesActions>
 				</States>
 			</Box>
@@ -56,15 +56,15 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 
 	return (
 		<>
-			{data?.sessions.length === 0 && phase === AsyncStatePhase.RESOLVED && <GenericNoResults />}
-			<GenericTable>
+			{data?.sessions.length === 0 && isSuccess && <GenericNoResults />}
+			<GenericTable aria-label={t('Devices')}>
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>
-					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}
-					{phase === AsyncStatePhase.RESOLVED && data?.sessions && data.sessions.map(renderRow)}
+					{isPending && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}
+					{isSuccess && data?.sessions && data.sessions.map(renderRow)}
 				</GenericTableBody>
 			</GenericTable>
-			{phase === AsyncStatePhase.RESOLVED && (
+			{isSuccess && (
 				<Pagination
 					divider
 					current={current}

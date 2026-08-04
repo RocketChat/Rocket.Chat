@@ -47,22 +47,30 @@ export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 
-	const { token } = guest;
-	token && (await store.setState({ token }));
-
 	const {
+		user,
 		iframe: { defaultDepartment },
 	} = store.state;
+
+	if (guest.token) {
+		store.setState({ token: guest.token });
+	}
+
 	if (defaultDepartment && !guest.department) {
 		guest.department = defaultDepartment;
 	}
 
-	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
+	if (user && guest.token !== user.token) {
+		await Livechat.unsubscribeAll();
+	}
 
-	if (!user) {
+	const { visitor: newUser } = await Livechat.grantVisitor({ visitor: { ...guest } });
+
+	if (!newUser) {
 		return;
 	}
-	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
+
+	store.setState({ user: newUser } as Omit<StoreState['user'], 'ts'>);
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
@@ -83,7 +91,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 	}
 
 	const guestData = { token, ...data };
-	createOrUpdateGuest(guestData);
+	void createOrUpdateGuest(guestData);
 };
 
 export type HooksWidgetAPI = typeof api;
@@ -101,6 +109,22 @@ const updateIframeData = (data: Partial<StoreState['iframe']>) => {
 };
 
 const api = {
+	syncState(data: Partial<StoreState>) {
+		if (!data || typeof data !== 'object') {
+			return;
+		}
+
+		void evaluateChangesAndLoadConfigByFields(async () => {
+			const { user } = store.state;
+
+			if (user && data.token && user.token !== data.token) {
+				await createOrUpdateGuest({ token: data.token });
+			}
+
+			store.setState(data);
+		});
+	},
+
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
 		const { _id: rid } = room || {};
@@ -111,7 +135,7 @@ const api = {
 			location: { href },
 		} = info;
 
-		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
+		void Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
 	setCustomField: (key: string, value = '', overwrite = true) => {
@@ -150,6 +174,7 @@ const api = {
 		}
 
 		updateIframeData({ defaultDepartment: department });
+		updateIframeGuestData({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
@@ -177,7 +202,7 @@ const api = {
 
 	clearWidgetData: async () => {
 		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
-		await store.setState(initial);
+		store.setState(initial);
 	},
 
 	setAgent: (agent: StoreState['defaultAgent']) => {
@@ -224,26 +249,17 @@ const api = {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest: async (data: StoreState['guest']) => {
-		if (typeof data !== 'object') {
+	registerGuest: async (newGuest: StoreState['guest']) => {
+		if (typeof newGuest !== 'object') {
 			return;
 		}
 
 		await evaluateChangesAndLoadConfigByFields(async () => {
-			if (!data.token) {
-				data.token = createToken();
-			}
-			const {
-				iframe: { defaultDepartment },
-			} = store.state;
-
-			if (defaultDepartment && !data.department) {
-				data.department = defaultDepartment;
+			if (!newGuest.token) {
+				newGuest.token = createToken();
 			}
 
-			Livechat.unsubscribeAll();
-
-			await createOrUpdateGuest(data);
+			await createOrUpdateGuest(newGuest);
 		});
 	},
 
@@ -270,8 +286,8 @@ const api = {
 
 	setLanguage: async (language: StoreState['iframe']['language']) => {
 		const { iframe } = store.state;
-		await store.setState({ iframe: { ...iframe, language } });
-		i18next.changeLanguage(language);
+		store.setState({ iframe: { ...iframe, language } });
+		void i18next.changeLanguage(language);
 	},
 
 	showWidget: () => {
@@ -332,7 +348,7 @@ function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksW
 
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
 	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
-	api[fn](...args);
+	void api[fn](...args);
 }
 
 class Hooks {

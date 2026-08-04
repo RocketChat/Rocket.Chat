@@ -1,17 +1,17 @@
-import type { ReactElement, ReactNode } from 'react';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
+import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 
-type MainLayoutProps = {
+export type MainLayoutProps = {
 	children?: ReactNode;
-} & Record<string, unknown>;
+};
 
-const MainLayout = ({ children = null }: MainLayoutProps): ReactElement => {
+const MainLayout = ({ children = null }: MainLayoutProps) => {
 	useCustomScript();
 
 	const isEmbeddedLayout = useEmbeddedLayout();

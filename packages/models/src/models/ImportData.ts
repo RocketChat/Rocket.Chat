@@ -1,13 +1,12 @@
 import type {
 	IImportChannelRecord,
-	IImportMessageRecord,
 	IImportRecord,
 	IImportUserRecord,
 	IImportContactRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -16,20 +15,8 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 		super(db, 'import_data', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { dataType: 1 } }];
-	}
-
-	getAllUsers(): FindCursor<IImportUserRecord> {
-		return this.find({ dataType: 'user' }) as FindCursor<IImportUserRecord>;
-	}
-
-	getAllMessages(): FindCursor<IImportMessageRecord> {
-		return this.find({ dataType: 'message' }) as FindCursor<IImportMessageRecord>;
-	}
-
-	getAllChannels(): FindCursor<IImportChannelRecord> {
-		return this.find({ dataType: 'channel' }) as FindCursor<IImportChannelRecord>;
 	}
 
 	getAllUsersForSelection(): Promise<Array<IImportUserRecord>> {
@@ -86,7 +73,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 
 	async checkIfDirectMessagesExists(): Promise<boolean> {
 		return (
-			(await this.col.countDocuments({
+			(await this.countDocuments({
 				'dataType': 'channel',
 				'data.t': 'd',
 			})) > 0
@@ -94,7 +81,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 	}
 
 	async countMessages(): Promise<number> {
-		return this.col.countDocuments({ dataType: 'message' });
+		return this.countDocuments({ dataType: 'message' });
 	}
 
 	async findChannelImportIdByNameOrImportId(channelIdentifier: string): Promise<string | undefined> {

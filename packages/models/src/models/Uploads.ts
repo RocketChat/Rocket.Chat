@@ -1,8 +1,6 @@
-// TODO: Lib imports should not exists inside the raw models
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -11,40 +9,25 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		super(db, 'uploads', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
-		return [...super.modelIndexes(), { key: { uploadedAt: -1 } }, { key: { rid: 1, _hidden: 1, typeGroup: 1 } }];
+	protected override modelIndexes(): IndexDescription[] {
+		return [
+			...super.modelIndexes(),
+			{ key: { uploadedAt: -1 } },
+			{ key: { rid: 1, _hidden: 1, typeGroup: 1 } },
+			{ key: { 'federation.mediaId': 1, 'federation.serverName': 1 }, unique: true, sparse: true },
+		];
 	}
 
-	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
-		const fileQuery = {
-			rid: roomId,
-			complete: true,
-			uploading: false,
-			_hidden: {
-				$ne: true,
-			},
+	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null> {
+		return this.findOne({ 'federation.mediaId': mediaId, 'federation.serverName': serverName });
+	}
 
-			...(searchText && { name: { $regex: new RegExp(escapeRegExp(searchText), 'i') } }),
-			...(fileType && fileType !== 'all' && { typeGroup: fileType }),
-		};
+	setFederationInfo(fileId: IUpload['_id'], info: Required<IUpload>['federation']): Promise<UpdateResult> {
+		return this.updateOne({ _id: fileId }, { $set: { federation: info } });
+	}
 
-		return this.find(fileQuery, {
-			limit,
-			sort: {
-				uploadedAt: -1,
-			},
-			projection: {
-				_id: 1,
-				userId: 1,
-				rid: 1,
-				name: 1,
-				description: 1,
-				type: 1,
-				url: 1,
-				uploadedAt: 1,
-				typeGroup: 1,
-			},
-		});
+	setFederationRoomInfo(fileId: IUpload['_id'], rid: IRoom['_id'], mrid: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: fileId }, { $set: { rid, 'federation.mrid': mrid } });
 	}
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
@@ -79,5 +62,9 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 				sort: { uploadedAt: -1 },
 			},
 		);
+	}
+
+	findAllByOriginalFileId(originalFileId: string, options: FindOptions<IUpload> = {}): FindCursor<IUpload> {
+		return this.find({ originalFileId }, options);
 	}
 }

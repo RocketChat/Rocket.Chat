@@ -1,0 +1,126 @@
+import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
+import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater';
+import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater';
+import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
+import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+
+import { LivechatUpdater } from './LivechatUpdater';
+import { MessageUpdater } from './MessageUpdater';
+import { UserUpdater } from './UserUpdater';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { UIHelper } from '../../UIHelper';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
+import { MessageBuilder } from '../builders/MessageBuilder';
+import { RoomBuilder } from '../builders/RoomBuilder';
+
+export class ModifyUpdater implements IModifyUpdater {
+	private readonly livechatUpdater: ILivechatUpdater;
+
+	private readonly userUpdater: IUserUpdater;
+
+	private readonly messageUpdater: IMessageUpdater;
+
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		// Thunks, not `this.senderFn` directly: these sub-accessors are built eagerly, so capturing
+		// the function here would pin them to it before a test could swap it out.
+		this.livechatUpdater = new LivechatUpdater((request) => this.senderFn(request));
+		this.userUpdater = new UserUpdater((request) => this.senderFn(request));
+		this.messageUpdater = new MessageUpdater((request) => this.senderFn(request));
+	}
+
+	public getLivechatUpdater(): ILivechatUpdater {
+		return this.livechatUpdater;
+	}
+
+	public getUserUpdater(): IUserUpdater {
+		return this.userUpdater;
+	}
+
+	public getMessageUpdater(): IMessageUpdater {
+		return this.messageUpdater;
+	}
+
+	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
+		const message = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID')) as IMessage;
+
+		const builder = new MessageBuilder(message);
+
+		builder.setEditor(editor);
+
+		return builder;
+	}
+
+	public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
+		const room = (await bridgeCall(this.senderFn, 'getRoomBridge', 'doGetById', roomId, 'APP_ID')) as IRoom;
+
+		return new RoomBuilder(room);
+	}
+
+	public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
+		switch (builder.kind) {
+			case RocketChatAssociationModel.MESSAGE:
+				return this._finishMessage(builder as MessageBuilder);
+			case RocketChatAssociationModel.ROOM:
+				return this._finishRoom(builder as RoomBuilder);
+			default:
+				throw new Error('Invalid builder passed to the ModifyUpdater.finish function.');
+		}
+	}
+
+	private async _finishMessage(builder: MessageBuilder): Promise<void> {
+		const result = builder.getMessage();
+
+		if (!result.id) {
+			throw new Error("Invalid message, can't update a message without an id.");
+		}
+
+		if (!result.sender?.id) {
+			throw new Error('Invalid sender assigned to the message.');
+		}
+
+		if (result.blocks?.length) {
+			result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
+		}
+
+		const changes = { id: result.id, ...builder.getChanges() };
+
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doUpdate', changes, 'APP_ID');
+	}
+
+	private async _finishRoom(builder: RoomBuilder): Promise<void> {
+		const room = builder.getRoom();
+
+		if (!room.id) {
+			throw new Error("Invalid room, can't update a room without an id.");
+		}
+
+		if (!room.type) {
+			throw new Error('Invalid type assigned to the room.');
+		}
+
+		if (room.type !== RoomType.LIVE_CHAT) {
+			if (!room.creator?.id) {
+				throw new Error('Invalid creator assigned to the room.');
+			}
+
+			if (!room.slugifiedName?.trim()) {
+				throw new Error('Invalid slugifiedName assigned to the room.');
+			}
+		}
+
+		if (!room.displayName?.trim()) {
+			throw new Error('Invalid displayName assigned to the room.');
+		}
+
+		const changes = { id: room.id, ...builder.getChanges() };
+
+		await bridgeCall(this.senderFn, 'getRoomBridge', 'doUpdate', changes, builder.getMembersToBeAddedUsernames(), 'APP_ID');
+	}
+}

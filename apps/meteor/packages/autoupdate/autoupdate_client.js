@@ -25,6 +25,7 @@
 // The client version of the client code currently running in the
 // browser.
 
+import { Meteor } from 'meteor/meteor';
 import { ClientVersions } from './client_versions.js';
 
 const clientArch = Meteor.isCordova ? 'web.cordova' : Meteor.isModern ? 'web.browser' : 'web.browser.legacy';
@@ -117,9 +118,7 @@ Autoupdate._retrySubscription = () => {
 							doc.versionNonRefreshable,
 							`Page will reload in ${reloadDelayInSeconds} seconds`,
 						);
-						setTimeout(() => {
-							Package.reload.Reload._reload();
-						}, reloadDelayInSeconds * 1000);
+						document.dispatchEvent(new Event('client_changed'));
 					}
 					return;
 				}

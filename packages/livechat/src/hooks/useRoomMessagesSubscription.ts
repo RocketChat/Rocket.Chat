@@ -12,7 +12,7 @@ export const useRoomMessagesSubscription = (rid: string, token: string) => {
 			return;
 		}
 		return stream(rid, (msg: IMessage) => {
-			onMessage(msg);
+			void onMessage(msg);
 		});
 	}, [rid, stream, token]);
 };

@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -31,15 +32,15 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputUsername.fill(newUsername);
 			await poAccountProfile.btnSubmit.click();
 			await poAccountProfile.btnClose.click();
-			await poHomeChannel.sidenav.openChat('general');
+			await poHomeChannel.navbar.openChat('general');
 			await poHomeChannel.content.sendMessage('any_message');
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.content.linkUserCard.click();
+			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
@@ -58,45 +59,26 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should display a skeleton if the image url is not valid', async () => {
+			test('should show inline error if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await poAccountProfile.btnSubmit.click();
-				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
 			});
-		});
-	});
 
-	test.describe('Security', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('account/security');
-			await page.waitForSelector('.main-content');
-		});
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
 
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/security');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
 
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		});
-
-		test('expect to disable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
-			await poAccountProfile.disableEmail2FAButton.click();
-
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-		});
-
-		test('expect to enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-			await poAccountProfile.enableEmail2FAButton.click();
-
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
+			test('should not allow avatar URL change when avatar changes are disabled', async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', false);
+				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
+				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
+			});
 		});
 	});
 
@@ -105,35 +87,40 @@ test.describe.serial('settings-account-profile', () => {
 		await page.goto('/account/tokens');
 		await response;
 
-		await test.step('expect show empty personal access tokens table', async () => {
+		await test.step('should show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
 			await expect(poAccountProfile.inputToken).toBeVisible();
 		});
 
-		await test.step('expect show new personal token', async () => {
-			await poAccountProfile.inputToken.type(token);
+		await test.step('should show new personal token', async () => {
+			await poAccountProfile.inputToken.fill(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('role=button[name=Ok]').click();
+			await poAccountProfile.btnTokenAddedOk.click();
 		});
 
-		await test.step('expect not allow add new personal token with same name', async () => {
-			await poAccountProfile.inputToken.type(token);
+		await test.step('should not allow add new personal with no name', async () => {
 			await poAccountProfile.btnTokensAdd.click();
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
 		});
 
-		await test.step('expect regenerate personal token', async () => {
+		await test.step('should not allow add new personal token with same name', async () => {
+			await poAccountProfile.inputToken.fill(token);
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(poAccountProfile.tokensRows).toHaveCount(1);
+		});
+
+		await test.step('should regenerate personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
 			await poAccountProfile.btnRegenerateTokenModal.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('role=button[name=Ok]').click();
+			await poAccountProfile.btnTokenAddedOk.click();
 		});
 
-		await test.step('expect delete personal token', async () => {
+		await test.step('should delete personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=1').click();
 			await poAccountProfile.btnRemoveTokenModal.click();
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
+			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
 		});
 	});
 

@@ -1,0 +1,130 @@
+import type { IPermission, IRole } from '@rocket.chat/core-typings';
+import { Margins } from '@rocket.chat/fuselage';
+import { PageContent } from '@rocket.chat/ui-client';
+import type { Meta } from '@storybook/react';
+
+import PermissionsTable from './PermissionsTable';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
+
+export default {
+	component: PermissionsTable,
+	decorators: [
+		(fn) => (
+			<PageContent marginBlock='neg-x8'>
+				<Margins block={8}>{fn()}</Margins>
+			</PageContent>
+		),
+	],
+} satisfies Meta<typeof PermissionsTable>;
+
+const roles: IRole[] = [
+	{
+		description: 'Owner of the workspace',
+		name: 'owner',
+		protected: true,
+		scope: 'Users',
+		_id: 'owner',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'Administrator',
+		name: 'admin',
+		protected: true,
+		scope: 'Users',
+		_id: 'admin',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'Leader',
+		name: 'leader',
+		protected: false,
+		scope: 'Subscriptions',
+		_id: 'leader',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'Moderator',
+		name: 'moderator',
+		protected: false,
+		scope: 'Subscriptions',
+		_id: 'moderator',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'User',
+		name: 'user',
+		protected: true,
+		scope: 'Users',
+		_id: 'user',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'Guest',
+		name: 'guest',
+		protected: true,
+		scope: 'Users',
+		_id: 'guest',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'Bot',
+		name: 'bot',
+		protected: true,
+		scope: 'Users',
+		_id: 'bot',
+		_updatedAt: new Date(),
+	},
+	{
+		description: 'App',
+		name: 'app',
+		protected: true,
+		scope: 'Users',
+		_id: 'app',
+		_updatedAt: new Date(),
+	},
+];
+
+const permissions: IPermission[] = [
+	{
+		_id: '0',
+		_updatedAt: new Date('2023-01-01'),
+		roles: ['admin'],
+	},
+	{
+		_id: '1',
+		_updatedAt: new Date('2023-01-01'),
+		roles: ['user'],
+	},
+	{
+		_id: '2',
+		_updatedAt: new Date('2023-01-01'),
+		roles: ['user'],
+	},
+	{
+		_id: '3',
+		_updatedAt: new Date('2023-01-01'),
+		roles: ['user'],
+	},
+];
+
+const paginationData = createMockedPagination(permissions.length, 10);
+
+export const Default = {
+	args: {
+		total: 10,
+		permissions,
+		roleList: roles,
+		setFilter: () => undefined,
+		paginationData,
+	},
+};
+
+export const Empty = {
+	args: {
+		total: 0,
+		permissions: [],
+		roleList: [],
+		setFilter: () => undefined,
+		paginationData,
+	},
+};

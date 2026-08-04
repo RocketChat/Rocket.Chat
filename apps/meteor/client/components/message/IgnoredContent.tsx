@@ -1,13 +1,14 @@
 import { Box, Icon, MessageBody } from '@rocket.chat/fuselage';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type IgnoredContentProps = {
+export type IgnoredContentProps = {
+	messageId: string;
 	onShowMessageIgnored: () => void;
 };
 
-const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
+const IgnoredContent = ({ messageId, onShowMessageIgnored }: IgnoredContentProps) => {
 	const { t } = useTranslation();
 
 	const showMessageIgnored = (event: SyntheticEvent): void => {
@@ -17,7 +18,7 @@ const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactEle
 	};
 
 	return (
-		<MessageBody data-qa-type='message-body' dir='auto'>
+		<MessageBody id={`${messageId}-content`} role='document' aria-roledescription={t('message_body')} dir='auto'>
 			<Box display='flex' alignItems='center' fontSize='c2' color='hint'>
 				<span
 					tabIndex={0}

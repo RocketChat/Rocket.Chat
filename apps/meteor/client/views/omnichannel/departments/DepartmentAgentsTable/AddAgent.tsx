@@ -1,25 +1,31 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { AriaAttributes } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import type { IDepartmentAgent } from '../EditDepartment';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
+import AutoCompleteAgent from '../../components/AutoCompleteAgent';
+import type { IDepartmentAgent } from '../definitions';
 
-function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: (agent: IDepartmentAgent) => void }) {
+export type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+	agentList: IDepartmentAgent[];
+	onAdd: (agent: IDepartmentAgent) => void;
+};
+
+function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAgentProps) {
 	const { t } = useTranslation();
 
 	const [userId, setUserId] = useState('');
 
-	const getAgent = useEndpointAction('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
+	const { mutateAsync: getAgent } = useEndpointMutation('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useEffectEvent((e: string) => setUserId(e));
+	const handleAgent = useStableCallback((e: string) => setUserId(e));
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useStableCallback(async () => {
 		if (!userId) {
 			return;
 		}
@@ -37,9 +43,9 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 	});
 
 	return (
-		<Box display='flex' alignItems='center'>
+		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} mis={8} primary>
+			<Button disabled={!userId} onClick={handleSave} marginInlineStart={8} primary>
 				{t('Add')}
 			</Button>
 		</Box>

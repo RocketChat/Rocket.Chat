@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajvQuery } from '../Ajv';
 
 export type ChannelsOnlineProps = { _id?: string; query?: Record<string, any> };
 const channelsOnlyPropsSchema = {
@@ -20,4 +16,4 @@ const channelsOnlyPropsSchema = {
 	required: [],
 	additionalProperties: false,
 };
-export const isChannelsOnlineProps = ajv.compile<ChannelsOnlineProps>(channelsOnlyPropsSchema);
+export const isChannelsOnlineProps = ajvQuery.compile<ChannelsOnlineProps>(channelsOnlyPropsSchema);

@@ -1,19 +1,32 @@
 import { proxify } from './lib/proxify';
+import type {
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+} from './types/IAISearchService';
+import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
-import { IApiService } from './types/IApiService';
+import type { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
-import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
+import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
+import type { IFederationMatrixService } from './types/IFederationMatrixService';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
+import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
+import type { IMediaCallService } from './types/IMediaCallService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IMessageService } from './types/IMessageService';
@@ -24,7 +37,6 @@ import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
-import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
 import type { IPresence } from './types/IPresence';
 import type { IPushService } from './types/IPushService';
 import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
@@ -42,32 +54,40 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
-import type { ITranslationService } from './types/ITranslationService';
-import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type {
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
+	IUiKitCoreApp,
+	IUiKitCoreAppService,
+} from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
-import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
-import type { IVoipService } from './types/IVoipService';
 
+export type { AppStatusReport } from './types/IAppsEngineService';
+export type { IAbacService, AbacActor } from './types/IAbacService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export { EventSignatures } from './events/Events';
+export type { EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
 
-export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
+export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 
-export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
+export type { IServiceContext, IServiceClass } from './types/ServiceClass';
+export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export {
+export type {
 	IFederationService,
 	IFederationServiceEE,
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from './types/IFederationService';
 
-export {
+export type { IFederationMatrixService } from './types/IFederationMatrixService';
+
+export type {
 	ConversationData,
 	AgentOverviewDataOptions,
 	ChartDataOptions,
@@ -79,20 +99,21 @@ export {
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
-export {
+export type { ICreateRoomOptions } from './types/IRoomService';
+
+export type {
 	AutoUpdateRecord,
-	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
 	IApiService,
 	IAppsEngineService,
 	IAuthorization,
 	IAuthorizationLivechat,
-	IAuthorizationVoip,
 	IBannerService,
 	ICreateRoomParams,
 	IDeviceManagementService,
 	IEnterpriseSettings,
+	ILDAPEEService,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -101,9 +122,9 @@ export {
 	IMeteor,
 	INPSService,
 	IOmnichannelService,
-	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IMediaCallService,
 	IMessageReadsService,
 	IRoomService,
 	ISAUMonitorService,
@@ -116,17 +137,17 @@ export {
 	ITeamService,
 	ITeamUpdateData,
 	ITelemetryEvent,
-	UiKitCoreAppPayload,
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 	IVideoConfService,
-	IVoipService,
-	IVoipFreeSwitchService,
 	NPSCreatePayload,
 	NPSVotePayload,
-	proxify,
 	ResizeResult,
 	RoomAccessValidator,
+	UserWithRoles,
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
@@ -135,10 +156,17 @@ export {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
-	ITranslationService,
 	IMessageService,
 	ISettingsService,
 	IOmnichannelEEService,
@@ -147,6 +175,7 @@ export {
 	IOmnichannelAnalyticsService,
 	IUserService,
 };
+export { proxify };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');
@@ -162,20 +191,19 @@ export const Team = proxify<ITeamService>('team');
 export const MessageReads = proxify<IMessageReadsService>('message-reads');
 export const Room = proxify<IRoomService>('room');
 export const Media = proxify<IMediaService>('media');
-export const VoipAsterisk = proxify<IVoipService>('voip-asterisk');
-export const VoipFreeSwitch = proxify<IVoipFreeSwitchService>('voip-freeswitch');
-export const LivechatVoip = proxify<IOmnichannelVoipService>('omnichannel-voip');
+export const MediaCall = proxify<IMediaCallService>('media-call');
 export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxify<ILDAPService>('ldap');
+export const LDAPEnterprise = proxify<ILDAPEEService>('ldap-enterprise');
 export const SAUMonitor = proxify<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxify<IDeviceManagementService>('device-management');
 export const VideoConf = proxify<IVideoConfService>('video-conference');
 export const Upload = proxify<IUploadService>('upload');
 export const Calendar = proxify<ICalendarService>('calendar');
+export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
-export const Translation = proxify<ITranslationService>('translation');
 export const Settings = proxify<ISettingsService>('settings');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');
@@ -185,7 +213,12 @@ export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
 export const User = proxify<IUserService>('user');
+export const Push = proxify<IPushService>('push');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
+
+export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
+export const Abac = proxify<IAbacService>('abac');
+export const AISearch = proxify<IAISearchService>('ai-search');

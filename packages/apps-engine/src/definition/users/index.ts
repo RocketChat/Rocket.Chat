@@ -1,33 +1,32 @@
-import { IPostUserCreated } from './IPostUserCreated';
-import { IPostUserDeleted } from './IPostUserDeleted';
-import { IPostUserLoggedIn } from './IPostUserLoggedIn';
-import { IPostUserLoggedOut } from './IPostUserLoggedOut';
-import { IPostUserStatusChanged } from './IPostUserStatusChanged';
-import { IPostUserUpdated } from './IPostUserUpdated';
-import { IUser } from './IUser';
-import { IUserContext } from './IUserContext';
-import { IUserCreationOptions } from './IUserCreationOptions';
-import { IUserEmail } from './IUserEmail';
-import { IUserLookup } from './IUserLookup';
-import { IUserStatusContext } from './IUserStatusContext';
-import { IUserUpdateContext } from './IUserUpdateContex';
+import type { IPostUserCreated } from './IPostUserCreated';
+import type { IPostUserDeleted } from './IPostUserDeleted';
+import type { IPostUserLoggedIn } from './IPostUserLoggedIn';
+import type { IPostUserLoggedOut } from './IPostUserLoggedOut';
+import type { IPostUserStatusChanged } from './IPostUserStatusChanged';
+import type { IPostUserUpdated } from './IPostUserUpdated';
+import type { IUser } from './IUser';
+import type { IUserContext } from './IUserContext';
+import type { IUserCreationOptions } from './IUserCreationOptions';
+import type { IUserEmail } from './IUserEmail';
+import type { IUserLookup } from './IUserLookup';
+import type { IUserStatusContext } from './IUserStatusContext';
+import type { IUserUpdateContext } from './IUserUpdateContex';
 import { UserStatusConnection } from './UserStatusConnection';
 import { UserType } from './UserType';
 
-export {
-    IUser,
-    IUserEmail,
-    IUserLookup,
-    IUserCreationOptions,
-    UserStatusConnection,
-    UserType,
-    IPostUserCreated,
-    IPostUserUpdated,
-    IPostUserDeleted,
-    IPostUserLoggedIn,
-    IPostUserLoggedOut,
-    IPostUserStatusChanged,
-    IUserContext,
-    IUserUpdateContext,
-    IUserStatusContext,
+export type {
+	IUser,
+	IUserEmail,
+	IUserLookup,
+	IUserCreationOptions,
+	IPostUserCreated,
+	IPostUserUpdated,
+	IPostUserDeleted,
+	IPostUserLoggedIn,
+	IPostUserLoggedOut,
+	IPostUserStatusChanged,
+	IUserContext,
+	IUserUpdateContext,
+	IUserStatusContext,
 };
+export { UserStatusConnection, UserType };

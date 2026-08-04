@@ -1,14 +1,18 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../app/models/client';
-
-export const getUidDirectMessage = (rid: IRoom['_id'], uid: IUser['_id'] | null = Meteor.userId()): string | undefined => {
-	const room = Rooms.findOne({ _id: rid }, { fields: { t: 1, uids: 1 } });
-
-	if (!room || room.t !== 'd' || !room.uids || room.uids.length > 2) {
+export const getUidDirectMessage = (room: Pick<IRoom, 't' | 'uids' | 'usernames'>, uid?: IUser['_id']) => {
+	if (room.t !== 'd' || !room.uids?.length || room.uids.length > 2) {
 		return undefined;
 	}
 
-	return room.uids.filter((_uid) => _uid !== uid)[0];
+	const partner = room.uids.find((_uid) => _uid !== uid);
+	if (partner) {
+		return partner;
+	}
+
+	if (room.uids.length === 1 && room.usernames?.length === 1) {
+		return uid;
+	}
+
+	return undefined;
 };

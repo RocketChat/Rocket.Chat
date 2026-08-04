@@ -1,32 +1,32 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
-import { useState, useMemo, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import CustomUserStatusRow from './CustomUserStatusRow';
-import FilterByText from '../../../../components/FilterByText';
-import GenericNoResult from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { MutableRefObject } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-type CustomUserStatusProps = {
+import CustomUserStatusRow from './CustomUserStatusRow';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResult from '../../../../components/GenericNoResults';
+
+export type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (id: string) => void;
 };
 
 // TODO: Missing error state
-const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
+const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();

@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createSetupWSettings = () =>
 	settingsRegistry.addGroup('Setup_Wizard', async function () {
@@ -1221,6 +1221,13 @@ export const createSetupWSettings = () =>
 					value: true,
 				},
 				secret: true,
+			});
+
+			await this.add('Omnigateway_Url', 'https://omni-gateway.rocket.chat', {
+				type: 'string',
+				hidden: true,
+				secret: true,
+				readonly: true,
 			});
 
 			await this.add('Cloud_Service_Agree_PrivacyTerms', false, {

@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
 import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
-type ChannelToTeamSelectionProps = {
+export type ChannelToTeamSelectionProps = {
 	teamId: IRoom['teamId'];
 	onChange: (value: string | string[]) => void;
 	onCancel: () => void;
