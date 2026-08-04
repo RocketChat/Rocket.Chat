@@ -24,13 +24,26 @@ entitled to refuse, and `VideoConfBlockModal` then has to ask the user to click 
 asked for.
 
 A direct call used to be the exception. It rang the callee and kept the caller waiting in the room, opening the
-window only once the answer arrived, which is exactly the refusable case. Now placing a direct call rings the
-callee **and** opens the window, so the caller sets up mic and camera in the call while the other side is still
-ringing, and initiation reads the same for every room type.
+window only once the answer arrived, which is exactly the refusable case. Now placing a direct call opens the
+window immediately, and initiation reads the same for every room type.
 
 The wait therefore moves into the call window, which is also where its outcome is reported — see
 [When nobody picks up](#when-nobody-picks-up). The room stops showing an outgoing popup for a call the user is
-already sitting in, even though the caller's client keeps ringing the callee from there.
+already sitting in.
+
+### When the callee is rung
+
+Creating a direct call is not asking anyone to answer it. The caller lands on the [preflight](#the-preflight-screen)
+first, so the ring waits for them to actually enter the call: `addUserToCall` rings the other side when the
+**caller** arrives, and only members who have never been rung — a rejoin rings nobody, and a second attempt is
+what the call window's own *ring again* is for.
+
+Being rung into a call whose caller is still choosing a camera means answering to an empty room, which is what
+this avoids. The screen says as much before it happens ("Alice will be notified when you start the call") and the
+button is the call itself rather than a join.
+
+With persistent chat **off** there is no preflight to wait for, so nothing changes: the caller's own client rings
+the callee from the room, on the 1:1 handshake it always used.
 
 ### How the call window is opened
 
@@ -636,6 +649,7 @@ and package-level jest.
 | The sidebar list: what it lists, what it leaves out, and the three-row cap | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
 | That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
+| That the callee is rung when the caller arrives, and only once | `apps/meteor/tests/unit/server/services/video-conference/ringOnArrival.spec.ts` |
 | What the preflight offers, what it joins with, and naming the call | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
 | That the join waits to be asked, and carries what it was asked with | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
 | That the main app opens the call window without joining for the user | `apps/meteor/client/lib/VideoConfManager.spec.ts` |

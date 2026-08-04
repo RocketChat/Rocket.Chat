@@ -16,6 +16,8 @@ type ConferencePreflightProps = {
 	name: string;
 	/** Only the person who started a group call may name it, and only a group call has a name of its own. */
 	canRename: boolean;
+	/** This user is placing the call: nobody has been asked to answer it until they go in. */
+	placing: boolean;
 	capabilities: VideoConferenceCapabilities;
 	onJoin: (preferences: CallPreferences) => void;
 };
@@ -33,7 +35,7 @@ type ConferencePreflightProps = {
  * The devices sit in the same bar the call's own controls occupy, so the control that mutes the mic doesn't move
  * between deciding to join and being in the call.
  */
-const ConferencePreflight = ({ callId, name, canRename, capabilities, onJoin }: ConferencePreflightProps) => {
+const ConferencePreflight = ({ callId, name, canRename, placing, capabilities, onJoin }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
 	const user = useUser();
 	const { preferences, toggle } = useCallPreferences(capabilities);
@@ -94,6 +96,14 @@ const ConferencePreflight = ({ callId, name, canRename, capabilities, onJoin }: 
 					{name}
 				</Box>
 
+				{/* Nobody's phone is ringing yet — going in is what rings it, and saying so is what makes the wait
+				    afterwards make sense. */}
+				{placing && (
+					<Box fontScale='p2' color='hint' marginBlockStart={8} maxWidth='x480' withTruncatedText>
+						{t('__name__will_be_notified_when_you_start_the_call', { name })}
+					</Box>
+				)}
+
 				{canRename && (
 					<Box width='100%' maxWidth='x360' marginBlockStart={16}>
 						<Field>
@@ -112,7 +122,7 @@ const ConferencePreflight = ({ callId, name, canRename, capabilities, onJoin }: 
 
 				<Box marginBlockStart={24}>
 					<Button primary loading={joining} onClick={join}>
-						{t('Join_call')}
+						{placing ? t('Call__name__', { name }) : t('Join_call')}
 					</Button>
 				</Box>
 			</Box>

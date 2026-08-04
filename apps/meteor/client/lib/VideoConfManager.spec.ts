@@ -279,9 +279,11 @@ describe('when the call window joins for itself', () => {
 		expect(VideoConfManager.isCalling()).toBe(false);
 	});
 
-	it('still rings the callee', async () => {
+	// The callee is rung by the server once the caller has actually entered the call. Ringing from here would ring
+	// them while the caller is still choosing a camera, which means answering into an empty room.
+	it('leaves the ringing until the caller has arrived in the call', async () => {
 		await VideoConfManager.startCall('room-1');
 
-		expect(publishedActions()).toContain('call');
+		expect(publishedActions()).not.toContain('call');
 	});
 });
