@@ -1,16 +1,21 @@
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type RoomsAvailableForTeamsAutoCompleteProps<TLabel = ReactNode> = Omit<AutoCompleteProps<TLabel>, 'filter'>;
 
-const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
+const RoomsAvailableForTeamsAutoComplete = <TLabel = ReactNode,>({
+	value,
+	onChange,
+	...props
+}: RoomsAvailableForTeamsAutoCompleteProps<TLabel>) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 

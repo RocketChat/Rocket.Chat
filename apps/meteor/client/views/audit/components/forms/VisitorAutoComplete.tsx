@@ -1,12 +1,13 @@
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete, Option } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-export type VisitorAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type VisitorAutoCompleteProps<TLabel = ReactNode> = Omit<AutoCompleteProps<TLabel>, 'filter'>;
 
-const VisitorAutoComplete = ({ value, onChange, ...props }: VisitorAutoCompleteProps) => {
+const VisitorAutoComplete = <TLabel = ReactNode,>({ value, onChange, ...props }: VisitorAutoCompleteProps<TLabel>) => {
 	const [filter, setFilter] = useState('');
 
 	const performVisitorSearch = useEndpoint('GET', '/v1/livechat/visitors.autocomplete');

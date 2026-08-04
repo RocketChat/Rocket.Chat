@@ -1,9 +1,10 @@
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete, Option, Chip, Box, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
@@ -12,11 +13,11 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+type RoomAutoCompleteProps<TLabel = ReactNode> = Omit<AutoCompleteProps<TLabel>, 'filter'> & {
 	readOnly?: boolean;
 };
 
-const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoCompleteProps) => {
+const RoomAutoCompleteMultiple = <TLabel = ReactNode,>({ value, onChange, ...props }: RoomAutoCompleteProps<TLabel>) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
