@@ -28,7 +28,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		];
 	}
 
-	public async findOneByIdAndCallee<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(id: IMediaCall['_id'], callee: MediaCallActor, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	public async findOneByIdAndCallee<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		id: IMediaCall['_id'],
+		callee: MediaCallActor,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				'_id': id,
@@ -40,7 +44,14 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async findOneByCallerRequestedId<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(id: Required<IMediaCall>['callerRequestedId'], caller: { type: MediaCallActorType; id: string }, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	public async findOneByCallerRequestedId<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		id: Required<IMediaCall>['callerRequestedId'],
+		caller: { type: MediaCallActorType; id: string },
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				'caller.type': caller.type,
@@ -166,7 +177,9 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	public findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				ended: false,
@@ -178,7 +191,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllNotOverByUid<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uid: IUser['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	public findAllNotOverByUid<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				ended: false,

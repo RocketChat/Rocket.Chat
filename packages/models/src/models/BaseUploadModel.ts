@@ -1,6 +1,16 @@
 import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
-import type { DeleteResult, IndexDescription, UpdateResult, Document, InsertOneResult, WithId, Filter, FindCursor, ClientSession } from 'mongodb';
+import type {
+	DeleteResult,
+	IndexDescription,
+	UpdateResult,
+	Document,
+	InsertOneResult,
+	WithId,
+	Filter,
+	FindCursor,
+	ClientSession,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -81,7 +91,10 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	findByIds<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(_ids: string[], options?: O): FindCursor<DocumentWithProjection<T_, O>> {
+	findByIds<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		_ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
 		const query = {
 			_id: {
 				$in: _ids,
@@ -99,7 +112,9 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.findOne({ rid });
 	}
 
-	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(options?: O): FindCursor<DocumentWithProjection<T_, O>> {
+	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
 		return this.find<T_, O>(
 			{
 				expiresAt: {
@@ -124,7 +139,12 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 
-	async findOneByIdAndUserIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(fileId: string, userId: string, rid: string, options?: O): Promise<DocumentWithProjection<T_, O> | null> {
+	async findOneByIdAndUserIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		userId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null> {
 		return this.findOne<T_, O>({ _id: fileId, userId, rid }, options);
 	}
 

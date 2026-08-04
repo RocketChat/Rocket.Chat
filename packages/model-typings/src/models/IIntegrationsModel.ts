@@ -21,6 +21,10 @@ export interface IIntegrationsModel extends IBaseModel<IIntegration> {
 	removeByIdAndCreatedByIfExists(params: { _id: IIntegration['_id']; createdBy?: IUser['_id'] }): Promise<IIntegration | null>;
 	findOneByUrl(url: string): Promise<IIntegration | null>;
 	updateRoomName(oldRoomName: string, newRoomName: string): ReturnType<IBaseModel<IIntegration>['updateMany']>;
-	findOneByIdAndToken<P extends Document = IIntegration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(id: IIntegration['_id'], token: string, options?: O): Promise<DocumentWithProjection<P, O> | null>;
+	findOneByIdAndToken<P extends Document = IIntegration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		id: IIntegration['_id'],
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 	getStatistics(options?: AggregateOptions): Promise<IntegrationsStatistics>;
 }

@@ -12,7 +12,14 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
-import type { DefaultFields, InsertionModel, IUsersModel, DocumentWithProjection, FindOptionsWithProjection, FindPaginated } from '@rocket.chat/model-typings';
+import type {
+	DefaultFields,
+	InsertionModel,
+	IUsersModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	FindPaginated,
+} from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	Collection,
@@ -104,7 +111,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		];
 	}
 
-	findUsersByIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>({ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] }, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findUsersByIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const normalizedIds = (ids ?? []).filter(Boolean);
 		const normalizedUsernames = (usernames ?? []).filter(Boolean);
 		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
@@ -141,7 +151,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
-	findActiveByRoomIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomIds: IRoom['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByRoomIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: IRoom['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ active: true, __rooms: { $in: roomIds } }, options);
 	}
 
@@ -180,17 +193,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	/**
 	 * @param {IRole['_id'][]} roles list of role ids
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
-	 * @param {any} options
 	 */
-	findUsersInRoles: IUsersModel['findUsersInRoles'] = (roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: any) => {
-		roles = ([] as string[]).concat(roles);
-
+	findUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		_scope?: null,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
-			roles: { $in: roles },
+			roles: { $in: ([] as string[]).concat(roles) },
 		};
 
-		return this.find(query, options);
-	};
+		return this.find<T, O>(query, options);
+	}
 
 	countUsersInRoles(roles: IRole['_id'][] | IRole['_id']) {
 		roles = ([] as string[]).concat(roles);
@@ -202,7 +216,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query);
 	}
 
-	findPaginatedUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: IRole['_id'][] | IRole['_id'], options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		roles = ([] as string[]).concat(roles);
 
 		const query = {
@@ -212,13 +229,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findOneByUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(username: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { username };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneAgentById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneAgentById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id,
 			roles: 'livechat-agent',
@@ -232,7 +255,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: IRole['_id'][] | IRole['_id'], query: Filter<IUser>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		query: Filter<IUser>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		roles = ([] as string[]).concat(roles);
 
 		Object.assign(query, { roles: { $in: roles } });
@@ -245,7 +272,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findPaginatedUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: IRole['_id'][] | IRole['_id'], query: Filter<IUser>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		query: Filter<IUser>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		roles = ([] as string[]).concat(roles);
 
 		Object.assign(query, { roles: { $in: roles } });
@@ -303,7 +334,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.aggregate<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }>(aggregate).toArray();
 	}
 
-	findOneByUsernameAndRoomIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(username: string | RegExp, rid: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByUsernameAndRoomIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string | RegExp,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -316,7 +351,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByIdAndLoginHashedToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IUser['_id'], token: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdAndLoginHashedToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -325,12 +364,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: string, exceptions: string[], options?: O, searchFields?: string[], extraQuery: Filter<IUser>[] = [], { startsWith = false, endsWith = false } = {}): FindCursor<DocumentWithProjection<T, O>> {
+	findByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		searchTerm: string,
+		exceptions: string[],
+		options?: O,
+		searchFields?: string[],
+		extraQuery: Filter<IUser>[] = [],
+		{ startsWith = false, endsWith = false } = {},
+	): FindCursor<DocumentWithProjection<T, O>> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
 		if (options == null) {
-			options = {};
+			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -364,12 +410,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findPaginatedByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: string, exceptions?: string[], options?: O, searchFields: string[] = [], extraQuery: Filter<IUser>[] = [], { startsWith = false, endsWith = false } = {}): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: O,
+		searchFields: string[] = [],
+		extraQuery: Filter<IUser>[] = [],
+		{ startsWith = false, endsWith = false } = {},
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
 		if (options == null) {
-			options = {};
+			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -403,27 +456,48 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	findPaginatedByActiveLocalUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: string, exceptions?: string[], options?: O, forcedSearchFields?: string[], localDomain?: string): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByActiveLocalUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: O,
+		forcedSearchFields?: string[],
+		localDomain?: string,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const extraQuery = [
 			{
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
 			},
 		];
-		return this.findPaginatedByActiveUsersExcept<T>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findPaginatedByActiveExternalUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(searchTerm: string, exceptions?: string[], options?: O, forcedSearchFields?: string[], localDomain?: string): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedByActiveExternalUsersExcept<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: O,
+		forcedSearchFields?: string[],
+		localDomain?: string,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
-		return this.findPaginatedByActiveUsersExcept<T>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findActive<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(query: Filter<IUser>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActive<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<IUser>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		Object.assign(query, { active: true });
 
 		return this.find<T, O>(query, options);
 	}
 
-	findActiveByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userIds: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: userIds },
 			active: true,
@@ -432,7 +506,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findActiveByIdsOrUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userIds: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByIdsOrUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
 			active: true,
@@ -441,7 +518,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userIds: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: userIds },
 		};
@@ -449,11 +529,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findOneByImportId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByImportId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ importIds: _id }, options);
 	}
 
-	findOneByUsernameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(username: IUser['username'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByUsernameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: IUser['username'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (!username) {
 			throw new Error('invalid username');
 		}
@@ -463,10 +549,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
-		});
+		} as unknown as O);
 	}
 
-	findOneWithoutLDAPByUsernameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(username: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneWithoutLDAPByUsernameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(username: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 
 		const query = {
@@ -488,19 +577,27 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(query);
 	}
 
-	async findOneByAppId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(appId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findOneByAppId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		appId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { appId };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	findLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { ldap: true };
 
 		return this.find<T, O>(query, options);
 	}
 
-	findActiveLDAPUsersExceptIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userIds: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveLDAPUsersExceptIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			ldap: true,
 			active: true,
@@ -512,7 +609,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'ldap': true,
 			'services.resume.loginTokens': {
@@ -847,7 +946,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(termRegex: { $regex: string; $options: string } | RegExp, exceptions?: string[], conditions?: Filter<IUser>, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		termRegex: { $regex: string; $options: string } | RegExp,
+		exceptions?: string[],
+		conditions?: Filter<IUser>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -855,7 +962,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			conditions = {};
 		}
 		if (options == null) {
-			options = {};
+			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
@@ -1521,7 +1628,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByIdWithEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdWithEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				_id: userId,
@@ -1552,7 +1662,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T>(query);
 	}
 
-	findOneOnlineAgentByUserList<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userList: string | string[], options?: O, isLivechatEnabledWhenAgentIdle?: boolean, acceptChatsWithNoAgents?: boolean): Promise<DocumentWithProjection<T, O> | null> {
+	findOneOnlineAgentByUserList<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userList: string | string[],
+		options?: O,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		acceptChatsWithNoAgents?: boolean,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		// TODO:: Create class Agent
 		const username = {
 			$in: ([] as string[]).concat(userList),
@@ -2075,7 +2190,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findByIdsWithPublicE2EKey<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByIdsWithPublicE2EKey<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'_id': {
 				$in: ids,
@@ -2166,7 +2284,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	 * @param {IRole['_id'][]} roles the list of role ids
 	 * @param {any} options
 	 */
-	findActiveUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: IRole['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		roles = ([] as string[]).concat(roles);
 
 		const query = {
@@ -2188,7 +2309,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(username: string | RegExp, userId: IUser['_id'], serviceName: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByUsernameAndServiceNameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(username: string | RegExp, userId: IUser['_id'], serviceName: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -2198,7 +2322,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByEmailAddressAndServiceNameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(emailAddress: string, userId: IUser['_id'], serviceName: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByEmailAddressAndServiceNameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(emailAddress: string, userId: IUser['_id'], serviceName: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			'emails.address': String(emailAddress).trim(),
 			[`services.${serviceName}.id`]: userId,
@@ -2207,19 +2334,25 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
-		});
+		} as unknown as O);
 	}
 
-	findOneByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(emailAddress: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { 'emails.address': String(emailAddress).trim() };
 
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
-		});
+		} as unknown as O);
 	}
 
-	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(emailAddress: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			'emails.address': emailAddress.trim().toLowerCase(),
 			'services.ldap': {
@@ -2230,13 +2363,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { roles: { $in: ['admin'] }, _id: userId };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByIdAndLoginToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: IUser['_id'], token: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdAndLoginToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -2245,13 +2385,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	override findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
-		const query = { _id: userId };
-
-		return this.findOne(query, options);
-	}
-
-	findOneActiveById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId?: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneActiveById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId?: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id: userId,
 			active: true,
@@ -2260,7 +2397,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByIdOrUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(idOrUsername: IUser['_id'] | IUser['username'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdOrUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		idOrUsername: IUser['_id'] | IUser['username'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			$or: [
 				{
@@ -2275,13 +2415,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: IRole['_id'][], type: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][],
+		type: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { roles, type };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(users: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		users: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: users },
 			$or: [
@@ -2293,7 +2440,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findUsersNotOffline<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findUsersNotOffline<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			username: {
 				$exists: true,
@@ -2319,7 +2468,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.countDocuments(query, options);
 	}
 
-	findNotIdUpdatedFrom<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(uid: IUser['_id'], from: Date, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findNotIdUpdatedFrom<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		from: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IUser> = {
 			_id: { $ne: uid },
 			username: {
@@ -2331,13 +2484,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], role: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		role: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { _id: userId, roles: role };
 
 		return this.findOne<T, O>(query, options);
 	}
 
-	async findByRoomId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: IRoom['_id'], options?: O): Promise<FindCursor<DocumentWithProjection<T, O>>> {
+	async findByRoomId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<T, O>>> {
 		const data = (await Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
 		const query = {
 			_id: {
@@ -2348,13 +2508,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(usernames: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { username: { $in: usernames } };
 
 		return this.find<T, O>(query, options);
 	}
 
-	findByUsernamesIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(usernames: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByUsernamesIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			username: {
 				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${escapeRegExp(u)}$`, 'i')),
@@ -2364,7 +2530,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findActiveByUserIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveByUserIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				active: true,
@@ -2397,7 +2566,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query);
 	}
 
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { crowd: true };
 
 		return this.find<T, O>(query, options);
@@ -2409,7 +2580,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return user?.lastLogin;
 	}
 
-	findUsersByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(usernames: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findUsersByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			username: {
 				$in: usernames,
@@ -2419,7 +2593,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
-	findUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: IUser['_id'][], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: {
 				$in: ids,
@@ -2431,19 +2608,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	/**
 	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} projection
 	 */
-	getOldest<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(optionsParams?: O): Promise<DocumentWithProjection<T, O> | null> {
+	getOldest<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		optionsParams?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id: {
 				$ne: 'rocket.cat',
 			},
 		};
 
-		const options: FindOptions<IUser> = {
+		const options = {
 			...optionsParams,
 			sort: {
 				createdAt: 1,
 			},
-		};
+		} as unknown as O;
 
 		return this.findOne<T, O>(query, options);
 	}
@@ -2460,7 +2639,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findBySAMLNameIdOrIdpSession<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(nameID: string, idpSession: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findBySAMLNameIdOrIdpSession<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		nameID: string,
+		idpSession: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
@@ -2469,7 +2652,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findBySAMLInResponseTo<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(inResponseTo: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findBySAMLInResponseTo<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		inResponseTo: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				'services.saml.inResponseTo': inResponseTo,
@@ -2478,7 +2664,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(freeSwitchExtension: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		freeSwitchExtension: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
 				freeSwitchExtension,
@@ -2684,7 +2873,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateMany(query, update);
 	}
 
-	findActiveNotLoggedInAfterWithRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(latestLastLoginDate: Date, role: IRole['_id'] = 'user', options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findActiveNotLoggedInAfterWithRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		latestLastLoginDate: Date,
+		role: IRole['_id'] = 'user',
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const neverActive = { lastLogin: { $exists: false }, createdAt: { $lte: latestLastLoginDate } };
 		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
 
@@ -3084,7 +3277,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(token: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			'services.email.verificationTokens.token': token,
 		};

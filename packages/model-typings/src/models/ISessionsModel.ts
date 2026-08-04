@@ -1,4 +1,12 @@
-import type { ISession, UserSessionAggregationResult, DeviceSessionAggregationResult, OSSessionAggregationResult, IUser, DeviceManagementPopulatedSession, DeviceManagementSession, } from '@rocket.chat/core-typings';
+import type {
+	ISession,
+	UserSessionAggregationResult,
+	DeviceSessionAggregationResult,
+	OSSessionAggregationResult,
+	IUser,
+	DeviceManagementPopulatedSession,
+	DeviceManagementSession,
+} from '@rocket.chat/core-typings';
 import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -136,5 +144,9 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 
-	getLoggedInByUserIdAndSessionId<T extends Document = ISession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, sessionId: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	getLoggedInByUserIdAndSessionId<T extends Document = ISession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		sessionId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 }

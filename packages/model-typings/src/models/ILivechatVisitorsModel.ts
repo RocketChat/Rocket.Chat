@@ -15,9 +15,18 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
-	findById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findByIds<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	getVisitorByToken<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(token: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByIds<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	getVisitorByToken<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[],
@@ -29,7 +38,15 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		}
 	>;
 
-	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(emailOrPhone?: string, nameOrUsername?: RegExp, allowedCustomFields?: string[], options?: O): Promise<FindPaginated<FindCursor<DocumentWithProjection<T, O>>>>;
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField<
+		T extends Document = ILivechatVisitor,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		emailOrPhone?: string,
+		nameOrUsername?: RegExp,
+		allowedCustomFields?: string[],
+		options?: O,
+	): Promise<FindPaginated<FindCursor<DocumentWithProjection<T, O>>>>;
 
 	findOneByEmailAndPhoneAndCustomField(
 		email: string | null | undefined,
@@ -69,11 +86,17 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
 
-	findOneEnabledById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneEnabledById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	disableById(_id: string): Promise<UpdateResult>;
 
-	findEnabled<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(query: Filter<ILivechatVisitor>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findEnabled<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<ILivechatVisitor>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	saveGuestById(
 		_id: string,

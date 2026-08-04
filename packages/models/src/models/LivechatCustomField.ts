@@ -13,11 +13,18 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return [{ key: { scope: 1 } }];
 	}
 
-	findByScope<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(scope: ILivechatCustomField['scope'], options?: O, includeHidden = true): FindCursor<DocumentWithProjection<T, O>> {
+	findByScope<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		scope: ILivechatCustomField['scope'],
+		options?: O,
+		includeHidden = true,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ scope, ...(includeHidden === true ? {} : { visibility: { $ne: 'hidden' } }) }, options);
 	}
 
-	findMatchingCustomFields<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(scope: ILivechatCustomField['scope'], searchable = true, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findMatchingCustomFields<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(scope: ILivechatCustomField['scope'], searchable = true, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope,
 			searchable,
@@ -26,7 +33,15 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return this.find<T, O>(query, options);
 	}
 
-	findMatchingCustomFieldsByIds<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(ids: ILivechatCustomField['_id'][], scope: ILivechatCustomField['scope'], searchable = true, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findMatchingCustomFieldsByIds<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		ids: ILivechatCustomField['_id'][],
+		scope: ILivechatCustomField['scope'],
+		searchable = true,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
 			scope,

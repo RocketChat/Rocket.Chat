@@ -10,7 +10,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		super(db, 'roles', trash);
 	}
 
-	findByUpdatedDate<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(updatedAfterDate: Date, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByUpdatedDate<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		updatedAfterDate: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_updatedAt: { $gte: new Date(updatedAfterDate) },
 		};
@@ -46,7 +49,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return false;
 	}
 
-	findOneByIdOrName<P extends Document = IRole, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(_idOrName: IRole['_id'], options?: O): Promise<DocumentWithProjection<P, O> | null> {
+	findOneByIdOrName<P extends Document = IRole, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_idOrName: IRole['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const query: Filter<IRole> = {
 			$or: [
 				{
@@ -66,7 +72,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			name,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IRole>(query, options);
 	}
 
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
@@ -101,12 +107,15 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	}
 
-	findByScope<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(scope: IRole['scope'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByScope<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		scope: IRole['scope'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope,
 		};
 
-		return this.find<T, O>(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
 	countByScope(scope: IRole['scope'], options?: CountDocumentsOptions): Promise<number> {
@@ -117,12 +126,14 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.countDocuments(query, options);
 	}
 
-	findCustomRoles<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findCustomRoles<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRole> = {
 			protected: false,
 		};
 
-		return this.find<T, O>(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
 	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {

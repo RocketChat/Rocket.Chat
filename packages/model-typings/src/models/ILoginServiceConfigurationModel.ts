@@ -10,5 +10,8 @@ export interface ILoginServiceConfigurationModel extends IBaseModel<LoginService
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']>;
 	removeByService(serviceName: LoginServiceConfiguration['service']): Promise<Pick<LoginServiceConfiguration, '_id'> | null>;
-	findOneByService<P extends Document = LoginServiceConfiguration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(serviceName: LoginServiceConfiguration['service'], options?: O): Promise<DocumentWithProjection<P, O> | null>;
+	findOneByService<P extends Document = LoginServiceConfiguration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		serviceName: LoginServiceConfiguration['service'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 }

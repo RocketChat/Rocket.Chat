@@ -9,9 +9,19 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	countGcmTokens(): Promise<number>;
 	countApnTokens(): Promise<number>;
 	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null>;
-	findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>>;
-	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], idToIgnore: IPushToken['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>>;
 	refreshTokenById(

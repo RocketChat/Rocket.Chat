@@ -13,7 +13,19 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { ISessionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
-import type { AggregationCursor, AnyBulkWriteOperation, BulkWriteResult, Collection, Document, FindCursor, Db, Filter, IndexDescription, UpdateResult, OptionalId } from 'mongodb';
+import type {
+	AggregationCursor,
+	AnyBulkWriteOperation,
+	BulkWriteResult,
+	Collection,
+	Document,
+	FindCursor,
+	Db,
+	Filter,
+	IndexDescription,
+	UpdateResult,
+	OptionalId,
+} from 'mongodb';
 
 import { getCollectionName } from '../index';
 import { BaseRaw } from './BaseRaw';
@@ -1559,7 +1571,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async getLoggedInByUserIdAndSessionId<T extends Document = ISession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, sessionId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async getLoggedInByUserIdAndSessionId<
+		T extends Document = ISession,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(userId: string, sessionId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ userId, sessionId, logoutAt: { $exists: false } }, options);
 	}
 }

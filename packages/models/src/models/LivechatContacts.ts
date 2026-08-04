@@ -165,13 +165,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			enabled: { $ne: false },
 		};
 
-		return this.findPaginated<T, O>(
-			{ ...match },
-			{
-				allowDiskUse: true,
-				...options,
-			},
-		);
+		return this.findPaginated<T, O>({ ...match }, {
+			allowDiskUse: true,
+			...options,
+		} as unknown as O);
 	}
 
 	async findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null> {

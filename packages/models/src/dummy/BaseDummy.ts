@@ -170,7 +170,7 @@ export class BaseDummy<
 		_query: Filter<TDeleted>,
 		_options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>> | undefined {
-		return undefined as any;
+		return undefined;
 	}
 
 	trashFindOneById(_id: TDeleted['_id']): Promise<TDeleted | null>;

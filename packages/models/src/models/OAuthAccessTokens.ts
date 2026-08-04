@@ -19,14 +19,20 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		];
 	}
 
-	async findOneByAccessToken<T extends Document = IOAuthAccessToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(accessToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findOneByAccessToken<T extends Document = IOAuthAccessToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		accessToken: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof accessToken !== 'string' || !accessToken) {
 			return null;
 		}
 		return this.findOne<T, O>({ accessToken }, options);
 	}
 
-	async findOneByRefreshToken<T extends Document = IOAuthAccessToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(refreshToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findOneByRefreshToken<
+		T extends Document = IOAuthAccessToken,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(refreshToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof refreshToken !== 'string' || !refreshToken) {
 			return null;
 		}

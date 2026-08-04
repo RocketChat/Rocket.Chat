@@ -7,7 +7,12 @@ import type { DocumentWithProjection, FindOptionsWithProjection } from '../types
 export interface IBannersModel extends IBaseModel<IBanner> {
 	create(doc: Optional<IBanner, '_updatedAt'>): Promise<InsertOneResult<IBanner>>;
 
-	findActiveByRoleOrId<T extends Document = IBanner, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roles: string[], platform: BannerPlatform, bannerId?: string, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findActiveByRoleOrId<T extends Document = IBanner, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: string[],
+		platform: BannerPlatform,
+		bannerId?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	disable(bannerId: string): Promise<UpdateResult | Document>;
 

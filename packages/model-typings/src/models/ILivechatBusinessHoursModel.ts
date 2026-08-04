@@ -15,9 +15,25 @@ export interface IWorkHoursCronJobsWrapper {
 }
 
 export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusinessHour> {
-	findActiveBusinessHours<T extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): Promise<DocumentWithProjection<T, O>[]>;
-	findOneDefaultBusinessHour<P extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(options?: O): Promise<DocumentWithProjection<P, O> | null>;
-	findActiveAndOpenBusinessHoursByDay<T extends Document = ILivechatBusinessHour, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(day: string, options?: O): Promise<DocumentWithProjection<T, O>[]>;
+	findActiveBusinessHours<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O>[]>;
+	findOneDefaultBusinessHour<
+		P extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
+	findActiveAndOpenBusinessHoursByDay<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		day: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O>[]>;
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
 	insertOne(data: Omit<ILivechatBusinessHour, '_id' | '_updatedAt'>): Promise<any>;
 	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]>;

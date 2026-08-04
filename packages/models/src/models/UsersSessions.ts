@@ -102,7 +102,10 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		return this.updateOne({ _id: userId }, update, { upsert: true });
 	}
 
-	findByOtherInstanceIds<T extends Document = IUserSession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(instanceIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByOtherInstanceIds<T extends Document = IUserSession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		instanceIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				'connections.instanceId': {

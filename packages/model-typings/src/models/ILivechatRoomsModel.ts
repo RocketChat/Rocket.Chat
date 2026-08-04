@@ -140,7 +140,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo, options?: UpdateOptions): Promise<UpdateResult>;
 
 	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
-	findOneByIdOrName<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_idOrName: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByIdOrName<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
 	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
 	saveRoomById(
@@ -156,18 +159,78 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		visitorToken: string,
 		fields?: FindOptions<IOmnichannelRoom>['projection'],
 	): Promise<IOmnichannelRoom | null>;
-	findOneByVisitorTokenAndEmailThreadAndDepartment<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, emailThread: string[], departmentId?: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByVisitorTokenAndEmailThreadAndDepartment<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		visitorToken: string,
+		emailThread: string[],
+		departmentId?: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
-	findOneLastServedAndClosedByVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
+	findOneLastServedAndClosedByVisitorToken<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		visitorToken: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
-	findOpenByVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, options?: O, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<DocumentWithProjection<T, O>>;
-	findOneOpenByContactChannelVisitor<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(association: ILivechatContactVisitorAssociation, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findOneOpenByVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, options?: O, extraQuery?: Filter<IOmnichannelRoom>): Promise<DocumentWithProjection<T, O> | null>;
-	findOneOpenByVisitorTokenAndDepartmentIdAndSource<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, departmentId?: string, source?: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findOpenByVisitorTokenAndDepartmentId<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorToken: string, departmentId: string, options?: O, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<DocumentWithProjection<T, O>>;
-	findByVisitorIdAndAgentId<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorId?: string, agentId?: string, options?: O, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<DocumentWithProjection<T, O>>;
-	findOneOpenByRoomIdAndVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(roomId: string, visitorToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null>;
-	findClosedRooms<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(departmentIds?: string[], options?: O, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<DocumentWithProjection<T, O>>;
+	findOpenByVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorToken: string,
+		options?: O,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findOneOpenByContactChannelVisitor<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		association: ILivechatContactVisitorAssociation,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneOpenByVisitorToken<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorToken: string,
+		options?: O,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		visitorToken: string,
+		departmentId?: string,
+		source?: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOpenByVisitorTokenAndDepartmentId<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		visitorToken: string,
+		departmentId: string,
+		options?: O,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByVisitorIdAndAgentId<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorId?: string,
+		agentId?: string,
+		options?: O,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findOneOpenByRoomIdAndVisitorToken<
+		T extends Document = IOmnichannelRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		roomId: string,
+		visitorToken: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findClosedRooms<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentIds?: string[],
+		options?: O,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	getResponseByRoomIdUpdateQuery(
 		responseBy: IOmnichannelRoom['responseBy'],
 		updater?: Updater<IOmnichannelRoom>,
@@ -203,7 +266,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		date: { gte: Date; lte: Date },
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
-	findOpenByAgent<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, extraQuery?: Filter<IOmnichannelRoom>, options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findOpenByAgent<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		extraQuery?: Filter<IOmnichannelRoom>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): Promise<number>;
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
@@ -237,6 +304,9 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		oldContactId: ILivechatContact['_id'],
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document>;
-	findOpenByContactId<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(contactId: ILivechatContact['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findOpenByContactId<T extends Document = IOmnichannelRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		contactId: ILivechatContact['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null>;
 }

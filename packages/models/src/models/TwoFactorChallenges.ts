@@ -15,7 +15,10 @@ export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> impleme
 		return [{ key: { expireAt: 1 }, expireAfterSeconds: 0 }];
 	}
 
-	findOneByPendingChallengeId<T extends Document = ITwoFactorChallenge, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(pendingChallengeId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByPendingChallengeId<
+		T extends Document = ITwoFactorChallenge,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(pendingChallengeId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ _id: pendingChallengeId }, options);
 	}
 

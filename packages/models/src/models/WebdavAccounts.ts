@@ -13,11 +13,19 @@ export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebda
 		return [{ key: { userId: 1 } }];
 	}
 
-	findOneByIdAndUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_id: string, userId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdAndUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ _id, userId }, options);
 	}
 
-	findOneByUserIdServerUrlAndUsername<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>({
+	findOneByUserIdServerUrlAndUsername<
+		T extends Document = IWebdavAccount,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		{
 			userId,
 			serverURL,
 			username,
@@ -25,11 +33,16 @@ export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebda
 			userId: string;
 			serverURL: string;
 			username: string;
-		}, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		},
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ userId, serverURL, username }, options);
 	}
 
-	findWithUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findWithUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { userId };
 		return this.find<T, O>(query, options);
 	}

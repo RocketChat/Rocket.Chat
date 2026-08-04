@@ -64,7 +64,10 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		);
 	}
 
-	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(originalFileId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ originalFileId }, options);
 	}
 }

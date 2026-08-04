@@ -1855,8 +1855,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			'servedBy': { $exists: true },
 		};
 
-		options.sort = { closedAt: -1 };
-		return this.findOne<T, O>(query, options);
+		return this.findOne<T, O>(query, { ...options, sort: { closedAt: -1 } } as unknown as O);
 	}
 
 	findOneByVisitorToken(visitorToken: string, fields: FindOptions<IOmnichannelRoom>['projection']) {
@@ -2765,6 +2764,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
-		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.findOne<IOmnichannelRoom>({ contactId, open: true }, { projection: { _id: 1 } });
 	}
 }

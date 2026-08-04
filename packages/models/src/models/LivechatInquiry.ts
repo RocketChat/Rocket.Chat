@@ -107,7 +107,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		];
 	}
 
-	findOneByRoomId<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(rid: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			rid,
 		};
@@ -115,7 +118,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord> {
-		return this.find({ 'v._id': _id }, { projection: { _id: 1 } });
+		// TODO: this projection is narrower than the declared return type — narrow the signature
+		return this.find<ILivechatInquiryRecord>({ 'v._id': _id }, { projection: { _id: 1 } });
 	}
 
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
@@ -285,7 +289,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.deleteOne({ rid }, options);
 	}
 
-	getQueuedInquiries<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	getQueuedInquiries<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
@@ -456,7 +462,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateMany(query, update);
 	}
 
-	findByVisitorIds<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(visitorIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByVisitorIds<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ 'v._id': { $in: visitorIds } }, options);
 	}
 }

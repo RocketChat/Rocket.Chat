@@ -1,6 +1,6 @@
 import type { IBannerDismiss, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBannersDismissModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, Document } from 'mongodb';
+import type { IBannersDismissModel } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, IndexDescription, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,7 +13,21 @@ export class BannersDismissRaw extends BaseRaw<IBannerDismiss> implements IBanne
 		return [{ key: { userId: 1, bannerId: 1 } }];
 	}
 
-	findByUserIdAndBannerId<P extends Document = IBannerDismiss, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(userId: string, bannerIds: string[], options?: O): FindCursor<DocumentWithProjection<P, O>> {
+	findByUserIdAndBannerId(userId: string, bannerIds: string[]): FindCursor<IBannerDismiss>;
+
+	findByUserIdAndBannerId(userId: string, bannerIds: string[], options: FindOptions<IBannerDismiss>): FindCursor<IBannerDismiss>;
+
+	findByUserIdAndBannerId<P extends Document>(
+		userId: string,
+		bannerIds: string[],
+		options: FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+	): FindCursor<P>;
+
+	findByUserIdAndBannerId<P extends Document>(
+		userId: string,
+		bannerIds: string[],
+		options?: FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+	): FindCursor<P> | FindCursor<IBannerDismiss> {
 		const query = {
 			userId,
 			bannerId: { $in: bannerIds },

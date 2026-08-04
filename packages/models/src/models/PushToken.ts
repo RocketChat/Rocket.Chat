@@ -42,11 +42,17 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		return this.countDocuments(query);
 	}
 
-	async findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	async findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ userId }, options);
 	}
 
-	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				userId,
@@ -56,7 +62,11 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		);
 	}
 
-	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(userId: IUser['_id'], idToIgnore: IPushToken['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>(
 			{
 				_id: { $ne: idToIgnore },

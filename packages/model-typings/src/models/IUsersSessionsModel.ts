@@ -13,6 +13,9 @@ export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
 		userId: string,
 		{ id, instanceId, status }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status'>,
 	): ReturnType<IBaseModel<IUserSession>['updateOne']>;
-	findByOtherInstanceIds<T extends Document = IUserSession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(instanceIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>>;
+	findByOtherInstanceIds<T extends Document = IUserSession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		instanceIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	removeConnectionsFromOtherInstanceIds(instanceIds: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 }
