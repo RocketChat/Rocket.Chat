@@ -109,7 +109,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPro
 					event.preventDefault();
 					onClose();
 					return;
-				case KeyboardCode.get('TAB'):
+				case KeyboardCode.get('TAB'): {
 					if (!ref.current) {
 						return;
 					}
@@ -135,6 +135,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPro
 						event.stopPropagation();
 						event.preventDefault();
 					}
+				}
 			}
 		},
 		[onClose],
