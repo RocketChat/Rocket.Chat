@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCreateNewMenu } from './hooks/useCreateNewMenu';
 
-type CreateRoomProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
-
-export type NavBarItemCreateNewProps = CreateRoomProps;
+export type NavBarItemCreateNewProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemCreateNew = (props: NavBarItemCreateNewProps) => {
 	const { t } = useTranslation();
