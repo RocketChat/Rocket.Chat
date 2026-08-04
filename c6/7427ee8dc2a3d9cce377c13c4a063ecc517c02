@@ -1,0 +1,41 @@
+packages/models/src/dummy/BaseDummy.ts
+  s_d81a2915077aab::t_6e15c9af1fae5a 9-11
+  s_d81a2915077aab::t_25e33c41781ccc 66-69,73-76,80-83
+packages/models/src/models/LivechatDepartmentAgents.ts
+  s_d81a2915077aab::t_f4b40031e5e848 188,242
+packages/models/src/models/Rooms.ts
+  s_d81a2915077aab::t_ff4db1a86d7686 1895-1896
+packages/model-typings/src/types/DocumentWithProjection.ts
+  s_d81a2915077aab::t_cc2b7d8d678ab8 1
+  s_d81a2915077aab::t_d41b77594a6ff5 24,28-32
+  s_d81a2915077aab::t_5300763e87cc0a 61-84
+  s_d81a2915077aab::t_7fa2a944ff73bd 33
+packages/model-typings/src/models/IBaseModel.ts
+  s_d81a2915077aab::t_4edc49381d8b94 25-33
+  s_d81a2915077aab::t_d8e3892b16885c 65-77
+packages/model-typings/src/types/DocumentWithProjection.typetest.ts
+  s_d81a2915077aab::t_bd8be975245856 65-81
+  s_d81a2915077aab::t_67e964d925b988 5
+packages/models/src/models/BaseRaw.ts
+  s_d81a2915077aab::t_96f217d767fce1 10-12
+  s_d81a2915077aab::t_01686572a09395 199
+  s_d81a2915077aab::t_3500b5f22269f5 353,356-357
+  s_d81a2915077aab::t_c6444e41121293 385,392
+  s_d81a2915077aab::t_3fb7022666d384 185-189,348-351,388-391
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "c67427ee8dc2a3d9cce377c13c4a063ecc517c02",
+  "prompts": {},
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
