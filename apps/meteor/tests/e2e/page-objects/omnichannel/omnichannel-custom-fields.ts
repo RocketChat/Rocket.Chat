@@ -2,7 +2,6 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
-import { Table } from '../fragments/table';
 
 class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -22,21 +21,16 @@ class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelCustomFieldsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Custom Fields' }));
-	}
-}
-
 export class OmnichannelCustomFields extends OmnichannelAdmin {
-	readonly manageCustomFields: OmnichannelManageCustomFieldsFlexTab;
+	protected readonly route = 'customfields';
 
-	readonly table: OmnichannelCustomFieldsTable;
+	protected readonly title = 'Custom Fields';
+
+	readonly manageCustomFields: OmnichannelManageCustomFieldsFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.manageCustomFields = new OmnichannelManageCustomFieldsFlexTab(page);
-		this.table = new OmnichannelCustomFieldsTable(page);
 	}
 
 	async createNew() {

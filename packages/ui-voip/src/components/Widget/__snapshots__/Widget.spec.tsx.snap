@@ -9,20 +9,9 @@ exports[`renders FullWidget without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-1ww4mnk"
       role="dialog"
     >
-      <div
-        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
-        style="user-select: none; webkit-user-select: none;"
-      >
-        <i
-          aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
-        >
-          
-        </i>
-      </div>
       <header
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >

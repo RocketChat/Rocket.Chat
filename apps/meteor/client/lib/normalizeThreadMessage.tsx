@@ -1,7 +1,9 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { type IMessage } from '@rocket.chat/core-typings';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
+import { MessageTypes } from '@rocket.chat/message-types';
+import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { toPlainTextRoot } from './toPlainTextRoot';
@@ -22,7 +24,9 @@ const tryParseWithLimit = (text: string): Root | undefined => {
 	}
 };
 
-export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
+export function normalizeThreadMessage({ ...message }: Readonly<IMessage>, t: TFunction) {
+	const messageType = MessageTypes.getType(message);
+
 	if (message.msg) {
 		delete message.mentions;
 
@@ -49,6 +53,10 @@ export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, '
 		if (attachment?.title) {
 			return <>{attachment.title}</>;
 		}
+	}
+
+	if (message.t) {
+		return messageType?.text(t, message, { capitalize: true });
 	}
 
 	return null;

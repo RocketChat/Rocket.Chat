@@ -1,3 +1,5 @@
+import bannersConfigSchema from '@rocket.chat/abac/docs/classification-banners.schema.json';
+
 import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
@@ -49,6 +51,25 @@ export function addSettings(): Promise<void> {
 					invalidValue: false,
 					section: 'ABAC',
 					enableQuery: abacEnabledQuery,
+				});
+				await this.add('ABAC_Classification_Banners_Enabled', false, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC_Classification_Banners',
+					enableQuery: abacEnabledQuery,
+					i18nDescription: 'ABAC_Classification_Banners_Enabled_Description',
+				});
+				await this.add('ABAC_Classification_Banners_Config', '', {
+					type: 'code',
+					code: 'application/json',
+					multiline: true,
+					public: true,
+					invalidValue: '',
+					section: 'ABAC_Classification_Banners',
+					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],
+					i18nDescription: 'ABAC_Classification_Banners_Config_Description',
+					schema: bannersConfigSchema,
 				});
 				await this.add('Abac_Cache_Decision_Time_Seconds', 300, {
 					type: 'int',

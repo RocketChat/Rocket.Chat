@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -11,6 +11,7 @@ import SidePanelParent from './SidePanelParent';
 import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getSubscriptionDraft } from '../../../../lib/utils/getSubscriptionDraft';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
@@ -39,6 +40,10 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
+	const titleIcon = getSubscriptionDraft(room) ? (
+		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
+	) : undefined;
+
 	const menu =
 		!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
 			<RoomMenu
@@ -60,6 +65,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			href={href}
 			selected={rid === openedRoom}
 			title={title}
+			titleIcon={titleIcon}
 			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
 			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
 			unread={highlighted}

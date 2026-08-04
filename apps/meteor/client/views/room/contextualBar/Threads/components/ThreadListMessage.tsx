@@ -8,11 +8,13 @@ import {
 	MessageTimestamp,
 	MessageBody,
 	MessageContainerFixed,
+	MessageStatusIndicatorItem,
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
@@ -35,6 +37,7 @@ export type ThreadListMessageProps = {
 	all: boolean;
 	tlm: Date;
 	emoji: IMessage['emoji'];
+	hasDraft?: boolean;
 } & Omit<ComponentProps<typeof Box>, 'is'>;
 
 const ThreadListMessage = ({
@@ -53,8 +56,10 @@ const ThreadListMessage = ({
 	tlm,
 	className = [],
 	emoji,
+	hasDraft,
 	...props
 }: ThreadListMessageProps) => {
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 
 	return (
@@ -67,6 +72,7 @@ const ThreadListMessage = ({
 					<MessageHeader>
 						<MessageName title={username}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Unfinished_thread_message')} />}
 					</MessageHeader>
 					<MessageBody clamp={2}>{msg}</MessageBody>
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />

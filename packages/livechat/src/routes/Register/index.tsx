@@ -1,4 +1,3 @@
-import type { JSX as JSXInternal } from 'preact';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -18,7 +17,6 @@ import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
-import type { StoreState } from '../../store';
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
@@ -26,7 +24,7 @@ type FormPayloadCustomField = { [key: string]: string };
 export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
 export type RegisterProps = {
-	path: string;
+	path?: string;
 };
 
 export const Register = (_: RegisterProps) => {
@@ -99,7 +97,7 @@ export const Register = (_: RegisterProps) => {
 			dispatch({
 				user,
 				...(user.contactManager && { agent: user.contactManager }),
-			} as Omit<StoreState['user'], 'ts'>);
+			});
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
 			Triggers.callbacks?.emit('chat-visitor-registered');
@@ -133,7 +131,7 @@ export const Register = (_: RegisterProps) => {
 					<Form
 						id='register'
 						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-						onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+						onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
 					>
 						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 						<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>

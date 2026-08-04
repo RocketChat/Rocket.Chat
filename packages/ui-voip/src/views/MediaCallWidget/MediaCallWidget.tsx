@@ -1,40 +1,27 @@
-import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
-import OngoingCallWithScreen from './OngoingCallWithScreen';
+import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter';
+import WidgetDraggableProvider from '../../components/Widget/WidgetDraggableProvider';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
 	const currentViews = useRegisterView('widget');
 	const {
-		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
+		sessionState: { state, hidden },
 	} = useMediaCallView();
 
 	if (hidden || !currentViews.includes('widget')) {
 		return null;
 	}
 
-	switch (state) {
-		case 'ongoing':
-			if ('username' in peerInfo && supportedFeatures.includes('screen-share')) {
-				return <OngoingCallWithScreen />;
-			}
-			return <OngoingCall />;
-		case 'new':
-			return <NewCall />;
-		case 'ringing':
-			if (transferredBy) {
-				return <IncomingCallTransfer />;
-			}
-			return <IncomingCall />;
-		case 'calling':
-			if (transferredBy) {
-				return <OutgoingCallTransfer />;
-			}
-			return <OutgoingCall />;
-		case 'closed':
-		default:
-			return null;
+	if (state === 'closed') {
+		return null;
 	}
+
+	return (
+		<WidgetDraggableProvider>
+			<MediaCallWidgetViewRouter />
+		</WidgetDraggableProvider>
+	);
 };
 
 export default MediaCallWidget;

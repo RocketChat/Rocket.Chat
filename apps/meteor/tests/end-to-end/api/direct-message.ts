@@ -116,8 +116,8 @@ describe('[Direct Messages]', () => {
 	});
 
 	describe('/im.setTopic', () => {
-		it('should set the topic of the DM with a string', (done) => {
-			void request
+		it('should set the topic of the DM with a string', async () => {
+			const res = await request
 				.post(api('im.setTopic'))
 				.set(credentials)
 				.send({
@@ -125,15 +125,13 @@ describe('[Direct Messages]', () => {
 					topic: `a direct message with ${user.username}`,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('topic', `a direct message with ${user.username}`);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('topic', `a direct message with ${user.username}`);
 		});
-		it('should set the topic of DM with an empty string(remove the topic)', (done) => {
-			void request
+		it('should set the topic of DM with an empty string(remove the topic)', async () => {
+			const res = await request
 				.post(api('im.setTopic'))
 				.set(credentials)
 				.send({
@@ -141,20 +139,18 @@ describe('[Direct Messages]', () => {
 					topic: '',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('topic', '');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('topic', '');
 		});
 	});
 
 	describe('Testing DM info', () => {
 		let dmMessage: IMessage;
 
-		it('sending a message...', (done) => {
-			void request
+		it('sending a message...', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -164,15 +160,13 @@ describe('[Direct Messages]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					dmMessage = res.body.message;
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			dmMessage = res.body.message;
 		});
-		it('REACTing with last message', (done) => {
-			void request
+		it('REACTing with last message', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -180,75 +174,65 @@ describe('[Direct Messages]', () => {
 					messageId: dmMessage._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('STARring last message', (done) => {
-			void request
+		it('STARring last message', async () => {
+			const res = await request
 				.post(api('chat.starMessage'))
 				.set(credentials)
 				.send({
 					messageId: dmMessage._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('PINning last message', (done) => {
-			void request
+		it('PINning last message', async () => {
+			const res = await request
 				.post(api('chat.pinMessage'))
 				.set(credentials)
 				.send({
 					messageId: dmMessage._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
-			void request
+		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', async () => {
+			const res = await request
 				.get(api('im.messages'))
 				.set(credentials)
 				.query({
 					roomId: testDM._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const messages = res.body.messages as IMessage[];
-					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
-					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages').and.to.be.an('array');
+			const messages = res.body.messages as IMessage[];
+			const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
+			expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+			expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 		});
 	});
 
-	it('/im.history', (done) => {
-		void request
+	it('/im.history', async () => {
+		const res = await request
 			.get(api('im.history'))
 			.set(credentials)
 			.query({
 				roomId: directMessage._id,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('messages');
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body).to.have.property('messages');
 	});
 
 	describe('/im.history inclusive parameter', () => {
@@ -353,28 +337,22 @@ describe('[Direct Messages]', () => {
 		});
 	});
 
-	it('/im.list', (done) => {
-		void request
-			.get(api('im.list'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
-				expect(im).to.have.property('_id');
-				expect(im).to.have.property('t').and.to.be.eq('d');
-				expect(im).to.have.property('msgs').and.to.be.a('number');
-				expect(im).to.have.property('usernames').and.to.be.an('array');
-				expect(im).to.have.property('lm');
-				expect(im).to.have.property('_updatedAt');
-				expect(im).to.have.property('ts');
-				expect(im).to.have.property('lastMessage');
-			})
-			.end(done);
+	it('/im.list', async () => {
+		const res = await request.get(api('im.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body).to.have.property('count');
+		expect(res.body).to.have.property('total');
+		expect(res.body).to.have.property('ims').and.to.be.an('array');
+		const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
+		expect(im).to.have.property('_id');
+		expect(im).to.have.property('t').and.to.be.eq('d');
+		expect(im).to.have.property('msgs').and.to.be.a('number');
+		expect(im).to.have.property('usernames').and.to.be.an('array');
+		expect(im).to.have.property('lm');
+		expect(im).to.have.property('_updatedAt');
+		expect(im).to.have.property('ts');
+		expect(im).to.have.property('lastMessage');
 	});
 
 	describe('/im.list.everyone', () => {
@@ -428,79 +406,65 @@ describe('[Direct Messages]', () => {
 		before(async () => updateSetting('UI_Use_Real_Name', true));
 		after(async () => updateSetting('UI_Use_Real_Name', false));
 
-		it('/im.list', (done) => {
-			void request
-				.get(api('im.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('ims').and.to.be.an('array');
+		it('/im.list', async () => {
+			const res = await request.get(api('im.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
-					const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('ims').and.to.be.an('array');
 
-					expect(im).to.have.property('_id');
-					expect(im).to.have.property('t').and.to.be.eq('d');
-					expect(im).to.have.property('msgs').and.to.be.a('number');
-					expect(im).to.have.property('usernames').and.to.be.an('array');
-					expect(im).to.have.property('lm');
-					expect(im).to.have.property('_updatedAt');
-					expect(im).to.have.property('ts');
-					expect(im).to.have.property('lastMessage');
+			const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
 
-					const { lastMessage } = im;
+			expect(im).to.have.property('_id');
+			expect(im).to.have.property('t').and.to.be.eq('d');
+			expect(im).to.have.property('msgs').and.to.be.a('number');
+			expect(im).to.have.property('usernames').and.to.be.an('array');
+			expect(im).to.have.property('lm');
+			expect(im).to.have.property('_updatedAt');
+			expect(im).to.have.property('ts');
+			expect(im).to.have.property('lastMessage');
 
-					expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
-				})
-				.end(done);
+			const { lastMessage } = im;
+
+			expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
 		});
 
-		it('/im.list.everyone', (done) => {
-			void request
-				.get(api('im.list.everyone'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('ims').and.to.be.an('array');
-					const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
-					expect(im).to.have.property('_id');
-					expect(im).to.have.property('t').and.to.be.eq('d');
-					expect(im).to.have.property('msgs').and.to.be.a('number');
-					expect(im).to.have.property('usernames').and.to.be.an('array');
-					expect(im).to.have.property('ro');
-					expect(im).to.have.property('sysMes');
-					expect(im).to.have.property('_updatedAt');
-					expect(im).to.have.property('ts');
-					expect(im).to.have.property('lastMessage');
+		it('/im.list.everyone', async () => {
+			const res = await request.get(api('im.list.everyone')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
-					const { lastMessage } = im;
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('ims').and.to.be.an('array');
+			const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
+			expect(im).to.have.property('_id');
+			expect(im).to.have.property('t').and.to.be.eq('d');
+			expect(im).to.have.property('msgs').and.to.be.a('number');
+			expect(im).to.have.property('usernames').and.to.be.an('array');
+			expect(im).to.have.property('ro');
+			expect(im).to.have.property('sysMes');
+			expect(im).to.have.property('_updatedAt');
+			expect(im).to.have.property('ts');
+			expect(im).to.have.property('lastMessage');
 
-					expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
-				})
-				.end(done);
+			const { lastMessage } = im;
+
+			expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
 		});
 	});
 
-	it('/im.open', (done) => {
-		void request
+	it('/im.open', async () => {
+		const res = await request
 			.post(api('im.open'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
 	});
 
 	describe('/im.counters', () => {
@@ -523,26 +487,24 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
-		it('should work with all params right', (done) => {
-			void request
+		it('should work with all params right', async () => {
+			const res = await request
 				.get(api('im.counters'))
 				.set(credentials)
 				.query({
 					roomId: directMessage._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('joined', true);
-					expect(res.body).to.have.property('members');
-					expect(res.body).to.have.property('unreads');
-					expect(res.body).to.have.property('unreadsFrom');
-					expect(res.body).to.have.property('msgs');
-					expect(res.body).to.have.property('latest');
-					expect(res.body).to.have.property('userMentions');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('joined', true);
+			expect(res.body).to.have.property('members');
+			expect(res.body).to.have.property('unreads');
+			expect(res.body).to.have.property('unreadsFrom');
+			expect(res.body).to.have.property('msgs');
+			expect(res.body).to.have.property('latest');
+			expect(res.body).to.have.property('userMentions');
 		});
 
 		describe('with valid room id', () => {
@@ -703,20 +665,18 @@ describe('[Direct Messages]', () => {
 
 		after(async () => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
 
-		it('should return all DM messages that were sent to yourself using your username', (done) => {
-			void request
+		it('should return all DM messages that were sent to yourself using your username', async () => {
+			const res = await request
 				.get(api('im.messages'))
 				.set(testUserCredentials)
 				.query({
 					username: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages').and.to.be.an('array');
 		});
 
 		it('should sort by ts by default', async () => {
@@ -1010,19 +970,17 @@ describe('[Direct Messages]', () => {
 		});
 	});
 
-	it('/im.close', (done) => {
-		void request
+	it('/im.close', async () => {
+		const res = await request
 			.post(api('im.close'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
 	});
 
 	describe('fname property', () => {
@@ -1076,25 +1034,23 @@ describe('[Direct Messages]', () => {
 
 		after(async () => deleteUser(user));
 
-		it('should have fname property', (done) => {
-			void request
+		it('should have fname property', async () => {
+			const res = await request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
 					roomId: directMessageId,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.subscription).to.have.property('name', username);
-					expect(res.body.subscription).to.have.property('fname', name);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.subscription).to.have.property('name', username);
+			expect(res.body.subscription).to.have.property('fname', name);
 		});
 
-		it("should update user's name", (done) => {
-			void request
+		it("should update user's name", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -1103,69 +1059,64 @@ describe('[Direct Messages]', () => {
 						name: updatedName,
 					},
 				})
-				.expect((res) => {
-					expect(res.body.user).to.have.property('name', updatedName);
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.user).to.have.property('name', updatedName);
 		});
 
-		it('should have fname property updated', (done) => {
-			void request
+		it('should have fname property updated', async () => {
+			const res = await request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
 					roomId: directMessageId,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.subscription).to.have.property('name', username);
-					expect(res.body.subscription).to.have.property('fname', updatedName);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.subscription).to.have.property('name', username);
+			expect(res.body.subscription).to.have.property('fname', updatedName);
 		});
 	});
 
 	describe('/im.members', () => {
-		it('should return and array with two members', (done) => {
-			void request
+		it('should return and array with two members', async () => {
+			const res = await request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
 					roomId: directMessage._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count').and.to.be.equal(2);
-					expect(res.body).to.have.property('offset').and.to.be.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.equal(2);
-					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count').and.to.be.equal(2);
+			expect(res.body).to.have.property('offset').and.to.be.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.equal(2);
+			expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
 		});
-		it('should return and array with one member', (done) => {
-			void request
+		it('should return and array with one member', async () => {
+			const res = await request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
 					username: user.username,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count').and.to.be.equal(2);
-					expect(res.body).to.have.property('offset').and.to.be.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.equal(2);
-					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count').and.to.be.equal(2);
+			expect(res.body).to.have.property('offset').and.to.be.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.equal(2);
+			expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
 		});
-		it('should return and array with one member queried by status', (done) => {
-			void request
+		it('should return and array with one member queried by status', async () => {
+			const res = await request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
@@ -1173,15 +1124,13 @@ describe('[Direct Messages]', () => {
 					'status[]': ['online'],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count').and.to.be.equal(1);
-					expect(res.body).to.have.property('offset').and.to.be.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.equal(1);
-					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count').and.to.be.equal(1);
+			expect(res.body).to.have.property('offset').and.to.be.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.equal(1);
+			expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
 		});
 	});
 
@@ -1219,26 +1168,24 @@ describe('[Direct Messages]', () => {
 			await deleteUser(thirdUser);
 		});
 
-		it('creates a DM between two other parties (including self)', (done) => {
-			void request
+		it('creates a DM between two other parties (including self)', async () => {
+			const res = await request
 				.post(api('im.create'))
 				.set(userCredentials)
 				.send({
 					usernames: [otherUser.username, thirdUser.username].join(','),
 				})
 				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members([thirdUser.username, user.username, otherUser.username]);
-					roomIds = { ...roomIds, multipleDm: res.body.room._id };
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('room').and.to.be.an('object');
+			expect(res.body.room).to.have.property('usernames').and.to.have.members([thirdUser.username, user.username, otherUser.username]);
+			roomIds = { ...roomIds, multipleDm: res.body.room._id };
 		});
 
-		it('creates a DM between two other parties (excluding self)', (done) => {
-			void request
+		it('creates a DM between two other parties (excluding self)', async () => {
+			const res = await request
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
@@ -1246,32 +1193,28 @@ describe('[Direct Messages]', () => {
 					excludeSelf: true,
 				})
 				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
-					roomIds = { ...roomIds, dm: res.body.room._id };
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('room').and.to.be.an('object');
+			expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+			roomIds = { ...roomIds, dm: res.body.room._id };
 		});
 
-		it('should create a self-DM', (done) => {
-			void request
+		it('should create a self-DM', async () => {
+			const res = await request
 				.post(api('im.create'))
 				.set(userCredentials)
 				.send({
 					username: user.username,
 				})
 				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username]);
-					roomIds = { ...roomIds, self: res.body.room._id };
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('room').and.to.be.an('object');
+			expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username]);
+			roomIds = { ...roomIds, self: res.body.room._id };
 		});
 
 		describe('should create dm with correct notification preferences', () => {
@@ -1306,39 +1249,35 @@ describe('[Direct Messages]', () => {
 					.expect(200);
 			});
 
-			it('should create a DM', (done) => {
-				void request
+			it('should create a DM', async () => {
+				const res = await request
 					.post(api('im.create'))
 					.set(userCredentials)
 					.send({
 						usernames: [user.username, otherUser.username].join(','),
 					})
 					.expect(200)
-					.expect('Content-Type', 'application/json')
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room').and.to.be.an('object');
-						expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
-						userPrefRoomId = res.body.room._id;
-					})
-					.end(done);
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('room').and.to.be.an('object');
+				expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+				userPrefRoomId = res.body.room._id;
 			});
 
-			it('should return the right user notification preferences in the dm', (done) => {
-				void request
+			it('should return the right user notification preferences in the dm', async () => {
+				const res = await request
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({
 						roomId: userPrefRoomId,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('subscription').and.to.be.an('object');
-						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('subscription').and.to.be.an('object');
+				expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 			});
 		});
 
@@ -1377,50 +1316,44 @@ describe('[Direct Messages]', () => {
 	describe('/im.delete', () => {
 		let testDM: IRoom;
 
-		it('/im.create', (done) => {
-			void request
+		it('/im.create', async () => {
+			const res = await request
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
 					username: user.username,
 				})
 				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					testDM = res.body.room;
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			testDM = res.body.room;
 		});
 
-		it('/im.delete', (done) => {
-			void request
+		it('/im.delete', async () => {
+			const res = await request
 				.post(api('im.delete'))
 				.set(credentials)
 				.send({
 					username: user.username,
 				})
 				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('/im.open', (done) => {
-			void request
+		it('/im.open', async () => {
+			const res = await request
 				.post(api('im.open'))
 				.set(credentials)
 				.send({
 					roomId: testDM._id,
 				})
 				.expect(403)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'unauthorized');
 		});
 
 		describe('when authenticated as a non-admin user', () => {
@@ -1436,34 +1369,30 @@ describe('[Direct Messages]', () => {
 				await deleteUser(otherUser);
 			});
 
-			it('/im.create', (done) => {
-				void request
+			it('/im.create', async () => {
+				const res = await request
 					.post(api('im.create'))
 					.set(credentials)
 					.send({
 						username: otherUser.username,
 					})
 					.expect(200)
-					.expect('Content-Type', 'application/json')
-					.expect((res) => {
-						testDM = res.body.room;
-					})
-					.end(done);
+					.expect('Content-Type', 'application/json');
+
+				testDM = res.body.room;
 			});
 
-			it('/im.delete', (done) => {
-				void request
+			it('/im.delete', async () => {
+				const res = await request
 					.post(api('im.delete'))
 					.set(otherCredentials)
 					.send({
 						roomId: testDM._id,
 					})
 					.expect(400)
-					.expect('Content-Type', 'application/json')
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', false);
 			});
 		});
 	});

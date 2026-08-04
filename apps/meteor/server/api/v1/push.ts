@@ -357,16 +357,20 @@ const pushTestEndpoints = API.v1.post(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ tokensCount: number }>({
+			200: ajv.compile<{ tokensCount: number; message: string; params: number[] }>({
 				type: 'object',
 				properties: {
 					tokensCount: { type: 'integer' },
+					// The admin "send a test push" setting renders the outcome straight from this
+					// response, so it carries the i18n key and its interpolation values.
+					message: { type: 'string' },
+					params: { type: 'array', items: { type: 'integer' } },
 					success: {
 						type: 'boolean',
 						enum: [true],
 					},
 				},
-				required: ['tokensCount', 'success'],
+				required: ['tokensCount', 'message', 'params', 'success'],
 				additionalProperties: false,
 			}),
 		},
@@ -380,7 +384,7 @@ const pushTestEndpoints = API.v1.post(
 		}
 
 		const tokensCount = await executePushTest(this.userId, this.user.username);
-		return API.v1.success({ tokensCount });
+		return API.v1.success({ tokensCount, message: 'Your_push_was_sent_to_s_devices', params: [tokensCount] });
 	},
 );
 
