@@ -98,6 +98,12 @@ export const useUserInfoActions = ({
 			...(editProfile && { editProfile }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
+			// Closes the 'communication' block. Kept adjacent to its peers so the
+			// group survives the actionSpread slice below: the first `size` entries
+			// leave the menu to become standalone buttons, and a straggler declared
+			// after the other groups would have its section rebuilt at the bottom,
+			// below the danger items.
+			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && muteUser && { muteUser }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
@@ -108,7 +114,6 @@ export const useUserInfoActions = ({
 			...((isMember || isInvited) && removeUser && { removeUser }),
 			...((isMember || isInvited) && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
 		}),
 		[
 			openDirectMessage,
