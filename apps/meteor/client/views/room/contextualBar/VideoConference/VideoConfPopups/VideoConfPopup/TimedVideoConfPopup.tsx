@@ -65,9 +65,13 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 		dismissCall(id);
 	};
 
-	const handleStartCall = async (): Promise<void> => {
+	const handleStartCall = (): void => {
 		setStarting(true);
 		startCall(rid);
+		// The call opens in its own window on this very click, so this popup has nothing left to show — the wait
+		// for the other side lives in the call now. A group call closed it by way of `calling/ended`; a direct one
+		// keeps ringing and never emits that, which left "Start a call" sitting behind the call it had started.
+		dismissOutgoing();
 	};
 
 	if (isReceiving) {

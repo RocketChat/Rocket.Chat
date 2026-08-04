@@ -55,7 +55,7 @@ export const useVideoConfOpenCall = () => {
 
 			if (desktopApp?.openInternalVideoChatWindow) {
 				desktopApp.openInternalVideoChatWindow(callUrl, { providerName });
-				return;
+				return undefined;
 			}
 
 			const open = () => {
@@ -96,11 +96,18 @@ export const useVideoConfOpenCall = () => {
 				return conferenceWindow;
 			};
 
-			if (!isBlocked(open())) {
-				return;
+			// The window is handed back so the caller can watch it: the server counts the user as being in the call
+			// from the moment the join is posted — which happens here, in the opener — so the opener is also the
+			// one place that can notice a call window closing before it ever finished loading.
+			const target = open();
+
+			if (!isBlocked(target)) {
+				return target;
 			}
 
 			setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
+
+			return null;
 		},
 		[setModal],
 	);
