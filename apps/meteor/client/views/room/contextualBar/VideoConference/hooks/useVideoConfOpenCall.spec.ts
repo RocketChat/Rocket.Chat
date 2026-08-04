@@ -144,7 +144,10 @@ describe('with an in-product conference URL', () => {
 	};
 
 	/** A window that reports itself as showing `url`, the way a real conference window would. */
-	const windowShowing = (url: string, closed = false) => ({ closed, location: { pathname: new URL(url).pathname } }) as unknown as Window;
+	// Path *and* search, as a real `Location` has both: a conference about to be started is identified by the room
+	// in its query string.
+	const windowShowing = (url: string, closed = false) =>
+		({ closed, location: { pathname: new URL(url).pathname, search: new URL(url).search } }) as unknown as Window;
 
 	afterAll(() => {
 		window.open = previousWindowOpen;
@@ -171,6 +174,22 @@ describe('with an in-product conference URL', () => {
 
 		// Empty URL means "don't navigate", and no features means the user's window stays where they put it.
 		expect(window.open).toHaveBeenCalledWith('', 'rocketchat-conference');
+	});
+
+	// A conference the user is about to *start* is identified by the room in its query string, so two of those
+	// differ nowhere else — treating them as the same window left the second click focusing the first room.
+	it('should navigate the shared window when a different room is about to be called', async () => {
+		const first = `${window.location.origin}/conference/new?rid=room-1`;
+		const second = `${window.location.origin}/conference/new?rid=room-2`;
+		window.open = jest.fn(() => windowShowing(first));
+
+		const openCall = renderOpenCall();
+		await openCall(first);
+		(window.open as jest.Mock).mockClear();
+
+		await openCall(second);
+
+		expect(window.open).toHaveBeenCalledWith(second, 'rocketchat-conference', expect.any(String));
 	});
 
 	it('should navigate the shared window when a different conference is requested', async () => {

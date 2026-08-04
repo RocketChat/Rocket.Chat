@@ -2,11 +2,12 @@ import { useRouter, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
+import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
@@ -59,11 +60,31 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
 	}, []);
 
+	/**
+	 * Placing a call, once the user has asked for one.
+	 *
+	 * With persistent chat on, this only opens the call window: the conference is created by the preflight in it,
+	 * because creating one posts a message in the room, rings people and writes a call into everyone's history —
+	 * none of which should happen for a call the user may still walk away from. Without it there is no preflight
+	 * to wait for, so the manager starts the conference here as it always has.
+	 */
+	const startCall = useCallback(
+		(rid: string, confTitle?: string) => {
+			if (!persistentChatEnabled) {
+				void VideoConfManager.startCall(rid, confTitle);
+				return;
+			}
+
+			handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: NEW_CONFERENCE_ID }, search: { rid } })));
+		},
+		[handleOpenCall, persistentChatEnabled, router],
+	);
+
 	const contextValue = useMemo<VideoConfContextValue>(
 		() => ({
 			dispatchOutgoing: (option) => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: () => setOutgoing(undefined),
-			startCall: (rid, confTitle) => VideoConfManager.startCall(rid, confTitle),
+			startCall,
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId) => VideoConfManager.joinCall(callId),
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
@@ -77,7 +98,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			queryCapabilities: () => [(cb) => VideoConfManager.on('capabilities/changed', cb), () => VideoConfManager.capabilities],
 			queryPreferences: () => [(cb) => VideoConfManager.on('preference/changed', cb), () => VideoConfManager.preferences],
 		}),
-		[],
+		[startCall],
 	);
 
 	return (

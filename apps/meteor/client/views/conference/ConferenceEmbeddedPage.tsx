@@ -125,12 +125,13 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 		return (
 			<ConferencePreflight
-				callId={callId}
 				name={call.name}
-				canRename={call.canRename}
-				placing={call.placing}
+				// Placing a call means the other side has not been rung yet, so confirming is the call itself.
+				confirm={call.placing ? 'call' : 'join'}
+				canName={call.canRename}
 				capabilities={call.capabilities}
-				onJoin={conference.join}
+				onConfirm={(preferences, name) => conference.join({ state: preferences, name })}
+				onCancel={leaveNow}
 			/>
 		);
 	}

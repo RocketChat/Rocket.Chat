@@ -129,7 +129,7 @@ describe('joining', () => {
 		const { result, join } = renderForJoin();
 
 		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
-		result.current.conference.join({ mic: false, cam: true });
+		result.current.conference.join({ state: { mic: false, cam: true } });
 
 		await waitFor(() => expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } }));
 		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example'));
@@ -140,5 +140,60 @@ describe('joining', () => {
 
 		// `withJohnDoe` is the reader, and the fixture's conference was started by somebody else.
 		await waitFor(() => expect(result.current.call.canRename).toBe(false));
+	});
+});
+
+// Naming a call it can already see the name of: the field on the preflight, which reaches the server on the way
+// into the call rather than as a separate action the user has to remember to take.
+describe('naming on the way in', () => {
+	const renderForRename = (rename: jest.Mock) => {
+		const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), title: 'general' }) as any)
+				.withEndpoint('POST', '/v1/video-conference.join', join)
+				.withEndpoint('POST', '/v1/video-conference.rename', rename)
+				.build(),
+		});
+
+		return { result, join };
+	};
+
+	it('renames the call before joining it', async () => {
+		const rename = jest.fn(() => ({ success: true }) as any);
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
+
+		await waitFor(() => expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' }));
+		await waitFor(() => expect(join).toHaveBeenCalled());
+	});
+
+	it('says nothing to the server when the name was left alone', async () => {
+		const rename = jest.fn(() => ({ success: true }) as any);
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'general' });
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
+		expect(rename).not.toHaveBeenCalled();
+	});
+
+	// The call is what the user actually asked for — a name that won't take is not worth being refused it over.
+	it('joins anyway when the name would not take', async () => {
+		const rename = jest.fn(() => {
+			throw new Error('error-not-allowed');
+		});
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
+		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example'));
 	});
 });

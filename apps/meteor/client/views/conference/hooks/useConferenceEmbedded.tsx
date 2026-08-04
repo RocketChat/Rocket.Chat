@@ -1,6 +1,6 @@
 import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
@@ -17,6 +17,8 @@ export type ConferenceChatAccess = VideoConferenceChatAccess & {
 
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
+	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
+	const dispatchToastMessage = useToastMessageDispatch();
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const getConferenceCallUrl = useConferenceCallUrl();
 	const subscribeToVideoConference = useStream('video-conference');
@@ -57,6 +59,9 @@ export const useConferenceEmbedded = (callId: string) => {
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
 	const members = useMemo(() => info?.users.map(mapVideoConfUserFromApi) ?? [], [info?.users]);
 
+	/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
+	const currentName = (info?.type === 'videoconference' && info.title) || info?.chatAccess.name || '';
+
 	const chatAccess = useMemo((): ConferenceChatAccess | undefined => {
 		if (!info) {
 			return undefined;
@@ -69,16 +74,40 @@ export const useConferenceEmbedded = (callId: string) => {
 	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
 	// choices into the provider's URL — and what marks them as present. So this waits to be asked, rather than
 	// running as soon as the window opens.
+	//
+	// The result is held in the cache rather than in this hook's state, so a window that has *already* joined —
+	// one that just created the conference on the start screen — finds it there and goes straight into the call
+	// instead of asking again.
+	const { data } = useQuery({
+		queryKey: videoConferenceQueryKeys.join(callId),
+		queryFn: async () => joinConference({ callId, state: {} }),
+		enabled: false,
+	});
+
 	const {
 		mutate: join,
-		data,
 		isPending,
 		error,
 	} = useMutation({
-		mutationFn: (state: CallPreferences) => joinConference({ callId, state }),
-		// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription
-		// being established — which left the members list showing us as absent until something else moved.
-		onSuccess: () => queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) }),
+		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
+			// Naming is not worth failing the join over: if it doesn't take, the toast says so and the user still
+			// gets the call, which is what they actually asked for.
+			if (name && name !== currentName) {
+				try {
+					await renameConference({ callId, title: name });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
+
+			return joinConference({ callId, state });
+		},
+		onSuccess: (joined) => {
+			queryClient.setQueryData(videoConferenceQueryKeys.join(callId), joined);
+			// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription
+			// being established — which left the members list showing us as absent until something else moved.
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		},
 	});
 
 	return {
@@ -89,7 +118,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
 			canRing: info?.type === 'direct',
 			/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
-			name: (info?.type === 'videoconference' && info.title) || info?.chatAccess.name || '',
+			name: currentName,
 			/**
 			 * Naming a call is the creator's to do, and only a group call has a name of its own — a direct call is
 			 * named after the other person, per viewer.
