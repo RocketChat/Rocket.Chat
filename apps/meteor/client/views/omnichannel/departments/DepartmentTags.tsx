@@ -1,5 +1,6 @@
+import type { TextInputProps } from '@rocket.chat/fuselage';
 import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +8,7 @@ export type DepartmentTagsProps = {
 	error: string;
 	value: string[];
 	onChange: (tags: string[]) => void;
-} & ComponentProps<typeof TextInput>;
+} & TextInputProps;
 
 const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTagsProps) => {
 	const { t } = useTranslation();

@@ -1,14 +1,14 @@
 import type { Serialized, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useId } from 'react';
-import type { ComponentProps } from 'react';
 import { useController, type Control } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import SenderSelect from '../../../../SenderSelect';
 import type { RecipientFormData } from '../RecipientForm';
 
-export type SenderFieldProps = ComponentProps<typeof Field> & {
+export type SenderFieldProps = FieldProps & {
 	control: Control<RecipientFormData>;
 	provider?: Serialized<IOutboundProviderMetadata>;
 	disabled?: boolean;

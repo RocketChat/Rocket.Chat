@@ -1,7 +1,7 @@
 import type { Serialized, ILivechatContact } from '@rocket.chat/core-typings';
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
-import type { ComponentProps } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RecipientFormData } from '../RecipientForm';
 
-export type ProviderFieldProps = ComponentProps<typeof Field> & {
+export type ProviderFieldProps = FieldProps & {
 	control: Control<RecipientFormData>;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	disabled?: boolean;

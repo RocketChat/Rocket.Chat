@@ -8,10 +8,10 @@ import {
 	Option,
 	SelectLegacy,
 	Tag,
+	type FieldProps,
 	type SelectOption,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
@@ -21,7 +21,7 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 
-export type ActionFormProps = ComponentProps<typeof Field> & {
+export type ActionFormProps = FieldProps & {
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 	index: number;

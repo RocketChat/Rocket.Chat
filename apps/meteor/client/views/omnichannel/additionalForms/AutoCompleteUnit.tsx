@@ -1,16 +1,13 @@
+import type { PaginatedSelectFilteredProps } from '@rocket.chat/fuselage';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UnitOption } from '../hooks/useUnitsList';
 import { useUnitsList } from '../hooks/useUnitsList';
 
-export type AutoCompleteUnitProps = Omit<
-	ComponentProps<typeof PaginatedSelectFiltered>,
-	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
-> & {
+export type AutoCompleteUnitProps = Omit<PaginatedSelectFilteredProps, 'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'> & {
 	haveNone?: boolean;
 	value: string | undefined;
 	onChange: (value: string) => void;

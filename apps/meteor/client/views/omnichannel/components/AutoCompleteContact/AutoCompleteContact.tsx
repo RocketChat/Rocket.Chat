@@ -1,8 +1,9 @@
 import type { Serialized } from '@rocket.chat/core-typings';
+import type { PaginatedSelectFilteredProps } from '@rocket.chat/fuselage';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import type { ComponentProps, ReactNode, SyntheticEvent } from 'react';
+import type { ReactNode, SyntheticEvent } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +21,7 @@ type OptionProps = {
 };
 
 export type AutoCompleteContactProps = Omit<
-	ComponentProps<typeof PaginatedSelectFiltered>,
+	PaginatedSelectFilteredProps,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value' | 'onChange'
 > & {
 	value: string;

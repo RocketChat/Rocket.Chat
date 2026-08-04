@@ -1,3 +1,4 @@
+import type { OptionIconProps } from '@rocket.chat/fuselage';
 import { Option, OptionColumn, OptionContent, OptionIcon, OptionInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
@@ -10,7 +11,7 @@ type ListItemCommonProps = {
 
 type ListItemConditionalProps =
 	| {
-			icon?: ComponentProps<typeof OptionIcon>['name'];
+			icon?: OptionIconProps['name'];
 			gap?: never;
 	  }
 	| {

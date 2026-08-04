@@ -1,13 +1,9 @@
+import type { BadgeProps } from '@rocket.chat/fuselage';
 import { Badge } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 
-const getBadgeVariantAndTitle = (
-	unread: boolean,
-	mention: boolean,
-	all: boolean,
-): false | [ComponentProps<typeof Badge>['variant'], TranslationKey] => {
+const getBadgeVariantAndTitle = (unread: boolean, mention: boolean, all: boolean): false | [BadgeProps['variant'], TranslationKey] => {
 	if (!unread) {
 		return false;
 	}

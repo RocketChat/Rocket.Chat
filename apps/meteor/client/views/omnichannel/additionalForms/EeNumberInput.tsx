@@ -1,9 +1,9 @@
+import type { NumberInputProps } from '@rocket.chat/fuselage';
 import { NumberInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-export type EeNumberInputProps = { label: string } & ComponentProps<typeof NumberInput>;
+export type EeNumberInputProps = { label: string } & NumberInputProps;
 
 export const EeNumberInput = ({ label, ...props }: EeNumberInputProps) => {
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

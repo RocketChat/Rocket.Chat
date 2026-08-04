@@ -1,5 +1,6 @@
+import type { TableProps } from '@rocket.chat/fuselage';
 import { Box, Table } from '@rocket.chat/fuselage';
-import type { ComponentProps, ForwardedRef, ReactNode } from 'react';
+import type { ForwardedRef, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
 import { CustomScrollbars } from '../CustomScrollbars';
@@ -7,7 +8,7 @@ import { CustomScrollbars } from '../CustomScrollbars';
 export type GenericTableProps = {
 	fixed?: boolean;
 	children: ReactNode;
-} & ComponentProps<typeof Table>;
+} & TableProps;
 
 export const GenericTable = forwardRef(function GenericTable(
 	{ fixed = true, children, ...props }: GenericTableProps,

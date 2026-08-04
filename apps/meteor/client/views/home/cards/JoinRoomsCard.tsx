@@ -1,10 +1,9 @@
-import type { Card } from '@rocket.chat/fuselage';
+import type { CardProps } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 
-export type JoinRoomsCardProps = Omit<ComponentProps<typeof Card>, 'type'>;
+export type JoinRoomsCardProps = Omit<CardProps, 'type'>;
 
 const JoinRoomsCard = (props: JoinRoomsCardProps) => {
 	const t = useTranslation();

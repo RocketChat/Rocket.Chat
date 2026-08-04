@@ -1,5 +1,4 @@
-import { FieldRow, Select, TextInput, type SelectOption, Field, FieldLabel } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import { FieldRow, Select, TextInput, type FieldProps, type SelectOption, Field, FieldLabel } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
@@ -7,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from '../EditTrigger';
 
-export type ActionSenderProps = ComponentProps<typeof Field> & {
+export type ActionSenderProps = FieldProps & {
 	control: Control<TriggersPayload>;
 	index: number;
 	disabled?: boolean;

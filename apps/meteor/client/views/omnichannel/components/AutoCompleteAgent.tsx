@@ -1,12 +1,12 @@
+import type { PaginatedSelectFilteredProps } from '@rocket.chat/fuselage';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
 
 export type AutoCompleteAgentProps = Omit<
-	ComponentProps<typeof PaginatedSelectFiltered>,
+	PaginatedSelectFilteredProps,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
 	value: string;

@@ -1,6 +1,6 @@
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -11,7 +11,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-export type DepartmentFieldProps = ComponentProps<typeof Field> & {
+export type DepartmentFieldProps = FieldProps & {
 	control: Control<RepliesFormData>;
 	onlyMyDepartments?: boolean;
 	isError: boolean;

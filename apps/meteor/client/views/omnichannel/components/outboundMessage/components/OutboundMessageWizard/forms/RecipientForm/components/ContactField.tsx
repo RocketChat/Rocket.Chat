@@ -1,3 +1,4 @@
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -11,7 +12,7 @@ import AutoCompleteContact from '../../../../../../AutoCompleteContact';
 import RetryButton from '../../../components/RetryButton';
 import type { RecipientFormData } from '../RecipientForm';
 
-export type ContactFieldProps = ComponentProps<typeof Field> & {
+export type ContactFieldProps = FieldProps & {
 	control: Control<RecipientFormData>;
 	isError: boolean;
 	isFetching: boolean;

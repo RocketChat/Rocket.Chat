@@ -1,6 +1,6 @@
+import type { MessageBodyProps } from '@rocket.chat/fuselage';
 import { MessageBody, Skeleton } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
-import type { ComponentProps } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ export type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | '
 	/** Original source text the `md` was parsed from; used to render the fallback of unsupported blocks. */
 	msg?: string;
 	searchText?: string;
-} & ComponentProps<typeof MessageBody>;
+} & MessageBodyProps;
 
 const MessageContentBody = ({ mentions, channels, md, msg, searchText, ...props }: MessageContentBodyProps) => {
 	const { t } = useTranslation();

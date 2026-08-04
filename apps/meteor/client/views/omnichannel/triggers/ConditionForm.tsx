@@ -1,6 +1,5 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
+import type { FieldProps, SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, NumberInput, Select, TextInput } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useId, useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
@@ -8,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from './EditTrigger';
 
-export type ConditionFormProps = ComponentProps<typeof Field> & {
+export type ConditionFormProps = FieldProps & {
 	index: number;
 	control: Control<TriggersPayload>;
 };

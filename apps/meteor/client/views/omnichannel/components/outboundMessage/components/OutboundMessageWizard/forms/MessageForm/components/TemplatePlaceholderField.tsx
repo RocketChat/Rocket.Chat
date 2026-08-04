@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import type { TemplateParameter, TemplateParameterMetadata } from '../../../../.
 import TemplatePlaceholderInput from '../../../../TemplatePlaceholderSelector';
 import type { MessageFormData } from '../MessageForm';
 
-export type TemplatePlaceholderFieldProps = ComponentProps<typeof Field> & {
+export type TemplatePlaceholderFieldProps = FieldProps & {
 	control: Control<MessageFormData>;
 	metadata: TemplateParameterMetadata;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;

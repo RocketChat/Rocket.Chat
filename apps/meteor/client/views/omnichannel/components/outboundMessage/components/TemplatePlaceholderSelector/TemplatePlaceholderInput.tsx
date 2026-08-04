@@ -1,12 +1,13 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
+import type { TextInputProps } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRef, type ChangeEventHandler, type ChangeEvent, type ComponentProps } from 'react';
+import { useRef, type ChangeEventHandler, type ChangeEvent } from 'react';
 
 import PlaceholderSelector from './TemplatePlaceholderSelector';
 import type { TemplateParameter } from '../../types/template';
 
-export type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
+export type TemplatePlaceholderInputProps = Omit<TextInputProps, 'value' | 'onChange'> & {
 	type?: TemplateParameter['type'];
 	value: string;
 	contact?: Serialized<ILivechatContact>;

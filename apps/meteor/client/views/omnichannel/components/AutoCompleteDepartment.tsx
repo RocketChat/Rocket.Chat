@@ -1,6 +1,6 @@
+import type { PaginatedSelectFilteredProps } from '@rocket.chat/fuselage';
 import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,7 @@ export type AutoCompleteDepartmentProps = {
 	haveNone?: boolean;
 	showArchived?: boolean;
 	unitId?: string;
-} & Omit<ComponentProps<typeof PaginatedSelectFiltered>, 'options' | 'setFilter'>;
+} & Omit<PaginatedSelectFilteredProps, 'options' | 'setFilter'>;
 
 const AutoCompleteDepartment = ({
 	value,
