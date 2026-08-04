@@ -16,7 +16,12 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
+import {
+	useMessageListShowRoles,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+	useMessageListHoverUserCardEnabled,
+} from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 
@@ -51,6 +56,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -69,7 +75,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				tabIndex={0}
 				aria-haspopup='dialog'
 				style={{ cursor: 'pointer' }}
-				onMouseEnter={(e) => openUserCard(e, message.u.username)}
+				onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 				onClick={() => openUserInfo(message.u.username)}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {

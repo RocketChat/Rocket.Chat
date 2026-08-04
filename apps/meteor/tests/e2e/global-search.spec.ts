@@ -70,16 +70,9 @@ test.describe.serial('Global Search', () => {
 		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
 		await message.hover();
 
-		// Hovering a result can open the author's user card on top of the row
-		// actions (500ms hover intent). Dismissing it is expected, but the
-		// Escape has to be conditional: with no card open it bubbles up and
-		// closes the whole Search Messages panel, taking the result list with it.
-		const userCard = page.getByRole('dialog', { name: 'User card' });
-		await page.waitForTimeout(1000);
-		if (await userCard.isVisible()) {
-			await page.keyboard.press('Escape');
-			await expect(userCard).toBeHidden();
-		}
+		// Message lists inside the contextual bar do not open the user card on
+		// hover, so the row actions stay reachable without dismissing anything.
+		await expect(page.getByRole('dialog', { name: 'User card' })).toBeHidden();
 
 		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
 		await jumpToMessageButton.click();

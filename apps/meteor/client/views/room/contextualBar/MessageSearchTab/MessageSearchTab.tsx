@@ -68,7 +68,7 @@ const MessageSearchTab = () => {
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>
-										<MessageListProvider>
+										<MessageListProvider hoverUserCardEnabled={false}>
 											<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 												<VirtualizedScrollbars>
 													<Virtuoso
