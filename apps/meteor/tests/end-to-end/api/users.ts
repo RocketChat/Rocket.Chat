@@ -1077,6 +1077,43 @@ describe('[Users]', () => {
 						users.push(res.body.user);
 					});
 			});
+
+			describe('[/misc.registrationSecretCheck]', () => {
+				it('should return valid: true for the configured secret', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.query({ hash: 'valid-secret' })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('valid', true);
+						});
+				});
+
+				it('should return valid: false for a wrong secret', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.query({ hash: 'wrong-secret' })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('valid', false);
+						});
+				});
+
+				it('should fail when the hash query param is missing', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-params');
+						});
+				});
+			});
 		});
 
 		describe('manual approval', () => {
