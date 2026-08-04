@@ -1,4 +1,4 @@
-import type { IServiceProviderOptions } from '../../../../../server/lib/saml/definition/IServiceProviderOptions';
+import type { IServiceProviderOptions } from '../../../../../ee/server/lib/saml/definition/IServiceProviderOptions';
 
 export const serviceProviderOptions: IServiceProviderOptions = {
 	provider: '[test-provider]',

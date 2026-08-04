@@ -14,9 +14,9 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
-import { settings, settingsRegistry } from '../../../settings';
-import { SystemLogger } from '../../logger/system';
-import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
+import { settings, settingsRegistry } from '../../../../../server/settings';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../../../../server/lib/notifyListener';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {
@@ -180,6 +180,9 @@ export const addSettings = async function (name: string): Promise<void> {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
 					public: true,
+					enterprise: true,
+					modules: ['saml-enterprise'],
+					invalidValue: false,
 				});
 				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',

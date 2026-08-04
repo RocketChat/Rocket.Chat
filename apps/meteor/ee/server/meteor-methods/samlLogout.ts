@@ -2,9 +2,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import type { IServiceProviderOptions } from '../../lib/saml/definition/IServiceProviderOptions';
-import { SAMLServiceProvider } from '../../lib/saml/lib/ServiceProvider';
-import { SAMLUtils } from '../../lib/saml/lib/Utils';
+import type { IServiceProviderOptions } from '../lib/saml/definition/IServiceProviderOptions';
+import { SAMLServiceProvider } from '../lib/saml/lib/ServiceProvider';
+import { SAMLUtils } from '../lib/saml/lib/Utils';
 
 /**
  * Fetch SAML provider configs for given 'provider'.
