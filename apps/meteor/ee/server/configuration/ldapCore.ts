@@ -1,9 +1,9 @@
 import { LDAP } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
 import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../lib/callbacks';
-import { warnUnlicensedAuthService } from '../lib/premiumAuthDeprecation';
-import type { ICachedSettings } from '../settings/CachedSettings';
+import { callbacks } from '../../../server/lib/callbacks';
+import type { ICachedSettings } from '../../../server/settings/CachedSettings';
 
 export async function configureLDAP(settings: ICachedSettings): Promise<void> {
 	// Register ldap login handler
@@ -12,7 +12,11 @@ export async function configureLDAP(settings: ICachedSettings): Promise<void> {
 			return undefined;
 		}
 
-		warnUnlicensedAuthService('LDAP', 'ldap-enterprise');
+		// `LDAP_Enable` already falls back to `false` without the module, this only
+		// keeps the handler from running if the setting is read from another source
+		if (!License.hasModule('ldap-enterprise')) {
+			return undefined;
+		}
 
 		return LDAP.loginRequest(loginRequest.username, loginRequest.ldapPass);
 	});

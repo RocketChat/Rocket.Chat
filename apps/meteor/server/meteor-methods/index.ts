@@ -4,7 +4,7 @@ import './auth/addOAuthService';
 import './auth/addUserToRole';
 import './auth/checkRegistrationSecretURL';
 import './auth/removeOAuthService';
-import './auth/samlLogout';
+import '../../ee/server/meteor-methods/samlLogout';
 import './auth/sendConfirmationEmail';
 import './auth/sendForgotPasswordEmail';
 import './import/downloadPublicImportFile';

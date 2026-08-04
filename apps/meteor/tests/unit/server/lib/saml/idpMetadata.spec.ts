@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { InvalidIdpMetadataError, parseIdpMetadata } from '../../../../../server/lib/saml/lib/parsers/IdpMetadata';
+import { InvalidIdpMetadataError, parseIdpMetadata } from '../../../../../ee/server/lib/saml/lib/parsers/IdpMetadata';
 
 // Real self-signed cert (CN=idp.test) — the parser validates X.509, so fixtures must be real certs.
 const TEST_CERT =

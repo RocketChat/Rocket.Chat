@@ -13,7 +13,7 @@ import { CallHistoryService } from './call-history/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
-import { LDAPService } from './ldap/service';
+import { LDAPService } from '../../ee/server/local-services/ldap/coreService';
 import { MediaCallService } from './media-call/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';

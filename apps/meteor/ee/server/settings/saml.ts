@@ -8,7 +8,7 @@ import {
 	defaultAuthnContext,
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
-} from '../../../server/lib/saml/lib/constants';
+} from '../lib/saml/lib/constants';
 import { settingsRegistry } from '../../../server/settings';
 
 export const addSettings = async function (name: string): Promise<void> {

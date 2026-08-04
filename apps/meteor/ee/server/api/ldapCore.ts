@@ -7,10 +7,10 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { getLdapErrorReason } from '../../lib/ldap/getLdapErrorReason';
-import { SystemLogger } from '../../lib/logger/system';
-import { settings } from '../../settings';
-import { API } from '../api';
+import { getLdapErrorReason } from '../lib/ldap/getLdapErrorReason';
+import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../../server/settings';
+import { API } from '../../../server/api/api';
 
 const messageResponseSchema = {
 	type: 'object' as const,
@@ -30,6 +30,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['ldap-enterprise'],
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
 			400: validateBadRequestErrorResponse,
@@ -72,6 +73,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['ldap-enterprise'],
 		body: isLdapTestSearch,
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),

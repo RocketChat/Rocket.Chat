@@ -1,12 +1,12 @@
+import { License } from '@rocket.chat/license';
 import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { getUserForCheck } from '../2fa/code';
-import { i18n } from '../i18n';
-import { SystemLogger } from '../logger/system';
-import { doesUserRequire2FA } from '../oauth/twoFactorAuth';
-import { warnUnlicensedAuthService } from '../premiumAuthDeprecation';
+import { getUserForCheck } from '../../../../server/lib/2fa/code';
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { doesUserRequire2FA } from '../../../../server/lib/oauth/twoFactorAuth';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 
@@ -25,7 +25,11 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		return undefined;
 	}
 
-	warnUnlicensedAuthService('SAML', 'saml-enterprise');
+	// providers are only loaded while the module is licensed, this covers the
+	// window between a license being removed and the providers being reloaded
+	if (!License.hasModule('saml-enterprise')) {
+		return undefined;
+	}
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
