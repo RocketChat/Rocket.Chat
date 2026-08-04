@@ -44,25 +44,33 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-14d0dip"
+                    class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
+                    <button
+                      aria-label="View_avatar"
+                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      title="View_avatar"
+                      type="button"
                     >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x124"
-                        data-username="guilherme.gazzo"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="guilherme.gazzo"
-                      />
-                    </figure>
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      >
+                        <img
+                          alt="Avatar"
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x48"
+                          data-username="guilherme.gazzo"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="guilherme.gazzo"
+                        />
+                      </figure>
+                    </button>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
+                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-902tla"
+                      <h2
+                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        title="guilherme.gazzo"
                       >
                         <svg
                           aria-hidden="true"
@@ -82,20 +90,19 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-dredvr"
-                          title="guilherme.gazzo"
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
                         >
                           guilherme.gazzo
                         </div>
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-ih19h2"
-                    >
+                      </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        class="rcx-box rcx-box--full rcx-css-15mc0du"
                       >
-                        🛴 currently working on User Card
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          🛴 currently working on User Card
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -399,25 +406,33 @@ exports[`renders InvitedUser without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-14d0dip"
+                    class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
+                    <button
+                      aria-label="View_avatar"
+                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      title="View_avatar"
+                      type="button"
                     >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x124"
-                        data-username="guilherme.gazzo"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="guilherme.gazzo"
-                      />
-                    </figure>
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      >
+                        <img
+                          alt="Avatar"
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x48"
+                          data-username="guilherme.gazzo"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="guilherme.gazzo"
+                        />
+                      </figure>
+                    </button>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
+                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-902tla"
+                      <h2
+                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        title="guilherme.gazzo"
                       >
                         <svg
                           aria-hidden="true"
@@ -437,20 +452,19 @@ exports[`renders InvitedUser without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-dredvr"
-                          title="guilherme.gazzo"
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
                         >
                           guilherme.gazzo
                         </div>
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-ih19h2"
-                    >
+                      </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        class="rcx-box rcx-box--full rcx-css-15mc0du"
                       >
-                        🛴 currently working on User Card
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          🛴 currently working on User Card
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -768,25 +782,33 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-14d0dip"
+                    class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
+                    <button
+                      aria-label="View_avatar"
+                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      title="View_avatar"
+                      type="button"
                     >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x124"
-                        data-username="guilherme.gazzo"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="guilherme.gazzo"
-                      />
-                    </figure>
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      >
+                        <img
+                          alt="Avatar"
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x48"
+                          data-username="guilherme.gazzo"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="guilherme.gazzo"
+                        />
+                      </figure>
+                    </button>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
+                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-902tla"
+                      <h2
+                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        title="guilherme.gazzo"
                       >
                         <svg
                           aria-hidden="true"
@@ -806,20 +828,19 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-dredvr"
-                          title="guilherme.gazzo"
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
                         >
                           guilherme.gazzo
                         </div>
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-ih19h2"
-                    >
+                      </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        class="rcx-box rcx-box--full rcx-css-15mc0du"
                       >
-                        🛴 currently working on User Card
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          🛴 currently working on User Card
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1183,25 +1204,33 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-14d0dip"
+                    class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
+                    <button
+                      aria-label="View_avatar"
+                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      title="View_avatar"
+                      type="button"
                     >
-                      <img
-                        alt="Avatar"
-                        aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x124"
-                        data-username="guilherme.gazzo"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                        title="guilherme.gazzo"
-                      />
-                    </figure>
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      >
+                        <img
+                          alt="Avatar"
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x48"
+                          data-username="guilherme.gazzo"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="guilherme.gazzo"
+                        />
+                      </figure>
+                    </button>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
+                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-902tla"
+                      <h2
+                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        title="guilherme.gazzo"
                       >
                         <svg
                           aria-hidden="true"
@@ -1221,20 +1250,19 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-dredvr"
-                          title="guilherme.gazzo"
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
                         >
                           guilherme.gazzo
                         </div>
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-ih19h2"
-                    >
+                      </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        class="rcx-box rcx-box--full rcx-css-15mc0du"
                       >
-                        🛴 currently working on User Card
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          🛴 currently working on User Card
+                        </div>
                       </div>
                     </div>
                   </div>
