@@ -1,9 +1,11 @@
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
-const PageContent = forwardRef<HTMLElement, BoxProps>(function PageContent(props, ref) {
-	return <Box ref={ref} paddingInline={24} display='flex' flexDirection='column' overflowY='hidden' height='full' {...props} />;
-});
+export type PageContentProps = BoxProps & RefAttributes<HTMLElement>;
+
+const PageContent = ({ ref, ...props }: PageContentProps) => (
+	<Box ref={ref} paddingInline={24} display='flex' flexDirection='column' overflowY='hidden' height='full' {...props} />
+);
 
 export default PageContent;

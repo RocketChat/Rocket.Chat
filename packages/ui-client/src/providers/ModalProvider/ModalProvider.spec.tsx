@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
-import type { ForwardedRef, ReactNode } from 'react';
-import { Suspense, createContext, createRef, forwardRef, useContext, useImperativeHandle } from 'react';
+import type { ReactNode, Ref } from 'react';
+import { Suspense, createContext, createRef, useContext, useImperativeHandle } from 'react';
 
 import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
@@ -22,7 +22,7 @@ describe('via useSetModal', () => {
 
 	type ModalOpenerAPI = { open: () => void };
 
-	const ModalOpener = forwardRef((_: unknown, ref: ForwardedRef<ModalOpenerAPI>) => {
+	const ModalOpener = ({ ref }: { ref?: Ref<ModalOpenerAPI> }) => {
 		const setModal = useSetModal();
 		const title = useContext(ModalTitleContext);
 		useImperativeHandle(ref, () => ({
@@ -32,7 +32,7 @@ describe('via useSetModal', () => {
 		}));
 
 		return null;
-	});
+	};
 
 	it('should render a modal', async () => {
 		const modalOpenerRef = createRef<ModalOpenerAPI>();

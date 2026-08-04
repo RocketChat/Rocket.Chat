@@ -1,11 +1,9 @@
 import { ContextualbarV2Content } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import { forwardRef, memo } from 'react';
+import type { ComponentProps, RefAttributes } from 'react';
+import { memo } from 'react';
 
-const ContextualbarContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarV2Content>>(
-	function ContextualbarContent(props, ref) {
-		return <ContextualbarV2Content ref={ref} {...props} />;
-	},
-);
+export type ContextualbarContentProps = ComponentProps<typeof ContextualbarV2Content> & RefAttributes<HTMLElement>;
+
+const ContextualbarContent = ({ ref, ...props }: ContextualbarContentProps) => <ContextualbarV2Content ref={ref} {...props} />;
 
 export default memo(ContextualbarContent);

@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import { forwardRef, memo } from 'react';
+import type { RefAttributes } from 'react';
+import { memo } from 'react';
 
 import 'overlayscrollbars/styles/overlayscrollbars.css';
 
@@ -11,7 +12,9 @@ export const getScrollbarsOptions = (overflowX?: boolean) =>
 		overflow: { x: overflowX ? 'scroll' : 'hidden' },
 	}) as const;
 
-const BaseScrollbars = forwardRef<HTMLElement, BoxProps>(function BaseScrollbars(props, ref) {
+export type BaseScrollbarsProps = BoxProps & RefAttributes<HTMLElement>;
+
+const BaseScrollbars = ({ ref, ...props }: BaseScrollbarsProps) => {
 	return (
 		<Box
 			ref={ref}
@@ -27,6 +30,6 @@ const BaseScrollbars = forwardRef<HTMLElement, BoxProps>(function BaseScrollbars
 			{...props}
 		/>
 	);
-});
+};
 
 export default memo(BaseScrollbars);

@@ -1,18 +1,16 @@
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
 import type { OverlayScrollbars } from '../CustomScrollbars';
 import { CustomScrollbars } from '../CustomScrollbars';
 
 export type PageScrollableContentProps = {
 	onScroll?: (args: OverlayScrollbars) => void;
-} & Omit<BoxProps, 'onScroll'>;
+} & Omit<BoxProps, 'onScroll'> &
+	RefAttributes<HTMLElement>;
 
-const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps>(function PageScrollableContent(
-	{ onScroll, borderBlockEndColor, ...props },
-	ref,
-) {
+const PageScrollableContent = ({ onScroll, borderBlockEndColor, ref, ...props }: PageScrollableContentProps) => {
 	return (
 		<Box
 			height='50vh'
@@ -28,6 +26,6 @@ const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps
 			</CustomScrollbars>
 		</Box>
 	);
-});
+};
 
 export default PageScrollableContent;

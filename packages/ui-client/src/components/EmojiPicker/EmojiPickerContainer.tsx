@@ -1,23 +1,20 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import type { AllHTMLAttributes, RefAttributes } from 'react';
 
-const EmojiPickerContainer = forwardRef<HTMLElement, Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'style'>>(
-	function EmojiPickerContainer(props, ref) {
-		return (
-			<Box
-				{...props}
-				color='default'
-				ref={ref}
-				height='x480'
-				backgroundColor='light'
-				borderRadius={4}
-				display='flex'
-				flexDirection='column'
-				marginBlock='neg-x12'
-			/>
-		);
-	},
+export type EmojiPickerContainerProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'style'> & RefAttributes<HTMLElement>;
+
+const EmojiPickerContainer = ({ ref, ...props }: EmojiPickerContainerProps) => (
+	<Box
+		{...props}
+		color='default'
+		ref={ref}
+		height='x480'
+		backgroundColor='light'
+		borderRadius={4}
+		display='flex'
+		flexDirection='column'
+		marginBlock='neg-x12'
+	/>
 );
 
 export default EmojiPickerContainer;
