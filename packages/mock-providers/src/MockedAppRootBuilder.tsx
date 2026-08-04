@@ -95,6 +95,9 @@ export type StreamControllerRef<N extends StreamNames> = {
 
 const empty = [] as const;
 
+const mockedVideoConfCapabilities: ProviderCapabilities = { mic: true, cam: true };
+const mockedVideoConfPreferences: CallPreferences = { mic: true, cam: true };
+
 export class MockedAppRootBuilder {
 	private _settings: Map<string, ISetting> = new Map();
 
@@ -210,12 +213,19 @@ export class MockedAppRootBuilder {
 		loadCapabilities(): Promise<void> {
 			throw new Error('Function not implemented.');
 		},
-		queryCapabilities(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] {
-			throw new Error('Function not implemented.');
-		},
-		queryPreferences(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] {
-			throw new Error('Function not implemented.');
-		},
+		// The actions above throw so that a test triggering one has to say what it expects to happen. These two
+		// are reads, and every video-conf popup does them just by rendering — throwing would fail such a test on
+		// the render rather than on anything it means to assert.
+		// Both snapshots are module constants, not fresh objects: `useSyncExternalStore` compares them by identity
+		// and a new object every read is an endless re-render.
+		queryCapabilities: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] => [
+			() => () => undefined,
+			() => mockedVideoConfCapabilities,
+		],
+		queryPreferences: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] => [
+			() => () => undefined,
+			() => mockedVideoConfPreferences,
+		],
 	};
 
 	private room: IRoom | undefined = undefined;

@@ -221,6 +221,24 @@ network, a killed tab.
 request needs `keepalive`, because the document is being torn down and an ordinary `fetch` dies with it;
 `sendBeacon` would be the usual tool but can't carry the auth headers the REST API needs.
 
+### The window that opened the call watches it
+
+A page can only report its own departure once it is running, and the user counts as being in the call before
+that: `video-conference.join` is posted by the **main app**, before the call window is even opened. Accept a call
+and close the window while it is still loading and nothing ever reported the leave — the user sat listed as
+present in a call they never saw, holding it open.
+
+So the opener watches the window it opened. `useLeaveCallOnWindowClose` polls `closed` once a second and posts
+the leave when the window goes, which covers the whole gap: closed while loading, and closed without `pagehide`
+firing at all. One call is watched at a time, since a user is in one call at a time and the window is shared —
+opening the next call replaces the watch. Leaving twice is harmless, so it makes no attempt to work out whether
+the page got there first, and the watch is dropped rather than fired when the main app itself goes away: that is
+not the call window closing, and the call window is meant to outlive it.
+
+Two gaps this leaves, both ending in the same place — the next join, which reconciles presence server-side (see
+[One call at a time](#one-call-at-a-time)) — or the expiry cron: a popup the browser blocked outright (the user
+is joined with no window at all), and the main app being closed alongside the call window.
+
 > Verified end to end against a running workspace. Placing a DM call and closing the call window ended the call
 > and wrote both history items — `ended`/`outbound` for the caller, `not-answered`/`inbound` for the callee who
 > never answered, which is the case that used to leave no trace at all. Leaving a call with another member still
@@ -560,6 +578,8 @@ and package-level jest.
 | Which room types can be answered from one subscription read, and which still can't | `apps/meteor/tests/unit/server/services/video-conference/getChatAccess.spec.ts` |
 | Who counts as still in the call, and which conferences get history | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
 | Leaving is reported on `pagehide`, with `keepalive`, and on demand | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
+| Leaving is also reported when the call window goes, including before it ever loaded | `apps/meteor/client/views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose.spec.ts` |
+| "Start a call" closes itself once the call it started has its own window | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/TimedVideoConfPopup.spec.tsx` |
 | Declined vs unanswered vs still-ringing, and that ringing again restarts the wait | `apps/meteor/client/views/conference/hooks/useCallOutcome.spec.ts` |
 | A direct call opens its window on the click, still rings, and stops the room reporting "calling"; a fresh ring survives a dismissal | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
 | Member statuses, and who can be rung back — including not while their phone is ringing | `apps/meteor/tests/unit/lib/videoConference/memberStatus.spec.ts` |

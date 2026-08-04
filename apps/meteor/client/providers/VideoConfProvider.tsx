@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
+import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
 export type VideoConfContextProviderProps = { children: ReactNode };
@@ -15,6 +16,7 @@ export type VideoConfContextProviderProps = { children: ReactNode };
 const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
+	const watchCallWindow = useLeaveCallOnWindowClose();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
 	const { t } = useTranslation();
@@ -28,14 +30,15 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
 				// With persistent chat on, open the in-product conference page — the provider's call embedded
 				// beside the conference's chat — instead of handing the user off to the provider's own URL.
-				if (persistentChatEnabled) {
-					handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName);
-					return;
-				}
+				const target = persistentChatEnabled
+					? handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName)
+					: handleOpenCall(url, providerName);
 
-				handleOpenCall(url, providerName);
+				// The join has already been posted by now, so the user counts as being in the call. If that window
+				// goes away before it can report its own departure, this is what does it for them.
+				watchCallWindow(callId, target);
 			}),
-		[handleOpenCall, router, persistentChatEnabled],
+		[handleOpenCall, router, persistentChatEnabled, watchCallWindow],
 	);
 
 	useEffect(
