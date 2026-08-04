@@ -5,7 +5,7 @@ import JumpToMessageAction from './actions/JumpToMessageAction';
 import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 
-type ThreadsItemsProps = {
+export type ThreadsItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
@@ -16,7 +16,7 @@ const ThreadsItems = ({ message, room, subscription }: ThreadsItemsProps) => {
 		<>
 			<ReactionMessageAction message={message} room={room} subscription={subscription} />
 			<QuoteMessageAction message={message} subscription={subscription} />
-			<ForwardMessageAction message={message} />
+			<ForwardMessageAction message={message} room={room} />
 			<JumpToMessageAction id='jump-to-message' message={message} />
 		</>
 	);

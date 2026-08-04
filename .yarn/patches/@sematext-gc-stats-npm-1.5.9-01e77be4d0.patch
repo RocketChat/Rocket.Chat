@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index cad8d557e25394d01bc4e95af2f4eb6f11de61ce..ef669ff1a8595e0a347c78055b2f3b9bac035b73 100644
+--- a/package.json
++++ b/package.json
+@@ -20,7 +20,6 @@
+   },
+   "dependencies": {
+     "@mapbox/node-pre-gyp": "^1.0.10",
+-    "depcheck": "^1.4.3",
+     "nan": "^2.17.0"
+   },
+   "gypfile": true,

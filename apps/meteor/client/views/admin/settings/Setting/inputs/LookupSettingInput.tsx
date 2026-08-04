@@ -1,13 +1,13 @@
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
-import type { ReactElement } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
-import type { AsyncState } from '../../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
+import { miscQueryKeys } from '../../../../../lib/queryKeys';
 
-type LookupSettingInputProps = SettingInputProps & {
+export type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 };
 
@@ -15,6 +15,7 @@ function LookupSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -24,13 +25,19 @@ function LookupSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LookupSettingInputProps): ReactElement {
+}: LookupSettingInputProps) {
 	const handleChange = (value: string): void => {
 		onChangeValue?.(value);
 	};
 
-	const { value: options } = useEndpointData(lookupEndpoint) as AsyncState<{ data: { key: string; label: string }[] }>;
-	const values = options?.data || [];
+	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<{ data: { key: string; label: string }[] }>;
+	const { data: values = [] } = useQuery({
+		queryKey: miscQueryKeys.lookup(lookupEndpoint),
+		queryFn: async () => {
+			const { data = [] } = (await lookup()) ?? {};
+			return data as { key: string; label: string }[];
+		},
+	});
 
 	return (
 		<Field>
@@ -38,11 +45,10 @@ function LookupSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Select
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}
@@ -53,6 +59,7 @@ function LookupSettingInput({
 					options={values.map(({ key, label }) => [key, label])}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Updater, SetProps, UnsetProps, IncProps, AddToSetProps } from '@rocket.chat/model-typings';
 import type { UpdateFilter } from 'mongodb';
 
@@ -17,7 +16,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 
 	private dirty = false;
 
-	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]) {
+	set<K extends keyof SetProps<T>>(key: K, value: SetProps<T>[K]) {
 		this._set = this._set ?? new Map<Keys<T>, any>();
 		this._set.set(key as Keys<T>, value);
 		return this;
@@ -46,7 +45,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 
 	hasChanges() {
-		const filter = this._getUpdateFilter();
+		const filter = this.getRawUpdateFilter();
 		return this._hasChanges(filter);
 	}
 
@@ -54,7 +53,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return Object.keys(filter).length > 0;
 	}
 
-	private _getUpdateFilter() {
+	public getRawUpdateFilter() {
 		return {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
@@ -68,7 +67,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			throw new Error('Updater is dirty');
 		}
 		this.dirty = true;
-		const filter = this._getUpdateFilter();
+		const filter = this.getRawUpdateFilter();
 		if (!this._hasChanges(filter)) {
 			throw new Error('No changes to update');
 		}
@@ -76,4 +75,4 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 }
 
-export { Updater };
+export type { Updater };

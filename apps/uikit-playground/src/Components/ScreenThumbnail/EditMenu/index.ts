@@ -1,1 +1,1 @@
-export {default} from './EditMenu';
+export { default } from './EditMenu';

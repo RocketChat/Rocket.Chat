@@ -1,12 +1,23 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajvQuery, ajv } from './Ajv';
+import { type PaginatedRequest } from '../helpers/PaginatedRequest';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
+
+const CustomSoundsGetOneSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsGetOneProps = ajvQuery.compile<CustomSoundsGetOne>(CustomSoundsGetOneSchema);
 
 type CustomSoundsList = PaginatedRequest<{ name?: string }>;
 
@@ -38,12 +49,56 @@ const CustomSoundsListSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
+export const isCustomSoundsListProps = ajvQuery.compile<CustomSoundsList>(CustomSoundsListSchema);
 
-export type CustomSoundEndpoint = {
-	'/v1/custom-sounds.list': {
-		GET: (params: CustomSoundsList) => PaginatedResult<{
-			sounds: ICustomSound[];
-		}>;
-	};
+type CustomSoundsCreate = Pick<ICustomSound, 'name'>;
+
+const CustomSoundsCreateSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
 };
+
+export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
+
+type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name'>;
+
+const CustomSoundsUpdateSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+		name: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id', 'name'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsUpdateProps = ajv.compile<CustomSoundsUpdate>(CustomSoundsUpdateSchema);
+
+type CustomSoundsDelete = { _id: ICustomSound['_id'] };
+
+const CustomSoundsDeleteSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsDeleteProps = ajv.compile<CustomSoundsDelete>(CustomSoundsDeleteSchema);

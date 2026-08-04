@@ -1,82 +1,75 @@
-import { VoipProvider } from '@rocket.chat/ui-voip';
+import { ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider as OmnichannelCallProvider } from './CallProvider';
-import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
-import ModalProvider from './ModalProvider/ModalProvider';
+import MediaCallProvider from './MediaCallProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
-import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
-type MeteorProviderProps = {
+export type MeteorProviderProps = {
 	children?: ReactNode;
 };
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
-	<ConnectionStatusProvider>
-		<ServerProvider>
-			<RouterProvider>
+	<ServerProvider>
+		<RouterProvider>
+			<ModalProvider>
 				<SettingsProvider>
 					<TranslationProvider>
 						<SessionProvider>
 							<TooltipProvider>
 								<ToastMessagesProvider>
-									<LayoutProvider>
-										<AvatarUrlProvider>
-											<UserProvider>
+									<AvatarUrlProvider>
+										<UserProvider>
+											<LayoutProvider>
 												<AuthenticationProvider>
 													<CustomSoundProvider>
 														<DeviceProvider>
-															<ModalProvider>
-																<AuthorizationProvider>
-																	<EmojiPickerProvider>
-																		<OmnichannelRoomIconProvider>
-																			<UserPresenceProvider>
-																				<ActionManagerProvider>
-																					<VideoConfProvider>
-																						<VoipProvider>
-																							<OmnichannelCallProvider>
-																								<OmnichannelProvider>{children}</OmnichannelProvider>
-																							</OmnichannelCallProvider>
-																						</VoipProvider>
-																					</VideoConfProvider>
-																				</ActionManagerProvider>
-																			</UserPresenceProvider>
-																		</OmnichannelRoomIconProvider>
-																	</EmojiPickerProvider>
-																</AuthorizationProvider>
-															</ModalProvider>
+															<AuthorizationProvider>
+																<EmojiPickerProvider>
+																	<OmnichannelRoomIconProvider>
+																		<UserPresenceProvider>
+																			<ActionManagerProvider>
+																				<VideoConfProvider>
+																					<MediaCallProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
+																					</MediaCallProvider>
+																				</VideoConfProvider>
+																			</ActionManagerProvider>
+																		</UserPresenceProvider>
+																	</OmnichannelRoomIconProvider>
+																</EmojiPickerProvider>
+															</AuthorizationProvider>
 														</DeviceProvider>
 													</CustomSoundProvider>
 												</AuthenticationProvider>
-											</UserProvider>
-										</AvatarUrlProvider>
-									</LayoutProvider>
+											</LayoutProvider>
+										</UserProvider>
+									</AvatarUrlProvider>
 								</ToastMessagesProvider>
 							</TooltipProvider>
 						</SessionProvider>
 					</TranslationProvider>
 				</SettingsProvider>
-			</RouterProvider>
-		</ServerProvider>
-	</ConnectionStatusProvider>
+			</ModalProvider>
+		</RouterProvider>
+	</ServerProvider>
 );
 
 export default MeteorProvider;

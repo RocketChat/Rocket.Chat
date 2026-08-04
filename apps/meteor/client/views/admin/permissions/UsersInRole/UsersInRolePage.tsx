@@ -1,13 +1,15 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, type ReactElement } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTable from './UsersInRoleTable';
-import { Page, PageHeader, PageContent } from '../../../../components/Page';
+import { useRemoveUserFromRole } from './hooks/useRemoveUserFromRole';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
@@ -16,8 +18,10 @@ type UsersInRolePayload = {
 	users: string[];
 };
 
-const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
-	const t = useTranslation();
+export type UsersInRolePageProps = { role: IRole };
+
+const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 
@@ -36,12 +40,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const roomFieldId = useId();
 	const usersFieldId = useId();
 
-	const handleAdd = useEffectEvent(async ({ users, rid }: UsersInRolePayload) => {
+	const handleAdd = useStableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
 			await Promise.all(
 				users.map(async (user) => {
 					if (user) {
-						await addUserToRoleEndpoint({ roleName: _id, username: user, roomId: rid });
+						await addUserToRoleEndpoint({ roleId: _id, username: user, roomId: rid });
 					}
 				}),
 			);
@@ -54,6 +58,28 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		}
 	});
 
+	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
+
+	const paginationData = usePagination();
+	const { itemsPerPage, current } = paginationData;
+
+	const query = useMemo(
+		() => ({
+			role: _id,
+			...(rid && { roomId: rid }),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[itemsPerPage, current, rid, _id],
+	);
+
+	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
+		queryKey: ['getUsersInRole', _id, query],
+		queryFn: async () => getUsersInRoleEndpoint(query),
+	});
+
+	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });
+
 	return (
 		<Page>
 			<PageHeader title={`${t('Users_in_role')} "${description || name}"`}>
@@ -62,10 +88,10 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageContent>
-				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
+				<Box display='flex' flexDirection='column' width='full' marginInline='neg-x4'>
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe={4}>
+							<Field marginBlockEnd={4}>
 								<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
 								<FieldRow>
 									<Controller
@@ -112,7 +138,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										/>
 									)}
 								/>
-								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+								<Button marginInlineStart={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 									{t('Add')}
 								</Button>
 							</FieldRow>
@@ -127,7 +153,18 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 					</Margins>
 				</Box>
 				<Margins blockStart={8}>
-					{(role.scope === 'Users' || rid) && <UsersInRoleTable rid={rid} roleId={_id} roleName={name} description={description} />}
+					{(role.scope === 'Users' || rid) && (
+						<UsersInRoleTable
+							isLoading={isLoading}
+							isError={isError}
+							isSuccess={isSuccess}
+							total={data?.total || 0}
+							users={data?.users || []}
+							onRemove={handleRemove}
+							refetch={refetch}
+							paginationData={paginationData}
+						/>
+					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
 			</PageContent>

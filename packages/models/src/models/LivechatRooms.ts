@@ -34,16 +34,13 @@ import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
-/**
- * @extends BaseRaw<ILivechatRoom>
- */
 export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, 'room', trash);
 	}
 
 	// move indexes from constructor to here using IndexDescription as type
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { open: 1 }, sparse: true },
 			{ key: { departmentId: 1 }, sparse: true },
@@ -68,9 +65,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			{ key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
-			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
 			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
@@ -79,7 +74,31 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 			{ key: { contactId: 1 }, partialFilterExpression: { contactId: { $exists: true }, t: 'l' } },
+			{
+				key: { 'v.token': 1 },
+				unique: true,
+				partialFilterExpression: {
+					t: 'l',
+					open: true,
+					_enforceSingleRoom: true,
+				},
+			},
 		];
+	}
+
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+
+	override async findOneById<P extends Document = IOmnichannelRoom>(
+		_id: IOmnichannelRoom['_id'],
+		options?: FindOptions<P>,
+	): Promise<P | null>;
+
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
+		if (options) {
+			return this.findOne(query, options);
+		}
+		return this.findOne(query);
 	}
 
 	getQueueMetrics({
@@ -727,7 +746,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -741,7 +760,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -754,7 +773,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -1261,7 +1280,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}: {
 		agents?: string[];
 		roomName?: string;
-		departmentId?: string;
+		departmentId?: string | string[];
 		open?: boolean;
 		served?: boolean;
 		createdAt?: { start?: Date; end?: Date };
@@ -1275,12 +1294,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
+		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName?.endsWith(`"`);
+		const roomNameQuery = isRoomNameExactTerm ? roomName?.slice(1, -1) : roomName;
+
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
-			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
-			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(roomName && isRoomNameExactTerm
+				? { fname: roomNameQuery } // exact match
+				: roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }), // regex match
+			...(departmentId && departmentId !== 'undefined' && { departmentId: { $in: ([] as string[]).concat(departmentId) } }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
@@ -1357,7 +1381,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.departmentId = departmentId;
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findAllServiceTimeByAgent({
@@ -1560,30 +1584,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		]);
 	}
 
-	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
-	// And refactoring it could take time
-	setTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$set: { pdfTranscriptRequested: true },
-			},
-		);
-	}
-
-	unsetTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$unset: { pdfTranscriptRequested: 1 },
-			},
-		);
-	}
-
 	setPdfTranscriptFileIdById(rid: string, fileId: string) {
 		return this.updateOne(
 			{
@@ -1782,21 +1782,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne({ _id }, update);
 	}
 
-	findById(_id: string, fields: FindOptions<IOmnichannelRoom>['projection']) {
-		const options: FindOptions<IOmnichannelRoom> = {};
-
-		if (fields) {
-			options.projection = fields;
-		}
-
-		const query: Filter<IOmnichannelRoom> = {
-			t: 'l',
-			_id,
-		};
-
-		return this.find(query, options);
-	}
-
 	findByIds(ids: string[], fields: FindOptions<IOmnichannelRoom>['projection'], extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const options: FindOptions<IOmnichannelRoom> = {};
 
@@ -1829,16 +1814,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorTokenAndEmailThread(visitorToken: string, emailThread: string[], options: FindOptions<IOmnichannelRoom>) {
-		const query: Filter<IOmnichannelRoom> = {
-			't': 'l',
-			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findOneByVisitorTokenAndEmailThreadAndDepartment(
 		visitorToken: string,
 		emailThread: string[],
@@ -1853,17 +1828,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
 			],
 			...(departmentId && { departmentId }),
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findOneOpenByVisitorTokenAndEmailThread(visitorToken: string, emailThread: string[], options: FindOptions<IOmnichannelRoom>) {
-		const query: Filter<IOmnichannelRoom> = {
-			't': 'l',
-			'open': true,
-			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -1932,11 +1896,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.findOne(query, options);
@@ -1974,16 +1939,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.find(query, options);
-	}
-
-	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
-		const query: Filter<IOmnichannelRoom> = {
-			't': 'l',
-			'v.token': visitorToken,
-			...extraQuery,
-		};
-
-		return this.find(query);
 	}
 
 	findByVisitorIdAndAgentId(
@@ -2123,7 +2078,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	getAnalyticsMetricsBetweenDate(
@@ -2317,10 +2272,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
-	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
@@ -2328,7 +2283,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string; ts?: Date }) {
@@ -2406,16 +2361,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	removeByVisitorToken(token: string) {
+	removeByVisitorId(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
-			'v.token': token,
+			'v._id': _id,
 		};
 
 		return this.deleteMany(query);
 	}
 
-	removeById(_id: string) {
+	override removeById(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id,
 			t: 'l',
@@ -2435,22 +2390,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	changeVisitorByRoomId(roomId: string, { _id, username, token }: { _id: string; username: string; token: string }) {
-		const query: Filter<IOmnichannelRoom> = {
-			_id: roomId,
-			t: 'l',
-		};
-		const update = {
-			$set: {
-				'v._id': _id,
-				'v.username': username,
-				'v.token': token,
 			},
 		};
 
@@ -2602,7 +2541,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
-		return this.col.countDocuments({ departmentId: { $exists: true } });
+		return this.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
@@ -2614,10 +2553,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	unsetOnHoldByRoomId(_roomId: string): Promise<UpdateResult> {
-		throw new Error('Method not implemented.');
-	}
-
-	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(_roomId: string): Promise<UpdateResult> {
 		throw new Error('Method not implemented.');
 	}
 
@@ -2645,10 +2580,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async unsetPriorityByRoomId(_roomId: string): Promise<UpdateResult> {
-		throw new Error('Method not implemented.');
-	}
-
-	findOpenRoomsByPriorityId(_priorityId: string): FindCursor<IOmnichannelRoom> {
 		throw new Error('Method not implemented.');
 	}
 
@@ -2688,10 +2619,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countRoomsWithSla(): Promise<number> {
-		throw new Error('Method not implemented.');
-	}
-
-	countRoomsWithPdfTranscriptRequested(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 
@@ -2808,5 +2735,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({ open: true, contactId }, options);
+	}
+
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
+		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
 	}
 }

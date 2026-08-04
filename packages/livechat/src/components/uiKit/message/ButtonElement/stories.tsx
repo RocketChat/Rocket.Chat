@@ -1,7 +1,7 @@
 import { BlockContext } from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
 import ButtonElement from '.';
 import { parser } from '..';
@@ -29,12 +29,13 @@ export default {
 	decorators: [
 		(storyFn) => (
 			<Surface
-				children={storyFn()}
 				dispatchAction={async (payload: unknown) => {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 					action('dispatchAction')(payload);
 				}}
-			/>
+			>
+				{storyFn()}
+			</Surface>
 		),
 	],
 	parameters: {

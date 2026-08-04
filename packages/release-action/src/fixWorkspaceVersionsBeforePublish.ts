@@ -27,13 +27,13 @@ export async function fixWorkspaceVersionsBeforePublish() {
 
 	// Get the version of each workspace package.
 	const workspaceVersions = new Map();
-	for await (const workspace of workspaces) {
+	for (const workspace of workspaces) {
 		const packageJson = await readPackageJson(workspace.location);
 		workspaceVersions.set(workspace.name, packageJson.version);
 	}
 
 	// Replace any `workspace:^` version ranges with the actual version.
-	for await (const workspace of workspaces) {
+	for (const workspace of workspaces) {
 		const packageJson = await readPackageJson(workspace.location);
 
 		for (const dependencyType of DEPENDENCY_TYPES) {

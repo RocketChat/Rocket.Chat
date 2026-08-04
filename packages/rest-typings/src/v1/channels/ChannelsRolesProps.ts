@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajvQuery } from '../Ajv';
 
 export type ChannelsRolesProps = { roomId: string } | { roomName: string };
 const channelsRolesPropsSchema = {
@@ -28,4 +26,4 @@ const channelsRolesPropsSchema = {
 	],
 };
 
-export const isChannelsRolesProps = ajv.compile<ChannelsRolesProps>(channelsRolesPropsSchema);
+export const isChannelsRolesProps = ajvQuery.compile<ChannelsRolesProps>(channelsRolesPropsSchema);

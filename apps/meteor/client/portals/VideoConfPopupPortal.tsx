@@ -1,14 +1,14 @@
 import { AnchorPortal } from '@rocket.chat/ui-client';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 const videoConfAnchorId = 'video-conf-root';
 
-type VideoConfPortalProps = {
+export type VideoConfPortalProps = {
 	children?: ReactNode;
 };
 
-const VideoConfPortal = ({ children }: VideoConfPortalProps): ReactElement => {
+const VideoConfPortal = ({ children }: VideoConfPortalProps) => {
 	return <AnchorPortal id={videoConfAnchorId}>{children}</AnchorPortal>;
 };
 

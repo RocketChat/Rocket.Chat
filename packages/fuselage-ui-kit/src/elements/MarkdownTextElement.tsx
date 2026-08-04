@@ -6,22 +6,22 @@ import { Suspense } from 'react';
 
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
-const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
-  const { t } = useAppTranslation();
+export type MarkdownTextElementProps = { textObject: TextObject };
 
-  const text = textObject.i18n
-    ? t(textObject.i18n.key, { ...textObject.i18n.args })
-    : textObject.text;
+const MarkdownTextElement = ({ textObject }: MarkdownTextElementProps) => {
+	const { t } = useAppTranslation();
 
-  if (!text) {
-    return null;
-  }
+	const text = textObject.i18n ? t(textObject.i18n.key, { ...textObject.i18n.args }) : textObject.text;
 
-  return (
-    <Suspense fallback={<Skeleton />}>
-      <Markup tokens={parse(text, { emoticons: false })} />
-    </Suspense>
-  );
+	if (!text) {
+		return null;
+	}
+
+	return (
+		<Suspense fallback={<Skeleton />}>
+			<Markup tokens={parse(text, { emoticons: false })} />
+		</Suspense>
+	);
 };
 
 export default MarkdownTextElement;

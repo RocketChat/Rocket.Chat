@@ -1,17 +1,18 @@
+import { useOverlayTrigger } from '@react-aria/overlays';
+import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Popover } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
-import { useOverlayTrigger } from 'react-aria';
-import { useOverlayTriggerState } from 'react-stately';
 
 import { useRoom } from '../contexts/RoomContext';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { UserCardContext } from '../contexts/UserCardContext';
 
 const UserCard = lazy(() => import('../UserCard'));
 
-const UserCardProvider = ({ children }: { children: ReactNode }) => {
+export type UserCardProviderProps = { children: ReactNode };
+
+const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 
@@ -22,14 +23,10 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 
 	const { openTab } = useRoomToolbox();
 
-	const openUserInfo = useEffectEvent((username?: string) => {
+	const openUserInfo = useStableCallback((username?: string) => {
 		switch (room.t) {
 			case 'l':
 				openTab('room-info', username);
-				break;
-
-			case 'v':
-				openTab('voip-room-info', username);
 				break;
 
 			case 'd':

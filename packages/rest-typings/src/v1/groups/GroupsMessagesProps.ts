@@ -1,23 +1,23 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajvQuery } from '../Ajv';
 import { withGroupBaseProperties } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type GroupsMessagesProps = PaginatedRequest<{
-	roomId: IRoom['_id'];
-	mentionIds?: string;
-	starredIds?: string;
-	pinned?: boolean;
-	query?: Record<string, any>;
-}>;
+export type GroupsMessagesProps = PaginatedRequest<
+	({ roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) & {
+		mentionIds?: string;
+		starredIds?: string;
+		pinned?: boolean;
+		query?: Record<string, any>;
+	}
+>;
 
 const GroupsMessagesPropsSchema = withGroupBaseProperties({
 	roomId: {
+		type: 'string',
+	},
+	roomName: {
 		type: 'string',
 	},
 	mentionIds: {
@@ -47,4 +47,4 @@ const GroupsMessagesPropsSchema = withGroupBaseProperties({
 	},
 });
 
-export const isGroupsMessagesProps = ajv.compile<GroupsMessagesProps>(GroupsMessagesPropsSchema);
+export const isGroupsMessagesProps = ajvQuery.compile<GroupsMessagesProps>(GroupsMessagesPropsSchema);

@@ -1,16 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
-
-type EnableE2EEModalProps = {
+export type EnableE2EEModalProps = {
 	onConfirm: () => void;
 	onClose: () => void;
 	roomType: string;
 };
 
-const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps): ReactElement => {
+const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -22,7 +20,7 @@ const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps)
 			onConfirm={onConfirm}
 			onCancel={onClose}
 		>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				{t('E2E_enable_encryption_description', { roomType })}
 			</Box>
 		</GenericModal>

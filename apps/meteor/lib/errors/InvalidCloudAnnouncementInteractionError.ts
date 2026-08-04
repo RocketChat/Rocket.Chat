@@ -1,3 +1,3 @@
 export class InvalidCloudAnnouncementInteractionError extends Error {
-	name = InvalidCloudAnnouncementInteractionError.name;
+	override name = InvalidCloudAnnouncementInteractionError.name;
 }

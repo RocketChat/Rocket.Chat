@@ -1,5 +1,5 @@
-import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import type { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
+import { AppClientManager } from '@rocket.chat/apps/dist/client/AppClientManager';
+import type { AppsEngineUIHost } from '@rocket.chat/apps/dist/client/AppsEngineUIHost';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
@@ -47,7 +47,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getInstalledApps(): Promise<App[]> {
-		const result = await sdk.rest.get<'/apps/installed'>('/apps/installed');
+		const result = await sdk.rest.get<'/apps/installed'>('/apps/installed', { includeClusterStatus: 'true' });
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one

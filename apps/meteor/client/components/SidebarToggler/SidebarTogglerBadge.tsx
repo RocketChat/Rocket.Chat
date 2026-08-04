@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type SidebarTogglerBadgeProps = {
+export type SidebarTogglerBadgeProps = {
 	children?: ReactNode;
 };
 
@@ -12,7 +12,7 @@ const SidebarTogglerBadge = ({ children }: SidebarTogglerBadgeProps) => (
 			position: absolute;
 			z-index: 3;
 			top: -5px;
-			right: 3px;
+			right: -5px;
 		`}
 	>
 		<Badge variant='danger'>{children}</Badge>

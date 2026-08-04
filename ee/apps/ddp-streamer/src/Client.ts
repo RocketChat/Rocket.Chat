@@ -1,7 +1,9 @@
 import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
+import { Presence } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
+import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
@@ -72,6 +74,18 @@ export class Client extends EventEmitter {
 	public userId?: string;
 
 	public userToken?: string;
+
+	private updatePresence = throttle(
+		() => {
+			if (this.userId) {
+				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
+					console.error('Error updating connection presence:', err);
+				});
+			}
+		},
+		TIMEOUT,
+		{ leading: true, trailing: false },
+	);
 
 	constructor(
 		public ws: WebSocket,
@@ -151,7 +165,7 @@ export class Client extends EventEmitter {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
-				this.callMethod(packet);
+				void this.callMethod(packet);
 				break;
 			case DDP_EVENTS.SUBSCRIBE:
 				if (!packet.name) {
@@ -160,7 +174,7 @@ export class Client extends EventEmitter {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
-				this.callSubscribe(packet);
+				void this.callSubscribe(packet);
 				break;
 			case DDP_EVENTS.UNSUBSCRIBE:
 				if (!packet.id) {
@@ -200,6 +214,7 @@ export class Client extends EventEmitter {
 	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
 			const packet = server.parse(payload, isBinary);
+			this.updatePresence();
 			this.emit('message', packet);
 			if (this.wait) {
 				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));

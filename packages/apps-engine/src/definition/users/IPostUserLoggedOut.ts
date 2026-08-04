@@ -11,5 +11,5 @@ import type { IUser } from './IUser';
  * user logout from the Rocket.chat
  */
 export interface IPostUserLoggedOut {
-    [AppMethod.EXECUTE_POST_USER_LOGGED_OUT](context: IUser, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_USER_LOGGED_OUT](context: IUser, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
 }

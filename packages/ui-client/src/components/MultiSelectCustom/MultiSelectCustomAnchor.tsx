@@ -1,17 +1,17 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MultiSelectCustomAnchorProps = {
+export type MultiSelectCustomAnchorProps = {
 	collapsed: boolean;
 	defaultTitle: string;
 	selectedOptionsTitle: string;
 	selectedOptionsCount: number;
 	maxCount: number;
-} & ComponentProps<typeof Box>;
+} & ComponentPropsWithoutRef<typeof Box>;
 
 const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
 	{ className, collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
@@ -33,7 +33,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			display='flex'
 			justifyContent='space-between'
 			alignItems='center'
-			h='x40'
+			height='x40'
 			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>

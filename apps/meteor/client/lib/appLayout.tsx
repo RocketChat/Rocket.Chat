@@ -1,41 +1,40 @@
 import { Emitter } from '@rocket.chat/emitter';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
 const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
 const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
-const ModalRegion = lazy(() => import('../views/modal/ModalRegion'));
+const ModalRegion = lazy(() => import('@rocket.chat/ui-client').then(({ ModalRegion }) => ({ default: ModalRegion })));
 const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
+const AppLayoutThemeWrapper = lazy(() => import('../components/AppLayoutThemeWrapper'));
 const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
 
-type AppLayoutDescriptor = ReactElement | null;
-
 class AppLayoutSubscription extends Emitter<{ update: void }> {
-	private descriptor: AppLayoutDescriptor = null;
+	private descriptor: ReactNode = null;
 
-	getSnapshot = (): AppLayoutDescriptor => this.descriptor;
+	getSnapshot = (): ReactNode => this.descriptor;
 
 	subscribe = (onStoreChange: () => void): (() => void) => this.on('update', onStoreChange);
 
-	setCurrentValue(descriptor: AppLayoutDescriptor): void {
+	setCurrentValue(descriptor: ReactNode): void {
 		this.descriptor = descriptor;
 		this.emit('update');
 	}
 
-	render(element: ReactElement): void {
+	render(element: ReactNode): void {
 		this.setCurrentValue(element);
 	}
 
-	wrap(element: ReactElement): ReactElement {
+	wrap(element: ReactNode): ReactNode {
 		return (
-			<>
+			<AppLayoutThemeWrapper>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
 				<CloudAnnouncementsRegion />
 				<BannerRegion />
 				{element}
 				<ModalRegion />
-			</>
+			</AppLayoutThemeWrapper>
 		);
 	}
 }

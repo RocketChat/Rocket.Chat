@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
@@ -28,6 +28,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			suspended: boolean;
 			filter: unknown;
 			clear: () => void;
+			update: () => void;
 	  }
 	| {
 			option: undefined;
@@ -39,6 +40,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			suspended: undefined;
 			filter: unknown;
 			clear: () => void;
+			update: () => void;
 	  };
 
 const keys = {
@@ -58,7 +60,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 	const option = options[optionIndex];
 
-	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
+	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef(undefined);
 
 	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, option) as {
 		queries: UseQueryResult<T[]>[];
@@ -85,7 +87,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		});
 	}, [items, option, suspended]);
 
-	const select = useEffectEvent((item: T) => {
+	const select = useStableCallback((item: T) => {
 		if (!option) {
 			throw new Error('No popup is open');
 		}
@@ -112,7 +114,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFocused(undefined);
 	});
 
-	const setOptionByInput = useEffectEvent((): ComposerBoxPopupOptions<T> | undefined => {
+	const setOptionByInput = useStableCallback((): ComposerBoxPopupOptions<T> | undefined => {
 		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 
 		if (!value) {
@@ -148,14 +150,14 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		return option;
 	});
 
-	const handleFocus = useEffectEvent(() => {
+	const handleFocus = useStableCallback(() => {
 		if (option) {
 			return;
 		}
 		setOptionByInput();
 	});
 
-	const handleKeyUp = useEffectEvent((event: KeyboardEvent) => {
+	const handleKeyUp = useStableCallback((event: KeyboardEvent) => {
 		if (!setOptionByInput()) {
 			return;
 		}
@@ -172,7 +174,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		}
 	});
 
-	const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+	const handleKeyDown = useStableCallback((event: KeyboardEvent) => {
 		if (!option) {
 			return;
 		}
@@ -228,7 +230,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		}
 	});
 
-	const clear = useEffectEvent(() => {
+	const clear = useStableCallback(() => {
 		if (!option) {
 			return;
 		}
@@ -269,6 +271,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			suspended: undefined,
 			filter: undefined,
 			clear,
+			update: setOptionByInput,
 		};
 	}
 
@@ -282,5 +285,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		suspended,
 		filter,
 		clear,
+		update: setOptionByInput,
 	};
 };

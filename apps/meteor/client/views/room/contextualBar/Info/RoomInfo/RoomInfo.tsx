@@ -1,19 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from 'react-i18next';
-
-import RoomInfoActions from './RoomInfoActions';
 import {
+	GenericMenu,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarBack,
 	ContextualbarIcon,
 	ContextualbarClose,
 	ContextualbarTitle,
-} from '../../../../../components/Contextualbar';
-import {
+	ContextualbarDialog,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -22,14 +18,18 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../../../../../components/InfoPanel';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import RoomInfoActions from './RoomInfoActions';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
+import RoomInfoABACSection from './ABAC/RoomInfoABACSection';
 
-type RoomInfoProps = {
+export type RoomInfoProps = {
 	room: IRoom;
 	icon: string;
 	onClickBack?: () => void;
@@ -50,16 +50,16 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const { buttons, menu } = useSplitRoomActions(actions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
 				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<InfoPanel>
-					<InfoPanelSection maxWidth='x332' mi='auto'>
+					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanelAvatar>
@@ -78,7 +78,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					{archived && (
 						<InfoPanelSection>
-							<Box mb={16}>
+							<Box marginBlock={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						</InfoPanelSection>
@@ -127,10 +127,11 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -43,20 +43,29 @@ const license = {
 };
 
 const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services/omnichannel/queue', {
-	'../../../app/livechat/server/lib/Helper': {
+	'../../lib/omnichannel/Helper': {
 		dispatchAgentDelegated,
 	},
-	'../../../app/livechat/server/lib/RoutingManager': {
+	'../../lib/omnichannel/RoutingManager': {
 		RoutingManager: {
 			getConfig,
 			delegateInquiry,
 		},
 	},
-	'../../../app/livechat/server/lib/settings': libSettings,
-	'../../../app/settings/server': { settings },
+	'../../lib/omnichannel/settings': libSettings,
+	'../../settings': { settings },
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },
+	'../../lib/metrics': {
+		metrics: {
+			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
+			timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
+			totalItemsProcessedByQueue: { inc: Sinon.stub() },
+			totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
+			totalItemsFailedByQueue: { inc: Sinon.stub() },
+		},
+	},
 });
 
 describe('Omnichannel Queue processor', () => {
@@ -376,7 +385,6 @@ describe('Omnichannel Queue processor', () => {
 			await queue.execute();
 
 			expect(queue.getActiveQueues.calledOnce).to.be.true;
-			expect(queueLogger.debug.calledWith('Processing items for queue Public')).to.be.true;
 		});
 	});
 	describe('start', () => {

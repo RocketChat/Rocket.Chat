@@ -5,27 +5,29 @@ import {
 	StatesActions,
 	StatesIcon,
 	StatesTitle,
-	ContextualbarFooter,
 	FieldGroup,
 	Field,
 	FieldLabel,
 	FieldRow,
-	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
-import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import GenericNoResults from '../../../../components/GenericNoResults';
+import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
 
-const UserReportInfo = ({ userId }: { userId: string }) => {
+export type UserReportInfoProps = { userId: string };
+
+const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 	const { t } = useTranslation();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();
@@ -48,7 +50,8 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		}
 
 		const { username, name } = report.user;
-		return <UserColumn key={dataUpdatedAt} username={username} name={name} fontSize='p2' size='x48' />;
+		const normalizedUsername = username ? normalizeUsername(username) : undefined;
+		return <UserColumn key={dataUpdatedAt} username={normalizedUsername} name={name} fontSize='p2' size='x48' />;
 	}, [report?.user, dataUpdatedAt]);
 
 	const userEmails = useMemo(() => {
@@ -60,7 +63,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	if (isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 				<StatesIcon name='warning' variation='danger' />
 				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 				<StatesActions>
@@ -70,10 +73,13 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	}
 
+	if (isLoading) {
+		return <FormSkeleton />;
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoading && <ContextualbarSkeleton />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (
@@ -97,7 +103,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

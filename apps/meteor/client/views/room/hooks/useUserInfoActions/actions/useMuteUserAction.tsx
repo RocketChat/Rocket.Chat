@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { GenericModal } from '@rocket.chat/ui-client';
 import {
 	useAllPermissions,
 	usePermission,
@@ -13,7 +14,6 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
@@ -44,7 +44,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 	const userCanMute = usePermission('mute-user', rid);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal(null));
+	const closeModal = useStableCallback(() => setModal(null));
 	const otherUserCanPostReadonly = useAllPermissions(
 		useMemo(() => ['post-readonly'], []),
 		rid,

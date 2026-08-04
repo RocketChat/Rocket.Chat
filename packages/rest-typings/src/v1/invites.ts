@@ -1,10 +1,7 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from './Ajv';
 
 type UseInviteTokenProps = {
 	token: string;
@@ -82,9 +79,6 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
 
 export type InvitesEndpoints = {
-	'/v1/listInvites': {
-		GET: () => Array<IInvite>;
-	};
 	'/v1/removeInvite/:_id': {
 		DELETE: () => boolean;
 	};

@@ -1,6 +1,7 @@
 import 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
@@ -8,7 +9,7 @@ type StringifyBuffers<T extends unknown[]> = {
 
 declare global {
 	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
 
 		function getTextAsync(assetPath: string): Promise<string | undefined>;
 	}
@@ -39,9 +40,16 @@ declare module 'meteor/meteor' {
 			isDesktop: () => boolean;
 		}
 
-		const server: any;
+		const server: {
+			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat; connectionHandle: Meteor.Connection }>;
+			publish_handlers: {
+				meteor_autoupdate_clientVersions(): void;
+			};
+		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
+
+		function userAsync(): Promise<IUser | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -59,6 +67,42 @@ declare module 'meteor/meteor' {
 			methods: string[];
 		}
 
+		interface IDDPStream {
+			eventCallbacks: {
+				message: Array<(data: string) => void>;
+				reset: Array<() => void>;
+				disconnect: Array<() => void>;
+			};
+			socket?: {
+				onmessage: (data: { type: string; data: string }) => void;
+				_didMessage: (data: string) => void;
+				send: (data: string) => void;
+			};
+			_launchConnectionAsync?: () => void;
+			on: {
+				(key: 'message', callback: (data: string) => void): void;
+				(key: 'reset', callback: () => void): void;
+				(key: 'disconnect', callback: () => void): void;
+			};
+			disconnect(options?: { _permanent?: boolean; _error?: unknown }): void;
+
+			currentStatus: {
+				status: string;
+				connected: boolean;
+				retryCount: number;
+				retryTime?: number;
+				reason?: string;
+			};
+			statusListeners?: { changed(): void };
+			forEachCallback(name: string, cb: (callback: (...args: unknown[]) => void) => void): void;
+			send(data: string): void;
+			status(): IDDPStream['currentStatus'];
+			statusChanged(): void;
+			reconnect(options?: unknown): void;
+			disconnect(options?: { _permanent?: boolean; _error?: unknown }): void;
+			_lostConnection(error?: unknown): void;
+		}
+
 		interface IMeteorConnection {
 			httpHeaders: Record<string, any>;
 			referer: string;
@@ -66,26 +110,20 @@ declare module 'meteor/meteor' {
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;
+			_subsBeingRevived: Record<string, unknown>;
+			_methodsBlockingQuiescence: Record<string, unknown>;
+			_messagesBufferedUntilQuiescence: unknown[];
+			_outstandingMethodBlocks: unknown[];
 
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
-			_stream: {
-				eventCallbacks: {
-					message: Array<(data: string) => void>;
-				};
-				socket: {
-					onmessage: (data: { type: string; data: string }) => void;
-					_didMessage: (data: string) => void;
-					send: (data: string) => void;
-				};
-				_launchConnectionAsync: () => void;
-				allowConnection: () => void;
-				on: (key: 'message', callback: (data: string) => void) => void;
+			_stream: IDDPStream | undefined;
+
+			// Updated: onMessage is now inside _streamHandlers
+			_streamHandlers: {
+				onMessage(message: string): void;
+				onReset(): void;
 			};
-
-			_outstandingMethodBlocks: unknown[];
-
-			onMessage(message: string): void;
 
 			status(): {
 				connected: boolean;
@@ -94,6 +132,7 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+
 			subscribe(
 				id: string,
 				name: string,
@@ -106,6 +145,10 @@ declare module 'meteor/meteor' {
 					},
 				]
 			): SubscriptionHandle;
+
+			call(methodName: string, ...args: [...unknown, callback?: (error: Error | null, result: unknown) => void]): void;
+
+			setUserId(uid: string | null): void;
 		}
 
 		const connection: IMeteorConnection;
@@ -125,6 +168,16 @@ declare module 'meteor/meteor' {
 					config: (config: { onlineOnly: string[] }) => void;
 			  }
 			| undefined;
+
+		function _isPromise(obj: unknown): obj is Promise<unknown>;
+
+		function _runFresh(func: () => void): void;
+
+		class _SynchronousQueue {
+			queueTask(arg0: () => void): void;
+
+			drain(): unknown;
+		}
 	}
 
 	// eslint-disable-next-line no-var

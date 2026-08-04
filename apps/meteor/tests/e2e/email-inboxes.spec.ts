@@ -1,20 +1,18 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { AdminEmailInboxes, Utils } from './page-objects';
+import { AdminEmailInboxes } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('email-inboxes', () => {
 	let poAdminEmailInboxes: AdminEmailInboxes;
-	let poUtils: Utils;
 
 	const email = faker.internet.email();
 
 	test.beforeEach(async ({ page }) => {
 		poAdminEmailInboxes = new AdminEmailInboxes(page);
-		poUtils = new Utils(page);
 
 		await page.goto('/admin/email-inboxes');
 	});
@@ -42,10 +40,13 @@ test.describe.serial('email-inboxes', () => {
 		await expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
 	});
 
-	test('expect delete an email inbox', async () => {
-		await poAdminEmailInboxes.itemRow(email).click();
-		await poAdminEmailInboxes.btnDelete.click();
-		await poUtils.btnModalConfirmDelete.click();
-		await expect(poUtils.toastBarSuccess).toBeVisible();
+	test('expect delete an email inbox', async ({ page }) => {
+		await poAdminEmailInboxes.deleteEmailInboxByName(email);
+		// await poAdminEmailInboxes.itemRow(email).click();
+		// await poAdminEmailInboxes.btnDelete.click();
+		// await poUtils.btnModalConfirmDelete.click();
+		// await expect(poUtils.toastBarSuccess).toBeVisible();
+
+		await expect(page.locator('text=No results found')).toBeVisible();
 	});
 });

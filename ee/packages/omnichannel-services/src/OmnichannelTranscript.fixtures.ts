@@ -59,6 +59,17 @@ export const validSystemMessage = {
 	t: 'livechat-started' as MessageTypesValues,
 };
 
+export const validTranslatableSystemMessage = {
+	ts: '2022-11-21T16:00:00.000Z',
+	u: {
+		_id: '123',
+		name: 'Juanito De Ponce',
+		username: 'juanito.ponce',
+	},
+	msg: 'Conversation closed by user',
+	t: 'livechat-close' as MessageTypesValues,
+};
+
 export const invalidSystemMessage = {
 	ts: '2022-11-21T16:00:00.000Z',
 	u: {

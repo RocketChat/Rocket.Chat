@@ -1,17 +1,11 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
-import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-import { executeSetReaction } from '../../../app/reactions/server/setReaction';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -22,6 +16,18 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
+import { deleteMessage } from '../../lib/messages/deleteMessage';
+import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { updateMessage } from '../../lib/messages/updateMessage';
+import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
+import { settings } from '../../settings';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -42,7 +48,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private checkMAC: BeforeSaveCheckMAC;
 
-	async created() {
+	override async created() {
 		this.preventMention = new BeforeSavePreventMention();
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
@@ -84,8 +90,56 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(fromId, { rid, msg });
 	}
 
+	async saveMessageFromFederation({
+		fromId,
+		rid,
+		federation_event_id,
+		msg,
+		e2e_content,
+		file,
+		files,
+		attachments,
+		thread,
+		ts,
+	}: {
+		fromId: string;
+		rid: string;
+		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: 'm.megolm.v1.aes-sha2';
+			ciphertext: string;
+		};
+		file?: IMessage['file'];
+		files?: IMessage['files'];
+		attachments?: IMessage['attachments'];
+		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
+	}): Promise<IMessage> {
+		return executeSendMessage(
+			fromId,
+			{
+				rid,
+				msg,
+				...thread,
+				federation: {
+					eventId: federation_event_id,
+					version: 1,
+				},
+				...(file && { file }),
+				...(files && { files }),
+				...(attachments && { attachments }),
+				...(e2e_content && {
+					t: 'e2e',
+					content: e2e_content,
+				}),
+			},
+			{ ts },
+		);
+	}
+
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
-		return sendMessage(user, message, room, upsert);
+		return sendMessage(user, message, room, { upsert });
 	}
 
 	async deleteMessage(user: IUser, message: IMessage): Promise<void> {
@@ -152,6 +206,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('Failed to find the created message.');
 		}
 
+		if (Apps.self?.isLoaded()) {
+			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
+		}
+
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
 		void notifyOnRoomChangedById(rid);
 
@@ -162,10 +220,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message,
 		room,
 		user,
+		previewUrls,
+		parseUrls = true,
 	}: {
 		message: IMessage;
 		room: IRoom;
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
+		previewUrls?: string[];
+		parseUrls?: boolean;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
@@ -174,10 +236,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
 
-		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
+		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
+		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
+		if (!shouldBreakInVersion('9.0.0') && message.msg) {
+			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
+		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
+		message = await mentionServer.execute(message);
+		if (parseUrls) {
+			message.urls = parseUrlsInMessage(message, previewUrls);
+		}
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,
@@ -198,6 +268,17 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		return message;
+	}
+
+	// The actions made on this event should be asynchronous
+	// That means, caller should not expect to receive updated message
+	// after calling
+	async afterSave({ message }: { message: IMessage }): Promise<void> {
+		await OEmbed.rocketUrlParser(message);
+
+		// Since this will happen after the message is sent and ack on the UI
+		// we'll notify until after these hooks are finished
+		void notifyOnMessageChange({ id: message._id });
 	}
 
 	private getMarkdownConfig() {
@@ -254,5 +335,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}
+	}
+
+	async parseOEmbedUrl(url: string): Promise<{
+		urlPreview: MessageUrl;
+		foundMeta: boolean;
+	}> {
+		return OEmbed.parseUrl(url);
 	}
 }

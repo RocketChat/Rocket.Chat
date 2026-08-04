@@ -1,8 +1,12 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import type { IBanner } from '../IBanner';
+import * as z from 'zod';
 
-export interface Announcement extends IBanner {
-	selector?: {
-		roles?: string[];
-	};
-}
+import { IBannerSchema } from '../IBanner';
+import { TimestampSchema } from '../utils';
+
+export const AnnouncementSchema = IBannerSchema.extend({
+	createdBy: z.enum(['cloud', 'system']),
+	_updatedAt: TimestampSchema.optional(),
+	selector: z.object({ roles: z.array(z.string()) }).optional(),
+});
+
+export type Announcement = z.infer<typeof AnnouncementSchema>;

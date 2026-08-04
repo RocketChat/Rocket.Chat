@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv();
+import { ajvQuery } from '../Ajv';
 
 export type IntegrationsListProps = PaginatedRequest<{ name?: string; type?: string; query?: string }>;
 
@@ -38,4 +35,4 @@ const integrationsListSchema = {
 	additionalProperties: false,
 };
 
-export const isIntegrationsListProps = ajv.compile<IntegrationsListProps>(integrationsListSchema);
+export const isIntegrationsListProps = ajvQuery.compile<IntegrationsListProps>(integrationsListSchema);

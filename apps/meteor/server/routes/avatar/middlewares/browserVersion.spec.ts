@@ -11,7 +11,7 @@ const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().l
 	'meteor/ostrio:cookies': {
 		Cookies: CookiesMock,
 	},
-	'../../../../app/utils/server/getURL': {
+	'../../../lib/utils/getURL': {
 		getURL: () => '',
 	},
 });

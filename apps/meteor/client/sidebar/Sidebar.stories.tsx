@@ -1,14 +1,13 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 
 import Sidebar from './SidebarRegion';
 
 export default {
-	title: 'Sidebar',
 	component: Sidebar,
 } satisfies Meta<typeof Sidebar>;
 
@@ -31,7 +30,6 @@ const settings: Record<string, ISetting> = {
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
-	isLoading: false,
 	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
 	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
@@ -99,13 +97,17 @@ const userContextValue: ContextType<typeof UserContext> = {
 	queryRoom: () => [() => () => undefined, () => undefined],
 
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
-export const SidebarStory: StoryFn<typeof Sidebar> = () => <Sidebar />;
-SidebarStory.decorators = [
-	(fn) => (
-		<SettingsContext.Provider value={settingContextValue}>
-			<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>
-		</SettingsContext.Provider>
-	),
-];
+export const SidebarStory: StoryObj<typeof Sidebar> = {
+	render: () => <Sidebar />,
+
+	decorators: [
+		(fn) => (
+			<SettingsContext.Provider value={settingContextValue}>
+				<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>
+			</SettingsContext.Provider>
+		),
+	],
+};

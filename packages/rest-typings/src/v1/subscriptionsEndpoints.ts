@@ -1,5 +1,6 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+
+import { ajv, ajvQuery } from './Ajv';
 
 type SubscriptionsGet = { updatedSince?: string };
 
@@ -8,10 +9,6 @@ type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 const SubscriptionsGetSchema = {
 	type: 'object',
@@ -25,7 +22,7 @@ const SubscriptionsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetProps = ajv.compile<SubscriptionsGet>(SubscriptionsGetSchema);
+export const isSubscriptionsGetProps = ajvQuery.compile<SubscriptionsGet>(SubscriptionsGetSchema);
 
 const SubscriptionsGetOneSchema = {
 	type: 'object',
@@ -38,7 +35,7 @@ const SubscriptionsGetOneSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
+export const isSubscriptionsGetOneProps = ajvQuery.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
 	anyOf: [
@@ -107,7 +104,7 @@ const SubscriptionsUnreadSchema = {
 	],
 };
 
-export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
+export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {

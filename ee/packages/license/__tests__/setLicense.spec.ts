@@ -11,7 +11,7 @@ import { NotReadyForValidation } from '../src/errors/NotReadyForValidation';
 // Same license used on ci tasks so no I didnt leak it
 const VALID_LICENSE =
 	process.env.ENTERPRISE_LICENSE ||
-	'X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=';
+	'MK+bpK5NveUuNlWGaQXGoy+8b74Luet82M3ZGcBB8b5P9Y+m67NEtpW64dc1d5lEWi6d0nFjCjtCMneVD7bKxodz/Cml8URKEo5P7cQb/9wmeT0MzAhYNaRFZlIGkZ3ITF59pDV2u4HZuosEDJikVRwnaJ5ZoU/pOsHSPUPhTyGNIqLeKynODtUpfwDdIKEmHxpf2yVkKjgRiIJmbWjM6A4k+MNNYXWVXHzye7GggqWVg/ZcT7nKU1CCadpLhTJiIrgrrPzil1G5DQ4xnLs3Q2tu2dILSDiW5OYw/ywu2yCMicTjMq4MLL5SXDQJj6WoJzZ54HosbvsDzOXvsdC9gI1CjhPL2uRuvC8XLrzn3vL2UgXnifzD1VrLTtdZ+aSADveqtlzYlRWtqoUFBbNw8o+YVHdhbZGR0beMoAyRbHi5EMpxpad3L+NyztUIT/Uh/IjQ/C2SQZ6jB0GKPBOPxFLN56FNhTGrffLFR++TVoBu0Iquc7kajWkNit3bVbZvbx+oFcVW2PcjQ/+i2jpJjbgtUFUKrTKxGMAXTWoDzIQQ35zNzGAy268IM4Ymp5JmsVEnBOEUkbF9yx6fzkO6xZhpsHf0muklnW0kA+Tlore/TUrBWh1/RwWlQeZlxM5NyWoRM5onQmr/k/4BmObtL1Hpmbk8oMG29z89xtE9y/4=';
 
 describe('License set license procedures', () => {
 	describe('Invalid formats', () => {
@@ -140,7 +140,7 @@ describe('License set license procedures', () => {
 			const mocked = new MockedLicenseBuilder();
 			const oldToken = await mocked.sign();
 
-			const newToken = await mocked.withGratedModules(['livechat-enterprise', 'chat.rocket.test-addon']).sign();
+			const newToken = await mocked.withGrantedModules(['livechat-enterprise', 'chat.rocket.test-addon']).sign();
 
 			await expect(license.setLicense(oldToken)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);
@@ -160,7 +160,7 @@ describe('License set license procedures', () => {
 			license.onValidateLicense(validateCallback);
 			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);
-			expect(validateCallback).toBeCalledTimes(1);
+			expect(validateCallback).toHaveBeenCalledTimes(1);
 		});
 
 		describe('License limits', () => {
@@ -198,7 +198,7 @@ describe('License set license procedures', () => {
 					await expect(licenseManager.setLicense(newToken)).resolves.toBe(true);
 					expect(licenseManager.hasValidLicense()).toBe(false);
 
-					expect(invalidationCallback).toBeCalledTimes(1);
+					expect(invalidationCallback).toHaveBeenCalledTimes(1);
 				});
 			});
 		});

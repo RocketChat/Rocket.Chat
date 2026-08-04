@@ -5,10 +5,10 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditDepartment from './EditDepartment';
-import EnterpriseDepartmentsModal from '../../../components/Omnichannel/modals/EnterpriseDepartmentsModal';
 import PageSkeleton from '../../../components/PageSkeleton';
+import EnterpriseDepartmentsModal from '../modals/EnterpriseDepartmentsModal';
 
-type NewDepartmentProps = {
+export type NewDepartmentProps = {
 	id?: string;
 };
 

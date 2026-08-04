@@ -9,7 +9,7 @@ export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageRe
 		super(db, 'message_reads', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { ls: 1 } }];
 	}
 
@@ -50,13 +50,13 @@ export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageRe
 			tmid,
 			userId: { $in: userIds },
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async countByThreadId(tmid: IMessage['_id']): Promise<number> {
 		const query = {
 			tmid,
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 }

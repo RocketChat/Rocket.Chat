@@ -3,16 +3,17 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { settings } from '../../../app/settings/server/cached';
+import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
-const STATUS_MAP: Record<UserStatus, 0 | 1 | 2 | 3> = {
+const STATUS_MAP: Record<UserStatus, PresenceStatusCode> = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
@@ -45,8 +46,8 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.forceLogout', (uid) => {
-			notifications.notifyUserInThisInstance(uid, 'force_logout');
+		service.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout', sessionId);
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
@@ -144,6 +145,10 @@ export class ListenersModule {
 			},
 		);
 
+		service.onEvent('user.media-signal', ({ userId, signal }: { userId: string; signal: ServerMediaSignal }) => {
+			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
+		});
+
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
 			(notifications.notifyRoom as any)(rid, callId);
@@ -152,8 +157,12 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
-			const { _id, username, name, status, statusText, roles } = user;
+			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
+				return;
+			}
+
+			if (settings.get('Presence_broadcast_disabled')) {
 				return;
 			}
 
@@ -163,14 +172,29 @@ export class ListenersModule {
 				diff: {
 					status,
 					...(statusText && { statusText }),
+					...(statusSource && { statusSource }),
+					...(statusExpiresAt && { statusExpiresAt }),
 				},
-				unset: {},
+				unset: {
+					...(!statusText && { statusText: 1 }),
+					...(!statusSource && { statusSource: 1 }),
+					...(!statusExpiresAt && { statusExpiresAt: 1 }),
+				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [
+				_id,
+				username,
+				STATUS_MAP[status],
+				statusText,
+				name,
+				roles,
+				statusSource,
+				statusExpiresAt,
+			]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);
 			}
 		});
 
@@ -178,6 +202,10 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
+		});
+
+		service.onEvent('user.activity', ({ isTyping, roomId, user }) => {
+			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
 		});
 
 		service.onEvent('watch.messages', async ({ message }) => {
@@ -223,49 +251,49 @@ export class ListenersModule {
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
-			if (clientAction === 'removed') {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
-					_id: inquiry._id,
-					clientAction,
-				});
 
-				if (inquiry.department) {
-					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
+			const isOnlyQueueMetadataUpdate = (diff: Record<string, unknown> | undefined): boolean => {
+				if (!diff) {
+					return false;
 				}
 
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
-					type,
-					...inquiry,
-				});
-			}
+				const queueMetadataKeys = ['lockedAt', 'locked', '_updatedAt'];
+				return Object.keys(diff).length === queueMetadataKeys.length && queueMetadataKeys.every((key) => diff.hasOwnProperty(key));
+			};
 
-			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
-			if (
-				clientAction === 'updated' &&
-				diff?.hasOwnProperty('lockedAt') &&
-				diff?.hasOwnProperty('locked') &&
-				diff?.hasOwnProperty('_updatedAt') &&
-				Object.keys(diff).length === 3
-			) {
-				return;
-			}
-
+			// Always notify the specific inquiry channel
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
-				...inquiry,
+				_id: inquiry._id,
+				...(clientAction !== 'removed' && { ...inquiry }),
 				clientAction,
 			});
 
-			if (!inquiry.department) {
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+			// Skip further notifications if it's just a queue metadata update
+			if (clientAction === 'updated' && isOnlyQueueMetadataUpdate(diff)) {
+				return;
+			}
+
+			// Notify the defaultAgent if exists
+			if (inquiry.defaultAgent?.agentId) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(`agent/${inquiry.defaultAgent.agentId}`, {
 					type,
 					...inquiry,
 				});
 			}
 
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
+			// Prioritize department-specific channel over public
+			if (inquiry.department) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, {
+					type,
+					...inquiry,
+				});
+			}
 
-			if (clientAction === 'updated' && !diff?.department) {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+			if (!inquiry.department && !inquiry.defaultAgent?.agentId) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+					type,
+					...inquiry,
+				});
 			}
 		});
 
@@ -382,10 +410,6 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 
-		service.onEvent('voip.events', (userId, data): void => {
-			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
-		});
-
 		service.onEvent('call.callerhangup', (userId, data): void => {
 			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});
@@ -439,9 +463,6 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('connector.statuschanged', (enabled): void => {
-			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
-		});
 		service.onEvent('omnichannel.room', (roomId, data): void => {
 			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
@@ -497,13 +518,6 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
-		});
-
-		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
-			notifications.streamRoomMessage.emit(roomId, message, user, room);
-		});
-		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
-			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

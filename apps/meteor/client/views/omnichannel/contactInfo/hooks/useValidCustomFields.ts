@@ -1,14 +1,15 @@
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useCustomFieldsQuery } from './useCustomFieldsQuery';
+import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 
-const checkIsVisibleAndScopeVisitor = (key: string, customFields: Record<string, string | unknown>[]) => {
+const checkIsVisibleAndCorrectScope = (key: string, customFields: ILivechatCustomField[], scope: 'visitor' | 'room') => {
 	const field = customFields?.find(({ _id }) => _id === key);
-	return field?.visibility === 'visible' && field?.scope === 'visitor';
+	return field?.visibility === 'visible' && field?.scope === scope;
 };
 
-export const useValidCustomFields = (userCustomFields: Record<string, string | unknown> | undefined) => {
+export const useValidCustomFields = (userCustomFields: Record<string, string | unknown> | undefined, scope: 'visitor' | 'room') => {
 	const { data, isError } = useCustomFieldsQuery();
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
@@ -17,8 +18,10 @@ export const useValidCustomFields = (userCustomFields: Record<string, string | u
 			return [];
 		}
 
-		return Object.entries(userCustomFields).filter(([key, value]) => checkIsVisibleAndScopeVisitor(key, data?.customFields) && value);
-	}, [data?.customFields, userCustomFields, canViewCustomFields, isError]);
+		return Object.entries(userCustomFields).filter(
+			([key, value]) => checkIsVisibleAndCorrectScope(key, data?.customFields, scope) && value,
+		);
+	}, [canViewCustomFields, userCustomFields, data?.customFields, isError, scope]);
 
 	return customFieldEntries;
 };

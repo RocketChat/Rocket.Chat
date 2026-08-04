@@ -1,19 +1,20 @@
 import type { App } from '@rocket.chat/core-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
-import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
+import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
+import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
+import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
 
 type FetchMarketplaceAppsParams = {
 	endUserID?: string;
 };
 
 const markdownObject = z.object({
-	raw: z.string(),
-	rendered: z.string(),
+	raw: z.string().optional(),
+	rendered: z.string().optional(),
 });
 
 const fetchMarketplaceAppsSchema = z.array(
@@ -53,7 +54,7 @@ const fetchMarketplaceAppsSchema = z.array(
 			classFile: z.string(),
 			iconFile: z.string(),
 			iconFileData: z.string(),
-			status: z.enum(['submitted', 'author-rejected', 'author-approved', 'rejected', 'approved']),
+			status: z.enum(['submitted', 'author-rejected', 'author-approved', 'rejected', 'approved', 'published']),
 			reviewedNote: z.string().optional(),
 			rejectionNote: z.string().optional(),
 			changesNote: z.string().optional(),
@@ -66,20 +67,20 @@ const fetchMarketplaceAppsSchema = z.array(
 		addonId: z.string().optional(),
 		isEnterpriseOnly: z.boolean(),
 		isBundle: z.boolean(),
-		bundedAppIds: z.array(z.string()),
+		bundledAppsIn: z.array(z.string()).optional(),
 		bundledIn: z.array(
 			z.object({
 				bundleId: z.string(),
 				bundleName: z.string(),
-				addonTierId: z.string(),
+				addonTierId: z.string().optional(),
 			}),
 		),
 		isPurchased: z.boolean(),
 		isSubscribed: z.boolean(),
 		subscriptionInfo: z
 			.object({
-				typeOf: z.enum(['app', 'service']),
-				status: z.enum(['trialing', 'active', 'cancelled', 'cancelling', 'pastDue']),
+				typeOf: z.enum(['app', 'service', '']),
+				status: z.enum(['trialing', 'active', 'cancelled', 'cancelling', 'pastDue', '']),
 				statusFromBilling: z.boolean(),
 				isSeatBased: z.boolean(),
 				seats: z.number(),
@@ -98,27 +99,29 @@ const fetchMarketplaceAppsSchema = z.array(
 			.optional(),
 		price: z.number(),
 		purchaseType: z.enum(['', 'buy', 'subscription']),
-		pricingPlans: z.array(
-			z.object({
-				id: z.string(),
-				enabled: z.boolean(),
-				price: z.number(),
-				trialDays: z.number(),
-				strategy: z.enum(['once', 'monthly', 'yearly']),
-				isPerSeat: z.boolean(),
-				tiers: z
-					.array(
-						z.object({
-							perUnit: z.boolean(),
-							minimum: z.number(),
-							maximum: z.number(),
-							price: z.number(),
-							refId: z.string().optional(),
-						}),
-					)
-					.optional(),
-			}),
-		),
+		pricingPlans: z
+			.array(
+				z.object({
+					id: z.string(),
+					enabled: z.boolean(),
+					price: z.number(),
+					trialDays: z.number(),
+					strategy: z.enum(['once', 'monthly', 'yearly']),
+					isPerSeat: z.boolean(),
+					tiers: z
+						.array(
+							z.object({
+								perUnit: z.boolean(),
+								minimum: z.number(),
+								maximum: z.number(),
+								price: z.number(),
+								refId: z.string().optional(),
+							}),
+						)
+						.optional(),
+				}),
+			)
+			.optional(),
 		isUsageBased: z.boolean().optional(),
 		requestedEndUser: z.boolean().optional(),
 		requested: z.boolean().optional(),
@@ -128,8 +131,16 @@ const fetchMarketplaceAppsSchema = z.array(
 	}),
 );
 
+/**
+ * Fetches marketplace apps available to the workspace.
+ *
+ * @param endUserID - Optional end-user identifier used to filter apps returned by the marketplace.
+ * @returns An array of marketplace `App` objects describing available apps and their latest release metadata.
+ * @throws MarketplaceConnectionError when the marketplace cannot be reached.
+ * @throws MarketplaceUnsupportedVersionError when the marketplace reports an unsupported client version.
+ * @throws MarketplaceAppsError for marketplace-side errors, including invalid apps engine version, internal marketplace errors, or a generic failure to fetch apps.
+ */
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
-	const baseUrl = Apps.getMarketplaceUrl();
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
 	if (token) {
@@ -138,13 +149,21 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	let request;
 	try {
-		request = await fetch(`${baseUrl}/v1/apps`, {
+		request = await Apps.getMarketplaceClient().fetch(`v1/apps`, {
 			headers,
+			ignoreSsrfValidation: false,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			params: {
 				...(endUserID && { endUserID }),
 			},
 		});
 	} catch (error) {
+		// Offline (air-gapped) licenses reject before any request is made; keep the
+		// typed error so the REST layer can report the real reason instead of a
+		// generic connectivity failure.
+		if (error instanceof CloudOfflineLicenseError) {
+			throw error;
+		}
 		throw new MarketplaceConnectionError('Marketplace_Bad_Marketplace_Connection');
 	}
 
@@ -156,7 +175,12 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	const response = await request.json();
 
-	Apps.getRocketChatLogger().error('Failed to fetch marketplace apps', response);
+	Apps.getRocketChatLogger().error({ msg: 'Error fetching marketplace apps', status: request.status, response });
+
+	// TODO: Refactor cloud to return a proper error code on unsupported version
+	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {
+		throw new MarketplaceUnsupportedVersionError();
+	}
 
 	if (request.status === 400 && response.code === 200) {
 		throw new MarketplaceAppsError('Marketplace_Invalid_Apps_Engine_Version');

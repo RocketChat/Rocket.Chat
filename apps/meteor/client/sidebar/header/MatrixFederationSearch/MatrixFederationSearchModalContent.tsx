@@ -1,8 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, SearchInput, Select } from '@rocket.chat/fuselage';
+import { Box, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ import FederatedRoomListErrorBoundary from './FederatedRoomListErrorBoundary';
 import MatrixFederationManageServersModal from './MatrixFederationManageServerModal';
 import MatrixFederationSearch from './MatrixFederationSearch';
 
-type MatrixFederationSearchModalContentProps = {
+export type MatrixFederationSearchModalContentProps = {
 	servers: Array<{
 		name: string;
 		default: boolean;
@@ -34,7 +34,7 @@ const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: 
 
 	const { t } = useTranslation();
 
-	const serverOptions = useMemo(() => servers.map((server): SelectOption => [server.name, server.name]), [servers]);
+	const serverOptions = useMemo<Array<SelectOption>>(() => servers.map((server): SelectOption => [server.name, server.name]), [servers]);
 
 	const manageServers = useCallback(() => {
 		setModal(
@@ -45,19 +45,18 @@ const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: 
 	return (
 		<>
 			<Box display='flex' flexDirection='row'>
-				<Box mie={4} flexGrow={0} flexShrink={4}>
+				<Box marginInlineEnd={4} flexGrow={0} flexShrink={4}>
 					<Select options={serverOptions} value={serverName} onChange={(value) => setServerName(String(value))} />
 				</Box>
-				<SearchInput
-					aria-label={t('Search_rooms')}
+				<TextInput
 					placeholder={t('Search_rooms')}
 					flexGrow={4}
 					flexShrink={0}
 					value={roomName}
-					onChange={(e: FormEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
 			</Box>
-			<Box is='a' role='button' display='flex' flexDirection='row' mbe={16} onClick={manageServers}>
+			<Box is='a' display='flex' flexDirection='row' marginBlockEnd={16} onClick={manageServers}>
 				{t('Manage_server_list')}
 			</Box>
 			<FederatedRoomListErrorBoundary>

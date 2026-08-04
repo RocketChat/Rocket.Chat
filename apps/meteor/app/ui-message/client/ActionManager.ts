@@ -1,6 +1,7 @@
 import type { DistributiveOmit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { t } from 'i18next';
@@ -9,7 +10,6 @@ import { lazy } from 'react';
 
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 import * as banners from '../../../client/lib/banners';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { sdk } from '../../utils/client/lib/SDKClient';

@@ -1,36 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { FindOptions } from 'mongodb';
 import { useTranslation } from 'react-i18next';
 
-import { Messages } from '../../../../../app/models/client';
 import { downloadJsonAs } from '../../../../lib/download';
+import { Messages } from '../../../../stores';
 import { useRoom } from '../../contexts/RoomContext';
-
-const messagesFields: FindOptions<IMessage> = {
-	projection: {
-		'_id': 1,
-		'ts': 1,
-		'u': 1,
-		'msg': 1,
-		'_updatedAt': 1,
-		'tlm': 1,
-		'replies': 1,
-		'tmid': 1,
-		'attachments.ts': 1,
-		'attachments.title': 1,
-		'attachments.title_link': 1,
-		'attachments.title_link_download': 1,
-		'attachments.image_dimensions': 1,
-		'attachments.image_preview': 1,
-		'attachments.image_url': 1,
-		'attachments.image_type': 1,
-		'attachments.image_size': 1,
-		'attachments.type': 1,
-		'attachments.description': 1,
-	},
-};
 
 export const useDownloadExportMutation = () => {
 	const { t } = useTranslation();
@@ -38,14 +13,36 @@ export const useDownloadExportMutation = () => {
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const filterMessages = Messages.use((state) => state.filter);
+
 	return useMutation({
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {
-			const messages = Messages.find(
-				{
-					$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
-				},
-				messagesFields,
-			).fetch();
+			const messages = filterMessages((record) => mids.includes(record._id) || (!!record.tmid && mids.includes(record.tmid))).map(
+				({ _id, ts, u, msg, _updatedAt, tlm, replies, tmid, attachments }) => ({
+					_id,
+					ts,
+					u,
+					msg,
+					_updatedAt,
+					tlm,
+					replies,
+					tmid,
+					attachments:
+						attachments?.map((attachment) => ({
+							ts: attachment.ts,
+							title: attachment.title,
+							title_link: attachment.title_link,
+							title_link_download: attachment.title_link_download,
+							...('image_dimensions' in attachment && { image_dimensions: attachment.image_dimensions }),
+							...('image_preview' in attachment && { image_preview: attachment.image_preview }),
+							...('image_url' in attachment && { image_url: attachment.image_url }),
+							...('image_type' in attachment && { image_type: attachment.image_type }),
+							...('image_size' in attachment && { image_size: attachment.image_size }),
+							...('type' in attachment && { type: attachment.type }),
+							description: attachment.description,
+						})) ?? [],
+				}),
+			);
 
 			const fileData = {
 				roomId: room._id,

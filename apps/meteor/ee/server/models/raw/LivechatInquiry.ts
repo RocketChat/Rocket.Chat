@@ -16,7 +16,10 @@ declare module '@rocket.chat/model-typings' {
 
 // Note: Expect a circular dependency error here 😓
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
-	setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<null | WithId<ILivechatInquiryRecord>> {
+	override setSlaForRoom(
+		rid: string,
+		sla: { estimatedWaitingTimeQueue: number; slaId: string },
+	): Promise<null | WithId<ILivechatInquiryRecord>> {
 		const { estimatedWaitingTimeQueue, slaId } = sla;
 
 		return this.findOneAndUpdate(
@@ -30,7 +33,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	unsetSlaForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
+	override unsetSlaForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{
@@ -44,7 +47,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult> {
+	override bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{
 				rid: { $in: roomIds },
@@ -60,7 +63,10 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<null | WithId<ILivechatInquiryRecord>> {
+	override setPriorityForRoom(
+		rid: string,
+		priority: Pick<ILivechatPriority, '_id' | 'sortItem'>,
+	): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{
@@ -72,7 +78,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	unsetPriorityForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
+	override unsetPriorityForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{

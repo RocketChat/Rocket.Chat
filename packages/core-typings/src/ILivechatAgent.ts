@@ -14,4 +14,13 @@ export interface ILivechatAgent extends IUser {
 	lastRoutingTime: Date;
 	livechatStatusSystemModified?: boolean;
 	openBusinessHours?: string[];
+	agentLockedAt?: Date;
+	agentLocked?: boolean;
 }
+
+export type AvailableAgentsAggregation = {
+	agentId: string;
+	username: string;
+	maxChatsForAgent: number;
+	queueInfo: { chats: number; chatsForDepartment?: number };
+};

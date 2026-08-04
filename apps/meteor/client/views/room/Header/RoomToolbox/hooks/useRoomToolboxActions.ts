@@ -1,8 +1,7 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxContextValue } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
-import type { RoomToolboxContextValue } from '../../../contexts/RoomToolboxContext';
 
 type MenuActionsProps = {
 	id: string;
@@ -21,13 +20,12 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
-			'content': t(item.title),
-			'onClick':
+			content: t(item.title),
+			onClick:
 				item.action ??
 				((): void => {
 					openTab(item.id);
 				}),
-			'data-qa-id': `ToolBoxAction-${item.icon}`,
 			...item,
 		}))
 		.reduce((acc, item) => {

@@ -1,5 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
 
-	const handleLeave = useEffectEvent(() => {
+	const handleLeave = useStableCallback(() => {
 		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom({ roomId: rid });
@@ -52,7 +52,7 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, name)}
+				text={t(warnText as TranslationKey, { roomName: name })}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}

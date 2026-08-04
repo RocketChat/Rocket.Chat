@@ -1,3 +1,3 @@
 export * from './helpers';
-export * from './types';
-export { emoji } from './lib';
+export type * from './types';
+export { emoji, emojiEmitter } from './lib';

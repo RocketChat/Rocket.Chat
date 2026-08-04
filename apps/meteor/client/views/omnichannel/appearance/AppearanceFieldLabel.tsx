@@ -4,23 +4,23 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
+export type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
 	premium?: boolean;
 	children: string;
 };
 
-const AppearanceFieldLabel = ({ children, premium = false }: AppearanceFieldLabelProps) => {
+const AppearanceFieldLabel = ({ children, premium = false, ...props }: AppearanceFieldLabelProps) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const shouldDisableEnterprise = premium && !hasLicense;
 
 	if (!shouldDisableEnterprise) {
-		return <FieldLabel>{children}</FieldLabel>;
+		return <FieldLabel {...props}>{children}</FieldLabel>;
 	}
 
 	return (
-		<FieldLabel>
-			<Box is='span' mie={4}>
+		<FieldLabel {...props}>
+			<Box is='span' marginInlineEnd={4}>
 				{children}
 			</Box>
 			<Tag variant='featured'>{t('Premium')}</Tag>

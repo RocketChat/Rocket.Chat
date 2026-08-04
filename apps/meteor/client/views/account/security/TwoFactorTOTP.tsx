@@ -1,8 +1,8 @@
-import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentPropsWithoutRef } from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
+import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
@@ -15,19 +15,24 @@ type TwoFactorTOTPFormData = {
 	authCode: string;
 };
 
-type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
+export type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
 
-const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
+const isInvalidTotpError = (error: unknown): boolean => {
+	const { error: errorCode, errorType } = (error ?? {}) as { error?: string; errorType?: string };
+	return errorCode === 'invalid-totp' || errorType === 'invalid-totp';
+};
+
+const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
 	const setModal = useSetModal();
 
-	const enableTotpFn = useMethod('2fa:enable');
-	const disableTotpFn = useMethod('2fa:disable');
-	const verifyCodeFn = useMethod('2fa:validateTempToken');
-	const checkCodesRemainingFn = useMethod('2fa:checkCodesRemaining');
-	const regenerateCodesFn = useMethod('2fa:regenerateCodes');
+	const enableTotpFn = useEndpoint('POST', '/v1/users.enableTotp');
+	const disableTotpFn = useEndpoint('POST', '/v1/users.disableTotp');
+	const verifyCodeFn = useEndpoint('POST', '/v1/users.validateTotp');
+	const checkCodesRemainingFn = useEndpoint('GET', '/v1/users.totpCodesRemaining');
+	const regenerateCodesFn = useEndpoint('POST', '/v1/users.regenerateTotpCodes');
 
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
 	const [qrCode, setQrCode] = useSafely(useState<string>());
@@ -51,7 +56,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		updateCodesRemaining();
 	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
 
-	const handleEnableTotp = useCallback(async () => {
+	const enableTotp = useStableCallback(async () => {
 		try {
 			const result = await enableTotpFn();
 
@@ -62,96 +67,115 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, enableTotpFn, setQrCode, setRegisteringTotp, setTotpSecret]);
+	});
 
-	const handleDisableTotp = useCallback(async () => {
+	const disableTotp = useStableCallback(async () => {
+		if (!totpEnabled) {
+			setRegisteringTotp(false);
+
+			return;
+		}
+
 		const onDisable = async (authCode: string): Promise<void> => {
 			try {
-				const result = await disableTotpFn(authCode);
+				const { disabled } = await disableTotpFn({ code: authCode });
 
-				if (!result) {
-					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+				if (!disabled) {
+					dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+
+					return;
 				}
 
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+
 			closeModal();
 		};
 
 		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
-	}, [closeModal, disableTotpFn, dispatchToastMessage, setModal, t]);
+	});
+
+	const handleToggleTotp = useStableCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.currentTarget?.checked) {
+			void enableTotp();
+		} else {
+			void disableTotp();
+		}
+	});
+
+	const totpId = useId();
+	const totpCodeId = useId();
 
 	const handleVerifyCode = useCallback(
 		async ({ authCode }: TwoFactorTOTPFormData) => {
 			try {
-				const result = await verifyCodeFn(authCode);
+				const result = await verifyCodeFn({ code: authCode });
 
-				if (!result) {
+				setRegisteringTotp(false);
+				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
+
+				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_enabled') });
+			} catch (error) {
+				if (isInvalidTotpError(error)) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
-
-				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
-			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn],
+		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn, setRegisteringTotp],
 	);
 
 	const handleRegenerateCodes = useCallback(() => {
 		const onRegenerate = async (authCode: string): Promise<void> => {
 			try {
-				const result = await regenerateCodesFn(authCode);
+				const { codes } = await regenerateCodesFn({ code: authCode });
 
-				if (!result) {
+				setModal(<BackupCodesModal codes={codes} onClose={closeModal} />);
+			} catch (error) {
+				if (isInvalidTotpError(error)) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
-				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
-			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 
-		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
-	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
+		setModal(<TwoFactorTotpModal onDismiss={() => undefined} onConfirm={onRegenerate} onClose={closeModal} />);
+	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('Two-factor_authentication_via_TOTP')}</Box>
-				{!totpEnabled && !registeringTotp && (
-					<>
-						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>
-						<Button primary onClick={handleEnableTotp}>
-							{t('Enable_two-factor_authentication')}
-						</Button>
-					</>
-				)}
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={totpId}>{t('Two-factor_authentication_via_TOTP')}</FieldLabel>
+						<ToggleSwitch id={totpId} checked={registeringTotp || totpEnabled} onChange={handleToggleTotp} />
+					</FieldRow>
+				</Field>
 				{!totpEnabled && registeringTotp && (
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
 						<TextCopy text={totpSecret || ''} />
-						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
-						<Box display='flex' flexDirection='row' w='full'>
-							<TextInput placeholder={t('Enter_authentication_code')} {...register('authCode')} />
-							<Button primary onClick={handleSubmit(handleVerifyCode)}>
-								{t('Verify')}
-							</Button>
-						</Box>
+						<Box marginInlineStart='-16px' marginBlock='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
+						<Field>
+							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
+							<FieldRow>
+								<TextInput id={totpCodeId} marginInlineEnd='8px' {...register('authCode')} />
+								<Button primary onClick={handleSubmit(handleVerifyCode)}>
+									{t('Verify')}
+								</Button>
+							</FieldRow>
+						</Field>
 					</>
 				)}
 				{totpEnabled && (
 					<>
-						<Button danger onClick={handleDisableTotp}>
-							{t('Disable_two-factor_authentication')}
-						</Button>
-						<Box fontScale='p2m' mbs={8}>
+						<Box fontScale='p2m' marginBlockStart={8}>
 							{t('Backup_codes')}
 						</Box>
-						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>
+						<Box color='font-secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>
 						<Button onClick={handleRegenerateCodes}>{t('Regenerate_codes')}</Button>
 					</>
 				)}

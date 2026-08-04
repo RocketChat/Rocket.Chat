@@ -2,14 +2,14 @@ import type { TextObject } from '@rocket.chat/ui-kit';
 
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
-const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
-  const { t } = useAppTranslation();
+export type PlainTextElementProps = { textObject: TextObject };
 
-  const text = textObject.i18n
-    ? t(textObject.i18n.key, { ...textObject.i18n.args })
-    : textObject.text;
+const PlainTextElement = ({ textObject }: PlainTextElementProps) => {
+	const { t } = useAppTranslation();
 
-  return <>{text}</>;
+	const text = textObject.i18n ? t(textObject.i18n.key, { ...textObject.i18n.args }) : textObject.text;
+
+	return <>{text}</>;
 };
 
 export default PlainTextElement;

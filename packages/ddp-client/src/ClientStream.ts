@@ -121,7 +121,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 
 		const stop = () => {
 			s();
-			self.unsubscribe(id);
+			void self.unsubscribe(id);
 		};
 
 		const result: Subscription = {

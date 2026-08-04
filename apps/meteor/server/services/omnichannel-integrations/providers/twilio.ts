@@ -1,14 +1,13 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request } from 'express';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
-import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { i18n } from '../../../lib/i18n';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fileUploadIsValidContentType } from '../../../lib/utils/restrictions';
+import { settings } from '../../../settings';
 
 type TwilioData = {
 	From: string;
@@ -79,7 +78,7 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (isNaN(numMedia)) {
-			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
+			SystemLogger.error({ msg: 'Error parsing NumMedia', numMedia: data.NumMedia });
 			return returnData;
 		}
 
@@ -115,7 +114,7 @@ export class Twilio implements ISMSProvider {
 			return twilio(sid, token);
 		} catch (error) {
 			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
-			SystemLogger.error(`(Twilio) -> ${error}`);
+			SystemLogger.error({ msg: '(Twilio) ->', err: error });
 		}
 	}
 
@@ -158,7 +157,7 @@ export class Twilio implements ISMSProvider {
 
 		if (reason) {
 			await notifyAgent(userId, rid, reason);
-			SystemLogger.error(`(Twilio) -> ${reason}`);
+			SystemLogger.error({ msg: '(Twilio) ->', reason });
 			return '';
 		}
 
@@ -220,7 +219,7 @@ export class Twilio implements ISMSProvider {
 
 			if (result.errorCode) {
 				await notifyAgent(userId, rid, result.errorMessage);
-				SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+				SystemLogger.error({ msg: '(Twilio) ->', errorCode: result.errorCode });
 			}
 
 			return {
@@ -245,7 +244,16 @@ export class Twilio implements ISMSProvider {
 		};
 	}
 
-	isRequestFromTwilio(signature: string, request: Request): boolean {
+	private getUrl(url: string, siteUrl: string): string {
+		const baseUrl = new URL(url);
+		const newUrl = new URL(siteUrl);
+		baseUrl.protocol = newUrl.protocol;
+		baseUrl.host = newUrl.host;
+
+		return baseUrl.toString();
+	}
+
+	async isRequestFromTwilio(signature: string, request: Request, requestBody: unknown): Promise<boolean> {
 		const authToken = settings.get<string>('SMS_Twilio_authToken');
 		let siteUrl = settings.get<string>('Site_Url');
 		if (siteUrl.endsWith('/')) {
@@ -253,23 +261,23 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (!authToken || !siteUrl) {
-			SystemLogger.error(`(Twilio) -> URL or Twilio token not configured.`);
+			SystemLogger.error('(Twilio) -> URL or Twilio token not configured.');
 			return false;
 		}
 
-		const twilioUrl = request.originalUrl ? `${siteUrl}${request.originalUrl}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+		const twilioUrl = request.url ? this.getUrl(request.url, siteUrl) : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
 
-		return twilio.validateRequest(authToken, signature, twilioUrl, request.body);
+		return twilio.validateRequest(authToken, signature, twilioUrl, requestBody as Record<string, any>);
 	}
 
-	validateRequest(request: Request): boolean {
+	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
-		if (process.env.TEST_MODE === 'true') {
+		if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 			return true;
 		}
-		const twilioHeader = request.headers['x-twilio-signature'] || '';
+		const twilioHeader = request.headers.get('x-twilio-signature') || '';
 		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
-		return this.isRequestFromTwilio(twilioSignature, request);
+		return this.isRequestFromTwilio(twilioSignature, request, requestBody);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {

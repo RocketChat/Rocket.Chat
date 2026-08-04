@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
@@ -8,15 +8,17 @@ import moment from 'moment';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
+	deleteVisitor,
+	makeAgentAvailable,
 	placeRoomOnHold,
 	sendAgentMessage,
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { createAnOnlineAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, createBotAgent } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
@@ -31,9 +33,12 @@ describe('LIVECHAT - dashboards', function () {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 	});
 
 	let department: ILivechatDepartment;
+	let roomList: IOmnichannelRoom[];
+	let visitorList: ILivechatVisitor[];
 	const agents: {
 		credentials: Credentials;
 		user: IUser & { username: string };
@@ -109,9 +114,10 @@ describe('LIVECHAT - dashboards', function () {
 			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 		});
 
-		const results = await Promise.all(promises);
+		const chatInfo = await Promise.all(promises);
 
-		const chatInfo = results.map((result) => ({ room: result.room, visitor: result.visitor }));
+		roomList = chatInfo.map((info) => info.room);
+		visitorList = chatInfo.map((info) => info.visitor);
 
 		// simulate messages being exchanged between agents and visitors
 		await simulateRealtimeConversation(chatInfo);
@@ -129,6 +135,17 @@ describe('LIVECHAT - dashboards', function () {
 		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
 
 		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
+	});
+
+	after(async () => {
+		if (!IS_EE) {
+			return;
+		}
+		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.allSettled(visitorList.map((visitor) => deleteVisitor(visitor.token)));
+		await deleteDepartment(department._id);
+		await Promise.allSettled(agents.map((agent) => deleteUser(agent.user)));
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -550,6 +567,8 @@ describe('LIVECHAT - dashboards', function () {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
+			await Promise.all(agents.map((agent) => makeAgentAvailable(agent.credentials)));
+
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
 				.query({ start, end, departmentId: department._id })
@@ -704,6 +723,28 @@ describe('LIVECHAT - dashboards', function () {
 			expect(chatDurationValues.longest).to.be.greaterThan(avgClosedRoomChatDuration);
 			expect(chatDurationValues.longest).to.be.lessThan(avgClosedRoomChatDuration + 20);
 		});
+	});
+
+	describe('livechat/analytics/dashboards/charts-data', () => {
+		it('should return the correct data structure for the charts', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts-data'))
+				.query({ chartName: 'Total_conversations', start: yesterday, end: today })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+
+			expect(result.body).to.have.property('chartLabel', 'Total_conversations');
+			expect(result.body).to.have.property('dataLabels').to.be.an('array');
+			expect(result.body).to.have.property('dataPoints').to.be.an('array');
+		});
+
+		// it('should return the correct data structure but empty for unavailable data');
 	});
 
 	describe('livechat/analytics/agent-overview', () => {
@@ -923,20 +964,37 @@ describe('LIVECHAT - dashboards', function () {
 	describe('[livechat/analytics/agent-overview] - Average first response time', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 		let forwardAgent: { credentials: Credentials; user: IUser & { username: string } };
+		let botAgent: { credentials: Credentials; user: IUser };
 		let originalFirstResponseTimeInSeconds: number;
 		let roomId: string;
 		const firstDelayInSeconds = 4;
 		const secondDelayInSeconds = 8;
+		const roomsToClose: IOmnichannelRoom[] = [];
+		const visitorsToDelete: ILivechatVisitor[] = [];
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
 			forwardAgent = await createAnOnlineAgent();
+			botAgent = await createBotAgent();
+
+			await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
 		});
 
-		after(async () => Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]));
+		after(async () => {
+			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+			await Promise.all([
+				deleteUser(agent.user),
+				deleteUser(forwardAgent.user),
+				deleteUser(botAgent.user),
+				updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
+			]);
+		});
 
 		it('should return no average response time for an agent if no response has been sent in the period', async () => {
-			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -955,8 +1013,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it("should not consider system messages in agents' first response time metric", async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			await sleep(firstDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
@@ -984,9 +1044,41 @@ describe('LIVECHAT - dashboards', function () {
 			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
 		});
 
+		it("should not consider bot messages in agent's first response time metric if setting is enabled", async () => {
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: botAgent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+
+			roomId = room._id;
+
+			await sleep(firstDelayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', botAgent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === botAgent.user.username,
+			);
+			expect(agentData).to.be.undefined;
+		});
+
 		it('should correctly associate the first response time to the first agent who responded the room', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			await sendAgentMessage(roomId, 'first response from agent', forwardAgent.credentials);
 
@@ -1041,8 +1133,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it('should correctly calculate the average time of first responses for an agent', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			await sleep(secondDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
@@ -1078,16 +1172,24 @@ describe('LIVECHAT - dashboards', function () {
 		let forwardAgent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalBestFirstResponseTimeInSeconds: number;
 		let roomId: string;
+		const roomsToClose: IOmnichannelRoom[] = [];
+		const visitorsToDelete: ILivechatVisitor[] = [];
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
 			forwardAgent = await createAnOnlineAgent();
 		});
 
-		after(() => Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]));
+		after(async () => {
+			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+			await Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]);
+		});
 
 		it('should return no best response time for an agent if no response has been sent in the period', async () => {
-			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -1106,8 +1208,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it("should not consider system messages in agents' best response time metric", async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			const delayInSeconds = 4;
 			await sleep(delayInSeconds * 1000);
@@ -1138,8 +1242,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			const delayInSeconds = 6;
 			await sleep(delayInSeconds * 1000);
@@ -1170,8 +1276,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it('should correctly associate best first response time to the first agent who responded the room', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
-			roomId = response.room._id;
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
+			roomsToClose.push(room);
+			visitorsToDelete.push(visitor);
+			roomId = room._id;
 
 			await sendAgentMessage(roomId, 'first response from agent', forwardAgent.credentials);
 
@@ -1284,12 +1392,12 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 15 },
-				{ title: 'Open_conversations', value: 12 },
+				{ title: 'Total_conversations', value: 7 },
+				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '7.50' },
+				{ title: 'Conversations_per_day', value: '3.50' },
 				// { title: 'Busiest_time', value: '' },
 			];
 

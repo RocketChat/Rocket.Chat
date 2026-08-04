@@ -1,0 +1,20 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
+
+import { useIsRoomOverMacLimit } from '../hooks/useIsRoomOverMacLimit';
+
+export type RoomActivityIconProps = {
+	room: IOmnichannelRoom;
+};
+
+const RoomActivityIcon = ({ room }: RoomActivityIconProps) => {
+	const { t } = useTranslation();
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
+
+	return isRoomOverMacLimit ? (
+		<Icon name='warning' verticalAlign='middle' size='x20' color='danger' title={t('Workspace_exceeded_MAC_limit_disclaimer')} />
+	) : null;
+};
+
+export default RoomActivityIcon;

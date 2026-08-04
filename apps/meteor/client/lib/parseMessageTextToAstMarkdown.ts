@@ -2,15 +2,15 @@ import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.ch
 import {
 	isFileAttachment,
 	isE2EEMessage,
-	isOTRMessage,
-	isOTRAckMessage,
 	isQuoteAttachment,
 	isTranslatedAttachment,
 	isTranslatedMessage,
+	isEncryptedMessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
+import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
 import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
 
@@ -19,7 +19,10 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 };
 
 export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
-	WithRequiredProperty<TMessage, 'md'>;
+	WithRequiredProperty<TMessage, 'md'> & {
+		/** The exact source text `md` was parsed from (translation-aware), so its `fallback` offsets can be sliced. */
+		mdSource?: string;
+	};
 /**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
@@ -46,10 +49,10 @@ export const parseMessageTextToAstMarkdown = <
 
 	return {
 		...msg,
-		md:
-			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
-				? textToMessageToken(text, parseOptions)
-				: (msg.md ?? textToMessageToken(text, parseOptions)),
+		md: isE2EEMessage(message) || translated ? textToMessageToken(text, parseOptions) : (msg.md ?? textToMessageToken(text, parseOptions)),
+		// `text` is the exact string `md` was parsed from (translation/E2EE-aware, and equal to
+		// `msg.msg` otherwise), so block `fallback` offsets slice against the right source.
+		mdSource: text,
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),
@@ -77,9 +80,10 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 		'';
 
 	if (isFileAttachment(attachment) && attachment.description) {
-		attachment.descriptionMd = translated
-			? textToMessageToken(text, parseOptions)
-			: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
+		attachment.descriptionMd =
+			translated || isEncryptedMessageAttachment(attachment)
+				? textToMessageToken(text, parseOptions)
+				: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
 	}
 
 	return {
@@ -131,6 +135,11 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 	if (isParsedMessage(textOrRoot)) {
 		return textOrRoot;
 	}
+
+	if (textOrRoot.length > getMarkdownParserLimit()) {
+		return [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: textOrRoot }] }];
+	}
+
 	const parsedMessage = parse(textOrRoot, parseOptions);
 
 	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);

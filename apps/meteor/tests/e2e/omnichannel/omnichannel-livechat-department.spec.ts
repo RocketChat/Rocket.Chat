@@ -2,7 +2,8 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
@@ -73,7 +74,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 		});
 
 		await test.step('expect message to be received by department', async () => {
-			await poHomeOmnichannelAgent1.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent1.navbar.openChat(guest.name);
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
@@ -96,7 +97,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 		});
 
 		await test.step('expect message to be received by department 1', async () => {
-			await poHomeOmnichannelAgent1.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent1.navbar.openChat(guest.name);
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
@@ -139,7 +140,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 		});
 
 		await test.step('expect message to be received by department', async () => {
-			await poHomeOmnichannelAgent2.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent2.navbar.openChat(guest.name);
 			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toContainText('this_a_test_message_from_user_to_department_2');
 		});

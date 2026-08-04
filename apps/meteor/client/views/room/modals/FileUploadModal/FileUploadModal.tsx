@@ -6,49 +6,27 @@ import { useRef, memo, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
+import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
 
-type FileUploadModalProps = {
+export type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, altText?: string) => void;
 	file: File;
 	fileName: string;
-	fileDescription?: string;
-	invalidContentType: boolean;
-	showDescription?: boolean;
+	fileAltText?: string;
 };
 
-const FileUploadModal = ({
-	onClose,
-	file,
-	fileName,
-	fileDescription,
-	onSubmit,
-	invalidContentType,
-	showDescription = true,
-}: FileUploadModalProps): ReactElement => {
+const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
+	const { t } = useTranslation();
+	const fileUploadFormId = useId();
+	const isImage = file.type.startsWith('image/');
+
 	const {
-		register,
+		control,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
-
-	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
-	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
-
-	const isDescriptionValid = (description: string) =>
-		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
-
-	const submit = ({ name, description }: { name: string; description?: string }): void => {
-		// -1 maxFileSize means there is no limit
-		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			onClose();
-			return dispatchToastMessage({
-				type: 'error',
-				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }),
-			});
-		}
+		formState: { errors, isDirty, isSubmitting },
+	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
 
 		onSubmit(name, description);
 	};
@@ -84,64 +62,55 @@ const FileUploadModal = ({
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(submit)} {...props} />
+				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))} {...props} />
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
-				<Modal.Header>
-					<Modal.Title id={`${fileUploadFormId}-title`}>{t('FileUpload')}</Modal.Title>
-					<Modal.Close tabIndex={-1} onClick={onClose} />
-				</Modal.Header>
-				<Modal.Content>
-					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
+				<ModalHeader>
+					<ModalTitle id={`${fileUploadFormId}-title`}>{t('FileUpload')}</ModalTitle>
+					<ModalClose tabIndex={-1} onClick={onClose} />
+				</ModalHeader>
+				<ModalContent>
+					<Box display='flex' maxHeight='x360' width='full' justifyContent='center' alignContent='center' marginBlockEnd={16}>
+						<FilePreview file={file} altText={fileAltText} />
 					</Box>
 					<FieldGroup>
 						<Field>
-							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
+							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
 							<FieldRow>
-								<TextInput
-									id={fileNameField}
-									{...register('name', {
+								<Controller
+									name='name'
+									control={control}
+									rules={{
 										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
-									})}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									aria-describedby={`${fileNameField}-error`}
-									aria-required='true'
+										validate: validateFileName,
+									}}
+									render={({ field }) => <TextInput {...field} error={errors.name?.message} aria-required='true' />}
 								/>
 							</FieldRow>
-							{errors.name && <FieldError id={`${fileNameField}-error`}>{errors.name.message}</FieldError>}
+							{errors.name && <FieldError>{errors.name.message}</FieldError>}
 						</Field>
-						{showDescription && (
+						{isImage && (
 							<Field>
-								<FieldLabel htmlFor={fileDescriptionField}>{t('Upload_file_description')}</FieldLabel>
+								<FieldLabel>{t('Alternative_text')}</FieldLabel>
+								<FieldDescription>{t('Alt_text_description')}</FieldDescription>
 								<FieldRow>
-									<TextInput
-										id={fileDescriptionField}
-										{...register('description', {
-											validate: (value) => isDescriptionValid(value || ''),
-										})}
-										error={errors.description?.message}
-										aria-invalid={errors.description ? 'true' : 'false'}
-										aria-describedby={`${fileDescriptionField}-error`}
-									/>
+									<Controller name='altText' control={control} render={({ field }) => <TextAreaInput {...field} />} />
 								</FieldRow>
-								{errors.description && <FieldError id={`${fileDescriptionField}-error`}>{errors.description.message}</FieldError>}
 							</Field>
 						)}
 					</FieldGroup>
-				</Modal.Content>
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				</ModalContent>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' loading={isSubmitting}>
-							{t('Send')}
+						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
+							{t('Update')}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Box>
 		</Modal>
 	);

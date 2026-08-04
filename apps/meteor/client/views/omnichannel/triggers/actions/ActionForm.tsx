@@ -18,7 +18,7 @@ import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
-import { type TriggersPayload } from '../EditTrigger';
+import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
@@ -40,7 +40,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 	const actionFieldName = `actions.${index}.name` as const;
 	const actionFieldValue = useWatch({ control, name: actionFieldName });
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const actionOptions = useMemo<SelectOption[]>(() => {
 		return [

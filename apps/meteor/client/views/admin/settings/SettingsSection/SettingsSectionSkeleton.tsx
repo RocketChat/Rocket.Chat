@@ -1,9 +1,8 @@
 import { AccordionItem, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import SettingSkeleton from '../Setting/SettingSkeleton';
 
-function SettingsSectionSkeleton(): ReactElement {
+function SettingsSectionSkeleton() {
 	return (
 		<AccordionItem noncollapsible title={<Skeleton />}>
 			<Box is='p' color='hint' fontScale='p2'>

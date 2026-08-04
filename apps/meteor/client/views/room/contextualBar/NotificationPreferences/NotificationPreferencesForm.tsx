@@ -7,7 +7,7 @@ import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
 import NotificationToggle from './components/NotificationToggle';
 
-type NotificationPreferencesFormProps = {
+export type NotificationPreferencesFormProps = {
 	notificationOptions: {
 		[key: string]: SelectOption[];
 	};
@@ -26,26 +26,21 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 				control={control}
 				name='turnOn'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={onChange} defaultChecked={value} />
+					<NotificationToggle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={onChange} checked={value} />
 				)}
 			/>
 			<Controller
 				control={control}
 				name='muteGroupMentions'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle label={t('Mute_Group_Mentions')} onChange={onChange} defaultChecked={value} />
+					<NotificationToggle label={t('Mute_Group_Mentions')} onChange={onChange} checked={value} />
 				)}
 			/>
 			<Controller
 				control={control}
 				name='showCounter'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle
-						label={t('Show_counter')}
-						description={t('Display_unread_counter')}
-						onChange={onChange}
-						defaultChecked={value}
-					/>
+					<NotificationToggle label={t('Show_counter')} description={t('Display_unread_counter')} onChange={onChange} checked={value} />
 				)}
 			/>
 			{!showCounter && (
@@ -57,7 +52,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 							label={t('Show_mentions')}
 							description={t('Display_mentions_counter')}
 							onChange={onChange}
-							defaultChecked={value}
+							checked={value}
 						/>
 					)}
 				/>
@@ -89,7 +84,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 									optionValue={value}
 									onChange={onChange}
 								>
-									<IconButton icon='play' mis={4} onClick={handlePlaySound} />
+									<IconButton icon='play' marginInlineStart={4} onClick={handlePlaySound} aria-label={t('Play')} />
 								</NotificationPreference>
 							)}
 						/>

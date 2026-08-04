@@ -9,7 +9,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		super(db, 'canned_response');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {
@@ -64,7 +64,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return Object.assign(record, { _id });
 	}
 
-	findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
+	override findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
 		const query = { _id };
 
 		return this.findOne(query, options);
@@ -78,12 +78,6 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return this.findOne(query, options);
 	}
 
-	findByCannedResponseId(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
-		const query = { _id };
-
-		return this.find(query, options);
-	}
-
 	findByDepartmentId(departmentId: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
 		const query = {
 			scope: 'department',
@@ -93,14 +87,8 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return this.find(query, options);
 	}
 
-	findByShortcut(shortcut: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
-		const query = { shortcut };
-
-		return this.find(query, options);
-	}
-
 	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: string): Promise<DeleteResult> {
 		const query = { _id };
 
 		return this.deleteOne(query);
@@ -113,6 +101,6 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 			},
 		};
 
-		return this.updateMany({}, update);
+		return this.updateMany({ tags: tagId }, update);
 	}
 }

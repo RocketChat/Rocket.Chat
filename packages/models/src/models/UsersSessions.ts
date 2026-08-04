@@ -14,21 +14,6 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		});
 	}
 
-	clearConnectionsFromInstanceId(instanceId: string[]): ReturnType<BaseRaw<IUserSession>['updateMany']> {
-		return this.col.updateMany(
-			{},
-			{
-				$pull: {
-					connections: {
-						instanceId: {
-							$nin: instanceId,
-						},
-					},
-				},
-			},
-		);
-	}
-
 	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
 		const query = {
 			'_id': uid,

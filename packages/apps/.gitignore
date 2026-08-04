@@ -1,0 +1,5 @@
+.deno-cache/
+/tests/test-data/dbs
+
+# File generated at runtime
+deno.runtime.jsonc

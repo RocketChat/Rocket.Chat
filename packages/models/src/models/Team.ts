@@ -1,4 +1,4 @@
-import type { ITeam, RocketChatRecordDeleted, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam, RocketChatRecordDeleted, TeamType } from '@rocket.chat/core-typings';
 import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
@@ -9,7 +9,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		super(db, 'team', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 }, unique: true }];
 	}
 
@@ -63,19 +63,19 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.findPaginated({ ...query, _id: { $in: ids } }, options);
 	}
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TeamType, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
-		type: TEAM_TYPE,
+		type: TeamType,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
-		type: TEAM_TYPE,
+		type: TeamType,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
@@ -200,7 +200,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.col.deleteOne({ name });
 	}
 
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult> {
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TeamType }): Promise<UpdateResult> {
 		const query = {
 			_id: teamId,
 		};

@@ -1,10 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class AdminEmailInboxes {
-	private readonly page: Page;
+import { Admin } from './admin';
 
+export class AdminEmailInboxes extends Admin {
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 	}
 
 	get btnNewEmailInbox(): Locator {
@@ -53,15 +53,13 @@ export class AdminEmailInboxes {
 		return this.page.locator('label >> text="Connect with SSL/TLS"').last();
 	}
 
-	get btnSave(): Locator {
-		return this.page.locator('button >> text=Save');
-	}
-
-	get btnDelete(): Locator {
-		return this.page.locator('button >> text=Delete');
-	}
-
 	itemRow(name: string): Locator {
 		return this.page.locator(`td >> text="${name}"`);
+	}
+
+	async deleteEmailInboxByName(name: string): Promise<void> {
+		await this.itemRow(name).click();
+		await this.btnDelete.click();
+		await this.deleteModal.confirmDelete();
 	}
 }

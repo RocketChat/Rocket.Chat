@@ -16,8 +16,8 @@ const AccountSidebar = () => {
 
 	// TODO: uplift this provider
 	return (
-		<SettingsProvider privileged>
-			<Sidebar>
+		<SettingsProvider>
+			<Sidebar aria-label={t('Account')}>
 				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
 				<Sidebar.Content>
 					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />

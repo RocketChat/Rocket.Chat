@@ -1,11 +1,10 @@
 import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box, FieldHint } from '@rocket.chat/fuselage';
-import { useId, type ReactElement } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
-
-type CreateOAuthModalProps = {
+export type CreateOAuthModalProps = {
 	onConfirm: (text: string) => Promise<void>;
 	onClose: () => void;
 };
@@ -14,7 +13,7 @@ type CreateOAuthModalFields = {
 	customOAuthName: string;
 };
 
-const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactElement => {
+const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps) => {
 	const {
 		register,
 		handleSubmit,

@@ -10,7 +10,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 		super(db, 'nps', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { status: 1, expireAt: 1 } }];
 	}
 

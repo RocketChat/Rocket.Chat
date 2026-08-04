@@ -1,8 +1,10 @@
-import emojione from 'emojione';
+import { Emitter } from '@rocket.chat/emitter';
 
 import type { EmojiPackages } from '../lib/rocketchat';
 
-export const emoji: EmojiPackages = {
+export const emojiEmitter = new Emitter<{ updated: void }>();
+
+export const emoji: EmojiPackages & { dispatchUpdate: () => void } = {
 	packages: {
 		base: {
 			emojiCategories: [{ key: 'recent', i18n: 'Frequently_Used' }],
@@ -11,7 +13,7 @@ export const emoji: EmojiPackages = {
 				recent: [],
 			},
 			toneList: {},
-			render: emojione.toImage,
+			render: (message: string) => message,
 			renderPicker(emojiToRender) {
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
 				if (!correctPackage) {
@@ -23,4 +25,9 @@ export const emoji: EmojiPackages = {
 		},
 	},
 	list: {},
+	dispatchUpdate() {
+		queueMicrotask(() => {
+			emojiEmitter.emit('updated');
+		});
+	},
 };

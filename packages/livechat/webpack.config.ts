@@ -1,8 +1,10 @@
-import path from 'path';
+import path from 'node:path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
+
+import { supportedLocales } from './src/supportedLocales';
 import 'webpack-dev-server';
 
 // Helper to use absolute paths in the webpack config
@@ -18,6 +20,7 @@ const common = (args: webpack.WebpackOptionsNormalized): Partial<webpack.Configu
 		alias: {
 			'react': 'preact/compat',
 			'react-dom': 'preact/compat',
+			'date-fns': path.dirname(require.resolve('date-fns/package.json')),
 		},
 	},
 	optimization: {
@@ -57,7 +60,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				},
 				{
 					test: /\.svg$/,
-					use: [require.resolve('./svg-component-loader'), 'svg-loader', 'image-webpack-loader'],
+					use: [require.resolve('./svg-component-loader'), 'svg-loader'],
 				},
 				{
 					test: /\.s?css$/,
@@ -80,7 +83,27 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					],
 				},
 				{
-					test: /\.s?css$/,
+					test: /\.css$/,
+					include: [_('./src/components'), _('./src/routes')],
+					use: [
+						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						{
+							loader: 'css-loader',
+							options: {
+								importLoaders: 1,
+								sourceMap: true,
+							},
+						},
+						{
+							loader: 'postcss-loader',
+							options: {
+								sourceMap: true,
+							},
+						},
+					],
+				},
+				{
+					test: /\.scss$/,
 					include: [_('./src/components'), _('./src/routes')],
 					use: [
 						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
@@ -135,6 +158,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
+			new webpack.ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\\.js$`)),
 		],
 		devServer: {
 			hot: true,

@@ -1,5 +1,14 @@
 import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
@@ -8,17 +17,8 @@ import { useState, useMemo, useEffect } from 'react';
 import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 
-type CustomSoundsTableProps = {
+export type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
 	reload: MutableRefObject<() => void>;
 };
@@ -59,7 +59,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x40' key='action' />
+			<GenericTableHeaderCell width='x40' key='action' />
 		</>
 	);
 
@@ -88,7 +88,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data.sounds.length || 0}
+						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

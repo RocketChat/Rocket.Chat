@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { DEFAULT_USER_CREDENTIALS } from '../../config/constants';
-import { type IUserState } from '../userStates';
+import type { IUserState } from '../userStates';
 
 type UserFixture = IUser & {
 	username: string;

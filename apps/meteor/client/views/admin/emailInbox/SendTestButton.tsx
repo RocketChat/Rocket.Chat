@@ -1,12 +1,13 @@
 import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
+import { GenericTableCell } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell } from '../../../components/GenericTable';
+export type SendTestButtonProps = { id: IEmailInboxPayload['_id'] };
 
-const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement => {
+const SendTestButton = ({ id }: SendTestButtonProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const sendTest = useEndpoint('POST', '/v1/email-inbox.send-test/:_id', { _id: id });

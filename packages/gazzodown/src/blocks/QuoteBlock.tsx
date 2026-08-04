@@ -1,16 +1,15 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import ParagraphBlock from './ParagraphBlock';
 
-type QuoteBlockProps = {
+export type QuoteBlockProps = {
 	children: MessageParser.Paragraph[];
 };
 
-const QuoteBlock = ({ children }: QuoteBlockProps): ReactElement => (
+const QuoteBlock = ({ children }: QuoteBlockProps) => (
 	<blockquote>
 		{children.map((paragraph, index) => (
-			<ParagraphBlock key={index} children={paragraph.value} />
+			<ParagraphBlock key={index}>{paragraph.value}</ParagraphBlock>
 		))}
 	</blockquote>
 );

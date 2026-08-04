@@ -1,18 +1,18 @@
-import { Box, Accordion, AccordionItem, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Accordion, AccordionItem, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
-const AccountSecurityPage = (): ReactElement => {
+const AccountSecurityPage = () => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -38,15 +38,17 @@ const AccountSecurityPage = (): ReactElement => {
 
 	const passwordFormId = useId();
 
+	const require2faSetup = useRequire2faSetup();
+
 	return (
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<Box maxWidth='x600' width='full' alignSelf='center' color='default'>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
-								<AccordionItem title={t('Password')} defaultExpanded>
+								<AccordionItem title={t('Password')} defaultExpanded={!require2faSetup}>
 									<ChangePassword id={passwordFormId} />
 								</AccordionItem>
 							</Accordion>
@@ -54,7 +56,12 @@ const AccountSecurityPage = (): ReactElement => {
 					)}
 					<Accordion>
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
-							<AccordionItem title={t('Two Factor Authentication')}>
+							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
+								{require2faSetup && (
+									<Callout type='warning' title={t('Enable_two-factor_authentication')} marginBlockEnd='24px'>
+										{t('Enable_two-factor_authentication_callout_description')}
+									</Callout>
+								)}
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{showEmailTwoFactor && <TwoFactorEmail />}
 							</AccordionItem>

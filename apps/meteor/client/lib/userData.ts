@@ -1,10 +1,11 @@
 import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
+import { create } from 'zustand';
 
-import { Users } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { Users } from '../stores';
 
-export const isSyncReady = new ReactiveVar(false);
+export const useUserDataSyncReady = create(() => false);
 
 type RawUserData = Serialized<
 	Pick<
@@ -17,6 +18,7 @@ type RawUserData = Serialized<
 		| 'status'
 		| 'statusDefault'
 		| 'statusText'
+		| 'statusExpiresAt'
 		| 'statusConnection'
 		| 'avatarOrigin'
 		| 'utcOffset'
@@ -34,45 +36,48 @@ type RawUserData = Serialized<
 >;
 
 const updateUser = (userData: IUser): void => {
-	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
+	const user = Users.state.get(userData._id);
 
 	if (!user?._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
-		Users.upsert({ _id: userData._id }, userData);
+		Users.state.store(userData);
 		return;
 	}
 
 	// delete data already on user's collection as those are newer
-	Object.keys(user).forEach((key) => {
+	for (const key of Object.keys(user)) {
 		delete userData[key as keyof IUser];
-	});
-	Users.update({ _id: user._id }, { $set: { ...userData } });
+	}
+
+	Users.state.update(
+		({ _id }) => _id === user._id,
+		(user) => ({ ...user, ...userData }),
+	);
 };
 
 let cancel: undefined | (() => void);
 export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserData | void> => {
-	if (!uid) {
-		return;
-	}
+	if (!uid) return;
 
 	// Remove data from any other user that we may have retained
-	Users.remove({ _id: { $ne: uid } });
-
+	Users.state.remove((record) => record._id !== uid);
 	cancel?.();
 
 	const result = sdk.stream('notify-user', [`${uid}/userData`], (data) => {
 		switch (data.type) {
-			case 'inserted':
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			case 'inserted': {
 				const { type, id, ...user } = data;
-				Users.insert(user as unknown as IUser);
+				Users.state.store(user.data);
 				break;
+			}
 
-			case 'updated':
-				Users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset as any });
+			case 'updated': {
+				const transform = createTransformFromUpdateFilter<IUser>({ $unset: data.unset as Record<string, 1>, $set: data.diff });
+				Users.state.update(({ _id }) => _id === uid, transform);
 				break;
+			}
 
 			case 'removed':
-				Users.remove({ _id: uid });
+				Users.state.delete(uid);
 				break;
 		}
 	});
@@ -80,22 +85,40 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	cancel = result.stop;
 	await result.ready();
 
-	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
+	const { success: _success, ldap, lastLogin, services: rawServices, ...fromMe } = await sdk.rest.get('/v1/me');
 
-	// email?: {
-	// 	verificationTokens?: IUserEmailVerificationToken[];
-	// };
-	// export interface IUserEmailVerificationToken {
-	// 	token: string;
-	// 	address: string;
-	// 	when: Date;
-	// }
+	if (fromMe._id) {
+		const existingUser = Users.state.get(uid);
+		const { email: _meEmail, ...meFields } = fromMe;
+		const { email, cloud, resume, email2fa, emailCode, ...services } = (rawServices ?? {}) as NonNullable<IUser['services']>;
 
-	if (userData) {
-		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
+		const mergedEmail2fa =
+			email2fa &&
+			(() => {
+				const { changedAt: apiChangedAt, ...email2faRest } = email2fa;
+				let changedAt: Date | undefined;
+				if (apiChangedAt != null) {
+					const parsed = new Date(apiChangedAt as string | number | Date);
+					if (!Number.isNaN(parsed.getTime())) {
+						changedAt = parsed;
+					}
+				}
+				if (changedAt == null && existingUser?.services?.email2fa?.changedAt != null) {
+					const prev = existingUser.services.email2fa.changedAt;
+					changedAt = prev instanceof Date ? prev : new Date(prev);
+				}
+				return {
+					...email2faRest,
+					...(changedAt != null ? { changedAt } : {}),
+				};
+			})();
 
 		updateUser({
-			...userData,
+			type: existingUser?.type ?? 'user',
+			active: existingUser?.active ?? true,
+			roles: existingUser?.roles ?? [],
+			...existingUser,
+			...meFields,
 			...(rawServices && {
 				services: {
 					...(services ? { ...services } : {}),
@@ -105,8 +128,8 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 									...(resume.loginTokens && {
 										loginTokens: resume.loginTokens.map((token) => ({
 											...token,
-											when: new Date('when' in token ? token.when : ''),
-											createdAt: ('createdAt' in token ? new Date(token.createdAt) : undefined) as Date,
+											when: new Date('when' in token && token.when ? token.when : 0),
+											createdAt: 'createdAt' in token && token.createdAt ? new Date(token.createdAt) : new Date(0),
 											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
 										})),
 									}),
@@ -122,7 +145,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 							}
 						: {}),
 					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
-					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
+					...(mergedEmail2fa ? { email2fa: mergedEmail2fa } : {}),
 					...(email?.verificationTokens && {
 						email: {
 							verificationTokens: email.verificationTokens.map((token) => ({
@@ -136,14 +159,20 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			...(lastLogin && {
 				lastLogin: new Date(lastLogin),
 			}),
+			...(meFields.statusExpiresAt && {
+				statusExpiresAt: new Date(meFields.statusExpiresAt),
+			}),
 			ldap: Boolean(ldap),
-			createdAt: new Date(userData.createdAt),
-			_updatedAt: new Date(userData._updatedAt),
-		});
+			createdAt: meFields.createdAt != null ? new Date(meFields.createdAt) : (existingUser?.createdAt ?? new Date()),
+			_updatedAt: new Date(meFields._updatedAt ?? existingUser?._updatedAt ?? Date.now()),
+		} as IUser);
 	}
-	isSyncReady.set(true);
+	useUserDataSyncReady.setState(true);
 
-	return userData;
+	return fromMe as unknown as RawUserData;
 };
 
-export const removeLocalUserData = (): number => Users.remove({});
+export const removeLocalUserData = () => {
+	Users.state.replaceAll([]);
+	localStorage.clear();
+};

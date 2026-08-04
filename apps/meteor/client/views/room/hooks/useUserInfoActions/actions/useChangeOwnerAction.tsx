@@ -1,7 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { GenericModal } from '@rocket.chat/ui-client';
 import {
 	useTranslation,
 	usePermission,
@@ -13,10 +14,8 @@ import {
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 
-import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
@@ -28,7 +27,7 @@ const getWarningModalForFederatedRooms = (
 	title: string,
 	confirmText: string,
 	bodyText: string,
-): ReactElement => (
+) => (
 	<GenericModal
 		variant='warning'
 		onClose={closeModalFn}
@@ -129,11 +128,13 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid });
 	}, [room, loggedUserId, loggedUserIsOwner, toggleOwnerMutation, rid, uid, t, setModal]);
 
-	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
+	const changeOwnerAction = useStableCallback(async () => handleChangeOwner());
 
+	const roomIsFederated = isRoomFederated(room);
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
 	const changeOwnerOption = useMemo(
 		() =>
-			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
+			(roomIsFederated && !isFederationBlocked && roomCanSetOwner) || (!roomIsFederated && roomCanSetOwner && userCanSetOwner)
 				? {
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
@@ -141,7 +142,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						type: 'privileges' as UserInfoActionType,
 					}
 				: undefined,
-		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],
+		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, roomIsFederated, isFederationBlocked],
 	);
 
 	return changeOwnerOption;

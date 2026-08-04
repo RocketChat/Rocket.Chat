@@ -5,6 +5,7 @@ export type MessageAttachmentBase = {
 	title?: string;
 	ts?: Date;
 	collapsed?: boolean;
+	/** description isn't being used on client for non-image attachments, we're keeping it for backward compatibility */
 	description?: string;
 	descriptionMd?: Root;
 	text?: string;
@@ -20,4 +21,12 @@ export type MessageAttachmentBase = {
 	hashes?: {
 		sha256: string;
 	};
+};
+
+export type EncryptedMessageAttachment = MessageAttachmentBase & {
+	encryption: Required<MessageAttachmentBase>['encryption'];
+};
+
+export const isEncryptedMessageAttachment = (attachment: MessageAttachmentBase): attachment is EncryptedMessageAttachment => {
+	return attachment?.encryption !== undefined && typeof attachment.encryption === 'object';
 };

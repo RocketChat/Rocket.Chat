@@ -1,17 +1,20 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useDocumentTitle } from '@rocket.chat/ui-client';
-import type { KeyboardEvent, ReactElement } from 'react';
+import { useButtonPattern, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDocumentTitle, HeaderTitle, HeaderTitleButton } from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
-import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
-const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
+export type RoomTitleProps = { room: IRoom };
+
+const RoomTitle = ({ room }: RoomTitleProps) => {
+	const { t } = useTranslation();
+
 	useDocumentTitle(room.name, false);
 	const { openTab } = useRoomToolbox();
 
-	const handleOpenRoomInfo = useEffectEvent(() => {
+	const handleOpenRoomInfo = useStableCallback(() => {
 		if (isTeamRoom(room)) {
 			return openTab('team-info');
 		}
@@ -19,10 +22,6 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 		switch (room.t) {
 			case 'l':
 				openTab('room-info');
-				break;
-
-			case 'v':
-				openTab('voip-room-info');
 				break;
 
 			case 'd':
@@ -35,15 +34,12 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 		}
 	});
 
+	const buttonProps = useButtonPattern(handleOpenRoomInfo);
+
 	return (
-		<HeaderTitleButton
-			onKeyDown={(e: KeyboardEvent) => (e.code === 'Enter' || e.code === 'Space') && handleOpenRoomInfo()}
-			onClick={() => handleOpenRoomInfo()}
-			tabIndex={0}
-			role='button'
-		>
+		<HeaderTitleButton aria-label={`${room.name}${room.encrypted ? ` - ${t('encrypted')}` : ''}`} {...buttonProps} marginInlineEnd={4}>
 			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
+			<HeaderTitle>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
 	);
 };

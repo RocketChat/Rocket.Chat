@@ -11,11 +11,19 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	username: string;
 	channel: string[];
 
-	token: string;
+	token?: string;
 	scriptEnabled: boolean;
-	script: string;
+	script?: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
+	/**
+	 * When `true`, the integration script is stored as-is without Babel
+	 * transpilation — matching the 9.0.0 default where Babel is removed
+	 * entirely. Defaults to `false` (transpile with Babel for backwards
+	 * compatibility). Deprecated field — removed in 9.0.0 together with
+	 * the Babel transpilation path.
+	 */
+	skipTranspile?: boolean;
 
 	name: string;
 	enabled: boolean;
@@ -50,12 +58,20 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	urls?: string[];
 	triggerWords?: string[];
 	triggerWordAnywhere?: boolean;
-	token: string;
+	token?: string;
 
 	scriptEnabled: boolean;
-	script: string;
+	script?: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
+	/**
+	 * When `true`, the integration script is stored as-is without Babel
+	 * transpilation — matching the 9.0.0 default where Babel is removed
+	 * entirely. Defaults to `false` (transpile with Babel for backwards
+	 * compatibility). Deprecated field — removed in 9.0.0 together with
+	 * the Babel transpilation path.
+	 */
+	skipTranspile?: boolean;
 	runOnEdits?: boolean;
 
 	retryFailedCalls?: boolean;

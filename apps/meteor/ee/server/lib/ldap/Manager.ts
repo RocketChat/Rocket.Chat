@@ -1,25 +1,27 @@
-import { Team } from '@rocket.chat/core-services';
+import { Abac, Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
+import type { FindCursor } from 'mongodb';
 
+import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type {
 	ImporterAfterImportCallback,
 	ImporterBeforeImportCallback,
-} from '../../../../app/importer/server/definitions/IConversionCallbacks';
-import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
-import { createRoom } from '../../../../app/lib/server/functions/createRoom';
-import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
-import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
-import { settings } from '../../../../app/settings/server';
-import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
+} from '../../../../server/lib/import/definitions/IConversionCallbacks';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
+import { createRoom } from '../../../../server/lib/rooms/createRoom';
+import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
+import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
+import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
+import { settings } from '../../../../server/settings';
 import { syncUserRoles } from '../syncUserRoles';
-import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -76,8 +78,8 @@ export class LDAPEEManager extends LDAPManager {
 			if (disableMissingUsers) {
 				await this.disableMissingUsers([...touchedUsers]);
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 
 		ldap.disconnect();
@@ -97,8 +99,60 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
+		}
+	}
+
+	public static async syncAbacAttributes(): Promise<void> {
+		if (
+			!settings.get('LDAP_Enable') ||
+			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
+			!License.hasModule('abac') ||
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
+		) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.updateUserAbacAttributes(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
+		}
+	}
+
+	public static async syncUsersAbacAttributes(users: FindCursor<IUser>): Promise<void> {
+		if (
+			!settings.get('LDAP_Enable') ||
+			!License.hasModule('abac') ||
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
+		) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				logger.debug({ msg: 'Starting ABAC attributes sync for LDAP users' });
+				for await (const user of users) {
+					await this.syncUserAbacAttribute(ldap, user);
+				}
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -123,6 +177,69 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static validateLDAPABACAttributeMap(json: string): void {
+		if (!json) {
+			return;
+		}
+
+		const mappedAttributes = this.parseJson(json);
+
+		// attributes are { key: value } with key being the ldap attribute and value being the abac attribute in rocketchat
+		// both strings
+		// There's no need for the attribute to exist in rocketchat, we just add whatever the admin wants to map
+
+		if (!mappedAttributes || Object.keys(mappedAttributes).length === 0) {
+			return;
+		}
+
+		const validStructureMapping = Object.entries(mappedAttributes).every(
+			([key, value]) => typeof key === 'string' && typeof value === 'string',
+		);
+
+		if (!validStructureMapping) {
+			throw new Error(
+				'Please verify your mapping for LDAP X RocketChat ABAC Attributes. The structure is invalid, the structure should be an object like: {key: LdapAttribute, value: RocketChatAbacAttribute}',
+			);
+		}
+	}
+
+	public static async syncAvatarAndAbacAttributes(): Promise<void> {
+		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
+		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
+		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+
+		if (!syncAvatars && !syncAbac) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				const users = Users.findLDAPUsers();
+				for await (const user of users) {
+					const ldapUser = await this.findLDAPUser(ldap, user);
+					if (!ldapUser) {
+						continue;
+					}
+
+					if (syncAvatars) {
+						await LDAPManager.syncUserAvatar(user, ldapUser);
+					}
+
+					if (syncAbac && abacMapping) {
+						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
+					}
+				}
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
+		}
+	}
+
 	public static async syncLogout(): Promise<void> {
 		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Sync_AutoLogout_Enabled') !== true) {
 			return;
@@ -137,8 +254,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -147,9 +264,8 @@ export class LDAPEEManager extends LDAPManager {
 			await this.syncUserRoles(ldap, user, dn);
 			await this.syncUserChannels(ldap, user, dn);
 			await this.syncUserTeams(ldap, user, dn, isNewRecord);
-		} catch (e) {
-			logger.debug(`Advanced Sync failed for user: ${dn}`);
-			logger.error(e);
+		} catch (err) {
+			logger.error({ msg: 'Advanced Sync failed for user', dn, err });
 		}
 	}
 
@@ -190,9 +306,9 @@ export class LDAPEEManager extends LDAPManager {
 		const result = await ldap.searchRaw(baseDN, searchOptions);
 
 		if (!Array.isArray(result) || result.length === 0) {
-			logger.debug(`${username} is not in ${groupName} group!!!`);
+			logger.debug({ msg: 'User is not in group', username, groupName });
 		} else {
-			logger.debug(`${username} is in ${groupName} group.`);
+			logger.debug({ msg: 'User is in group', username, groupName });
 			return true;
 		}
 
@@ -226,7 +342,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = (await Roles.find(
+		const roles = await Roles.find(
 			{},
 			{
 				projection: {
@@ -234,7 +350,7 @@ export class LDAPEEManager extends LDAPManager {
 					name: 1,
 				},
 			},
-		).toArray()) as Array<IRole>;
+		).toArray();
 
 		if (!roles) {
 			return;
@@ -286,17 +402,21 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
-		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
+		logger.debug({ msg: "Channel doesn't exist, creating it", channel });
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+		if (!user) {
+			logger.error({ msg: 'Unable to find user to own channel', roomOwner, channel });
+			return;
+		}
 
 		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },
 		});
 		if (!room?.rid) {
-			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
+			logger.error({ msg: 'Unable to auto-create channel during LDAP sync', channel });
 			return;
 		}
 
@@ -351,19 +471,25 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
 				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
 				if (!room) {
-					return;
+					logger.debug({ msg: 'Unable to resolve mapped channel for sync', userChannelName, username });
+					continue;
+				}
+
+				if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
+					logger.error({ msg: 'Cannot add user to channel. Channel is ABAC managed', userChannelName });
+					continue;
 				}
 
 				if (room.teamMain) {
-					logger.error(`Can't add user to channel ${userChannelName} because it is a team.`);
+					logger.error({ msg: "Can't add user to channel because it is a team", userChannelName });
 				} else {
 					channelsToAdd.add(room._id);
 					await addUserToRoom(room._id, user);
-					logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+					logger.debug({ msg: 'Synced user channel from LDAP', roomId: room._id, username });
 				}
-			} catch (e) {
-				logger.debug(`Failed to sync user room, user = ${username}, channel = ${userChannelName}`);
-				logger.error(e);
+			} catch (err) {
+				logger.debug({ msg: 'Failed to sync user room', username, userChannelName });
+				logger.error({ err });
 			}
 		}
 
@@ -376,13 +502,14 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
 				const room = await Rooms.findOneByNonValidatedName(name);
 				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
-					return;
+					logger.debug({ msg: 'Skipping channel on removal sync', roomName, username });
+					continue;
 				}
 
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					await removeUserFromRoom(room._id, user);
-					logger.debug(`Removed user ${username} from channel ${room._id}`);
+					logger.debug({ msg: 'Removed user from channel', username, roomId: room._id });
 				}
 			}
 		}
@@ -426,7 +553,23 @@ export class LDAPEEManager extends LDAPManager {
 		});
 		const currentTeamIds = currentTeams?.map(({ teamId }) => teamId);
 		const teamsToRemove = currentTeamIds?.filter((teamId) => notInTeamIds.includes(teamId));
-		const teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
+		let teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
+
+		if (settings.get('ABAC_Enabled')) {
+			const roomsWithAbacAttributes = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(
+				allTeams.filter((t) => teamsToAdd.includes(t._id)).map((t) => t.roomId),
+				{ projection: { teamId: 1 } },
+			)
+				.map((r) => r.teamId)
+				.toArray();
+
+			logger.debug({ msg: 'Some teams will be ignored from sync because they are abac managed', roomsWithAbacAttributes });
+
+			teamsToAdd = teamsToAdd.filter((teamId) => !roomsWithAbacAttributes.includes(teamId));
+			if (!teamsToAdd.length) {
+				return;
+			}
+		}
 
 		await Team.insertMemberOnTeams(user._id, teamsToAdd);
 		if (teamsToRemove) {
@@ -440,7 +583,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (filteredMappedLdapGroups.length < ldapGroups.length) {
 			const unmappedLdapGroups = ldapGroups.filter((ldapGroup) => !mappedLdapGroups.includes(ldapGroup));
-			logger.error(`The following LDAP groups are not mapped in Rocket.Chat: "${unmappedLdapGroups.join(', ')}".`);
+			logger.error({ msg: 'The following LDAP groups are not mapped in Rocket.Chat', unmappedLdapGroups });
 		}
 
 		if (!filteredMappedLdapGroups.length) {
@@ -494,12 +637,6 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
-		// Account locked by "Draft-behera-ldap-password-policy"
-		if (ldapUser.pwdAccountLockedTime) {
-			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
-			return true;
-		}
-
 		// EDirectory: Account manually disabled by an admin
 		if (ldapUser.loginDisabled) {
 			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');
@@ -510,26 +647,6 @@ export class LDAPEEManager extends LDAPManager {
 		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
 			mapLogger.debug('User must not be allowed to authenticate (attribute orclIsEnabled)');
 			return true;
-		}
-
-		// Active Directory - Account locked automatically by security policies
-		if (ldapUser.lockoutTime && ldapUser.lockoutTime !== '0') {
-			const lockoutTimeValue = Number(ldapUser.lockoutTime);
-			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
-				// Automatic unlock is disabled
-				if (!ldapUser.lockoutDuration) {
-					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
-					return true;
-				}
-
-				const lockoutTime = new Date(lockoutTimeValue);
-				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
-				// Account has not unlocked itself yet
-				if (lockoutTime.valueOf() > Date.now()) {
-					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
-					return true;
-				}
-			}
 		}
 
 		// Active Directory - Account disabled by an Admin
@@ -565,7 +682,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		userData.deleted = deleted;
-		logger.info(`${deleted ? 'Deactivating' : 'Activating'} user ${userData.name} (${userData.username})`);
+		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
@@ -585,26 +702,28 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-					const data = ldap.extractLdapEntryData(entry);
-					count++;
+			ldap
+				.searchAllUsers<IImportUser>({
+					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
+						const data = ldap.extractLdapEntryData(entry);
+						count++;
 
-					const userData = this.mapUserData(data);
-					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-					return userData;
-				},
-				endCallback: (error: any): void => {
-					if (error) {
-						logger.error(error);
-						reject(error);
-						return;
-					}
+						const userData = this.mapUserData(data);
+						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
+						return userData;
+					},
+					endCallback: (err: any): void => {
+						if (err) {
+							logger.error({ err });
+							reject(err);
+							return;
+						}
 
-					logger.info('LDAP finished loading users. Users added to importer: ', count);
-					resolve();
-				},
-			});
+						logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
+						resolve();
+					},
+				})
+				.catch(reject);
 		});
 	}
 
@@ -616,14 +735,14 @@ export class LDAPEEManager extends LDAPManager {
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
 				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
-			} else if (disableMissingUsers) {
+			} else if (disableMissingUsers && user.active) {
 				await setUserActiveStatus(user._id, false, true);
 			}
 		}
 	}
 
 	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
-		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+		const userIds = (await Users.findActiveLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 
 		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}
@@ -638,6 +757,38 @@ export class LDAPEEManager extends LDAPManager {
 
 			await LDAPManager.syncUserAvatar(user, ldapUser);
 		}
+	}
+
+	private static async updateUserAbacAttributes(ldap: LDAPConnection): Promise<void> {
+		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+		if (!mapping) {
+			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
+			return;
+		}
+
+		for await (const user of Users.findLDAPUsers()) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
+			if (!ldapUser) {
+				continue;
+			}
+
+			await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
+		}
+	}
+
+	private static async syncUserAbacAttribute(ldap: LDAPConnection, user: IUser): Promise<void> {
+		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+		if (!mapping) {
+			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
+			return;
+		}
+
+		const ldapUser = await this.findLDAPUser(ldap, user);
+		if (!ldapUser) {
+			return;
+		}
+
+		await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
 	}
 
 	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {

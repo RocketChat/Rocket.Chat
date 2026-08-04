@@ -1,11 +1,12 @@
+import { SetupWizardRoute } from '@rocket.chat/ui-client';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
 import { router } from '../providers/RouterProvider';
+import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const MeetRoute = lazy(() => import('../views/meet/MeetRoute'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
@@ -14,7 +15,6 @@ const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CM
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
 const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));
@@ -24,6 +24,8 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -39,6 +41,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/meet/${string}`;
 			pattern: '/meet/:rid';
 		};
+		'2fa': {
+			pathname: `/2fa/${string}/${string}`;
+			pattern: '/2fa/:method/:challengeId';
+		};
 		'home': {
 			pathname: '/home';
 			pattern: '/home';
@@ -49,7 +55,7 @@ declare module '@rocket.chat/ui-contexts' {
 		};
 		'omnichannel-directory': {
 			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/omnichannel-directory/:tab?/:context?/:id?/';
+			pattern: '/omnichannel-directory/:tab?/:context?/:id?';
 		};
 		'livechat-queue': {
 			pathname: '/livechat-queue';
@@ -107,6 +113,14 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/saml/${string}`;
 			pattern: '/saml/:token';
 		};
+		'call-history': {
+			pathname: `/call-history${`/details/${string}` | ''}`;
+			pattern: '/call-history/:tab?/:historyId?';
+		};
+		'search': {
+			pathname: '/search';
+			pattern: '/search';
+		};
 	}
 }
 
@@ -128,9 +142,9 @@ router.defineRoutes([
 		}),
 	},
 	{
-		path: '/meet/:rid',
-		id: 'meet',
-		element: appLayout.wrap(<MeetRoute />),
+		path: '/2fa/:method/:challengeId',
+		id: '2fa',
+		element: appLayout.wrap(<OAuthTwoFactorAuthenticationRouter />),
 	},
 	{
 		path: '/home',
@@ -151,7 +165,7 @@ router.defineRoutes([
 		),
 	},
 	{
-		path: '/omnichannel-directory/:tab?/:context?/:id?/',
+		path: '/omnichannel-directory/:tab?/:context?/:id?',
 		id: 'omnichannel-directory',
 		element: appLayout.wrap(
 			<MainLayout>
@@ -232,6 +246,24 @@ router.defineRoutes([
 		path: '/saml/:token',
 		id: 'saml',
 		element: appLayout.wrap(<SAMLLoginRoute />),
+	},
+	{
+		path: '/call-history/:tab?/:historyId?',
+		id: 'call-history',
+		element: appLayout.wrap(
+			<MainLayout>
+				<CallHistoryPage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/search',
+		id: 'search',
+		element: appLayout.wrap(
+			<MainLayout>
+				<SearchPage />
+			</MainLayout>,
+		),
 	},
 	{
 		path: '*',

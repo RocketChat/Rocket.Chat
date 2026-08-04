@@ -1,10 +1,10 @@
-import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type FontSettingInputProps = SettingInputProps & {
+export type FontSettingInputProps = SettingInputProps & {
 	value: string;
 };
 
@@ -12,6 +12,7 @@ function FontSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -20,8 +21,8 @@ function FontSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: FontSettingInputProps): ReactElement {
-	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+}: FontSettingInputProps) {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event): void => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 
@@ -31,11 +32,10 @@ function FontSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<TextInput
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}
@@ -45,6 +45,7 @@ function FontSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

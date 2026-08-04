@@ -32,7 +32,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	return new MeteorError(500, 'Internal server error');
 };
 
-export const SERVER_ID = ejson.stringify({ server_id: '0' });
+export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 
 export class Server extends EventEmitter {
 	private _subscriptions = new Map<string, SubscriptionFn>();
@@ -68,11 +68,7 @@ export class Server extends EventEmitter {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
 				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
-				if (result?.result) {
-					return this.result(client, packet, result.result);
-				}
-
-				throw new MeteorError(404, `Method '${packet.method}' not found`);
+				return this.result(client, packet, result.result);
 			}
 
 			const fn = this._methods.get(packet.method);

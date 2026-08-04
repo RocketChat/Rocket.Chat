@@ -21,14 +21,16 @@ import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
-const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
+export type IncomingWebhookFormProps = { webhookData?: Serialized<IIncomingIntegration> };
+
+const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
@@ -79,7 +81,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const curlField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' w='full'>
+		<Box maxWidth='x600' alignSelf='center' width='full'>
 			<Accordion>
 				<AccordionItem defaultExpanded={Boolean(webhookData?._id)} title={t('Instructions')}>
 					<FieldGroup>
@@ -90,7 +92,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									id={webhookUrlField}
 									value={webhookData?._id ? url : t('Will_be_available_here_after_saving')}
 									readOnly
-									addon={webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={
+										webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
+									}
 									aria-describedby={`${webhookUrlField}-hint`}
 								/>
 							</FieldRow>
@@ -103,7 +107,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									id={tokenField}
 									value={webhookData?._id ? `${webhookData?._id}/${webhookData?.token}` : t('Will_be_available_here_after_saving')}
 									readOnly
-									addon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
 								/>
 							</FieldRow>
 						</Field>
@@ -125,7 +129,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										id={curlField}
 										value={curlData}
 										readOnly
-										addon={webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined}
+										endAddon={
+											webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
+										}
 									/>
 								</FieldRow>
 							</Field>
@@ -168,7 +174,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										<TextInput
 											id={channelField}
 											{...field}
-											addon={<Icon name='at' size='x20' />}
+											endAddon={<Icon name='at' size='x20' />}
 											aria-describedby={`${channelField}-hint-1 ${channelField}-hint-2 ${channelField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.channel)}
@@ -177,17 +183,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${channelField}-hint-1`}>{t('Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here')}</FieldHint>
-							<FieldHint
-								id={`${channelField}-hint-2`}
-								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(
-										t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-											postProcess: 'sprintf',
-											sprintf: ['@', '#', '@john', '#general'],
-										}),
-									),
-								}}
-							/>
+							<FieldHint id={`${channelField}-hint-2`}>
+								<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 							{errors?.channel && (
 								<FieldError aria-live='assertive' id={`${channelField}-error`}>
 									{errors?.channel.message}
@@ -202,12 +200,12 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
+									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
 											{...field}
-											addon={<Icon name='user' size='x20' />}
+											endAddon={<Icon name='user' size='x20' />}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}
@@ -216,7 +214,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${usernameField}-hint-1`}>{t('Choose_the_username_that_this_integration_will_post_as')}</FieldHint>
-							<FieldHint id={`${usernameField}-hint-2`}>{t('Should_exists_a_user_with_this_username')}</FieldHint>
+							<FieldHint id={`${usernameField}-hint-2`}>
+								{t('User_must_exist_and_have_permission', { permission: 'message-impersonate' })}
+							</FieldHint>
 							{errors?.username && (
 								<FieldError aria-live='assertive' id={`${usernameField}-error`}>
 									{errors.username.message}
@@ -230,7 +230,12 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									name='alias'
 									control={control}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} aria-describedby={`${aliasField}-hint`} addon={<Icon name='edit' size='x20' />} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											aria-describedby={`${aliasField}-hint`}
+											endAddon={<Icon name='edit' size='x20' />}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -247,7 +252,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 											id={avatarField}
 											{...field}
 											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
 										/>
 									)}
 								/>
@@ -266,16 +271,15 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 											id={emojiField}
 											{...field}
 											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
-											addon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='emoji' size='x20' alignSelf='center' />}
 										/>
 									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint
-								id={`${emojiField}-hint-2`}
-								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
-							/>
+							<FieldHint id={`${emojiField}-hint-2`}>
+								<Trans i18nKey='Example_s' values={{ value: ':ghost:' }} components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 						</Field>
 						<Field>
 							<FieldRow>
@@ -324,7 +328,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									name='script'
 									control={control}
 									render={({ field }) => (
-										<TextAreaInput id={scriptField} {...field} rows={10} addon={<Icon name='code' size='x20' alignSelf='center' />} />
+										<TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
 									)}
 								/>
 							</FieldRow>

@@ -18,8 +18,8 @@ const log = new Logger('Migrations');
 const migrations = new Set<IMigration>();
 
 // sets the control record
-function setControl(control: Pick<IControl, 'version' | 'locked'>): Pick<IControl, 'version' | 'locked'> {
-	void Migrations.updateMany(
+async function setControl(control: Pick<IControl, 'version' | 'locked'>): Promise<Pick<IControl, 'version' | 'locked'>> {
+	await Migrations.updateOne(
 		{
 			_id: 'control',
 		},
@@ -107,8 +107,8 @@ export function addMigration(migration: IMigration): void {
 }
 
 // Side effect: saves version.
-function unlock(version: number): void {
-	setControl({
+async function unlock(version: number): Promise<void> {
+	await setControl({
 		locked: false,
 		version,
 	});
@@ -146,7 +146,12 @@ async function migrate(direction: 'up' | 'down', migration: IMigration): Promise
 		throw new Error(`Cannot migrate ${direction} on version ${migration.version}`);
 	}
 
-	log.startup(`Running ${direction}() on version ${migration.version}${migration.name ? `(${migration.name})` : ''}`);
+	log.startup({
+		msg: 'Running migration',
+		direction,
+		version: migration.version,
+		name: migration.name,
+	});
 
 	await migration[direction]?.(migration);
 }
@@ -168,7 +173,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 
 	// version 0 means it is a fresh database, just set the control to latest known version and skip
 	if (currentVersion === 0) {
-		setControl({
+		await setControl({
 			locked: false,
 			version: orderedMigrations[orderedMigrations.length - 1].version,
 		});
@@ -181,9 +186,13 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
 
 	if (!(await lock())) {
-		const msg = `Not migrating, control is locked. Attempt ${currentAttempt}/${maxAttempts}`;
 		if (currentAttempt <= maxAttempts) {
-			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
+			log.warn({
+				msg: 'Not migrating, control is locked. Will retry.',
+				retryIntervalSeconds: retryInterval,
+				attempt: currentAttempt,
+				maxAttempts,
+			});
 
 			await sleep(retryInterval * 1000);
 
@@ -212,7 +221,10 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	}
 
 	if (subcommands?.includes('rerun')) {
-		log.startup(`Rerunning version ${targetVersion}`);
+		log.startup({
+			msg: 'Rerunning migration',
+			targetVersion,
+		});
 		const migration = orderedMigrations.find((migration) => migration.version === targetVersion);
 
 		if (!migration) {
@@ -227,13 +239,16 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			process.exit(1);
 		}
 		log.startup('Finished migrating.');
-		unlock(currentVersion);
+		await unlock(currentVersion);
 		return true;
 	}
 
 	if (currentVersion === version) {
-		log.startup(`Not migrating, already at version ${version}`);
-		unlock(currentVersion);
+		log.startup({
+			msg: 'Already at target migration version',
+			version,
+		});
+		await unlock(currentVersion);
 		return true;
 	}
 
@@ -247,7 +262,11 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		throw new Error(`Can't find migration version ${version}`);
 	}
 
-	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
+	log.startup({
+		msg: 'Migrating between versions',
+		fromVersion: orderedMigrations[startIdx].version,
+		toVersion: orderedMigrations[endIdx].version,
+	});
 
 	try {
 		const migrations = [];
@@ -255,7 +274,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			for (let i = startIdx; i < endIdx; i++) {
 				migrations.push(async () => {
 					await migrate('up', orderedMigrations[i + 1]);
-					setControl({
+					await setControl({
 						locked: true,
 						version: orderedMigrations[i + 1].version,
 					});
@@ -265,7 +284,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 			for (let i = startIdx; i > endIdx; i--) {
 				migrations.push(async () => {
 					await migrate('down', orderedMigrations[i]);
-					setControl({
+					await setControl({
 						locked: true,
 						version: orderedMigrations[i - 1].version,
 					});
@@ -281,7 +300,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		process.exit(1);
 	}
 
-	unlock(orderedMigrations[endIdx].version);
+	await unlock(orderedMigrations[endIdx].version);
 	log.startup('Finished migrating.');
 
 	// remember to run meteor with --once otherwise it will restart

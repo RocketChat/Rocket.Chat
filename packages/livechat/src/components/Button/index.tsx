@@ -1,15 +1,14 @@
-import type { ComponentChildren } from 'preact';
+import type { ComponentChildren, JSX as JSXInternal } from 'preact';
 import type { CSSProperties } from 'preact/compat';
-import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
 
-import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../helpers/createClassName';
 
 const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTMLButtonElement>> = ({ target }) =>
 	(target as HTMLButtonElement)?.blur();
 
-type ButtonProps = {
+export type ButtonProps = {
 	children?: ComponentChildren;
 	submit?: boolean;
 	form?: string;

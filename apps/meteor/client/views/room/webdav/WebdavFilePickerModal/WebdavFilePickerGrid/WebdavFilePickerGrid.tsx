@@ -1,19 +1,18 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Skeleton, Palette } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { getNodeIconType } from '../lib/getNodeIconType';
 
-type WebdavFilePickerGridProps = {
+export type WebdavFilePickerGridProps = {
 	webdavNodes: IWebdavNode[];
 	onNodeClick: (file: IWebdavNode) => void;
 	isLoading: boolean;
 };
 
-const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFilePickerGridProps): ReactElement => {
+const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFilePickerGridProps) => {
 	const hoverStyle = css`
 		&:hover {
 			background-color: ${Palette.surface['surface-neutral']};
@@ -27,7 +26,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 				Array(6)
 					.fill('')
 					.map((_, index) => (
-						<WebdavFilePickerGridItem p={4} key={index}>
+						<WebdavFilePickerGridItem padding={4} key={index}>
 							<Skeleton variant='rect' width='full' height='full' />
 						</WebdavFilePickerGridItem>
 					))}
@@ -37,7 +36,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 
 					return (
 						<WebdavFilePickerGridItem key={index} className={hoverStyle} onClick={(): void => onNodeClick(webdavNode)}>
-							<Icon mie={4} size='x72' name={icon} />
+							<Icon marginInlineEnd={4} size='x72' name={icon} />
 							<Box textAlign='center'>{webdavNode.basename}</Box>
 						</WebdavFilePickerGridItem>
 					);

@@ -34,6 +34,6 @@ const run = async (url: string, token: string) => {
 	return sdk;
 };
 
-(async () => {
+void (async () => {
 	await run('wss://unstable.rocket.chat/websocket', process.env.INSTANCE_TOKEN || '');
 })();

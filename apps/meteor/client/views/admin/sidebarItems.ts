@@ -35,12 +35,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		href: '/admin/federation',
-		i18nLabel: 'Federation',
-		icon: 'discover',
-		permissionGranted: (): boolean => hasPermission('view-federation-data'),
-	},
-	{
 		href: '/admin/rooms',
 		i18nLabel: 'Rooms',
 		icon: 'hashtag',
@@ -51,6 +45,14 @@ export const {
 		i18nLabel: 'Users',
 		icon: 'team',
 		permissionGranted: (): boolean => hasPermission('view-user-administration'),
+	},
+	{
+		href: '/admin/ai-center',
+		i18nLabel: 'AI_Center',
+		icon: 'stars',
+		tag: 'Beta',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 	{
 		href: '/admin/invites',
@@ -69,6 +71,19 @@ export const {
 		i18nLabel: 'Permissions',
 		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		href: '/admin/ABAC',
+		i18nLabel: 'ABAC',
+		icon: 'team-lock',
+		permissionGranted: (): boolean =>
+			hasPermission('abac-management') &&
+			hasAtLeastOnePermission([
+				'manage-abac-admin-settings',
+				'manage-abac-admin-room-attributes',
+				'manage-abac-admin-rooms',
+				'view-abac-admin-audit',
+			]),
 	},
 	{
 		href: '/admin/device-management',
@@ -114,7 +129,7 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/reports',
+		href: '/admin/analytic-reports',
 		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),

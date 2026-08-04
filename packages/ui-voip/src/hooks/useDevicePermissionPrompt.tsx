@@ -1,0 +1,166 @@
+import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+
+import { PermissionFlowModal, type PermissionFlowModalType } from '../views';
+
+type OnAccept = (stream: MediaStream) => void;
+type OnReject = (error?: DOMException) => void;
+
+type DeviceChangePromptProps = {
+	onAccept: OnAccept;
+	onReject?: OnReject;
+	actionType: 'device-change';
+};
+
+type OutgoingPromptProps = {
+	onAccept: OnAccept;
+	onReject?: OnReject;
+	actionType: 'outgoing';
+};
+
+type IncomingPromptProps = {
+	onAccept: OnAccept;
+	onReject: OnReject;
+	actionType: 'incoming';
+};
+
+type UseDevicePermissionPromptProps = DeviceChangePromptProps | OutgoingPromptProps | IncomingPromptProps;
+
+const isNoDeviceError = (error: Error) => {
+	return ['NotFoundError', 'DevicesNotFoundError'].includes(error.name);
+};
+
+const getModalType = (
+	actionType: UseDevicePermissionPromptProps['actionType'],
+	state: Exclude<PermissionState, 'granted'>,
+): PermissionFlowModalType => {
+	if (state === 'denied') {
+		return 'denied';
+	}
+
+	if (actionType === 'device-change') {
+		return 'deviceChangePrompt';
+	}
+
+	if (actionType === 'outgoing') {
+		return 'outgoingPrompt';
+	}
+
+	// actionType === 'incoming'
+	return 'incomingPrompt';
+};
+
+export const stopTracks = (stream: MediaStream) => {
+	stream.getTracks().forEach((track) => {
+		track.stop();
+	});
+};
+
+export class PermissionRequestCancelledCallRejectedError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'PermissionRequestDeniedError';
+	}
+}
+
+export const useDevicePermissionPrompt2 = () => {
+	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
+	const setModal = useSetModal();
+	const setInputMediaDevice = useSetInputMediaDevice();
+	const queryClient = useQueryClient();
+	const { audioInput } = useSelectedDevices() || {};
+
+	const selectedDeviceId = audioInput?.id;
+
+	return useCallback(
+		async ({
+			constraints: _constraints,
+			actionType,
+		}: {
+			constraints?: MediaStreamConstraints;
+			actionType: 'outgoing' | 'incoming' | 'device-change';
+		}) => {
+			return new Promise<MediaStream>((_resolve, reject) => {
+				const resolve = (stream: MediaStream) => {
+					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
+					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
+					void queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+					_resolve(stream);
+				};
+
+				const onAccept = (stream: MediaStream) => {
+					stream.getTracks().forEach((track) => {
+						const { deviceId } = track.getSettings();
+						if (!deviceId) {
+							return;
+						}
+
+						if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
+							void navigator.mediaDevices.enumerateDevices().then((devices) => {
+								const device = devices.find((device) => device.deviceId === deviceId);
+								if (!device) {
+									return;
+								}
+								setInputMediaDevice({
+									id: device.deviceId,
+									label: device.label,
+									type: 'audioinput',
+								});
+							});
+						}
+					});
+					resolve(stream);
+				};
+
+				const constraints = _constraints || {
+					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
+				};
+
+				const onConfirm = () => {
+					void requestDevice?.({
+						onReject: (...args) => {
+							const [error] = args;
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							setModal(<PermissionFlowModal type='denied' onCancel={onCancel} onConfirm={onCancel} />);
+						},
+						onAccept: (...args) => {
+							onAccept(...args);
+							setModal(null);
+						},
+						constraints,
+					});
+				};
+
+				const onCancel = () => {
+					reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
+
+					setModal(null);
+				};
+
+				if (state === 'granted') {
+					void requestDevice({
+						onAccept: resolve,
+						onReject: (error) => {
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							reject(error);
+						},
+						constraints,
+					});
+					return;
+				}
+
+				const modalType = getModalType(actionType, state);
+
+				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
+			});
+		},
+		[selectedDeviceId, state, setModal, queryClient, setInputMediaDevice, requestDevice],
+	);
+};

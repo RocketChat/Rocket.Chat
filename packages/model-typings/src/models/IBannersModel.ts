@@ -11,4 +11,6 @@ export interface IBannersModel extends IBaseModel<IBanner> {
 	disable(bannerId: string): Promise<UpdateResult | Document>;
 
 	createOrUpdate(banner: Optional<IBanner, '_updatedAt'>): Promise<UpdateResult>;
+
+	findByIds(bannerIds: string[]): FindCursor<IBanner>;
 }

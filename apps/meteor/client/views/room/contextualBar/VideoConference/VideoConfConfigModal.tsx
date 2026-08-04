@@ -1,30 +1,45 @@
-import { Modal, Button, Box, Callout, Margins } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import {
+	Modal,
+	Button,
+	Box,
+	Callout,
+	Margins,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalHeroImage,
+	ModalFooter,
+	ModalFooterAnnotation,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type VideoConfConfigModalProps = {
+export type VideoConfConfigModalProps = {
 	onClose: () => void;
 	onConfirm?: () => void;
 	isAdmin: boolean;
 };
 
-const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps): ReactElement => {
+const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps) => {
 	const { t } = useTranslation();
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</Modal.Tagline>
-					<Modal.Title>{isAdmin ? t('Configure_video_conference') : t('Video_Conference')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
-				<Modal.HeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</ModalTagline>
+					<ModalTitle>{isAdmin ? t('Configure_video_conference') : t('Video_Conference')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
+				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
-					<Box is='ul' pis={24}>
+					<Box is='ul' paddingInlineStart={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
@@ -41,30 +56,30 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Margins>
-				<Box fontScale='h3' mbs={24}>
+				<Box fontScale='h3' marginBlockStart={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout mbs={12} mbe={24} title={t('Missing_configuration')} type='warning'>
+				<Callout marginBlockStart={12} marginBlockEnd={24} title={t('Missing_configuration')} type='warning'>
 					{isAdmin
 						? t('An_app_needs_to_be_installed_and_configured')
 						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
 				</Callout>
-			</Modal.Content>
-			<Modal.Footer justifyContent='space-between'>
-				<Modal.FooterAnnotation>
+			</ModalContent>
+			<ModalFooter justifyContent='space-between'>
+				<ModalFooterAnnotation>
 					{isAdmin
 						? t('Configure_video_conference_to_make_it_available_on_this_workspace')
 						: t('Talk_to_your_workspace_administrator_about_enabling_video_conferencing')}
-				</Modal.FooterAnnotation>
-				<Modal.FooterControllers>
+				</ModalFooterAnnotation>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
 					{onConfirm && isAdmin && (
 						<Button primary onClick={onConfirm}>
 							{t('Open_settings')}
 						</Button>
 					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

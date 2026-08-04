@@ -1,23 +1,24 @@
-import { Box, Modal } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { Box, ModalFooterAnnotation, ModalIcon } from '@rocket.chat/fuselage';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
-import { dispatchToastMessage } from '../../../../lib/toast';
+import { links } from '../../../../lib/links';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
-const E2EE_RESET_KEY_LINK = 'https://go.rocket.chat/i/e2ee-guide';
+const E2EE_RESET_KEY_LINK = links.go.e2eeGuide;
 
-type ResetKeysE2EEModalProps = {
+export type ResetKeysE2EEModalProps = {
 	roomType: string;
 	roomId: string;
 	onCancel: () => void;
 };
 
-const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps): ReactElement => {
+const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps) => {
 	const { t } = useTranslation();
 	const resetRoomKeyMutation = useE2EEResetRoomKey();
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleResetRoomKey = () => {
 		resetRoomKeyMutation.mutate(
@@ -38,16 +39,16 @@ const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalPr
 
 	return (
 		<GenericModal
-			icon={<Modal.Icon color='danger' name='key' />}
+			icon={<ModalIcon color='danger' name='key' />}
 			title={t('E2E_reset_encryption_keys')}
 			variant='danger'
 			confirmText={t('E2E_reset_encryption_keys')}
-			dontAskAgain={<Modal.FooterAnnotation>{t('This_action_cannot_be_undone')}</Modal.FooterAnnotation>}
+			dontAskAgain={<ModalFooterAnnotation>{t('This_action_cannot_be_undone')}</ModalFooterAnnotation>}
 			onCancel={onCancel}
 			onConfirm={handleResetRoomKey}
 			onDismiss={() => undefined}
 		>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				<Trans i18nKey='E2E_reset_encryption_keys_modal_description' tOptions={{ roomType }}>
 					Resetting E2EE keys is only recommend if no {roomType} member has a valid key to regain access to the previously encrypted
 					content. All members may lose access to previously encrypted content.

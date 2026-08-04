@@ -1,10 +1,9 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import SidebarTogglerButton from './SidebarTogglerButton';
 
 export default {
-	title: 'Components/SidebarToggler/SidebarTogglerButton',
 	component: SidebarTogglerButton,
 	parameters: {
 		layout: 'centered',
@@ -14,11 +13,10 @@ export default {
 } satisfies Meta<typeof SidebarTogglerButton>;
 
 export const Example: StoryFn<typeof SidebarTogglerButton> = () => <SidebarTogglerButton onClick={action('onClick')} />;
+export const Default = {};
 
-const Template: StoryFn<typeof SidebarTogglerButton> = (args) => <SidebarTogglerButton {...args} />;
-
-export const Default = Template.bind({});
-export const WithBadge = Template.bind({});
-WithBadge.args = {
-	badge: 99,
+export const WithBadge = {
+	args: {
+		badge: 99,
+	},
 };

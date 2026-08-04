@@ -16,7 +16,7 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		super(db, 'server_events', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];
 	}
 
@@ -77,20 +77,6 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 			ts: {
 				$gte: since,
 			},
-		});
-	}
-
-	countFailedAttemptsByIp(ip: string): Promise<number> {
-		return this.countDocuments({
-			ip,
-			t: ServerEventType.FAILED_LOGIN_ATTEMPT,
-		});
-	}
-
-	countFailedAttemptsByUsername(username: string): Promise<number> {
-		return this.countDocuments({
-			'u.username': username,
-			't': ServerEventType.FAILED_LOGIN_ATTEMPT,
 		});
 	}
 

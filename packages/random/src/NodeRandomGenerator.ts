@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { AleaRandomGenerator } from './AleaRandomGenerator';
 import { RandomGenerator } from './RandomGenerator';
@@ -21,7 +21,7 @@ export class NodeRandomGenerator extends RandomGenerator {
 	 * @locus Anywhere
 	 * @param digits Length of the string
 	 */
-	hexString(digits: number) {
+	override hexString(digits: number) {
 		const numBytes = Math.ceil(digits / 2);
 		let bytes;
 		// Try to get cryptographically strong randomness. Fall back to

@@ -7,19 +7,50 @@ export class Sidepanel {
 		this.page = page;
 	}
 
+	get sidepanel(): Locator {
+		return this.page.getByRole('tabpanel', { name: 'Side panel' });
+	}
+
 	get sidepanelList(): Locator {
-		return this.page.getByRole('main').getByRole('list', { name: 'Channels' });
+		return this.sidepanel.getByRole('list', { name: 'Channels' });
 	}
 
 	get firstChannelFromList(): Locator {
 		return this.sidepanelList.getByRole('listitem').first();
 	}
 
-	getItemByName(name: string): Locator {
-		return this.sidepanelList.getByRole('link').filter({ hasText: name });
+	get unreadCheckbox(): Locator {
+		return this.sidepanel.getByRole('heading').getByRole('checkbox', { name: 'Unread' });
 	}
 
-	getExtendedItem(name: string, subtitle?: string): Locator {
+	get unreadToggleLabel(): Locator {
+		return this.sidepanel.getByRole('heading').locator('label', { hasText: 'Unread' });
+	}
+
+	get sidepanelBackButton(): Locator {
+		return this.sidepanel.getByRole('button', { name: 'Back' });
+	}
+
+	getSidepanelHeader(name: string): Locator {
+		return this.sidepanel.getByRole('heading', { name, exact: true });
+	}
+
+	getTeamItemByName(name: string): Locator {
+		return this.sidepanelList
+			.getByRole('link')
+			.filter({ hasText: name })
+			.filter({ hasNot: this.page.getByRole('button', { name }) });
+	}
+
+	getMainRoomByName(name: string): Locator {
+		return this.getTeamItemByName(name);
+	}
+
+	getItemByName(name: string): Locator {
+		return this.sidepanelList.getByRole('link', { name });
+	}
+
+	getSidepanelItem(name: string, subtitle?: string): Locator {
 		const regex = new RegExp(`${name}.*${subtitle}`);
 		return this.sidepanelList.getByRole('link', { name: regex });
 	}

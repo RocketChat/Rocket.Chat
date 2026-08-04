@@ -12,7 +12,7 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const queryClient = useQueryClient();
 
 	const blockContact = useEndpoint('POST', '/v1/omnichannel/contacts.block');

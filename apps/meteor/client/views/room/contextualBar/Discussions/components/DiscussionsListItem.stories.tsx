@@ -5,7 +5,8 @@ const message = {
 	ts: new Date(0),
 	username: 'guilherme.gazzo',
 	dcount: 5,
-	dlm: new Date(0).toISOString(),
+	dlm: new Date(0),
+	formatDate: (date: Date) => date.toISOString(),
 };
 
 const largeText = {
@@ -19,7 +20,6 @@ const noReplies = {
 };
 
 export default {
-	title: 'Room/Contextual Bar/Discussion/DiscussionsListItem',
 	component: DiscussionsListItem,
 };
 

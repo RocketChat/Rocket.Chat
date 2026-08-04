@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useInstallApp } from './hooks/useInstallApp';
-import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 
 const AppInstallPage = () => {
@@ -33,7 +33,7 @@ const AppInstallPage = () => {
 		<Page flexDirection='column'>
 			<PageHeader title={t('App_Installation')} />
 			<PageScrollableContent>
-				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
+				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' width='full'>
 					<Field>
 						<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
 						<FieldRow>
@@ -46,8 +46,8 @@ const AppInstallPage = () => {
 										readOnly
 										{...field}
 										value={field.value?.name || ''}
-										addon={
-											<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
+										endAddon={
+											<Button icon='upload' small primary onClick={handleUploadButtonClick} marginBlock='neg-x4' marginInlineEnd='neg-x8'>
 												{t('Browse_Files')}
 											</Button>
 										}

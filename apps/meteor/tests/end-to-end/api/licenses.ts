@@ -22,97 +22,78 @@ describe('licenses', () => {
 	after(() => deleteUser(createdUser));
 
 	describe('[/licenses.add]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(api('licenses.add'))
 				.send({
 					license: '',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if user is unauthorized', (done) => {
-			void request
+		it('should fail if user is unauthorized', async () => {
+			const res = await request
 				.post(api('licenses.add'))
 				.set(unauthorizedUserCredentials)
 				.send({
 					license: '',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				})
-				.end(done);
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 
-		it('should fail if license is invalid', (done) => {
-			void request
+		it('should fail if license is invalid', async () => {
+			const res = await request
 				.post(api('licenses.add'))
 				.set(credentials)
 				.send({
 					license: '',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 	});
 
 	describe('[/licenses.info]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.get(api('licenses.info'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+		it('should fail if not logged in', async () => {
+			const res = await request.get(api('licenses.info')).expect('Content-Type', 'application/json').expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return limited information if user is unauthorized', (done) => {
-			void request
+		it('should return limited information if user is unauthorized', async () => {
+			const res = await request
 				.get(api('licenses.info'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('license').and.to.be.an('object');
-					expect(res.body.license).to.not.have.property('license');
-					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('license').and.to.be.an('object');
+			expect(res.body.license).to.not.have.property('license');
+			expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 		});
 
-		it('should return unrestricted info if user is logged in and is authorized', (done) => {
-			void request
-				.get(api('licenses.info'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('license').and.to.be.an('object');
-					if (process.env.IS_EE) {
-						expect(res.body.license).to.have.property('license').and.to.be.an('object');
-					}
-					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
-				})
+		it('should return unrestricted info if user is logged in and is authorized', async () => {
+			const res = await request.get(api('licenses.info')).set(credentials).expect(200);
 
-				.end(done);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('license').and.to.be.an('object');
+			if (process.env.IS_EE) {
+				expect(res.body.license).to.have.property('license').and.to.be.an('object');
+			}
+			expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 		});
 	});
 });

@@ -53,9 +53,17 @@ export const starMessage = ({ messageId, requestCredentials }: { messageId: IMes
 		.send({ messageId });
 };
 
-export const pinMessage = ({ messageId, requestCredentials }: { messageId: IMessage['_id']; requestCredentials?: Credentials }) => {
+export const pinMessage = ({
+	messageId,
+	requestCredentials,
+	unpin = false,
+}: {
+	messageId: IMessage['_id'];
+	requestCredentials?: Credentials;
+	unpin?: boolean;
+}) => {
 	return request
-		.post(api('chat.pinMessage'))
+		.post(api(unpin ? 'chat.unPinMessage' : 'chat.pinMessage'))
 		.set(requestCredentials ?? credentials)
 		.send({ messageId });
 };
@@ -95,4 +103,21 @@ export const followMessage = ({ msgId, requestCredentials }: { msgId: IMessage['
 		.post(api('chat.followMessage'))
 		.set(requestCredentials ?? credentials)
 		.send({ mid: msgId });
+};
+
+export const updateMessage = ({
+	msgId,
+	requestCredentials,
+	updatedMessage,
+	roomId,
+}: {
+	msgId: IMessage['_id'];
+	requestCredentials?: Credentials;
+	updatedMessage: string;
+	roomId?: IRoom['_id'];
+}) => {
+	return request
+		.post(api('chat.update'))
+		.set(requestCredentials ?? credentials)
+		.send({ msgId, text: updatedMessage, roomId });
 };

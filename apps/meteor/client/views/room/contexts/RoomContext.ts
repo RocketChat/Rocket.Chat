@@ -1,5 +1,5 @@
-import type { IRoom, IOmnichannelRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export interface IRoomWithFederationOriginalName extends IRoom {
@@ -78,20 +78,6 @@ export const useOmnichannelRoom = (): IOmnichannelRoom => {
 	}
 
 	if (!isOmnichannelRoom(room)) {
-		throw new Error('invalid room type');
-	}
-
-	return room;
-};
-
-export const useVoipRoom = (): IVoipRoom => {
-	const { room } = useContext(RoomContext) || {};
-
-	if (!room) {
-		throw new Error('use useRoom only inside opened rooms');
-	}
-
-	if (!isVoipRoom(room)) {
 		throw new Error('invalid room type');
 	}
 

@@ -3,12 +3,12 @@ import { memo, useContext, useCallback, useState, useRef, useEffect } from 'prea
 
 import { useDispatchAction } from './Surface';
 
-const BlockContext = createContext({
-	appId: null,
-	blockId: null,
+const BlockContext = createContext<{ appId?: string; blockId?: string }>({
+	appId: undefined,
+	blockId: undefined,
 });
 
-type BlockProps = {
+export type BlockProps = {
 	appId?: string;
 	blockId?: string;
 	children: ComponentChildren;
@@ -16,12 +16,13 @@ type BlockProps = {
 
 const Block = ({ appId, blockId, children }: BlockProps) => (
 	<BlockContext.Provider
-		children={children}
 		value={{
 			appId,
 			blockId,
 		}}
-	/>
+	>
+		{children}
+	</BlockContext.Provider>
 );
 
 export const usePerformAction = (actionId: string) => {

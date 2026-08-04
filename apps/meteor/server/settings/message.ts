@@ -1,5 +1,5 @@
+import { settingsRegistry } from '.';
 import { MessageTypesValues } from '../../app/lib/lib/MessageTypes';
-import { settingsRegistry } from '../../app/settings/server';
 
 export const createMessageSettings = () =>
 	settingsRegistry.addGroup('Message', async function () {
@@ -64,6 +64,48 @@ export const createMessageSettings = () =>
 				modules: ['message-read-receipt'],
 				public: true,
 				enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+			});
+			await this.add('Message_Read_Receipt_Archive_Enabled', false, {
+				type: 'boolean',
+				enterprise: true,
+				invalidValue: false,
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Enabled_Description',
+				alert: 'Message_Read_Receipt_Archive_Enabled_Alert',
+				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
+			});
+			await this.add('Message_Read_Receipt_Archive_Retention_Days', 30, {
+				type: 'int',
+				enterprise: true,
+				invalidValue: 30,
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Retention_Days_Description',
+				enableQuery: [
+					{ _id: 'Message_Read_Receipt_Store_Users', value: true },
+					{ _id: 'Message_Read_Receipt_Archive_Enabled', value: true },
+				],
+			});
+			await this.add('Message_Read_Receipt_Archive_Cron', '0 2 * * *', {
+				type: 'string',
+				enterprise: true,
+				invalidValue: '0 2 * * *',
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Cron_Description',
+				enableQuery: [
+					{ _id: 'Message_Read_Receipt_Store_Users', value: true },
+					{ _id: 'Message_Read_Receipt_Archive_Enabled', value: true },
+				],
+			});
+			await this.add('Message_Read_Receipt_Archive_Batch_Size', 10000, {
+				type: 'int',
+				enterprise: true,
+				invalidValue: 10000,
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Batch_Size_Description',
+				enableQuery: [
+					{ _id: 'Message_Read_Receipt_Store_Users', value: true },
+					{ _id: 'Message_Read_Receipt_Archive_Enabled', value: true },
+				],
 			});
 		});
 		await this.add('Message_CustomDomain_AutoLink', '', {
@@ -165,6 +207,10 @@ export const createMessageSettings = () =>
 		// TODO: deprecate this setting in favor of App
 		await this.add('API_EmbedSafePorts', '80, 443', {
 			type: 'string',
+		});
+		await this.add('API_EmbedTimeout', 10, {
+			type: 'int',
+			enableQuery: { _id: 'API_Embed', value: true },
 		});
 		await this.add('Message_TimeFormat', 'LT', {
 			type: 'string',
@@ -270,6 +316,10 @@ export const createMessageSettings = () =>
 					key: 'microsoft-translate',
 					i18nLabel: 'AutoTranslate_Microsoft',
 				},
+				{
+					key: 'libre-translate',
+					i18nLabel: 'AutoTranslate_LibreTranslate',
+				},
 			],
 			enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 			i18nLabel: 'AutoTranslate_ServiceProvider',
@@ -329,6 +379,44 @@ export const createMessageSettings = () =>
 				},
 			],
 		});
+
+		await this.add('AutoTranslate_LibreTranslateAPIURL', '', {
+			type: 'string',
+			group: 'Message',
+			section: 'AutoTranslate_LibreTranslate',
+			public: false,
+			i18nLabel: 'AutoTranslate_LibreTranslate_API_URL',
+			enableQuery: [
+				{
+					_id: 'AutoTranslate_Enabled',
+					value: true,
+				},
+				{
+					_id: 'AutoTranslate_ServiceProvider',
+					value: 'libre-translate',
+				},
+			],
+		});
+
+		await this.add('AutoTranslate_LibreTranslateAPIKey', '', {
+			type: 'string',
+			group: 'Message',
+			section: 'AutoTranslate_LibreTranslate',
+			public: false,
+			secret: true,
+			i18nLabel: 'AutoTranslate_APIKey',
+			enableQuery: [
+				{
+					_id: 'AutoTranslate_Enabled',
+					value: true,
+				},
+				{
+					_id: 'AutoTranslate_ServiceProvider',
+					value: 'libre-translate',
+				},
+			],
+		});
+
 		await this.add('HexColorPreview_Enabled', true, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',

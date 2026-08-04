@@ -10,7 +10,7 @@ export const normalizeQueueAlert = async (queueInfo: any) => {
 	if (!queueInfo) {
 		return;
 	}
-	const { default: formatDistance } = await import('date-fns/formatDistance');
+	const { formatDistance } = await import('date-fns/formatDistance');
 	const { spot, estimatedWaitTimeSeconds } = queueInfo;
 	const locale = await getDateFnsLocale();
 	const estimatedWaitTime =

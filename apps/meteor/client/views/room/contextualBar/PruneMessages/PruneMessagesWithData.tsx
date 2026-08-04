@@ -1,16 +1,14 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
-import type { ReactElement } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
-import GenericModal from '../../../../components/GenericModal';
+import { formatDate } from '../../../../lib/utils/dateFormat';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const getTimeZoneOffset = (): string => {
 	const offset = new Date().getTimezoneOffset();
@@ -37,7 +35,7 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = (): ReactElement => {
+const PruneMessagesWithData = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
@@ -69,7 +67,7 @@ const PruneMessagesWithData = (): ReactElement => {
 		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
 	}, [olderDate, olderTime]);
 
-	const handlePrune = useEffectEvent((): void => {
+	const handlePrune = useStableCallback((): void => {
 		const handlePruneAction = async () => {
 			const limit = DEFAULT_PRUNE_LIMIT;
 
@@ -94,10 +92,13 @@ const PruneMessagesWithData = (): ReactElement => {
 				setCounter(count);
 
 				if (count < 1) {
-					throw new Error(t('No_messages_found_to_prune'));
+					throw new Error(attached ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
+				dispatchToastMessage({
+					type: 'success',
+					message: attached ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
+				});
 				methods.reset();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -134,7 +135,7 @@ const PruneMessagesWithData = (): ReactElement => {
 			return (
 				t('Prune_Warning_between', {
 					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
+					sprintf: [filesOrMessages, name, formatDate(fromDate, 'L LT'), formatDate(toDate, 'L LT')],
 				}) +
 				exceptPinned +
 				ifFrom
@@ -145,7 +146,7 @@ const PruneMessagesWithData = (): ReactElement => {
 			return (
 				t('Prune_Warning_after', {
 					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT')],
+					sprintf: [filesOrMessages, name, formatDate(fromDate, 'L LT')],
 				}) +
 				exceptPinned +
 				ifFrom
@@ -156,7 +157,7 @@ const PruneMessagesWithData = (): ReactElement => {
 			return (
 				t('Prune_Warning_before', {
 					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(toDate).format('L LT')],
+					sprintf: [filesOrMessages, name, formatDate(toDate, 'L LT')],
 				}) +
 				exceptPinned +
 				ifFrom

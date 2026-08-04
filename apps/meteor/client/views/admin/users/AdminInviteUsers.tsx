@@ -9,14 +9,14 @@ import {
 	StatesTitle,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
+import { validateEmail } from '@rocket.chat/tools';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { validateEmail } from '../../../../lib/emailValidator';
-import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 
 // TODO: Replace using RHF
@@ -59,17 +59,17 @@ const AdminInviteUsers = () => {
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box is='h2' fontScale='h2' mb={8}>
+				<Box is='h2' fontScale='h2' marginBlock={8}>
 					{t('Send_invitation_email')}
 				</Box>
-				<Box fontScale='p2' mb={8}>
+				<Box fontScale='p2' marginBlock={8}>
 					{t('Send_invitation_email_info')}
 				</Box>
 				<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb={8}>
+					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' marginBlock={8}>
 						{t('Send')}
 					</Button>
 				</ButtonGroup>

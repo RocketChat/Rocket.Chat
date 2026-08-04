@@ -6,16 +6,16 @@ import type { IUser } from '../users';
  * - IPostMessageStarred
  */
 export interface IMessageStarContext {
-    /**
-     * The message that was starred or unstarred
-     */
-    message: IMessage;
-    /**
-     * The user who starred the message
-     */
-    user: IUser;
-    /**
-     * If the message was starred or unstarred
-     */
-    isStarred: boolean;
+	/**
+	 * The message that was starred or unstarred
+	 */
+	message: IMessage;
+	/**
+	 * The user who starred the message
+	 */
+	user: IUser;
+	/**
+	 * If the message was starred or unstarred
+	 */
+	isStarred: boolean;
 }

@@ -1,16 +1,17 @@
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import moment from 'moment-timezone';
-import type { ReactElement } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { canonicalizeTimezone } from '@rocket.chat/tools';
 
+import { useTimezoneNameList } from '../../../../../hooks/useTimezoneNameList';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type SelectTimezoneSettingInputProps = SettingInputProps;
+export type SelectTimezoneSettingInputProps = SettingInputProps;
 
 function SelectTimezoneSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -19,7 +20,9 @@ function SelectTimezoneSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: SelectTimezoneSettingInputProps): ReactElement {
+}: SelectTimezoneSettingInputProps) {
+	const timezoneNames = useTimezoneNameList();
+
 	const handleChange = (value: string): void => {
 		onChangeValue?.(value);
 	};
@@ -30,21 +33,21 @@ function SelectTimezoneSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Select
-					data-qa-setting-id={_id}
 					id={_id}
-					value={value}
+					value={typeof value === 'string' ? canonicalizeTimezone(value) : value}
 					placeholder={placeholder}
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={(value) => handleChange(String(value))}
-					options={moment.tz.names().map((key) => [key, key])}
+					options={timezoneNames.map((key) => [key, key])}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

@@ -1,6 +1,7 @@
 import { Random } from '@rocket.chat/random';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
+import { positiveOrDisabled, notGreaterThanSetting, notLowerThanSetting } from './functions/validationRuleBuilders';
 
 export const createAccountSettings = () =>
 	settingsRegistry.addGroup('Accounts', async function () {
@@ -181,6 +182,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowAnonymousWrite', false, {
 			type: 'boolean',
 			public: true,
+			alert: 'Accounts_AllowAnonymousWrite_Deprecation_Alert',
 			enableQuery: {
 				_id: 'Accounts_AllowAnonymousRead',
 				value: true,
@@ -457,6 +459,11 @@ export const createAccountSettings = () =>
 				],
 				public: true,
 			});
+			await this.add('Accounts_Default_User_Preferences_desktopNotificationVoiceCalls', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notification_Desktop_show_voice_calls',
+			});
 			await this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 				type: 'select',
 				values: [
@@ -700,21 +707,24 @@ export const createAccountSettings = () =>
 			});
 
 			await this.add('Accounts_Default_User_Preferences_masterVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Master_volume',
+				i18nDescription: 'Master_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Notification_volume',
+				i18nDescription: 'Notification_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Call_ringer_volume',
+				i18nDescription: 'Call_ringer_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
@@ -801,7 +811,7 @@ export const createAccountSettings = () =>
 		});
 
 		await this.section('Password_Policy', async function () {
-			await this.add('Accounts_Password_Policy_Enabled', false, {
+			await this.add('Accounts_Password_Policy_Enabled', true, {
 				type: 'boolean',
 				public: true,
 			});
@@ -812,16 +822,18 @@ export const createAccountSettings = () =>
 				public: true,
 			};
 
-			await this.add('Accounts_Password_Policy_MinLength', 7, {
+			await this.add('Accounts_Password_Policy_MinLength', 14, {
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [positiveOrDisabled(), notGreaterThanSetting('Accounts_Password_Policy_MaxLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [positiveOrDisabled(), notLowerThanSetting('Accounts_Password_Policy_MinLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {

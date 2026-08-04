@@ -1,7 +1,8 @@
-import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
+import { useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
+import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 
@@ -14,17 +15,23 @@ import UsernameCheck from './UsernameCheck';
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
  * renders the page, without creating an user (not even an anonymous user)
  */
-const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }): ReactElement => {
-	const uid = useUserId();
+export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
+
+const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
+	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
 
-	if (uid) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+	if (user) {
+		return (
+			<LoggedInArea>
+				<UsernameCheck>{children}</UsernameCheck>
+			</LoggedInArea>
+		);
 	}
 
 	if (!forceLogin && guest) {
-		return <RegistrationRoute defaultRoute='guest' children={children} />;
+		return <RegistrationRoute defaultRoute='guest'>{children}</RegistrationRoute>;
 	}
 
 	if (!forceLogin && allowAnonymousRead) {

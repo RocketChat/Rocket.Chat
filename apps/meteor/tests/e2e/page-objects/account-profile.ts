@@ -1,15 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AccountSidenav } from './fragments/account-sidenav';
+import { Account } from './account';
+import { DeleteAccountModal } from './fragments';
 
-export class AccountProfile {
-	private readonly page: Page;
-
-	readonly sidenav: AccountSidenav;
+export class AccountProfile extends Account {
+	readonly deleteAccountModal: DeleteAccountModal;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new AccountSidenav(page);
+		super(page);
+		this.deleteAccountModal = new DeleteAccountModal(page);
 	}
 
 	get inputName(): Locator {
@@ -17,19 +16,20 @@ export class AccountProfile {
 	}
 
 	get inputAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
+		return this.page.getByRole('textbox', { name: 'Use URL for avatar' });
 	}
 
 	get btnSetAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
+		return this.page.getByRole('button', { name: 'Add URL', exact: true });
 	}
 
 	get inputUsername(): Locator {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
 
+	// TODO: remove this locator
 	get btnSubmit(): Locator {
-		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
 	get avatarFileInput(): Locator {
@@ -37,11 +37,32 @@ export class AccountProfile {
 	}
 
 	get userAvatarEditor(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+		return this.page.getByAltText('profile picture');
 	}
 
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
+
+	get inputStatusText(): Locator {
+		return this.page.getByRole('textbox', { name: 'Status' });
+	}
+
+	get selectClearStatusAfter(): Locator {
+		return this.page.getByLabel('Clear status after');
+	}
+
+	async chooseClearStatusAfter(option: string): Promise<void> {
+		await this.selectClearStatusAfter.click();
+		await this.page.getByRole('option', { name: new RegExp(option) }).click();
+	}
+
+	get preferencesSoundAccordionOption(): Locator {
+		return this.page.locator('h2:has-text("Sound")');
+	}
+
+	get preferencesCallRingerVolumeSlider(): Locator {
+		return this.page.getByRole('slider', { name: 'Call Ringer Volume' });
 	}
 
 	get btnClose(): Locator {
@@ -64,6 +85,14 @@ export class AccountProfile {
 		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
 	}
 
+	get btnTokenAddedOk(): Locator {
+		return this.tokenAddedModal.locator('role=button[name="Ok"]');
+	}
+
+	get tokensRows(): Locator {
+		return this.page.locator('table tbody tr');
+	}
+
 	tokenInTable(name: string): Locator {
 		return this.page.locator(`tr[qa-token-name="${name}"]`);
 	}
@@ -72,44 +101,16 @@ export class AccountProfile {
 		return this.page.locator('role=button[name="Regenerate token"]');
 	}
 
+	get removeTokenModal(): Locator {
+		return this.page.locator('role=dialog', { hasText: 'personal access token' });
+	}
+
 	get btnRemoveTokenModal(): Locator {
-		return this.page.locator('role=button[name="Remove"]');
+		return this.removeTokenModal.getByRole('button', { name: 'Remove' });
 	}
 
 	get inputImageFile(): Locator {
 		return this.page.locator('input[type=file]');
-	}
-
-	get securityHeader(): Locator {
-		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
-	}
-
-	get securityPasswordSection(): Locator {
-		return this.page.locator('[role="button"]:has-text("Password")');
-	}
-
-	get security2FASection(): Locator {
-		return this.page.locator('[role="button"]:has-text("Two Factor Authentication")');
-	}
-
-	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('[role="button"]:has-text("End-to-end encryption")');
-	}
-
-	get securityE2EEncryptionResetKeyButton(): Locator {
-		return this.page.locator("role=button[name='Reset E2EE key']");
-	}
-
-	get securityE2EEncryptionPassword(): Locator {
-		return this.page.locator('role=textbox[name="New encryption password"]');
-	}
-
-	get securityE2EEncryptionPasswordConfirmation(): Locator {
-		return this.page.locator('role=textbox[name="Confirm new encryption password"]');
-	}
-
-	get securityE2EEncryptionSavePasswordButton(): Locator {
-		return this.page.locator("role=button[name='Save changes']");
 	}
 
 	getAccordionItemByName(name: string): Locator {
@@ -124,11 +125,19 @@ export class AccountProfile {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
-	get enableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Enable two-factor authentication via Email"]');
+	get profileTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 
-	get disableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Disable two-factor authentication via Email"]');
+	get btnDeleteMyAccount(): Locator {
+		return this.page.getByRole('button', { name: 'Delete my account' });
+	}
+
+	private getErrorAlertByText(text: string): Locator {
+		return this.page.getByRole('alert').filter({ hasText: text });
+	}
+
+	get errorInvalidUrl(): Locator {
+		return this.getErrorAlertByText('Invalid image URL');
 	}
 }

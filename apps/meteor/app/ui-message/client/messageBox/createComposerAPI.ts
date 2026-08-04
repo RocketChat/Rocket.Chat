@@ -1,13 +1,23 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Accounts } from 'meteor/accounts-base';
+import type { RefObject } from 'react';
 
+import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+import { settings } from '../../../../client/lib/settings';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+export const createComposerAPI = (
+	input: HTMLTextAreaElement,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
+	quoteChainLimit: number,
+	composerRef: RefObject<HTMLElement | null>,
+	{ rid, tmid }: { rid: string; tmid?: string },
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -30,19 +40,12 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
-			return;
-		}
-
-		Accounts.storageLocation.removeItem(storageID);
+		persistDraft(input.value);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
-
-	input.addEventListener('input', persist);
 
 	const setText = (
 		text: string,
@@ -108,7 +111,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -192,29 +195,34 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		setEditing(editing);
 	};
 
-	const [formatters, stopFormatterTracker] = (() => {
+	const [formatters, stopFormatterSubscription] = (() => {
 		let actions: FormattingButton[] = [];
 
-		const c = Tracker.autorun(() => {
+		const recompute = (): void => {
 			actions = formattingButtons.filter(({ condition }) => !condition || condition());
 			emitter.emit('formatting');
-		});
+		};
+		recompute();
+		// Coarse-grained: fires on every setting change, but the only condition()
+		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
+		// extra work per unrelated setting change is negligible.
+		const stop = settings.observe('*', recompute);
 
 		return [
 			{
 				get: () => actions,
 				subscribe: (callback: () => void) => emitter.on('formatting', callback),
 			},
-			c,
+			stop,
 		];
 	})();
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		stopFormatterTracker.stop();
+		stopFormatterSubscription();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -223,11 +231,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
 
 			if (endPatternFound) {
 				insertText(selectedText);
@@ -244,7 +252,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
 			}
 		}
 
@@ -258,18 +270,24 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		triggerEvent(input, 'change');
 
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
+	setText(initialDraft, {
 		skipFocus: true,
 	});
 
+	input.addEventListener('input', persist);
+
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
-		const { selectionStart, selectionEnd } = input;
-
 		// Selects the text that is connected to the cursor
 		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
 		const textAreaTxt = input.value;
@@ -278,11 +296,9 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selectionStart + text.length;
-		input.selectionEnd = selectionStart + text.length;
-		if (selectionStart !== selectionEnd) {
-			input.selectionStart = selectionStart;
-		}
+		const cursorPosition = (selection.start ?? 0) + text.length;
+		input.selectionStart = cursorPosition;
+		input.selectionEnd = cursorPosition;
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
@@ -291,6 +307,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	return {
+		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),
@@ -342,5 +359,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

@@ -1,6 +1,6 @@
 import type { IExportOperation, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IExportOperationsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -9,7 +9,7 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		super(db, 'export_operations', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
 
@@ -37,15 +37,6 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		};
 
 		return this.findOne(query, { sort: { createdAt: -1 } });
-	}
-
-	findAllPendingBeforeMyRequest(requestDay: Date): FindCursor<IExportOperation> {
-		const query = {
-			status: { $nin: ['completed', 'skipped'] },
-			createdAt: { $lt: requestDay },
-		};
-
-		return this.find(query);
 	}
 
 	countAllPendingBeforeMyRequest(requestDay: Date): Promise<number> {

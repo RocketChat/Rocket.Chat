@@ -40,6 +40,16 @@ Meteor.startup(() => {
 			return;
 		}
 
+		const _messageReceived = session.heartbeat.messageReceived.bind(session.heartbeat);
+		session.heartbeat.messageReceived = function messageReceived() {
+			if (this._seenPacket === false) {
+				void Presence.updateConnection(login.user._id, login.connection.id).catch((err) => {
+					console.error('Error updating connection presence on heartbeat:', err);
+				});
+			}
+			return _messageReceived();
+		};
+
 		void (async function () {
 			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();

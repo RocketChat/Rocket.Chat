@@ -39,9 +39,13 @@ export const subscriptionFields = {
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
 	oldRoomKeys: 1,
+	draft: 1,
+	threadDrafts: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
+	status: 1,
+	inviter: 1,
 
 	// Omnichannel fields
 	department: 1,
@@ -76,7 +80,6 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
-	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
@@ -114,15 +117,14 @@ export const roomFields = {
 
 	// Federation fields
 	federated: 1,
+	federation: 1,
 
 	// fields used by DMs
 	usernames: 1,
 	uids: 1,
 
-	// Voip fields
-	queue: 1,
-	callDuration: 1,
-	callTotalHoldTime: 1,
-	callWaitingTime: 1,
 	usersWaitingForE2EKeys: 1,
+
+	// ABAC fields
+	abacAttributes: 1,
 } as const;

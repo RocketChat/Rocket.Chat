@@ -3,9 +3,9 @@ import type { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../lib/cloud';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 type NpsSurveyData = {
 	id: string;
@@ -36,6 +36,8 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			ignoreSsrfValidation: true,
 		});
 
 		if (!result.ok) {
@@ -62,8 +64,8 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 		};
 
 		await Banner.create(banner);
-	} catch (e) {
-		SystemLogger.error(e);
+	} catch (err) {
+		SystemLogger.error({ err });
 		return false;
 	}
 };

@@ -1,8 +1,10 @@
 import { ButtonGroup, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const EmojiPickerCategoryHeader = (props: ComponentProps<typeof ButtonGroup>) => (
-	<Box mbs={12} mi={12}>
+export type EmojiPickerCategoryHeaderProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
+
+const EmojiPickerCategoryHeader = (props: EmojiPickerCategoryHeaderProps) => (
+	<Box marginBlockStart={12} marginInline={12}>
 		<ButtonGroup small stretch {...props} />
 	</Box>
 );

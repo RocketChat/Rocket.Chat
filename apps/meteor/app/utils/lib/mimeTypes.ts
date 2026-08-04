@@ -12,6 +12,11 @@ const getExtension = (param: string): string => {
 	return !extension || typeof extension === 'boolean' ? '' : extension;
 };
 
+const getMimeTypeFromFileName = (fileName: string): string => {
+	const fileMimeType = mime.lookup(fileName);
+	return typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream';
+};
+
 const getMimeType = (mimetype: string, fileName: string): string => {
 	// If the extension from the mimetype is different from the file extension, the file
 	// extension may be wrong so use the informed mimetype
@@ -20,8 +25,7 @@ const getMimeType = (mimetype: string, fileName: string): string => {
 		return mimetype;
 	}
 
-	const fileMimeType = mime.lookup(fileName);
-	return typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream';
+	return getMimeTypeFromFileName(fileName);
 };
 
-export { mime, getExtension, getMimeType };
+export { mime, getExtension, getMimeType, getMimeTypeFromFileName };

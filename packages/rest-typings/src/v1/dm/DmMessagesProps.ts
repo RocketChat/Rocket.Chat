@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({ coerceTypes: true });
+import { ajvQuery } from '../Ajv';
 
 export type DmMessagesProps = PaginatedRequest<
 	({ roomId: string } | { username: string }) & {
@@ -14,7 +11,7 @@ export type DmMessagesProps = PaginatedRequest<
 	}
 >;
 
-export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
+export const isDmMessagesProps = ajvQuery.compile<DmMessagesProps>({
 	oneOf: [
 		{
 			type: 'object',

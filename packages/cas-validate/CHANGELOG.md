@@ -1,5 +1,29 @@
 # @rocket.chat/cas-validate
 
+## 0.0.4
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 0.0.4-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 0.0.3
+
+### Patch Changes
+
+- ([#35115](https://github.com/RocketChat/Rocket.Chat/pull/35115) by [@tapiarafael](https://github.com/tapiarafael)) Fixes a problem with CAS when URL connection ended with `/`
+
+## 0.0.3-rc.0
+
+### Patch Changes
+
+- ([#35115](https://github.com/RocketChat/Rocket.Chat/pull/35115)) Fixes a problem with CAS when URL connection ended with `/`
+
 ## 0.0.2
 
 ### Patch Changes

@@ -1,3 +1,4 @@
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { IUser } from './IUser';
 
@@ -7,12 +8,13 @@ export interface ISessionDevice {
 	longVersion: string;
 	os: {
 		name: string;
-		version: string;
+		// Empty values are stripped at capture time (SAUMonitor.removeEmptyProps), so version may be absent at runtime.
+		version?: string;
 	};
 	version: string;
 }
-export interface ISession {
-	_id: string;
+
+export interface ISession extends IRocketChatRecord {
 	type: 'session' | 'computed-session' | 'user_daily';
 	mostImportantRole: IRole['_id'];
 	userId: string;
@@ -24,7 +26,6 @@ export interface ISession {
 	day: number;
 	instanceId: string;
 	sessionId: string;
-	_updatedAt: Date;
 	createdAt: Date;
 	host: string;
 	ip: string;
@@ -45,9 +46,11 @@ type SessionAggregationResult = {
 export type UserSessionAggregationResult = SessionAggregationResult & {
 	data: UserSessionAggregation[];
 };
+
 export type DeviceSessionAggregationResult = SessionAggregationResult & {
 	data: DeviceSessionAggregation[];
 };
+
 export type OSSessionAggregationResult = SessionAggregationResult & {
 	data: OSSessionAggregation[];
 };
@@ -57,6 +60,7 @@ export type UserSessionAggregation = Pick<ISession, '_id'> & {
 	sessions: number;
 	roles: { role: string; count: number; sessions: number; time: number }[];
 };
+
 export type DeviceSessionAggregation = Pick<ISession, '_id'> & {
 	type: string;
 	name: string;
@@ -64,6 +68,7 @@ export type DeviceSessionAggregation = Pick<ISession, '_id'> & {
 	count: number;
 	time: number;
 };
+
 export type OSSessionAggregation = Pick<ISession, '_id'> & {
 	name: string;
 	version: string;
@@ -71,7 +76,11 @@ export type OSSessionAggregation = Pick<ISession, '_id'> & {
 	time: number;
 };
 
-export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'device' | 'host' | 'ip' | 'logoutAt' | 'userId' | 'loginAt'>;
+export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'device' | 'host' | 'ip' | 'logoutAt' | 'userId' | 'loginAt'> & {
+	current?: boolean;
+};
+
 export type DeviceManagementPopulatedSession = DeviceManagementSession & {
-	_user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
+	// The users $lookup uses preserveNullAndEmptyArrays, so an unmatched session has no _user.
+	_user?: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
 };

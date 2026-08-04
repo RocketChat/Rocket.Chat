@@ -15,6 +15,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'muted'
 		| 'federated'
 		| 'lm'
+		| 'abacAttributes'
 	> &
 	Pick<
 		IOmnichannelRoom,
@@ -35,4 +36,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'queuedAt'
 	> & {
 		source?: IOmnichannelRoom['source'];
-	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'>;
+	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'> & {
+		lowerCaseName: string;
+		lowerCaseFName: string;
+	};

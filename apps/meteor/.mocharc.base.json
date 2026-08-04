@@ -3,7 +3,7 @@
 	"reporter": "spec",
 	"extension": ["js", "ts", "tsx"],
 	"require": [
-		"ts-node/register",
+		"tsx",
 		"./tests/setup/chaiPlugins.ts"
 	],
 	"watch-files": [
