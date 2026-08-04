@@ -1,3 +1,4 @@
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
@@ -231,8 +232,16 @@ export const addProfileRoutes = (router: ClientRouter) => {
 					};
 				}
 
-				// TODO(federation-sdk): setUserProfile(userId, {displayname?, avatar_url?}) — global, propagates to rooms
-				return notImplemented('Global profile update not yet implemented', { userId });
+				const body = await c.req.json();
+
+				await FederationMatrix.setUserProfile(userId, {
+					avatar_url: body.avatar_url,
+				});
+
+				return {
+					statusCode: 200,
+					body: {},
+				};
 			},
 		);
 };
