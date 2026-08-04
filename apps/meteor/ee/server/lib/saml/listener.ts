@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
+import { License } from '@rocket.chat/license';
 import bodyParser from 'body-parser';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +10,7 @@ import { WebApp } from 'meteor/webapp';
 import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import { SystemLogger } from '../logger/system';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -44,6 +45,11 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 	try {
 		const samlObject = samlUrlToObject(req.originalUrl);
 		if (!samlObject?.serviceName) {
+			next();
+			return;
+		}
+
+		if (!License.hasModule('saml-enterprise')) {
 			next();
 			return;
 		}

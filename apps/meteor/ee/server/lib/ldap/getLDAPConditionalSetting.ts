@@ -1,6 +1,6 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings';
+import { settings } from '../../../../server/settings';
 
 export function getLDAPConditionalSetting<T extends SettingValue = SettingValue>(settingName: string): T | undefined {
 	const isActiveDirectory = settings.get<string>('LDAP_Server_Type') === 'ad';

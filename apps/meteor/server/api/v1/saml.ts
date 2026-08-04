@@ -7,7 +7,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { FetchError, serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { parseIdpMetadata } from '../../lib/saml/lib/parsers/IdpMetadata';
+import { parseIdpMetadata } from '../../../ee/server/lib/saml/lib/parsers/IdpMetadata';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
