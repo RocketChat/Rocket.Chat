@@ -114,6 +114,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
 
+			startCall(true);
 		}
 	};
 
