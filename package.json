@@ -128,6 +128,7 @@
 		"npm-run-all/shell-quote": "1.9.0",
 		"socks-proxy-agent/socks": "^2.8.9",
 		"mongodb/socks": "^2.8.9",
+		"socks/ip-address": "10.4.0",
 		"underscore": "1.13.8",
 		"ws@npm:^7.5.3": "7.5.11",
 		"ws@npm:^8": "^8.20.1",
