@@ -1050,16 +1050,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			avatar_url?: string;
 		},
 	): Promise<void> {
-		const [username] = userId.slice(1).split(':');
-
-		const user = await Users.findOneByUsername(username);
+		const user = await Users.findOneByUsername(userId);
 
 		if (!user) {
 			return;
 		}
-
+		
 		const subs = await Subscriptions.findJoinedByUserId<Pick<ISubscription, 'rid'>>(user._id, { projection: { rid: 1 } }).toArray();
-
 		const rooms = await Rooms.findFederatedByIds<Pick<IRoomNativeFederated, '_id' | 'federation' | 'federated'>>(
 			subs.map(({ rid }) => rid),
 			{ projection: { _id: 1, federation: 1, federated: 1 } },

@@ -221,6 +221,13 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				const userId = c.req.param('userId');
 				const username = c.get('impersonatedUserId') as string;
 
+				if (userId !== (c.req.query('user_id') ?? username)) {
+					return {
+						statusCode: 403,
+						body: { errcode: 'M_FORBIDDEN', error: 'Cannot set the avatar of another user' },
+					};
+				}
+
 				const user = await Users.findOneByUsername(username);
 				if (!user) {
 					return {

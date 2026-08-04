@@ -35,11 +35,11 @@ export interface IFederationMatrixService {
 	notifyRoomRead(params: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void>;
 	updateUserName(user: IUser): Promise<void>;
 	setUserProfile(
-		userId: string,
-		profile: {
-			displayname?: string;
-			avatar_url?: string;
-		},
+    	userId: string,
+    	profile: {
+        	displayname?: string;
+        	avatar_url?: string | null;
+    	},
 	): Promise<void>;
 	joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean>;
 	saveFederationMessage(event: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void>;
