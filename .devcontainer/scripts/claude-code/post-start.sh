@@ -20,6 +20,10 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # claude-code feature installs — that one is unused here.
 sudo bash "$here/init-firewall.sh"
 
+# Brings ~/.claude.json back after a rebuild — it sits outside the shared config
+# volume, unlike the backups it is restored from.
+bash "$here/restore-claude-json.sh"
+
 # Installs the host's user-level skills, staged into the workspace by
 # initialize.sh. Here rather than on-create so editing a skill on the host takes
 # effect on a restart.
