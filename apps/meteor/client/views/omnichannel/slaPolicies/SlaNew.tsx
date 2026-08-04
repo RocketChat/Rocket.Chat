@@ -1,6 +1,10 @@
 import SlaEdit from './SlaEdit';
 
-function SlaNew({ reload }: { reload: () => void }) {
+export type SlaNewProps = {
+	reload: () => void;
+};
+
+function SlaNew({ reload }: SlaNewProps) {
 	return <SlaEdit isNew reload={reload} />;
 }
 

@@ -8,7 +8,12 @@ import { useTranslation } from 'react-i18next';
 import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
 
-const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClose: () => void }) => {
+export type TagEditWithDataProps = {
+	tagId: ILivechatTag['_id'];
+	onClose: () => void;
+};
+
+const TagEditWithData = ({ tagId, onClose }: TagEditWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getTagById = useEndpoint('GET', '/v1/livechat/tags/:tagId', { tagId });

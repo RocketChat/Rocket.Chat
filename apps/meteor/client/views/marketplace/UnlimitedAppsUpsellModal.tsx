@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import GenericUpsellModal from '../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 
-const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
+export type UnlimitedAppsUpsellModalProps = {
+	onClose: () => void;
+};
+
+const UnlimitedAppsUpsellModal = ({ onClose }: UnlimitedAppsUpsellModalProps) => {
 	const { t } = useTranslation();
 	const { handleManageSubscription, cloudWorkspaceHadTrial } = useUpsellActions();
 

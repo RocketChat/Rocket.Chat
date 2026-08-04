@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useSettingSelectOptions } from '../hooks/useSettingSelectOptions';
 
-export const SettingSelect = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+export type SettingSelectProps = {
+	value: string;
+	onChange: (value: string) => void;
+};
+
+export const SettingSelect = ({ value, onChange }: SettingSelectProps) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState<string>('');
 

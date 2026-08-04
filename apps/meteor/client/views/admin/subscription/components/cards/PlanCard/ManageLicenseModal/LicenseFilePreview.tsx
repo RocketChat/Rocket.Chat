@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { getFileExtension } from '../../../../../../../../lib/utils/getFileExtension';
 import { formatBytes } from '../../../../../../../lib/utils/formatBytes';
 
-const LicenseFilePreview = ({ selectedFile, handleRemoveFile }: { selectedFile: File; handleRemoveFile: () => void }) => {
+export type LicenseFilePreviewProps = {
+	selectedFile: File;
+	handleRemoveFile: () => void;
+};
+
+const LicenseFilePreview = ({ selectedFile, handleRemoveFile }: LicenseFilePreviewProps) => {
 	const { t } = useTranslation();
 
 	return (

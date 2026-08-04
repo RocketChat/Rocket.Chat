@@ -6,7 +6,12 @@ import { useQuery } from '@tanstack/react-query';
 
 import TagEdit from './TagEdit';
 
-const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: Serialized<ILivechatTag>; onClose: () => void }) => {
+export type TagEditWithDepartmentDataProps = {
+	tagData: Serialized<ILivechatTag>;
+	onClose: () => void;
+};
+
+const TagEditWithDepartmentData = ({ tagData, onClose }: TagEditWithDepartmentDataProps) => {
 	const t = useTranslation();
 
 	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');

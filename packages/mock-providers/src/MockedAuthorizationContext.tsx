@@ -3,15 +3,13 @@ import type { ContextType, ReactNode } from 'react';
 
 const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
 
-export const MockedAuthorizationContext = ({
-	permissions = [],
-	roles = [],
-	children,
-}: {
+export type MockedAuthorizationContextProps = {
 	permissions: string[];
 	roles?: string[];
 	children: ReactNode;
-}) => {
+};
+
+export const MockedAuthorizationContext = ({ permissions = [], roles = [], children }: MockedAuthorizationContextProps) => {
 	return (
 		<AuthorizationContext.Provider
 			value={{

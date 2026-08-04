@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
 
-export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }) => {
+export type EmailConfirmationFormProps = {
+	email?: string;
+	onBackToLogin: () => void;
+};
+
+export const EmailConfirmationForm = ({ email, onBackToLogin }: EmailConfirmationFormProps) => {
 	const { t } = useTranslation();
 
 	const basicEmailRegex = /^[^@]+@[^@]+$/;

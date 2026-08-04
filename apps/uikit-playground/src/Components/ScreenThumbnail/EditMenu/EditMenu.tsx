@@ -5,15 +5,7 @@ import { type ComponentProps, useRef, useState, type ChangeEvent } from 'react';
 import { formatDate } from '../../../utils/formatDate';
 import EditableLabel from '../EditableLabel/EditableLabel';
 
-const EditMenu = ({
-	name,
-	date,
-	onChange,
-	onBlur,
-	onDuplicate,
-	onDelete,
-	labelProps,
-}: {
+export type EditMenuProps = {
 	name: string;
 	date: string;
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -21,7 +13,9 @@ const EditMenu = ({
 	onDelete?: () => void;
 	onBlur: () => void;
 	labelProps?: ComponentProps<typeof EditableLabel>;
-}) => {
+};
+
+const EditMenu = ({ name, date, onChange, onBlur, onDuplicate, onDelete, labelProps }: EditMenuProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);

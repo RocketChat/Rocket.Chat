@@ -4,7 +4,11 @@ import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import EditRoomInfo from './EditRoomInfo';
 import { useRoom } from '../../../contexts/RoomContext';
 
-const EditRoomInfoWithData = ({ onClickBack }: { onClickBack: () => void }) => {
+export type EditRoomInfoWithDataProps = {
+	onClickBack: () => void;
+};
+
+const EditRoomInfoWithData = ({ onClickBack }: EditRoomInfoWithDataProps) => {
 	const room = useRoom() as IRoomWithRetentionPolicy;
 	const { closeTab } = useRoomToolbox();
 

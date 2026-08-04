@@ -1,9 +1,4 @@
-const ConnectionLine = ({
-	fromX,
-	fromY,
-	toX,
-	toY,
-}: {
+export type ConnectionLineProps = {
 	fromX: number;
 	fromY: number;
 	fromPosition: string;
@@ -11,7 +6,9 @@ const ConnectionLine = ({
 	toY: number;
 	toPosition: string;
 	connectionLineType: string;
-}) => (
+};
+
+const ConnectionLine = ({ fromX, fromY, toX, toY }: ConnectionLineProps) => (
 	<g>
 		<path
 			fill='none'

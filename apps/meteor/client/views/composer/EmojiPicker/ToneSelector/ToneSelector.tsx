@@ -5,7 +5,12 @@ import { useMemo, useRef, useCallback, useEffect } from 'react';
 
 import ToneItem from './ToneItem';
 
-const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number) => void }) => {
+export type ToneSelectorProps = {
+	tone: number;
+	setTone: (tone: number) => void;
+};
+
+const ToneSelector = ({ tone, setTone }: ToneSelectorProps) => {
 	const options = useMemo(() => {
 		const renderOption = (tone: number) => <ToneItem tone={tone} />;
 

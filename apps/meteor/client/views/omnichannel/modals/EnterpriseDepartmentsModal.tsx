@@ -20,9 +20,13 @@ import { useTranslation } from 'react-i18next';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
+export type EnterpriseDepartmentsModalProps = {
+	closeModal: () => void;
+};
+
 // TODO: use `GenericModal` instead of creating a new modal from scratch
 // This seems a upSell modal for enterprise feature
-const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) => {
+const EnterpriseDepartmentsModal = ({ closeModal }: EnterpriseDepartmentsModalProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const ref = useRef<HTMLDivElement>(null);

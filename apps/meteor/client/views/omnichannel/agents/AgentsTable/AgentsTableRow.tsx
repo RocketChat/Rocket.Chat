@@ -6,10 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveAgent } from '../hooks/useRemoveAgent';
 
-const AgentsTableRow = ({
-	user: { _id, name, username, avatarETag, emails, statusLivechat },
-	mediaQuery,
-}: {
+export type AgentsTableRowProps = {
 	user: {
 		_id: string;
 		name?: string;
@@ -19,7 +16,9 @@ const AgentsTableRow = ({
 		statusLivechat: string;
 	};
 	mediaQuery: boolean;
-}) => {
+};
+
+const AgentsTableRow = ({ user: { _id, name, username, avatarETag, emails, statusLivechat }, mediaQuery }: AgentsTableRowProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 

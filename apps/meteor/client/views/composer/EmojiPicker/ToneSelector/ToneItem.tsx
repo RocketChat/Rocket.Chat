@@ -8,7 +8,11 @@ const TONE_EMOJIS: Record<number, string> = {
 	5: '✋🏿',
 };
 
-const ToneItem = ({ tone }: { tone: number }) => (
+export type ToneItemProps = {
+	tone: number;
+};
+
+const ToneItem = ({ tone }: ToneItemProps) => (
 	<Box>
 		<span className='emoji'>{TONE_EMOJIS[tone] ?? '✋'}</span>
 	</Box>

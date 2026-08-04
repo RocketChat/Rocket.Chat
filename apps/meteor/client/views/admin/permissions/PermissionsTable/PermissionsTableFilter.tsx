@@ -4,11 +4,15 @@ import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+export type PermissionsTableFilterProps = {
+	onChange: (debouncedFilter: string) => void;
+};
+
 /**
  *
  * TODO: Replaced this by FilterByText, it has the same render
  */
-const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }) => {
+const PermissionsTableFilter = ({ onChange }: PermissionsTableFilterProps) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);

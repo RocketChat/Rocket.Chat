@@ -73,7 +73,12 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 	actions: triggerData?.actions.map((action) => getDefaultAction(action)) ?? [DEFAULT_SEND_MESSAGE_ACTION],
 });
 
-const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivechatTrigger>; onClose: () => void }) => {
+export type EditTriggerProps = {
+	triggerData?: Serialized<ILivechatTrigger>;
+	onClose: () => void;
+};
+
+const EditTrigger = ({ triggerData, onClose }: EditTriggerProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();

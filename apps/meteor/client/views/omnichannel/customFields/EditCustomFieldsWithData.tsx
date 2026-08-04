@@ -7,7 +7,12 @@ import { useTranslation } from 'react-i18next';
 
 import EditCustomFields from './EditCustomFields';
 
-const EditCustomFieldsWithData = ({ customFieldId, onClose }: { customFieldId: ILivechatCustomField['_id']; onClose: () => void }) => {
+export type EditCustomFieldsWithDataProps = {
+	customFieldId: ILivechatCustomField['_id'];
+	onClose: () => void;
+};
+
+const EditCustomFieldsWithData = ({ customFieldId, onClose }: EditCustomFieldsWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getCustomFieldById = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: customFieldId });

@@ -7,17 +7,14 @@ import { isValidElement } from 'react';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
-export const RoomIcon = ({
-	room,
-	size = 'x16',
-	isIncomingCall,
-	placement = 'default',
-}: {
+export type RoomIconProps = {
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>;
 	size?: ComponentProps<typeof Icon>['size'];
 	isIncomingCall?: boolean;
 	placement?: 'sidebar' | 'default';
-}) => {
+};
+
+export const RoomIcon = ({ room, size = 'x16', isIncomingCall, placement = 'default' }: RoomIconProps) => {
 	const iconPropsOrReactNode = useRoomIcon(room);
 
 	if (isIncomingCall) {

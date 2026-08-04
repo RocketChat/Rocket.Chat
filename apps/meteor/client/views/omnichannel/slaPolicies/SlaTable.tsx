@@ -21,7 +21,11 @@ import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 
-const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+export type SlaTableProps = {
+	reload: MutableRefObject<() => void>;
+};
+
+const SlaTable = ({ reload }: SlaTableProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 

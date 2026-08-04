@@ -5,7 +5,12 @@ import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch } from '@ro
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) => {
+export type RemoveSlaButtonProps = {
+	_id: string;
+	reload: () => void;
+};
+
+const RemoveSlaButton = ({ _id, reload }: RemoveSlaButtonProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const slaRoute = useRoute('omnichannel-sla-policies');

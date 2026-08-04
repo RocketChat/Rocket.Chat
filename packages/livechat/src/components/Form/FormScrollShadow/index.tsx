@@ -4,15 +4,13 @@ import { useEffect, useState } from 'preact/hooks';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-export const FormScrollShadow = ({
-	topRef,
-	bottomRef,
-	children,
-}: {
+export type FormScrollShadowProps = {
 	children: ComponentChildren;
 	topRef: RefObject<HTMLDivElement>;
 	bottomRef: RefObject<HTMLDivElement>;
-}) => {
+};
+
+export const FormScrollShadow = ({ topRef, bottomRef, children }: FormScrollShadowProps) => {
 	const [atTop, setAtTop] = useState(true);
 	const [atBottom, setAtBottom] = useState(false);
 

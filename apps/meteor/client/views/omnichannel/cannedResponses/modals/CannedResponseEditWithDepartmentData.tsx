@@ -9,13 +9,12 @@ import CannedResponseEdit from './CannedResponseEdit';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
-const CannedResponseEditWithDepartmentData = ({
-	cannedResponseData,
-	onDelete,
-}: {
+export type CannedResponseEditWithDepartmentDataProps = {
 	cannedResponseData: Serialized<IOmnichannelCannedResponse>;
 	onDelete: () => void;
-}) => {
+};
+
+const CannedResponseEditWithDepartmentData = ({ cannedResponseData, onDelete }: CannedResponseEditWithDepartmentDataProps) => {
 	const departmentId = useMemo(() => cannedResponseData?.departmentId, [cannedResponseData]) as string;
 
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });

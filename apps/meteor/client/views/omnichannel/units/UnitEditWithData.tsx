@@ -8,7 +8,12 @@ import { useTranslation } from 'react-i18next';
 import UnitEdit from './UnitEdit';
 import { useRemoveUnit } from './useRemoveUnit';
 
-const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
+export type UnitEditWithDataProps = {
+	unitId: IOmnichannelBusinessUnit['_id'];
+	onClose: () => void;
+};
+
+const UnitEditWithData = ({ unitId, onClose }: UnitEditWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });

@@ -5,7 +5,12 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-function RemoveAgentButton({ agentId, onRemove }: { agentId: string; onRemove: (agentId: string) => void }) {
+export type RemoveAgentButtonProps = {
+	agentId: string;
+	onRemove: (agentId: string) => void;
+};
+
+function RemoveAgentButton({ agentId, onRemove }: RemoveAgentButtonProps) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();

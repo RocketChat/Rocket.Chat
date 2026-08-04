@@ -6,21 +6,16 @@ import { useTranslation } from 'react-i18next';
 
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 
-const DeleteMessageConfirmModal = ({
-	room,
-	chat,
-	resolve,
-	reject,
-	onCancel,
-	message,
-}: {
+export type DeleteMessageConfirmModalProps = {
 	room?: IRoom;
 	chat: ChatAPI;
 	resolve: () => void;
 	reject: (reason?: any) => void;
 	message: IMessage;
 	onCancel: () => void;
-}) => {
+};
+
+const DeleteMessageConfirmModal = ({ room, chat, resolve, reject, onCancel, message }: DeleteMessageConfirmModalProps) => {
 	const { t } = useTranslation();
 	const mid = chat.currentEditingMessage.getMID();
 	const dispatchToastMessage = useToastMessageDispatch();

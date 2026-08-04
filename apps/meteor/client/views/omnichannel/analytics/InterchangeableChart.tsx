@@ -33,12 +33,7 @@ const getChartTooltips = (chartName: string) => {
 	}
 };
 
-const InterchangeableChart = ({
-	departmentId,
-	dateRange,
-	chartName,
-	...props
-}: {
+export type InterchangeableChartProps = {
 	departmentId: string;
 	dateRange: { start: string; end: string };
 	chartName: string;
@@ -46,7 +41,9 @@ const InterchangeableChart = ({
 	height: string;
 	width: string;
 	alignSelf: string;
-}) => {
+};
+
+const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }: InterchangeableChartProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

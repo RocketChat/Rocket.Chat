@@ -1,7 +1,11 @@
 import ContextualbarDialog from './ContextualbarDialog';
 import ContextualbarSkeletonBody from './ContextualbarSkeletonBody';
 
-const ContextualbarSkeleton = ({ onClose }: { onClose?: () => void }) => (
+export type ContextualbarSkeletonProps = {
+	onClose?: () => void;
+};
+
+const ContextualbarSkeleton = ({ onClose }: ContextualbarSkeletonProps) => (
 	<ContextualbarDialog onClose={onClose}>
 		<ContextualbarSkeletonBody />
 	</ContextualbarDialog>

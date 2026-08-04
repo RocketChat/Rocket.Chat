@@ -59,7 +59,12 @@ const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | un
 	public: !!customFieldData?.public,
 });
 
-const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Serialized<ILivechatCustomField>; onClose: () => void }) => {
+export type EditCustomFieldsProps = {
+	customFieldData?: Serialized<ILivechatCustomField>;
+	onClose: () => void;
+};
+
+const EditCustomFields = ({ customFieldData, onClose }: EditCustomFieldsProps) => {
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -8,14 +8,13 @@ import {
 import type { ILayoutBlock } from '../../Context/initialState';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 
-const RenderPayload = ({
-	blocks,
-	surface = SurfaceOptions.Message,
-}: {
+export type RenderPayloadProps = {
 	index?: number;
 	blocks: ILayoutBlock[];
 	surface?: SurfaceOptions;
-}) => {
+};
+
+const RenderPayload = ({ blocks, surface = SurfaceOptions.Message }: RenderPayloadProps) => {
 	switch (surface) {
 		case SurfaceOptions.Message:
 			return uiKitMessage(blocks);

@@ -7,7 +7,12 @@ import { useTranslation } from 'react-i18next';
 
 import EditTrigger from './EditTrigger';
 
-const EditTriggerWithData = ({ triggerId, onClose }: { triggerId: ILivechatTrigger['_id']; onClose: () => void }) => {
+export type EditTriggerWithDataProps = {
+	triggerId: ILivechatTrigger['_id'];
+	onClose: () => void;
+};
+
+const EditTriggerWithData = ({ triggerId, onClose }: EditTriggerWithDataProps) => {
 	const { t } = useTranslation();
 	const getTriggersById = useEndpoint('GET', '/v1/livechat/triggers/:_id', { _id: triggerId });
 	const { data, isPending, isError } = useQuery({

@@ -1,7 +1,11 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => void }) => {
+export type NoInstalledAppsEmptyStateProps = {
+	onButtonClick: () => void;
+};
+
+const NoInstalledAppsEmptyState = ({ onButtonClick }: NoInstalledAppsEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
