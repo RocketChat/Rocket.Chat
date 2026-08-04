@@ -24,14 +24,15 @@ import type {
 	WithId,
 } from 'mongodb';
 
+import type { ApplyProjection, DocumentWithProjection, FindOptionsWithProjection, ProjectionSpec } from '../types/DocumentWithProjection';
 import type { Updater } from '../updater';
 
 export type DefaultFields<Base> = Partial<Record<keyof Base, 1>> | Partial<Record<keyof Base, 0>> | void;
-export type ResultFields<Base, Defaults> = Defaults extends void
+export type ResultFields<Base, Defaults> = Defaults extends void | undefined
 	? Base
-	: Defaults[keyof Defaults] extends 1
-		? Pick<Defaults, keyof Defaults>
-		: Omit<Defaults, keyof Defaults>;
+	: Defaults extends ProjectionSpec
+		? ApplyProjection<Base, Defaults>
+		: Base;
 
 export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
@@ -59,20 +60,29 @@ export interface IBaseModel<
 	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<null | WithId<T>>;
 
-	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
-	findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
+	findOneById(_id: T['_id'], options?: undefined): Promise<ResultFields<T, C> | null>;
+	findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 
-	findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
-	findOne<P extends Document = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<ResultFields<T, C> | null>;
+	findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> | T['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
-	find<P extends Document = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
-	find<P extends Document>(
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		query: Filter<T> | undefined,
-		options?: FindOptions<P extends T ? T : P>,
-	): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
 
-	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
+	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> | undefined,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>>;
 
 	update(
 		filter: Filter<T>,
