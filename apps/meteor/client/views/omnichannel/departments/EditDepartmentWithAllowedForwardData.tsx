@@ -7,7 +7,9 @@ import type { EditDepartmentProps } from './EditDepartment';
 import EditDepartment from './EditDepartment';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepartmentProps, 'allowedToForwardData'>) => {
+export type EditDepartmentWithAllowedForwardDataProps = Omit<EditDepartmentProps, 'allowedToForwardData'>;
+
+const EditDepartmentWithAllowedForwardData = ({ data, ...props }: EditDepartmentWithAllowedForwardDataProps) => {
 	const { t } = useTranslation();
 	const getDepartmentListByIds = useEndpoint('GET', '/v1/livechat/department.listByIds');
 

@@ -8,7 +8,9 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>) => {
+export type ModerationConsoleActionsProps = Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>;
+
+const ModerationConsoleActions = ({ report, onClick }: ModerationConsoleActionsProps) => {
 	const { t } = useTranslation();
 	const { userId: uid, isUserDeleted } = report;
 

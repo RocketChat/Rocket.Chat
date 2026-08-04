@@ -2,7 +2,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const MainContent = ({ className, ...props }: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => {
+export type MainContentProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const MainContent = ({ className, ...props }: MainContentProps) => {
 	const customCSS = css`
 		@media print {
 			overflow: visible !important; /* 1 */

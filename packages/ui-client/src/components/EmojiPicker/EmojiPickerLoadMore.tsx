@@ -1,7 +1,9 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const EmojiPickerLoadMore = ({ children, ...props }: Omit<AllHTMLAttributes<HTMLButtonElement>, 'style' | 'is'>) => (
+export type EmojiPickerLoadMoreProps = Omit<AllHTMLAttributes<HTMLButtonElement>, 'style' | 'is'>;
+
+const EmojiPickerLoadMore = ({ children, ...props }: EmojiPickerLoadMoreProps) => (
 	<Box display='flex' flexDirection='column' alignItems='center' marginBlockEnd={8}>
 		<Button {...props} small>
 			{children}

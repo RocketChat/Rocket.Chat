@@ -5,15 +5,12 @@ import { memo } from 'react';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../hooks/useCheckoutUrl';
 
-const UpgradeButton = ({
-	children,
-	target = '_blank',
-	action,
-	...props
-}: Partial<ButtonProps> & {
+export type UpgradeButtonProps = Partial<ButtonProps> & {
 	target: string;
 	action: string;
-}) => {
+};
+
+const UpgradeButton = ({ children, target = '_blank', action, ...props }: UpgradeButtonProps) => {
 	const handleOpenLink = useExternalLink();
 	const url = useCheckoutUrl()({ target, action });
 

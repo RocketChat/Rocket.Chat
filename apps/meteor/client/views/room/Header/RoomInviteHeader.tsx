@@ -1,7 +1,9 @@
 import RoomHeader from './RoomHeader';
 import type { RoomHeaderProps } from './RoomHeader';
 
-const RoomInviteHeader = ({ room }: Pick<RoomHeaderProps, 'room'>) => {
+export type RoomInviteHeaderProps = Pick<RoomHeaderProps, 'room'>;
+
+const RoomInviteHeader = ({ room }: RoomInviteHeaderProps) => {
 	return (
 		<RoomHeader
 			room={room}

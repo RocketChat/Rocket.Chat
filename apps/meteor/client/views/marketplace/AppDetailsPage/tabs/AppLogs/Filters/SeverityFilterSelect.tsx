@@ -3,7 +3,9 @@ import { Select } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const SeverityFilterSelect = ({ ...props }: Omit<ComponentProps<typeof Select>, 'options'>) => {
+export type SeverityFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'>;
+
+export const SeverityFilterSelect = ({ ...props }: SeverityFilterSelectProps) => {
 	const { t } = useTranslation();
 
 	const options = [

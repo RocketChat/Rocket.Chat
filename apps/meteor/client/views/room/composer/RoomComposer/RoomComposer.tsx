@@ -24,7 +24,9 @@ const customStyle = css`
 	}
 `;
 
-const RoomComposer = ({ children, ...props }: Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
+export type RoomComposerProps = Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
+
+const RoomComposer = ({ children, ...props }: RoomComposerProps) => {
 	const { isEmbedded } = useLayout();
 
 	return (
