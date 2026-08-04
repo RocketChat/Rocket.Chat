@@ -1,19 +1,16 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, ComponentPropsWithoutRef, SubmitEvent } from 'react';
-import { forwardRef, memo, useCallback } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, RefAttributes, SubmitEvent } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void
 export type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
 	shouldAutoFocus?: boolean;
 	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-};
+} & RefAttributes<HTMLInputElement>;
 
-const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
-	{ placeholder, shouldAutoFocus = false, children, ...props },
-	ref,
-) {
+const FilterByText = ({ placeholder, shouldAutoFocus = false, children, ref, ...props }: FilterByTextProps) => {
 	const { t } = useTranslation();
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
@@ -38,6 +35,6 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 			{children && <Margins inline={4}>{children}</Margins>}
 		</Box>
 	);
-});
+};
 
 export default memo(FilterByText);

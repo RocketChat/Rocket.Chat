@@ -1,6 +1,5 @@
 import { Box, Card, CardTitle, CardBody, CardCol, CardRow } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
-import { forwardRef } from 'react';
+import type { ComponentProps, ReactNode, RefAttributes } from 'react';
 
 import { ReportCardContent } from './ReportCardContent';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
@@ -20,12 +19,22 @@ export type ReportCardProps = {
 	isError?: boolean;
 	onRetry?: () => void;
 	chartHeight?: number;
-};
+} & RefAttributes<HTMLElement>;
 
-export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function ReportCard(
-	{ id, title, children, periodSelectorProps, downloadProps, isPending, isDataFound, subtitle, emptyStateSubtitle, isError, onRetry },
+export const ReportCard = ({
+	id,
+	title,
+	children,
+	periodSelectorProps,
+	downloadProps,
+	isPending,
+	isDataFound,
+	subtitle,
+	emptyStateSubtitle,
+	isError,
+	onRetry,
 	ref,
-) {
+}: ReportCardProps) => {
 	return (
 		<Box height='full' ref={ref}>
 			<Card height='full' aria-busy={isPending} data-qa={id}>
@@ -59,4 +68,4 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 			</Card>
 		</Box>
 	);
-});
+};

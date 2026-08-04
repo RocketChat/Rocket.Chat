@@ -1,11 +1,8 @@
 import { SidebarV2ListItem } from '@rocket.chat/fuselage';
-import type { ForwardedRef, HTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import type { HTMLAttributes, RefAttributes } from 'react';
 
-export type RoomListRoomWrapperProps = HTMLAttributes<HTMLDivElement>;
+export type RoomListRoomWrapperProps = HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>;
 
-const RoomListRoomWrapper = forwardRef(function RoomListRoomWrapper(props: RoomListRoomWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
-	return <SidebarV2ListItem ref={ref} {...props} />;
-});
+const RoomListRoomWrapper = ({ ref, ...props }: RoomListRoomWrapperProps) => <SidebarV2ListItem ref={ref} {...props} />;
 
 export default RoomListRoomWrapper;

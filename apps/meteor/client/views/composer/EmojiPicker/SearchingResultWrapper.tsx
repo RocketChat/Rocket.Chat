@@ -1,9 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { Ref } from 'react';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
-const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props, ref: Ref<HTMLDivElement>) {
+export type SearchingResultWrapperProps = RefAttributes<HTMLDivElement>;
+
+const SearchingResultWrapper = ({ ref, ...props }: SearchingResultWrapperProps) => {
 	const searchResultWrapperStyle = css`
 		button {
 			margin-right: 0.25rem;
@@ -15,6 +16,6 @@ const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props,
 	`;
 
 	return <Box ref={ref} {...props} className={searchResultWrapperStyle} display='flex' flexWrap='wrap' />;
-});
+};
 
 export default SearchingResultWrapper;

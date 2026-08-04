@@ -3,8 +3,8 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import { useCallback, forwardRef, useMemo, useState } from 'react';
+import type { ComponentProps, RefAttributes } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -42,10 +42,9 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		[sorting],
 	);
 
-	// eslint-disable-next-line react/no-multi-comp
-	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
-		return <Options ref={ref} {...props} maxHeight={200} />;
-	});
+	const renderOptions = ({ ref, ...props }: ComponentProps<typeof Options> & RefAttributes<HTMLElement>) => (
+		<Options ref={ref} {...props} maxHeight={200} />
+	);
 
 	if (!hasLicense) {
 		return null;

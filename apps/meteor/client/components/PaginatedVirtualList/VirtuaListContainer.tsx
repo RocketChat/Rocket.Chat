@@ -1,5 +1,4 @@
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import { forwardRef } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
 const listResetStyle = {
 	margin: 0,
@@ -10,15 +9,11 @@ const listResetStyle = {
 export type VirtuaListContainerProps = {
 	children: ReactNode;
 	style: CSSProperties;
-} & Omit<HTMLAttributes<HTMLUListElement>, 'children' | 'style'>;
+} & Omit<HTMLAttributes<HTMLUListElement>, 'children' | 'style'> &
+	RefAttributes<HTMLUListElement>;
 
-export const VirtuaListContainer = forwardRef<HTMLUListElement, VirtuaListContainerProps>(function VirtuaListContainer(
-	{ children, style, ...props },
-	ref,
-) {
-	return (
-		<ul {...props} ref={ref} style={{ ...listResetStyle, ...style }}>
-			{children}
-		</ul>
-	);
-});
+export const VirtuaListContainer = ({ children, style, ref, ...props }: VirtuaListContainerProps) => (
+	<ul {...props} ref={ref} style={{ ...listResetStyle, ...style }}>
+		{children}
+	</ul>
+);

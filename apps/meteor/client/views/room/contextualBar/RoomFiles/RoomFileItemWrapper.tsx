@@ -2,8 +2,7 @@ import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { Ref } from 'react';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
 const customClass = css`
 	&:hover {
@@ -12,12 +11,9 @@ const customClass = css`
 	}
 `;
 
-export type RoomFileItemWrapperProps = BoxProps & { item: IUploadWithUser };
+export type RoomFileItemWrapperProps = BoxProps & { item: IUploadWithUser } & RefAttributes<HTMLDivElement>;
 
-const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
-	{ item, ...props }: RoomFileItemWrapperProps,
-	ref: Ref<HTMLDivElement>,
-) {
+const RoomFileItemWrapper = ({ item, ref, ...props }: RoomFileItemWrapperProps) => {
 	return (
 		<Box
 			ref={ref}
@@ -31,6 +27,6 @@ const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 			{...props}
 		/>
 	);
-});
+};
 
 export default RoomFileItemWrapper;

@@ -1,18 +1,18 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
-import type { ComponentProps, MouseEventHandler } from 'react';
-import { forwardRef } from 'react';
+import type { ComponentProps, MouseEventHandler, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & ComponentProps<
-	typeof Button
->;
+// `ref` is omitted from Button's props so this component can narrow it to HTMLElement,
+// matching what forwardRef's PropsWithoutRef did.
+export type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & Omit<
+	ComponentProps<typeof Button>,
+	'ref'
+> &
+	RefAttributes<HTMLElement>;
 
-const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorProps>(function CategoryDropDownAnchor(
-	{ onClick, selectedCategoriesCount, ...props },
-	ref,
-) {
+const CategoryDropDownAnchor = ({ onClick, selectedCategoriesCount, ref, ...props }: CategoryDropDownAnchorProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -65,6 +65,6 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			</Box>
 		</Box>
 	);
-});
+};
 
 export default CategoryDropDownAnchor;
