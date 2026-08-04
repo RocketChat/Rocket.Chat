@@ -9,7 +9,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 
-const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Serialized<ILivechatBusinessHour>) => {
+export type BusinessHoursRowProps = Serialized<ILivechatBusinessHour>;
+
+const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: BusinessHoursRowProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const handleRemove = useRemoveBusinessHour();

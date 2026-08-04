@@ -10,13 +10,13 @@ import { useFieldError } from '../hooks';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
 import { ActionSender } from './ActionSender';
 
-type SendMessageActionFormType = ComponentProps<typeof Field> & {
+export type ExternalServiceActionFormProps = ComponentProps<typeof Field> & {
 	index: number;
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 };
 
-export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: SendMessageActionFormType) => {
+export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: ExternalServiceActionFormProps) => {
 	const { t } = useTranslation();
 
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

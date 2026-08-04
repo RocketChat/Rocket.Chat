@@ -8,12 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from './EditTrigger';
 
-type ConditionFormType = ComponentProps<typeof Field> & {
+export type ConditionFormProps = ComponentProps<typeof Field> & {
 	index: number;
 	control: Control<TriggersPayload>;
 };
 
-export const ConditionForm = ({ control, index, ...props }: ConditionFormType) => {
+export const ConditionForm = ({ control, index, ...props }: ConditionFormProps) => {
 	const conditionFieldId = useId();
 	const { t } = useTranslation();
 	const conditionName = useWatch({ control, name: `conditions.${index}.name` });

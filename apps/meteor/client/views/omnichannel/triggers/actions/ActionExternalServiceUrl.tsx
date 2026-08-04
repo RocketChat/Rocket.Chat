@@ -12,14 +12,14 @@ import { useTranslation } from 'react-i18next';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
 
-type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
+export type ActionExternalServiceUrlProps = ComponentProps<typeof Field> & {
 	index: number;
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 	disabled?: boolean;
 };
 
-export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternaServicelUrlType) => {
+export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternalServiceUrlProps) => {
 	const { t } = useTranslation();
 
 	const serviceUrlFieldId = useId();

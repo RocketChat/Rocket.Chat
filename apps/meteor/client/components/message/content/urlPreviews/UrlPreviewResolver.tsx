@@ -3,7 +3,9 @@ import UrlImagePreview from './UrlImagePreview';
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import UrlVideoPreview from './UrlVideoPreview';
 
-const UrlPreviewResolver = ({ url, type, originalType }: UrlPreviewMetadata) => {
+export type UrlPreviewResolverProps = UrlPreviewMetadata;
+
+const UrlPreviewResolver = ({ url, type, originalType }: UrlPreviewResolverProps) => {
 	switch (type) {
 		case 'audio':
 			return <UrlAudioPreview url={url} />;

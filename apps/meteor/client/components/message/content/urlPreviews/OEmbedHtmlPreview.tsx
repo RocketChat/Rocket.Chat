@@ -11,7 +11,9 @@ const purifyOptions = {
 	ALLOW_UNKNOWN_PROTOCOLS: true,
 };
 
-const OEmbedHtmlPreview = ({ html, ...props }: OEmbedPreviewMetadata) => {
+export type OEmbedHtmlPreviewProps = OEmbedPreviewMetadata;
+
+const OEmbedHtmlPreview = ({ html, ...props }: OEmbedHtmlPreviewProps) => {
 	// Memoize the dangerouslySetInnerHTML object so its identity is stable across
 	// re-renders. React 19 re-applies innerHTML when this object is a new reference
 	// (even with an identical string), which reloads embedded iframes (e.g. YouTube)

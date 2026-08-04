@@ -20,7 +20,9 @@ const customAlignTop = css`
 	}
 `;
 
-const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+export type ContactTableRowProps = ILivechatContactWithManagerData;
+
+const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ContactTableRowProps) => {
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();

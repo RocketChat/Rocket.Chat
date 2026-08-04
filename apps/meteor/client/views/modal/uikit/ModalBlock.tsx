@@ -46,7 +46,7 @@ const focusableElementsStringInvalid = `
 	[tabindex]:not([tabindex="-1"]):invalid,
 	[contenteditable]:invalid`;
 
-type ModalBlockParams = {
+export type ModalBlockProps = {
 	view: UiKit.ModalView;
 	errors: any;
 	appId: string;
@@ -64,7 +64,7 @@ const KeyboardCode = new Map<string, number>([
 	['TAB', 9],
 ]);
 
-const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams) => {
+const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockProps) => {
 	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
 

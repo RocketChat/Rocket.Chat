@@ -4,13 +4,15 @@ import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
 
 import RadioDropDownAnchor from './RadioDownAnchor';
-import type { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownProps as RadioDropDownSelection } from '../../definitions/RadioDropDownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';
 import RadioButtonList from '../RadioButtonList';
 
-const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & ComponentProps<typeof Button>) => {
+export type RadioDropDownProps = RadioDropDownSelection & ComponentProps<typeof Button>;
+
+const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps) => {
 	const reference = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 

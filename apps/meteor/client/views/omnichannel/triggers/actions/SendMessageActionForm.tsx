@@ -8,12 +8,12 @@ import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
 import { ActionSender } from './ActionSender';
 
-type SendMessageActionFormType = ComponentProps<typeof Field> & {
+export type SendMessageActionFormProps = ComponentProps<typeof Field> & {
 	index: number;
 	control: Control<TriggersPayload>;
 };
 
-export const SendMessageActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
+export const SendMessageActionForm = ({ control, index, ...props }: SendMessageActionFormProps) => {
 	const { t } = useTranslation();
 	const messageFieldId = useId();
 	const name = `actions.${index}.params.msg` as const;

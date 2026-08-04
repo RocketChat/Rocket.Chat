@@ -7,13 +7,13 @@ import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from '../EditTrigger';
 
-type ActionSenderType = ComponentProps<typeof Field> & {
+export type ActionSenderProps = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
 	index: number;
 	disabled?: boolean;
 };
 
-export const ActionSender = ({ control, index, disabled, ...props }: ActionSenderType) => {
+export const ActionSender = ({ control, index, disabled, ...props }: ActionSenderProps) => {
 	const { t } = useTranslation();
 
 	const senderFieldId = useId();

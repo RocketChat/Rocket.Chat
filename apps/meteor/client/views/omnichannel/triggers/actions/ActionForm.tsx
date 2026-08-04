@@ -21,7 +21,7 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 
-type SendMessageFormType = ComponentProps<typeof Field> & {
+export type ActionFormProps = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 	index: number;
@@ -33,7 +33,7 @@ const ACTION_HINTS: Record<string, TranslationKey> = {
 
 const PREMIUM_ACTIONS = ['use-external-service'];
 
-export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFormType) => {
+export const ActionForm = ({ control, trigger, index, ...props }: ActionFormProps) => {
 	const { t } = useTranslation();
 
 	const actionFieldId = useId();

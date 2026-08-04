@@ -8,7 +8,9 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import MemoizedSetting from '../../../../admin/settings/Setting/MemoizedSetting';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
-const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, ...props }: ISetting) => {
+export type AppSettingProps = ISetting;
+
+const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, ...props }: AppSettingProps) => {
 	const appId = useRouteParameter('id');
 	const tApp = useAppTranslation(appId || '');
 
