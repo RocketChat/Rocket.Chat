@@ -1,9 +1,10 @@
 import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
-import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
 import type { ConferenceMember } from './useCallOutcome';
+import type { CallPreferences } from './useCallPreferences';
 import { useConferenceCallUrl } from './useConferenceCallUrl';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
@@ -19,6 +20,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	const getConferenceCallUrl = useConferenceCallUrl();
 	const subscribeToVideoConference = useStream('video-conference');
 	const queryClient = useQueryClient();
+	const uid = useUserId();
 
 	// The chat room comes from the conference record: show `discussionRid` when it's set (a discussion was
 	// created), otherwise the conference's `rid` (the original room). The `rid` never changes.
@@ -63,20 +65,20 @@ export const useConferenceEmbedded = (callId: string) => {
 		return { ...info.chatAccess, members: members.filter(({ _id }) => missing.has(_id)) };
 	}, [info, members]);
 
-	const { data, isPending, error } = useQuery({
-		queryKey: videoConferenceQueryKeys.join(callId),
-		queryFn: async () => joinConference({ callId, state: { mic: true, cam: false } }),
+	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
+	// choices into the provider's URL — and what marks them as present. So this waits to be asked, rather than
+	// running as soon as the window opens.
+	const {
+		mutate: join,
+		data,
+		isPending,
+		error,
+	} = useMutation({
+		mutationFn: (state: CallPreferences) => joinConference({ callId, state }),
+		// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription
+		// being established — which left the members list showing us as absent until something else moved.
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) }),
 	});
-
-	// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription being
-	// established — which left the members list showing us as absent until something else moved.
-	useEffect(() => {
-		if (!data) {
-			return;
-		}
-
-		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-	}, [data, callId, queryClient]);
 
 	return {
 		call: {
@@ -85,6 +87,15 @@ export const useConferenceEmbedded = (callId: string) => {
 			members,
 			/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
 			canRing: info?.type === 'direct',
+			/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
+			name: (info?.type === 'videoconference' && info.title) || info?.chatAccess.name || '',
+			/**
+			 * Naming a call is the creator's to do, and only a group call has a name of its own — a direct call is
+			 * named after the other person, per viewer.
+			 */
+			canRename: info?.type === 'videoconference' && info.createdBy._id === uid,
+			/** Which devices the provider can actually be told about, which is all the preflight offers. */
+			capabilities: info?.capabilities ?? {},
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,
@@ -97,6 +108,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			providerName: data?.providerName,
 			loading: isPending,
 			error,
+			join,
 		} as const,
 	};
 };

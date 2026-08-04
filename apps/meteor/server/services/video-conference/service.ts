@@ -1498,6 +1498,34 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
+	 * Names a running group conference, for the person who started it.
+	 *
+	 * The name is what the provider is told to call the meeting and what the call is listed as everywhere it
+	 * appears, so it is worth being able to set it once the call exists rather than only in the instant it is
+	 * created. Only the creator: a title everyone in the call could rewrite is a title nobody can rely on.
+	 *
+	 * A direct call has no title of its own — it is named after the other person — so there is nothing to set.
+	 */
+	public async renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { type: 1, rid: 1, createdBy: 1, endedAt: 1 } });
+		if (!call || call.endedAt || !isGroupVideoConference(call as VideoConference)) {
+			throw new Error('error-invalid-video-conf');
+		}
+
+		if (call.createdBy._id !== uid) {
+			throw new Error('error-not-allowed');
+		}
+
+		const name = title.trim();
+		if (!name) {
+			throw new Error('error-invalid-name');
+		}
+
+		await VideoConferenceModel.setTitleById(callId, name);
+		this.notifyVideoConfUpdate(call.rid, callId);
+	}
+
+	/**
 	 * Gives every member who can't read the chat access to it, either by bringing them into the room — which
 	 * exposes its whole history — or by moving the chat to a discussion. Both are lossy in different ways, so
 	 * the caller chooses; without a choice, the room's own rules decide. Returns the room the chat now lives in.

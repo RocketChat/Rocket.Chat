@@ -46,3 +46,24 @@ it('closes itself once the call has been asked for', async () => {
 
 	expect(dismissOutgoing).toHaveBeenCalled();
 });
+
+// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this popup
+// doesn't, and a choice made here seconds earlier isn't quietly overruled there.
+it('leaves the devices to the call window', async () => {
+	render(<TimedVideoConfPopup id={fakeRoom._id} rid={fakeRoom._id} position={0} />, {
+		wrapper: mockAppRoot().withRoom(fakeRoom).withSetting('VideoConf_Enable_Persistent_Chat', true).build(),
+	});
+
+	expect(await screen.findByRole('button', { name: 'Start_call' })).toBeInTheDocument();
+	expect(screen.queryByTitle('Mic_on')).not.toBeInTheDocument();
+	expect(screen.queryByTitle('Cam_on')).not.toBeInTheDocument();
+});
+
+it('asks about them when there is no call window to ask', async () => {
+	render(<TimedVideoConfPopup id={fakeRoom._id} rid={fakeRoom._id} position={0} />, {
+		wrapper: mockAppRoot().withRoom(fakeRoom).withSetting('VideoConf_Enable_Persistent_Chat', false).build(),
+	});
+
+	expect(await screen.findByTitle('Mic_on')).toBeInTheDocument();
+	expect(screen.getByTitle('Cam_on')).toBeInTheDocument();
+});

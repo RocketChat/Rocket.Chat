@@ -220,6 +220,14 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		});
 	}
 
+	public async setTitleById(callId: string, title: string): Promise<void> {
+		await this.updateOneById(callId, {
+			$set: {
+				title,
+			},
+		});
+	}
+
 	public async setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void> {
 		await this.updateOneById(callId, {
 			...(providerData

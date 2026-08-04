@@ -1162,8 +1162,10 @@
     "one": "{{count}} call in queue",
     "other": "{{count}} calls in queue"
   },
+  "Call_name": "Call name",
   "Cam_off": "Cam Off",
   "Cam_on": "Cam On",
+  "Camera": "Camera",
   "Camera_access_not_allowed": "Video message - camera access was not allowed, please check your browser settings.",
   "Cancel": "Cancel",
   "Cancel__planName__subscription": "Cancel {{planName}} subscription",
@@ -4547,6 +4549,7 @@
   "Read_only_field_hint_disabled": "Anyone can send new messages",
   "Read_only_field_hint_enabled": "Only {{roomType}} owners can send new messages",
   "Read_only_group": "Read Only Group",
+  "Ready_to_join": "Ready to join?",
   "Readability": "Readability",
   "RealName_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of names",
   "Real_Estate": "Real Estate",

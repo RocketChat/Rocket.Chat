@@ -54,6 +54,9 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setUrlById(callId: string, url: string): Promise<void>;
 
+	/** Names a group conference. Only that kind carries a title of its own. */
+	setTitleById(callId: string, title: string): Promise<void>;
+
 	setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void>;
 
 	addMemberById(

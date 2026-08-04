@@ -14,6 +14,7 @@ import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
 import type { VideoConfLeaveProps } from './VideoConfLeaveProps';
 import type { VideoConfListProps } from './VideoConfListProps';
+import type { VideoConfRenameProps } from './VideoConfRenameProps';
 import type { VideoConfRingProps } from './VideoConfRingProps';
 import type { VideoConfShareChatProps } from './VideoConfShareChatProps';
 import type { VideoConfStartProps } from './VideoConfStartProps';
@@ -29,6 +30,7 @@ export * from './VideoConfCancelProps';
 export * from './VideoConfAddParticipantsProps';
 export * from './VideoConfDeclineProps';
 export * from './VideoConfShareChatProps';
+export * from './VideoConfRenameProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -59,6 +61,11 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.add-participants': {
 		POST: (params: VideoConfAddParticipantsProps) => { added: string[] };
+	};
+
+	/** Renames a running group conference. Only the person who started it may. */
+	'/v1/video-conference.rename': {
+		POST: (params: VideoConfRenameProps) => void;
 	};
 
 	'/v1/video-conference.share-chat': {

@@ -19,6 +19,8 @@ const buildInfo = (membersWithoutAccess: string[]) =>
 		_id: callId,
 		type: 'videoconference',
 		rid: 'room-id',
+		title: '',
+		createdBy: { _id: 'someone-else', username: 'someone.else', name: 'Someone Else' },
 		users: [outsider],
 		capabilities: {},
 		chatAccess: {
@@ -95,4 +97,48 @@ it('follows the chat to a discussion the conference moved into', async () => {
 	streamRef.controller?.emit(`${callId}/discussionUpdated`, [{ discussionRid }]);
 
 	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
+});
+
+// Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices
+// into the provider's URL, and what marks them as present in the call.
+describe('joining', () => {
+	const renderForJoin = () => {
+		const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+				.withEndpoint('POST', '/v1/video-conference.join', join)
+				.build(),
+		});
+
+		return { result, join };
+	};
+
+	it('does not happen until it is asked for', async () => {
+		const { result, join } = renderForJoin();
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+
+		expect(join).not.toHaveBeenCalled();
+		expect(result.current.conference.url).toBeUndefined();
+	});
+
+	it('carries the preferences it was asked with', async () => {
+		const { result, join } = renderForJoin();
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		result.current.conference.join({ mic: false, cam: true });
+
+		await waitFor(() => expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } }));
+		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example'));
+	});
+
+	it('says who may name the call', async () => {
+		const { result } = renderForJoin();
+
+		// `withJohnDoe` is the reader, and the fixture's conference was started by somebody else.
+		await waitFor(() => expect(result.current.call.canRename).toBe(false));
+	});
 });
