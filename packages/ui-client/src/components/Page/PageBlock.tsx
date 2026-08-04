@@ -1,10 +1,9 @@
-import type { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { forwardRef } from 'react';
 
 import PageContent from './PageContent';
 
-const PageBlock = forwardRef<HTMLElement, ComponentProps<typeof Box>>(function PageBlock(props, ref) {
+const PageBlock = forwardRef<HTMLElement, BoxProps>(function PageBlock(props, ref) {
 	return (
 		<PageContent borderBlockEndColor='transparent' {...props} paddingBlock={16} ref={ref} borderBlockEndWidth='default' height='auto' />
 	);

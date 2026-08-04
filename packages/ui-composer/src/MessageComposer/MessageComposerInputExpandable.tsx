@@ -1,12 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useState, forwardRef } from 'react';
-import type { ChangeEvent, ComponentProps } from 'react';
+import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageComposerInput from './MessageComposerInput';
 
-export type ExpandComposerButtonProps = ComponentProps<typeof Box> & {
+export type ExpandComposerButtonProps = BoxProps & {
 	dimensions: Readonly<{
 		inlineSize: number;
 		blockSize: number;

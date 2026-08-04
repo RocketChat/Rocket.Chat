@@ -1,11 +1,12 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type FieldProps = {
 	short?: boolean;
 	title: ReactNode;
 	value: ReactNode;
-} & Omit<ComponentProps<typeof Box>, 'title' | 'value'>;
+} & Omit<BoxProps, 'title' | 'value'>;
 
 // TODO: description missing color token
 const Field = ({ title, value, ...props }: FieldProps) => (

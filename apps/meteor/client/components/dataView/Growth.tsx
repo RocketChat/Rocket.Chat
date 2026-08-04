@@ -1,10 +1,10 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 
-export type GrowthProps = ComponentProps<typeof Box> & {
+export type GrowthProps = BoxProps & {
 	children: number;
 };
 

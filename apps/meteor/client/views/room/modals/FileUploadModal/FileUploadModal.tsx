@@ -1,3 +1,4 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import {
 	Modal,
 	Box,
@@ -19,7 +20,6 @@ import {
 	FieldGroup,
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
-import type { ComponentProps } from 'react';
 import { memo, useCallback, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +62,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 	return (
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+			wrapperFunction={(props: BoxProps) => (
 				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))} {...props} />
 			)}
 		>

@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import { useDraggableWidget } from './WidgetDraggableContext';
 
@@ -19,7 +19,7 @@ const dragHandle = css`
 	}
 `;
 
-const WidgetHandle = (props: ComponentProps<typeof Box>) => {
+const WidgetHandle = (props: BoxProps) => {
 	const draggableContext = useDraggableWidget();
 	if (!draggableContext) {
 		return null;

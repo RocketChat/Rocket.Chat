@@ -1,14 +1,13 @@
-import type { Box } from '@rocket.chat/fuselage';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useRoomToolbox, type RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { roomActionHooksForE2EESetup } from '../../../../ui';
 
 export type RoomToolboxE2EESetupProps = {
-	className?: ComponentProps<typeof Box>['className'];
+	className?: BoxProps['className'];
 };
 
 const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {

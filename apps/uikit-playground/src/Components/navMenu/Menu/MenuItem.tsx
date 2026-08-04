@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Label } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 export type MenuItemProps = {
 	name: string;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const MenuItem = ({ name, ...props }: MenuItemProps) => {
 	const pointer = css`

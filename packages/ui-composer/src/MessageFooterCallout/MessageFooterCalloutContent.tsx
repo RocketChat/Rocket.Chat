@@ -1,8 +1,8 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-export type MessageFooterCalloutContentProps = ComponentProps<typeof Box>;
+export type MessageFooterCalloutContentProps = BoxProps;
 
 const MessageFooterCalloutContent = forwardRef<HTMLDivElement, MessageFooterCalloutContentProps>(
 	function MessageFooterCalloutContent(props, ref) {

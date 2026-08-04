@@ -1,9 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactNode, ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { useRef, useState, useEffect } from 'react';
 
-export type ThumbnailProps = ComponentProps<typeof Box> & {
+export type ThumbnailProps = BoxProps & {
 	of: ReactNode;
 };
 

@@ -1,12 +1,13 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
-import type { ComponentProps, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
+export type DateRangePickerProps = Omit<BoxProps, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };
 

@@ -1,8 +1,8 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
-import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ type MarkdownTextParams = {
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();

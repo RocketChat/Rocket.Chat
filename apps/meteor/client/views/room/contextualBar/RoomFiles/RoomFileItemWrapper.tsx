@@ -1,7 +1,8 @@
 import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps, Ref } from 'react';
+import type { Ref } from 'react';
 import { forwardRef } from 'react';
 
 const customClass = css`
@@ -11,7 +12,7 @@ const customClass = css`
 	}
 `;
 
-export type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
+export type RoomFileItemWrapperProps = BoxProps & { item: IUploadWithUser };
 
 const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 	{ item, ...props }: RoomFileItemWrapperProps,

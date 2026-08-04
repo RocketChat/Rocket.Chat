@@ -1,9 +1,10 @@
 /* eslint-disable no-nested-ternary */
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.json';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
 import HeaderSkeleton from '../Header/HeaderSkeleton';
@@ -14,7 +15,7 @@ export type RoomLayoutProps = {
 	body?: ReactNode;
 	footer?: ReactNode;
 	aside?: ReactNode;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const useBreakpointsElement = () => {
 	const { ref, borderBoxSize } = useResizeObserver<HTMLElement>({

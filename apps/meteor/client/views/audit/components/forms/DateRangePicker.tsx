@@ -1,8 +1,9 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
-import type { ComponentProps, SetStateAction, ChangeEvent } from 'react';
+import type { SetStateAction, ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -117,7 +118,7 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 	}
 };
 
-export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {
+export type DateRangePickerProps = Omit<BoxProps, 'value' | 'onChange'> & {
 	value?: DateRange;
 	onChange?: (dateRange: DateRange) => void;
 };

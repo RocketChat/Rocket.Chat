@@ -1,10 +1,10 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useEffect, useRef } from 'react';
 
 export type InfiniteListAnchorProps = {
 	loadMore: () => void;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const InfiniteListAnchor = ({ loadMore, ...props }: InfiniteListAnchorProps) => {
 	const ref = useRef<HTMLDivElement | null>(null);

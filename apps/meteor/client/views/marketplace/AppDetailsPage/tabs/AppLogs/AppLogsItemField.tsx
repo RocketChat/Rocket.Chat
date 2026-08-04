@@ -1,10 +1,11 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type AppsLogItemFieldProps = {
 	field: ReactNode | string;
 	label: string;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 export const AppsLogItemField = ({ field, label, ...props }: AppsLogItemFieldProps) => {
 	return (

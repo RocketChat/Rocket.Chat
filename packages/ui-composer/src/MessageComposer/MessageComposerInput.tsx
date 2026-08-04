@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 const messageComposerInputStyle = css`
@@ -11,7 +11,7 @@ const messageComposerInputStyle = css`
 	}
 `;
 
-export type MessageComposerInputProps = ComponentProps<typeof Box>;
+export type MessageComposerInputProps = BoxProps;
 
 const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInputProps>(function MessageComposerInput(props, ref) {
 	return (

@@ -1,5 +1,5 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
-import type { OptionType } from '@rocket.chat/fuselage';
+import type { BoxProps, OptionType } from '@rocket.chat/fuselage';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
@@ -11,7 +11,7 @@ import { UserStatus } from './UserStatus';
 export type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
-	optionWidth?: ComponentProps<typeof Box>['width'];
+	optionWidth?: BoxProps['width'];
 	placement?: ComponentProps<typeof PositionAnimated>['placement'];
 };
 

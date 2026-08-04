@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import {
 	Message,
 	MessageLeftContainer,
@@ -12,7 +13,7 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,7 +39,7 @@ export type ThreadListMessageProps = {
 	tlm: Date;
 	emoji: IMessage['emoji'];
 	hasDraft?: boolean;
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+} & Omit<BoxProps, 'is'>;
 
 const ThreadListMessage = ({
 	_id,

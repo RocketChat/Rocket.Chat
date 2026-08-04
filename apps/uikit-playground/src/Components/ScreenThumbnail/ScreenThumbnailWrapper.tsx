@@ -1,11 +1,12 @@
 import './Thumbnail.scss';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactNode, ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 
 export type ScreenThumbnailWrapperProps = {
-	onClick?: ComponentProps<typeof Box>['onClick'];
+	onClick?: BoxProps['onClick'];
 	children: ReactNode;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const ScreenThumbnailWrapper = ({
 	children,
