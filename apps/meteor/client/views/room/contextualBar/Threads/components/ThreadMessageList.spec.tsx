@@ -92,10 +92,6 @@ jest.mock('../../../MessageList/hooks/useKeepAtBottom', () => ({
 	useKeepAtBottom: () => ({ keepAtBottomRef: jest.fn(), setKeepAtBottom: jest.fn() }),
 }));
 
-jest.mock('../../../MessageList/hooks/useKeepMountedMessages', () => ({
-	useKeepMountedMessages: () => [],
-}));
-
 jest.mock('../../../hooks/useFirstUnreadMessageId', () => ({
 	useFirstUnreadMessageId: () => undefined,
 }));
