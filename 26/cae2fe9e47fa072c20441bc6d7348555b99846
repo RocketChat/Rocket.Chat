@@ -1,0 +1,23 @@
+.github/workflows/ci.yml
+  h_4c386397e672f4 11-12,20,192,202,216-217,323,355,379,389,405,422,439,453,462,470,478,653,744,815,854,869,877,994,1057,1083,1138,1255,1281-1315,1320
+  h_4c386397e672f4 208-211,213-215,979-993,995,1316
+docs/release-process.md
+  h_4c386397e672f4 1-101
+packages/release-action/action.yml
+  h_4c386397e672f4 6
+packages/release-action/src/bumpNextVersion.ts
+  h_4c386397e672f4 92,98
+packages/release-action/src/publishRelease.ts
+  h_4c386397e672f4 119-120,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "26cae2fe9e47fa072c20441bc6d7348555b99846",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
