@@ -20,7 +20,7 @@ export const setRealName = async function (
 		return;
 	}
 
-	const user = fullUser || (await Users.findOneById(userId, { session }));
+	const user = fullUser || (await Users.findOneById<IUser>(userId, { session }));
 
 	if (!user) {
 		return;

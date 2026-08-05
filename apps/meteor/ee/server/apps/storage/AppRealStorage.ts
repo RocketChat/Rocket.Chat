@@ -74,7 +74,12 @@ export class AppRealStorage extends AppMetadataStorage {
 			updateQuery.$unset = { permissionsGranted: 1 };
 		}
 
-		return this.db.findOneAndUpdate({ _id }, updateQuery, { returnDocument: 'after' });
+		const updated = await this.db.findOneAndUpdate({ _id }, updateQuery, { returnDocument: 'after' });
+		if (!updated) {
+			throw new Error(`App storage item not found for _id: ${_id}`);
+		}
+
+		return updated;
 	}
 
 	public async updateStatus(_id: string, status: AppStatus): Promise<boolean> {

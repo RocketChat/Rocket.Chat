@@ -1,5 +1,5 @@
 import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
-import type { IOmnichannelServiceLevelAgreementsModel } from '@rocket.chat/model-typings/src';
+import type { IOmnichannelServiceLevelAgreementsModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
 import type { Db, IndexDescription } from 'mongodb';
 

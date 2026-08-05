@@ -1,7 +1,7 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import type { ICannedResponseModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
-import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription, UpdateFilter, Document } from 'mongodb';
+import type { Db, DeleteResult, FindCursor, IndexDescription, UpdateFilter, Document } from 'mongodb';
 
 // TODO need to define type for CannedResponse object
 export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> implements ICannedResponseModel {
@@ -64,13 +64,19 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return Object.assign(record, { _id });
 	}
 
-	override findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
+	override findOneById<
+		P extends Document = IOmnichannelCannedResponse,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(_id: string, options?: O): Promise<DocumentWithProjection<P, O> | null> {
 		const query = { _id };
 
-		return this.findOne(query, options);
+		return this.findOne<P, O>(query, options);
 	}
 
-	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(shortcut: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		shortcut: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			shortcut,
 		};
@@ -78,7 +84,10 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return this.findOne<T, O>(query, options);
 	}
 
-	findByDepartmentId<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(departmentId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	findByDepartmentId<
+		T extends Document = IOmnichannelCannedResponse,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(departmentId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope: 'department',
 			departmentId,
