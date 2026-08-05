@@ -45,7 +45,6 @@ const hoverUnderlineStyle = css`
 
 const timestampStyle = css`
 	& .rcx-message-system__time {
-		font-size: 0.625rem;
 		color: ${Palette.text['font-secondary-info']};
 	}
 `;
