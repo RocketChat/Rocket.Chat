@@ -2,7 +2,7 @@ import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import { Users } from '@rocket.chat/models';
+import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
@@ -1135,8 +1135,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			);
 
-			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
-			// instead of having to listen to every watch.users event
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: hashedToken, userId: this.userId });
 			void notifyOnUserChangeAsync(async () => {
 				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {

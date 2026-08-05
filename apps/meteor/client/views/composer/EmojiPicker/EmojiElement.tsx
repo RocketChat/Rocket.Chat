@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
@@ -11,6 +12,12 @@ export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: Mous
 		'is'
 	>;
 
+const smallEmojiClass = css`
+	.emoji {
+		font-size: 1.125rem;
+	}
+`;
+
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
 
@@ -22,6 +29,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 
 	return (
 		<IconButton
+			{...(small && { className: smallEmojiClass })}
 			small={small}
 			medium={!small}
 			onMouseEnter={() => handlePreview(image, emoji)}

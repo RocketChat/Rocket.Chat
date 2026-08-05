@@ -1,6 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
 import { useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
 
@@ -15,6 +16,8 @@ const CMSPage = ({ page }: CMSPageProps) => {
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 
+	const dangerousContent = useMemo(() => ({ __html: pageContent }), [pageContent]);
+
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
@@ -24,7 +27,7 @@ const CMSPage = ({ page }: CMSPageProps) => {
 			<VerticalWizardLayoutForm>
 				<Box padding={32}>
 					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
-					<Box withRichContent dangerouslySetInnerHTML={{ __html: pageContent }} />
+					<Box withRichContent dangerouslySetInnerHTML={dangerousContent} />
 				</Box>
 			</VerticalWizardLayoutForm>
 			<VerticalWizardLayoutFooter>

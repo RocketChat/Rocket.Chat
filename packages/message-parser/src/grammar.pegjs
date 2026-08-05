@@ -795,6 +795,7 @@ EmoticonBackslash
 /* Unicode emojis */
 UnicodeEmoji
   = UnicodeEmojiTagSequence
+  / UnicodeEmojiKeycapSequence
   / $(
     (UnicodeEmojiZwjComponent [\u200D])*
     UnicodeEmojiZwjComponent
@@ -804,9 +805,12 @@ UnicodeEmoji
   / UnicodeEmojiMiscellaneousTechnical
   / UnicodeEmojiMiscellaneousSymbols
   / UnicodeEmojiDingbats
+  / UnicodeEmojiGeometricSquares
+  / UnicodeEmojiEnclosedBadges
+  / UnicodeEmojiTextPresentation
   / UnicodeEmojiFlags
 
-UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
+UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F] [︀-️]?)
 
 UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
 
@@ -814,18 +818,23 @@ UnicodeEmojiZwjComponent
   = ( UnicodeEmojiSupplementalSymbolsAndPictographs
     / UnicodeEmojiMiscellaneousSymbolsAndPictographs
     / UnicodeEmojiEmoticon
+    / UnicodeEmojiTransportAndMapSymbols
     / UnicodeEmojiDingbats
     / UnicodeEmojiMiscellaneousSymbols
+    / UnicodeEmojiArrows
+    / UnicodeEmojiGeometricSquares
     ) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
 
 /* Emoji tag sequence: Black Flag + tag characters (U+E0020-U+E007E) + Cancel Tag (U+E007F), e.g. England/Scotland/Wales flags */
 UnicodeEmojiTagSequence = $([\uD83C] [\uDFF4] ([\uDB40] [\uDC20-\uDC7E])+ [\uDB40] [\uDC7F])
 
+UnicodeEmojiKeycapSequence = $([0-9#*] [️]? [⃣])
+
 UnicodeEmojiMiscellaneousSymbolsAndPictographs = $([\uD83C] [\uDF00-\uDFFF] [\uFE00-\uFE0F]?) / $([\uD83D] [\uDC00-\uDDFF] [\uFE00-\uFE0F]?)
 
 UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers = $([\uD83C] [\uDFFB-\uDFFF])
 
-UnicodeEmojiTransportAndMapSymbols = $([\uD83D] [\uDE80-\uDEFA])
+UnicodeEmojiTransportAndMapSymbols = $([\uD83D] [\uDE80-\uDEFF] [︀-️]?)
 
 UnicodeEmojiMiscellaneousTechnical = $([\u2300-\u23FF] [\uFE00-\uFE0F]?)
 
@@ -833,7 +842,21 @@ UnicodeEmojiMiscellaneousSymbols = $([\u2600-\u26FF] [\uFE00-\uFE0F]?)
 
 UnicodeEmojiDingbats = $([\u2700-\u27BF] [\uFE00-\uFE0F]?)
 
-UnicodeEmojiFlags = $([\uD83C] [\uDD00-\uDDFF] [\uD83C] [\uDD00-\uDDFF])
+/* U+2194/U+2195 only; kept narrow so bare prose arrows (U+2190..U+2193, U+21D2) aren't matched */
+UnicodeEmojiArrows = $([\u2194-\u2195] [\uFE00-\uFE0F]?)
+
+UnicodeEmojiGeometricSquares = $([\u2B1B-\u2B1C] [\uFE00-\uFE0F]?) / $([\uD83D] ([\uDFE0-\uDFEB] / [\uDFF0]) [\uFE00-\uFE0F]?)
+
+/* Tight ranges — these enclosed-alphanumeric/ideographic and playing-card blocks are mostly non-emoji */
+UnicodeEmojiEnclosedBadges = $([\uD83C] ([\uDCCF] / [\uDD8E] / [\uDD91-\uDD9A] / [\uDE01] / [\uDE32-\uDE3A] / [\uDE50-\uDE51]) [︀-️]?)
+
+/* Default-text chars that are emoji ONLY with a required trailing VS16, so a bare U+00A9/U+2122/U+25B6 in prose stays text */
+UnicodeEmojiTextPresentation
+  = $([©®‼⁉™ℹ↖-↙↩-↪Ⓜ▪-▫▶◀◻-◾⤴-⤵⬅-⬇⭐⭕〰〽㊗㊙] [️])
+  / $([\uD83C] ([\uDC04] / [\uDD70-\uDD71] / [\uDD7E-\uDD7F] / [\uDE02] / [\uDE1A] / [\uDE2F]) [️])
+
+/* Two regional indicators combine into a flag (e.g. U + S = US flag); a single one alone is not an emoji. Narrowed from U+1F100-1F1FF so squared badges aren't mis-grouped as flags. */
+UnicodeEmojiFlags = $([\uD83C] [\uDDE6-\uDDFF] [\uD83C] [\uDDE6-\uDDFF])
 
 /**
  *

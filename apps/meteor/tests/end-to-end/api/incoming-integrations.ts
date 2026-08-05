@@ -62,8 +62,8 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -77,16 +77,14 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'not_authorized');
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -100,12 +98,10 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'not_authorized');
 			});
 		});
 
@@ -183,8 +179,8 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-				void request
+			it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -198,13 +194,11 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('integration').and.to.be.an('object');
-						integration = res.body.integration;
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('integration').and.to.be.an('object');
+				integration = res.body.integration;
 			});
 		});
 
@@ -236,8 +230,8 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		describe('Incoming Integration execution', () => {
-			it('should return an error when the user sends an invalid type of integration', (done) => {
-				void request
+			it('should return an error when the user sends an invalid type of integration', async () => {
+				const res = await request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -251,52 +245,45 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Invalid integration type.');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'Invalid integration type.');
 			});
 
-			it('should execute the incoming integration', (done) => {
-				void request
+			it('should execute the incoming integration', async () => {
+				await request
 					.post(`/hooks/${integration._id}/${integration.token}`)
 					.send({
 						text: 'Example message',
 					})
-					.expect(200)
-					.end(done);
+					.expect(200);
 			});
 
-			it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
-				void request
+			it("should return an error when sending 'channel' field telling its configuration is disabled", async () => {
+				const res = await request
 					.post(`/hooks/${integration._id}/${integration.token}`)
 					.send({
 						text: 'Example message',
 						channel: [testChannelName],
 					})
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
 			});
 
-			it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
-				void request
+			it("should return an error when sending 'roomId' field telling its configuration is disabled", async () => {
+				const res = await request
 					.post(`/hooks/${integration._id}/${integration.token}`)
 					.send({
 						text: 'Example message',
 						roomId: channel._id,
 					})
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
 			});
 			it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
 				const successfulMessage = `Message sent successfully at #${Date.now()}`;
@@ -646,20 +633,18 @@ describe('[Incoming Integrations]', () => {
 			]);
 		});
 
-		it('should return an error when trying to get history of incoming integrations if user does NOT have enough permissions', (done) => {
-			void request
+		it('should return an error when trying to get history of incoming integrations if user does NOT have enough permissions', async () => {
+			const res = await request
 				.get(api('integrations.history'))
 				.set(credentials)
 				.query({
 					id: integration._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				})
-				.end(done);
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 	});
 
@@ -691,25 +676,19 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('should return the list of incoming integrations', (done) => {
-			void request
-				.get(api('integrations.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
-						(createdIntegration) => createdIntegration._id === integration._id,
-					);
-					assert.isDefined(integrationCreatedByAdmin);
-					expect(integrationCreatedByAdmin).to.be.an('object');
-					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('items');
-					expect(res.body).to.have.property('total');
-				})
-				.end(done);
+		it('should return the list of incoming integrations', async () => {
+			const res = await request.get(api('integrations.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
+				(createdIntegration) => createdIntegration._id === integration._id,
+			);
+			assert.isDefined(integrationCreatedByAdmin);
+			expect(integrationCreatedByAdmin).to.be.an('object');
+			expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('items');
+			expect(res.body).to.have.property('total');
 		});
 
 		describe('With manage-own-incoming-integrations permission', () => {
@@ -727,23 +706,17 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should return the list of integrations created by the user only', (done) => {
-				void request
-					.get(api('integrations.list'))
-					.set(userCredentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
-							(createdIntegration) => createdIntegration._id === integration._id,
-						);
-						expect(integrationCreatedByAdmin).to.be.equal(undefined);
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('items');
-						expect(res.body).to.have.property('total');
-					})
-					.end(done);
+			it('should return the list of integrations created by the user only', async () => {
+				const res = await request.get(api('integrations.list')).set(userCredentials).expect('Content-Type', 'application/json').expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
+					(createdIntegration) => createdIntegration._id === integration._id,
+				);
+				expect(integrationCreatedByAdmin).to.be.equal(undefined);
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('items');
+				expect(res.body).to.have.property('total');
 			});
 		});
 
@@ -782,31 +755,23 @@ describe('[Incoming Integrations]', () => {
 
 	describe('[/integrations.get]', () => {
 		describe('Invalid params', () => {
-			it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-				void request
-					.get(api('integrations.get'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `must have required property 'integrationId'`);
-					})
-					.end(done);
+			it('should return an error when the required "integrationId" query parameters is not sent', async () => {
+				const res = await request.get(api('integrations.get')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', `must have required property 'integrationId'`);
 			});
 
-			it('should return an error when the user sends an invalid integration', (done) => {
-				void request
+			it('should return an error when the user sends an invalid integration', async () => {
+				const res = await request
 					.get(api('integrations.get'))
 					.query({ integrationId: 'invalid' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'The integration does not exists.');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'The integration does not exists.');
 			});
 		});
 
@@ -822,32 +787,28 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', async () => {
+				const res = await request
 					.get(api('integrations.get'))
 					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'not-authorized');
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', async () => {
+				const res = await request
 					.get(api('integrations.get'))
 					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'not-authorized');
 			});
 		});
 
@@ -856,19 +817,17 @@ describe('[Incoming Integrations]', () => {
 				await updatePermission('manage-incoming-integrations', ['admin']);
 			});
 
-			it('should return the integration successfully', (done) => {
-				void request
+			it('should return the integration successfully', async () => {
+				const res = await request
 					.get(api('integrations.get'))
 					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('integration');
-						expect(res.body.integration._id).to.be.equal(integration._id);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('integration');
+				expect(res.body.integration._id).to.be.equal(integration._id);
 			});
 		});
 
@@ -887,19 +846,17 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
-				void request
+			it('should return the integration successfully when the user is able to see only your own integrations', async () => {
+				const res = await request
 					.get(api('integrations.get'))
 					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('integration');
-						expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('integration');
+				expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
 			});
 		});
 	});
@@ -923,8 +880,8 @@ describe('[Incoming Integrations]', () => {
 			await deleteUser(senderUser);
 		});
 
-		it('should update an integration by id and return the new data', (done) => {
-			void request
+		it('should update an integration by id and return the new data', async () => {
+			const res = await request
 				.put(api('integrations.update'))
 				.set(credentials)
 				.send({
@@ -939,16 +896,14 @@ describe('[Incoming Integrations]', () => {
 					integrationId: integration._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration');
-					expect(res.body.integration._id).to.be.equal(integration._id);
-					expect(res.body.integration.name).to.be.equal('Incoming test updated');
-					expect(res.body.integration.alias).to.be.equal('test updated');
-					integration = res.body.integration;
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('integration');
+			expect(res.body.integration._id).to.be.equal(integration._id);
+			expect(res.body.integration.name).to.be.equal('Incoming test updated');
+			expect(res.body.integration.alias).to.be.equal('test updated');
+			integration = res.body.integration;
 		});
 
 		it('should not allow users without a role with the message-impersonate permission to be assigned to existing incoming integrations', async () => {
@@ -975,21 +930,19 @@ describe('[Incoming Integrations]', () => {
 				});
 		});
 
-		it('should have integration updated on subsequent gets', (done) => {
-			void request
+		it('should have integration updated on subsequent gets', async () => {
+			const res = await request
 				.get(api('integrations.get'))
 				.query({ integrationId: integration._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration');
-					expect(res.body.integration._id).to.be.equal(integration._id);
-					expect(res.body.integration.name).to.be.equal('Incoming test updated');
-					expect(res.body.integration.alias).to.be.equal('test updated');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('integration');
+			expect(res.body.integration._id).to.be.equal(integration._id);
+			expect(res.body.integration.name).to.be.equal('Incoming test updated');
+			expect(res.body.integration.alias).to.be.equal('test updated');
 		});
 
 		it("should update an integration's username and associated userId correctly and return the new data", async () => {
@@ -1067,8 +1020,8 @@ describe('[Incoming Integrations]', () => {
 				]);
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -1076,16 +1029,14 @@ describe('[Incoming Integrations]', () => {
 						type: 'webhook-incoming',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
+					.expect(403);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 			});
 
-			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-				void request
+			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -1093,12 +1044,10 @@ describe('[Incoming Integrations]', () => {
 						type: 'webhook-incoming',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
+					.expect(403);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 			});
 		});
 
@@ -1107,8 +1056,8 @@ describe('[Incoming Integrations]', () => {
 				await updatePermission('manage-own-incoming-integrations', ['admin']);
 			});
 
-			it('should return an error when the user sends an invalid type of integration', (done) => {
-				void request
+			it('should return an error when the user sends an invalid type of integration', async () => {
+				const res = await request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -1116,12 +1065,10 @@ describe('[Incoming Integrations]', () => {
 						type: 'invalid-type',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
 			});
 		});
 
@@ -1130,8 +1077,8 @@ describe('[Incoming Integrations]', () => {
 				await updatePermission('manage-incoming-integrations', ['admin']);
 			});
 
-			it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', (done) => {
-				void request
+			it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -1139,11 +1086,9 @@ describe('[Incoming Integrations]', () => {
 						type: integration.type,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
 		});
 
@@ -1156,8 +1101,8 @@ describe('[Incoming Integrations]', () => {
 				await updatePermission('manage-own-incoming-integrations', ['admin']);
 			});
 
-			it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-				void request
+			it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.remove'))
 					.set(userCredentials)
 					.send({
@@ -1165,11 +1110,9 @@ describe('[Incoming Integrations]', () => {
 						type: integrationCreatedByAnUser.type,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
 		});
 	});
