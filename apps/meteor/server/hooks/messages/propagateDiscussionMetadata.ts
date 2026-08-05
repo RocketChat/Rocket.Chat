@@ -77,7 +77,7 @@ callbacks.add(
 			});
 
 			if (room) {
-				await updateAndNotifyParentRoomWithParentMessage(withPendingRoomChanges(room));
+				await updateAndNotifyParentRoomWithParentMessage(room);
 			}
 		}
 		if (message.drid) {

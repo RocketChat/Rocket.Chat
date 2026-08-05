@@ -2060,6 +2060,41 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('discussion messages count', () => {
+		let testChannel: IRoom;
+		let discussion: IRoom;
+
+		const getDiscussionMessage = async () => {
+			const { body } = await request.get(api('chat.getDiscussions')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+
+			return body.messages.find((message: IMessage & { drid: IRoom['_id'] }) => message.drid === discussion._id);
+		};
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
+
+			const { body } = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: testChannel._id, t_name: `discussion.test.${Date.now()}-${Math.random()}` })
+				.expect(200);
+
+			discussion = body.discussion;
+		});
+
+		// deleting the parent channel also deletes its discussions
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should count the message just sent on the discussion', async () => {
+			await sendSimpleMessage({ roomId: discussion._id });
+
+			const discussionMessage = await getDiscussionMessage();
+
+			expect(discussionMessage).to.have.property('dcount', 1);
+			expect(discussionMessage).to.have.property('dlm');
+		});
+	});
+
 	describe('[/rooms.join]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
