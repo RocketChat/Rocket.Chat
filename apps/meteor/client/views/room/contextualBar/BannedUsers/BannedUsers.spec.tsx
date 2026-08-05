@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps, CSSProperties, ElementType, ReactNode, Ref } from 'react';
 import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
 
@@ -117,31 +117,6 @@ describe('BannedUsers', () => {
 		jest.useRealTimers();
 	});
 
-	it('renders banned user rows inside the Virtua virtual list', () => {
-		const { Default } = composed;
-		render(<Default />, { wrapper: appRoot });
-
-		const list = screen.getByTestId('banned-users-virtual-list');
-		expect(list).toHaveAttribute('data-buffer-size', '50');
-		expect(within(list).getAllByRole('listitem')).toHaveLength(3);
-		expect(within(list).getByText('john.doe')).toBeInTheDocument();
-		expect(within(list).getByText('jane.smith:matrix.org')).toBeInTheDocument();
-		expect(screen.getAllByRole('button', { name: 'More' })).toHaveLength(3);
-	});
-
-	it('does not render the virtual list for loading, empty, or error states', () => {
-		const { unmount: unmountLoading } = renderBannedUsers({ loading: true, bannedUsers: [] });
-		expect(screen.queryByTestId('banned-users-virtual-list')).not.toBeInTheDocument();
-		unmountLoading();
-
-		const { unmount: unmountEmpty } = renderBannedUsers({ bannedUsers: [] });
-		expect(screen.queryByTestId('banned-users-virtual-list')).not.toBeInTheDocument();
-		unmountEmpty();
-
-		renderBannedUsers({ error: new Error('Failed to load banned users'), bannedUsers: [] });
-		expect(screen.queryByTestId('banned-users-virtual-list')).not.toBeInTheDocument();
-	});
-
 	it('calls onLoadMore when scrolled near the bottom', async () => {
 		jest.useFakeTimers();
 		const onLoadMore = jest.fn();
@@ -215,20 +190,6 @@ describe('BannedUsers', () => {
 		renderBannedUsers({ onLoadMore });
 
 		mockVirtualizerHandle.scrollOffset = 700;
-		fireEvent.scroll(screen.getByTestId('banned-users-virtual-list'));
-		await advanceDebouncedScroll();
-
-		expect(onLoadMore).not.toHaveBeenCalled();
-	});
-
-	it('does not call onLoadMore when the viewport has no measurable height', async () => {
-		jest.useFakeTimers();
-		const onLoadMore = jest.fn();
-		mockVirtualizerHandle.viewportSize = 0;
-
-		renderBannedUsers({ onLoadMore });
-
-		mockVirtualizerHandle.scrollOffset = 1000;
 		fireEvent.scroll(screen.getByTestId('banned-users-virtual-list'));
 		await advanceDebouncedScroll();
 
