@@ -19,7 +19,7 @@ While colocation is a commendable concept, it's not consistently followed for Re
 
 Failing to name a component is a common mistake that can lead to prolonged debugging efforts. It results in less informative error stacks and challenges while navigating components in React Dev Tools. There are two approaches to properly name a component:
 
-1. By writing a non-anonymous function:
+1. By assigning the function straight to a binding. The arrow function is itself anonymous, but assigning it to a `const` makes JavaScript infer the name from the variable:
 
 ```jsx
 const Foo = () => {
@@ -29,7 +29,7 @@ const Foo = () => {
 console.log('The component name is:', Foo.name);
 ```
 
-2. By using the `displayName` property:
+2. By setting the `displayName` property. Once a wrapper call sits between the binding and the function, there is nothing for inference to attach to — the arrow is an argument to `memo`, and `memo` returns an object rather than a function:
 
 ```jsx
 const Foo = memo(() => {
@@ -53,7 +53,7 @@ type ComponentProps = {
 	name: string;
 };
 
-// It is NOT an anonymous function
+// Anonymous arrow, but the const assignment infers the name "Component"
 const Component = (props: ComponentProps) => {
 	return <div>Hello, {props.name}</div>;
 };
@@ -78,7 +78,7 @@ type ComponentProps = {
 	name: string;
 };
 
-// It is an anonymous function
+// Anonymous arrow in an argument position — no name is inferred
 export const Component = memo((props: ComponentProps) => {
 	return <div>Hello, {props.name}</div>;
 });
