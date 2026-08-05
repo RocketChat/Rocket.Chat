@@ -58,42 +58,60 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	if (!hideDefaultOptions && type !== 'l') {
 		const isFavorite = Boolean(subscription?.f);
-		const { moveToItems, removeItem } = buildCategoryItems({ rid, name, isFavorite });
+		const { moveToItems, removeItem, isEnterprise } = buildCategoryItems({ rid, name, isFavorite });
 
-		// Strip toggleFavorite — the submenu's "Favorites" target replaces it.
-		const actionSections = allSections
-			.map((section) => ({ ...section, items: section.items.filter((item) => item.id !== 'toggleFavorite') }))
-			.filter((section) => section.items.length > 0);
+		// Strip toggleFavorite only when showing the category submenu — it takes over the favorites action.
+		const actionSections = isEnterprise
+			? allSections
+					.map((section) => ({ ...section, items: section.items.filter((item) => item.id !== 'toggleFavorite') }))
+					.filter((section) => section.items.length > 0)
+			: allSections;
 
-		// Separate "New category" from the regular category targets so it always goes last in the submenu.
-		const categoryTargets = moveToItems.filter((item) => item.id !== 'newCategory');
-		const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
+		if (isEnterprise) {
+			// Separate "New category" from the regular category targets so it always goes last in the submenu.
+			const categoryTargets = moveToItems.filter((item) => item.id !== 'newCategory');
+			const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
 
-		const allItems = [...actionSections.flatMap((s) => s.items), ...moveToItems, ...(removeItem ? [removeItem] : [])];
+			const allItems = [...actionSections.flatMap((s) => s.items), ...moveToItems, ...(removeItem ? [removeItem] : [])];
+			const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
+			const handleAction = makeHandleAction(allItems);
+
+			const submenuActionsItems = [...(newCategoryItem ? [newCategoryItem] : []), ...(removeItem ? [removeItem] : [])];
+
+			return (
+				<Menu detached title={t('Options')} mini icon='kebab' aria-keyshortcuts='alt' onAction={handleAction} disabledKeys={disabledKeys}>
+					{[
+						...actionSections.map(({ title, items }, index) => (
+							<MenuSection key={title || String(index)} aria-label={title || t('Options')} title={title || undefined} items={items}>
+								{renderSectionItem}
+							</MenuSection>
+						)),
+						<MenuSection key='category' title={t('Category')}>
+							<MenuSubmenuTrigger key='moveTo' textValue={t('Move_to')}>
+								<MenuItem aria-label={t('Move_to')}>
+									<MenuItemIcon name='folder' />
+									<MenuItemContent>{t('Move_to')}</MenuItemContent>
+								</MenuItem>
+								<MenuSection items={categoryTargets}>{renderSubmenuItem}</MenuSection>
+								{submenuActionsItems.length > 0 && <MenuSection items={submenuActionsItems}>{renderSubmenuItem}</MenuSection>}
+							</MenuSubmenuTrigger>
+						</MenuSection>,
+					]}
+				</Menu>
+			);
+		}
+
+		const allItems = actionSections.flatMap((s) => s.items);
 		const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 		const handleAction = makeHandleAction(allItems);
 
-		const submenuActionsItems = [...(newCategoryItem ? [newCategoryItem] : []), ...(removeItem ? [removeItem] : [])];
-
 		return (
 			<Menu detached title={t('Options')} mini icon='kebab' aria-keyshortcuts='alt' onAction={handleAction} disabledKeys={disabledKeys}>
-				{[
-					...actionSections.map(({ title, items }, index) => (
-						<MenuSection key={title || String(index)} aria-label={title || t('Options')} title={title || undefined} items={items}>
-							{renderSectionItem}
-						</MenuSection>
-					)),
-					<MenuSection key='category' title={t('Category')}>
-						<MenuSubmenuTrigger key='moveTo' textValue={t('Move_to')}>
-							<MenuItem aria-label={t('Move_to')}>
-								<MenuItemIcon name='folder' />
-								<MenuItemContent>{t('Move_to')}</MenuItemContent>
-							</MenuItem>
-							<MenuSection items={categoryTargets}>{renderSubmenuItem}</MenuSection>
-							{submenuActionsItems.length > 0 && <MenuSection items={submenuActionsItems}>{renderSubmenuItem}</MenuSection>}
-						</MenuSubmenuTrigger>
-					</MenuSection>,
-				]}
+				{actionSections.map(({ title, items }, index) => (
+					<MenuSection key={title || String(index)} aria-label={title || t('Options')} title={title || undefined} items={items}>
+						{renderSectionItem}
+					</MenuSection>
+				))}
 			</Menu>
 		);
 	}
