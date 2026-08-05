@@ -1,0 +1,24 @@
+ee/packages/abac/src/index.ts
+  h_4c386397e672f4 354
+packages/core-services/src/types/IAbacService.ts
+  h_4c386397e672f4 25
+ee/packages/abac/src/pdp/LocalPDP.ts
+  h_4c386397e672f4 54
+ee/packages/abac/src/pdp/types.ts
+  h_4c386397e672f4 55
+ee/packages/abac/src/pdp/VirtruPDP.ts
+  h_4c386397e672f4 18-19,270,377,392,433
+ee/packages/abac/src/store/types.ts
+  h_4c386397e672f4 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "147ffbde358a28e9e00799eb1efafe29a74d717d",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
