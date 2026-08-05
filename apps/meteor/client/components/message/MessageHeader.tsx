@@ -41,15 +41,14 @@ const nameStyle = css`
 
 const timestampStyle = css`
 	& .rcx-message-header__time {
-		font-size: 0.625rem;
 		color: ${Palette.text['font-secondary-info']};
 	}
 
-	/* At 10px the timestamp counts as normal-size text, so it needs 4.5:1.
-	   secondary-info clears that on the room surface (4.80:1) but not on the
-	   hover surface (4.33:1), so it steps up to the default token while
-	   hovered. Mirrors the rule added to the design system in fuselage#2138;
-	   both this block and the bump can drop it once that lands. */
+	/* secondary-info clears the 4.5:1 contrast requirement on the room
+	   surface (4.80:1) but not on the hover surface (4.33:1), so it steps up
+	   to the default token while hovered. Mirrors the rule added to the
+	   design system in fuselage#2138; both this block and the wrapper
+	   applying it can drop once that lands and the package is bumped. */
 	.rcx-message:hover & .rcx-message-header__time {
 		color: ${Palette.text['font-default']};
 	}
