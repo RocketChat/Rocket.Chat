@@ -195,14 +195,14 @@ export const MyComponent: ComponentStory<typeof VideoConfMessage> = () => (
 );
 ```
 
-### Encapsulate HTML elements, Box, and Box props
+### HTML elements, box, and box props should be encapsulated
 
 Encapsulation ensures predictable behavior and streamlined debugging by accessing HTML elements and Box props solely through the Box component's API.
 
 ❌ Incorrect:
 
 ```tsx
-export const VideoConfMessage: ComponentStory<typeof VideoConfMessage> = () => (
+export const VideoConfMessage = () => (
 	<Box mbs='x4' maxWidth='345px' borderWidth={2} borderColor='neutral-200' borderRadius='x4'>
 		<Box p='x16' display='flex' alignItems='center'>
 			<Icon name='link' />
@@ -276,7 +276,7 @@ return (
 
 ## Understanding the component and defining the scope
 
-New components typically emerge from requirements put forth by the Product Design Team. The frontend engineer holds the responsibility of assessing the genuine necessity of such components. Due to the substantial effort involved in creating a new component, it is prudent to collaborate with product managers and designers. It is advisable to explore the feasibility of employing Complex Components as an MVP to validate concepts and user flows. Subsequent to successful validation, the progression to developing a new Fuselage level component can be considered.
+New components typically emerge from requirements put forth by the Product Design Team. The frontend engineer holds the responsibility of assessing the genuine necessity of such components. Due to the substantial effort involved in creating a new component, it is prudent to collaborate with product managers and designers. It is advisable to explore the feasibility of employing Complex Components as an MVP to validate concepts and user flows. After successful validation, the progression to developing a new Fuselage level component can be considered.
 
 **How do I know my component should be part of the Fuselage library?**
 
