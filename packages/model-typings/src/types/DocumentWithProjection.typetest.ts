@@ -1,7 +1,9 @@
 /**
- * Compile-time assertions for {@link DocumentWithProjection}. This file emits nothing; it exists so
- * that `tsc -p tsconfig.json` fails if the projection inference regresses.
+ * Compile-time assertions for {@link DocumentWithProjection}. Nothing here is meant to run; it
+ * exists so that `tsc -p tsconfig.json` fails if the projection inference regresses.
  */
+import type { Document } from 'mongodb';
+
 import type { DocumentWithDriverProjection, DocumentWithProjection, FindOptionsWithProjection } from './DocumentWithProjection';
 
 type Expect<T extends true> = T;
@@ -62,6 +64,33 @@ export type NonLiteralValueBailsOut = Expect<Equal<Project<{ name: number }>, Do
 export type UnknownKeyBailsOut = Expect<Equal<Project<{ name: 1; notInDoc: 1 }>, Doc>>;
 
 export type WideProjectionBailsOut = Expect<Equal<Project<Record<string, 0 | 1>>, Doc>>;
+
+// Documents with a string index signature collapse `keyof T` to `string | number`, which used to
+// make the implicit `_id` disappear from inclusion projections.
+
+type IndexedDoc = {
+	_id: string;
+	name: string;
+	[k: string]: any;
+};
+
+export type IndexSignatureKeepsId = Expect<
+	Equivalent<DocumentWithProjection<IndexedDoc, { projection: { name: 1 } }>, { _id: string; name: string }>
+>;
+
+// When a call sits in a contextually typed position (argument, object literal property), inference
+// through the return type would drive the document type param to its `Document` constraint instead
+// of its default. The `NoInfer` inside `DocumentWithProjection` blocks that.
+
+declare const contextualProbe: {
+	findOne<P extends Document = Doc, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		options?: O,
+	): DocumentWithProjection<P, O> | null;
+};
+
+export const contextualInferenceKeepsDefault: Pick<Doc, '_id' | 'username'> | null = contextualProbe.findOne({
+	projection: { username: 1 },
+});
 
 // `findOneAndUpdate` / `findOneAndDelete` reach the driver directly, so they get none of BaseRaw's
 // rewriting. The two rules below are where driver semantics diverge from the `find` path.
