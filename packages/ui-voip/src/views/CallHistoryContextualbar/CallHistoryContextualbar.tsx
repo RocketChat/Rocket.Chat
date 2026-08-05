@@ -1,3 +1,4 @@
+import type { CallHistoryItemState } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Icon, MessageBlock } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import {
@@ -27,7 +28,7 @@ export type CallHistoryData = {
 	direction: 'inbound' | 'outbound';
 	duration: number;
 	startedAt: Date;
-	state: 'ended' | 'not-answered' | 'failed' | 'error' | 'transferred';
+	state: CallHistoryItemState;
 	messageId?: string;
 };
 

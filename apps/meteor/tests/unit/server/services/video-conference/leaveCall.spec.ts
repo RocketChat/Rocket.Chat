@@ -46,7 +46,8 @@ const VideoConferenceModelMock = {
 };
 
 const CallHistoryMock = {
-	insertMany: sinon.stub().resolves({ insertedCount: 0 }),
+	// A conference is logged from the moment it starts and rewritten as it changes, so the write is an upsert.
+	upsertMany: sinon.stub().resolves(),
 };
 
 const UsersMock = {
@@ -199,10 +200,10 @@ describe('VideoConfService.leaveCall', () => {
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
-			CallHistoryMock.insertMany,
+			CallHistoryMock.upsertMany,
 		].forEach((stub) => stub.resetHistory());
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
-		CallHistoryMock.insertMany.resolves({ insertedCount: 0 });
+		CallHistoryMock.upsertMany.resolves();
 		SubscriptionsMock.findByRoomIdAndNotUserId.returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() });
 	});
 
@@ -225,8 +226,8 @@ describe('VideoConfService.leaveCall', () => {
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(fixture.endedAt).to.be.instanceOf(Date);
 
-		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
-		const [items] = CallHistoryMock.insertMany.firstCall.args;
+		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
+		const [items] = CallHistoryMock.upsertMany.firstCall.args;
 		expect(items).to.have.length(2);
 		expect(items.map((item: { uid: string }) => item.uid).sort()).to.deep.equal(['creator', 'other']);
 	});
@@ -244,7 +245,7 @@ describe('VideoConfService.leaveCall', () => {
 		const leaver = fixture.users.find((user) => user._id === 'other');
 		expect(leaver?.leftAt).to.be.instanceOf(Date);
 
-		expect(CallHistoryMock.insertMany.called).to.be.false;
+		expect(CallHistoryMock.upsertMany.called).to.be.false;
 	});
 
 	// This was the specific case that produced nothing: a 1:1 DM conference has no `title` and was being
@@ -259,9 +260,9 @@ describe('VideoConfService.leaveCall', () => {
 		await leaveAndSettle('other');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
-		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
+		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
 
-		const [items] = CallHistoryMock.insertMany.firstCall.args;
+		const [items] = CallHistoryMock.upsertMany.firstCall.args;
 		expect(items).to.have.length(2);
 		expect(items.every((item: { type: string }) => item.type === 'video-conference')).to.be.true;
 		expect(items.some((item: { title?: string }) => 'title' in item)).to.be.false;
@@ -281,7 +282,7 @@ describe('VideoConfService.leaveCall', () => {
 		await leaveAndSettle('other');
 		await leaveAndSettle('other');
 
-		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
+		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
 	});
 
 	// A conference that already ended (already carries `endedAt`) must not be re-processed at all — this is
@@ -294,7 +295,7 @@ describe('VideoConfService.leaveCall', () => {
 
 		await service.leaveCall('creator', 'call1');
 
-		expect(CallHistoryMock.insertMany.called).to.be.false;
+		expect(CallHistoryMock.upsertMany.called).to.be.false;
 		expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
 	});
 
@@ -306,9 +307,9 @@ describe('VideoConfService.leaveCall', () => {
 		await leaveAndSettle('creator');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
-		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
+		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
 
-		const [items] = CallHistoryMock.insertMany.firstCall.args;
+		const [items] = CallHistoryMock.upsertMany.firstCall.args;
 		expect(items).to.have.length(2);
 		expect(items.find((item: { uid: string }) => item.uid === 'neverJoined')).to.include({ state: 'not-answered' });
 		expect(items.find((item: { uid: string }) => item.uid === 'creator')).to.include({ state: 'ended' });
@@ -329,7 +330,7 @@ describe('VideoConfService.leaveCall', () => {
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		expect(fixture.endedAt).to.be.undefined;
-		expect(CallHistoryMock.insertMany.called).to.be.false;
+		expect(CallHistoryMock.upsertMany.called).to.be.false;
 	});
 
 	it('still ends the call when nobody comes back', async () => {

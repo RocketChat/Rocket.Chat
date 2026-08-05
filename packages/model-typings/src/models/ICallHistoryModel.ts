@@ -1,10 +1,12 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
 import type { FindCursor, Document } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
+	upsertMany(items: InsertionModel<CallHistoryItem>[]): Promise<void>;
+
 	findOneByIdAndUid<T extends Document = CallHistoryItem, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		_id: CallHistoryItem['_id'],
 		uid: CallHistoryItem['uid'],

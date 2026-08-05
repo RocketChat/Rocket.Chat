@@ -1,5 +1,5 @@
 import type { CallHistoryItemState } from '@rocket.chat/core-typings';
-import { Box, FramedIcon, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, FramedIcon, Icon } from '@rocket.chat/fuselage';
 import { GenericMenu, GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import { intlFormatDistance } from 'date-fns';
@@ -17,10 +17,14 @@ export type CallHistoryRowConferenceProps = {
 	type: 'outbound' | 'inbound';
 	status: CallHistoryItemState;
 	timestamp: string;
+	/** Offered for a call that is still running, which is what makes this list the way back into one. */
+	onJoin?: () => void;
 };
 
 const getStatusIcon = (status: CallHistoryItemState) => {
 	switch (status) {
+		case 'ongoing':
+			return 'phone';
 		case 'ended':
 			return 'phone-off';
 		case 'not-answered':
@@ -35,6 +39,8 @@ const getStatusIcon = (status: CallHistoryItemState) => {
 
 const getStatusVariant = (status: CallHistoryItemState) => {
 	switch (status) {
+		case 'ongoing':
+			return 'status-font-on-success';
 		case 'not-answered':
 			return 'status-font-on-warning';
 		case 'failed':
@@ -47,6 +53,8 @@ const getStatusVariant = (status: CallHistoryItemState) => {
 
 const getStatusText = (status: CallHistoryItemState, t: TFunction) => {
 	switch (status) {
+		case 'ongoing':
+			return t('Ongoing');
 		case 'ended':
 			return t('Ended');
 		case 'not-answered':
@@ -63,7 +71,7 @@ const getStatusText = (status: CallHistoryItemState, t: TFunction) => {
 // `CallHistoryTableRow` from `@rocket.chat/ui-voip` — its `contact`/`duration` props don't apply here.
 // Clicking the row opens the conference's room directly, mirroring the "Call chat" action already used for
 // conferences elsewhere, instead of the contact-shaped call info panel the other rows open.
-const CallHistoryRowConference = ({ _id, rid, title, usersCount, type, status, timestamp }: CallHistoryRowConferenceProps) => {
+const CallHistoryRowConference = ({ _id, rid, title, usersCount, type, status, timestamp, onJoin }: CallHistoryRowConferenceProps) => {
 	const { t } = useTranslation();
 	const locale = useLanguage();
 	const goToRoom = useGoToRoom();
@@ -103,7 +111,21 @@ const CallHistoryRowConference = ({ _id, rid, title, usersCount, type, status, t
 			</GenericTableCell>
 			<GenericTableCell>{intlFormatDistance(new Date(timestamp), new Date(), { locale: locale ?? 'en-US' })}</GenericTableCell>
 			<GenericTableCell>
-				<GenericMenu title={t('Options')} items={[]} />
+				{/* The row itself opens the call's room, so joining has to stop there — one row, two destinations. */}
+				{onJoin ? (
+					<Button
+						small
+						primary
+						onClick={(event) => {
+							event.stopPropagation();
+							onJoin();
+						}}
+					>
+						{t('Join')}
+					</Button>
+				) : (
+					<GenericMenu title={t('Options')} items={[]} />
+				)}
 			</GenericTableCell>
 		</GenericTableRow>
 	);

@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import type { ChangeEvent, Key, SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type StatesFilter = Array<'ended' | 'transferred' | 'not-answered' | 'failed'>;
+type StatesFilter = Array<'ongoing' | 'ended' | 'transferred' | 'not-answered' | 'failed'>;
 type TypeFilter = 'inbound' | 'outbound' | 'all';
 
 export type CallHistoryPageFiltersProps = {
@@ -25,6 +25,7 @@ const typeOptions = [
 
 const statesOptions = [
 	{ id: 'filter_by_status', text: 'Filter_By_Status', isGroupTitle: true },
+	{ id: 'ongoing', text: 'Ongoing', icon: { name: 'phone', color: 'success' } },
 	{ id: 'ended', text: 'Ended', icon: { name: 'phone-off', color: 'default' } },
 	{ id: 'transferred', text: 'Transferred', icon: { name: 'arrow-forward', color: 'default' } },
 	{ id: 'not-answered', text: 'Not_answered', icon: { name: 'phone-question-mark', color: 'warning' } },
@@ -34,7 +35,7 @@ const statesOptions = [
 export const useCallHistoryPageFilters = () => {
 	const [searchText, setSearchText] = useState('');
 	const [type, setType] = useState<TypeFilter>('all');
-	const [states, setStates] = useState<StatesFilter>(['ended', 'transferred', 'not-answered', 'failed']);
+	const [states, setStates] = useState<StatesFilter>(['ongoing', 'ended', 'transferred', 'not-answered', 'failed']);
 
 	const onChangeText = useCallback((text: string) => {
 		setSearchText(text);

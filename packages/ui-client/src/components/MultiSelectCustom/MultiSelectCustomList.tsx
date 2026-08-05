@@ -7,12 +7,14 @@ import { useTranslation } from 'react-i18next';
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
-const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
+const getIconColor = (color: 'default' | 'danger' | 'warning' | 'success' | undefined) => {
 	switch (color) {
 		case 'danger':
 			return 'status-font-on-danger';
 		case 'warning':
 			return 'status-font-on-warning';
+		case 'success':
+			return 'status-font-on-success';
 		case 'default':
 		default:
 			return undefined;

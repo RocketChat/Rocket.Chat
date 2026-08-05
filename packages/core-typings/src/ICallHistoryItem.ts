@@ -4,6 +4,8 @@ import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
 export type CallHistoryItemState =
+	/** The call is still happening — it is written to history when it starts, not only when it finishes */
+	| 'ongoing'
 	/** One of the users ended the call */
 	| 'ended'
 	/** Call was not answered */
