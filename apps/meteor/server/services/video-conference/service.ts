@@ -47,12 +47,11 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import type { LoggableVideoConference } from '../../../lib/videoConference/callHistory';
 import {
 	buildConferenceCallHistoryItems,
 	EMPTY_CALL_GRACE_MS,
 	hasActiveParticipants,
-	shouldWriteConferenceHistory,
+	isLoggableConference,
 } from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
@@ -529,28 +528,36 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		// `call` was read before `endedAt` was set above, so it still shows the previous state — which is what
-		// makes the repeat guard in `shouldWriteConferenceHistory` work.
-		if (shouldWriteConferenceHistory(call)) {
-			await this.saveConferenceToHistory(call);
-		}
+		// The members' rows have said `ongoing` since the call started; this is where each one's own outcome — who
+		// was there, and who never answered — is finally written.
+		await this.recordConferenceInHistory(call._id, { ended: true });
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
 		}
 	}
 
-	// Writes one call-history item per conference member (see `buildConferenceCallHistoryItems`), so a conference
-	// gets a "rejoin from a past call" entry point the same way media calls do. Which conferences qualify is
-	// `shouldWriteConferenceHistory`'s call — a direct conference is a 1:1 video call and belongs here too.
-	private async saveConferenceToHistory(call: LoggableVideoConference): Promise<void> {
-		if (!call.users.length) {
-			return;
-		}
+	/**
+	 * Records a conference in every member's call history — while it runs, and again once it is over.
+	 *
+	 * The history is the single list of calls, so a call has to be in it from the moment it starts rather than
+	 * appearing once it finishes. `ongoing` is a state like any other there, which is also what lets a member who
+	 * declined find their way back in.
+	 *
+	 * Writes repeat for the same call, on purpose: whenever membership moves and once at the end, when each
+	 * member's own outcome is finally known. They are upserts keyed by member and call, so repeating is harmless.
+	 */
+	private async recordConferenceInHistory(callId: VideoConference['_id'], { ended }: { ended: boolean }): Promise<void> {
+		try {
+			const call = await this.getUnfiltered(callId);
+			if (!call || !isLoggableConference(call) || !call.users.length) {
+				return;
+			}
 
-		await CallHistory.insertMany(buildConferenceCallHistoryItems(call)).catch((err: unknown) =>
-			logger.error({ msg: 'Failed to insert items into Call History', err, callId: call._id }),
-		);
+			await CallHistory.upsertMany(buildConferenceCallHistoryItems(call, { ended }));
+		} catch (err: unknown) {
+			logger.error({ msg: 'Failed to record a conference in Call History', err, callId });
+		}
 	}
 
 	private async expireCall(callId: VideoConference['_id']): Promise<void> {
@@ -562,10 +569,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
 
 		// An expired call is one nobody ever ended, which is how a conference normally finishes when the provider
-		// doesn't report the end back. It still happened, so it belongs in its members' history just the same.
-		if (shouldWriteConferenceHistory(call)) {
-			await this.saveConferenceToHistory(call);
-		}
+		// doesn't report the end back. Its members' rows have to stop saying `ongoing` all the same.
+		await this.recordConferenceInHistory(call._id, { ended: true });
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
@@ -842,6 +847,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}, 40000);
 
+		// In both members' history from the moment it exists, as an `ongoing` call.
+		await this.recordConferenceInHistory(callId, { ended: false });
+
 		return {
 			type: 'direct',
 			callId,
@@ -903,6 +911,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.ringing) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
 		}
+
+		// In everyone's history from the moment it exists, as an `ongoing` call.
+		await this.recordConferenceInHistory(callId, { ended: false });
 
 		return {
 			type: 'videoconference',
@@ -1152,6 +1163,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceMembersUpdate(call._id);
 
+		// Someone new is in the call: they need a row of their own, and everyone else's count has changed.
+		await this.recordConferenceInHistory(call._id, { ended: false });
+
 		if (call.type === 'direct') {
 			await this.ringCalleeOnCallerArrival(call as IDirectVideoConference, _id);
 			return this.updateDirectCall(call, _id);
@@ -1196,6 +1210,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (added.length) {
 			this.notifyVideoConfUpdate(call.rid, callId);
 			this.notifyConferenceMembersUpdate(callId);
+			// Being added to a call is being in its history — that is where someone who never answers finds it.
+			await this.recordConferenceInHistory(callId, { ended: false });
 		}
 
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing
@@ -1236,6 +1252,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceMembersUpdate(callId);
+
+		// Someone who was only rung has no history row until now: declining is how they end up with one, and it is
+		// what makes the call reachable again from there while it is still running.
+		await this.recordConferenceInHistory(callId, { ended: false });
 	}
 
 	/**

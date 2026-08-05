@@ -1,4 +1,9 @@
-import type { IInternalMediaCallHistoryItem, IExternalMediaCallHistoryItem, Serialized } from '@rocket.chat/core-typings';
+import type {
+	CallHistoryItemState,
+	IInternalMediaCallHistoryItem,
+	IExternalMediaCallHistoryItem,
+	Serialized,
+} from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
@@ -18,6 +23,7 @@ import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import { getExternalContact } from './MediaCallHistoryExternal';
 import GenericNoResults from '../../components/GenericNoResults';
+import { useJoinCall } from '../conference/hooks/useJoinCall';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -36,7 +42,7 @@ const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirect
 	}
 };
 
-const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | undefined => {
+const getStateFilter = <T extends CallHistoryItemState[]>(states: T): T | [...T, 'error'] | undefined => {
 	if (states.length === 0) {
 		return undefined;
 	}
@@ -116,6 +122,9 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
+	// A call still running is a row like any other, and the only thing it needs beyond them is somewhere to go.
+	const joinCall = useJoinCall();
+
 	const { data, isPending, error, refetch } = useQuery({
 		queryKey: [
 			'call-history',
@@ -155,6 +164,8 @@ const CallHistoryPage = () => {
 					type: item.direction,
 					status: item.state,
 					timestamp: item.ts,
+					// Still running: this row is the way into it, whether or not its ring was ever answered.
+					...(item.state === 'ongoing' && { onJoin: () => joinCall(item.callId) }),
 				};
 			}
 
@@ -170,7 +181,7 @@ const CallHistoryPage = () => {
 				duration: item.duration,
 			};
 		});
-	}, [data]);
+	}, [data, joinCall]);
 
 	const contextualBar = (() => {
 		if (tab?.openTab === 'user-info') {

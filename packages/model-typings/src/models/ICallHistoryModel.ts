@@ -1,9 +1,17 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
 import type { FindCursor, FindOptions } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
+	/**
+	 * Writes an item per member, replacing what was there for the same member and call.
+	 *
+	 * A conference is logged when it starts and again as it changes, so these writes repeat for the same call by
+	 * design — `{ uid, callId }` is unique, and that is what makes repeating them harmless.
+	 */
+	upsertMany(items: InsertionModel<CallHistoryItem>[]): Promise<void>;
+
 	findOneByIdAndUid(
 		_id: CallHistoryItem['_id'],
 		uid: CallHistoryItem['uid'],

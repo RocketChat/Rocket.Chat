@@ -1,5 +1,5 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type { FindPaginated, ICallHistoryModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ICallHistoryModel, InsertionModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Db, Filter, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 
@@ -12,6 +12,30 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { uid: 1, callId: 1 }, unique: true }, { key: { uid: 1, ts: -1 } }];
+	}
+
+	/**
+	 * One item per member, replacing whatever was there for that member and call.
+	 *
+	 * A conference is logged from the moment it starts and rewritten as it runs, so these writes repeat for the
+	 * same call by design. `{ uid, callId }` is unique, so an upsert is what keeps that from doubling anyone's
+	 * history — and `_updatedAt` is left to the base model's own hand.
+	 */
+	async upsertMany(items: InsertionModel<CallHistoryItem>[]): Promise<void> {
+		if (!items.length) {
+			return;
+		}
+
+		await this.col.bulkWrite(
+			items.map(({ uid, callId, ...fields }) => ({
+				updateOne: {
+					filter: { uid, callId },
+					update: { $set: { ...fields, _updatedAt: new Date() }, $setOnInsert: { uid, callId } },
+					upsert: true,
+				},
+			})),
+			{ ordered: false },
+		);
 	}
 
 	async findOneByIdAndUid(

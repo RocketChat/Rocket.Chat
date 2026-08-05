@@ -683,6 +683,8 @@ and package-level jest.
 | That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
 | That the camera is described rather than previewed | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
+| A call is logged from the start and settles when it ends | `apps/meteor/tests/unit/server/services/video-conference/conferenceHistory.spec.ts` |
+| What a conference row says, and that a running one can be joined from it | `apps/meteor/client/views/mediaCallHistory/CallHistoryRowConference.spec.tsx` |
 | That the callee is rung when the caller arrives, and only once | `apps/meteor/tests/unit/server/services/video-conference/ringOnArrival.spec.ts` |
 | That opening the call window creates nothing, and confirming starts the call | `apps/meteor/client/views/conference/ConferenceStartPage.spec.tsx` |
 | What the preflight offers, what it joins with, and naming the call | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
@@ -775,9 +777,9 @@ Ringing is a poor only-route into a call: it is one-shot, it lasts seconds, and 
 with more than ten subscribers rings **nobody at all**. So a call is also reachable from two lists.
 
 **The sidebar** (`sections/OngoingCallsSection`) shows the calls running now that this user may join, with
-**join** and **decline** on each. **The call history page** shows the same calls above the record of past ones —
-and unlike the sidebar it keeps the ones the user declined, which is what makes it the way back to a call they
-turned down.
+**join** and **decline** on each. **The call history page** shows them as rows of its own table, with `ongoing`
+as their status and a **join** button — the way back to a call the user turned down, since declining quiets the
+sidebar but leaves the history row where it was.
 
 Every sidebar row is something to act on — join it, or turn it down so it stops asking. The call the reader is
 *already in* is therefore left out entirely: they are in it, there is nothing to reach, and a row that only read
@@ -802,6 +804,25 @@ without that filter an abandoned call would be advertised as joinable for a day.
 The row's name comes from the conference's title, or — for a direct message, which has no name of its own — from
 the reader's **own subscription**, since a DM is named after the other person and that name is per-viewer. Both
 fall back to the room. One subscription query answers this and the room-membership question together.
+
+### A call is in the history from the moment it starts
+
+The history is the one list of calls, so a call in progress is a row in it rather than a section above it. That
+means writing it when it starts, not when it finishes: `recordConferenceInHistory` upserts an item per member as
+the conference is created, again whenever membership moves (someone joins, is added, declines), and once more when
+it ends.
+
+While it runs, every member's row says the same thing — `ongoing` — because a member's own outcome doesn't exist
+yet. Ending is what settles it into `ended` or `not-answered` per member, along with the count of who was actually
+there. `{ uid, callId }` is unique in `call_history`, which is what makes writing repeatedly harmless: an app can
+resend `ENDED`, the expiry cron runs every three hours, and membership can move a dozen times.
+
+Two things fall out of this. Someone who was rung and never answered has a row while the call is still running, so
+turning a call down is not the end of it — the row is the way back in. And the client needs no second source: the
+table's rows, its filters and its states all come from `call-history.list`, with `ongoing` a state like any other.
+
+The sidebar keeps using `video-conference.joinable`, which answers a different question — *may I join this, right
+now* — and carries a live count.
 
 ### One call at a time
 
