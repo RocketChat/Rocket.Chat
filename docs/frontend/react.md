@@ -128,13 +128,13 @@ Children should always be actual children, not passed in as a prop. Use the `esl
 ❌ Incorrect:
 
 ```jsx
-export const MyComponent = () => <div children={...} />;
+export const MyComponent = ({ children }) => <div children={children} />;
 ```
 
 ✅ Correct:
 
 ```jsx
-export const MyComponent = () => <div>{...}</div>;
+export const MyComponent = ({ children }) => <div>{children}</div>;
 ```
 
 ## Declare props type explicitly
