@@ -46,14 +46,6 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-// This method is unauthenticated (callable over DDP and via method.callAnon), so we key the
-// rate limit on `clientAddress` rather than `userId` — keying on the (always-null) anonymous
-// userId would collapse every caller into a single global bucket. Correct per-client bucketing
-// relies on `HTTP_FORWARDED_COUNT` being set to the real number of trusted proxies, the same
-// assumption the generic DDP IP rate limit and login-attempt throttling already depend on.
-// The 10/60s allowance mirrors the REST `users.forgotPassword` endpoint (which inherits the
-// API_Enable_Rate_Limiter_Limit_Calls_Default / _Time_Default defaults) so the same operation
-// has the same per-client allowance regardless of the path it is called through.
 DDPRateLimiter.addRule(
 	{
 		type: 'method',
