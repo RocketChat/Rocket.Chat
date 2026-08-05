@@ -6,15 +6,16 @@ import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 import type { MovableRoom } from '../hooks/useCustomCategories';
 import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCustomCategories';
 
-type CategoryFormModalProps = {
+type CreateCategoryModalProps = {
 	room?: MovableRoom;
 	onClose: () => void;
 };
 
-const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
+const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { createCategory, createCategoryAndMoveRoom, validateName } = useCustomCategories();
@@ -25,13 +26,18 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 		setError,
 		setFocus,
 		formState: { errors },
-	} = useForm({ defaultValues: { name: '' } });
+	} = useForm({
+		defaultValues: {
+			name: '',
+			rooms: room ? [room.rid] : [],
+		},
+	});
 
 	useEffect(() => {
 		setFocus('name');
 	}, [setFocus]);
 
-	const handleConfirm = async ({ name }: { name: string }) => {
+	const handleConfirm = async ({ name, rooms }: { name: string; rooms: string[] }) => {
 		const error = validateName(name);
 		if (error) {
 			setError(
@@ -44,9 +50,13 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 
 		try {
 			if (room) {
-				await createCategoryAndMoveRoom(name, room);
+				await createCategoryAndMoveRoom(
+					name,
+					room,
+					rooms.filter((id) => id !== room.rid),
+				);
 			} else {
-				await createCategory(name);
+				await createCategory(name, rooms);
 				dispatchToastMessage({ type: 'success', message: t('Category_created') });
 			}
 			onClose();
@@ -88,9 +98,19 @@ const CategoryFormModal = ({ room, onClose }: CategoryFormModalProps) => {
 					</FieldRow>
 					{errors.name && <FieldError>{errors.name.message}</FieldError>}
 				</Field>
+				<Field>
+					<FieldLabel>{t('Rooms')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='rooms'
+							render={({ field: { value, onChange } }) => <UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} />}
+						/>
+					</FieldRow>
+				</Field>
 			</FieldGroup>
 		</GenericModal>
 	);
 };
 
-export default CategoryFormModal;
+export default CreateCategoryModal;
