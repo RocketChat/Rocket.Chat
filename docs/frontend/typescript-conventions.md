@@ -55,12 +55,17 @@ export class Bar {
 import { Foo } from './Foo';
 import type { Bar } from './Bar';
 
-declare const foo: Foo;
+export const foo = new Foo('baz');
 declare const bar: Bar;
 
 // index.js (transpiled from index.ts)
 import { Foo } from './Foo';
+export const foo = new Foo('baz');
 ```
+
+`Foo` is constructed, so its import is emitted; `Bar` is only ever a type, so `import type { Bar }` disappears entirely.
+
+Note that TypeScript also elides a plain `import` whose bindings are only used in type positions, so writing `import` where `import type` belongs is usually not what bloats the output. `import type` is preferred because it states the intent, fails loudly if someone later uses the binding as a value, and is what tooling that transpiles file-by-file — `isolatedModules`, `verbatimModuleSyntax`, esbuild, SWC — needs in order to strip the import without consulting the type checker.
 
 ## Know the difference between `type` and `interface`
 
