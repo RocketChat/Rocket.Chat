@@ -21,9 +21,10 @@ Example with `@typedef`:
 /**
  * @typedef {Object} Foo
  * @property {string} bar
- * @property {string} qux
+ * @property {string} [qux]
  */
 
+/** @type {Foo} */
 export const foo = { bar: 'baz' };
 
 foo.qux = 'quux';
@@ -35,7 +36,7 @@ Alternative using the `@type` tag:
 // module.js
 
 /**
- * @type {{ bar: string; qux: string }}
+ * @type {{ bar: string; qux?: string }}
  */
 export const foo = { bar: 'baz' };
 
