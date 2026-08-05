@@ -1,0 +1,14 @@
+packages/omni-core/src/visitor/create.spec.ts
+  h_4c386397e672f4 302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "47d3c50d479c0c292559e516051eae4ea6670123",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
