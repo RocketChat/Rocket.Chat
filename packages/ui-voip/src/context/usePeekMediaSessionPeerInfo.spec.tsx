@@ -3,8 +3,7 @@ import type { CallContact } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
+import { MediaCallInstanceContext, defaultContextValue } from './MediaCallInstanceContext';
 import { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo';
 
 type MockInstance = {
@@ -16,15 +15,8 @@ const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
 		<MediaCallInstanceContext.Provider
 			value={{
-				currentViews: [],
-				registerView: () => undefined,
-				unregisterView: () => undefined,
+				...defaultContextValue,
 				instance: instance as any,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: () => undefined,
-				getAutocompleteOptions: () => Promise.resolve([]),
 			}}
 		>
 			{children}

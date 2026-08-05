@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import MediaCallWidget from './MediaCallWidget';
-import { useMediaCallView, useWidgetExternalControls } from '../../context';
+import { useMediaCallInstance, useMediaCallView, useWidgetExternalControls } from '../../context';
 import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
@@ -21,12 +21,12 @@ const meta = {
 	title: 'Views/MediaCallWidget/Draggable Widget',
 	component: MediaCallWidget,
 	args: {
-		state: 'closed',
+		state: 'none',
 	},
 	decorators: [
 		mockedContexts,
 		(Story, options) => (
-			<MockedMediaCallProvider {...options.args}>
+			<MockedMediaCallProvider instanceProps={{ targetWidgetVisibility: 'open' }} {...options.args}>
 				<Story />
 			</MockedMediaCallProvider>
 		),
@@ -37,16 +37,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const MediaCallWidgetManualTesting: Story = {
+	args: {
+		instanceProps: {},
+	},
 	render: () => {
+		const { targetWidgetVisibility } = useMediaCallInstance();
 		const { sessionState, onCall } = useMediaCallView();
 		const { toggleWidget } = useWidgetExternalControls();
 		const { state } = sessionState;
 		return (
 			<>
-				<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} marginInlineEnd={8}>
+				<Button onClick={() => toggleWidget()} disabled={state !== 'none'} marginInlineEnd={8}>
 					Toggle widget
 				</Button>
-				<Button onClick={() => onCall()} disabled={state !== 'closed'}>
+				<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
 					Receive call
 				</Button>
 				<MediaCallWidget />
@@ -57,7 +61,7 @@ export const MediaCallWidgetManualTesting: Story = {
 
 export const NewCall: Story = {
 	args: {
-		state: 'new',
+		state: 'none',
 	},
 };
 
