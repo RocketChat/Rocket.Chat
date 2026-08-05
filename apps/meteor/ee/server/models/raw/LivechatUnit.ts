@@ -21,7 +21,10 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		super(db, 'livechat_department');
 	}
 
-	findPaginatedUnits<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(query: Filter<IOmnichannelBusinessUnit>, options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	findPaginatedUnits<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<IOmnichannelBusinessUnit>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		return super.findPaginated<T, O>({ ...query, type: 'u' }, options);
 	}
 
@@ -155,7 +158,10 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return result;
 	}
 
-	findOneByIdOrName<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(_idOrName: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+	findOneByIdOrName<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			$or: [
 				{
