@@ -18,18 +18,7 @@ export const useWidgetExternalControls = () => {
 		[closeWidget, openWidget, targetWidgetVisibility],
 	);
 
-	const openDialer = useCallback(
-		(peerInfo?: PeerInfo) => {
-			signalEmitter.emit('openDialer', { peerInfo });
-		},
-		[signalEmitter],
-	);
-
-	const closeDialer = useCallback(() => {
-		signalEmitter.emit('closeDialer', undefined);
-	}, [signalEmitter]);
-
 	const endCall = useCallback(() => getEndCall(instance)(), [instance]);
 
-	return { toggleWidget, openDialer, closeDialer, endCall };
+	return { toggleWidget, endCall };
 };

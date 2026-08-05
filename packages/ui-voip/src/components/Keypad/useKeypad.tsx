@@ -25,10 +25,10 @@ export const useKeypad = (onPress: (tone: string) => void, { alwaysOpen = false 
 	const { t } = useTranslation();
 
 	const element = (
-		<Box display='flex' justifyContent='center' alignItems='center' w='100%' flexDirection='column' mbe={8}>
-			<Field mbe={8}>
+		<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
+			<Field marginBlockEnd={8}>
 				<FieldRow>
-					<TextInput value={inputValue} readOnly small mi={24} />
+					<TextInput value={inputValue} readOnly small marginInline={24} />
 				</FieldRow>
 			</Field>
 			<Keypad
@@ -38,7 +38,7 @@ export const useKeypad = (onPress: (tone: string) => void, { alwaysOpen = false 
 					onPress(...args);
 				}}
 			/>
-			<Divider w='100%' />
+			<Divider width='100%' />
 		</Box>
 	);
 
