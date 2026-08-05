@@ -41,7 +41,7 @@ const NewCall = () => {
 					</Box>
 				)}
 				{inline && (
-					<Box display='flex' justifyContent='center' mbs={12}>
+					<Box display='flex' justifyContent='center' marginBlockStart={12}>
 						<Keypad autoFocus={false} onKeyPress={autocomplete.onKeypadPress} />
 					</Box>
 				)}
