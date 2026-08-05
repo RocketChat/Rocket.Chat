@@ -1,0 +1,25 @@
+packages/core-typings/src/ILivechatBusinessHour.ts
+  s_757bbbab112d52::t_78cb001a2d2f40 40-41
+apps/meteor/ee/server/lib/omnichannel/business-hour/lib/business-hour.ts
+  s_757bbbab112d52::t_cb51b442de06ff 33
+apps/meteor/server/lib/omnichannel/business-hour/filterBusinessHoursThatMustBeOpened.ts
+  s_757bbbab112d52::t_13f9f244dfb9e7 5
+apps/meteor/server/lib/omnichannel/business-hour/Helper.ts
+  s_757bbbab112d52::t_ad2de5af69f8cf 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "be8a055ed973b1b72e3153f4080b41cf8c027e6c",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
