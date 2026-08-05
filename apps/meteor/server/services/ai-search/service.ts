@@ -229,7 +229,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			}
 		}
 		const msgIds = [...msgIdSet];
-		let messageMap = new Map<string, IMessage>();
+		let messageMap = new Map<string, Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u'>>();
 
 		if (msgIds.length > 0) {
 			messageMap = new Map(
