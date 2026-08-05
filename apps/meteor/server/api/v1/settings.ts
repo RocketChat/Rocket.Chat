@@ -32,6 +32,7 @@ import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
+import type { FetchedSetting } from '../../settings/SettingsRegistry';
 import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
@@ -45,7 +46,7 @@ async function fetchSettings(
 	offset: FindOptions<ISetting>['skip'],
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
-): Promise<{ settings: ISetting[]; totalCount: number }> {
+): Promise<{ settings: FetchedSetting[]; totalCount: number }> {
 	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
@@ -59,7 +60,7 @@ async function fetchSettings(
 	return { settings: settingsList, totalCount: total };
 }
 
-const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -89,7 +90,7 @@ const addCustomOAuthBodySchema = ajv.compile<{ name: string }>({
 	additionalProperties: false,
 });
 
-const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
