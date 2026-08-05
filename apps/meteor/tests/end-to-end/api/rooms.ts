@@ -2086,12 +2086,11 @@ describe('[Rooms]', () => {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should count the message just sent on the discussion', async () => {
-			await sendSimpleMessage({ roomId: discussion._id });
-
+			const t = await sendSimpleMessage({ roomId: discussion._id });
 			const discussionMessage = await getDiscussionMessage();
 
 			expect(discussionMessage).to.have.property('dcount', 1);
-			expect(discussionMessage).to.have.property('dlm');
+			expect(discussionMessage).to.have.property('dlm', t.body.message.ts);
 		});
 	});
 
