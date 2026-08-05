@@ -66,8 +66,6 @@ Comprehensive unit tests ensure reliability across all intended scenarios:
 
 ```jsx
 describe('[Menu Component]', () => {
-	const menuOption = screen.queryByText('Make Admin');
-
 	it('should renders without crashing', () => {
 		render(<Simple {...Simple.args} />);
 	});
@@ -82,17 +80,17 @@ describe('[Menu Component]', () => {
 	it('should have no options when click twice', async () => {
 		const { getByTestId } = render(<Simple {...Simple.args} />);
 		const button = getByTestId('menu');
-		userEvent.click(button);
-		userEvent.click(button);
-		expect(menuOption).toBeNull();
+		await userEvent.click(button);
+		await userEvent.click(button);
+		expect(screen.queryByText('Make Admin')).toBeNull();
 	});
 
 	it('should have no options when click on menu and then elsewhere', async () => {
 		const { getByTestId } = render(<Simple {...Simple.args} />);
 		const button = getByTestId('menu');
-		userEvent.click(button);
-		userEvent.click(document.body);
-		expect(menuOption).toBeNull();
+		await userEvent.click(button);
+		await userEvent.click(document.body);
+		expect(screen.queryByText('Make Admin')).toBeNull();
 	});
 });
 ```
@@ -217,8 +215,10 @@ export const VideoConfMessage: ComponentStory<typeof VideoConfMessage> = () => (
 ✅ Correct:
 
 ```tsx
-const VideoConfMessage = ({ ...props }): ReactElement => (
-	<Box mbs='x4' maxWidth='345' borderWidth={2} borderColor='neutral-200' borderRadius='x4' {...props} />
+export type VideoConfMessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const VideoConfMessage = (props: VideoConfMessageProps) => (
+	<Box mbs='x4' maxWidth='345px' borderWidth={2} borderColor='neutral-200' borderRadius='x4' {...props} />
 );
 ```
 
