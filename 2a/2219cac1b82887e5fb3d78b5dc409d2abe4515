@@ -1,0 +1,21 @@
+apps/meteor/server/lib/utils/lib/normalizeMessagesForUser.ts
+  s_757bbbab112d52::t_b59a561063e382 63
+  s_757bbbab112d52::t_f48ff6a6df8905 25
+  s_757bbbab112d52::t_2d5eeefa7abc29 6-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2a2219cac1b82887e5fb3d78b5dc409d2abe4515",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
