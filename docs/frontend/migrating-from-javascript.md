@@ -6,7 +6,7 @@ TypeScript is an extension of JavaScript, meaning that when transitioning from J
 
 When a diagnostic is genuinely wrong about the code, suppress it explicitly and narrowly:
 
-- `@ts-expect-error` with a short reason, not `@ts-ignore` — it fails once the underlying error is gone, so the suppression can't outlive its cause (52 files use it against 3 for `@ts-ignore`);
+- `@ts-expect-error` with a short reason, rather than `@ts-ignore` — it fails once the underlying error is gone, so the suppression can't outlive its cause;
 - `eslint-disable-next-line`, naming the specific rule rather than disabling the line wholesale.
 
 ## JSDoc
