@@ -41,7 +41,7 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
  */
 callbacks.add(
 	'afterSaveMessage',
-	async (message, { room: { _id, prid } }) => {
+	async (message, { room: { _id, prid }, roomUpdater }) => {
 		if (!prid) {
 			return message;
 		}
@@ -57,7 +57,7 @@ callbacks.add(
 			return message;
 		}
 
-		await updateAndNotifyParentRoomWithParentMessage(withPendingRoomChanges(room));
+		await updateAndNotifyParentRoomWithParentMessage(withPendingRoomChanges(room, roomUpdater));
 
 		return message;
 	},
