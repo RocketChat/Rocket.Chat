@@ -40,7 +40,7 @@ const CategoryMenu = ({
 	const close = () => setIsOpen(false);
 
 	const setModal = useSetModal();
-	const { openCreate, openRename, openDelete } = useCategoryModals();
+	const { openManage, openDelete } = useCategoryModals();
 	const {
 		toggleShowUnreads: toggleCustomShowUnreads,
 		toggleKeepUnreadsOnTop: toggleCustomKeepUnreadsOnTop,
@@ -100,12 +100,12 @@ const CategoryMenu = ({
 	const manageItems: GenericMenuItemProps[] = category
 		? [
 				{
-					id: 'rename',
-					icon: 'edit',
-					content: t('Rename'),
+					id: 'manage',
+					icon: 'cog',
+					content: t('Manage'),
 					onClick: () => {
 						close();
-						openRename(category);
+						openManage(category);
 					},
 				},
 				{
@@ -117,45 +117,27 @@ const CategoryMenu = ({
 						openDelete(category);
 					},
 				},
-				{
-					id: 'new-category',
-					// TODO: Change this icon
-					icon: 'folder',
-					content: t('New_category'),
-					onClick: () => {
-						close();
-						openCreate();
-					},
-				},
 			]
 		: [];
 
-	const collapsedItems: GenericMenuItemProps[] = [
+	const unreadItems: GenericMenuItemProps[] = [
 		{
 			id: 'show-unreads',
 			icon: 'flag',
-			content: t('Show_unreads'),
+			content: t('Always_display'),
 			onClick: handleToggleShowUnreads,
 			addon: <ToggleSwitch checked={showUnreads} onChange={() => undefined} />,
 		},
-	];
-
-	const expandedItems: GenericMenuItemProps[] = [
 		{
 			id: 'keep-unreads-on-top',
 			icon: 'sort-amount-down',
-			content: t('Keep_unreads_on_top'),
+			content: t('Keep_on_top'),
 			onClick: handleToggleKeepUnreadsOnTop,
 			addon: <ToggleSwitch checked={keepUnreadsOnTop} onChange={() => undefined} />,
 		},
 	];
 
-	const sections = [
-		{ items: orderItems },
-		...(category ? [{ title: t('Manage'), items: manageItems }] : []),
-		{ title: t('When_collapsed'), items: collapsedItems },
-		{ title: t('When_expanded'), items: expandedItems },
-	];
+	const sections = [{ items: [...orderItems, ...(category ? manageItems : [])] }, { title: t('Unreads'), items: unreadItems }];
 
 	return (
 		<GenericMenu

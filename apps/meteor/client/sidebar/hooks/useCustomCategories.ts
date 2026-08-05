@@ -4,6 +4,7 @@ import { useEndpoint, useToastMessageDispatch, useUserId, useUserPreference } fr
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { toggleFavoriteRoom } from '../../lib/mutationEffects/room';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
@@ -30,7 +31,10 @@ export const useCustomCategories = () => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const categories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', EMPTY) ?? EMPTY;
+	const { data: enterpriseData } = useIsEnterprise();
+	const isEnterprise = Boolean(enterpriseData?.isEnterprise);
+	const rawCategories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', EMPTY) ?? EMPTY;
+	const categories = isEnterprise ? rawCategories : EMPTY;
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
@@ -63,23 +67,19 @@ export const useCustomCategories = () => {
 		[categories],
 	);
 
+	/** Create a category, optionally pre-populated with room IDs. Strips each room from any prior category. */
 	const createCategory = useCallback(
-		async (name: string): Promise<ISidebarCustomCategory> => {
+		async (name: string, rooms: string[] = []): Promise<ISidebarCustomCategory> => {
+			const stripped = rooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: true,
-				rooms: [],
+				rooms,
 			};
-			await persist([category, ...categories]);
+			await persist([category, ...stripped]);
 			return category;
 		},
-		[categories, persist],
-	);
-
-	const renameCategory = useCallback(
-		(categoryId: string, name: string) =>
-			persist(categories.map((category) => (category._id === categoryId ? { ...category, name: name.trim() } : category))),
 		[categories, persist],
 	);
 
@@ -143,16 +143,18 @@ export const useCustomCategories = () => {
 		[categories, persist, setFavorite, dispatchToastMessage, t],
 	);
 
-	/** Create a category and move a room into it in a single persisted action */
+	/** Create a category, move a room into it (with full move semantics), and optionally add more rooms. */
 	const createCategoryAndMoveRoom = useCallback(
-		async (name: string, room: MovableRoom) => {
+		async (name: string, room: MovableRoom, extraRooms: string[] = []) => {
+			const allRooms = [room.rid, ...extraRooms];
+			const stripped = allRooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: true,
-				rooms: [room.rid],
+				rooms: allRooms,
 			};
-			await persist([category, ...stripRoom(categories, room.rid)]);
+			await persist([category, ...stripped]);
 			if (room.isFavorite) {
 				await setFavorite(room.rid, false);
 			}
@@ -162,6 +164,15 @@ export const useCustomCategories = () => {
 			});
 		},
 		[categories, persist, setFavorite, dispatchToastMessage, t],
+	);
+
+	/** Update a category's name and room list in a single persist. Strips added rooms from any prior category. */
+	const updateCategory = useCallback(
+		async (categoryId: string, name: string, rooms: string[]) => {
+			const stripped = rooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
+			await persist(stripped.map((category) => (category._id === categoryId ? { ...category, name: name.trim(), rooms } : category)));
+		},
+		[categories, persist],
 	);
 
 	const getRoomCategory = useCallback(
@@ -191,23 +202,25 @@ export const useCustomCategories = () => {
 
 	return useMemo(
 		() => ({
+			isEnterprise,
 			categories,
 			validateName,
 			createCategory,
-			renameCategory,
+			createCategoryAndMoveRoom,
+			updateCategory,
 			deleteCategory,
 			toggleShowUnreads,
 			toggleKeepUnreadsOnTop,
 			moveRoom,
-			createCategoryAndMoveRoom,
 			removeRoom,
 			getRoomCategory,
 		}),
 		[
+			isEnterprise,
 			categories,
 			validateName,
 			createCategory,
-			renameCategory,
+			updateCategory,
 			deleteCategory,
 			toggleShowUnreads,
 			toggleKeepUnreadsOnTop,

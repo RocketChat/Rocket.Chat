@@ -11,16 +11,16 @@ import { FAVORITES_TARGET, useCustomCategories } from '../hooks/useCustomCategor
 export type MoveToItem = GenericMenuItemProps;
 
 /**
- * Builds the "Move to" targets (Favorites, each custom category, New category) and a "Create" item for a room.
+ * Builds the "Move to" targets (Favorites, each custom category, New category) for a room.
  * Shared by the sidebar item context menu and the room-header grouping dropdown.
  */
 export const useRoomCategoryItems = () => {
 	const { t } = useTranslation();
-	const { categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
+	const { isEnterprise, categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
 	const { openCreate } = useCategoryModals();
 
 	return useCallback(
-		(room: MovableRoom): { moveToItems: MoveToItem[]; createItem: GenericMenuItemProps; removeItem?: GenericMenuItemProps } => {
+		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; isEnterprise: boolean } => {
 			const current = getRoomCategory(room.rid);
 			const selected = <Icon name='check' size='x16' />;
 
@@ -29,8 +29,7 @@ export const useRoomCategoryItems = () => {
 					id: 'favorites',
 					icon: 'star',
 					content: t('Favorites'),
-					onClick: room.isFavorite ? undefined : () => void moveRoom(room, FAVORITES_TARGET),
-					disabled: room.isFavorite,
+					onClick: room.isFavorite ? () => void removeRoom(room) : () => void moveRoom(room, FAVORITES_TARGET),
 					addon: room.isFavorite ? selected : undefined,
 				},
 				...categories.map(
@@ -38,30 +37,27 @@ export const useRoomCategoryItems = () => {
 						id: category._id,
 						icon: 'folder',
 						content: category.name,
-						onClick: current?._id === category._id ? undefined : () => void moveRoom(room, category._id),
-						disabled: current?._id === category._id,
+						onClick: current?._id === category._id ? () => void removeRoom(room) : () => void moveRoom(room, category._id),
 						addon: current?._id === category._id ? selected : undefined,
 					}),
 				),
-				{ id: 'newCategory', icon: 'plus', content: t('New_category'), onClick: () => openCreate(room) },
+				...(isEnterprise
+					? [{ id: 'newCategory', icon: 'plus' as const, content: t('New_category'), onClick: () => openCreate(room) }]
+					: []),
 			];
 
-			const createItem: GenericMenuItemProps = { id: 'createCategory', icon: 'plus', content: t('Create'), onClick: () => openCreate() };
-
-			// Shown only when the room currently belongs to a custom category or Favorites — removes it back to its system group.
 			const currentName = current?.name ?? (room.isFavorite ? t('Favorites') : undefined);
 			const removeItem: GenericMenuItemProps | undefined = currentName
 				? {
 						id: 'removeFromCategory',
 						icon: 'cross',
-						variant: 'danger',
 						content: t('Remove_from__categoryName__', { categoryName: currentName }),
 						onClick: () => void removeRoom(room),
 					}
 				: undefined;
 
-			return { moveToItems, createItem, removeItem };
+			return { moveToItems, removeItem, isEnterprise };
 		},
-		[t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
+		[isEnterprise, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
 	);
 };

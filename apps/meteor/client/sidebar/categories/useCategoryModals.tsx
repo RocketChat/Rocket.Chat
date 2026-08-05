@@ -2,9 +2,9 @@ import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import CategoryFormModal from './CategoryFormModal';
+import CreateCategoryModal from './CreateCategoryModal';
 import DeleteCategoryModal from './DeleteCategoryModal';
-import RenameCategoryModal from './RenameCategoryModal';
+import ManageCategoryModal from './ManageCategoryModal';
 import type { MovableRoom } from '../hooks/useCustomCategories';
 
 export const useCategoryModals = () => {
@@ -14,8 +14,8 @@ export const useCategoryModals = () => {
 		const onClose = () => setModal(null);
 
 		return {
-			openCreate: (room?: MovableRoom) => setModal(<CategoryFormModal room={room} onClose={onClose} />),
-			openRename: (category: ISidebarCustomCategory) => setModal(<RenameCategoryModal category={category} onClose={onClose} />),
+			openCreate: (room?: MovableRoom) => setModal(<CreateCategoryModal room={room} onClose={onClose} />),
+			openManage: (category: ISidebarCustomCategory) => setModal(<ManageCategoryModal category={category} onClose={onClose} />),
 			openDelete: (category: ISidebarCustomCategory) => setModal(<DeleteCategoryModal category={category} onClose={onClose} />),
 		};
 	}, [setModal]);
