@@ -31,7 +31,11 @@ export type FindOneAndUpdateOptionsWithProjection = WithProjectionSpec<FindOneAn
 
 export type FindOneAndDeleteOptionsWithProjection = WithProjectionSpec<FindOneAndDeleteOptions>;
 
-type IdKey<T> = Extract<keyof T, '_id'>;
+/**
+ * `Extract<keyof T, '_id'>` would miss documents with a string index signature (`keyof T` collapses
+ * to `string | number`, which `'_id'` is not a member of), so probe with `extends` instead.
+ */
+type IdKey<T> = '_id' extends keyof T ? '_id' : never;
 
 type InclusionKeys<P> = { [K in keyof P]-?: P[K] extends 1 | true ? K : never }[keyof P];
 
@@ -53,9 +57,16 @@ export type ApplyProjection<T, P> = [keyof P] extends [keyof T]
 		: T
 	: T;
 
+/**
+ * `NoInfer` blocks contextual inference through the return type: when a call sits in a typed
+ * position (argument, object literal property), the document type param would otherwise fall back
+ * to its `Document` constraint instead of its default, degenerating the result to `{ key: any }`.
+ * The bail-out branches must stay a bare `T` so the no-projection case reduces to exactly the
+ * document type — implementations that forward a legacy `<T>` generic rely on that identity.
+ */
 export type DocumentWithProjection<T extends Document, O> = O extends { projection: infer P }
 	? P extends ProjectionSpec
-		? ApplyProjection<T, P>
+		? ApplyProjection<NoInfer<T>, P>
 		: T
 	: T;
 
@@ -79,6 +90,6 @@ type ApplyDriverProjection<T, P> = [keyof P] extends [keyof T]
 
 export type DocumentWithDriverProjection<T extends Document, O> = O extends { projection: infer P }
 	? P extends ProjectionSpec
-		? ApplyDriverProjection<T, P>
+		? ApplyDriverProjection<NoInfer<T>, P>
 		: T
 	: T;
