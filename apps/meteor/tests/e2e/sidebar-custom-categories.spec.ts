@@ -123,9 +123,9 @@ test.describe.serial('sidebar custom categories', () => {
 			await createCategory(name);
 
 			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Rename', exact: true }).click();
+			await poHomeChannel.page.getByRole('menuitem', { name: 'Manage', exact: true }).click();
 
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Rename category' });
+			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Manage category' });
 			await expect(dialog).toBeVisible();
 			await dialog.getByRole('textbox', { name: 'Name' }).fill(renamed);
 			await dialog.getByRole('button', { name: 'Save', exact: true }).click();
@@ -231,7 +231,7 @@ test.describe.serial('sidebar custom categories', () => {
 			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'New category', exact: true })).toBeVisible();
 			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Show unreads' })).toBeVisible();
 
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Rename', exact: true })).toHaveCount(0);
+			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Manage', exact: true })).toHaveCount(0);
 			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Delete', exact: true })).toHaveCount(0);
 			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'New channel', exact: true })).toHaveCount(0);
 			await poHomeChannel.page.keyboard.press('Escape');
