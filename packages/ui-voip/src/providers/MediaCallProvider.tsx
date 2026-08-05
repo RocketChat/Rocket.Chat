@@ -6,19 +6,24 @@ import MediaCallViewProvider from './MediaCallViewProvider';
 import { MediaCallWidget } from '../views';
 import MediaCallPopout from '../views/MediaCallPopout';
 
-type MediaCallProviderProps = {
+export type MediaCallProviderProps = {
 	children: ReactNode;
+	enabled?: boolean;
 };
 
-const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
+const MediaCallProvider = ({ children, enabled = true }: MediaCallProviderProps) => {
 	return (
-		<MediaCallInstanceProvider>
-			<MediaCallViewProvider>
-				<AnchorPortal id='rcx-media-call-widget-portal'>
-					<MediaCallWidget />
-				</AnchorPortal>
-			</MediaCallViewProvider>
-			<MediaCallPopout />
+		<MediaCallInstanceProvider enabled={enabled}>
+			{enabled && (
+				<>
+					<MediaCallViewProvider>
+						<AnchorPortal id='rcx-media-call-widget-portal'>
+							<MediaCallWidget />
+						</AnchorPortal>
+					</MediaCallViewProvider>
+					<MediaCallPopout />
+				</>
+			)}
 			{children}
 		</MediaCallInstanceProvider>
 	);

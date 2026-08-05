@@ -132,6 +132,14 @@ export type SettingsEndpoints = {
 		POST: (params: { name: string }) => void;
 	};
 
+	'/v1/settings.removeCustomOAuth': {
+		POST: (params: { name: string }) => void;
+	};
+
+	'/v1/settings.refreshOAuthServices': {
+		POST: () => void;
+	};
+
 	'/v1/settings': {
 		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];

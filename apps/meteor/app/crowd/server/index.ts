@@ -1,2 +1,0 @@
-import './crowd';
-import './methods';

@@ -5,7 +5,7 @@ import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, AppSlashCommandManager } from '../../../src/server/managers';
-import { AppAccessorManager, AppOutboundCommunicationProviderManager } from '../../../src/server/managers';
+import { AppOutboundCommunicationProviderManager } from '../../../src/server/managers';
 import { OutboundMessageProvider } from '../../../src/server/managers/AppOutboundCommunicationProvider';
 import { AppPermissionManager } from '../../../src/server/managers/AppPermissionManager';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
@@ -17,7 +17,6 @@ import { TestData } from '../../test-data/utilities';
 describe('AppOutboundCommunicationProviderManager', () => {
 	let mockBridges: TestsAppBridges;
 	let mockApp: ProxiedApp;
-	let mockAccessors: AppAccessorManager;
 	let mockManager: AppManager;
 	let hasPermissionSpy: ReturnType<typeof mock.method>;
 
@@ -59,12 +58,6 @@ describe('AppOutboundCommunicationProviderManager', () => {
 			},
 		} as AppManager;
 
-		mockAccessors = new AppAccessorManager(mockManager);
-		const ac = mockAccessors;
-		mockManager.getAccessorManager = function _getAccessorManager(): AppAccessorManager {
-			return ac;
-		};
-
 		hasPermissionSpy = mock.method(AppPermissionManager, 'hasPermission', () => true);
 	});
 
@@ -78,7 +71,6 @@ describe('AppOutboundCommunicationProviderManager', () => {
 
 		const manager = new AppOutboundCommunicationProviderManager(mockManager);
 		assert.strictEqual((manager as any).manager, mockManager);
-		assert.strictEqual((manager as any).accessors, mockManager.getAccessorManager());
 		assert.ok((manager as any).outboundMessageProviders !== undefined);
 		assert.strictEqual((manager as any).outboundMessageProviders.size, 0);
 	});

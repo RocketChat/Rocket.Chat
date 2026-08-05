@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import EditOauthApp from './EditOauthApp';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-const EditOauthAppWithData = ({ _id, ...props }: { _id: string }) => {
+export type EditOauthAppWithDataProps = { _id: string };
+
+const EditOauthAppWithData = ({ _id, ...props }: EditOauthAppWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.get');
@@ -28,12 +30,12 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }) => {
 	}, [refetch]);
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (error || !data || !_id) {
 		return (
-			<Box fontScale='h2' pb={20}>
+			<Box fontScale='h2' paddingBlock={20}>
 				{t('error-application-not-found')}
 			</Box>
 		);

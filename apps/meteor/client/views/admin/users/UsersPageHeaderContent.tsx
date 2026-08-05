@@ -7,7 +7,7 @@ import type { SeatCapProps } from './useSeatsCap';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 
-type UsersPageHeaderContentProps = {
+export type UsersPageHeaderContentProps = {
 	isSeatsCapExceeded: boolean;
 	seatsCap?: Omit<SeatCapProps, 'reload'>;
 };

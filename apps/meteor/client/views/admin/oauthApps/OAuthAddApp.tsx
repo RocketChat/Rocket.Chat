@@ -55,8 +55,8 @@ const OAuthAddApp = () => {
 	const redirectUriField = useId();
 
 	return (
-		<ContextualbarScrollableContent w='full'>
-			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
+		<ContextualbarScrollableContent width='full'>
+			<FieldGroup maxWidth='x600' alignSelf='center' width='full'>
 				<Field>
 					<FieldRow>
 						<FieldLabel>{t('Active')}</FieldLabel>

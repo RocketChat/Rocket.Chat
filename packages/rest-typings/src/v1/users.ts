@@ -382,6 +382,30 @@ export type UsersEndpoints = {
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.verifyEmail': {
+		POST: (params: { token: string }) => void;
+	};
+
+	'/v1/users.enableTotp': {
+		POST: () => { secret: string; url: string };
+	};
+
+	'/v1/users.disableTotp': {
+		POST: (params: { code: string }) => { disabled: boolean };
+	};
+
+	'/v1/users.validateTotp': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.regenerateTotpCodes': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.totpCodesRemaining': {
+		GET: () => { remaining: number };
+	};
 };
 
 export * from './users/UserCreateParamsPOST';

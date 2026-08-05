@@ -288,8 +288,6 @@ export const createComposerAPI = (
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
-		const { selectionStart, selectionEnd } = input;
-
 		// Selects the text that is connected to the cursor
 		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
 		const textAreaTxt = input.value;
@@ -298,11 +296,9 @@ export const createComposerAPI = (
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selectionStart + text.length;
-		input.selectionEnd = selectionStart + text.length;
-		if (selectionStart !== selectionEnd) {
-			input.selectionStart = selectionStart;
-		}
+		const cursorPosition = (selection.start ?? 0) + text.length;
+		input.selectionStart = cursorPosition;
+		input.selectionEnd = cursorPosition;
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');

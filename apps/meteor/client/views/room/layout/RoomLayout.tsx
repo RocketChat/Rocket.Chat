@@ -8,7 +8,8 @@ import { Suspense, useMemo } from 'react';
 
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 
-type RoomLayoutProps = {
+export type RoomLayoutProps = {
+	classificationBanner?: ReactNode;
 	header?: ReactNode;
 	body?: ReactNode;
 	footer?: ReactNode;
@@ -34,7 +35,7 @@ const useBreakpointsElement = () => {
 	};
 };
 
-const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) => {
+const RoomLayout = ({ classificationBanner, header, body, footer, aside, ...props }: RoomLayoutProps) => {
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
@@ -57,7 +58,8 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) 
 				[layout, contextualbarPosition, contextualbarSize],
 			)}
 		>
-			<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
+			<Box height='full' width='full' display='flex' flexDirection='column' backgroundColor='room' {...props} ref={ref}>
+				{classificationBanner}
 				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 					<Box display={hideBody ? 'none' : 'flex'} flexDirection='column' flexGrow={1} minWidth={0}>

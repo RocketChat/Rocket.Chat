@@ -1,6 +1,6 @@
 import type { ComponentChildren } from 'preact';
 import { useRef } from 'preact/hooks';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import type { ScreenContextValue } from './ScreenProvider';
 import type { Agent } from '../../definitions/agents';
@@ -24,7 +24,7 @@ import {
 } from '../Header';
 import { TooltipContainer, TooltipTrigger } from '../Tooltip';
 
-type ScreenHeaderProps = {
+export type ScreenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
 	agent: Agent;
 	notificationsEnabled: boolean;
@@ -139,4 +139,4 @@ const ScreenHeader = ({
 	);
 };
 
-export default withTranslation()(ScreenHeader);
+export default ScreenHeader;

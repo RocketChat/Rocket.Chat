@@ -18,7 +18,7 @@ import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
-type UsersTableRowProps = {
+export type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
 	tab: AdminUsersTab;
 	isMobile: boolean;
@@ -133,7 +133,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
-						<Box mi={8}>
+						<Box marginInline={8}>
 							<UserStatus status={status || Status.OFFLINE} />
 						</Box>
 						<Box fontScale='p2' withTruncatedText>

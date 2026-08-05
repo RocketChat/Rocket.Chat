@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type BooleanSettingInputProps = SettingInputProps<boolean>;
+export type BooleanSettingInputProps = SettingInputProps<boolean>;
 
 function BooleanSettingInput({
 	_id,
@@ -30,7 +30,7 @@ function BooleanSettingInput({
 					{label}
 				</FieldLabel>
 				<Box display='flex' alignItems='center'>
-					{hasResetButton && <ResetSettingButton mie={8} onClick={onResetButtonClick} />}
+					{hasResetButton && <ResetSettingButton marginInlineEnd={8} onClick={onResetButtonClick} />}
 					<ToggleSwitch id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
 				</Box>
 			</FieldRow>

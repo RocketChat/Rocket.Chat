@@ -54,15 +54,15 @@ const NewZapier = ({ ...props }) => {
 				type='warning'
 				icon='warning'
 				title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
-				mbs={16}
-				mbe={4}
+				marginBlockStart={16}
+				marginBlockEnd={4}
 			>
 				{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
 			</Callout>
 			{zapierAvailable && (
 				<>
 					{!script && (
-						<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
+						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart={10}>
 							<Margins blockEnd={14}>
 								<Skeleton variant='rect' height={71} />
 								<Skeleton variant='rect' height={71} />

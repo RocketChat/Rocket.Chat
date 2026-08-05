@@ -11,13 +11,13 @@ import type { IGetAppsFilter } from './IGetAppsFilter';
 import { ProxiedApp } from './ProxiedApp';
 import { AppBridges } from './bridges';
 import type { PersistenceBridge, UserBridge } from './bridges';
+import { AppResourceBridge } from './bridges/AppResourceBridge';
 import type { IInternalPersistenceBridge } from './bridges/IInternalPersistenceBridge';
 import type { IInternalUserBridge } from './bridges/IInternalUserBridge';
 import { AppCompiler, AppFabricationFulfillment, AppPackageParser } from './compiler';
 import { InvalidLicenseError } from './errors';
 import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import {
-	AppAccessorManager,
 	AppApiManager,
 	AppExternalComponentManager,
 	AppLicenseManager,
@@ -87,8 +87,6 @@ export class AppManager {
 
 	private readonly compiler: AppCompiler;
 
-	private readonly accessorManager: AppAccessorManager;
-
 	private readonly listenerManager: AppListenerManager;
 
 	private readonly commandManager: AppSlashCommandManager;
@@ -108,6 +106,8 @@ export class AppManager {
 	private readonly videoConfProviderManager: AppVideoConfProviderManager;
 
 	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
+
+	private readonly resourceBridge: AppResourceBridge;
 
 	private readonly signatureManager: AppSignatureManager;
 
@@ -153,7 +153,6 @@ export class AppManager {
 
 		this.parser = new AppPackageParser();
 		this.compiler = new AppCompiler();
-		this.accessorManager = new AppAccessorManager(this);
 		this.listenerManager = new AppListenerManager(this);
 		this.commandManager = new AppSlashCommandManager(this);
 		this.apiManager = new AppApiManager(this);
@@ -164,6 +163,9 @@ export class AppManager {
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
 		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
+		// A single, stateless resource bridge shared by every subprocess controller: it only ever
+		// delegates to the managers above (keyed by appId per call), so one instance serves all apps.
+		this.resourceBridge = new AppResourceBridge(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -200,11 +202,6 @@ export class AppManager {
 		return this.compiler;
 	}
 
-	/** Gets the accessor manager instance. */
-	public getAccessorManager(): AppAccessorManager {
-		return this.accessorManager;
-	}
-
 	/** Gets the instance of the Bridge manager. */
 	public getBridges(): AppBridges {
 		return this.bridges;
@@ -226,6 +223,15 @@ export class AppManager {
 
 	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
 		return this.outboundCommunicationProviderManager;
+	}
+
+	/**
+	 * Gets the shared, engine-owned resource bridge that fronts the manager registries and app
+	 * settings for the subprocess. It is stateless (every method takes an appId), so a single
+	 * instance is consumed by every subprocess controller.
+	 */
+	public getAppResourceBridge(): AppResourceBridge {
+		return this.resourceBridge;
 	}
 
 	public getLicenseManager(): AppLicenseManager {
@@ -1096,7 +1102,6 @@ export class AppManager {
 		this.listenerManager.lockEssentialEvents(app);
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
-		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		await this.videoConfProviderManager.unregisterProviders(app.getID());
 		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {

@@ -6,7 +6,7 @@ import { createClassName } from '../../helpers/createClassName';
 
 const handleMouseUp: MouseEventHandler<HTMLButtonElement> = ({ target }) => (target as HTMLButtonElement | null)?.blur();
 
-type OptionsTriggerProps = {
+export type OptionsTriggerProps = {
 	pop: () => void;
 };
 

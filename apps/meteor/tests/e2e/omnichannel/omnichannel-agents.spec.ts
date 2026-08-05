@@ -17,12 +17,9 @@ test.describe.serial('OC - Manage Agents', () => {
 		department = await createDepartment(api);
 	});
 
-	// Create page object and redirect to home
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
-
-		await page.goto('/omnichannel');
-		await poOmnichannelAgents.sidebar.linkAgents.click();
+		await poOmnichannelAgents.goTo();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -81,7 +78,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		await test.step('expect update "user1" information', async () => {
 			await poOmnichannelAgents.editAgent.selectStatus('Not Available');
 			await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
-			await poOmnichannelAgents.editAgent.btnSave.click();
+			await poOmnichannelAgents.editAgent.save();
 		});
 
 		await test.step('expect removing "user1" via sidebar', async () => {

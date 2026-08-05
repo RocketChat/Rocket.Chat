@@ -1,26 +1,12 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession, CallState, CallContact } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
-import { useEffect, useReducer, useCallback } from 'react';
+import { useEffect, useReducer } from 'react';
 
-import type { ConnectionState, PeerInfo, SessionState } from '../context/definitions';
+import { defaultSessionState } from '../context/MediaCallViewContext';
+import type { ConnectionState, SessionState } from '../context/definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
-
-const defaultSessionInfo: SessionState = {
-	state: 'closed' as const,
-	callId: undefined,
-	connectionState: 'CONNECTING' as const,
-	peerInfo: undefined,
-	transferredBy: undefined,
-	muted: false,
-	held: false,
-	remoteMuted: false,
-	remoteHeld: false,
-	startedAt: undefined,
-	hidden: false,
-	supportedFeatures: ['audio', 'transfer', 'hold'],
-};
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
 	if (contact.type === 'sip') {
@@ -51,14 +37,6 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
-				type: 'selectPeer';
-				payload: { peerInfo?: PeerInfo };
-		  }
-		| {
-				type: 'toggleWidget';
-				payload: { peerInfo?: PeerInfo };
-		  }
-		| {
 				type: 'instance_updated';
 				payload: SessionState;
 		  }
@@ -67,30 +45,12 @@ const reducer = (
 				payload?: { status?: UserStatus };
 		  },
 ): SessionState => {
-	if (action.type === 'toggleWidget') {
-		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
-		}
-
-		if (reducerState.state === 'new') {
-			return { ...reducerState, state: 'closed' };
-		}
-	}
-
 	if (action.type === 'instance_updated') {
 		return { ...reducerState, ...action.payload };
 	}
 
-	if (action.type === 'selectPeer') {
-		if (reducerState.state !== 'new') {
-			return reducerState;
-		}
-
-		return { ...reducerState, peerInfo: action.payload?.peerInfo };
-	}
-
 	if (action.type === 'reset') {
-		return defaultSessionInfo;
+		return defaultSessionState;
 	}
 
 	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
@@ -100,14 +60,8 @@ const reducer = (
 	return reducerState;
 };
 
-export type MediaSessionStateWithWidgetControls = {
-	sessionState: SessionState;
-	toggleWidget: (peerInfo?: PeerInfo) => void;
-	selectPeer: (peerInfo: PeerInfo) => void;
-};
-
-export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionStateWithWidgetControls => {
-	const [mediaSession, dispatch] = useReducer(reducer, defaultSessionInfo);
+export const useMediaSession = (instance?: MediaSignalingSession): SessionState => {
+	const [mediaSession, dispatch] = useReducer(reducer, defaultSessionState);
 
 	const getAvatarUrl = useUserAvatarPath();
 
@@ -237,14 +191,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		};
 	}, [getAvatarUrl, instance]);
 
-	const toggleWidget = useCallback((peerInfo?: PeerInfo) => {
-		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
-	}, []);
-
-	const selectPeer = useCallback((peerInfo: PeerInfo) => {
-		dispatch({ type: 'selectPeer', payload: { peerInfo } });
-	}, []);
-
 	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
 
 	useEffect(() => {
@@ -253,9 +199,5 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		}
 	}, [status?.status]);
 
-	return {
-		sessionState: mediaSession,
-		toggleWidget,
-		selectPeer,
-	};
+	return mediaSession;
 };

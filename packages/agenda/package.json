@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.13",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

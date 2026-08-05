@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
@@ -49,7 +49,7 @@ export const useIsSelecting = (): boolean => {
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
-export const useToggleSelect = (mid: string): ((event?: FormEvent<HTMLElement>) => void) => {
+export const useToggleSelect = (mid: string): ((event?: SyntheticEvent<HTMLElement>) => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	return useCallback(

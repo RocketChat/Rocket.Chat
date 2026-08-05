@@ -1,4 +1,9 @@
-import type { RocketChatRecordDeleted, IMediaCallNegotiation, MediaCallNegotiationStream } from '@rocket.chat/core-typings';
+import type {
+	RocketChatRecordDeleted,
+	IMediaCallNegotiation,
+	MediaCallNegotiationStream,
+	RTCSessionDescriptionInit,
+} from '@rocket.chat/core-typings';
 import type { IMediaCallNegotiationsModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, FindOptions, Document, UpdateResult } from 'mongodb';
 

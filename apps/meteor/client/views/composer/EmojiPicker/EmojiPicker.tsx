@@ -3,7 +3,6 @@ import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuse
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
-	EmojiPickerFooter,
 	EmojiPickerPreviewArea,
 	EmojiPickerHeader,
 	EmojiPickerListArea,
@@ -25,7 +24,7 @@ import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
-type EmojiPickerProps = {
+export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
@@ -113,10 +112,15 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 		let tone = '';
 
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-					tone = `_tone${actualTone}`;
+		// Custom emoji should overwrite native emoji with the same name
+		// Custom emoji with name `:point_right:` should overwrite every tone
+		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
+		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emoji.packages) {
+				if (emoji.packages.hasOwnProperty(emojiPackage)) {
+					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+						tone = `_tone${actualTone}`;
+					}
 				}
 			}
 		}
@@ -195,7 +199,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('Search')}
 						aria-label={t('Search')}
 					/>
@@ -210,7 +214,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider mb={12} />
+				<Divider marginBlock={12} />
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (
@@ -237,7 +241,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						<ToneSelector tone={actualTone} setTone={setActualTone} />
 					</ToneSelectorWrapper>
 				</EmojiPickerPreviewArea>
-				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 			</EmojiPickerContainer>
 		</EmojiPickerDropdown>
 	);

@@ -7,59 +7,47 @@ describe('banners', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/banners.dismiss]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(api('banners.dismiss'))
 				.send({
 					bannerId: '123',
 				})
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if missing bannerId key', (done) => {
-			void request
-				.post(api('banners.dismiss'))
-				.set(credentials)
-				.send({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-				})
-				.end(done);
+		it('should fail if missing bannerId key', async () => {
+			const res = await request.post(api('banners.dismiss')).set(credentials).send({}).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'invalid-params');
 		});
 
-		it('should fail if bannerId is empty', (done) => {
-			void request
+		it('should fail if bannerId is empty', async () => {
+			const res = await request
 				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({
 					bannerId: '',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should fail if bannerId is invalid', (done) => {
-			void request
+		it('should fail if bannerId is invalid', async () => {
+			const res = await request
 				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({
 					bannerId: '123',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 

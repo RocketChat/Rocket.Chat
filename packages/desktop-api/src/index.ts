@@ -38,6 +38,7 @@ export interface IRocketChatDesktop {
 	setSidebarCustomTheme: (customTheme: string) => void;
 	setTitle: (title: string) => void;
 	setUserLoggedIn: (userLoggedIn: boolean) => void;
+	setUserRoles: (roles: string[]) => void;
 	setUserPresenceDetection: (options: {
 		isAutoAwayEnabled: boolean;
 		idleThreshold: number | null;
