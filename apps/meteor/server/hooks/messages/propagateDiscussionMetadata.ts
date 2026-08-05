@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 import type { Updater } from '@rocket.chat/models';
 
@@ -21,17 +22,6 @@ const withPendingRoomChanges = (room: IRoom, roomUpdater?: Updater<IRoom>): IRoo
 		msgs: room.msgs + pendingMsgs,
 		lm: pendingLm ?? room.lm,
 	};
-};
-
-const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const parentMessage = await Messages.refreshDiscussionMetadata(room);
-	if (!parentMessage) {
-		return;
-	}
-	void notifyOnMessageChange({
-		id: parentMessage._id,
-		data: parentMessage,
-	});
 };
 
 /**
