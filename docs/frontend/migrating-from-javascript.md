@@ -47,10 +47,15 @@ Both approaches help ensure TypeScript accurately recognizes the complete type s
 
 ## Declare a `*.d.ts` file
 
-Creating a `.d.ts` declaration file is strongly recommended when migrating large JavaScript modules. These files manage imports and exports, functioning as a module's interface. This approach is superior to JSDoc for planning and understanding module structure.
+Creating a `.d.ts` declaration file is strongly recommended when migrating large JavaScript modules. It describes the module's public surface for type checking and is easier to read as a whole than JSDoc scattered through the implementation.
+
+A declaration file is types only: it is erased at build time and creates no runtime code. Place it alongside the JavaScript module it describes, with the same basename, and declare only exports that module actually has — TypeScript will trust the declaration over the `.js`, so anything you declare that isn't really exported will typecheck at the import site and be `undefined` at runtime.
 
 ```ts
-// hugeModule.d.ts
-export function foo(): void; // maybe it will be placed in another module
-export function bar(): void; // maybe it will be placed in another module
+// hugeModule.d.ts — sits next to hugeModule.js
+
+export function foo(): void; // hugeModule.js exports `foo`
+export function bar(): void; // hugeModule.js exports `bar`
 ```
+
+Writing the file is still a good way to plan the shape you're migrating toward, but it only records exports; it can't create or relocate them. If an export belongs in another module, move the implementation first, then declare it beside its new home.
