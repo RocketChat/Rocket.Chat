@@ -1,0 +1,25 @@
+packages/model-typings/src/types/DocumentWithProjection.typetest.ts
+  s_757bbbab112d52::t_67bb44ff8f9c0e 2-3,5-6
+  s_757bbbab112d52::t_cba5fcf4ae2bed 68-94
+packages/model-typings/src/types/DocumentWithProjection.ts
+  s_757bbbab112d52::t_dd1891dc297bd0 60-63,66,69
+  s_757bbbab112d52::t_eca0cfb7200511 93
+  s_757bbbab112d52::t_ebe9617d569bc9 64-65
+  s_757bbbab112d52::t_9a27304edda0a0 34-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5316da6dd6fedc6442c26fd890ec8641e038e362",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
