@@ -1,0 +1,53 @@
+apps/meteor/ee/server/models/raw/CannedResponse.ts
+  s_757bbbab112d52::t_396ebc456a3761 4
+  s_757bbbab112d52::t_4c7266fc650031 73
+  s_757bbbab112d52::t_4b3586d94385f8 67-70,76-79,87-90
+apps/meteor/server/lib/omnichannel/custom-fields.ts
+  s_757bbbab112d52::t_c36505ec9f3a5c 109,116
+  s_757bbbab112d52::t_4b3586d94385f8 7-10
+apps/meteor/ee/server/models/raw/LivechatUnit.ts
+  s_757bbbab112d52::t_d5437c306e66e8 45
+  s_757bbbab112d52::t_4b3586d94385f8 24-27,32-36,41-44,161-164
+  s_757bbbab112d52::t_ccc0642c3f48aa 38
+apps/meteor/ee/server/models/raw/ServiceLevelAgreements.ts
+  s_757bbbab112d52::t_593ab7ba51a075 2
+apps/meteor/server/lib/users/setRealName.ts
+  s_757bbbab112d52::t_a00bfa9335cd17 23
+apps/meteor/ee/server/apps/storage/AppRealStorage.ts
+  s_757bbbab112d52::t_9c37e681b845d9 77-82
+apps/meteor/ee/tests/unit/server/hooks/messages/BeforeSaveCannedResponse.tests.ts
+  s_757bbbab112d52::t_b92dbcd697a2ee 42
+apps/meteor/server/api/v1/omnichannel/lib/rooms.ts
+  s_757bbbab112d52::t_9a2f20d8eb6ad2 76
+apps/meteor/server/api/v1/middlewares/authentication.ts
+  s_757bbbab112d52::t_614662f1cc9cad 28-29
+apps/meteor/server/lib/omnichannel/parseTranscriptRequest.ts
+  s_757bbbab112d52::t_ce1ff210c99ad3 38-40
+apps/meteor/app/apps/server/bridges/livechat.ts
+  s_757bbbab112d52::t_c3ad6776cca9df 337
+  s_757bbbab112d52::t_d59a8e24aec478 383
+apps/meteor/server/lib/statistics/lib/statistics.ts
+  s_757bbbab112d52::t_0716985a375bf9 6
+  s_757bbbab112d52::t_2e327203e7bdde 281,285,294,301,307
+  s_757bbbab112d52::t_4b3586d94385f8 290
+apps/meteor/server/lib/users/setUserAvatar.ts
+  s_757bbbab112d52::t_ef9e9c34d9d848 43
+apps/meteor/server/api/v1/omnichannel/statistics.ts
+  s_757bbbab112d52::t_7cdb794ac78e84 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c9ef82a973a235c358ee02fb002288deedcaf87a",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
