@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 import { useJoinCall } from './useJoinCall';
 import { useJoinableCalls } from './useJoinableCalls';
+import { buildJoinableCall as call } from '../testFixtures';
 
 const joinCall = jest.fn();
 
@@ -14,16 +15,6 @@ jest.mock('@rocket.chat/ui-video-conf', () => ({
 }));
 
 const leave = jest.fn(() => ({ success: true }) as any);
-
-const call = (overrides: Partial<JoinableVideoConference> & Pick<JoinableVideoConference, 'callId'>): JoinableVideoConference => ({
-	name: `Call ${overrides.callId}`,
-	createdAt: new Date('2026-08-03T10:00:00.000Z'),
-	usersCount: 2,
-	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],
-	joined: false,
-	declined: false,
-	...overrides,
-});
 
 /**
  * The hook decides from the joinable list, so a test that fires before that list arrives proves nothing — it

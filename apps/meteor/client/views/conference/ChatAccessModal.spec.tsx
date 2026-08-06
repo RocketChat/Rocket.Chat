@@ -36,21 +36,14 @@ it('names the members who cannot see the chat', () => {
 	expect(screen.getByText(member.username)).toBeInTheDocument();
 });
 
-describe('leading action', () => {
-	// Opening a private room's history to an outsider is the bigger step, so only a public room leads with it.
-	it('is the invite for a public room', () => {
-		renderModal(buildAccess({ type: 'c' }));
+// Which of the two leads is `chatAccessLeadsWithDiscussion`, pinned on the function itself in
+// `tests/unit/lib/videoConference/chatAccess.spec.ts`. What is worth asserting here is that the modal is wired
+// to it at all — and that costs one case, not one per room type.
+it('leads with the invite for a public room, whose history is already open', () => {
+	renderModal(buildAccess({ type: 'c' }));
 
-		expect(screen.getByRole('button', { name: 'Add_to_room' })).toHaveClass('rcx-button--primary');
-		expect(screen.getByRole('button', { name: 'Create_discussion' })).not.toHaveClass('rcx-button--primary');
-	});
-
-	it('is the discussion for a private room', () => {
-		renderModal(buildAccess({ type: 'p' }));
-
-		expect(screen.getByRole('button', { name: 'Create_discussion' })).toHaveClass('rcx-button--primary');
-		expect(screen.getByRole('button', { name: 'Add_to_room' })).not.toHaveClass('rcx-button--primary');
-	});
+	expect(screen.getByRole('button', { name: 'Add_to_room' })).toHaveClass('rcx-button--primary');
+	expect(screen.getByRole('button', { name: 'Create_discussion' })).not.toHaveClass('rcx-button--primary');
 });
 
 it('offers only the discussion when the room cannot take new members', () => {

@@ -1,8 +1,29 @@
+import { VIDEO_CONF_RINGING_LIMIT, hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { canRingConferenceMember, getConferenceMemberStatus } from '../../../../lib/videoConference/memberStatus';
+import { shouldRingVideoConference } from '../../../../lib/videoConference/constants';
+import {
+	canRingConferenceMember,
+	getConferenceMemberStatus,
+	isUnaskedConferenceMember,
+} from '../../../../lib/videoConference/memberStatus';
 
 const at = new Date('2026-08-02T10:00:00.000Z');
+
+// `users[]` entries were only ever written on join before membership existed, so anything without the flag is
+// historical data describing someone who did join. Reading those as "not joined" would make every past
+// conference look empty. Every predicate below inherits that rule, which is why it is stated once, here.
+describe('hasJoinedVideoConference', () => {
+	it('reads an explicit flag either way', () => {
+		expect(hasJoinedVideoConference({ joined: true })).to.be.true;
+		expect(hasJoinedVideoConference({ joined: false })).to.be.false;
+	});
+
+	it('treats an entry predating the flag as joined', () => {
+		expect(hasJoinedVideoConference({})).to.be.true;
+		expect(hasJoinedVideoConference({ joined: undefined })).to.be.true;
+	});
+});
 
 describe('getConferenceMemberStatus', () => {
 	it('reports a member who is in the call as joined', () => {
@@ -28,11 +49,6 @@ describe('getConferenceMemberStatus', () => {
 
 	it('prefers having left over an earlier decline, since they did answer', () => {
 		expect(getConferenceMemberStatus({ joined: true, declined: true, leftAt: at })).to.equal('left');
-	});
-
-	// Entries written before the flag existed were only ever created on join, so an absent flag reads as joined.
-	it('treats an entry predating the joined flag as joined', () => {
-		expect(getConferenceMemberStatus({})).to.equal('joined');
 	});
 });
 
@@ -70,5 +86,33 @@ describe('canRingConferenceMember', () => {
 		expect(
 			canRingConferenceMember({ joined: false, ringingAt: new Date(now - 3_000), declined: true, declinedAt: new Date(now - 60_000) }, now),
 		).to.be.false;
+	});
+});
+
+describe('isUnaskedConferenceMember', () => {
+	it('is true for someone nobody has asked yet', () => {
+		expect(isUnaskedConferenceMember({ joined: false })).to.be.true;
+	});
+
+	// All three mean they have been asked: their phone rang, they answered, or they turned it down.
+	it('is false once they have been rung, joined, or declined', () => {
+		expect(isUnaskedConferenceMember({ joined: false, ringingAt: at })).to.be.false;
+		expect(isUnaskedConferenceMember({ joined: true })).to.be.false;
+		expect(isUnaskedConferenceMember({ joined: false, declined: true })).to.be.false;
+	});
+});
+
+describe('shouldRingVideoConference', () => {
+	// Ringing a large room would mean a broadcast per subscriber, so past a point a call rings nobody at all.
+	it('rings a list up to the limit, and none beyond it', () => {
+		expect(shouldRingVideoConference(1)).to.be.true;
+		expect(shouldRingVideoConference(VIDEO_CONF_RINGING_LIMIT)).to.be.true;
+		expect(shouldRingVideoConference(VIDEO_CONF_RINGING_LIMIT + 1)).to.be.false;
+	});
+
+	// Nobody to ring is not the same as a list small enough to ring — it saves a pointless broadcast when a
+	// conference starts in an empty room, or when every user in an add was already a member.
+	it('rings nobody for an empty list', () => {
+		expect(shouldRingVideoConference(0)).to.be.false;
 	});
 });

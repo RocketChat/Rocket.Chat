@@ -1,10 +1,9 @@
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs } from './testHarness';
+import { buildDirectCall, buildGroupCall, buildMember, createService, resetAll } from './testHarness';
 
 const me = 'me';
 
@@ -26,30 +25,12 @@ const RoomsMock = {
 	findOneById: sinon.stub().callsFake(async (rid: string) => ({ _id: rid, name: `name-of-${rid}`, fname: `name-of-${rid}` })),
 };
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
-	...commonServiceStubs,
-	'@rocket.chat/models': {
-		VideoConference: VideoConferenceModelMock,
-		Subscriptions: SubscriptionsMock,
-		Rooms: RoomsMock,
-		Users: { findOneById: sinon.stub().resolves(null), find: sinon.stub().returns({ toArray: async () => [] }) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		CallHistory: { insertMany: sinon.stub().resolves() },
-	},
-	'@rocket.chat/core-services': {
-		api: { broadcast: sinon.stub().resolves() },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
-		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-	},
+const VideoConfService = createService({
+	models: { VideoConference: VideoConferenceModelMock, Subscriptions: SubscriptionsMock, Rooms: RoomsMock },
 });
 
 describe('VideoConfService.listJoinableCalls', () => {
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	before(() => {
 		// The service reads settings at construction in some paths; nothing here depends on them.
@@ -57,7 +38,7 @@ describe('VideoConfService.listJoinableCalls', () => {
 	});
 
 	beforeEach(() => {
-		[VideoConferenceModelMock.find, SubscriptionsMock.findByUserIdAndRoomIds, RoomsMock.findOneById].forEach((stub) => stub.resetHistory());
+		resetAll(VideoConferenceModelMock.find, SubscriptionsMock.findByUserIdAndRoomIds, RoomsMock.findOneById);
 		running = [];
 		subscribedRids = [];
 		subscriptionNames = {};

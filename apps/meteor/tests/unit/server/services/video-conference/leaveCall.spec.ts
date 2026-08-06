@@ -1,33 +1,21 @@
-import type { IGroupVideoConference, IDirectVideoConference, IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
 import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/callHistory';
 
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
 // projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A
 // real DB would answer both from the same document, so `fixture` is the single canonical record and the
 // mutating model methods below write into it, regardless of the projection asked for.
-//
-// Each read hands out a *clone*, not the live object. That matters for `endCall`: it reads the call, then
-// writes `endedAt` onto the canonical record, and only afterwards checks `shouldWriteConferenceHistory(call)`
-// against the variable it already had — deliberately stale, per the comment in the source. If reads returned
-// the live object, that write would retroactively change what the earlier-read variable shows (objects are
-// shared by reference), silently defeating the exact repeat-guard this suite is testing.
 let fixture: VideoConference;
-
-const cloneFixture = (): VideoConference => ({
-	...fixture,
-	users: fixture.users.map((user) => ({ ...user })),
-	messages: { ...fixture.messages },
-});
 
 const VideoConferenceModelMock = {
 	// `endCall`'s `getUnfiltered` is `VideoConfService.getUnfiltered`, which itself just calls
 	// `VideoConference.findOneById(callId)` with no projection — there's no separate model method to stub.
-	findOneById: sinon.stub().callsFake(async () => cloneFixture()),
+	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
 	setUserLeftById: sinon.stub().callsFake(async (_callId: string, uid: string, leftAt: Date) => {
 		const member = fixture.users.find((user) => user._id === uid);
 		if (member) {
@@ -54,132 +42,21 @@ const UsersMock = {
 	findOneById: sinon.stub().resolves(null),
 };
 
-const RoomsMock = {
-	findOneById: sinon.stub().resolves(null),
-};
-
-const MessagesMock = {
-	setBlocksById: sinon.stub().resolves(),
-};
-
-const SubscriptionsMock = {
-	findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-};
-
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
-	'@rocket.chat/apps': { Apps: {} },
-	'@rocket.chat/core-services': {
-		api: { broadcast: sinon.stub().resolves() },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
-		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-	},
-	'@rocket.chat/logger': {
-		Logger: class {
-			error() {
-				/* no-op */
-			}
-		},
-	},
-	'@rocket.chat/models': {
+const VideoConfService = createService({
+	models: {
 		CallHistory: CallHistoryMock,
 		Users: UsersMock,
 		VideoConference: VideoConferenceModelMock,
-		Rooms: RoomsMock,
-		Messages: MessagesMock,
-		Subscriptions: SubscriptionsMock,
 	},
-	'@rocket.chat/random': { Random: { id: () => 'randomId' } },
-	'@rocket.chat/tools': { wrapExceptions: (fn: () => unknown) => fn() },
-	'meteor/meteor': { Meteor: { startup: () => undefined } },
-	'meteor/mongo': { MongoInternals: { defaultRemoteCollectionDriver: () => ({ mongo: { db: {} } }) } },
-	'../../../definition/IRoomTypeConfig': { RoomMemberActions: {} },
-	'../../../lib/videoConference/chatAccess': { resolveChatAccessMode: () => undefined },
-	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false },
-	'../../database/readSecondaryPreferred': { readSecondaryPreferred: () => undefined },
-	'../../lib/authorization/canAccessRoom': { canAccessRoomIdAsync: async () => true },
-	'../../lib/callbacks': { callbacks: { runAsync: () => undefined, run: () => undefined } },
-	'../../lib/i18n': { i18n: { t: (s: string) => s } },
-	'../../lib/isRoomCompatibleWithVideoConfRinging': { isRoomCompatibleWithVideoConfRinging: () => true },
-	'../../lib/media/assets': { RocketChatAssets: { getURL: () => '' } },
-	'../../lib/messages/sendMessage': { sendMessage: async () => ({ _id: 'msg1' }) },
-	'../../lib/metrics/lib/metrics': {
-		metrics: { notificationsSent: { inc: () => undefined }, notificationsSentTotal: { inc: () => undefined } },
+	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
+	// join is stubbed out of the way.
+	overrides: {
+		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false },
 	},
-	'../../lib/notifications/push/push': { Push: { send: async () => undefined } },
-	'../../lib/notifications/push-config/lib/PushNotification': { default: { getNotificationId: () => 'notif' } },
-	'../../lib/notifyListener': { notifyOnMessageChange: async () => undefined },
-	'../../lib/rooms/createRoom': { createRoom: async () => ({ _id: 'room1' }) },
-	'../../lib/rooms/roomCoordinator': {
-		roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction: async () => true, getDiscussionType: () => 'p' }) },
-	},
-	'../../lib/statistics/functions/updateStatsCounter': { updateCounter: () => undefined },
-	'../../lib/utils/getUserAvatarURL': { getUserAvatarURL: () => '' },
-	'../../lib/utils/lib/getUserPreference': { getUserPreference: async () => false },
-	'../../lib/videoConfProviders': {
-		videoConfProviders: {
-			hasAnyProvider: () => false,
-			getActiveProvider: () => undefined,
-			isProviderAvailable: () => false,
-			getProviderCapabilities: () => undefined,
-			getProviderAppId: () => undefined,
-			getProviderList: () => [],
-		},
-	},
-	'../../lib/videoConfTypes': { videoConfTypes: { isCallManagedByApp: () => false, getTypeForRoom: () => ({}) } },
-	'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: async () => undefined },
-	'../../settings': { settings: { get: () => undefined } },
-});
-
-const createdBy = { _id: 'creator', username: 'creator.user', name: 'Creator User' };
-
-// A member's shape as it lives in `users[]`: someone who joined and is still in the call, unless overridden.
-const buildMember = (overrides: Partial<IVideoConferenceUser> & Pick<IVideoConferenceUser, '_id'>): IVideoConferenceUser => ({
-	username: `${overrides._id}.user`,
-	name: overrides._id,
-	avatarETag: null,
-	ts: new Date('2026-01-01T00:00:00.000Z'),
-	joined: true,
-	joinedAt: new Date('2026-01-01T00:00:00.000Z'),
-	...overrides,
-});
-
-const buildGroupCall = (users: IVideoConferenceUser[], overrides: Partial<IGroupVideoConference> = {}): IGroupVideoConference => ({
-	_id: 'call1',
-	type: 'videoconference',
-	rid: 'room1',
-	status: VideoConferenceStatus.STARTED,
-	title: 'Sprint planning',
-	anonymousUsers: 0,
-	providerName: 'test',
-	createdAt: new Date('2026-01-01T00:00:00.000Z'),
-	_updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-	createdBy,
-	messages: {},
-	users,
-	...overrides,
-});
-
-const buildDirectCall = (users: IVideoConferenceUser[], overrides: Partial<IDirectVideoConference> = {}): IDirectVideoConference => ({
-	_id: 'call1',
-	type: 'direct',
-	rid: 'room1',
-	status: VideoConferenceStatus.STARTED,
-	providerName: 'test',
-	createdAt: new Date('2026-01-01T00:00:00.000Z'),
-	_updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-	createdBy,
-	messages: {},
-	users,
-	...overrides,
 });
 
 describe('VideoConfService.leaveCall', () => {
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	let clock: sinon.SinonFakeTimers;
 
@@ -192,19 +69,15 @@ describe('VideoConfService.leaveCall', () => {
 	beforeEach(() => {
 		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
 		service = new VideoConfService();
-		// These are standalone stubs, so they are not in sinon's default sandbox and `sinon.resetHistory()`
-		// would leave their call history intact — every assertion would then be reading the previous test's
-		// calls, which is how a suite like this passes for the wrong reasons.
-		[
+		resetAll(
 			VideoConferenceModelMock.findOneById,
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 			CallHistoryMock.upsertMany,
-		].forEach((stub) => stub.resetHistory());
-		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
+		);
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		CallHistoryMock.upsertMany.resolves();
-		SubscriptionsMock.findByRoomIdAndNotUserId.returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() });
 	});
 
 	afterEach(() => {
@@ -347,7 +220,7 @@ describe('VideoConfService.leaveCall', () => {
 
 describe('VideoConfService one call at a time', () => {
 	let clock: sinon.SinonFakeTimers;
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	/** The conferences the model answers about, by id — a join reads the one being joined and any other it finds. */
 	let calls: Record<string, VideoConference>;
@@ -356,21 +229,21 @@ describe('VideoConfService one call at a time', () => {
 		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
 		service = new VideoConfService();
 		calls = {};
-		[
+		resetAll(
 			VideoConferenceModelMock.findOneById,
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.find,
 			VideoConferenceModelMock.addMemberById,
 			VideoConferenceModelMock.setUserJoinedById,
 			UsersMock.findOneById,
-		].forEach((stub) => stub.resetHistory());
+		);
 		VideoConferenceModelMock.findOneById.callsFake(async (callId: string) => calls[callId]);
 		UsersMock.findOneById.resolves({ _id: 'joiner', username: 'joiner.user', name: 'Joiner', avatarETag: null });
 	});
 
 	afterEach(() => {
 		clock.restore();
-		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		UsersMock.findOneById.resolves(null);
 	});
 

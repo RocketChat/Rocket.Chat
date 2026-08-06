@@ -74,27 +74,27 @@ describe('useConfinedNavigation', () => {
 			expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
 		});
 
-		it('does not intercept a same-origin same-path link (hash change)', () => {
+		/**
+		 * Everything a plain in-app link is *not*. Each of these is either the user asking for a different
+		 * destination (a new tab, a download, a modifier click) or not a navigation at all (a hash, a query, a
+		 * `mailto:`) — so the click has to be left exactly as it was found.
+		 */
+		it.each([
+			['a same-path link that only changes the hash', `${CONFERENCE_PATH}#hash`, {}, {}],
+			['a same-path link that only changes the query', `${CONFERENCE_PATH}?jump=x`, {}, {}],
+			['a modifier-key click', '/channel/general', {}, { metaKey: true }],
+			['a non-primary button click', '/channel/general', {}, { button: 1 }],
+			['an anchor asking for a new tab', '/channel/general', { target: '_blank' }, {}],
+			['an anchor asking for a download', '/channel/general', { download: '' }, {}],
+			['a mailto: anchor', 'mailto:someone@example.com', {}, {}],
+			['a tel: anchor', 'tel:+15551234567', {}, {}],
+		])('leaves %s alone', (_case, href, attrs, clickInit) => {
 			const openInMainWindow = jest.fn();
 			(window as any).videoCallWindow = { openInMainWindow };
 
 			renderHook(() => useConfinedNavigation());
 
-			const anchor = createAnchor(`${CONFERENCE_PATH}#hash`);
-			const event = clickAnchor(anchor);
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('does not intercept a same-origin same-path link (query change)', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor(`${CONFERENCE_PATH}?jump=x`);
-			const event = clickAnchor(anchor);
+			const event = clickAnchor(createAnchor(href, attrs as Record<string, string>), clickInit as MouseEventInit);
 
 			expect(event.defaultPrevented).toBe(false);
 			expect(openInMainWindow).not.toHaveBeenCalled();
@@ -112,75 +112,6 @@ describe('useConfinedNavigation', () => {
 			expect(event.defaultPrevented).toBe(true);
 			expect(openInMainWindow).not.toHaveBeenCalled();
 			expect(openSpy).toHaveBeenCalledWith('https://evil.example/x', '_blank', 'noopener');
-		});
-
-		it('ignores modifier-key clicks', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general');
-			const event = clickAnchor(anchor, { metaKey: true });
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('ignores non-primary button clicks', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general');
-			const event = clickAnchor(anchor, { button: 1 });
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('ignores anchors with target="_blank"', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general', { target: '_blank' });
-			const event = clickAnchor(anchor);
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('ignores anchors with a download attribute', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general', { download: '' });
-			const event = clickAnchor(anchor);
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('ignores non-http protocol anchors (mailto/tel)', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const mailto = createAnchor('mailto:someone@example.com');
-			const mailtoEvent = clickAnchor(mailto);
-
-			const tel = createAnchor('tel:+15551234567');
-			const telEvent = clickAnchor(tel);
-
-			expect(mailtoEvent.defaultPrevented).toBe(false);
-			expect(telEvent.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
 		});
 	});
 

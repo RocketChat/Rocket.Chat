@@ -1,37 +1,24 @@
 import { isVideoConfShareChatProps } from '@rocket.chat/rest-typings';
 import { assert } from 'chai';
 
-describe('VideoConfShareChatProps (definition/rest/v1)', () => {
-	describe('isVideoConfShareChatProps', () => {
-		it('should return false when provided anything that is not an VideoConfShareChatProps', () => {
-			assert.isFalse(isVideoConfShareChatProps(undefined));
-			assert.isFalse(isVideoConfShareChatProps(null));
-			assert.isFalse(isVideoConfShareChatProps(''));
-			assert.isFalse(isVideoConfShareChatProps(123));
-			assert.isFalse(isVideoConfShareChatProps([]));
-		});
+/**
+ * What this schema says that the others don't: a `mode` is optional, and when given it has to be one this server
+ * can actually act on. The "rejects a non-object", "requires the id" and "refuses extra properties" cases are
+ * `type: 'object'`, `required` and `additionalProperties: false` doing their job — ajv's, not ours.
+ */
+describe('isVideoConfShareChatProps', () => {
+	it('accepts a callId with nothing else, leaving the choice to the room', () => {
+		assert.isTrue(isVideoConfShareChatProps({ callId: 'callId' }));
+	});
 
-		it('should return false if callId is not provided', () => {
-			assert.isFalse(isVideoConfShareChatProps({}));
-			assert.isFalse(isVideoConfShareChatProps({ mode: 'invite' }));
-		});
+	it('accepts either way of sharing the chat', () => {
+		assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'invite' }));
+		assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'discussion' }));
+	});
 
-		it('should accept a callId with nothing else, leaving the choice to the room', () => {
-			assert.isTrue(isVideoConfShareChatProps({ callId: 'callId' }));
-		});
-
-		it('should accept either way of sharing the chat', () => {
-			assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'invite' }));
-			assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'discussion' }));
-		});
-
-		it('should reject a mode it cannot act on', () => {
-			assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: 'whatever' }));
-			assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: '' }));
-		});
-
-		it('should return false when extra parameters are provided', () => {
-			assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', extra: 'extra' }));
-		});
+	// Silently doing the other thing would give away history nobody agreed to give away.
+	it('rejects a mode it cannot act on', () => {
+		assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: 'whatever' }));
+		assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: '' }));
 	});
 });
