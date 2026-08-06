@@ -31,6 +31,9 @@ const SidebarRail = () => {
 			alignItems='stretch'
 			width='x44'
 			height='full'
+			// secondarySidebar Feature Preview animates transitions between panels.
+			// This zIndex ensures the panels transition stays behind the SideRail
+			zIndex={10}
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
