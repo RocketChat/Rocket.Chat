@@ -101,7 +101,10 @@ describe('getOrCreateFederatedUser', () => {
 	});
 
 	describe('when the remote user is unknown locally (cold path)', () => {
-		it('should create the user and return what was created', async () => {
+		// the document itself is built by createOrUpdateFederatedUser, so its completeness is covered
+		// in createOrUpdateFederatedUser.spec.ts; all this path can show is that nothing is stripped
+		// off or rebuilt on the way out
+		it('should return the created document untouched', async () => {
 			mockFindOneByUsername.mockResolvedValueOnce(null);
 			mockCreateOrUpdateFederatedUser.mockResolvedValueOnce(createdUser as any);
 
@@ -120,24 +123,6 @@ describe('getOrCreateFederatedUser', () => {
 				username: '@alice:example.com',
 				name: '@alice:example.com',
 				origin: 'example.com',
-			});
-		});
-
-		// the cold path is the only one that returns a freshly built document, so it is the only
-		// one that can hand back a user missing the fields its consumers read
-		it('should return a user carrying the fields required to subscribe it to a room', async () => {
-			mockFindOneByUsername.mockResolvedValueOnce(null);
-			mockCreateOrUpdateFederatedUser.mockResolvedValueOnce(createdUser as any);
-
-			const result = await getOrCreateFederatedUser('@alice:example.com');
-
-			expect(result).toMatchObject({
-				_id: expect.any(String),
-				username: expect.any(String),
-				name: expect.any(String),
-				roles: expect.any(Array),
-				type: expect.any(String),
-				active: expect.any(Boolean),
 			});
 		});
 

@@ -113,6 +113,8 @@ describe('createOrUpdateFederatedUser', () => {
 		);
 	});
 
+	// callers subscribe the returned document to a room, so a projection here silently hands them a
+	// user missing every field but the two projected ones
 	it('should not project fields away, so the full user document is returned', async () => {
 		mockFindOneAndUpdate.mockResolvedValueOnce(fakeUser as any);
 
@@ -120,6 +122,16 @@ describe('createOrUpdateFederatedUser', () => {
 
 		const [, , options] = mockFindOneAndUpdate.mock.calls[0];
 		expect(options).not.toHaveProperty('projection');
+	});
+
+	// the pre-image of an upsert that inserted is null, which would fail every first contact
+	it('should ask for the document as it looks after the upsert', async () => {
+		mockFindOneAndUpdate.mockResolvedValueOnce(fakeUser as any);
+
+		await createOrUpdateFederatedUser({ username: '@alice:example.com', origin: 'example.com' });
+
+		const [, , options] = mockFindOneAndUpdate.mock.calls[0];
+		expect((options as any).returnDocument).toBe('after');
 	});
 
 	it('should return the user returned by findOneAndUpdate', async () => {

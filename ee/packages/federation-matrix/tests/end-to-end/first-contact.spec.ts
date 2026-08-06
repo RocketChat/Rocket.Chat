@@ -114,9 +114,11 @@ const localUser = federationConfig.rc1.firstContactUser;
 			);
 		}, 30000);
 
-		// the invite handler is the only caller that reads the created user back, and it feeds it to
-		// the subscription and Apps layers, which need far more than an _id and a username
-		it('should create the remote user locally as a complete document', async () => {
+		// this covers the persisted document only. The shape of the object the invite handler reads back
+		// is not observable from here — it belongs to the createOrUpdateFederatedUser and
+		// getOrCreateFederatedUser unit tests, and when it regresses the room and subscription
+		// assertions below are what fail.
+		it('should persist the remote user locally as a complete document', async () => {
 			const response = await rc1AdminRequestConfig.request
 				.get(api('users.info'))
 				.set(rc1AdminRequestConfig.credentials)
