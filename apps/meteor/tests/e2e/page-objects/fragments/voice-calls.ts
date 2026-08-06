@@ -111,9 +111,12 @@ export class Widget {
 
 	private readonly transferModal: TransferModal;
 
-	constructor(private readonly page: Page) {
+	private readonly page: Page;
+
+	constructor(page: Page, root?: Locator) {
+		this.page = page;
 		this.transferModal = new TransferModal(page, page.getByRole('dialog', { name: 'Transfer call' }));
-		this.root = page.getByRole('dialog', { name: 'Voice call', exact: false });
+		this.root = root || page.getByRole('dialog', { name: 'Voice call', exact: false });
 		this.callControls = new VoiceCallControls(this.root.getByRole('group'));
 		this.headerControls = new VoiceCallControls(this.root.getByRole('banner'));
 	}
@@ -352,6 +355,8 @@ export class PopoutPage extends RoomSection {
 export class VoiceCalls {
 	public readonly widget: Widget;
 
+	public readonly dockedWidget: Widget;
+
 	public readonly roomSection: RoomSection;
 
 	public popoutPage: PopoutPage | undefined;
@@ -361,6 +366,10 @@ export class VoiceCalls {
 	constructor(page: Page) {
 		this.page = page;
 		this.widget = new Widget(page);
+		this.dockedWidget = new Widget(
+			page,
+			page.getByRole('complementary', { name: 'Calls' }).getByRole('dialog', { name: 'Voice Call', exact: false }),
+		);
 		this.roomSection = new RoomSection(page.getByRole('region', { name: 'Voice call' }));
 	}
 
