@@ -3,7 +3,7 @@ import type { AllHTMLAttributes } from 'react';
 
 const EmojiPickerLoadMore = ({ children, ...props }: Omit<AllHTMLAttributes<HTMLButtonElement>, 'style' | 'is'>) => (
 	<Box display='flex' flexDirection='column' alignItems='center' marginBlockEnd={8}>
-		<Button {...props} small>
+		<Button {...props} size='small'>
 			{children}
 		</Button>
 	</Box>
