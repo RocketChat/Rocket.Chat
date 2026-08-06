@@ -30,19 +30,16 @@ persistent-chat workspace gets.
 the provider URL without it, and `useVideoConfOpenCall` opens the window. On desktop,
 `openInternalVideoChatWindow` takes over.
 
-### When the call window opens
+### The window opens on the click
 
-Every call type opens its window **on the click that asked for it**, inside the browser's user-activation
-window. That matters: `window.open` from anything later — a stream event, a timer — is something the browser is
-entitled to refuse, and `VideoConfBlockModal` then has to ask the user to click again for a window they already
-asked for.
+Every call type opens its window **on the click that asked for it**, inside the browser's user-activation window.
+`window.open` from anything later — a stream event, a timer — is something the browser is entitled to refuse, and
+`VideoConfBlockModal` then has to ask the user to click again for a window they already asked for. A direct call
+used to be the exception: it rang the callee and kept the caller waiting in the room, opening the window only once
+the answer arrived, which is exactly the refusable case.
 
-A direct call used to be the exception. It rang the callee and kept the caller waiting in the room, opening the
-window only once the answer arrived, which is exactly the refusable case. Now placing a direct call opens the
-window immediately, and initiation reads the same for every room type.
-
-The wait therefore moves into the call window, which is also where its outcome is reported — see
-[When nobody picks up](#when-nobody-picks-up). The room stops showing an outgoing popup for a call the user is
+So the wait moves into the call window, which is also where its outcome is reported — see
+[When nobody picks up](#when-nobody-picks-up) — and the room stops showing an outgoing popup for a call the user is
 already sitting in.
 
 ### When the callee is rung
@@ -80,8 +77,8 @@ External provider URLs (persistent chat off) get their own popout each time, unn
 ## The preflight screen
 
 Opening the call window and being in the call are two different things, and the window opens first. What it shows
-until the user says otherwise is `ConferencePreflight`: a self-view, what the call is called, the devices they
-will arrive with, and — for whoever started a group call — a field to name it.
+until the user says otherwise is `ConferencePreflight`: what the call is called, the devices they will arrive
+with, and — for whoever started a group call — a field to name it.
 
 ### Nothing exists until it is confirmed
 
@@ -98,9 +95,8 @@ because nothing was created; on a call that already exists it reports leaving fi
 
 ### Why the join waits
 
-The window has to open on the click that asked for it, or the browser is entitled to refuse it; the *join*,
-though, is what turns mic and camera into the provider's URL and what marks the user as present in the call. So
-the join waits here:
+The window has to open on the click, as above. The *join*, though, is what turns mic and camera into the
+provider's URL and what marks the user as present in the call — so it waits here instead:
 
 - `VideoConfManager.joinCall` posts nothing when persistent chat is on — it only opens the window. Posting there
   would throw away the URL it returns and count the user as present in a call they have not chosen to enter yet.
@@ -161,15 +157,17 @@ The conference renders **standalone**, without the app's navigation chrome.
 
 The conference route is the only consumer of `AuthenticationCheck` outside `MainLayout`; every other route (including dynamic admin/account/room/audit groups) wraps in `MainLayout` and keeps the chrome.
 
-`AuthenticationCheck` also had to learn the difference between "not logged in" and "not logged in *yet*". It
-decided from `useUser()` alone, which is null while a stored session is still being resumed — so a window that
-opens with a session already in hand, a call popout above all, showed a login form for the few hundred
-milliseconds that took. It now waits instead, on either signal that a resume is under way: `isLoggingIn` once
-Meteor has started one, or a stored login token for the instant before that. A token that turns out to be stale
-is cleared when the resume fails, which lands as an ordinary logged-out visitor, and a forced login always goes
-straight to the form.
+`AuthenticationCheck` also had to learn the difference between "not logged in" and "not logged in *yet*": it
+decided from `useUser()` alone, which is null while a stored session is still being resumed, so a window opening
+with a session already in hand — a call popout above all — flashed a login form for as long as that took. It now
+waits on either signal that a resume is under way (`isLoggingIn`, or a stored login token for the instant before
+that); a stale token is cleared when the resume fails, landing as an ordinary logged-out visitor, and a forced
+login still goes straight to the form.
 
-The same applies to the chain's *loading placeholder*. `UsernameCheck` shows `HomeSkeleton` — a sidebar list, room and composer skeleton — while it resolves the user, which would flash a whole fake app shell in a conference window that never shows one. `AuthenticationCheck` and `UsernameCheck` therefore take an optional `loading` node; it still defaults to `HomeSkeleton` (so no existing route changes), and the conference route passes `PageLoading` instead. A plain spinner also matches what the conference itself shows while joining, making startup one continuous state rather than two.
+The chain's *loading placeholder* needed the same treatment. `UsernameCheck` shows `HomeSkeleton` — a whole fake
+app shell — while it resolves the user, so `AuthenticationCheck` and `UsernameCheck` take an optional `loading`
+node, defaulting to `HomeSkeleton` so no existing route changes. The conference route passes `PageLoading`, which
+is also what the conference shows while joining, making startup one continuous state rather than two.
 
 Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
 
@@ -177,11 +175,21 @@ Because it has no `MainContent` ancestor to inherit height from, `ConferenceView
 
 The conference is a column: a row holding the call and the chat panel, then `CallBar` beneath it.
 
-`CallBar` is the in-call control bar pinned along the bottom — the position third-party providers put their own toolbar in, so an embedded provider and the future native conference read the same. It is `relative`, and `CallBarActions placement='end'` is taken out of flow and anchored to the inline end, so adding or removing end actions never pulls the centred controls off-centre. Today the bar holds only the chat toggle (with an unread badge while the panel is closed); the native conference will fill the centre group with mic/camera/screen-share/hang-up.
+`CallBar` is the in-call control bar pinned along the bottom — the position third-party providers put their own toolbar in, so an embedded provider and the future native conference read the same. Its actions sit at the inline end, away from wherever the provider puts its own. Today that is the members and chat toggles (the chat one carrying an unread badge while its panel is closed). When the native conference brings mic, camera and hang-up of its own they will want the centre of the bar, which is the point at which what the centre needs will be known rather than guessed at.
 
 `CallPanel` is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
 
-The panel is docked to the inline end, so its close button sits at the far end of its header — matching every other closable surface in the product.
+The panel is docked to the inline end, so its close button sits at the far end of its header — matching every other closable surface in the product. Both panels share that header (`CallPanelHeader`), so two docked side by side can't disagree about where their own edges are.
+
+The bar carries two counts: how many people are in the call, and what is unread in the chat while its panel is
+closed. The unread one goes through `useUnreadDisplay`, the sidebar's own rules, so a mention reads as urgent in
+both places and a muted room stays quiet in both. The members count is deliberately `secondary` — a count of who is
+here is information, and a red badge would read as a problem.
+
+Knowing what is unread needs the room's subscription, and that is the **page's** business rather than the chat
+panel's: the badge exists precisely when that panel is closed, and a panel that isn't mounted can't keep anything
+fresh. `useConferenceSubscription` seeds it and follows `subscriptions-changed` for the life of the page. Nothing
+else would — the conference renders outside the main app, so the sidebar's own watcher never starts.
 
 ## Route Behavior (`/conference/:id`)
 
@@ -198,7 +206,9 @@ Guests can't be members of the conference's room, so the embedded page requires 
 
 The conference page renders one room outside the main app, so the cached stores the room UI reads from are never populated by the sidebar's subscriptions:
 
-- `ConferenceRoomPreload` seeds the single room + subscription into the stores and marks them ready.
+- `ConferenceStoresReady` marks the cached stores ready. That is all it does: the room UI waits on them being
+  *ready*, not on them being full, and the one room in play is fetched by `useOpenRoomById` below. It used to
+  fetch that room here as well, which meant two `rooms.info` for the same room a moment apart.
 - `ConferenceRoom` opens the room by id (`useOpenRoomById`), forces `isEmbedded` layout, and subscribes to `notify-user/…/subscriptions-changed` to keep unread counts fresh (no sidebar watcher is running).
 - `useOpenRoomById` is the by-rid counterpart to the router-driven `useOpenRoom`. It fetches via `GET /v1/rooms.info` (hence `mapRoomFromApi` to deserialize dates) and falls back to fetching the subscription directly, since `Subscriptions.state` may be empty here.
 
@@ -241,24 +251,14 @@ is in the call, and a second line pushed every row apart for something most memb
 thing about a member the other participants can act on (from the notice above the call). Anyone not currently in the call can be **rung individually**,
 including someone who declined or left — "call them back" is exactly that case.
 
-The ring button is offered only when there is something to ask for: not while they are in the call, and not
-while their phone is *already* ringing. `ringingAt` on the entry is what makes that knowable to everyone rather
-than only to whoever pressed the button — every ring records itself, including the one that starts a direct
-call. A ring stops on its own with nothing to announce it, so each row wakes itself when its window is up and
-offers the button again.
+The ring button is offered only when there is something to ask for: not while they are in the call, and not while
+their phone is *already* ringing (`canRingConferenceMember`). `ringingAt` on the entry is what makes that knowable
+to everyone rather than only to whoever pressed the button — every ring records itself, including the one that
+starts a direct call. A ring stops on its own with nothing to announce it, so the row wakes itself when its window
+is up, through the same `useRingingExpiry` the calls list uses.
 
-The bar carries two counts: how many people are in the call, and what is unread in the chat while it is closed.
-The unread one goes through `useUnreadDisplay`, the sidebar's own rules, so a mention reads as urgent in both
-places and a muted room stays quiet in both. The members count is deliberately `secondary` — a count of who is
-here is information, and a red badge would read as a problem.
-
-Knowing what is unread needs the room's subscription, and that is the **page's** business rather than the chat
-panel's: the badge exists precisely when that panel is closed, and a panel that isn't mounted can't keep
-anything fresh. `useConferenceSubscription` seeds it and follows `subscriptions-changed` for the life of the
-page. Nothing else would: the conference renders outside the main app, so the sidebar's own watcher never starts.
-
-This panel is where the membership model becomes visible at all: before it, a decline was recorded and an
-outside member counted in aggregate, with nowhere to see either against a name.
+This panel is where the membership model becomes visible at all: before it, a decline was recorded and an outside
+member counted in aggregate, with nowhere to see either against a name.
 
 ## Confined Navigation
 
@@ -281,14 +281,14 @@ External (cross-origin) links always open in a `noopener` new tab.
 
 Adding someone to a conference makes them a **member of the conference**. It puts them in no room: membership is what authorizes joining the call, and being able to read the chat is a separate concern, surfaced afterwards rather than decided here. See [Chat Access](#chat-access).
 
-`AddParticipantsModal` accepts users via autocomplete. The conference's room members are excluded — they can already join, so adding them would be a no-op — and everyone else is offerable, which is the point. The exclusion list is best-effort: a member who can't read the chat has no room to enumerate, and the modal still works for them, offering everyone.
+`AddParticipantsModal` picks users with `UserAutoCompleteMultiple`, the same component the room's own "add users" flow uses, given an `exceptions` list. The conference's room members are excluded — they can already join, so adding them would be a no-op — and everyone else is offerable, which is the point. The exclusion list is best-effort: a member who can't read the chat has no room to enumerate, and the modal still works for them, offering everyone.
 
 > Dial-out (typing a raw phone/SIP destination into the same field) is **not** wired up. No provider on this branch exposes a dial-out channel, so the affordance would have silently discarded the input; it was removed rather than left as dead UI. Restoring it means passing a provider-supplied `onDialOut` down to the modal.
 
 `POST /v1/video-conference.add-participants` takes `{ callId, users }` — no `keepHistory`, no room choice — and calls `addMembers`:
 
 - Each user who isn't already associated with the call gets a `users[]` entry with `joined: false`. Users who already have an entry are skipped, so an existing member's `joinedAt` (or `declined`) is never overwritten.
-- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`). The endpoint caps a single add at `VIDEO_CONF_ADD_PARTICIPANTS_LIMIT` (10), which is what guarantees an add always rings — unlike starting a call in a large room, where the room's subscriber count can exceed the cap and nobody is rung.
+- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`). The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
 - They also get a desktop notification, because the ring only reaches a client that is on screen and is one-shot. It deliberately carries **no room name**, which is what stops its click from navigating: the room behind the call may be one they can't open. Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
 
 Nothing about the conference's rooms changes, so `discussionRid` is untouched and no discussion is created.
@@ -311,7 +311,10 @@ it means:
 
 - The member's entry gets a `leftAt`. Leaving is neither declining nor un-joining — membership and `joined` both
   stand, so they keep their history entry and can rejoin, which clears `leftAt`.
-- If nobody is left in the call, the conference **ends**, which is what writes everyone's call history.
+- If nobody is left in the call, the conference **ends** after `EMPTY_CALL_GRACE_MS` (10s) with nobody having come
+  back — which is what settles everyone's call history. The grace period is what makes a **reload** survivable: the
+  page unloading reports a leave, and for a moment the call is empty because its only participant is on their way
+  back into it.
 
 "Left in the call" is `isInVideoConference` — joined, and not left since. `joined` never goes back to false
 (it records that they were there), so presence has to be that pair. A member who was added and never joined
@@ -342,11 +345,6 @@ not the call window closing, and the call window is meant to outlive it.
 Two gaps this leaves, both ending in the same place — the next join, which reconciles presence server-side (see
 [One call at a time](#one-call-at-a-time)) — or the expiry cron: a popup the browser blocked outright (the user
 is joined with no window at all), and the main app being closed alongside the call window.
-
-> Verified end to end against a running workspace. Placing a DM call and closing the call window ended the call
-> and wrote both history items — `ended`/`outbound` for the caller, `not-answered`/`inbound` for the callee who
-> never answered, which is the case that used to leave no trace at all. Leaving a call with another member still
-> in it set `leftAt` and left the call running, writing nothing.
 
 ## When nobody picks up
 
@@ -397,20 +395,14 @@ The desktop notification that accompanies a ring is explicitly silent (`audioNot
 ringing popup plays the ringtone; left unset, the notification would also play the new-message sound, so a call
 announced itself as a message arriving.
 
-Membership state reaches the window over the conference stream: `membersUpdated` fires whenever someone joins,
-declines, leaves or is added, and the window re-reads the conference.
-
-> Verified end to end: placing a DM call opened the call window at `/conference/:id` immediately, with the callee
-> registered as a member at `joined: false` while still ringing and the room showing no outgoing popup. After the
-> ring window the call window showed "Nobody answered", naming the callee, with **Leave call**, **Stay in the
-> call** and **Ring again**; ringing again succeeded and restarted the wait.
+Membership state reaches the window over the conference stream: `video-conference.updated` fires whenever someone
+joins, declines, leaves or is added, and the window re-reads the conference.
 
 ### Being called makes you a member
 
-Starting a direct call registers the callee as a member with `joined: false`, exactly as being added to a group
-conference does. Without it the callee only appeared once they answered, so nothing could tell "still ringing"
-from "nobody was called" — and a call they missed left them no history entry at all. Now a missed 1:1 call shows
-up in their call history as `not-answered`, which is the whole point of a call log.
+Starting a direct call registers the callee with `joined: false`, exactly as being added to a group conference
+does. That is what lets anything tell "still ringing" from "nobody was called", and what gives a missed 1:1 call a
+`not-answered` row in the callee's history rather than no trace at all.
 
 ## Chat Access
 
@@ -436,16 +428,9 @@ Which action leads in the modal is a privacy judgement — see [Resolving chat a
 
 Discussion type comes from `roomCoordinator.getRoomDirectives(parent.t).getDiscussionType(parent)`: `'c'` for a public channel (`'p'` if it belongs to a private team), `'p'` for everything else including DMs. Nesting is always flattened — `getRoomForDiscussion` walks `prid` up to the top-level room, so discussions never nest inside discussions.
 
-### Historical: the keep-history choice
-
-Adding used to ask **Keep chat history** up front and act on the answer immediately — the choice `share-chat`
-now offers as a remedy instead, because forcing it on whoever adds a participant demands a decision before
-anyone knows whether it matters, and a DM had no valid answer to give.
-
-Moving it also fixed a divergence: the two paths disagreed about which room to build from, so once a conference
-had moved into a discussion, a second "don't keep history" add rebuilt from the **original** room and dropped
-everyone added since. Both now build from `discussionRid || rid`, and `assignDiscussionToConference` subscribes
-the union of the room's members and the conference's, so a new discussion contains everyone involved.
+Whichever way it goes, the chat is built from `discussionRid || rid` — the room the chat is *currently* in.
+Building from the room the call started in instead is how a second discussion used to drop everyone added since
+the first one.
 
 ## Provider → Parent Bridge
 
@@ -463,12 +448,17 @@ parent.postMessage({ type: 'rocketchat:conference', command: 'toggle-chat' }, '*
 
 ## Realtime Updates
 
-Two things can change the chat under a participant, and each has its own signal on the `video-conference` stream:
+Several things can change a conference under a participant: its chat moves to another room, the same room becomes
+readable by members who couldn't read it, or its membership shifts — someone joins, declines, leaves or is added.
 
-- **The chat moves.** `assignDiscussionToConference` broadcasts `video-conference.discussionUpdated`, plus `notify-room/…/videoconf` so the in-room conference message block refreshes its "Join discussion" button.
-- **The same room becomes readable** by members who couldn't read it. Inviting them leaves the conference record untouched, so nothing else would say anything: `shareChatWithMembers` broadcasts `video-conference.chatAccessUpdated`.
+All of them are answered the same way: read the conference again, which carries the room, who can see it, and who
+is in it. So there is **one** signal, `video-conference.updated` on the `<callId>/updated` stream key, and one
+subscription that invalidates one query. It started as three events with a payload on one of them; the subscriber
+registered the same callback for all three and never read the payload.
 
-Both are answered the same way — refetch the conference, which carries both the room and who can see it — so the client subscribes to both and invalidates one query. The participant who *asked* for the change also invalidates locally rather than waiting on the round trip.
+`assignDiscussionToConference` also broadcasts `notify-room/…/videoconf`, so the in-room conference message block
+refreshes its "Join discussion" button. The participant who *asked* for a change invalidates locally rather than
+waiting on the round trip.
 
 The stream's `allowRead` accepts **conference membership or access to the chat's room**, the same pair `video-conference.info` accepts. Both halves matter: members may have no access to the room the call originated in, and membership alone would refuse a room member who opens the conference before their join lands — a refused subscription is never retried.
 
@@ -480,7 +470,7 @@ Every conference endpoint authorizes through one `canAccessConference` check, wh
 2. Access to `call.rid`, the room the call was started in.
 3. Access to `call.discussionRid`, the room the chat moved to. Someone who belongs only to the discussion has no access to the parent room, so checking only `rid` would lock them out of the call.
 
-Because all of them share that check, `add-participants` no longer disagrees with `join` and `info` about who is allowed in.
+Because all of them share that check, `add-participants` no longer disagrees with `join` and `info` about who is allowed in. `loadAccessibleConference` is the shared prologue: it reads the call, applies the check, and answers both failures the same way — `invalid-params`, deliberately vague about which of the two it was, so a stranger can't use an endpoint to learn that a call id is real.
 
 ## Conference Call History
 
@@ -502,364 +492,86 @@ Separately from the room-scoped tab above, a group conference also leaves an ent
 
 `CallHistoryItem` (`packages/core-typings/src/ICallHistoryItem.ts`) gains a `type: 'video-conference'` variant, `IVideoConferenceHistoryItem`, alongside the existing 1:1-contact-shaped media-call variants. It carries `rid` (the conference's room), `title` (if the conference had one), and `usersCount` (how many members actually joined — `hasJoinedVideoConference`, not raw membership count). `callId`, `uid`, `ts`, `direction` and `state` come from the shared `ICallHistoryItem` base.
 
-Items are written once, when a **group** conference stops — either because it was ended (`endCall`) or because the expiry cron ran past its 24h TTL (`expireCall`). Both matter: a provider that never reports the end back to Rocket.Chat, which includes the bundled Jitsi app, leaves *every* conference to be expired, so writing only on end writes almost never. Direct and livechat conferences are out of scope — they have no `title` and aren't the many-participants case this covers. `buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
-- `direction` is `outbound` for the conference's creator, `inbound` for everyone else.
-- `state` is `ended` for a member who joined and `not-answered` for one who did not. Only members get an item, and a member either joined or was rung and didn't — so not joining *is* not answering, whether they declined explicitly or ignored it. Reporting an ignored ring as a normal ended call would hide a missed conference.
+*When* items are written is [A call is in the history from the moment it starts](#a-call-is-in-the-history-from-the-moment-it-starts): from the conference's creation onward, not once at the end. `isLoggableConference` decides what belongs in a personal log at all — a group or **direct** conference does; a livechat call is the visitor's, and a VoIP conference is already logged as a media call.
 
-Both paths are reachable more than once for one call — an app can send `ENDED` repeatedly, and the cron runs every three hours — so `shouldWriteConferenceHistory` refuses a call that already carries `endedAt`, and must be given the call as read *before* `endedAt` is set. Otherwise every member collects a duplicate entry per attempt.
+`buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
+- `direction` is `outbound` for the conference's creator, `inbound` for everyone else.
+- `state` is `ongoing` while the call runs. Ending settles it: `ended` for a member who joined, `not-answered` for one who did not. Only members get an item, and a member either joined or was rung and didn't — so not joining *is* not answering, whether they declined explicitly or ignored it. Reporting an ignored ring as a normal ended call would hide a missed conference.
 
 All call-history items — media calls and conferences alike — live in the same `call_history` collection, so the existing `direction`/`state` filters on `call-history.list` already apply to conference items with no change. The free-text `filter` search term gains one more `$or` branch matching the conference's `title` (`CallHistoryRaw.findAllByUserIdAndSearchFilters`).
 
 The call-history page's table dispatches a conference item to `CallHistoryRowConference` (`apps/meteor/client/views/mediaCallHistory/`) instead of the three contact-shaped rows (`CallHistoryRowInternalUser`/`…External`/`…UnknownUser`), showing the room/title and joined-participant count in place of a contact. It doesn't reuse `CallHistoryTableRow` from `@rocket.chat/ui-voip` — that component's `contact`/`duration` props are contact-call-shaped and don't apply. Clicking the row opens the conference's room directly (`useGoToRoom`), the same "Call chat" action used by the room-scoped tab above, rather than the contact-shaped call-info side panel the other rows open — so `MediaCallHistoryContextualbar`/`MediaCallHistoryExternal` were only adjusted to keep compiling against the widened `CallHistoryItem` union, not to render a conference-specific detail view. Deep-linking straight to a conference item's `/call-history/details/:historyId` (bypassing the row) still falls through to the generic "Call info could not be loaded" panel — building a dedicated detail view was left out as out of scope.
 
-## Provider Requirements
-
-A provider must declare the **`persistentChat` capability** for `maybeCreateDiscussion` to create a discussion for its conferences.
-
-Providers that don't declare it still work in the split view — the chat panel falls back to the conference's `rid`, showing the room the call was started in — but get no dedicated per-call discussion. The bundled **Jitsi app (v2.1.1) declares only `{ mic, cam, title }`**, so it falls into this case; adding `persistentChat` is an app-side change.
-
-The provider's URL is embedded in an iframe, so it must permit framing (no restrictive `X-Frame-Options` / `frame-ancestors`). Rocket.Chat's own CSP allows `frame-src *`. Note the public `meet.jit.si` server disconnects embedded calls after 5 minutes and asks you to use a self-hosted instance or JaaS.
-
-## Settings
-
-| Setting | Notes |
-|---------|-------|
-| `VideoConf_Enable_Persistent_Chat` | EE; requires `Discussion_enabled`. Also gates whether joining opens the in-product conference page. |
-| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name; `[date]` is substituted, or the date is prefixed when absent. |
-
-## REST Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/v1/video-conference.add-participants` | Register users as conference members and ring them; touches no room. Capped at 10 per call |
-| POST | `/v1/video-conference.decline` | Record that the caller dismissed the call, without ending it |
-| POST | `/v1/video-conference.leave` | Record that the caller left; ends the conference when nobody is left in it |
-| POST | `/v1/video-conference.ring` | Ring the members who aren't in the call again |
-| GET | `/v1/video-conference.joinable` | The running calls the caller may join — the sidebar and history lists |
-| POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
-| POST | `/v1/video-conference.rename` | Name a running group conference; the creator only |
-| POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
-| GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
-| GET | `/v1/video-conference.list` | Paginated history, with discussion title / last message |
-
-## Streams
-
-| Stream | Event | Payload | Authorized for |
-|--------|-------|---------|----------------|
-| `video-conference` | `<callId>/discussionUpdated` | `{ discussionRid }` | conference members, or anyone who can read the chat's room |
-| `video-conference` | `<callId>/chatAccessUpdated` | — | same |
-| `video-conference` | `<callId>/membersUpdated` | — | same |
-
-## Why membership exists
-
-The prose above describes the shipped behaviour. This section is the record of *why* it is shaped that way,
-plus the follow-up work deliberately left out. The phase-by-phase plan it was built from lives in the git
-history and is not repeated here.
-
-### The problem it solved
-
-Today, adding someone to a conference *puts them in a room* — either the conference's room (keeping its
-history) or a fresh discussion. Authorization to join the call is then derived from room membership. That
-conflates two separate things: **being in the call** and **being able to read the chat**.
-
-The target model separates them:
-
-- Being added to a conference makes you a **member of the conference**. It does not put you in any room.
-- Authorization to join is *room access **or** conference membership*.
-- Members who can't see the chat are surfaced in the UI, with a remedy offered — rather than the decision
-  being forced up-front, before anyone knows whether it matters.
-- Being added **rings** you, and you accept or decline from the call widget.
-
-### Decisions on record
-
-| # | Decision |
-|---|---|
-| 1 | Conference membership lives on the existing `users[]`, with a per-entry `joined` flag — not a second array. Keeps one list of "who is associated with this call" and leaves room for future participant kinds. |
-| 2 | `ts` keeps its current meaning (added to the conference). A separate `joinedAt` records when they actually joined. |
-| 3 | Ringing is decided **per call event** against the list being rung, capped at 10. At start the list is the room's subscribers (so a >10-person room still rings nobody). On add, the list is the added users, capped at 10 per action — so an add always rings. |
-| 4 | A decline is recorded as a flag on the member's `users[]` entry. It must never end the call for anyone else. |
-| 5 | The ringing widget is **not** changed for now — the current floating overlay stays for every case. Revisit later. |
-| 6 | Membership never expires, and is additive-only. |
-| 7 | `assignDiscussionToConference` subscribes the **union of the original room's members and the conference's members**, so a newly created discussion contains everyone involved rather than only those who joined the call. |
-| 8 | "External" (a member with no access to the chat) is **derived**, not stored, so it stays true as access changes. It is surfaced per member in the members panel and in aggregate by the chat-access notice. |
-
-### Future work (not in scope)
-
-- **Non-user participants.** Members are registered Rocket.Chat users only, for now. Representing SIP
-  extensions, phone numbers, external email addresses, or participants derived from a calendar event is
-  wanted later. `IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'>` — required
-  `username` *and* `name` — so that constraint has to relax when it happens. Adding a nullable `source`
-  discriminator to the entry while Phase 1 is being written costs nothing and avoids a migration later.
-- **Docking the ringing widget.** Decision 5 keeps the current floating overlay for every case. Docking it
-  over the room list, with a floating fallback when the list isn't visible, was considered and deferred. It is
-  also the better answer to [a ring being missed entirely](#the-ring-can-still-be-missed-entirely).
-
-## Implementation notes
-
-Things worth knowing that aren't visible from the code alone.
-
-### Group ringing was dead code before this work
-
-The server had long set `ringing: true` on group conferences and broadcast an `action: 'ring'` to each room
-member, but **no client ever handled it** — the only match for `'ring'` in the client was a word in the E2EE
-wordlist. Real 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
-`'call'` on an interval while it waits.
-
-`VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work. The side effect is that
-group conferences which had been silently not ringing **will now ring** — the behaviour the EE code always
-intended, but a visible change beyond "ring on add".
-
-A server-originated ring is one-shot: nothing refreshes the 10s abort timeout that a 1:1 caller keeps alive,
-so it rings once and gives up. That suits an already-running conference, where there is no caller waiting.
-
-### Declining makes you a member
-
-There is nowhere to record a decline except on a `users[]` entry, so declining creates one for someone who
-was rung as a room member. Since membership authorizes joining, a member who declines can still join
-afterwards — which is intended, but is a consequence of where the flag is stored rather than a separate
-decision.
-
-### Resolving chat access is the user's call
-
-Both ways out of "some members can't see the chat" give something away, in different directions: inviting
-exposes the room's whole history to an outsider, while moving the chat to a discussion leaves the earlier
-history behind for everyone already there. So `share-chat` takes a `mode` and `ChatAccessModal` spells out
-each consequence next to its button, naming the room in bold — that name is the context the decision turns on.
-
-Which action *leads* is a privacy judgement: opening a private room's history is the bigger step, so private
-rooms and DMs lead with the discussion, and public rooms — whose history is already open — lead with the
-invite. A DM can't take new members at all, so there the discussion is the only option offered. The server
-re-derives `canInvite` and rejects `mode: 'invite'` it can't honour, rather than trusting the client's read.
-
-The notice itself is `AnnouncementBanner` — the same banner rooms use for announcements — so it inherits
-readable contrast instead of hand-rolled colours. It is passed no `onClick`: the Review button is the only
-control, which keeps one interactive element rather than nesting a button inside a `role='button'` bar.
-
-### A member who can't read the chat is told so, not shown an error
-
-The panel used to let the room fetch fail and fall back to `NotFoundPage` — *"The page does not exist or you
-may not have access permission"* — which reads as something being broken. The server already works out who
-can't read the chat, so `ConferenceChat` checks whether the current user is one of them and renders
-`ConferenceChatNotShared` instead, without attempting a fetch that is known to fail.
-
-`ChatAccessNotice` hides itself from those same members for the same reason: it offers to share the chat, and
-they are the ones it would be shared with — `share-chat` would fail for them anyway, since they can't add
-anyone to a room they can't see.
-
-### The incoming-call popup assumed the callee was in the room
-
-Ringing on add is the first case where a call rings someone who has no access to the room it belongs to, and
-the popup was built entirely around that room — it read it from the client store with `useUserRoom(rid)` and
-returned `null` when it wasn't there, while still calling `focusManager.focusFirst()`, which then looked for
-the parent of a node the focus scope never got (`Cannot read properties of undefined`).
-
-Incoming popups now render without a room, describing the call from the conference's own record instead
-(`VideoConfPopupCallerInfo`, fed by the `video-conference.info` the popup already fetches). The popups that act
-*on* a room — starting or placing a call — still require one.
-
-### Accepting a server ring joins; it doesn't negotiate
-
-1:1 accept is a handshake: the callee publishes `accepted` and waits for the caller's client to reply
-`confirmed` with the go-ahead, giving up after 5s. A server-originated ring has no caller waiting, so running
-that handshake left the added user staring at *"No response from remote user after notifying the call was
-accepted"*. Incoming calls now carry a `handshake` flag; without it, accepting joins the conference outright —
-membership is what authorizes joining — and declining records the decline without publishing `rejected` to
-whoever added them, which their client would read as their own call being turned down.
-
-### Test coverage and where it lives
-
-The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config)
-and package-level jest.
-
-| What | Where |
-|---|---|
-| `hasJoinedVideoConference` back-compat, ringing cap boundaries | `apps/meteor/tests/unit/lib/videoConference/membership.spec.ts` |
-| Per-member history semantics | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
-| A decline can't tear down a conference; `ring` and `call` both register; accepting a ring joins outright while accepting a call negotiates | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
-| The share-chat `mode` contract | `apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.spec.ts` |
-| Leaving ends an empty call and writes history; a direct call qualifies; no duplicates; a reload doesn't end it | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
-| Adding registers without touching rooms, skips existing members, rings the batch, respects the cap | `apps/meteor/tests/unit/server/services/video-conference/addMembers.spec.ts` |
-| A decline is recorded and never ends the call | `apps/meteor/tests/unit/server/services/video-conference/declineCall.spec.ts` |
-| Which room types can be answered from one subscription read, and which still can't | `apps/meteor/tests/unit/server/services/video-conference/getChatAccess.spec.ts` |
-| Who counts as still in the call, and which conferences get history | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
-| Leaving is reported on `pagehide`, with `keepalive`, and on demand | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
-| Leaving is also reported when the call window goes, including before it ever loaded | `apps/meteor/client/views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose.spec.ts` |
-| "Start a call" closes itself once the call it started has its own window | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/TimedVideoConfPopup.spec.tsx` |
-| Declined vs unanswered vs still-ringing, and that ringing again restarts the wait | `apps/meteor/client/views/conference/hooks/useCallOutcome.spec.ts` |
-| A direct call opens its window on the click, still rings, and stops the room reporting "calling"; a fresh ring survives a dismissal | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
-| Member statuses, and who can be rung back — including not while their phone is ringing | `apps/meteor/tests/unit/lib/videoConference/memberStatus.spec.ts` |
-| The members panel: sections and counts, statuses, the no-access tag, per-member ring, adding people | `apps/meteor/client/views/conference/CallMembersPanel.spec.tsx` |
-| What the outcome modal offers, and that a refused ring doesn't restart the wait | `apps/meteor/client/views/conference/CallOutcomeModal.spec.tsx` |
-| One panel at a time, members open by default, and the provider's chat commands | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.spec.ts` |
-| Who gets rung again, and who doesn't | `apps/meteor/tests/unit/server/services/video-conference/ringMembers.spec.ts` |
-| Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
-| Who is offered which running calls, and what each row says | `apps/meteor/tests/unit/server/services/video-conference/listJoinableCalls.spec.ts` |
-| Joining another call asks first, then leaves the one before it | `apps/meteor/client/views/conference/hooks/useJoinCall.spec.tsx` |
-| The list: what it shows and leaves out, the three-row cap, ringing, silencing, scrolling | `apps/meteor/client/components/OngoingCalls/OngoingCalls.spec.tsx` |
-| Faces instead of a count, and the `+N` for the rest | `apps/meteor/client/components/OngoingCalls/CallParticipants.spec.tsx` |
-| The navbar stand-in: only without a sidebar, red while ringing, opens itself | `apps/meteor/client/navbar/NavBarItemOngoingCalls.spec.tsx` |
-| That the room's call button opens the window rather than a popup | `apps/meteor/client/hooks/roomActions/useVideoCallRoomAction.spec.tsx` |
-| That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
-| The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
-| That the camera is described rather than previewed | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
-| A call is logged from the start and settles when it ends | `apps/meteor/tests/unit/server/services/video-conference/conferenceHistory.spec.ts` |
-| What a conference row says, and that a running one can be joined from it | `apps/meteor/client/views/mediaCallHistory/CallHistoryRowConference.spec.tsx` |
-| That the callee is rung when the caller arrives, and only once | `apps/meteor/tests/unit/server/services/video-conference/ringOnArrival.spec.ts` |
-| That opening the call window creates nothing, and confirming starts the call | `apps/meteor/client/views/conference/ConferenceStartPage.spec.tsx` |
-| What the preflight offers, what it joins with, and naming the call | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
-| That the join waits to be asked, and carries what it was asked with | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
-| That the main app opens the call window without joining for the user | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
-| Who may name a call, and what a name may be | `apps/meteor/tests/unit/server/services/video-conference/renameCall.spec.ts` |
-| Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
-| The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
-| Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
-| That a window resuming a session waits rather than flashing the login form | `apps/meteor/client/views/root/MainLayout/AuthenticationCheck.spec.tsx` |
-| Who the notice is shown to, that it ignores members who never joined, and that Review opens the modal | `apps/meteor/client/views/conference/ChatAccessNotice.spec.tsx` |
-| Both stream events refetch the conference; the chat follows a discussion | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
-| The chat subscription is seeded and followed for the life of the page | `apps/meteor/client/views/conference/hooks/useConferenceSubscription.spec.ts` |
-| Adding works without the room, and posts the usernames | `apps/meteor/client/views/conference/AddParticipantsModal.spec.tsx` |
-| The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
-
-There is also an end-to-end REST suite at `apps/meteor/tests/end-to-end/apps/video-conference-membership.ts`,
-covering the endpoints against a real server and real Mongo: membership without room access, authorization by
-membership, decline, leave, ring, `chatAccess`, and both `share-chat` modes. It follows the provider-app harness
-in `apps/meteor/tests/end-to-end/apps/video-conferences.ts` (a test app supplies the conference provider) and is
-EE-gated, since a private app is never enabled outside EE.
-
-> It has **not** been run locally: the API suite authenticates as the fixture admin
-> `rocketchat.internal.admin.test`, which a real development workspace doesn't have. It is type-checked, and CI
-> seeds that user. Treat its first CI run as the real one.
-
-There is also an end-to-end REST suite at `apps/meteor/tests/end-to-end/apps/video-conference-membership.ts`,
-covering the endpoints against a real server and real Mongo: membership without room access, authorization by
-membership, decline, leave, ring, `chatAccess`, and both `share-chat` modes. It follows the provider-app harness
-in `apps/meteor/tests/end-to-end/apps/video-conferences.ts` — a test app supplies the conference provider — and
-is EE-gated, since a private app is never enabled outside EE.
-
-> It has **not** been run locally. The API suite authenticates as the fixture admin
-> `rocketchat.internal.admin.test`, which a real development workspace doesn't have; it is type-checked, and CI
-> seeds that user. Treat its first CI run as the real one.
-
-`packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular
-import that leaves it uninitialized when the module is loaded directly by jest.
-
-Where the seams are drawn matters: `resolveChatAccessMode` and `chatAccessLeadsWithDiscussion`
-(`apps/meteor/lib/videoConference/chatAccess.ts`) exist as pure functions **shared by the server's default and
-the modal's primary button**, so the rule is tested once and the two can't drift. `VideoConfService` itself is
-not unit-tested — proxyquiring it means stubbing some thirty modules, one of which opens a Mongo driver at
-import time — which is why the decisions worth pinning down were moved out of it.
-
-### Nothing else "ends" a Jitsi conference
-
-`endCall` runs when something tells Rocket.Chat the call is over. For a third-party provider, nothing does:
-the Jitsi app never reports an end, so before closing the window became a signal, conferences sat at `STARTED`
-until `videoConferencesCron` expired them a day later — and the expire path wrote no history at all. Both gaps
-are closed: leaving ends the call when nobody is left, and expiry writes history as a backstop.
-
-Conferences expired *before* this landed have `endedAt` set already, so they are permanently invisible to
-history — the duplicate guard can't distinguish them from ones already written. Only conferences that stop from
-now on appear.
-
-### Verified against live data
-
-The premise — membership without room access — was confirmed by reading a development workspace's Mongo
-directly, not only by test:
-
-- A conference on a **DM** between two users carried a third, `alice`, as a `users[]` entry with
-  `joined: false` and **no subscription to that DM**. She is authorized to join the call and cannot read its
-  chat, which is exactly the state the model exists to represent.
-- Entries mixed both shapes as designed: joined members carry `joined: true` and a `joinedAt`; added members
-  carry `joined: false` and no `joinedAt`. Every entry carries `ts`.
-
-Not yet observed live: a persisted **decline**. `POST /v1/video-conference.decline` is covered from the client
-side (`VideoConfManager.spec.ts`) and the model write is covered by shape
-(`packages/models/src/models/VideoConference.spec.ts`), but no `users[].declined` flag has been seen in real
-data, so the endpoint-to-model chain rests on those two tests meeting in the middle.
-
-### Deliberate limits
-
-Not gaps — choices, recorded so they aren't mistaken for oversights.
-
-- **`add-participants` is capped at 10 users per call.** That cap is what guarantees an add always rings, since
-  the whole batch fits inside the ringing limit. Adding more means several requests.
-- **Ringing is decided per call event, not per call.** Starting a conference rings the room's subscribers, so a
-  large room rings nobody; adding rings just the people added.
-- **Membership never expires and is additive-only.** Leaving, declining and rejoining all annotate the entry
-  rather than removing it, which is what makes the call log and the members list possible after the fact.
-
-What remains genuinely unfinished is under [Improvement suggestions](#improvement-suggestions).
-
-
 ## Reaching a call without a ring
 
-Ringing is a poor only-route into a call: it is one-shot, it lasts seconds, and a conference started in a room
-with more than ten subscribers rings **nobody at all**. So a call is also reachable from two lists.
+Ringing is a poor only-route into a call: it is one-shot, it lasts seconds, and a conference started in a room with
+more than ten subscribers rings **nobody at all**. So a call is also reachable from a list of the calls running
+now — docked at the top of the sidebar, and behind a navbar button when there is no sidebar to dock it in.
 
-**The sidebar** (`sections/OngoingCallsSection`) docks the calls running now that this user may join, with
-**join** and **decline** on each. **The call history page** shows them as rows of its own table, with `ongoing`
-as their status and a **join** button — the way back to a call the user turned down, since declining quiets the
-sidebar but leaves the history row where it was.
+### What the list shows
+
+Every row is something to act on: **join** it, or turn it down with the ghost **×** after it so it stops asking.
+The call the reader is *already in* is left out entirely — they are in it, there is nothing to reach, and a row
+reading "in call" left them with something they could do nothing about. Rows are newest first, three of them, with
+a *Show all N calls* toggle for the rest and a `40vh` scroll region with that toggle outside it: this is a route to
+a call, not a place to read a list.
+
+Each row shows **who is already in the call** rather than a count — three avatars and a `+N` for the rest, from
+the `participants` the joinable list carries (capped server-side; `usersCount` stays the whole number, and is what
+the `+N` is worked out from). Faces answer the question a count never did, which is whether this is a call worth
+walking into. The group keeps the count as its accessible label, so nothing is lost to a screen reader.
 
 ### A ringing call is listed, not popped
 
 An incoming call used to take over the screen with a popup that had to be answered before anything else could
 happen. It is now the first item of that same list, under an *Incoming calls* heading of its own: bigger than the
-rest, with **accept** then **decline** *below* it rather than beside it — the same order as the **join** and
-**dismiss** on the calls underneath. The ring still sounds. When the ring stops, the item settles into an ordinary
-row with a join button — the call is still there, it just isn't asking any more.
+rest, with **accept** then **decline** *below* it rather than beside it — the same order as the join and dismiss on
+the calls underneath. The ring still sounds. When it stops, the item settles into an ordinary row with a join
+button: the call is still there, it just isn't asking any more.
 
-**Silencing** it is not answering it: the bell button stops this client's ring and leaves the call exactly where it
-is, so the user can decide in their own time. It only appears while there is a sound to stop — a ring this client
-never heard, because the page was reloaded, has nothing to silence — and once used it becomes a plain bell-off
-icon, which is what says why the room went quiet. Silenced ids are remembered by `useOngoingCalls`, because the
-manager forgets a dismissed call entirely and "silenced" would otherwise be indistinguishable from "never heard".
+**Silencing** is not answering. The bell button stops this client's ring and leaves the call exactly where it is,
+so the user can decide in their own time. It only appears while there is a sound to stop — a ring this client never
+heard, because the page was reloaded, has nothing to silence — and once used becomes a plain bell-off icon, which
+is what says why the room went quiet. Silenced ids are remembered by `useOngoingCalls`, because the manager forgets
+a dismissed call entirely and "silenced" would otherwise be indistinguishable from "never heard".
 
-Every item shows **who is already in the call** rather than a count: three avatars and a `+N` for the rest, from
-the `participants` the joinable list carries (capped server-side; `usersCount` remains the whole number, and is
-what the `+N` is worked out from). Faces answer the question a count never did — whether this is a call worth
-walking into. The group keeps the count as its label, so nothing is lost to a screen reader.
+Whether a ring is still ringing is the reader's own judgement (`isRingingVideoConferenceMember` over the `ringingAt`
+the joinable list carries), with `useRingingExpiry` waking the list when the earliest one is due to stop — nothing
+announces that a ring *ended*, so nothing can be waited for. The list also refreshes on the ring itself rather than
+on the poll: a ring *is* announced to the person being rung, and waiting up to twenty seconds to show a call that is
+ringing right now would miss it entirely.
 
-The list scrolls at `40vh` rather than growing without end, with the *Show all N calls* toggle outside the
-scrolling part so it stays reachable.
+### Where the list lives
 
-The ringing window is the reader's own judgement (`isRingingVideoConferenceMember` over the `ringingAt` the
-joinable list carries), with a timer that wakes the list when the earliest ring is due to stop. Nothing announces
-that a ring *ended*, so nothing can be waited for.
+`components/OngoingCalls` is the list; both places that show it render the same component, unchanged.
+`sidebar/sections/OngoingCallsSection` docks it at the top of the sidebar. `navbar/NavBarItemOngoingCalls` stands in
+for that when the sidebar is collapsed, which would otherwise hide the only place these calls appear — including one
+ringing right now. The button is blue for calls that are simply running and red while something is ringing, and it
+opens itself when a ring starts: a ringing call the user has to go looking for is a missed call.
 
-The list itself refreshes on the ring rather than on the poll: a ring is announced to the person being rung, and
-waiting up to twenty seconds to show a call that is ringing *now* would miss it entirely.
+Both containers ask `useOngoingCallsList` only whether there is anything to make room for; the decline and silence
+wiring belongs to whoever renders the rows.
 
-### When there is no sidebar to dock it in
+### What the server answers with
 
-A collapsed sidebar would hide the only place these calls appear, including one ringing right now. So
-`navbar/NavBarItemOngoingCalls` puts the same list — the same component, unchanged — in a dropdown behind a navbar
-button, and only while the sidebar is collapsed. The button is blue for calls that are simply running and red
-while something is ringing, and it opens itself when a ring starts: a ringing call the user has to go looking for
-is a missed call.
+`GET /v1/video-conference.joinable`, via `listJoinableCalls`. Nothing new is stored to support it: the conference
+records already hold membership (`users[]`), liveness (`endedAt`) and the room. The scan is over *running*
+conferences rather than over the user's rooms, so its cost follows how many calls are in progress — few — rather
+than how many rooms the user is in. A sparse index on `{endedAt, createdAt}` keeps it to the calls that are live,
+since a conference carries `endedAt` only once it has stopped.
 
-Every sidebar row is something to act on — join it, or turn it down so it stops asking. The call the reader is
-*already in* is therefore left out entirely: they are in it, there is nothing to reach, and a row that only read
-"in call" left them with something they could do nothing about. Rows are newest first, and only the three most
-recent are shown, with a **Show all** toggle for the rest: the sidebar is a route to a call, not a place to read a
-list.
-
-`GET /v1/video-conference.joinable` answers both, via `listJoinableCalls`. Nothing new is stored to support it:
-the conference records already hold membership (`users[]`), liveness (`endedAt`) and the room. The scan is over
-*running* conferences rather than over the user's rooms, so its cost follows how many calls are in progress —
-few — rather than how many rooms the user is in. A sparse index on `{endedAt, createdAt}` keeps that scan to the
-handful of calls that are live, since a conference carries `endedAt` only once it has stopped.
-
-A call is offered when the user is a **member** of it, or is **in the room** it belongs to. Room membership
-rather than room *access*: a public channel is readable by anyone, and a call in a channel the user never joined
-has no business in their sidebar. That is narrower than `canAccessConference` on purpose — the endpoints still
-authorize with the broader rule, so nobody is refused a call they can reach.
+A call is offered when the user is a **member** of it, or is **in the room** it belongs to. Room membership rather
+than room *access*: a public channel is readable by anyone, and a call in a channel the user never joined has no
+business in their sidebar. That is narrower than `canAccessConference` on purpose — the endpoints still authorize
+with the broader rule, so nobody is refused a call they can reach.
 
 Calls nobody is in are left out. A conference only stops when someone ends it or the expiry cron reaches it, so
 without that filter an abandoned call would be advertised as joinable for a day.
 
-The row's name comes from the conference's title, or — for a direct message, which has no name of its own — from
-the reader's **own subscription**, since a DM is named after the other person and that name is per-viewer. Both
-fall back to the room. One subscription query answers this and the room-membership question together.
+The name comes from the conference's title, or — for a direct message, which has no name of its own — from the
+reader's **own subscription**, since a DM is named after the other person and that name is per-viewer. Both fall
+back to the room. One subscription query answers this and the room-membership question together. The payload
+carries nothing else: a list needs enough to decide whether to walk in, and joining goes by `callId`.
 
 ### A call is in the history from the moment it starts
 
@@ -908,6 +620,195 @@ That is a deliberate trade. This list is not latency-critical: it exists precise
 arrived, where the alternative today is no route at all. A per-user signal remains the better answer if it can be
 made cheap — see [Improvement suggestions](#improvement-suggestions).
 
+## Provider Requirements
+
+A provider must declare the **`persistentChat` capability** for `maybeCreateDiscussion` to create a discussion for its conferences.
+
+Providers that don't declare it still work in the split view — the chat panel falls back to the conference's `rid`, showing the room the call was started in — but get no dedicated per-call discussion. The bundled **Jitsi app (v2.1.1) declares only `{ mic, cam, title }`**, so it falls into this case; adding `persistentChat` is an app-side change.
+
+The provider's URL is embedded in an iframe, so it must permit framing (no restrictive `X-Frame-Options` / `frame-ancestors`). Rocket.Chat's own CSP allows `frame-src *`. Note the public `meet.jit.si` server disconnects embedded calls after 5 minutes and asks you to use a self-hosted instance or JaaS.
+
+## Settings
+
+| Setting | Notes |
+|---------|-------|
+| `VideoConf_Enable_Persistent_Chat` | EE; requires `Discussion_enabled`. Also gates whether joining opens the in-product conference page. |
+| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name; `[date]` is substituted, or the date is prefixed when absent. |
+
+## REST Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/v1/video-conference.add-participants` | Register users as conference members and ring them; touches no room. Capped at 10 per call |
+| POST | `/v1/video-conference.decline` | Record that the caller dismissed the call, without ending it |
+| POST | `/v1/video-conference.leave` | Record that the caller left; ends the conference when nobody is left in it |
+| POST | `/v1/video-conference.ring` | Ring the members who aren't in the call again |
+| GET | `/v1/video-conference.joinable` | The running calls the caller may join — the sidebar and history lists |
+| POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
+| POST | `/v1/video-conference.rename` | Name a running group conference; the creator only |
+| POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
+| GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
+| GET | `/v1/video-conference.list` | Paginated history, with discussion title / last message |
+
+## Streams
+
+| Stream | Event | Payload | Authorized for |
+|--------|-------|---------|----------------|
+| `video-conference` | `<callId>/updated` | — | conference members, or anyone who can read the chat's room |
+
+## Why membership exists
+
+The prose above describes the shipped behaviour. This section is the record of *why* it is shaped that way,
+plus the follow-up work deliberately left out. The phase-by-phase plan it was built from lives in the git
+history and is not repeated here.
+
+Before it, adding someone to a conference *put them in a room* — the conference's own, or a fresh discussion —
+and authorization to join was derived from room membership. That conflated two separate things: being in the call,
+and being able to read the chat. What replaced it is described under [Adding Participants](#adding-participants)
+and [Access Control](#access-control).
+
+### Decisions on record
+
+| # | Decision |
+|---|---|
+| 1 | Conference membership lives on the existing `users[]`, with a per-entry `joined` flag — not a second array. Keeps one list of "who is associated with this call" and leaves room for future participant kinds. |
+| 2 | `ts` keeps its current meaning (added to the conference). A separate `joinedAt` records when they actually joined. |
+| 3 | Ringing is decided **per call event** against the list being rung, capped at 10. At start the list is the room's subscribers (so a >10-person room still rings nobody). On add, the list is the added users, capped at 10 per action — so an add always rings. |
+| 4 | A decline is recorded as a flag on the member's `users[]` entry. It must never end the call for anyone else. |
+| 5 | Membership never expires, and is additive-only. Leaving, declining and rejoining all annotate the entry rather than removing it, which is what makes the call log and the members list possible after the fact. |
+| 6 | `assignDiscussionToConference` subscribes the **union of the original room's members and the conference's members**, so a newly created discussion contains everyone involved rather than only those who joined the call. |
+| 7 | "External" (a member with no access to the chat) is **derived**, not stored, so it stays true as access changes. It is surfaced per member in the members panel and in aggregate by the chat-access notice. |
+| 8 | An incoming call is an item in the list of calls, not a popup over the screen. Answering it, turning it down and leaving it ringing are all things the user can do without the rest of the app being blocked — see [A ringing call is listed, not popped](#a-ringing-call-is-listed-not-popped). |
+
+### Future work (not in scope)
+
+- **Non-user participants.** Members are registered Rocket.Chat users only, for now. Representing SIP
+  extensions, phone numbers, external email addresses, or participants derived from a calendar event is
+  wanted later. `IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'>` — required
+  `username` *and* `name` — so that constraint has to relax when it happens. Adding a nullable `source`
+  discriminator to the entry while Phase 1 is being written costs nothing and avoids a migration later.
+
+## Implementation notes
+
+Things worth knowing that aren't visible from the code alone.
+
+### Group ringing was dead code before this work
+
+The server had long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
+handled it** — 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
+`'call'` while it waits. `VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work; the side
+effect is that group conferences which had been silently not ringing **will now ring**, which the EE code always
+intended but is a visible change beyond "ring on add".
+
+A server-originated ring is one-shot: nothing refreshes the 10s abort timeout a 1:1 caller keeps alive, so it rings
+once and gives up. That suits an already-running conference, where there is no caller waiting.
+
+### Declining makes you a member
+
+There is nowhere to record a decline except on a `users[]` entry, so declining creates one for someone who
+was rung as a room member. Since membership authorizes joining, a member who declines can still join
+afterwards — which is intended, but is a consequence of where the flag is stored rather than a separate
+decision.
+
+### Resolving chat access is the user's call
+
+Both ways out give something away, in different directions — see the mode table under
+[Chat Access](#chat-access) — so the choice is the user's, and `ChatAccessModal` spells out each consequence next
+to its button, naming the room in bold. That name is the context the decision turns on.
+
+Which one *leads* is a privacy judgement: opening a private room's history is the bigger step, so private rooms
+and DMs lead with the discussion, and public rooms — whose history is already open — lead with the invite.
+`chatAccessLeadsWithDiscussion` is shared with the server's own default so the two can't disagree.
+
+The notice itself is `AnnouncementBanner` — the same banner rooms use for announcements — so it inherits
+readable contrast instead of hand-rolled colours. It is passed no `onClick`: the Review button is the only
+control, which keeps one interactive element rather than nesting a button inside a `role='button'` bar.
+
+### A member who can't read the chat is told so, not shown an error
+
+The server already works out who can't read the chat, so `ConferenceChat` asks `hasConferenceChatAccess` about the
+current user and renders `ConferenceChatNotShared` rather than attempting a fetch that is known to fail — which
+would land on *"The page does not exist or you may not have access permission"* and read as something being broken.
+
+`ChatAccessNotice` hides itself from those same members for the same reason: it offers to share the chat, and
+they are the ones it would be shared with — `share-chat` would fail for them anyway, since they can't add
+anyone to a room they can't see.
+
+### The incoming-call popup assumed the callee was in the room
+
+Ringing on add is the first case where a call rings someone with no access to the room it belongs to, and the popup
+was built entirely around that room: it read it with `useUserRoom(rid)` and returned `null` when it wasn't there,
+while still calling `focusManager.focusFirst()` — which then crashed looking for the parent of a node the focus
+scope never got. Incoming popups therefore render **without** a room, describing the call from the conference's own
+record (`VideoConfPopupCallerInfo`). The popups that act *on* a room — starting or placing a call — still need one.
+
+### Accepting a server ring joins; it doesn't negotiate
+
+1:1 accept is a handshake: the callee publishes `accepted` and waits for the caller's client to reply
+`confirmed` with the go-ahead, giving up after 5s. A server-originated ring has no caller waiting, so running
+that handshake left the added user staring at *"No response from remote user after notifying the call was
+accepted"*. Incoming calls now carry a `handshake` flag; without it, accepting joins the conference outright —
+membership is what authorizes joining — and declining records the decline without publishing `rejected` to
+whoever added them, which their client would read as their own call being turned down.
+
+### Test coverage and where it lives
+
+The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config) and
+package-level jest. The specs sit beside what they test, so the file names say where to look; enumerating them
+here only produced a list that went stale on its own.
+
+Two things about the arrangement are worth knowing. `apps/meteor/tests/unit/server/services/video-conference/testHarness.ts`
+is what makes the service testable at all: `createService` proxyquires it with ~25 inert module stubs (one of
+which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
+it exercises. And the decisions worth pinning down were deliberately moved *out* of the service into pure
+functions — `resolveChatAccessMode`, `chatAccessLeadsWithDiscussion`
+(`apps/meteor/lib/videoConference/chatAccess.ts`), `buildConferenceCallHistoryItems`, the member predicates in
+`memberStatus.ts` — each shared by the server and the client that has to agree with it, so a rule is tested once
+and the two can't drift.
+
+`packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular import
+that leaves it uninitialized when the module is loaded directly by jest.
+
+There is also an end-to-end REST suite at `apps/meteor/tests/end-to-end/apps/video-conference-membership.ts`,
+covering the endpoints against a real server and real Mongo: membership without room access, authorization by
+membership, decline, leave, ring, `chatAccess`, and both `share-chat` modes. It follows the provider-app harness
+in `apps/meteor/tests/end-to-end/apps/video-conferences.ts` — a test app supplies the conference provider — and
+is EE-gated, since a private app is never enabled outside EE.
+
+> It has **not** been run locally. The API suite authenticates as the fixture admin
+> `rocketchat.internal.admin.test`, which a real development workspace doesn't have; it is type-checked, and CI
+> seeds that user. Treat its first CI run as the real one.
+
+### Nothing else "ends" a Jitsi conference
+
+`endCall` runs when something tells Rocket.Chat the call is over. For a third-party provider, nothing does:
+the Jitsi app never reports an end, so before closing the window became a signal, conferences sat at `STARTED`
+until `videoConferencesCron` expired them a day later — and the expire path wrote no history at all. Both gaps
+are closed: leaving ends the call when nobody is left, and expiry writes history as a backstop.
+
+Conferences expired *before* this landed have `endedAt` set already, so they are permanently invisible to
+history — the duplicate guard can't distinguish them from ones already written. Only conferences that stop from
+now on appear.
+
+### Verified against live data
+
+The premise — membership without room access — was confirmed by reading a development workspace's Mongo directly,
+not only by test:
+
+- A conference on a **DM** between two users carried a third, `alice`, as a `users[]` entry with `joined: false`
+  and **no subscription to that DM**. She is authorized to join the call and cannot read its chat, which is
+  exactly the state the model exists to represent.
+- Entries mixed both shapes as designed: joined members carry `joined: true` and a `joinedAt`; added members carry
+  `joined: false` and no `joinedAt`. Every entry carries `ts`. Declining from the sidebar wrote `declined` and
+  `declinedAt` on the decliner's entry alone, leaving the conference's own status untouched.
+
+Two flows were also walked end to end against that workspace. Placing a DM call opened the call window at
+`/conference/:id` immediately, with the callee a member at `joined: false` while still ringing and the room showing
+no outgoing popup; after the ring window the call window reported "Nobody answered", naming the callee, and ringing
+again restarted the wait. Closing the window then ended the call and settled both history rows — `ended`/`outbound`
+for the caller, `not-answered`/`inbound` for the callee — while leaving a call someone else was still in only set
+`leftAt`.
+
 ## Improvement suggestions
 
 What is still thinner than it looks. Everything previously listed here that has since been built — the members
@@ -918,10 +819,12 @@ reads — is described in the sections above instead.
 
 A server ring fires once and gives up after 10s, and the caller's own repeats stop at 30s. Being added is also a
 desktop notification, which covers a backgrounded tab, but someone with notifications denied and no client on
-screen has no signal beyond finding the conference in their call history afterwards.
+screen still has no signal in the moment.
 
-The deferred docked ringing widget (decision 5) is the intended answer. Repeating the server ring for a bounded
-window would be the cheaper one.
+The docked list closes most of this — the call stays reachable long after its ring stopped, which is the point of
+it. What remains is the case where nothing was on screen *at all* while it rang: the call is then found in the
+list or the history afterwards, rather than being announced. Repeating the server ring for a bounded window is the
+cheap answer if that is not enough.
 
 ### `share-chat`'s invite path is all-or-nothing
 
@@ -951,7 +854,7 @@ the modal now says so — but it is a suggestion that shouldn't have been there.
 
 The chat panel decides between the room and the not-shared explanation from `chatAccess`, which is only as fresh
 as the last read. A member removed from the room *during* a call still has the room attempted, and gets
-`ConferenceRoomPreload`'s not-found fallback until the next read. Rare, and self-correcting.
+`ConferenceRoom`'s not-found fallback until the next read. Rare, and self-correcting.
 
 ### No conference detail view in call history
 
@@ -971,14 +874,17 @@ could not be loaded" panel, because the detail panel is contact-call-shaped.
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
 | Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `ConferenceIframe.tsx`, `components/CallBar/`, `components/CallPanel/` |
-| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceRoomPreload.tsx` |
+| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceStoresReady.tsx`, `CallPanelHeader.tsx` |
 | Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx`, `useConferenceCallUrl.ts` |
 | Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ConferenceChatNotShared.tsx` |
 | Call outcome | `apps/meteor/client/views/conference/CallOutcomeModal.tsx`, `hooks/useCallOutcome.ts`, `ConferenceMemberRow.tsx` |
-| Reaching a call | `apps/meteor/client/sidebar/sections/OngoingCallsSection.tsx`, `OngoingCallRow.tsx`, `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.tsx`, `apps/meteor/client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
+| Preflight | `apps/meteor/client/views/conference/ConferencePreflight.tsx`, `ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `hooks/useCallPreferences.ts` |
+| Members panel | `apps/meteor/client/views/conference/CallMembersPanel.tsx`, `CallMemberItem.tsx`, `client/hooks/useRingingExpiry.ts` |
+| Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
+| Reaching a call | `apps/meteor/client/components/OngoingCalls/` (the list, its rows and `useOngoingCalls`), `client/sidebar/sections/OngoingCallsSection.tsx`, `client/navbar/NavBarItemOngoingCalls.tsx`, `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
