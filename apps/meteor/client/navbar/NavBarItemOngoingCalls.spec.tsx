@@ -20,9 +20,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 }));
 
 const call = (overrides: Partial<JoinableVideoConference> & Pick<JoinableVideoConference, 'callId'>): JoinableVideoConference => ({
-	rid: 'room-id',
 	name: `Call ${overrides.callId}`,
-	type: 'videoconference',
 	createdAt: new Date(),
 	usersCount: 2,
 	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],

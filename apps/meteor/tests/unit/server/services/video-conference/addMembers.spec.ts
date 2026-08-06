@@ -1,4 +1,5 @@
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -24,8 +25,10 @@ const VideoConferenceModelMock = {
 			}
 		});
 	}),
+	// Mirrors the model: an entry is pushed as *not* present, whatever the caller passed. Getting this wrong
+	// would leave fixture members with no `joined` flag at all, which every reader treats as joined.
 	addMemberById: sinon.stub().callsFake(async (_callId: string, member: IVideoConferenceUser) => {
-		fixture.users.push({ ...member });
+		fixture.users.push({ ...member, joined: false });
 	}),
 };
 
@@ -103,14 +106,16 @@ describe('VideoConfService.addMembers', () => {
 		].forEach((stub) => stub.resetHistory());
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
 		VideoConferenceModelMock.addMemberById.callsFake(async (_callId: string, member: IVideoConferenceUser) => {
-			fixture.users.push({ ...member });
+			fixture.users.push({ ...member, joined: false });
 		});
 		UsersMock.findOneById.resolves({ _id: 'adder', username: 'adder.user', name: 'Adder User' });
 		UsersMock.find.returns({ toArray: sinon.stub().resolves([]) });
 		broadcastStub.resolves();
 	});
 
-	it('registers each named user as a member with joined: false, and returns the ids added', async () => {
+	// Added, not arrived: adding somebody to a call is not answering it for them, so nothing here may mark them
+	// as being in it.
+	it('registers each named user as a member without marking them present, and returns the ids added', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		const newUsers = [buildUser('newUser1'), buildUser('newUser2')];
 		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
@@ -119,11 +124,12 @@ describe('VideoConfService.addMembers', () => {
 
 		expect(result.sort()).to.deep.equal(['newUser1', 'newUser2']);
 		expect(VideoConferenceModelMock.addMemberById.callCount).to.equal(2);
-		VideoConferenceModelMock.addMemberById.args.forEach(([callId, member]) => {
-			expect(callId).to.equal('call1');
-			expect(member).to.include({ joined: false });
-		});
+		VideoConferenceModelMock.addMemberById.args.forEach(([callId]) => expect(callId).to.equal('call1'));
 		expect(VideoConferenceModelMock.addMemberById.args.map(([, member]) => member._id).sort()).to.deep.equal(['newUser1', 'newUser2']);
+
+		const added = fixture.users.filter(({ _id }) => ['newUser1', 'newUser2'].includes(_id));
+		expect(added).to.have.length(2);
+		added.forEach((member) => expect(isInVideoConference(member)).to.be.false);
 	});
 
 	// Overwriting an existing entry would wipe out whatever `joinedAt`/`declined` state the member already

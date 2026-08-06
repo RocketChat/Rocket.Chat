@@ -102,6 +102,16 @@ export const isInVideoConference = (user: Pick<IVideoConferenceUser, 'joined' | 
  */
 export const VIDEO_CONF_RINGING_WINDOW_MS = 15_000;
 
+/**
+ * How many people a single call event may ring. Ringing is decided per event against the list being rung:
+ * starting a call rings the room's members, so a large room rings nobody, while adding participants rings just the
+ * people added — which is why an add is capped at the same number and therefore always rings.
+ *
+ * It lives here because both halves of that rule need it: the server deciding whether to ring, and the endpoint
+ * capping the batch. They were two constants that had to be kept equal by comment.
+ */
+export const VIDEO_CONF_RINGING_LIMIT = 10;
+
 /** Whether this member's phone is ringing right now — as opposed to having been rung and done nothing. */
 export const isRingingVideoConferenceMember = (
 	user: Pick<IVideoConferenceUser, 'ringingAt' | 'declined' | 'declinedAt'>,
@@ -192,15 +202,16 @@ export type VideoConferenceChatAccess = {
 };
 
 /**
- * A call that is running now and that the reader may join — what the sidebar and the call-history page list so a
- * call can be reached without having caught its ring.
+ * A call that is running now and that the reader may join — what the sidebar and the navbar list so a call can be
+ * reached without having caught its ring.
+ *
+ * Deliberately not the conference record: a list needs enough to decide whether to walk in, and the room it
+ * belongs to is not part of that decision. Joining goes by `callId`.
  */
 export type JoinableVideoConference = {
 	callId: IVideoConference['_id'];
-	rid: IRoom['_id'];
 	/** What to call it: the conference's own title, or the room's name. */
 	name: string;
-	type: VideoConferenceType;
 	createdAt: Date;
 	/** How many people are in it right now. Never zero — an empty call isn't offered. */
 	usersCount: number;

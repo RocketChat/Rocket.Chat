@@ -1,5 +1,5 @@
 import type { IVideoConferenceUser } from '@rocket.chat/core-typings';
-import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 
 /** Where a member stands with the call, as one thing the UI can label them with. */
 export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'invited';
@@ -33,3 +33,14 @@ export const getConferenceMemberStatus = (member: MemberState): ConferenceMember
  */
 export const canRingConferenceMember = (member: MemberState, now?: number): boolean =>
 	getConferenceMemberStatus(member) !== 'joined' && !isRingingVideoConferenceMember(member, now);
+
+/**
+ * Whether this member has not been asked to answer *yet* — never rung, never in the call, never declined.
+ *
+ * Different from `canRingConferenceMember`, which is about whether ringing them again would make sense: this is
+ * about a call nobody has been asked about at all. Both sides of the ring need it — the server, to ring the callee
+ * when the caller finally walks in, and the caller's own preflight, to say so instead of implying a phone is
+ * already ringing.
+ */
+export const isUnaskedConferenceMember = (member: Pick<IVideoConferenceUser, 'joined' | 'declined' | 'ringingAt'>): boolean =>
+	!member.ringingAt && !hasJoinedVideoConference(member) && !member.declined;

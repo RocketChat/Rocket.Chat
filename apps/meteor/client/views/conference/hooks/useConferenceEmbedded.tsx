@@ -1,5 +1,4 @@
 import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
-import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -7,6 +6,7 @@ import { useEffect, useMemo } from 'react';
 import type { ConferenceMember } from './useCallOutcome';
 import type { CallPreferences } from './useCallPreferences';
 import { useConferenceCallUrl } from './useConferenceCallUrl';
+import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 
@@ -37,23 +37,16 @@ export const useConferenceEmbedded = (callId: string) => {
 		retry: false,
 	});
 
-	// Three ways the conference can change under a participant: the chat moves to another room
-	// (`discussionUpdated`), the same room becomes readable by members who couldn't read it
-	// (`chatAccessUpdated`), or the membership moves — someone joined, declined or left (`membersUpdated`).
-	// All are answered by reading the conference again, which carries the room, who can see it, and who is in it.
-	useEffect(() => {
-		const invalidate = () => {
-			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-		};
-
-		const unsubscribes = [
-			subscribeToVideoConference(`${callId}/discussionUpdated`, invalidate),
-			subscribeToVideoConference(`${callId}/chatAccessUpdated`, invalidate),
-			subscribeToVideoConference(`${callId}/membersUpdated`, invalidate),
-		];
-
-		return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
-	}, [callId, subscribeToVideoConference, queryClient]);
+	// The conference can change under a participant in several ways — the chat moves to another room, the same room
+	// becomes readable by members who couldn't read it, someone joins, declines or leaves — and every one of them
+	// has the same answer: read the conference again. It carries the room, who can see it, and who is in it.
+	useEffect(
+		() =>
+			subscribeToVideoConference(`${callId}/updated`, () => {
+				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+			}),
+		[callId, subscribeToVideoConference, queryClient],
+	);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
@@ -133,7 +126,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			placing:
 				info?.type === 'direct' &&
 				info.createdBy._id === uid &&
-				members.some((member) => member._id !== uid && !member.ringingAt && !hasJoinedVideoConference(member) && !member.declined),
+				members.some((member) => member._id !== uid && isUnaskedConferenceMember(member)),
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,

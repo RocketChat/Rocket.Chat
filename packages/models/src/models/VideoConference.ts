@@ -254,7 +254,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	 */
 	public async addMemberById(
 		callId: string,
-		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date; joined?: boolean; joinedAt?: Date },
+		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date },
 	): Promise<void> {
 		await this.updateOne(
 			{ '_id': callId, 'users._id': { $ne: user._id } },
@@ -266,8 +266,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 						name: user.name,
 						avatarETag: user.avatarETag,
 						ts: user.ts || new Date(),
-						joined: user.joined ?? false,
-						...(user.joinedAt && { joinedAt: user.joinedAt }),
+						// Being a member is not being in the call. Whoever is arriving says so with `setUserJoinedById`.
+						joined: false,
 					},
 				},
 			},
@@ -319,8 +319,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				[`messages.${messageType}`]: messageId,
 			},
-		}); // TODO: Remove this cast when TypeScript is updated
-		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
+		});
 	}
 
 	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {
