@@ -59,15 +59,5 @@ export interface IVideoConfService {
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
-	createConferenceDiscussionWithParticipants(
-		uid: IUser['_id'],
-		callId: VideoConference['_id'],
-		usernames: NonNullable<IUser['username']>[],
-	): Promise<IRoom['_id']>;
-	addUsersToConferenceRoom(
-		uid: IUser['_id'],
-		callId: VideoConference['_id'],
-		usernames: NonNullable<IUser['username']>[],
-	): Promise<IRoom['_id']>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

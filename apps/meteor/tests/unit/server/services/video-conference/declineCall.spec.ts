@@ -1,5 +1,5 @@
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
-import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus, isInVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -18,8 +18,10 @@ const cloneFixture = (): VideoConference => ({
 
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture()),
+	// Mirrors the model: an entry is pushed as *not* present, whatever the caller passed. Getting this wrong
+	// would leave fixture members with no `joined` flag at all, which every reader treats as joined.
 	addMemberById: sinon.stub().callsFake(async (_callId: string, member: IVideoConferenceUser) => {
-		fixture.users.push({ ...member });
+		fixture.users.push({ ...member, joined: false });
 	}),
 	setUserDeclinedById: sinon.stub().callsFake(async (_callId: string, uid: string) => {
 		const member = fixture.users.find((user) => user._id === uid);
@@ -65,12 +67,10 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 	},
 });
 
-// The one broadcast `declineCall` sends besides the room update: `video-conference.membersUpdated`, which is
-// what tells an open call window to re-read the conference's membership.
-const membersUpdatedCalls = (): { callId: string }[] =>
-	broadcastStub.args
-		.filter(([channel]) => channel === 'video-conference.membersUpdated')
-		.map(([, payload]) => payload as { callId: string });
+// The one broadcast `declineCall` sends besides the room update: `video-conference.updated`, which is what tells
+// an open call window to re-read the conference — and so its membership.
+const conferenceUpdatedCalls = (): { callId: string }[] =>
+	broadcastStub.args.filter(([channel]) => channel === 'video-conference.updated').map(([, payload]) => payload as { callId: string });
 
 describe('VideoConfService.declineCall', () => {
 	let service: InstanceType<typeof VideoConfService>;
@@ -91,7 +91,7 @@ describe('VideoConfService.declineCall', () => {
 		].forEach((stub) => stub.resetHistory());
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
 		VideoConferenceModelMock.addMemberById.callsFake(async (_callId: string, member: IVideoConferenceUser) => {
-			fixture.users.push({ ...member });
+			fixture.users.push({ ...member, joined: false });
 		});
 		VideoConferenceModelMock.setUserDeclinedById.callsFake(async (_callId: string, uid: string) => {
 			const member = fixture.users.find((user) => user._id === uid);
@@ -130,7 +130,7 @@ describe('VideoConfService.declineCall', () => {
 
 	// A user rung as a room member (never added to `users[]`) has no membership entry — one must be created so
 	// there is somewhere to record the decline.
-	it('creates an entry for someone who has none, added with joined: false', async () => {
+	it('creates an entry for someone who has none, without marking them present', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		UsersMock.findOneById.resolves({ _id: 'roomMember', username: 'roomMember.user', name: 'Room Member' });
 
@@ -139,7 +139,11 @@ describe('VideoConfService.declineCall', () => {
 		expect(VideoConferenceModelMock.addMemberById.calledOnce).to.be.true;
 		const [callId, member] = VideoConferenceModelMock.addMemberById.firstCall.args;
 		expect(callId).to.equal('call1');
-		expect(member).to.include({ _id: 'roomMember', joined: false });
+		expect(member).to.include({ _id: 'roomMember' });
+
+		// Turning a call down is not being in it.
+		const created = fixture.users.find(({ _id }) => _id === 'roomMember');
+		expect(created && isInVideoConference(created)).to.be.false;
 
 		expect(VideoConferenceModelMock.setUserDeclinedById.calledOnceWith('call1', 'roomMember')).to.be.true;
 	});
@@ -158,12 +162,12 @@ describe('VideoConfService.declineCall', () => {
 	});
 
 	// Open call windows re-read the conference's membership off this broadcast.
-	it('announces the change with a membersUpdated broadcast', async () => {
+	it('announces the change with an updated broadcast', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'decliner', joined: false, joinedAt: undefined })]);
 
 		await service.declineCall('decliner', 'call1');
 
-		const updates = membersUpdatedCalls();
+		const updates = conferenceUpdatedCalls();
 		expect(updates).to.have.length(1);
 		expect(updates[0]).to.deep.equal({ callId: 'call1' });
 	});

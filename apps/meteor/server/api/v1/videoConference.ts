@@ -4,13 +4,11 @@ import {
 	ajv,
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
-	isVideoConfLeaveProps,
 	isVideoConfRingProps,
-	isVideoConfCancelProps,
+	isVideoConfCallIdProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 	isVideoConfAddParticipantsProps,
-	isVideoConfDeclineProps,
 	isVideoConfRenameProps,
 	isVideoConfShareChatProps,
 	validateUnauthorizedErrorResponse,
@@ -93,44 +91,61 @@ const canAccessConference = async (
 	return !!call.discussionRid && canAccessRoomIdAsync(call.discussionRid, userId);
 };
 
-const addParticipantsResponseSchema = ajv.compile<{ added: string[] }>({
-	type: 'object',
-	properties: {
-		added: { type: 'array', items: { type: 'string' }, description: 'Ids of the users newly added as members.' },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['added', 'success'],
-	additionalProperties: false,
+/**
+ * How every conference endpoint below starts: the call has to exist, and the caller has to be allowed near it.
+ *
+ * Both failures are answered the same way — `invalid-params`, deliberately vague about which of the two it was,
+ * so a stranger can't use the endpoint to learn that a call id is real. Returning the caller's id alongside the
+ * call is what lets the handlers use it without re-checking that they are signed in.
+ */
+const loadAccessibleConference = async (
+	callId: VideoConference['_id'],
+	userId: string | undefined,
+): Promise<{ call: Omit<VideoConference, 'providerData'>; userId: string } | undefined> => {
+	if (!userId) {
+		return undefined;
+	}
+
+	const call = await VideoConf.get(callId);
+	if (!call || !(await canAccessConference(call, userId))) {
+		return undefined;
+	}
+
+	return { call, userId };
+};
+
+/**
+ * The conference endpoints answer with one value beside `success`, so their schemas differ in a single property.
+ */
+const oneValueResponseSchema = <T>(name: string, value: Record<string, unknown>) =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: { [name]: value, success: { type: 'boolean', enum: [true] } },
+		required: [name, 'success'],
+		additionalProperties: false,
+	});
+
+const addParticipantsResponseSchema = oneValueResponseSchema<{ added: string[] }>('added', {
+	type: 'array',
+	items: { type: 'string' },
+	description: 'Ids of the users newly added as members.',
 });
 
-const joinableResponseSchema = ajv.compile<{ calls: unknown[] }>({
-	type: 'object',
-	properties: {
-		calls: { type: 'array', items: { type: 'object' }, description: 'Calls running now that the caller may join.' },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['calls', 'success'],
-	additionalProperties: false,
+const joinableResponseSchema = oneValueResponseSchema<{ calls: unknown[] }>('calls', {
+	type: 'array',
+	items: { type: 'object' },
+	description: 'Calls running now that the caller may join.',
 });
 
-const ringResponseSchema = ajv.compile<{ rang: string[] }>({
-	type: 'object',
-	properties: {
-		rang: { type: 'array', items: { type: 'string' }, description: 'Ids of the members who were rung.' },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['rang', 'success'],
-	additionalProperties: false,
+const ringResponseSchema = oneValueResponseSchema<{ rang: string[] }>('rang', {
+	type: 'array',
+	items: { type: 'string' },
+	description: 'Ids of the members who were rung.',
 });
 
-const shareChatResponseSchema = ajv.compile<{ rid: string }>({
-	type: 'object',
-	properties: {
-		rid: { type: 'string', description: 'The room the conference chat now lives in.' },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['rid', 'success'],
-	additionalProperties: false,
+const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
+	type: 'string',
+	description: 'The room the conference chat now lives in.',
 });
 
 const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities }>({
@@ -295,7 +310,7 @@ API.v1.post(
 	'video-conference.cancel',
 	{
 		authRequired: true,
-		body: isVideoConfCancelProps,
+		body: isVideoConfCallIdProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
 		response: {
 			200: cancelResponseSchema,
@@ -325,7 +340,7 @@ API.v1.post(
 	'video-conference.decline',
 	{
 		authRequired: true,
-		body: isVideoConfDeclineProps,
+		body: isVideoConfCallIdProps,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
 		response: {
 			200: cancelResponseSchema,
@@ -335,20 +350,15 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
-			return API.v1.failure('invalid-params');
-		}
-
-		if (!(await canAccessConference(call, userId)) || !userId) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
 		// Records the decline against the caller's own membership only. Declining is deliberately not a way to
 		// end someone else's conference, so this takes no target user and never touches the call's status.
-		await VideoConf.declineCall(userId, callId);
+		await VideoConf.declineCall(conference.userId, callId);
 
 		return API.v1.success();
 	},
@@ -358,7 +368,7 @@ API.v1.post(
 	'video-conference.leave',
 	{
 		authRequired: true,
-		body: isVideoConfLeaveProps,
+		body: isVideoConfCallIdProps,
 		// Sent when the call window closes, which a user can do repeatedly across rejoins.
 		rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 60000 },
 		response: {
@@ -369,20 +379,15 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
-			return API.v1.failure('invalid-params');
-		}
-
-		if (!(await canAccessConference(call, userId)) || !userId) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
 		// Only ever marks the caller as gone. The conference ends as a consequence of nobody being left in it,
 		// not because one participant asked for it — the same rule declining follows.
-		await VideoConf.leaveCall(userId, callId);
+		await VideoConf.leaveCall(conference.userId, callId);
 
 		return API.v1.success();
 	},
@@ -403,18 +408,13 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId, users } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessConference(call, userId)) || !userId) {
-			return API.v1.failure('invalid-params');
-		}
-
-		const rang = await VideoConf.ringMembers(userId, callId, users);
+		const rang = await VideoConf.ringMembers(conference.userId, callId, users);
 
 		return API.v1.success({ rang });
 	},
@@ -434,20 +434,15 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId, users } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
-			return API.v1.failure('invalid-params');
-		}
-
-		if (!(await canAccessConference(call, userId))) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
 		// Registers the users as conference members — it deliberately does not put them in any room. Being a
 		// member authorizes joining the call; whether they can read the chat is surfaced separately.
-		const added = await VideoConf.addMembers(userId, callId, users);
+		const added = await VideoConf.addMembers(conference.userId, callId, users);
 
 		return API.v1.success({ added });
 	},
@@ -467,20 +462,15 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId, title } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
-			return API.v1.failure('invalid-params');
-		}
-
-		if (!(await canAccessConference(call, userId)) || !userId) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
 		// Whether this particular user may *name* the call is the service's call to make — access is only the
 		// question of whether they may be here at all.
-		await VideoConf.renameCall(userId, callId, title);
+		await VideoConf.renameCall(conference.userId, callId, title);
 
 		return API.v1.success();
 	},
@@ -500,18 +490,13 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId, mode } = this.bodyParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessConference(call, userId)) || !userId) {
-			return API.v1.failure('invalid-params');
-		}
-
-		const rid = await VideoConf.shareChatWithMembers(userId, callId, mode);
+		const rid = await VideoConf.shareChatWithMembers(conference.userId, callId, mode);
 
 		return API.v1.success({ rid });
 	},
@@ -531,16 +516,13 @@ API.v1.get(
 	},
 	async function action() {
 		const { callId } = this.queryParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessConference(call, userId))) {
-			return API.v1.failure('invalid-params');
-		}
+		const { call, userId } = conference;
 
 		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
 		// surfaces them and offers the remedy, which is why this ships with the conference rather than needing

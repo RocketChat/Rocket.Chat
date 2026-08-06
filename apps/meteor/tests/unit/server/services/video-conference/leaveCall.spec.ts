@@ -397,18 +397,17 @@ describe('VideoConfService one call at a time', () => {
 		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('wanted', 'joiner')).to.be.true;
 	});
 
-	// Membership of a call already left is not presence in it, and leaving it again would write a later `leftAt`
-	// over the real one.
-	it('leaves alone a call the user had already left', async () => {
-		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner', leftAt: new Date('2026-01-01T00:30:00.000Z') })], { _id: 'departed' }));
-
-		expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
-	});
-
-	it('asks only about calls that are still running', async () => {
+	// The query is the whole rule, so it is what this asserts: another call, still running, and one this user is
+	// *present* in. Membership of a call already left is not presence in it — leaving it again would write a later
+	// `leftAt` over the real one — and an entry with no `joined` flag predates the flag and counts as present.
+	it('asks only about the calls it should leave', async () => {
 		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
 
 		const [query] = VideoConferenceModelMock.find.firstCall.args;
-		expect(query).to.deep.equal({ '_id': { $ne: 'wanted' }, 'endedAt': { $exists: false }, 'users._id': 'joiner' });
+		expect(query).to.deep.equal({
+			_id: { $ne: 'wanted' },
+			endedAt: { $exists: false },
+			users: { $elemMatch: { _id: 'joiner', joined: { $ne: false }, leftAt: { $exists: false } } },
+		});
 	});
 });

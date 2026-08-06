@@ -1,7 +1,7 @@
-import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
+import { VIDEO_CONF_RINGING_LIMIT, hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { VIDEO_CONF_RINGING_LIMIT, shouldRingVideoConference } from '../../../../lib/videoConference/constants';
+import { shouldRingVideoConference } from '../../../../lib/videoConference/constants';
 
 describe('hasJoinedVideoConference', () => {
 	it('should treat an explicitly joined member as joined', () => {

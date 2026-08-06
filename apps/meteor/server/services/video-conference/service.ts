@@ -55,6 +55,7 @@ import {
 } from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
+import { isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
@@ -514,11 +515,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Tells anyone watching the conference that its membership moved — someone joined, declined, left or was
-	 * added. The call window needs this to know whether it is still waiting on anyone.
+	 * Tells anyone watching the conference that something about it moved — its membership, its chat's room, or who
+	 * can read that chat. Whichever it was, the answer on the other side is to read the conference again, so this
+	 * is one signal rather than three: the call window needs it to know whether it is still waiting on anyone, and
+	 * a participant's chat panel needs it to follow the chat.
 	 */
-	private notifyConferenceMembersUpdate(callId: VideoConference['_id']): void {
-		void api.broadcast('video-conference.membersUpdated', { callId });
+	private notifyConferenceUpdate(callId: VideoConference['_id']): void {
+		void api.broadcast('video-conference.updated', { callId });
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -812,12 +815,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Being called makes you a member, exactly as being added to a group conference does. Without this the
 		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
 		// and a call they missed leaves them no history entry.
-		const callee = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(calleeId, {
-			projection: { username: 1, name: 1, avatarETag: 1 },
-		});
-		if (callee) {
-			await VideoConferenceModel.addMemberById(callId, { ...callee, joined: false });
-		}
+		await this.addAbsentMember(callId, calleeId);
 
 		await this.maybeCreateDiscussion(callId, user);
 
@@ -1160,11 +1158,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// Both writes are idempotent, and both are needed: the first covers someone who wasn't a member yet
-		// (it no-ops for an existing member), the second covers a member who had been added but hadn't joined.
-		// Running both also closes the race where two joins land between the read above and the write.
-		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts, joined: true, joinedAt: ts });
+		// (it no-ops for an existing member), the second marks them present. Running both also closes the race
+		// where two joins land between the read above and the write.
+		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
-		this.notifyConferenceMembersUpdate(call._id);
+		this.notifyConferenceUpdate(call._id);
 
 		// Someone new is in the call: they need a row of their own, and everyone else's count has changed.
 		await this.recordConferenceInHistory(call._id, { ended: false });
@@ -1206,13 +1204,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				continue;
 			}
 
-			await VideoConferenceModel.addMemberById(callId, { ...user, ts, joined: false });
+			await VideoConferenceModel.addMemberById(callId, { ...user, ts });
 			added.push(user._id);
 		}
 
 		if (added.length) {
 			this.notifyVideoConfUpdate(call.rid, callId);
-			this.notifyConferenceMembersUpdate(callId);
+			this.notifyConferenceUpdate(callId);
 			// Being added to a call is being in its history — that is where someone who never answers finds it.
 			await this.recordConferenceInHistory(callId, { ended: false });
 		}
@@ -1241,20 +1239,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-video-conference');
 		}
 
-		if (!call.users.some(({ _id }) => _id === uid)) {
-			const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(uid, {
-				projection: { username: 1, name: 1, avatarETag: 1 },
-			});
-			if (!user) {
-				throw new Error('invalid-user');
-			}
-
-			await VideoConferenceModel.addMemberById(callId, { ...user, joined: false });
+		if (!call.users.some(({ _id }) => _id === uid) && !(await this.addAbsentMember(callId, uid))) {
+			throw new Error('invalid-user');
 		}
 
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
-		this.notifyConferenceMembersUpdate(callId);
+		this.notifyConferenceUpdate(callId);
 
 		// Someone who was only rung has no history row until now: declining is how they end up with one, and it is
 		// what makes the call reachable again from there while it is still running.
@@ -1294,17 +1285,39 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return absent;
 	}
 
+	/**
+	 * Associates a user with the call without marking them present — being a member is not being in the call.
+	 *
+	 * Two paths need it: being called, and declining a call you were only rung about as a room member. In both,
+	 * the person has to exist on the call before anything — an answer, a decline, a history row — can be recorded
+	 * against them. Says whether it found the user, which is the only thing the two callers disagree about.
+	 */
+	private async addAbsentMember(callId: VideoConference['_id'], uid: IUser['_id']): Promise<boolean> {
+		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(uid, {
+			projection: { username: 1, name: 1, avatarETag: 1 },
+		});
+		if (!user) {
+			return false;
+		}
+
+		await VideoConferenceModel.addMemberById(callId, user);
+		return true;
+	}
+
 	/** Leaves every other call this user is still counted as being in. See `addUserToCall`. */
 	private async leaveOtherCalls(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
+		// Asking the database for "still in it" rather than reading every membership and sifting in memory.
 		const others = await VideoConferenceModel.find(
-			{ '_id': { $ne: callId }, 'endedAt': { $exists: false }, 'users._id': uid },
-			{ projection: { users: 1 } },
+			{
+				_id: { $ne: callId },
+				endedAt: { $exists: false },
+				users: { $elemMatch: { _id: uid, joined: { $ne: false }, leftAt: { $exists: false } } },
+			},
+			{ projection: { _id: 1 } },
 		).toArray();
 
-		const stillIn = others.filter(({ users }) => users.some((user) => user._id === uid && isInVideoConference(user)));
-
 		// One at a time in practice, so the cost is a read that usually finds nothing.
-		await Promise.all(stillIn.map(({ _id }) => this.leaveCall(uid, _id)));
+		await Promise.all(others.map(({ _id }) => this.leaveCall(uid, _id)));
 	}
 
 	/**
@@ -1361,10 +1374,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 				return {
 					callId: call._id,
-					rid: call.rid,
 					name:
 						(isGroupVideoConference(call) && call.title) || subscription?.fname || subscription?.name || (await this.getRoomName(call.rid)),
-					type: call.type,
 					createdAt: call.createdAt,
 					usersCount: present.length,
 					// A handful of faces for the lists that show them; the count above stays the whole number.
@@ -1386,7 +1397,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async ringUsers(callId: VideoConference['_id'], rid: IRoom['_id'], uid: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
 		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
 		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
-		this.notifyConferenceMembersUpdate(callId);
+		this.notifyConferenceUpdate(callId);
 
 		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
 		// reaches someone who isn't looking at the app.
@@ -1408,7 +1419,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		const absent = call.users.filter((user) => user._id !== uid && !user.ringingAt && !hasJoinedVideoConference(user) && !user.declined);
+		const absent = call.users.filter((user) => user._id !== uid && isUnaskedConferenceMember(user));
 		if (!absent.length) {
 			return;
 		}
@@ -1452,7 +1463,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const leftAt = new Date();
 		await VideoConferenceModel.setUserLeftById(callId, uid, leftAt);
 		this.notifyVideoConfUpdate(call.rid, callId);
-		this.notifyConferenceMembersUpdate(callId);
+		this.notifyConferenceUpdate(callId);
 
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.
@@ -1490,6 +1501,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * extra reads, and conferences are small.
 	 */
 	public async getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess> {
+		return (await this.resolveChatAccess(uid, callId)).access;
+	}
+
+	/**
+	 * `getChatAccess`, plus the *usernames* of the members it decided about.
+	 *
+	 * The public shape carries ids, because that is what a client matches against the members it already holds. A
+	 * room invite needs usernames — and they were in hand while the ids were being worked out, so resolving the
+	 * access doesn't have to read the conference a second time to find them.
+	 */
+	private async resolveChatAccess(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+	): Promise<{ access: VideoConferenceChatAccess; usernamesWithoutAccess: NonNullable<IUser['username']>[] }> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1, users: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -1501,17 +1526,26 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room');
 		}
 
+		const membersWithoutAccess = await this.getMembersWithoutRoomAccess(
+			room,
+			call.users.map(({ _id }) => _id),
+		);
+		const withoutAccess = new Set(membersWithoutAccess);
+
 		return {
-			rid,
-			name: room.fname || room.name || '',
-			type: room.t,
-			membersWithoutAccess: await this.getMembersWithoutRoomAccess(
-				room,
-				call.users.map(({ _id }) => _id),
-			),
-			// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
-			// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
-			canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
+			access: {
+				rid,
+				name: room.fname || room.name || '',
+				type: room.t,
+				membersWithoutAccess,
+				// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
+				// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
+				canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
+			},
+			usernamesWithoutAccess: call.users
+				.filter(({ _id }) => withoutAccess.has(_id))
+				.map(({ username }) => username)
+				.filter((username): username is string => !!username),
 		};
 	}
 
@@ -1590,7 +1624,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: VideoConference['_id'],
 		mode?: VideoConferenceChatAccessMode,
 	): Promise<IRoom['_id']> {
-		const { rid, membersWithoutAccess, canInvite, type } = await this.getChatAccess(uid, callId);
+		const {
+			access: { rid, membersWithoutAccess, canInvite, type },
+			usernamesWithoutAccess: usernames,
+		} = await this.resolveChatAccess(uid, callId);
 		if (!membersWithoutAccess.length) {
 			return rid;
 		}
@@ -1600,19 +1637,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('error-not-allowed');
 		}
 
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1 } });
-		if (!call) {
-			throw new Error('invalid-video-conference');
-		}
-
-		const withoutAccess = new Set(membersWithoutAccess);
-		const usernames = call.users
-			.filter(({ _id }) => withoutAccess.has(_id))
-			.map(({ username }) => username)
-			.filter((username): username is string => !!username);
-
 		if (resolved === 'discussion') {
-			// Moving the chat to a discussion broadcasts `discussionUpdated` on its own, which is what makes every
+			// Moving the chat to a discussion announces the conference itself changed, which is what makes every
 			// participant's panel follow the chat to its new room.
 			return this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
 		}
@@ -1621,7 +1647,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Inviting leaves the conference record untouched — only who can read the chat changed — so nothing else
 		// tells the participants to look again. Without this their notice stays up until a reload.
-		void api.broadcast('video-conference.chatAccessUpdated', { callId });
+		this.notifyConferenceUpdate(callId);
 
 		return invitedRid;
 	}
@@ -1693,7 +1719,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	// the chat continues there without exposing the parent room's history to the new participants. For a
 	// DM (which can't grow past two people) the discussion keeps the DM members; for other rooms it keeps
 	// the room's current members. In both cases the newly selected users are added.
-	public async createConferenceDiscussionWithParticipants(
+	private async createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
@@ -1760,7 +1786,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await Message.saveSystemMessage('discussion-created', parent._id, name, user, { drid: discussion._id });
 
 		// The conference's `rid` always stays the original room; the chat to display is driven by
-		// `discussionRid`. This sets it and broadcasts `discussionUpdated` so participants follow along.
+		// `discussionRid`. This sets it and announces the change so participants follow along.
 		await this.assignDiscussionToConference(callId, discussion._id);
 
 		// Let the newly invited users know with a desktop notification; clicking it opens the discussion.
@@ -1771,7 +1797,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	// Adds the users to the conference's active room, so they get its history — the counterpart to
 	// `createConferenceDiscussionWithParticipants`.
-	public async addUsersToConferenceRoom(
+	private async addUsersToConferenceRoom(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
@@ -1806,13 +1832,55 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Tells the users just added to a conference that it is ringing for them, for the case where the in-product
-	 * ring can't: a backgrounded tab, or no client open at all.
+	 * Tells people about a conference through the desktop, for the case the in-product ring can't reach: a
+	 * backgrounded tab, or no client open at all. Clicking focuses the app, and the "Join call" action joins the
+	 * conference itself.
 	 *
-	 * Unlike `notifyUsersInvitedToConference` this carries **no room name**, which is what stops the click from
-	 * navigating: membership grants no room access, so the room behind the call may be one they can't open.
-	 * Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
+	 * Whether it carries a **room** is the one thing that matters here, because that is what makes the click
+	 * navigate. Someone invited *into* the room can be sent there; someone merely added to the call cannot —
+	 * membership grants no room access, so the room behind the call may be one they can't open.
 	 */
+	private async notifyUsersAboutConference({
+		recipients,
+		sender,
+		callId,
+		rid,
+		title,
+		room,
+	}: {
+		recipients: Pick<IUser, '_id' | 'language'>[];
+		sender: AtLeast<IUser, '_id' | 'username' | 'name'>;
+		callId: VideoConference['_id'];
+		rid: IRoom['_id'];
+		title: string;
+		/** Given only when the recipients can open it, which is what lets the notification navigate there. */
+		room?: AtLeast<IRoom, 't' | 'name'>;
+	}): Promise<void> {
+		for (const recipient of recipients) {
+			const text = i18n.t('You_were_invited_to_a_conference', { lng: recipient.language });
+
+			void api.broadcast('notify.desktop', recipient._id, {
+				title,
+				text,
+				// Keep it on screen until acted on — a call is worth interrupting for.
+				requireInteraction: true,
+				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: recipient.language }) }],
+				payload: {
+					_id: callId,
+					rid,
+					sender: { _id: sender._id, username: sender.username as string, name: sender.name },
+					...(room && { type: room.t, name: room.name }),
+					conferenceId: callId,
+					message: { msg: text },
+					// The ringing popup plays the ringtone. Left unset this would also play the new-message sound,
+					// so a call announced itself as a message arriving.
+					audioNotificationValue: 'none',
+				},
+			});
+		}
+	}
+
+	/** Tells the users just added to a conference that it is ringing for them. */
 	private async notifyUsersAddedToConference(
 		adderId: IUser['_id'],
 		memberIds: IUser['_id'][],
@@ -1828,31 +1896,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		for (const member of members) {
-			const text = i18n.t('You_were_invited_to_a_conference', { lng: member.language });
-
-			void api.broadcast('notify.desktop', member._id, {
-				title: adder.name || adder.username || '',
-				text,
-				// Keep it on screen until acted on — a call is worth interrupting for.
-				requireInteraction: true,
-				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: member.language }) }],
-				payload: {
-					_id: callId,
-					rid,
-					sender: { _id: adder._id, username: adder.username as string, name: adder.name },
-					conferenceId: callId,
-					message: { msg: text },
-					// The ringing popup plays the ringtone. Left unset this would also play the new-message sound,
-					// so a call announced itself as a message arriving.
-					audioNotificationValue: 'none',
-				},
-			});
-		}
+		await this.notifyUsersAboutConference({
+			recipients: members,
+			sender: adder,
+			callId,
+			rid,
+			title: adder.name || adder.username || '',
+		});
 	}
 
-	// Sends every added user a desktop notification about the conference; clicking it opens the room, and
-	// the "Join call" action joins the conference directly.
+	/** Tells the users just invited into the conference's room about it; clicking takes them to that room. */
 	private async notifyUsersInvitedToConference(
 		inviter: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		usernames: NonNullable<IUser['username']>[],
@@ -1864,28 +1917,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			{ projection: { language: 1 } },
 		).toArray();
 
-		const displayName = room.fname || room.name || '';
-
-		for (const invited of invitedUsers) {
-			const text = i18n.t('You_were_invited_to_a_conference', { lng: invited.language });
-			void api.broadcast('notify.desktop', invited._id, {
-				title: displayName,
-				text,
-				// Keep the invite on screen until the user acts on it.
-				requireInteraction: true,
-				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: invited.language }) }],
-				payload: {
-					_id: room._id,
-					rid: room._id,
-					sender: { _id: inviter._id, username: inviter.username as string, name: inviter.name },
-					type: room.t,
-					name: room.name,
-					conferenceId: callId,
-					message: { msg: text },
-					audioNotificationValue: '',
-				},
-			});
-		}
+		await this.notifyUsersAboutConference({
+			recipients: invitedUsers,
+			sender: inviter,
+			callId,
+			rid: room._id,
+			title: room.fname || room.name || '',
+			room,
+		});
 	}
 
 	private async getRoomForDiscussion(
@@ -1978,7 +2017,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		} finally {
 			// Tell every participant's client that the conference's chat moved, so an open conference view
 			// can follow it.
-			void api.broadcast('video-conference.discussionUpdated', { callId, discussionRid: rid });
+			this.notifyConferenceUpdate(callId);
 			// Also refresh the in-room conference message block, which listens on `notify-room/videoconf`
 			// (the same channel used when users join), so its "Join discussion" button updates.
 			this.notifyVideoConfUpdate(call.rid, callId);

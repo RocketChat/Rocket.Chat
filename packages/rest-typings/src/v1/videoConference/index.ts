@@ -8,11 +8,9 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
-import type { VideoConfCancelProps } from './VideoConfCancelProps';
-import type { VideoConfDeclineProps } from './VideoConfDeclineProps';
+import type { VideoConfCallIdProps } from './VideoConfCallIdProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
-import type { VideoConfLeaveProps } from './VideoConfLeaveProps';
 import type { VideoConfListProps } from './VideoConfListProps';
 import type { VideoConfRenameProps } from './VideoConfRenameProps';
 import type { VideoConfRingProps } from './VideoConfRingProps';
@@ -24,11 +22,9 @@ export * from './VideoConfInfoProps';
 export * from './VideoConfListProps';
 export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
-export * from './VideoConfLeaveProps';
 export * from './VideoConfRingProps';
-export * from './VideoConfCancelProps';
+export * from './VideoConfCallIdProps';
 export * from './VideoConfAddParticipantsProps';
-export * from './VideoConfDeclineProps';
 export * from './VideoConfShareChatProps';
 export * from './VideoConfRenameProps';
 
@@ -43,7 +39,7 @@ export type VideoConferenceEndpoints = {
 
 	/** Records that the caller left the call, ending the conference when nobody is left in it. */
 	'/v1/video-conference.leave': {
-		POST: (params: VideoConfLeaveProps) => void;
+		POST: (params: VideoConfCallIdProps) => void;
 	};
 
 	/** Rings the members who aren't in the call again; returns the ids actually rung. */
@@ -52,11 +48,11 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.cancel': {
-		POST: (params: VideoConfCancelProps) => void;
+		POST: (params: VideoConfCallIdProps) => void;
 	};
 
 	'/v1/video-conference.decline': {
-		POST: (params: VideoConfDeclineProps) => void;
+		POST: (params: VideoConfCallIdProps) => void;
 	};
 
 	'/v1/video-conference.add-participants': {

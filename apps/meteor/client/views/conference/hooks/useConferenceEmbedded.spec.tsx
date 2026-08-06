@@ -63,17 +63,16 @@ it('resolves the chat room and the members who cannot read it', async () => {
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]));
 });
 
-it.each(['discussionUpdated', 'chatAccessUpdated', 'membersUpdated'] as const)('reads the conference again on %s', async (event) => {
+it('reads the conference again when it changes', async () => {
 	const { result, streamRef, resolveChatAccess } = renderConference();
 
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(1));
 
 	resolveChatAccess();
 
-	// Each event means "what you know about this conference is stale" — the chat moved, the same room became
-	// readable, or the membership changed. Missing any of them leaves the UI wrong until the page is reloaded.
-	// The event keys carry different argument tuples, so the union needs widening to emit any of them.
-	(streamRef.controller?.emit as (event: string, args: unknown[]) => void)?.(`${callId}/${event}`, [{ discussionRid: undefined }]);
+	// The event means "what you know about this conference is stale" — the chat moved, the same room became
+	// readable, or the membership changed. Missing it leaves the UI wrong until the page is reloaded.
+	streamRef.controller?.emit(`${callId}/updated`, []);
 
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(0));
 });
@@ -94,7 +93,7 @@ it('follows the chat to a discussion the conference moved into', async () => {
 	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
 
 	discussionRid = 'discussion-id';
-	streamRef.controller?.emit(`${callId}/discussionUpdated`, [{ discussionRid }]);
+	streamRef.controller?.emit(`${callId}/updated`, []);
 
 	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
 });

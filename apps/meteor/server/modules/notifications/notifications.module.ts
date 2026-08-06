@@ -558,12 +558,9 @@ export class NotificationsModule {
 		this.streamImporters.emit('progress', progress);
 	}
 
-	notifyVideoConference<P extends string, E extends string>(
-		callId: P,
-		event: E extends ExtractNotifyUserEventName<'video-conference', P> ? E : never,
-		...args: `${P}/${E}` extends StreamKeys<'video-conference'> ? StreamerCallbackArgs<'video-conference', `${P}/${E}`> : never
-	): void {
-		return this.streamVideoConference.emit(`${callId}/${event}`, ...args);
+	/** Tells whoever is watching this conference that it changed and is worth reading again. */
+	notifyVideoConferenceUpdated(callId: string): void {
+		this.streamVideoConference.emit(`${callId}/updated`);
 	}
 }
 
