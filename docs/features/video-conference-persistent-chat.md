@@ -14,6 +14,11 @@ Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (requires `Discussion
 `/conference/new?rid=…`, and the conference is created there, by the [preflight](#the-preflight-screen). Without
 persistent chat it goes through `VideoConfManager.startCall` as it always has.
 
+The room's call button goes straight there. It used to open a popup to confirm and set devices first, which the
+preflight now does with the user able to see what they are joining — two confirmations for one call. The popup
+remains the only place to set devices when there is no preflight, so it is still what an unconfigured
+persistent-chat workspace gets.
+
 **Joining one that exists** (`joinCall`) emits `call/join`:
 
 - **Persistent chat enabled** — `{ callId }`, and again nothing is posted: the conference page joins for itself
@@ -679,7 +684,10 @@ and package-level jest.
 | Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
 | Who is offered which running calls, and what each row says | `apps/meteor/tests/unit/server/services/video-conference/listJoinableCalls.spec.ts` |
 | Joining another call asks first, then leaves the one before it | `apps/meteor/client/views/conference/hooks/useJoinCall.spec.tsx` |
-| The sidebar list: what it lists, what it leaves out, and the three-row cap | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
+| The list: what it shows and leaves out, the three-row cap, ringing, silencing, scrolling | `apps/meteor/client/components/OngoingCalls/OngoingCalls.spec.tsx` |
+| Faces instead of a count, and the `+N` for the rest | `apps/meteor/client/components/OngoingCalls/CallParticipants.spec.tsx` |
+| The navbar stand-in: only without a sidebar, red while ringing, opens itself | `apps/meteor/client/navbar/NavBarItemOngoingCalls.spec.tsx` |
+| That the room's call button opens the window rather than a popup | `apps/meteor/client/hooks/roomActions/useVideoCallRoomAction.spec.tsx` |
 | That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
 | That the camera is described rather than previewed | `apps/meteor/client/views/conference/ConferencePreflight.spec.tsx` |
@@ -776,10 +784,47 @@ What remains genuinely unfinished is under [Improvement suggestions](#improvemen
 Ringing is a poor only-route into a call: it is one-shot, it lasts seconds, and a conference started in a room
 with more than ten subscribers rings **nobody at all**. So a call is also reachable from two lists.
 
-**The sidebar** (`sections/OngoingCallsSection`) shows the calls running now that this user may join, with
+**The sidebar** (`sections/OngoingCallsSection`) docks the calls running now that this user may join, with
 **join** and **decline** on each. **The call history page** shows them as rows of its own table, with `ongoing`
 as their status and a **join** button — the way back to a call the user turned down, since declining quiets the
 sidebar but leaves the history row where it was.
+
+### A ringing call is listed, not popped
+
+An incoming call used to take over the screen with a popup that had to be answered before anything else could
+happen. It is now the first item of that same list, under an *Incoming calls* heading of its own: bigger than the
+rest, with **accept** then **decline** *below* it rather than beside it — the same order as the **join** and
+**dismiss** on the calls underneath. The ring still sounds. When the ring stops, the item settles into an ordinary
+row with a join button — the call is still there, it just isn't asking any more.
+
+**Silencing** it is not answering it: the bell button stops this client's ring and leaves the call exactly where it
+is, so the user can decide in their own time. It only appears while there is a sound to stop — a ring this client
+never heard, because the page was reloaded, has nothing to silence — and once used it becomes a plain bell-off
+icon, which is what says why the room went quiet. Silenced ids are remembered by `useOngoingCalls`, because the
+manager forgets a dismissed call entirely and "silenced" would otherwise be indistinguishable from "never heard".
+
+Every item shows **who is already in the call** rather than a count: three avatars and a `+N` for the rest, from
+the `participants` the joinable list carries (capped server-side; `usersCount` remains the whole number, and is
+what the `+N` is worked out from). Faces answer the question a count never did — whether this is a call worth
+walking into. The group keeps the count as its label, so nothing is lost to a screen reader.
+
+The list scrolls at `40vh` rather than growing without end, with the *Show all N calls* toggle outside the
+scrolling part so it stays reachable.
+
+The ringing window is the reader's own judgement (`isRingingVideoConferenceMember` over the `ringingAt` the
+joinable list carries), with a timer that wakes the list when the earliest ring is due to stop. Nothing announces
+that a ring *ended*, so nothing can be waited for.
+
+The list itself refreshes on the ring rather than on the poll: a ring is announced to the person being rung, and
+waiting up to twenty seconds to show a call that is ringing *now* would miss it entirely.
+
+### When there is no sidebar to dock it in
+
+A collapsed sidebar would hide the only place these calls appear, including one ringing right now. So
+`navbar/NavBarItemOngoingCalls` puts the same list — the same component, unchanged — in a dropdown behind a navbar
+button, and only while the sidebar is collapsed. The button is blue for calls that are simply running and red
+while something is ringing, and it opens itself when a ring starts: a ringing call the user has to go looking for
+is a missed call.
 
 Every sidebar row is something to act on — join it, or turn it down so it stops asking. The call the reader is
 *already in* is therefore left out entirely: they are in it, there is nothing to reach, and a row that only read

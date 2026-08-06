@@ -21,6 +21,7 @@ const call = (overrides: Partial<JoinableVideoConference> & Pick<JoinableVideoCo
 	type: 'videoconference',
 	createdAt: new Date('2026-08-03T10:00:00.000Z'),
 	usersCount: 2,
+	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],
 	joined: false,
 	declined: false,
 	...overrides,
