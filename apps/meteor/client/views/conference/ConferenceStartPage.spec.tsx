@@ -50,10 +50,11 @@ it('creates no conference until it is asked to', async () => {
 	expect(join).not.toHaveBeenCalled();
 });
 
+// Offered as the meeting it is, rather than as the room's bare name.
 it('names the call after the room it is being started in', async () => {
 	renderStart();
 
-	expect(await screen.findByLabelText('Call_name')).toHaveValue('general');
+	expect(await screen.findByLabelText('Call_name')).toHaveValue('Meeting_in__roomName__');
 });
 
 it('starts the conference with the name and devices it was given', async () => {

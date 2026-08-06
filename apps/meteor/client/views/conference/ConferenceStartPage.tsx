@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import ConferencePageError from './ConferencePageError';
 import ConferencePreflight from './ConferencePreflight';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
@@ -20,6 +22,7 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 	// The preflight is the whole page, but the window is still the call's: a stray link must not navigate it.
 	useConfinedNavigation();
 
+	const { t } = useTranslation();
 	const { name, isDirect, capabilities, loading, error, start } = useStartConference(rid);
 
 	if (error) {
@@ -33,10 +36,13 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 	return (
 		<ConferencePreflight
 			name={name}
-			// A direct call is placed to someone, so confirming calls them by name. A group conference is simply
-			// started, and can be named on the way in.
-			confirm={isDirect ? 'call' : 'start'}
+			// Nothing exists yet, so this screen starts the call rather than joining one.
+			action='start'
+			isDirect={isDirect}
 			canName={!isDirect}
+			// A conference is named after the room it happens in, said as the meeting it is — and the creator can
+			// put anything they like over it.
+			defaultName={isDirect ? undefined : t('Meeting_in__roomName__', { roomName: name })}
 			capabilities={capabilities}
 			onConfirm={(preferences, chosenName) => start({ state: preferences, name: chosenName })}
 			onCancel={closeCallWindow}

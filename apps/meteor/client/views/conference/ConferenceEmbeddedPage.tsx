@@ -126,8 +126,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		return (
 			<ConferencePreflight
 				name={call.name}
-				// Placing a call means the other side has not been rung yet, so confirming is the call itself.
-				confirm={call.placing ? 'call' : 'join'}
+				// Placing a call means nobody has been asked to answer it yet — confirming is what starts it.
+				action={call.placing ? 'start' : 'join'}
+				isDirect={call.canRing}
 				canName={call.canRename}
 				capabilities={call.capabilities}
 				onConfirm={(preferences, name) => conference.join({ state: preferences, name })}
