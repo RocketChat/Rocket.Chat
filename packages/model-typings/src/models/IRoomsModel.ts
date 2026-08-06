@@ -168,6 +168,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	countFederatedRooms(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
+	findOneAndIncMsgCountById(rid: string, inc: number, options?: FindOneAndUpdateOptions): Promise<IRoom | null>;
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;

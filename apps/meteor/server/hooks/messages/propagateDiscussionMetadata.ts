@@ -24,7 +24,7 @@ const withPendingRoomChanges = (room: IRoom, roomUpdater?: Updater<IRoom>): IRoo
 	};
 };
 
-const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
+export const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
 	const parentMessage = await Messages.refreshDiscussionMetadata(room);
 	if (!parentMessage) {
 		return;

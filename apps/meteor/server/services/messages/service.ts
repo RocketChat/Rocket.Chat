@@ -18,6 +18,7 @@ import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
 import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
+import { updateAndNotifyParentRoomWithParentMessage } from '../../hooks/messages/propagateDiscussionMetadata';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -185,7 +186,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('The username cannot be empty.');
 		}
 
-		const [{ insertedId }] = await Promise.all([
+		const [{ insertedId }, room] = await Promise.all([
 			Messages.createWithTypeRoomIdMessageUserAndUnread(
 				type,
 				rid,
@@ -194,7 +195,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.incMsgCountById(rid, 1),
+			Rooms.findOneAndIncMsgCountById(rid, 1),
 		]);
 
 		if (!insertedId) {
@@ -212,6 +213,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
 		void notifyOnRoomChangedById(rid);
+
+		if (room?.prid) {
+			await updateAndNotifyParentRoomWithParentMessage(room);
+		}
 
 		return createdMessage;
 	}

@@ -795,6 +795,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	findOneAndIncMsgCountById(_id: IRoom['_id'], inc = 1, options: FindOneAndUpdateOptions = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after', ...options });
+	}
+
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom> {
 		return roomUpdater.inc('msgs', inc);
 	}
@@ -818,11 +830,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndType<T extends Document = IRoom>(
-		roomId: IRoom['_id'],
-		type: IRoom['t'],
-		options: FindOptions<T> = {} as FindOptions<T>,
-	): Promise<T | null> {
+	findOneByIdAndType<T extends Document = IRoom>(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<T> = {}): Promise<T | null> {
 		return this.findOne<T>({ _id: roomId, t: type }, options);
 	}
 
@@ -1805,7 +1813,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{ _id, 'abacAttributes.key': { $ne: key } },
 			{ $push: { abacAttributes: { key, values } } },
 			{ returnDocument: 'after', projection: { abacAttributes: 1 } },
-		) as unknown as Promise<IRoom | null>;
+		);
 	}
 
 	updateAbacAttributeValuesArrayFilteredById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
