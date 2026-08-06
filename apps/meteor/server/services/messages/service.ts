@@ -19,6 +19,7 @@ import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
 import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
 import { updateAndNotifyParentRoomWithParentMessage } from '../../hooks/messages/propagateDiscussionMetadata';
+import { SystemLogger } from '../../lib/logger/system';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -195,7 +196,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.findOneAndIncMsgCountById(rid, 1),
+			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, msgs: 1, lm: 1 } }),
 		]);
 
 		if (!insertedId) {
@@ -215,7 +216,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		void notifyOnRoomChangedById(rid);
 
 		if (room?.prid) {
-			await updateAndNotifyParentRoomWithParentMessage(room);
+			try {
+				await updateAndNotifyParentRoomWithParentMessage(room);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+			}
 		}
 
 		return createdMessage;
