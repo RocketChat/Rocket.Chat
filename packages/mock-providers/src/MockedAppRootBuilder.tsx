@@ -180,7 +180,9 @@ export class MockedAppRootBuilder {
 	};
 
 	private videoConf: ContextType<typeof VideoConfContext> = {
-		queryIncomingCalls: () => [() => () => undefined, () => []],
+		// `empty` rather than a fresh array: `useSyncExternalStore` compares snapshots by identity, and a new one
+		// every read is an endless re-render.
+		queryIncomingCalls: () => [() => () => undefined, () => empty as unknown as DirectCallData[]],
 		queryRinging: () => [() => () => undefined, () => false],
 		queryCalling: () => [() => () => undefined, () => false],
 		dispatchOutgoing(_options: Omit<VideoConfPopupPayload, 'id'>): void {

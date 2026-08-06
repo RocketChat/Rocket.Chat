@@ -204,10 +204,20 @@ export type JoinableVideoConference = {
 	createdAt: Date;
 	/** How many people are in it right now. Never zero — an empty call isn't offered. */
 	usersCount: number;
+	/**
+	 * A few of the people in it, so a list can show faces instead of a number. Capped on the server — the count
+	 * above is still the whole truth, and what a "+3" is worked out from.
+	 */
+	participants: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
 	/** Whether the reader is one of them, which is what makes joining another call a matter of leaving this one. */
 	joined: boolean;
 	/** Whether the reader already turned this call down. The sidebar hides those; the call history keeps them. */
 	declined: boolean;
+	/**
+	 * When this reader was last rung, if ever. Whether that ring is still live is decided by the reader — see
+	 * `isRingingVideoConferenceMember` — so the list can stop presenting a call as ringing without being told.
+	 */
+	ringingAt?: Date;
 };
 
 /** How to give the missing members access: bring them into the room, or move the chat to a discussion. */

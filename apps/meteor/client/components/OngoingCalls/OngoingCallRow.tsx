@@ -1,6 +1,8 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
+
+import CallParticipants from './CallParticipants';
 
 type OngoingCallRowProps = {
 	call: JoinableVideoConference;
@@ -18,19 +20,16 @@ const OngoingCallRow = ({ call, onJoin, onDecline }: OngoingCallRowProps) => {
 				<Box fontScale='p2b' color='default' withTruncatedText>
 					{call.name}
 				</Box>
-				<Box fontScale='micro' color='hint'>
-					{t('__count__people_in_the_call', { count: call.usersCount })}
-				</Box>
+				<CallParticipants participants={call.participants} usersCount={call.usersCount} />
 			</Box>
 			{/* Every row is something to act on — the section leaves out the call the reader is already in, so
-			    there is no state here that offers nothing to do. */}
+			    there is no state here that offers nothing to do. Joining is the offer; turning the call down is the
+			    way to be rid of the row, which is a smaller thing and reads as one. */}
 			<ButtonGroup>
-				<Button small onClick={() => onDecline(call.callId)}>
-					{t('Decline')}
-				</Button>
 				<Button small primary onClick={() => onJoin(call.callId)}>
 					{t('Join')}
 				</Button>
+				<IconButton tiny icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={() => onDecline(call.callId)} />
 			</ButtonGroup>
 		</Box>
 	);

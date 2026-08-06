@@ -2814,7 +2814,9 @@
   "Incoming_Livechats": "Queued chats",
   "Incoming_WebHook": "Incoming WebHook",
   "Incoming_call": "Incoming call",
+  "Incoming_calls": "Incoming calls",
   "Incoming_call_ellipsis": "Incoming call...",
+  "Incoming_call_silenced": "Incoming call, silenced",
   "Incoming_call_from": "Incoming call from",
   "Incoming_call_from__roomName__": "Incoming call from {{roomName}}",
   "Incoming_call_transfer": "Incoming call transfer",
@@ -5189,6 +5191,10 @@
   "Show_email_field": "Show email field",
   "Show_chat": "Show chat",
   "Show_mentions": "Show badge for mentions",
+  "Show_all__count__calls": {
+    "one": "Show all {{count}} call",
+    "other": "Show all {{count}} calls"
+  },
   "Show_fewer": "Show fewer",
   "Show_more": "Show more",
   "Show_name_field": "Show name field",
@@ -5222,6 +5228,7 @@
   "SSRF_Allowlist": "SSRF allowlist",
   "SSRF_Allowlist_Description": "Domains, IPs, or IP:port (one per line or comma-separated) that are allowed for outbound requests despite SSRF protection. Use only for trusted internal hosts (e.g. internal.corp, 192.168.1.1, 192.168.1.1:8080).",
   "SSRF_Protection": "SSRF protection",
+  "Silence": "Silence",
   "Size": "Size",
   "Skin_tone": "Skin tone",
   "Skip": "Skip",
@@ -7425,6 +7432,14 @@
   "your_message_optional": "your message (optional)",
   "__agents__agents_and__count__conversations__period__": "{{agents}} agents and {{count}} conversations, {{period}}",
   "__count__conversations__period__": "{{count}} conversations, {{period}}",
+  "__count__ongoing": {
+    "one": "{{count}} ongoing",
+    "other": "{{count}} ongoing"
+  },
+  "__count__ringing": {
+    "one": "{{count}} ringing",
+    "other": "{{count}} ringing"
+  },
   "__count__participants_cannot_see_the_chat": {
     "one": "{{count}} participant can't see the chat",
     "other": "{{count}} participants can't see the chat"
