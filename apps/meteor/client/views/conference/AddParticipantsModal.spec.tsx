@@ -31,10 +31,15 @@ const renderModal = (props: Partial<{ callId: string; rid: string }> = {}) =>
 			.build(),
 	});
 
+const typeFilter = async (term: string) => {
+	await userEvent.type(screen.getByRole('combobox'), term);
+};
+
+// The shared picker labels an option with the username unless the workspace displays real names, which is the
+// default this renders under.
 const selectOutsider = async () => {
-	const input = screen.getByRole('textbox');
-	await userEvent.type(input, 'outsider');
-	await userEvent.click(await screen.findByText('Outsider Person'));
+	await typeFilter('outsider');
+	await userEvent.click(await screen.findByRole('option', { name: outsider.username }));
 };
 
 beforeEach(() => {
@@ -71,8 +76,7 @@ it('excludes the room members from the autocomplete when the room is in the stor
 
 	renderModal();
 
-	const input = screen.getByRole('textbox');
-	await userEvent.type(input, 'outsider');
+	await typeFilter('outsider');
 
 	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
 
@@ -86,11 +90,10 @@ it('excludes the room members from the autocomplete when the room is in the stor
 it('still fetches and offers users when the room is not in the store', async () => {
 	renderModal();
 
-	const input = screen.getByRole('textbox');
-	await userEvent.type(input, 'outsider');
+	await typeFilter('outsider');
 
 	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
-	expect(await screen.findByText('Outsider Person')).toBeInTheDocument();
+	expect(await screen.findByRole('option', { name: outsider.username })).toBeInTheDocument();
 });
 
 // The server skips anyone already associated with the call, so a selection can come back having added
@@ -117,16 +120,5 @@ it('reports the users it did add', async () => {
 	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Users_added' }));
 });
 
-it('allows removing a selected user before adding', async () => {
-	renderModal();
-
-	await selectOutsider();
-	expect(screen.getByText('Outsider Person')).toBeInTheDocument();
-
-	await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
-
-	// The dropdown stays open and the removed user reappears as an option (they're no longer excluded as
-	// "already selected"), so assert on the selected-participants row, not on the name text itself.
-	expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
-});
+// Taking a selection back is no longer this modal's doing: picking people is `UserAutoCompleteMultiple`, the
+// same component the room's own "add users" flow uses, and chips are how it offers that.

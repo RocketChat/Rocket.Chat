@@ -1,4 +1,16 @@
-import type { IRoom, VideoConferenceChatAccessMode } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, VideoConferenceChatAccess, VideoConferenceChatAccessMode } from '@rocket.chat/core-typings';
+
+/**
+ * Whether this user can read the conference's chat. Membership of a call grants no room access, so being in a
+ * call and being able to follow what is said in it are separate questions.
+ *
+ * Asked in three places — whether to render the chat at all, whether to offer to share it, and how to mark a
+ * member in the list — and each had worked it out for itself, from either an array or a `Set`.
+ */
+export const hasConferenceChatAccess = (
+	access: Pick<VideoConferenceChatAccess, 'membersWithoutAccess'> | undefined,
+	uid: IUser['_id'] | null | undefined,
+): boolean => !uid || !access?.membersWithoutAccess.includes(uid);
 
 /**
  * Which way of giving the missing members access should lead — be the primary action, and the one taken when

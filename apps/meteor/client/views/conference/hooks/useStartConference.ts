@@ -35,11 +35,7 @@ export const useStartConference = (rid: string) => {
 		queryFn: async () => (await getCapabilities()).capabilities,
 	});
 
-	const {
-		mutate: start,
-		isPending: isStarting,
-		error,
-	} = useMutation({
+	const { mutate: start, error } = useMutation({
 		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
 			const { data } = await startConference({ roomId: rid, title: name, allowRinging: true });
 			const joined = await joinConference({ callId: data.callId, state });
@@ -63,7 +59,6 @@ export const useStartConference = (rid: string) => {
 		isDirect: subscription?.t === 'd',
 		capabilities: capabilities ?? {},
 		loading: isRoomPending || isCapabilitiesPending,
-		starting: isStarting,
 		error,
 		start,
 	};

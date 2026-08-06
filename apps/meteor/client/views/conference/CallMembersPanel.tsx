@@ -1,5 +1,5 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
-import { Box, Button, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -7,16 +7,19 @@ import { useTranslation } from 'react-i18next';
 
 import AddParticipantsModal from './AddParticipantsModal';
 import CallMemberItem from './CallMemberItem';
+import CallPanelHeader from './CallPanelHeader';
 import type { ConferenceMember } from './hooks/useCallOutcome';
+import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import { MembersListDivider } from '../room/contextualBar/RoomMembers/MembersListDivider';
 
 type CallMembersPanelProps = {
 	callId: string;
 	rid?: string;
 	members: ConferenceMember[];
-	/** Ids of members who can't read the chat — membership grants no room access. */
-	membersWithoutChatAccess: string[];
-	onClose?: () => void;
+	/** Where the chat lives and who among the members can't read it — membership grants no room access. */
+	chatAccess?: ConferenceChatAccess;
+	onClose: () => void;
 };
 
 /**
@@ -29,13 +32,11 @@ type CallMembersPanelProps = {
  *
  * Split in two, because the two halves answer different questions: who is here, and who still isn't.
  */
-const CallMembersPanel = ({ callId, rid, members, membersWithoutChatAccess, onClose }: CallMembersPanelProps) => {
+const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMembersPanelProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const ring = useEndpoint('POST', '/v1/video-conference.ring');
-
-	const withoutAccess = new Set(membersWithoutChatAccess);
 
 	const [present, absent] = useMemo(
 		() => [members.filter(isInVideoConference), members.filter((member) => !isInVideoConference(member))],
@@ -50,37 +51,22 @@ const CallMembersPanel = ({ callId, rid, members, membersWithoutChatAccess, onCl
 	});
 
 	const renderMember = (member: ConferenceMember) => (
-		<CallMemberItem key={member._id} member={member} hasChatAccess={!withoutAccess.has(member._id)} onRing={ringMember} />
+		<CallMemberItem key={member._id} member={member} hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)} onRing={ringMember} />
 	);
 
 	return (
 		<>
-			<Box
-				is='header'
-				display='flex'
-				alignItems='center'
-				justifyContent='space-between'
-				paddingInline={12}
-				paddingBlock={8}
-				borderBlockEndWidth={1}
-				borderBlockEndColor='stroke-extra-light'
-			>
-				<Box is='h5' fontScale='h5' color='default'>
-					{t('Members')}
-				</Box>
-				<Box display='flex' alignItems='center'>
-					{rid && (
-						<Button
-							small
-							icon='user-plus'
-							onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
-						>
-							{t('Add_people')}
-						</Button>
-					)}
-					{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
-				</Box>
-			</Box>
+			<CallPanelHeader title={t('Members')} onClose={onClose}>
+				{rid && (
+					<Button
+						small
+						icon='user-plus'
+						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
+					>
+						{t('Add_people')}
+					</Button>
+				)}
+			</CallPanelHeader>
 
 			<Box flexGrow={1} overflowY='auto'>
 				{present.length > 0 && (

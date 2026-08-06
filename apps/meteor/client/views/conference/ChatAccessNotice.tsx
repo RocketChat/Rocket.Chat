@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChatAccessModal from './ChatAccessModal';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 
 type ChatAccessNoticeProps = {
 	callId: string;
@@ -37,7 +38,7 @@ const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
 	const present = access.members.filter(hasJoinedVideoConference);
 
 	// Only shown to participants who can act on it: a member who can't read the chat can't share it either.
-	if (!present.length || (uid && access.membersWithoutAccess.includes(uid))) {
+	if (!present.length || !hasConferenceChatAccess(access, uid)) {
 		return null;
 	}
 

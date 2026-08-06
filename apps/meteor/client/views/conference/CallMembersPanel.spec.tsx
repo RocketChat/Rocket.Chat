@@ -13,13 +13,13 @@ const member = (overrides: Partial<ConferenceMember> & Pick<ConferenceMember, '_
 
 const ring = jest.fn(() => ({ rang: [], success: true }) as any);
 
-const renderPanel = (members: ConferenceMember[], membersWithoutChatAccess: string[] = []) =>
+const renderPanel = (members: ConferenceMember[], membersWithoutAccess: string[] = []) =>
 	render(
 		<CallMembersPanel
 			callId='call-id'
 			rid='room-id'
 			members={members}
-			membersWithoutChatAccess={membersWithoutChatAccess}
+			chatAccess={{ rid: 'room-id', name: 'general', type: 'c', canInvite: true, membersWithoutAccess, members: [] }}
 			onClose={jest.fn()}
 		/>,
 		{

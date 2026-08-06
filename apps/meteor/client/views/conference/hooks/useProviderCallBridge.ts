@@ -8,7 +8,7 @@ export const CONFERENCE_PROVIDER_MESSAGE = 'rocketchat:conference';
  * Commands the embedded provider may send. A provider that renders its own in-call toolbar can hide ours
  * and drive the chat panel from its own controls, so the user never sees two competing sets of buttons.
  */
-export type ConferenceProviderCommand =
+type ConferenceProviderCommand =
 	| { command: 'set-call-bar-visible'; visible: boolean }
 	| { command: 'set-chat-visible'; visible: boolean }
 	| { command: 'toggle-chat' };
@@ -37,7 +37,7 @@ const isProviderMessage = (data: unknown): data is ConferenceProviderMessage => 
 };
 
 /** The side panel currently showing, or `undefined` for none. Only one at a time — they share the same space. */
-export type ConferencePanel = 'members' | 'chat';
+type ConferencePanel = 'members' | 'chat';
 
 /**
  * Owns the conference chrome state — whether our call bar is shown and which side panel is open — so both our
@@ -67,8 +67,6 @@ export const useProviderCallBridge = (iframeRef: RefObject<HTMLIFrameElement | n
 		setActivePanel((current) => (current === 'chat' ? undefined : current));
 	}, []);
 
-	const toggleChat = useCallback(() => togglePanel('chat'), [togglePanel]);
-
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent) => {
 			const contentWindow = iframeRef.current?.contentWindow;
@@ -88,14 +86,14 @@ export const useProviderCallBridge = (iframeRef: RefObject<HTMLIFrameElement | n
 					setChatVisible(event.data.visible);
 					break;
 				case 'toggle-chat':
-					toggleChat();
+					togglePanel('chat');
 					break;
 			}
 		};
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [iframeRef, toggleChat, setChatVisible]);
+	}, [iframeRef, togglePanel, setChatVisible]);
 
 	return { callBarVisible, activePanel, togglePanel };
 };
