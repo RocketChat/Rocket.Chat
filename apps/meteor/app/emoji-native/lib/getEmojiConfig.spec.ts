@@ -52,4 +52,44 @@ describe('native emoji render', () => {
 
 		expect(render(':smiley:')).toContain('<span class="emoji" title=":smiley:">');
 	});
+
+	it('renders bare (non-VS16) emoji-default characters', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('🐕')).toBe('<span class="emoji" title=":dog2:">🐕</span>');
+		expect(render('🐶')).toBe('<span class="emoji" title=":dog:">🐶</span>');
+		expect(render('⭐')).toBe('<span class="emoji" title=":star:">⭐</span>');
+		expect(render('👍')).toBe('<span class="emoji" title=":thumbsup:">👍</span>');
+	});
+
+	it('resolves the VS16-qualified form to the same shortcode', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('🐕\u{FE0F}')).toBe('<span class="emoji" title=":dog2:">🐕\u{FE0F}</span>');
+		expect(render('⭐\u{FE0F}')).toBe('<span class="emoji" title=":star:">⭐\u{FE0F}</span>');
+	});
+
+	it('only treats text-default symbols as emoji when VS16 is present', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('©')).toBe('©');
+		expect(render('™')).toBe('™');
+		expect(render('©\u{FE0F}')).toBe('<span class="emoji" title=":copyright:">©\u{FE0F}</span>');
+	});
+
+	it('renders shortcodes contested with emojibase using their emojione meaning', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
+		expect(render(':arrow_up_small:')).toBe('<span class="emoji" title=":arrow_up_small:">🔼</span>');
+		expect(render(':cat:')).toBe('<span class="emoji" title=":cat:">🐱</span>');
+		expect(render(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
+
+	it('renders picker entries for contested shortcodes', () => {
+		const { renderPicker } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(renderPicker(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
+		expect(renderPicker(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
 });

@@ -157,57 +157,59 @@ export const getEmojisBySearchTerm = (
 	setRecentEmojis: (emojis: string[]) => void,
 ) => {
 	const emojis = [];
+	const seenEmojis = new Set<(typeof emoji.list)[string]>();
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in emoji.list) {
-		if (!emoji.list.hasOwnProperty(current)) {
+		if (!emoji.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
 			continue;
 		}
 
-		if (searchRegExp.test(current)) {
-			const emojiObject = emoji.list[current];
-			const { emojiPackage, shortnames = [] } = emojiObject;
-			let tone = '';
-			current = current.replace(/:/g, '');
-			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
+		const emojiObject = emoji.list[current];
 
-			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {
-				tone = `_tone${actualTone}`;
-			}
+		// Skip duplicates (same emoji in different packages)
+		if (seenEmojis.has(emojiObject)) {
+			continue;
+		}
 
+		const { emojiPackage, shortnames = [], name } = emojiObject;
+		let tone = '';
+		current = current.replace(/:/g, '');
+
+		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
+			tone = `_tone${actualTone}`;
+		}
+
+		const isNative = emojiPackage === 'native';
+		if (isNative) {
 			const mixedTones = current.match(MIXED_TONE_SUFFIX);
-			const categoryName = current.replace(MIXED_TONE_SUFFIX, '');
 			if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
 				continue;
 			}
-
-			let emojiFound = false;
-
-			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(categoryName) !== -1 || searchValArray?.includes(searchTerm)) {
-						emojiFound = true;
-						break;
-					}
-				}
-			}
-
-			if (emojiFound) {
-				const emojiToRender = `:${current}${tone}:`;
-
-				const actualEmoji = emoji.list[emojiToRender];
-				if (!actualEmoji) {
-					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-					break;
-				}
-
-				const actualPackage = actualEmoji.emojiPackage;
-
-				emojis.push({ emoji: current, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
-			}
 		}
+
+		const categoryName = isNative ? current.replace(MIXED_TONE_SUFFIX, '') : current;
+
+		const isCategoryEmoji = Object.values(emoji.packages[emojiPackage].emojisByCategory).some(
+			(contents) => contents.indexOf(categoryName) !== -1,
+		);
+		if (!isCategoryEmoji && shortnames.length === 0) {
+			continue;
+		}
+
+		const emojiToRender = `:${current}${tone}:`;
+
+		const actualEmoji = emoji.list[emojiToRender];
+		if (!actualEmoji) {
+			removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
+			continue;
+		}
+
+		seenEmojis.add(emojiObject);
+
+		const actualPackage = actualEmoji.emojiPackage;
+
+		emojis.push({ emoji: `${current}${tone}`, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
 	}
 
 	return emojis;

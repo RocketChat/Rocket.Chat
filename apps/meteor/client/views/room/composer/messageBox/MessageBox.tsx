@@ -95,6 +95,7 @@ export type MessageBoxProps = {
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
+	threadExists?: boolean;
 };
 
 const MessageBox = ({
@@ -107,6 +108,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	threadExists,
 }: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
@@ -130,7 +132,12 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
+	const { initialValue, persistLocal, flushDraft } = useDraft(
+		room._id,
+		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
+		tmid,
+		threadExists,
+	);
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {

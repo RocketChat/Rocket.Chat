@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -7,6 +7,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
+	ContextualbarEmptyContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';

@@ -30,6 +30,7 @@ import type {
 	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
+	ToastMessagesContextValue,
 	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import {
@@ -43,6 +44,7 @@ import {
 	ModalContext,
 	UserPresenceContext,
 	AuthenticationContext,
+	ToastMessagesContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -163,6 +165,10 @@ export class MockedAppRootBuilder {
 		], // apply query and option
 		user: null,
 		userId: undefined,
+	};
+
+	private toastMessages: ToastMessagesContextValue = {
+		dispatch: () => undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -452,6 +458,18 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withLogout(logout: ContextType<typeof UserContext>['logout']): this {
+		this.user = { ...this.user, logout };
+
+		return this;
+	}
+
+	withToastMessageDispatch(dispatch: ToastMessagesContextValue['dispatch']): this {
+		this.toastMessages = { ...this.toastMessages, dispatch };
+
+		return this;
+	}
+
 	withUsers(users: IUser[]): this {
 		users.forEach((user) => {
 			this.userPresence.queryUserData = (_uid) => ({ subscribe: () => () => undefined, get: () => user });
@@ -699,6 +717,7 @@ export class MockedAppRootBuilder {
 			wrappers,
 			deviceContext,
 			authentication,
+			toastMessages,
 		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
@@ -767,62 +786,62 @@ export class MockedAppRootBuilder {
 								<I18nextProvider i18n={i18n}>
 									<TranslationContext.Provider value={translation}>
 										{/* <SessionProvider>
-												<TooltipProvider>
-														<ToastMessagesProvider>
-																<LayoutProvider>
-																		<AvatarUrlProvider>
-																				<CustomSoundProvider> */}
-										<UserContext.Provider value={user}>
-											<AuthenticationContext.Provider value={authentication}>
-												<MockedDeviceContext {...deviceContext}>
-													<ModalContext.Provider value={modal}>
-														<AuthorizationContext.Provider value={authorization}>
-															{/* <EmojiPickerProvider>
+												<TooltipProvider> */}
+										<ToastMessagesContext.Provider value={toastMessages}>
+											{/* <LayoutProvider>
+																	<AvatarUrlProvider>
+																			<CustomSoundProvider> */}
+											<UserContext.Provider value={user}>
+												<AuthenticationContext.Provider value={authentication}>
+													<MockedDeviceContext {...deviceContext}>
+														<ModalContext.Provider value={modal}>
+															<AuthorizationContext.Provider value={authorization}>
+																{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-															<UserPresenceContext.Provider value={userPresence}>
-																<ActionManagerContext.Provider
-																	value={{
-																		generateTriggerId: () => '',
-																		emitInteraction: () => Promise.reject(new Error('not implemented')),
-																		getInteractionPayloadByViewId: () => undefined,
-																		handleServerInteraction: () => undefined,
-																		off: () => undefined,
-																		on: () => undefined,
-																		openView: () => undefined,
-																		disposeView: () => undefined,
-																		notifyBusy: () => undefined,
-																		notifyIdle: () => undefined,
-																	}}
-																>
-																	<VideoConfContext.Provider value={videoConf}>
-																		{/* <CallProvider>
+																<UserPresenceContext.Provider value={userPresence}>
+																	<ActionManagerContext.Provider
+																		value={{
+																			generateTriggerId: () => '',
+																			emitInteraction: () => Promise.reject(new Error('not implemented')),
+																			getInteractionPayloadByViewId: () => undefined,
+																			handleServerInteraction: () => undefined,
+																			off: () => undefined,
+																			on: () => undefined,
+																			openView: () => undefined,
+																			disposeView: () => undefined,
+																			notifyBusy: () => undefined,
+																			notifyIdle: () => undefined,
+																		}}
+																	>
+																		<VideoConfContext.Provider value={videoConf}>
+																			{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																		{wrappers.reduce<ReactNode>(
-																			(children, wrapper) => wrapper(children),
-																			<>
-																				{children}
-																				{modal.currentModal.component}
-																			</>,
-																		)}
-																		{/* </OmnichannelProvider>
+																			{wrappers.reduce<ReactNode>(
+																				(children, wrapper) => wrapper(children),
+																				<>
+																					{children}
+																					{modal.currentModal.component}
+																				</>,
+																			)}
+																			{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																	</VideoConfContext.Provider>
-																</ActionManagerContext.Provider>
-															</UserPresenceContext.Provider>
-															{/*
+																		</VideoConfContext.Provider>
+																	</ActionManagerContext.Provider>
+																</UserPresenceContext.Provider>
+																{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-														</AuthorizationContext.Provider>
-													</ModalContext.Provider>
-												</MockedDeviceContext>
-											</AuthenticationContext.Provider>
-										</UserContext.Provider>
-										{/* 					</CustomSoundProvider>
-																</AvatarUrlProvider>
-															</LayoutProvider>
-														</ToastMessagesProvider>
-													</TooltipProvider>
+															</AuthorizationContext.Provider>
+														</ModalContext.Provider>
+													</MockedDeviceContext>
+												</AuthenticationContext.Provider>
+											</UserContext.Provider>
+											{/* 					</CustomSoundProvider>
+																	</AvatarUrlProvider>
+																</LayoutProvider> */}
+										</ToastMessagesContext.Provider>
+										{/* 	</TooltipProvider>
 												</SessionProvider> */}
 									</TranslationContext.Provider>
 								</I18nextProvider>

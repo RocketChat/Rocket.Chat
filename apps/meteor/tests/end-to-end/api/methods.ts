@@ -86,8 +86,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('getThreadMessages'))
 				.send({
 					message: JSON.stringify({
@@ -98,16 +98,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return message thread', (done) => {
-			void request
+		it('should return message thread', async () => {
+			const res = await request
 				.post(methodCall('getThreadMessages'))
 				.set(credentials)
 				.send({
@@ -119,16 +117,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
+			expect(data.result.length).to.equal(2);
 		});
 	});
 
@@ -544,8 +540,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('getMessages'))
 				.send({
 					message: JSON.stringify({
@@ -556,16 +552,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if msgIds not specified', (done) => {
-			void request
+		it('should fail if msgIds not specified', async () => {
+			const res = await request
 				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
@@ -577,21 +571,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(400);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('error').that.is.an('object');
+			expect(data.error).to.have.a.property('sanitizedError');
+			expect(data.error.sanitizedError).to.have.property('error', 400);
 		});
 
-		it('should return the first message', (done) => {
-			void request
+		it('should return the first message', async () => {
+			const res = await request
 				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
@@ -603,20 +595,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
+			expect(data.result.length).to.equal(1);
 		});
 
-		it('should return both messages', (done) => {
-			void request
+		it('should return both messages', async () => {
+			const res = await request
 				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
@@ -628,16 +618,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
+			expect(data.result.length).to.equal(2);
 		});
 	});
 
@@ -871,8 +859,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.send({
 					message: JSON.stringify({
@@ -883,16 +871,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if roomId not specified', (done) => {
-			void request
+		it('should fail if roomId not specified', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
@@ -904,21 +890,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(400);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('error').that.is.an('object');
+			expect(data.error).to.have.a.property('sanitizedError');
+			expect(data.error.sanitizedError).to.have.property('error', 400);
 		});
 
-		it('should return all messages for the specified room', (done) => {
-			void request
+		it('should return all messages for the specified room', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
@@ -930,21 +914,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(2);
 		});
 
-		it('should return only the first message', (done) => {
-			void request
+		it('should return only the first message', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
@@ -956,21 +938,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(1);
 		});
 
-		it('should return only one message when limit = 1', (done) => {
-			void request
+		it('should return only one message when limit = 1', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
@@ -982,21 +962,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(1);
 		});
 
-		it('should return the messages since the last one', (done) => {
-			void request
+		it('should return the messages since the last one', async () => {
+			const res = await request
 				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
@@ -1008,17 +986,15 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(2);
 		});
 	});
 
@@ -1089,8 +1065,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('loadNextMessages'))
 				.send({
 					message: JSON.stringify({
@@ -1101,16 +1077,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if roomId not specified', (done) => {
-			void request
+		it('should fail if roomId not specified', async () => {
+			const res = await request
 				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
@@ -1122,21 +1096,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(400);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('error').that.is.an('object');
+			expect(data.error).to.have.a.property('sanitizedError');
+			expect(data.error.sanitizedError).to.have.property('error', 400);
 		});
 
-		it('should return all messages for the specified room', (done) => {
-			void request
+		it('should return all messages for the specified room', async () => {
+			const res = await request
 				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
@@ -1148,21 +1120,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(2);
 		});
 
-		it('should return only the latest message', (done) => {
-			void request
+		it('should return only the latest message', async () => {
+			const res = await request
 				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
@@ -1174,21 +1144,19 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(1);
 		});
 
-		it('should return only one message when limit = 1', (done) => {
-			void request
+		it('should return only one message when limit = 1', async () => {
+			const res = await request
 				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
@@ -1200,17 +1168,15 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
-					expect(data.result.messages.length).to.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('messages').that.is.an('array');
+			expect(data.result.messages.length).to.equal(1);
 		});
 	});
 
@@ -1269,8 +1235,8 @@ describe('Meteor.methods', () => {
 
 		after(() => Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteUser(testUser)]));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('getUsersOfRoom'))
 				.send({
 					message: JSON.stringify({
@@ -1281,16 +1247,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should fail if roomId not specified', (done) => {
-			void request
+		it('should fail if roomId not specified', async () => {
+			const res = await request
 				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
@@ -1302,20 +1266,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(400);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('error', 'error-invalid-room');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('error').that.is.an('object');
+			expect(data.error).to.have.a.property('error', 'error-invalid-room');
 		});
 
-		it('should return the users for the specified room', (done) => {
-			void request
+		it('should return the users for the specified room', async () => {
+			const res = await request
 				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
@@ -1327,22 +1289,20 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('total', 2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('total', 2);
 		});
 	});
 
 	describe('[@listCustomUserStatus]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('listCustomUserStatus'))
 				.send({
 					message: JSON.stringify({
@@ -1353,16 +1313,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return custom status for the current user', (done) => {
-			void request
+		it('should return custom status for the current user', async () => {
+			const res = await request
 				.post(methodCall('listCustomUserStatus'))
 				.set(credentials)
 				.send({
@@ -1374,15 +1332,13 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
 		});
 	});
 
@@ -1391,8 +1347,8 @@ describe('Meteor.methods', () => {
 			$date: new Date().getTime(),
 		};
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('permissions:get'))
 				.send({
 					message: JSON.stringify({
@@ -1403,16 +1359,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return all permissions', (done) => {
-			void request
+		it('should return all permissions', async () => {
+			const res = await request
 				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
@@ -1424,20 +1378,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.be.above(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
+			expect(data.result.length).to.be.above(1);
 		});
 
-		it('should return all permissions after the given date', (done) => {
-			void request
+		it('should return all permissions after the given date', async () => {
+			const res = await request
 				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
@@ -1449,16 +1401,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('update').that.is.an('array');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('update').that.is.an('array');
 		});
 	});
 
@@ -1530,8 +1480,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.send({
 					message: JSON.stringify({
@@ -1542,16 +1492,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return an error if the rid param is empty', (done) => {
-			void request
+		it('should return an error if the rid param is empty', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -1563,16 +1511,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 		});
 
-		it('should return an error if the start param is missing', (done) => {
-			void request
+		it('should return an error if the start param is missing', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -1584,16 +1530,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.include('Match error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.a.property('success', false);
+			expect(res.body).to.have.a.property('message').that.include('Match error');
 		});
 
-		it('should return and empty list if using current time', (done) => {
-			void request
+		it('should return and empty list if using current time', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -1605,20 +1549,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
-					expect(data.result.length).to.be.equal(0);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.a('array');
+			expect(data.result.length).to.be.equal(0);
 		});
 
-		it('should return two messages if using a time from before the first msg was sent', (done) => {
-			void request
+		it('should return two messages if using a time from before the first msg was sent', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -1630,20 +1572,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
-					expect(data.result.length).to.be.equal(2);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.a('array');
+			expect(data.result.length).to.be.equal(2);
 		});
 
-		it('should return a single message if using a time from in between the messages', (done) => {
-			void request
+		it('should return a single message if using a time from in between the messages', async () => {
+			const res = await request
 				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -1655,16 +1595,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
-					expect(data.result.length).to.be.equal(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.a('array');
+			expect(data.result.length).to.be.equal(1);
 		});
 	});
 
@@ -1673,8 +1611,8 @@ describe('Meteor.methods', () => {
 			$date: new Date().getTime(),
 		};
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('public-settings:get'))
 				.send({
 					message: JSON.stringify({
@@ -1685,16 +1623,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return the list of public settings', (done) => {
-			void request
+		it('should return the list of public settings', async () => {
+			const res = await request
 				.post(methodCall('public-settings:get'))
 				.set(credentials)
 				.send({
@@ -1706,15 +1642,13 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
 		});
 	});
 
@@ -1731,8 +1665,8 @@ describe('Meteor.methods', () => {
 			]),
 		);
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('private-settings:get'))
 				.send({
 					message: JSON.stringify({
@@ -1743,12 +1677,10 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
 		it('should return nothing when user doesnt have any permission', (done) => {
@@ -1781,32 +1713,30 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should return properties when user has any related permissions', (done) => {
-			void updatePermission('view-privileged-setting', ['admin']).then(() => {
-				void request
-					.post(methodCall('private-settings:get'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'private-settings/get',
-							params: [date],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+		it('should return properties when user has any related permissions', async () => {
+			await updatePermission('view-privileged-setting', ['admin']);
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('object');
-						expect(data.result).to.have.a.property('update').that.is.an('array');
-						expect(data.result.update.length).to.not.equal(0);
-					})
-					.end(done);
-			});
+			const res = await request
+				.post(methodCall('private-settings:get'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'private-settings/get',
+						params: [date],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('update').that.is.an('array');
+			expect(data.result.update.length).to.not.equal(0);
 		});
 
 		it('should return properties when user has all related permissions', (done) => {
@@ -1846,8 +1776,8 @@ describe('Meteor.methods', () => {
 			$date: new Date().getTime(),
 		};
 
-		it('should fail if not logged in', (done) => {
-			void request
+		it('should fail if not logged in', async () => {
+			const res = await request
 				.post(methodCall('subscriptions:get'))
 				.send({
 					message: JSON.stringify({
@@ -1858,16 +1788,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return all subscriptions', (done) => {
-			void request
+		it('should return all subscriptions', async () => {
+			const res = await request
 				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
@@ -1879,20 +1807,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.be.above(1);
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('array');
+			expect(data.result.length).to.be.above(1);
 		});
 
-		it('should return all subscriptions after the given date', (done) => {
-			void request
+		it('should return all subscriptions after the given date', async () => {
+			const res = await request
 				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
@@ -1904,16 +1830,14 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('update').that.is.an('array');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('update').that.is.an('array');
 		});
 	});
 
@@ -1944,8 +1868,8 @@ describe('Meteor.methods', () => {
 
 		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
-		it('should send a message', (done) => {
-			void request
+		it('should send a message', async () => {
+			const res = await request
 				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
@@ -1957,20 +1881,18 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result.msg).to.equal('test message');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result.msg).to.equal('test message');
 		});
 
-		it('should parse correctly urls sent in message', (done) => {
-			void request
+		it('should parse correctly urls sent in message', async () => {
+			const res = await request
 				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
@@ -1988,17 +1910,15 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('urls').that.is.an('array');
-					expect(data.result.urls[0].url).to.equal('https://github.com');
-				})
-				.end(done);
+			expect(res.body).to.have.a.property('success', true);
+			expect(res.body).to.have.a.property('message').that.is.a('string');
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('urls').that.is.an('array');
+			expect(data.result.urls[0].url).to.equal('https://github.com');
 		});
 
 		it('should not send message if it is a system message', async () => {
@@ -2041,8 +1961,8 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should return an error if request includes unallowed parameters', (done) => {
-			void request
+		it('should return an error if request includes unallowed parameters', async () => {
+			const res = await request
 				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
@@ -2054,18 +1974,16 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.a.property('error').that.is.an('object');
+			expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
 		});
 
-		it('should accept message sent by js.SDK', (done) => {
-			void request
+		it('should accept message sent by js.SDK', async () => {
+			const res = await request
 				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
@@ -2077,17 +1995,15 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+				.expect(200);
 
-					const data = JSON.parse(res.body.message);
+			expect(res.body).to.have.property('success', true);
 
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('bot').that.is.an('object');
-					expect(data.result.bot).to.have.a.property('i', 'js.SDK');
-				})
-				.end(done);
+			const data = JSON.parse(res.body.message);
+
+			expect(data).to.have.a.property('result').that.is.an('object');
+			expect(data.result).to.have.a.property('bot').that.is.an('object');
+			expect(data.result.bot).to.have.a.property('i', 'js.SDK');
 		});
 	});
 
@@ -2498,8 +2414,8 @@ describe('Meteor.methods', () => {
 		});
 
 		['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'].forEach((prop) => {
-			it(`should allow to update a message changing property '${prop}'`, (done) => {
-				void request
+			it(`should allow to update a message changing property '${prop}'`, async () => {
+				const res = await request
 					.post(methodCall('updateMessage'))
 					.set(credentials)
 					.send({
@@ -2511,20 +2427,18 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('msg').that.is.a('string');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.a.property('success', true);
+				expect(res.body).to.have.a.property('message').that.is.a('string');
+				const data = JSON.parse(res.body.message);
+				expect(data).to.have.a.property('msg').that.is.a('string');
 			});
 		});
 
 		['tmid', '_hidden', 'rid'].forEach((prop) => {
-			it(`should fail to update a message changing invalid property '${prop}'`, (done) => {
-				void request
+			it(`should fail to update a message changing invalid property '${prop}'`, async () => {
+				const res = await request
 					.post(methodCall('updateMessage'))
 					.set(credentials)
 					.send({
@@ -2536,16 +2450,14 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+					.expect(400);
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('error').that.is.an('object');
-						expect(data.error).to.have.a.property('error', 'error-invalid-update-key');
-					})
-					.end(done);
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body).to.have.a.property('message').that.is.a('string');
+
+				const data = JSON.parse(res.body.message);
+				expect(data).to.have.a.property('error').that.is.an('object');
+				expect(data.error).to.have.a.property('error', 'error-invalid-update-key');
 			});
 		});
 	});
@@ -3124,8 +3036,8 @@ describe('Meteor.methods', () => {
 				]),
 			);
 
-			it('should fail when trying to add a user to a direct message room', (done) => {
-				void request
+			it('should fail when trying to add a user to a direct message room', async () => {
+				const res = await request
 					.post(methodCall('addUsersToRoom'))
 					.set(credentials)
 					.send({
@@ -3137,12 +3049,10 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('message').that.is.an('string');
-						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('message').that.is.an('string');
+				expect(res.body.message).to.include('error-cant-invite-for-direct-room');
 			});
 		});
 
@@ -3162,16 +3072,11 @@ describe('Meteor.methods', () => {
 				Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
 			);
 
-			it('should fail if not logged in', (done) => {
-				void request
-					.post(methodCall('addUsersToRoom'))
-					.expect('Content-Type', 'application/json')
-					.expect(401)
-					.expect((res) => {
-						expect(res.body).to.have.property('status', 'error');
-						expect(res.body).to.have.property('message');
-					})
-					.end(done);
+			it('should fail if not logged in', async () => {
+				const res = await request.post(methodCall('addUsersToRoom')).expect('Content-Type', 'application/json').expect(401);
+
+				expect(res.body).to.have.property('status', 'error');
+				expect(res.body).to.have.property('message');
 			});
 
 			it('should add a single user to a room', (done) => {

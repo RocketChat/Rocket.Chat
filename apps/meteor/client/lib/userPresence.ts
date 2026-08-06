@@ -54,6 +54,7 @@ export class UserPresence {
 		switch (newStatus) {
 			case UserStatus.ONLINE:
 				await this.goOnline();
+				this.startTimer();
 				break;
 
 			case UserStatus.AWAY:
@@ -118,9 +119,9 @@ export class UserPresence {
 		}, [RocketChatDesktop]);
 
 		useEffect(() => {
-			if (!user || !connected || isLoggingIn) return;
+			if (!user?._id || !connected || isLoggingIn) return;
 			this.startTimer();
-		}, [connected, isLoggingIn, user]);
+		}, [connected, isLoggingIn, user?._id]);
 
 		useEffect(() => {
 			if (connected) {

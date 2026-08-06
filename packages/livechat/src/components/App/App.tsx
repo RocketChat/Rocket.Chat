@@ -1,8 +1,7 @@
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
-import i18next from 'i18next';
-import { Component } from 'preact';
+import { useLayoutEffect, useState } from 'preact/hooks';
 import Router, { route } from 'preact-router';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
@@ -15,14 +14,14 @@ import Hooks from '../../lib/hooks';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import userPresence from '../../lib/userPresence';
-import { ChatConnector } from '../../routes/Chat';
+import Chat from '../../routes/Chat';
 import ChatFinished from '../../routes/ChatFinished';
 import GDPRAgreement from '../../routes/GDPRAgreement';
 import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch, StoreState } from '../../store';
+import store, { type Dispatch, type StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
 
 type AppProps = {
@@ -38,7 +37,7 @@ type AppProps = {
 		accepted: boolean;
 	};
 	triggered?: boolean;
-	user: {
+	user?: {
 		token: string;
 	};
 	dispatch: Dispatch;
@@ -52,46 +51,32 @@ type AppProps = {
 	alerts: {
 		id: string;
 	}[];
-	iframe: {
-		visible: boolean;
-		guest?: {
-			token: string;
-			department: string;
-			name: string;
-			email: string;
-		};
-		theme: StoreState['iframe']['theme'];
-	};
-	i18n: typeof i18next;
+	iframe: StoreState['iframe'];
 };
 
-type AppState = {
-	initialized: boolean;
-	poppedOut: boolean;
-};
+export const App = ({ dispatch }: AppProps) => {
+	const { t } = useTranslation();
 
-export class App extends Component<AppProps, AppState> {
-	override state = {
-		initialized: false,
-		poppedOut: false,
-	};
+	const [initialized, setInitialized] = useState(false);
 
-	protected handleRoute = async ({ url }: { url: string }) => {
+	const handleRoute = async ({ url }: { url: string }) => {
 		setTimeout(() => {
+			// Read the current store state, not the render-closure props: route('/')
+			// fires synchronously from the room store subscription before this
+			// component re-renders, so the closure would still hold the pre-login
+			// user and wrongly redirect a token-logged-in guest to /register.
+			const { config, gdpr, user } = store.state;
 			const {
-				config: {
-					settings: {
-						registrationForm,
-						nameFieldRegistrationForm,
-						emailFieldRegistrationForm,
-						forceAcceptDataProcessingConsent: gdprRequired,
-					},
-					online,
-					departments,
+				settings: {
+					registrationForm,
+					nameFieldRegistrationForm,
+					emailFieldRegistrationForm,
+					forceAcceptDataProcessingConsent: gdprRequired,
 				},
-				gdpr: { accepted: gdprAccepted },
-				user,
-			} = this.props;
+				online,
+				departments,
+			} = config;
+			const { accepted: gdprAccepted } = gdpr;
 
 			setInitCookies();
 
@@ -116,106 +101,89 @@ export class App extends Component<AppProps, AppState> {
 		}, 100);
 	};
 
-	protected handleTriggers() {
-		const {
-			config: { online, enabled },
-		} = this.props;
-		if (online && enabled) {
-			Triggers.init();
+	// Emulates componentDidMount / componentWillUnmount. useLayoutEffect (not
+	// useEffect) keeps the init/teardown synchronous with the commit, matching
+	// the class lifecycle these behaviors were ported from.
+	useLayoutEffect(() => {
+		const handleVisibilityChange = async () => {
+			dispatch({ visible: !visibility.hidden });
+		};
+
+		// Reads from the store at call time (after Connection.init has loaded the
+		// config), not from the mount-render closure whose config is still the
+		// initial empty state — otherwise Triggers.init() never runs.
+		const handleTriggers = () => {
+			const { config } = store.state;
+			if (config.online && config.enabled) {
+				Triggers.init();
+			}
+
+			void Triggers.processTriggers();
+		};
+
+		const initWidget = () => {
+			const { config, minimized, iframe, undocked } = store.state;
+			if (!undocked) {
+				parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
+				parentCall(iframe.visible ? 'showWidget' : 'hideWidget');
+				parentCall('setWidgetPosition', config.theme.position || 'right');
+			}
+
+			visibility.addListener(handleVisibilityChange);
+
+			void handleVisibilityChange();
+
+			window.addEventListener('beforeunload', () => {
+				visibility.removeListener(handleVisibilityChange);
+				dispatch({ minimized: true, undocked: false });
+			});
+		};
+
+		void (async () => {
+			// TODO: split these behaviors into composable components
+			await Connection.init();
+			CustomFields.init();
+			userPresence.init();
+			Hooks.init();
+			handleTriggers();
+			initWidget();
+			setInitialized(true);
+			parentCall('ready');
+		})();
+
+		return () => {
+			CustomFields.reset();
+			userPresence.reset();
+			visibility.removeListener(handleVisibilityChange);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	// Emulates componentDidUpdate: keep the document direction in sync with the
+	// active language (react-i18next re-renders on languageChanged).
+	useLayoutEffect(() => {
+		if (t) {
+			document.dir = isRTL(t('yes')) ? 'rtl' : 'ltr';
 		}
+	}, [t]);
 
-		void Triggers.processTriggers();
+	if (!initialized) {
+		return null;
 	}
 
-	protected handleVisibilityChange = async () => {
-		const { dispatch } = this.props;
-		dispatch({ visible: !visibility.hidden });
-	};
+	return (
+		<ScreenProvider>
+			<Router history={history} onChange={handleRoute}>
+				<Chat path='/' default />
+				<ChatFinished path='/chat-finished' />
+				<GDPRAgreement path='/gdpr' />
+				<LeaveMessage path='/leave-message' />
+				<Register path='/register' />
+				<SwitchDepartment path='/switch-department' />
+				<TriggerMessage path='/trigger-messages' />
+			</Router>
+		</ScreenProvider>
+	);
+};
 
-	protected handleLanguageChange = () => {
-		this.forceUpdate();
-	};
-
-	protected initWidget() {
-		const {
-			minimized,
-			iframe: { visible },
-			config: { theme },
-			dispatch,
-			undocked,
-		} = this.props;
-
-		if (!undocked) {
-			parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
-			parentCall(visible ? 'showWidget' : 'hideWidget');
-			parentCall('setWidgetPosition', theme.position || 'right');
-		}
-
-		visibility.addListener(this.handleVisibilityChange);
-
-		void this.handleVisibilityChange();
-
-		window.addEventListener('beforeunload', () => {
-			visibility.removeListener(this.handleVisibilityChange);
-			dispatch({ minimized: true, undocked: false });
-		});
-
-		i18next.on('languageChanged', this.handleLanguageChange);
-	}
-
-	protected async initialize() {
-		// TODO: split these behaviors into composable components
-		await Connection.init();
-		CustomFields.init();
-		userPresence.init();
-		Hooks.init();
-		this.handleTriggers();
-		this.initWidget();
-		this.setState({ initialized: true });
-		parentCall('ready');
-	}
-
-	protected async finalize() {
-		CustomFields.reset();
-		userPresence.reset();
-		visibility.removeListener(this.handleVisibilityChange);
-	}
-
-	override componentDidMount() {
-		void this.initialize();
-	}
-
-	override componentWillUnmount() {
-		void this.finalize();
-	}
-
-	override componentDidUpdate() {
-		const { i18n } = this.props;
-
-		if (i18n.t) {
-			document.dir = isRTL(i18n.t('yes')) ? 'rtl' : 'ltr';
-		}
-	}
-
-	render = (_: AppProps, { initialized }: AppState) => {
-		if (!initialized) {
-			return null;
-		}
-
-		return (
-			<ScreenProvider>
-				<Router history={history} onChange={this.handleRoute}>
-					<ChatConnector path='/' default />
-					<ChatFinished path='/chat-finished' />
-					<GDPRAgreement path='/gdpr' />
-					<LeaveMessage path='/leave-message' />
-					<Register path='/register' />
-					<SwitchDepartment path='/switch-department' />
-					<TriggerMessage path='/trigger-messages' />
-				</Router>
-			</ScreenProvider>
-		);
-	};
-}
-
-export default withTranslation()(App);
+export default App;

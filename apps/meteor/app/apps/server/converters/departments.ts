@@ -1,8 +1,9 @@
 import type { IAppDepartmentsConverter, IAppServerOrchestrator, IAppsDepartment } from '@rocket.chat/apps';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import * as z from 'zod';
 
-import { transformMappedData } from './transformMappedData';
+import { DepartmentCodec } from './codecs';
 
 export class AppDepartmentsConverter implements IAppDepartmentsConverter {
 	constructor(protected readonly orch: IAppServerOrchestrator) {
@@ -26,25 +27,7 @@ export class AppDepartmentsConverter implements IAppDepartmentsConverter {
 			return undefined;
 		}
 
-		const map = {
-			id: '_id',
-			name: 'name',
-			email: 'email',
-			updatedAt: '_updatedAt',
-			enabled: 'enabled',
-			numberOfAgents: 'numAgents',
-			showOnOfflineForm: 'showOnOfflineForm',
-			description: 'description',
-			offlineMessageChannelName: 'offlineMessageChannelName',
-			requestTagBeforeClosingChat: 'requestTagBeforeClosingChat',
-			chatClosingTags: 'chatClosingTags',
-			abandonedRoomsCloseCustomMessage: 'abandonedRoomsCloseCustomMessage',
-			waitingQueueMessage: 'waitingQueueMessage',
-			departmentsAllowedToForward: 'departmentsAllowedToForward',
-			showOnRegistration: 'showOnRegistration',
-		} as const;
-
-		return transformMappedData(department, map) as unknown as Promise<IAppsDepartment>;
+		return z.decode(DepartmentCodec, department);
 	}
 
 	convertAppDepartment(department: undefined | null): undefined;
@@ -58,27 +41,6 @@ export class AppDepartmentsConverter implements IAppDepartmentsConverter {
 			return undefined;
 		}
 
-		const newDepartment = {
-			_id: department.id,
-			name: department.name,
-			email: department.email,
-			_updatedAt: department.updatedAt,
-			enabled: department.enabled,
-			numAgents: department.numberOfAgents,
-			showOnOfflineForm: department.showOnOfflineForm,
-			showOnRegistration: department.showOnRegistration,
-			description: department.description,
-			offlineMessageChannelName: department.offlineMessageChannelName,
-			requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
-			chatClosingTags: department.chatClosingTags,
-			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage: department.waitingQueueMessage,
-			departmentsAllowedToForward: department.departmentsAllowedToForward,
-		};
-
-		return Object.assign(
-			newDepartment,
-			(department as { _unmappedProperties_?: Record<string, unknown> })._unmappedProperties_,
-		) as unknown as ILivechatDepartment;
+		return z.encode(DepartmentCodec, department);
 	}
 }

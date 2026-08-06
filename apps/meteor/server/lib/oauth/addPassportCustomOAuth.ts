@@ -4,6 +4,7 @@ import type { DoneCallback, Profile } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from './passportOAuthCallback';
+import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { verifyFunction } from './verifyFunction';
 import { oAuthRouter } from '../../configuration/configurePassport';
 import { settings } from '../../settings';
@@ -15,6 +16,7 @@ export const addPassportCustomOAuth = (
 	isCustomOAuth: boolean = false,
 ) => {
 	passport.unuse(serviceName);
+	removeOAuthRoutes(serviceName);
 
 	if (!config.clientId || !config.clientSecret || !config.serverURL) {
 		return;

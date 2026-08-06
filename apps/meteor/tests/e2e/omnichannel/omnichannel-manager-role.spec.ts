@@ -99,24 +99,23 @@ test.describe('OC - Manager Role', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-
-		await page.goto('/omnichannel');
+		await poOmnichannel.chats.goTo();
 	});
 
 	test('OC - Manager Role - Basic permissions', async () => {
 		await test.step('expect agent to not have access to omnichannel administration', async () => {
-			await expect(poOmnichannel.omnisidenav.linkCurrentChats).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkAnalytics).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkRealTimeMonitoring).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkAgents).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkDepartments).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkBusinessHours).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkReports).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.linkCannedResponses).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact Center')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Analytics')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time Monitoring')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Agents')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Departments')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business Hours')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Reports')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned Responses')).toBeVisible();
 		});
 	});
 
-	test('OC - Manager Role - Contact Center', async ({ page }) => {
+	test('OC - Manager Role - Contact Center', async () => {
 		await test.step('expect to be able to view all chats', async () => {
 			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();
 			await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
@@ -152,7 +151,7 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
-			await page.goto('/omnichannel');
+			await poOmnichannel.chats.goTo();
 		});
 
 		await test.step('expect to be able to remove closed rooms', async () => {
@@ -163,7 +162,7 @@ test.describe('OC - Manager Role', () => {
 
 	test('OC - Manager Role - Add/remove agents', async ({ page }) => {
 		const poOmnichannelAgents = new OmnichannelAgents(page);
-		await poOmnichannelAgents.sidebar.linkAgents.click();
+		await poOmnichannelAgents.goTo();
 
 		await test.step('expect add "user1" as agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
@@ -185,7 +184,7 @@ test.describe('OC - Manager Role', () => {
 
 	test('OC - Manager Role - Add/remove managers', async ({ page }) => {
 		const poOmnichannelManagers = new OmnichannelManager(page);
-		await poOmnichannelManagers.sidebar.linkManagers.click();
+		await poOmnichannelManagers.goTo();
 
 		await test.step('expect add "user1" as manager', async () => {
 			await poOmnichannelManagers.selectUsername('user1');

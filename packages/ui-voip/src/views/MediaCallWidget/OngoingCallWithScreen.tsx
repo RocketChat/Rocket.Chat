@@ -34,12 +34,11 @@ const OngoingCall = () => {
 		onOpenPopout,
 		streams,
 		onToggleScreenSharing,
-		widgetPositionTracker,
 		onClosePopout,
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 	const { currentViews } = useMediaCallInstance();
-	const isPopout = currentViews.includes('popout');
+	const isPopout = currentViews.has('popout');
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -58,7 +57,7 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget restorePosition={widgetPositionTracker?.getRestorePosition()} onChangePosition={widgetPositionTracker?.onChangePosition}>
+		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (

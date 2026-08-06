@@ -2,11 +2,15 @@ import type { Locator, Page } from '@playwright/test';
 
 import { expect } from '../../utils/test';
 
-export abstract class Table {
+export class Table {
 	constructor(protected root: Locator) {}
 
-	waitForDisplay() {
-		return expect(this.root).toBeVisible();
+	/**
+	 * @param fallback also satisfies the wait, for tables the page may legitimately
+	 * replace with something else — an empty state, most commonly.
+	 */
+	waitForDisplay(fallback?: Locator) {
+		return expect(fallback ? this.root.or(fallback) : this.root).toBeVisible();
 	}
 
 	findRowByName(name: string): Locator {

@@ -288,7 +288,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -468,7 +468,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -711,13 +711,13 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test-api-apps-node-ee:
-    name: 🔨 Test API Apps (node-runtime - EE)
+  test-api-apps-deno-ee:
+    name: 🔨 Test API Apps (deno-runtime - EE)
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
-      type: api-apps-node
+      type: api-apps-deno
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
@@ -847,7 +847,7 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
 
       - name: Restore turbo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -861,7 +861,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -985,7 +985,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-node-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-deno-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1022,7 +1022,7 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-apps-node-ee.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-apps-deno-ee.result }}' != 'success' ]]; then
             exit 1
           fi
 
@@ -1115,13 +1115,13 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Login to DockerHub
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}

@@ -1,4 +1,4 @@
-import type { ISubscription, IRole, IUser, IRoom, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, IMessage, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
 import type {
 	FindOptions,
 	FindCursor,
@@ -139,7 +139,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult>;
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
-	updateDraftByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], draft: string | undefined): Promise<null | WithId<ISubscription>>;
+	updateDraftByRoomIdAndUserId(
+		rid: IRoom['_id'],
+		uid: IUser['_id'],
+		draft: string | undefined,
+		tmid?: IMessage['_id'],
+	): Promise<null | WithId<ISubscription>>;
 
 	updateMuteGroupMentions(_id: string, muteGroupMentions: boolean): Promise<UpdateResult>;
 	changeDepartmentByRoomId(rid: string, department: string): Promise<UpdateResult>;

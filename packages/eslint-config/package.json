@@ -30,13 +30,14 @@
 		"eslint-plugin-prettier": "~5.5.6",
 		"eslint-plugin-react": "patch:eslint-plugin-react@npm%3A7.37.5#~/.yarn/patches/eslint-plugin-react-npm-7.37.5-d03f6b6543.patch",
 		"eslint-plugin-react-hooks": "~7.1.1",
-		"eslint-plugin-storybook": "~10.5.2",
+		"eslint-plugin-storybook": "~9.1.20",
 		"eslint-plugin-testing-library": "~7.16.2",
 		"globals": "~17.7.0",
 		"prettier": "~3.3.3",
 		"typescript-eslint": "~8.64.0"
 	},
 	"devDependencies": {
+		"storybook": "^9.1.20",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
