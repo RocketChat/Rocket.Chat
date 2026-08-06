@@ -1,4 +1,4 @@
-import { type IRegisterUser, isRegisterUser } from '@rocket.chat/core-typings';
+import type { IUser, RequiredField } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -10,21 +10,30 @@ import { validateFederatedUsername } from './validateFederatedUsername';
 const logger = new Logger('federation-matrix:user');
 
 /**
+ * `name` is deliberately not required: Rocket.Chat users are valid with a username and no
+ * display name (`Accounts_RequireNameForSignUp` off), and every consumer falls back to the
+ * username, so demanding it would drop membership events for nameless local users.
+ */
+type FederatedUser = RequiredField<IUser, 'username'>;
+
+const hasUsername = (user: IUser): user is FederatedUser => user.username !== undefined;
+
+/**
  * Resolves the local user for a Matrix user id, creating it on first contact.
  *
  * Only the last branch creates anything: once a user exists locally every later call
  * short-circuits on the lookup, which is why a broken creation path only ever surfaces
  * on the very first interaction with a given remote user.
  */
-export async function getOrCreateFederatedUser(userId: string): Promise<IRegisterUser> {
+export async function getOrCreateFederatedUser(userId: string): Promise<FederatedUser> {
 	try {
 		const serverName = federationSDK.getConfig('serverName');
 		const [username, userServerName, isLocal] = getUsernameServername(userId, serverName);
 
 		const user = await Users.findOneByUsername(username);
 		if (user) {
-			if (!isRegisterUser(user)) {
-				throw new Error(`User ${username} has no username or name for Matrix ID: ${userId}`);
+			if (!hasUsername(user)) {
+				throw new Error(`User ${username} has no username for Matrix ID: ${userId}`);
 			}
 			return user;
 		}
@@ -35,8 +44,8 @@ export async function getOrCreateFederatedUser(userId: string): Promise<IRegiste
 			if (!user) {
 				throw new Error('AppService user not found for creating user');
 			}
-			if (!isRegisterUser(user)) {
-				throw new Error(`AppService user ${userId} has no username or name`);
+			if (!hasUsername(user)) {
+				throw new Error(`AppService user ${userId} has no username`);
 			}
 			return user;
 		}

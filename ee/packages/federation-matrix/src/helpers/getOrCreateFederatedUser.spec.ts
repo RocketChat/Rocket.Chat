@@ -82,8 +82,17 @@ describe('getOrCreateFederatedUser', () => {
 			expect(mockFindOneByUsername).toHaveBeenCalledWith('bob');
 		});
 
-		it('should throw when the existing user has no name', async () => {
-			mockFindOneByUsername.mockResolvedValueOnce({ _id: 'user123', username: '@alice:example.com' } as any);
+		// local users are allowed to exist without a display name, so requiring one here would
+		// drop every membership event they take part in
+		it('should return a local user that has no name', async () => {
+			const namelessUser = { _id: 'user123', username: 'bob' };
+			mockFindOneByUsername.mockResolvedValueOnce(namelessUser as any);
+
+			await expect(getOrCreateFederatedUser('@bob:local.com')).resolves.toBe(namelessUser);
+		});
+
+		it('should throw when the existing user has no username', async () => {
+			mockFindOneByUsername.mockResolvedValueOnce({ _id: 'user123', name: 'Alice' } as any);
 
 			await expect(getOrCreateFederatedUser('@alice:example.com')).rejects.toThrow(
 				'Error getting or creating federated user @alice:example.com',
