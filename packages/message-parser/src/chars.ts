@@ -56,7 +56,10 @@ export function isEmojiStart(ch: string): boolean {
 		code === 0x303d ||
 		code === 0x3297 ||
 		code === 0x3299 ||
-		(code >= 0xd800 && code <= 0xdbff) // High surrogates (U+10000+ emoji)
+		(code >= 0xd800 && code <= 0xdbff) || // High surrogates (U+10000+ emoji)
+		ch === '#' || // keycap bases
+		ch === '*' ||
+		(ch >= '0' && ch <= '9')
 	);
 }
 

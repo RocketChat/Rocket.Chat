@@ -1167,7 +1167,10 @@ function tryEmojiShortCode(scanner: Scanner): Inlines | null {
 
 function tryUnicodeEmoji(scanner: Scanner): Inlines | null {
 	const ch = scanner.char();
-	if (ch === '' || ch.charCodeAt(0) <= 127) return null; // fast-reject ASCII
+
+	// fast-reject plain ASCII, but keycap bases (#, *, 0-9) can start an emoji
+	const isKeycapBase = (ch === '#' || ch === '*' || (ch >= '0' && ch <= '9')) && scanner.charAt(1) === '\uFE0F';
+	if (ch.charCodeAt(0) <= 127 && !isKeycapBase) return null;
 
 	let window = '';
 	for (let i = 0; i < 32; i++) {
