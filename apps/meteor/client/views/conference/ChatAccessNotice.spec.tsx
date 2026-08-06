@@ -4,18 +4,12 @@ import userEvent from '@testing-library/user-event';
 
 import ChatAccessNotice from './ChatAccessNotice';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { buildChatAccess } from './testFixtures';
 
 // `withJohnDoe` fixes the logged-in id, so the member without access has to be that same user to test self-exclusion.
 const uid = 'john.doe';
 
-const buildAccess = (membersWithoutAccess: string[], joined = true): ConferenceChatAccess => ({
-	rid: 'room-id',
-	name: 'general',
-	type: 'c',
-	membersWithoutAccess,
-	canInvite: true,
-	members: membersWithoutAccess.map((_id) => ({ _id, username: `user-${_id}`, name: `User ${_id}`, joined })),
-});
+const buildAccess = (membersWithoutAccess: string[], joined = true) => buildChatAccess({ membersWithoutAccess, joined });
 
 const renderNotice = (access: ConferenceChatAccess) =>
 	render(<ChatAccessNotice callId='call-id' access={access} />, {

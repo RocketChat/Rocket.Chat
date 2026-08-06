@@ -1,23 +1,16 @@
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isInVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { commonServiceStubs, buildMember, buildGroupCall } from './testHarness';
+import { buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
 
 // Mirrors `ringMembers.spec.ts`'s approach: `fixture` is the single canonical record and
 // `VideoConference.findOneById` hands out a clone of it on every call, regardless of projection.
 let fixture: VideoConference;
 
-const cloneFixture = (): VideoConference => ({
-	...fixture,
-	users: fixture.users.map((user) => ({ ...user })),
-	messages: { ...fixture.messages },
-});
-
 const VideoConferenceModelMock = {
-	findOneById: sinon.stub().callsFake(async () => cloneFixture()),
+	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
 	// Mirrors the model: an entry is pushed as *not* present, whatever the caller passed. Getting this wrong
 	// would leave fixture members with no `joined` flag at all, which every reader treats as joined.
 	addMemberById: sinon.stub().callsFake(async (_callId: string, member: IVideoConferenceUser) => {
@@ -43,28 +36,9 @@ const UsersMock = {
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
-	...commonServiceStubs,
-	'@rocket.chat/core-services': {
-		api: { broadcast: broadcastStub },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
-		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-	},
-	'@rocket.chat/models': {
-		CallHistory: CallHistoryMock,
-		Users: UsersMock,
-		VideoConference: VideoConferenceModelMock,
-		Rooms: { findOneById: sinon.stub().resolves(null) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: {
-			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-		},
-	},
+const VideoConfService = createService({
+	broadcast: broadcastStub,
+	models: { CallHistory: CallHistoryMock, Users: UsersMock, VideoConference: VideoConferenceModelMock },
 });
 
 // The one broadcast `declineCall` sends besides the room update: `video-conference.updated`, which is what tells
@@ -73,13 +47,11 @@ const conferenceUpdatedCalls = (): { callId: string }[] =>
 	broadcastStub.args.filter(([channel]) => channel === 'video-conference.updated').map(([, payload]) => payload as { callId: string });
 
 describe('VideoConfService.declineCall', () => {
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	beforeEach(() => {
 		service = new VideoConfService();
-		// Bare `sinon.stub()`s live outside sinon's default sandbox, so `sinon.resetHistory()` is a no-op for
-		// them — each has to be reset by hand or a test would silently read the previous test's calls.
-		[
+		resetAll(
 			VideoConferenceModelMock.findOneById,
 			VideoConferenceModelMock.addMemberById,
 			VideoConferenceModelMock.setUserDeclinedById,
@@ -88,8 +60,8 @@ describe('VideoConfService.declineCall', () => {
 			CallHistoryMock.insertMany,
 			UsersMock.findOneById,
 			broadcastStub,
-		].forEach((stub) => stub.resetHistory());
-		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
+		);
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		VideoConferenceModelMock.addMemberById.callsFake(async (_callId: string, member: IVideoConferenceUser) => {
 			fixture.users.push({ ...member, joined: false });
 		});

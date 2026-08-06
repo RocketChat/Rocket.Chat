@@ -1,10 +1,9 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs } from './testHarness';
+import { buildDirectCall, buildGroupCall, buildMember, createService, resetAll } from './testHarness';
 
 let call: VideoConference | null = null;
 
@@ -15,34 +14,14 @@ const VideoConferenceModelMock = {
 
 const broadcast = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
-	...commonServiceStubs,
-	'@rocket.chat/models': {
-		VideoConference: VideoConferenceModelMock,
-		Users: { findOneById: sinon.stub().resolves(null) },
-		Rooms: { findOneById: sinon.stub().resolves(null) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: { findOneByRoomIdAndUserId: sinon.stub().resolves(null) },
-		CallHistory: { insertMany: sinon.stub().resolves() },
-	},
-	'@rocket.chat/core-services': {
-		api: { broadcast },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
-		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-	},
-});
+const VideoConfService = createService({ broadcast, models: { VideoConference: VideoConferenceModelMock } });
 
 describe('VideoConfService.renameCall', () => {
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	beforeEach(() => {
 		service = new VideoConfService();
-		[VideoConferenceModelMock.findOneById, VideoConferenceModelMock.setTitleById, broadcast].forEach((stub) => stub.resetHistory());
+		resetAll(VideoConferenceModelMock.findOneById, VideoConferenceModelMock.setTitleById, broadcast);
 		call = buildGroupCall([buildMember({ _id: 'creator' })]);
 	});
 

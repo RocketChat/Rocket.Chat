@@ -125,21 +125,6 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(usernames).to.not.include(outsideUser.username);
 				});
 		});
-
-		it('should fail for an unknown callId', async () => {
-			await addParticipants('invalid-call-id', [outsideUser.username])
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
-
-		it('should fail when unauthenticated', async () => {
-			await request
-				.post(api('video-conference.add-participants'))
-				.send({ callId, users: [outsideUser.username] })
-				.expect(401);
-		});
 	});
 
 	describe('[Authorization by membership]', () => {
@@ -221,21 +206,6 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.a.property('status').equal(1);
 				});
 		});
-
-		it('should fail for an unknown callId', async () => {
-			await request
-				.post(api('video-conference.decline'))
-				.set(credentials)
-				.send({ callId: 'invalid-call-id' })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
-
-		it('should fail when unauthenticated', async () => {
-			await request.post(api('video-conference.decline')).send({ callId }).expect(401);
-		});
 	});
 
 	describe('[/video-conference.leave]', () => {
@@ -286,21 +256,6 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.a.property('status').equal(3);
 				});
 		});
-
-		it('should fail for an unknown callId', async () => {
-			await request
-				.post(api('video-conference.leave'))
-				.set(credentials)
-				.send({ callId: 'invalid-call-id' })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
-
-		it('should fail when unauthenticated', async () => {
-			await request.post(api('video-conference.leave')).send({ callId }).expect(401);
-		});
 	});
 
 	describe('[/video-conference.ring]', () => {
@@ -344,22 +299,6 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.success).to.be.equal(true);
 					expect(res.body.rang).to.deep.equal([outsideUser2._id]);
 				});
-		});
-
-		it('should fail for an unknown callId', async () => {
-			await request
-				.post(api('video-conference.ring'))
-				.set(credentials)
-				.send({ callId: 'invalid-call-id' })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
-
-		it('should fail when unauthenticated', async () => {
-			const callId = await startCall(roomId);
-			await request.post(api('video-conference.ring')).send({ callId }).expect(401);
 		});
 	});
 
@@ -491,47 +430,42 @@ import { IS_EE } from '../../e2e/config/constants';
 				await Promise.all([deleteRoom({ type: 'd', roomId: dmRoomId }), deleteUser(dmPeer)]);
 			}
 		});
-
-		it('should fail for an unknown callId', async () => {
-			await request
-				.post(api('video-conference.share-chat'))
-				.set(credentials)
-				.send({ callId: 'invalid-call-id', mode: 'invite' })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
-
-		it('should fail when unauthenticated', async () => {
-			await request.post(api('video-conference.share-chat')).send({ callId: 'invalid-call-id', mode: 'invite' }).expect(401);
-		});
 	});
 
-	describe('[/video-conference.info validation]', () => {
-		it('should fail for an unknown callId', async () => {
-			await getInfo('invalid-call-id')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
-		});
+	/**
+	 * Every conference endpoint refuses the same two things in the same way: a call id that names nothing, and a
+	 * caller who isn't signed in. Neither answer says which — a stranger must not be able to use these to learn
+	 * that a call id is real.
+	 */
+	describe('[validation]', () => {
+		const endpoints = [
+			['video-conference.add-participants', 'post', { callId: 'invalid-call-id', users: ['someone'] }],
+			['video-conference.decline', 'post', { callId: 'invalid-call-id' }],
+			['video-conference.leave', 'post', { callId: 'invalid-call-id' }],
+			['video-conference.ring', 'post', { callId: 'invalid-call-id' }],
+			['video-conference.rename', 'post', { callId: 'invalid-call-id', title: 'Anything' }],
+			['video-conference.share-chat', 'post', { callId: 'invalid-call-id', mode: 'invite' }],
+			['video-conference.join', 'post', { callId: 'invalid-call-id' }],
+			['video-conference.info', 'get', { callId: 'invalid-call-id' }],
+		] as const;
 
-		it('should fail when unauthenticated', async () => {
-			await request.get(api('video-conference.info')).query({ callId: 'invalid-call-id' }).expect(401);
-		});
-	});
+		endpoints.forEach(([endpoint, method, body]) => {
+			it(`${endpoint} should fail for an unknown callId`, async () => {
+				const call = method === 'get' ? request.get(api(endpoint)).query(body) : request.post(api(endpoint)).send(body);
 
-	describe('[/video-conference.join validation]', () => {
-		it('should fail for an unknown callId', async () => {
-			await request
-				.post(api('video-conference.join'))
-				.set(credentials)
-				.send({ callId: 'invalid-call-id' })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body.success).to.be.equal(false);
-				});
+				await call
+					.set(credentials)
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+					});
+			});
+
+			it(`${endpoint} should fail when unauthenticated`, async () => {
+				const call = method === 'get' ? request.get(api(endpoint)).query(body) : request.post(api(endpoint)).send(body);
+
+				await call.expect(401);
+			});
 		});
 	});
 });

@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import OngoingCalls from './OngoingCalls';
+import { buildJoinableCall as call } from '../../views/conference/testFixtures';
 
 const joinCall = jest.fn();
 const dismissCall = jest.fn();
@@ -13,16 +14,6 @@ jest.mock('@rocket.chat/ui-video-conf', () => ({
 	useVideoConfJoinCall: () => joinCall,
 	useVideoConfDismissCall: () => dismissCall,
 }));
-
-const call = (overrides: Partial<JoinableVideoConference> & Pick<JoinableVideoConference, 'callId'>): JoinableVideoConference => ({
-	name: `Call ${overrides.callId}`,
-	createdAt: new Date(),
-	usersCount: 2,
-	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],
-	joined: false,
-	declined: false,
-	...overrides,
-});
 
 const decline = jest.fn(() => ({ success: true }) as any);
 

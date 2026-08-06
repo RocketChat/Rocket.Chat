@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import NavBarItemOngoingCalls from './NavBarItemOngoingCalls';
+import { buildJoinableCall as call } from '../views/conference/testFixtures';
 
 const joinCall = jest.fn();
 
@@ -18,16 +19,6 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useLayout: () => ({ sidebar: { isCollapsed: sidebarCollapsed } }),
 }));
-
-const call = (overrides: Partial<JoinableVideoConference> & Pick<JoinableVideoConference, 'callId'>): JoinableVideoConference => ({
-	name: `Call ${overrides.callId}`,
-	createdAt: new Date(),
-	usersCount: 2,
-	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],
-	joined: false,
-	declined: false,
-	...overrides,
-});
 
 const renderButton = (calls: JoinableVideoConference[]) =>
 	render(<NavBarItemOngoingCalls />, {

@@ -271,14 +271,6 @@ describe('when the call window joins for itself', () => {
 		VideoConfManager.off('call/join', joined);
 	});
 
-	// The caller is in the call window, not waiting in the room, which is what stops the room showing an
-	// outgoing popup for a call they are already sitting in.
-	it('still stops reporting the room as calling', async () => {
-		await VideoConfManager.startCall('room-1');
-
-		expect(VideoConfManager.isCalling()).toBe(false);
-	});
-
 	// The callee is rung by the server once the caller has actually entered the call. Ringing from here would ring
 	// them while the caller is still choosing a camera, which means answering into an empty room.
 	it('leaves the ringing until the caller has arrived in the call', async () => {

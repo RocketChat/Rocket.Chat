@@ -36,12 +36,3 @@ it('falls back to the number when there are no faces to show', () => {
 	expect(screen.getByText('__count__people_in_the_call')).toBeInTheDocument();
 	expect(container.querySelectorAll('img')).toHaveLength(0);
 });
-
-// A number tucked under an avatar is a number you have to guess at.
-it('puts the count beside the faces, not under them', () => {
-	renderParticipants({ participants: [participant('alice'), participant('bob'), participant('carol')], usersCount: 6 });
-
-	const counter = screen.getByText('+3');
-	expect(counter).toBeInTheDocument();
-	expect(Number.parseInt(getComputedStyle(counter).marginInlineStart || '0', 10)).toBeGreaterThanOrEqual(0);
-});

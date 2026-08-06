@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import ConferenceChat from './ConferenceChat';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { buildChatAccess } from './testFixtures';
 
 // The room UI underneath needs the whole store-seeding apparatus, which isn't what these assertions are about.
 jest.mock('./ConferenceStoresReady', () => ({
@@ -14,14 +15,7 @@ jest.mock('./ConferenceRoom', () => ({ __esModule: true, default: () => null }))
 // `withJohnDoe` fixes the logged-in id, so the member without access has to be that same user.
 const uid = 'john.doe';
 
-const buildAccess = (membersWithoutAccess: string[]): ConferenceChatAccess => ({
-	rid: 'room-id',
-	name: 'general',
-	type: 'c',
-	membersWithoutAccess,
-	canInvite: true,
-	members: membersWithoutAccess.map((_id) => ({ _id, username: `user-${_id}`, name: `User ${_id}` })),
-});
+const buildAccess = (membersWithoutAccess: string[]) => buildChatAccess({ membersWithoutAccess });
 
 const renderChat = (chatAccess: ConferenceChatAccess) =>
 	render(<ConferenceChat rid='room-id' loading={false} chatAccess={chatAccess} onClose={jest.fn()} />, {

@@ -1,9 +1,8 @@
 import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { commonServiceStubs, buildMember, buildGroupCall } from './testHarness';
+import { buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
 
 // `getChatAccess` reads the conference once, then decides per room whether it can answer from a single
 // `Subscriptions` read or has to fall back to asking `canAccessRoomIdAsync` once per member — so each test
@@ -12,14 +11,8 @@ import { commonServiceStubs, buildMember, buildGroupCall } from './testHarness';
 let fixture: VideoConference;
 let room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'teamId' | 'prid' | 'abacAttributes'>;
 
-const cloneFixture = (): VideoConference => ({
-	...fixture,
-	users: fixture.users.map((user) => ({ ...user })),
-	messages: { ...fixture.messages },
-});
-
 const VideoConferenceModelMock = {
-	findOneById: sinon.stub().callsFake(async () => cloneFixture()),
+	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
 };
 
 const RoomsMock = {
@@ -37,47 +30,35 @@ const SubscriptionsMock = {
 // else can, which is enough to tell the two apart without pulling in the real `roomCoordinator`.
 const allowMemberActionStub = sinon.stub().callsFake(async (targetRoom: Pick<IRoom, 't'>) => targetRoom.t !== 'd');
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
-	...commonServiceStubs,
-	'@rocket.chat/core-services': {
-		api: { broadcast: sinon.stub().resolves() },
-		ServiceClassInternal: class {
-			onEvent() {
-				/* no-op */
-			}
-		},
-		Message: { saveSystemMessage: sinon.stub().resolves() },
-		Room: { addUserToRoom: sinon.stub().resolves() },
-	},
-	'@rocket.chat/models': {
-		CallHistory: { insertMany: sinon.stub().resolves({ insertedCount: 0 }) },
-		Users: { findOneById: sinon.stub().resolves(null), find: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
+// The two room-access paths and the invite rule are what this suite is about, so those come from the spec
+// rather than from the harness's inert defaults.
+const VideoConfService = createService({
+	models: {
 		VideoConference: VideoConferenceModelMock,
 		Rooms: RoomsMock,
-		Messages: { setBlocksById: sinon.stub().resolves() },
 		Subscriptions: SubscriptionsMock,
 	},
-	'../../lib/authorization/canAccessRoom': { canAccessRoomIdAsync: canAccessRoomIdAsyncStub },
-	'../../lib/rooms/roomCoordinator': {
-		roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction: allowMemberActionStub, getDiscussionType: () => 'p' }) },
+	overrides: {
+		'../../lib/authorization/canAccessRoom': { canAccessRoomIdAsync: canAccessRoomIdAsyncStub },
+		'../../lib/rooms/roomCoordinator': {
+			roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction: allowMemberActionStub, getDiscussionType: () => 'p' }) },
+		},
 	},
 });
 
 describe('VideoConfService.getChatAccess', () => {
-	let service: InstanceType<typeof VideoConfService>;
+	let service: any;
 
 	beforeEach(() => {
 		service = new VideoConfService();
-		// Bare `sinon.stub()`s live outside sinon's default sandbox, so `sinon.resetHistory()` is a no-op for
-		// them — each has to be reset by hand or a test would silently read the previous test's calls.
-		[
+		resetAll(
 			VideoConferenceModelMock.findOneById,
 			RoomsMock.findOneById,
 			canAccessRoomIdAsyncStub,
 			findByRoomIdAndUserIdsStub,
 			allowMemberActionStub,
-		].forEach((stub) => stub.resetHistory());
-		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
+		);
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		RoomsMock.findOneById.callsFake(async () => ({ ...room }));
 		canAccessRoomIdAsyncStub.reset();
 		findByRoomIdAndUserIdsStub.reset();
