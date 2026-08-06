@@ -14,13 +14,11 @@ const SidebarRailCallPanel = () => {
 		<FeaturePreview feature='sidebarRail' disabled={embeddedLayout || isMobile}>
 			<FeaturePreviewOn>
 				<SidebarPortal>
-					<Box width='x280' minWidth='x280'>
-						<Sidepanel role='complementary' aria-label={t('Calls')}>
-							<Box padding={16}>
-								<InlineMediaCallWidget />
-							</Box>
-						</Sidepanel>
-					</Box>
+					<Sidepanel role='complementary' aria-label={t('Calls')}>
+						<Box padding={16}>
+							<InlineMediaCallWidget />
+						</Box>
+					</Sidepanel>
 				</SidebarPortal>
 			</FeaturePreviewOn>
 			<FeaturePreviewOff>{null}</FeaturePreviewOff>
