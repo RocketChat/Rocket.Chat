@@ -22,7 +22,7 @@ const SidebarRail = () => {
 			is='nav'
 			aria-label={t('Sidebar')}
 			className='rcx-sidebar-rail'
-			bg='surface-sidebar'
+			backgroundColor='surface-sidebar'
 			borderInlineEndWidth='default'
 			borderInlineEndStyle='solid'
 			borderInlineEndColor='stroke-light'
@@ -32,7 +32,7 @@ const SidebarRail = () => {
 			width='x44'
 			height='full'
 		>
-			<Box flexGrow={1} minHeight={0} overflow='hidden auto' p={8}>
+			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
 					<NavBarItemHomePage title={t('Home')} />
 					<SidebarRailSort />
@@ -45,7 +45,7 @@ const SidebarRail = () => {
 					<NavBarItemMarketPlaceMenu />
 				</NavBarGroup>
 			</Box>
-			<Box p={8}>
+			<Box padding={8}>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <SidebarRailLoginPage />}
