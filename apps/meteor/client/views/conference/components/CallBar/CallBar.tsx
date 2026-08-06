@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 type CallBarProps = {
@@ -6,19 +6,19 @@ type CallBarProps = {
 };
 
 /**
- * The in-call control bar, pinned along the bottom of a conference — the same position third-party
- * providers put their own toolbar in, so an embedded provider and the native conference read the same.
+ * The in-call control bar, pinned along the bottom of a conference — the same position third-party providers put
+ * their own toolbar in, so an embedded provider and the native conference read the same.
  *
- * It is `relative` so a `placement='end'` group can sit at the inline end without pulling the centred
- * controls off-centre.
+ * Its actions sit at the inline end, away from wherever the provider puts its own controls. When the native
+ * conference brings mic, camera and hang-up of its own, they will want the centre of the bar — and that is the
+ * point at which what the centre needs will be known, rather than guessed at now.
  */
 const CallBar = ({ children }: CallBarProps) => (
 	<Box
 		is='footer'
 		display='flex'
 		alignItems='center'
-		justifyContent='center'
-		position='relative'
+		justifyContent='flex-end'
 		flexShrink={0}
 		width='100%'
 		minHeight={56}
@@ -28,7 +28,7 @@ const CallBar = ({ children }: CallBarProps) => (
 		borderBlockStartStyle='solid'
 		borderBlockStartColor='stroke-extra-light'
 	>
-		{children}
+		<ButtonGroup>{children}</ButtonGroup>
 	</Box>
 );
 

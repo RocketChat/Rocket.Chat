@@ -13,7 +13,9 @@ import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
-import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
+import CallBar from './components/CallBar/CallBar';
+import CallBarAction from './components/CallBar/CallBarAction';
+import CallPanel from './components/CallPanel/CallPanel';
 import { useCallOutcome } from './hooks/useCallOutcome';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConferenceSubscription } from './hooks/useConferenceSubscription';
@@ -156,7 +158,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 							callId={callId}
 							rid={room.rid}
 							members={call.members}
-							membersWithoutChatAccess={room.chatAccess?.membersWithoutAccess ?? []}
+							chatAccess={room.chatAccess}
 							onClose={() => togglePanel('members')}
 						/>
 					)}
@@ -168,25 +170,23 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 			{callBarVisible && (
 				<CallBar>
-					<CallBarActions placement='end'>
-						<CallBarAction
-							icon='team'
-							label={t('Members')}
-							pressed={activePanel === 'members'}
-							badgeCount={presentCount}
-							badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
-							onClick={() => togglePanel('members')}
-						/>
-						<CallBarAction
-							icon='balloon'
-							label={t('Chat')}
-							pressed={chatVisible}
-							badgeCount={unread}
-							badgeVariant={unreadVariant}
-							badgeTitle={unreadTitle}
-							onClick={() => togglePanel('chat')}
-						/>
-					</CallBarActions>
+					<CallBarAction
+						icon='team'
+						label={t('Members')}
+						pressed={activePanel === 'members'}
+						badgeCount={presentCount}
+						badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
+						onClick={() => togglePanel('members')}
+					/>
+					<CallBarAction
+						icon='balloon'
+						label={t('Chat')}
+						pressed={chatVisible}
+						badgeCount={unread}
+						badgeVariant={unreadVariant}
+						badgeTitle={unreadTitle}
+						onClick={() => togglePanel('chat')}
+					/>
 				</CallBar>
 			)}
 		</Box>

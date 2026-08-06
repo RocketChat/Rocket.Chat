@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OngoingCalls from '../components/OngoingCalls/OngoingCalls';
-import { useOngoingCalls } from '../components/OngoingCalls/useOngoingCalls';
+import { useOngoingCallsList } from '../components/OngoingCalls/useOngoingCalls';
 import { useDropdownVisibility } from '../views/room/Header/Omnichannel/QuickActions/hooks/useDropdownVisibility';
 
 /**
@@ -18,7 +18,7 @@ import { useDropdownVisibility } from '../views/room/Header/Omnichannel/QuickAct
 const NavBarItemOngoingCalls = () => {
 	const { t } = useTranslation();
 	const { sidebar } = useLayout();
-	const { ringing, ongoing } = useOngoingCalls();
+	const { ringing, ongoing } = useOngoingCallsList();
 
 	const reference = useRef<HTMLButtonElement>(null);
 	const target = useRef(null);

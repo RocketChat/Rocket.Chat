@@ -9,8 +9,6 @@ declare global {
 		videoCallWindow?: {
 			// Navigate the main app window to an in-app route (e.g. "/channel/general") and focus it.
 			openInMainWindow?: (path: string) => void;
-			// Close the conference window (renderer `window.close()` can't close a main-process window).
-			close?: () => void;
 		};
 
 		/** @deprecated use `window.RTCPeerConnection` */

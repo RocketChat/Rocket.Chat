@@ -136,7 +136,6 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
-			providerName: data?.providerName,
 			loading: isPending,
 			error,
 			join,

@@ -1,6 +1,6 @@
 import SidebarCard from './SidebarCard';
 import OngoingCalls from '../../components/OngoingCalls/OngoingCalls';
-import { useOngoingCalls } from '../../components/OngoingCalls/useOngoingCalls';
+import { useOngoingCallsList } from '../../components/OngoingCalls/useOngoingCalls';
 
 /**
  * The calls this user can walk into, docked at the top of the sidebar.
@@ -9,7 +9,7 @@ import { useOngoingCalls } from '../../components/OngoingCalls/useOngoingCalls';
  * only gives it the sidebar's surface, and knows when there is nothing to give it at all.
  */
 const OngoingCallsSection = () => {
-	const { ringing, ongoing } = useOngoingCalls();
+	const { ringing, ongoing } = useOngoingCallsList();
 
 	if (ringing.length === 0 && ongoing.length === 0) {
 		return null;

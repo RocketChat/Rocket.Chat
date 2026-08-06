@@ -16,7 +16,7 @@ const DEFAULTS: CallPreferences = { mic: true, cam: false };
  * A provider that cannot be told about a device is not asked about it: the returned value reports the device as
  * off, so nothing claims to have configured something it can't.
  */
-export const useCallPreferences = (capabilities: VideoConferenceCapabilities = {}) => {
+export const useCallPreferences = (capabilities: VideoConferenceCapabilities) => {
 	const [stored, setStored] = useLocalStorage<CallPreferences>('videoconf-call-preferences', DEFAULTS);
 
 	const preferences = useMemo(

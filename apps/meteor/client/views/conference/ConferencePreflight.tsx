@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Field, FieldRow, Icon, TextInput } from '@roc
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CallBarAction } from './components';
+import CallBarAction from './components/CallBar/CallBarAction';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
 

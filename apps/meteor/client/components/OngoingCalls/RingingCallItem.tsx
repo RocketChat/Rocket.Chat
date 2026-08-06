@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Icon, IconButton } from '@rocket.chat/fuselag
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
-import CallParticipants from './CallParticipants';
+import CallSummary from './CallSummary';
 
 type RingingCallItemProps = {
 	call: JoinableVideoConference;
@@ -35,22 +35,17 @@ const RingingCallItem = ({ call, silenced, onAccept, onReject, onSilence }: Ring
 
 	return (
 		<Box marginBlockEnd={12} paddingBlock={4}>
-			<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
-				{/* A conference, like every other call in this list — what makes it different is that it is ringing. */}
-				<Icon name='video' size='x20' color='status-font-on-danger' />
-				<Box minWidth={0} flexGrow={1}>
-					<Box fontScale='p2b' color='default' withTruncatedText>
-						{call.name}
-					</Box>
-					{/* The same thing the calls below say about themselves: who is already in there. That it is
-					    incoming is said once, above the group. */}
-					<CallParticipants participants={call.participants} usersCount={call.usersCount} />
-				</Box>
-				{audible && (
-					<IconButton tiny icon='bell-off' title={t('Silence')} aria-label={t('Silence')} onClick={() => onSilence(call.callId)} />
-				)}
-				{/* Silenced: the same icon, with nothing left to press — it says why it went quiet. */}
-				{silenced && <Icon name='bell-off' size='x16' color='hint' title={t('Incoming_call_silenced')} />}
+			{/* The same thing the calls below say about themselves — a conference, its name, who is already in it.
+			    That this one is *ringing* is what the colour and the actions below say; that it is incoming is said
+			    once, above the group. */}
+			<Box marginBlockEnd={8}>
+				<CallSummary call={call} ringing>
+					{audible && (
+						<IconButton tiny icon='bell-off' title={t('Silence')} aria-label={t('Silence')} onClick={() => onSilence(call.callId)} />
+					)}
+					{/* Silenced: the same icon, with nothing left to press — it says why it went quiet. */}
+					{silenced && <Icon name='bell-off' size='x16' color='hint' title={t('Incoming_call_silenced')} />}
+				</CallSummary>
 			</Box>
 			{/* Accept first, then decline, in the order the calls below use: the offer, then the way out of it. */}
 			<ButtonGroup stretch>

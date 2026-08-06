@@ -35,6 +35,7 @@ export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollap
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
+export { useCurrentRouteName } from './hooks/useCurrentRouteName';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export type { EndpointFunction } from './hooks/useEndpoint';

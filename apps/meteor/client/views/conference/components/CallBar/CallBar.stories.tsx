@@ -1,8 +1,9 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { CallBar, CallBarActions, CallBarAction } from '.';
-import { CallPanel } from '../CallPanel';
+import CallBar from './CallBar';
+import CallBarAction from './CallBarAction';
+import CallPanel from '../CallPanel/CallPanel';
 
 export default {
 	component: CallBar,
@@ -38,9 +39,7 @@ const Conference = ({ chatVisible, overlay, children }: { chatVisible?: boolean;
 export const Default: StoryFn<typeof CallBar> = () => (
 	<Conference>
 		<CallBar>
-			<CallBarActions placement='end'>
-				<CallBarAction icon='balloon' label='Chat' onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction icon='balloon' label='Chat' onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );
@@ -48,9 +47,7 @@ export const Default: StoryFn<typeof CallBar> = () => (
 export const WithOpenPanel: StoryFn<typeof CallBar> = () => (
 	<Conference chatVisible>
 		<CallBar>
-			<CallBarActions placement='end'>
-				<CallBarAction pressed icon='balloon' label='Chat' onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction pressed icon='balloon' label='Chat' onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );
@@ -58,9 +55,7 @@ export const WithOpenPanel: StoryFn<typeof CallBar> = () => (
 export const WithClosedPanel: StoryFn<typeof CallBar> = () => (
 	<Conference chatVisible={false}>
 		<CallBar>
-			<CallBarActions placement='end'>
-				<CallBarAction icon='balloon' label='Chat' onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction icon='balloon' label='Chat' onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );
@@ -68,9 +63,7 @@ export const WithClosedPanel: StoryFn<typeof CallBar> = () => (
 export const WithOverlayPanel: StoryFn<typeof CallBar> = () => (
 	<Conference chatVisible overlay>
 		<CallBar>
-			<CallBarActions placement='end'>
-				<CallBarAction pressed icon='balloon' label='Chat' onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction pressed icon='balloon' label='Chat' onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );
@@ -78,27 +71,17 @@ export const WithOverlayPanel: StoryFn<typeof CallBar> = () => (
 export const WithUnreadBadge: StoryFn<typeof CallBar> = () => (
 	<Conference chatVisible={false}>
 		<CallBar>
-			<CallBarActions placement='end'>
-				<CallBarAction icon='balloon' label='Chat' badgeCount={2} onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction icon='balloon' label='Chat' badgeCount={2} onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );
 
-// Centred call controls with the chat action anchored at the end — the shape the native conference will
-// use once it owns mic/camera/screen-share/hang-up.
-export const WithCallControls: StoryFn<typeof CallBar> = () => (
+// Every action the bar carries today, together — the members and chat panels, one of them open.
+export const WithEveryAction: StoryFn<typeof CallBar> = () => (
 	<Conference chatVisible>
 		<CallBar>
-			<CallBarActions>
-				<CallBarAction icon='mic' label='Mute' onClick={action('onClick')} />
-				<CallBarAction icon='video' label='Camera' onClick={action('onClick')} />
-				<CallBarAction icon='desktop' label='Share screen' onClick={action('onClick')} />
-				<CallBarAction icon='phone-off' label='Leave' onClick={action('onClick')} />
-			</CallBarActions>
-			<CallBarActions placement='end'>
-				<CallBarAction pressed icon='balloon' label='Chat' badgeCount={2} onClick={action('onClick')} />
-			</CallBarActions>
+			<CallBarAction icon='team' label='Members' badgeCount={3} onClick={action('onClick')} />
+			<CallBarAction pressed icon='balloon' label='Chat' badgeCount={2} onClick={action('onClick')} />
 		</CallBar>
 	</Conference>
 );

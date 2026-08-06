@@ -5,7 +5,7 @@ import ConferenceChat from './ConferenceChat';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 
 // The room UI underneath needs the whole store-seeding apparatus, which isn't what these assertions are about.
-jest.mock('./ConferenceRoomPreload', () => ({
+jest.mock('./ConferenceStoresReady', () => ({
 	__esModule: true,
 	default: ({ children }: { children: React.ReactNode }) => <div data-testid='chat-room'>{children}</div>,
 }));
@@ -24,7 +24,7 @@ const buildAccess = (membersWithoutAccess: string[]): ConferenceChatAccess => ({
 });
 
 const renderChat = (chatAccess: ConferenceChatAccess) =>
-	render(<ConferenceChat rid='room-id' loading={false} chatAccess={chatAccess} />, {
+	render(<ConferenceChat rid='room-id' loading={false} chatAccess={chatAccess} onClose={jest.fn()} />, {
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
