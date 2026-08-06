@@ -20,7 +20,7 @@ const SidebarRail = () => {
 	return (
 		<Box
 			is='nav'
-			aria-label={t('Sidebar')}
+			aria-label={t('Sidebar_rail')}
 			className='rcx-sidebar-rail'
 			backgroundColor='surface-sidebar'
 			borderInlineEndWidth='default'
