@@ -2094,15 +2094,15 @@ describe('[Rooms]', () => {
 		});
 
 		it('should count the system message just sent on the discussion', async () => {
-      await request
+			await request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({
 					rid: discussion._id,
-					roomName: "edited-discussion-name",
+					roomName: 'edited-discussion-name',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(200);
 			const discussionMessage = await getDiscussionMessage();
 
 			expect(discussionMessage).to.have.property('dcount', 1);

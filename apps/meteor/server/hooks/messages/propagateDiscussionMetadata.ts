@@ -3,7 +3,7 @@ import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 import type { Updater } from '@rocket.chat/models';
 
 import { callbacks } from '../../lib/callbacks';
-import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
 /**
@@ -22,17 +22,6 @@ const withPendingRoomChanges = (room: IRoom, roomUpdater?: Updater<IRoom>): IRoo
 		msgs: room.msgs + pendingMsgs,
 		lm: pendingLm ?? room.lm,
 	};
-};
-
-export const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const parentMessage = await Messages.refreshDiscussionMetadata(room);
-	if (!parentMessage) {
-		return;
-	}
-	void notifyOnMessageChange({
-		id: parentMessage._id,
-		data: parentMessage,
-	});
 };
 
 /**
