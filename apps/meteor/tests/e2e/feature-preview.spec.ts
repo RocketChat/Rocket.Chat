@@ -181,8 +181,7 @@ test.describe.serial('feature preview', () => {
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('hello thread');
 
-			const item = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
-			await expect(item.locator('..')).toHaveAttribute('data-item-index', '1');
+			await expect(poHomeTeam.sidepanel.sidepanelList.getByRole('listitem').nth(1)).toContainText(targetChannel);
 
 			await user1Page.close();
 		});

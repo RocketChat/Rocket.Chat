@@ -91,8 +91,8 @@ describe('SidePanelInternal', () => {
 		const listItems = screen.getAllByRole('listitem');
 		expect(listItems).toHaveLength(2);
 		expect(listItems[0]).not.toHaveAttribute('index');
-		expect(listItems[0]).toHaveAttribute('data-item-index', '0');
-		expect(listItems[1]).toHaveAttribute('data-item-index', '1');
+		expect(listItems[0]).toHaveTextContent('Alpha');
+		expect(listItems[1]).toHaveTextContent('Beta');
 		expect(screen.getByRole('link', { name: 'Alpha' })).toBeInTheDocument();
 		expect(screen.getByRole('link', { name: 'Beta' })).toHaveAttribute('aria-current', 'page');
 	});
