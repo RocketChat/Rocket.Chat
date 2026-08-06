@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -7,11 +8,12 @@ import { useEffect, useRef } from 'react';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
-import SecondaryPanel from './SecondaryPanel';
-import { isSidebarRailEnabled } from './sidebarRailFlag';
 import NavBar from '../../../navbar';
+import Sidebar from '../../../sidebar';
 import SidebarRail from '../../../sidebar/SidebarRail';
 import SidebarRailHeader from '../../../sidebar/SidebarRail/SidebarRailHeader';
+import NavigationRegion from '../../navigation';
+import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
@@ -19,7 +21,6 @@ export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const { isEmbedded: embeddedLayout, isMobile } = useLayout();
-	const showSidebarRail = isSidebarRailEnabled() && !embeddedLayout && !isMobile;
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
@@ -57,15 +58,40 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	return (
 		<>
 			<AccessibilityShortcut />
-			{!embeddedLayout && (showSidebarRail ? <SidebarRailHeader /> : <NavBar />)}
+			{!embeddedLayout && (
+				<FeaturePreview feature='sidebarRail' disabled={isMobile}>
+					<FeaturePreviewOn>
+						<SidebarRailHeader />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<NavBar />
+					</FeaturePreviewOff>
+				</FeaturePreview>
+			)}
 			<Box
 				backgroundColor='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				{showSidebarRail && <SidebarRail />}
-				{!removeSidenav && <SecondaryPanel showSidebarRail={showSidebarRail} currentRoutePath={currentRoutePath} />}
+				<FeaturePreview feature='sidebarRail' disabled={isMobile || embeddedLayout}>
+					<FeaturePreviewOn>
+						<SidebarRail />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+				</FeaturePreview>
+				{!removeSidenav && (
+					<FeaturePreview feature='secondarySidebar'>
+						<FeaturePreviewOn>
+							<RoomsNavigationProvider>
+								<NavigationRegion />
+							</RoomsNavigationProvider>
+						</FeaturePreviewOn>
+						<FeaturePreviewOff>
+							<Sidebar />
+						</FeaturePreviewOff>
+					</FeaturePreview>
+				)}
 				<MainContent>{children}</MainContent>
 			</Box>
 		</>
