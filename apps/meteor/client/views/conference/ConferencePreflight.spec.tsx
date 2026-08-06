@@ -13,7 +13,8 @@ const renderPreflight = (props: Partial<Parameters<typeof ConferencePreflight>[0
 	render(
 		<ConferencePreflight
 			name='general'
-			confirm='join'
+			action='join'
+			isDirect={false}
 			canName={false}
 			capabilities={bothDevices}
 			onConfirm={onConfirm}
@@ -29,10 +30,10 @@ beforeEach(() => {
 	localStorage.clear();
 });
 
-it('shows what the call is called', async () => {
+it('says what this screen is for', async () => {
 	renderPreflight();
 
-	expect(await screen.findByText('general')).toBeInTheDocument();
+	expect(await screen.findByText('Join_the_conference')).toBeInTheDocument();
 });
 
 // The whole point of waiting here: the choices are what the provider's URL is built from, so they have to reach
@@ -86,7 +87,7 @@ describe('naming the call', () => {
 	it('is not offered to everyone', async () => {
 		renderPreflight();
 
-		expect(await screen.findByText('general')).toBeInTheDocument();
+		expect(await screen.findByText('Join_the_conference')).toBeInTheDocument();
 		expect(screen.queryByLabelText('Call_name')).not.toBeInTheDocument();
 	});
 
@@ -94,6 +95,13 @@ describe('naming the call', () => {
 		renderPreflight({ canName: true });
 
 		expect(await screen.findByLabelText('Call_name')).toHaveValue('general');
+	});
+
+	// A conference in a room is offered as the meeting it is, rather than as the room's bare name.
+	it('offers the name it was given as a default', async () => {
+		renderPreflight({ canName: true, defaultName: 'Meeting in general' });
+
+		expect(await screen.findByLabelText('Call_name')).toHaveValue('Meeting in general');
 	});
 
 	it('hands the chosen name out with the devices', async () => {
@@ -148,27 +156,45 @@ describe('the camera', () => {
 	});
 });
 
-// Creating a direct call is not asking anyone to answer it: the caller lands here first, and confirming is what
-// rings the other side. The screen says so, and the button is the call rather than a join.
-describe('what confirming does', () => {
-	it('calls the person, when that is what it is', async () => {
-		renderPreflight({ confirm: 'call', name: 'Alice Attali' });
+// The screen says what this call is before anything else — with a person, or in a room; starting, or joining.
+describe('what it says it is', () => {
+	it('starts a conference in a room', async () => {
+		renderPreflight({ action: 'start' });
 
-		expect(await screen.findByText('__name__will_be_notified_when_you_start_the_call')).toBeInTheDocument();
+		expect(await screen.findByText('Start_a_new_conference')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Start_call' })).toBeInTheDocument();
+	});
+
+	// Creating a direct call is not asking anyone to answer it: the caller lands here first, and confirming is what
+	// rings the other side.
+	it('starts a conference with a person, and says they will be told', async () => {
+		renderPreflight({ action: 'start', isDirect: true, name: 'Alice Attali' });
+
+		expect(await screen.findByText('Start_conference_with__name__')).toBeInTheDocument();
+		expect(screen.getByText('__name__will_be_notified_when_you_start_the_call')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Call__name__' })).toBeInTheDocument();
 	});
 
-	it('starts a conference that does not exist yet', async () => {
-		renderPreflight({ confirm: 'start' });
+	it('joins a conference in a room', async () => {
+		renderPreflight();
 
-		expect(await screen.findByRole('button', { name: 'Start_call' })).toBeInTheDocument();
+		expect(await screen.findByText('Join_the_conference')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Join_call' })).toBeInTheDocument();
 		expect(screen.queryByText('__name__will_be_notified_when_you_start_the_call')).not.toBeInTheDocument();
 	});
 
-	it('joins one that is already under way', async () => {
-		renderPreflight();
+	it('joins a conference with a person', async () => {
+		renderPreflight({ isDirect: true, name: 'Alice Attali' });
 
-		expect(await screen.findByRole('button', { name: 'Join_call' })).toBeInTheDocument();
-		expect(screen.queryByText('__name__will_be_notified_when_you_start_the_call')).not.toBeInTheDocument();
+		expect(await screen.findByText('Join_conference_with__name__')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Join_call' })).toBeInTheDocument();
+	});
+
+	// The name is in the title, or in the field that changes it — saying it a third time under the tile was noise.
+	it('does not repeat the name under the tile', async () => {
+		renderPreflight({ name: 'general' });
+
+		expect(await screen.findByText('Join_the_conference')).toBeInTheDocument();
+		expect(screen.queryByText('general')).not.toBeInTheDocument();
 	});
 });

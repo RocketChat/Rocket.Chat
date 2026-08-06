@@ -116,6 +116,17 @@ What is on offer is what the provider can be told: today the pair it takes, on o
 same bar the call's own controls occupy, so the control that mutes the mic doesn't move between deciding to join
 and being in the call. A native provider will put input and output selection in the same place.
 
+### What the screen says it is
+
+A title, because the same screen serves four situations and they are not interchangeable: *Start a new
+conference* / *Start conference with Alice* when nothing exists yet, *Join the conference* / *Join conference with
+Alice* when it does. The confirm button follows suit — **Start call**, **Call Alice**, or **Join call**.
+
+The name field sits above the tile, because it is the one thing here that is about the *call* rather than about
+how the user shows up in it, and it carries no label: the field is its own label, prefilled with *Meeting in
+&lt;room&gt;* for a conference that doesn't exist yet. The room's name is not repeated anywhere else on the screen —
+it is either in the title or in that field.
+
 ### No self-view, on purpose
 
 Where a preview would sit, the screen states what will happen: *your camera is turned off*, or *your camera will
