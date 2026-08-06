@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import MediaCallDialpad from './MediaCallDialpad';
+import Dialpad from './Dialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -15,6 +15,7 @@ import {
 	DevicePicker,
 	ActionButton,
 	useInfoSlots,
+	useDraggableWidget,
 	CardWidgetContainer,
 	StreamCard,
 } from '../../components';
@@ -40,6 +41,7 @@ const OngoingCall = () => {
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
+	const isInline = !useDraggableWidget();
 
 	const screenShareAvailable = supportedFeatures.includes('screen-share');
 	const holdAvailable = supportedFeatures.includes('hold');
@@ -60,6 +62,8 @@ const OngoingCall = () => {
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
 	}
+
+	const isSip = 'number' in peerInfo;
 
 	return (
 		<Widget>
@@ -86,7 +90,7 @@ const OngoingCall = () => {
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 
-					<MediaCallDialpad />
+					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>

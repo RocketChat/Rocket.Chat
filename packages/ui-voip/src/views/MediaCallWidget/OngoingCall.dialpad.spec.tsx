@@ -4,8 +4,8 @@ import type { ComponentType, ReactNode } from 'react';
 
 import OngoingCall from './OngoingCall';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
+import { DragContext } from '../../components';
 import MediaCallViewContext from '../../context/MediaCallViewContext';
-import MediaCallWidgetSlotContext from '../../context/MediaCallWidgetSlotContext';
 import type { PeerInfo, SessionState } from '../../context/definitions';
 
 const externalPeer = { number: '+15551234567' } as PeerInfo;
@@ -51,17 +51,18 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		widgetPositionTracker: undefined,
 	} as any;
 
-	const slotContextValue = {
-		slot: inline ? document.createElement('div') : null,
-		inline,
-		setSlot: jest.fn(),
+	// Inline means "no draggable context" (see WidgetDraggableContext) — floating widgets
+	// are always wrapped in a drag provider, so only the floating case supplies one here.
+	const dragContextValue = {
+		draggableRef: () => undefined,
+		boundingRef: () => undefined,
+		handleRef: () => undefined,
 	};
 
-	const Wrapper = ({ children }: { children: ReactNode }) => (
-		<MediaCallWidgetSlotContext.Provider value={slotContextValue}>
-			<MediaCallViewContext.Provider value={viewContextValue}>{children}</MediaCallViewContext.Provider>
-		</MediaCallWidgetSlotContext.Provider>
-	);
+	const Wrapper = ({ children }: { children: ReactNode }) => {
+		const view = <MediaCallViewContext.Provider value={viewContextValue}>{children}</MediaCallViewContext.Provider>;
+		return inline ? view : <DragContext.Provider value={dragContextValue}>{view}</DragContext.Provider>;
+	};
 
 	return render(
 		<Wrapper>
