@@ -12,13 +12,17 @@ export type McpAuth = {
 	authToken: string;
 };
 
-const DEFAULT_PROTOCOL_VERSION = '2024-11-05';
+const DEFAULT_PROTOCOL_VERSION = '2025-11-25';
+const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-11-25', '2025-06-18', '2025-03-26']);
+
+const negotiateProtocolVersion = (requestedVersion: unknown): string =>
+	typeof requestedVersion === 'string' && SUPPORTED_PROTOCOL_VERSIONS.has(requestedVersion) ? requestedVersion : DEFAULT_PROTOCOL_VERSION;
 
 export type JsonRpcRequest = {
 	jsonrpc: '2.0';
 	id?: string | number | null;
 	method: string;
-	params?: Record<string, any>;
+	params?: Record<string, unknown>;
 };
 
 export type JsonRpcResponse = {
@@ -36,6 +40,20 @@ const error = (id: JsonRpcRequest['id'], code: number, message: string, data?: u
 	error: { code, message, ...(data !== undefined && { data }) },
 });
 
+const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+export const isJsonRpcRequest = (value: unknown): value is JsonRpcRequest => {
+	if (!isRecord(value) || value.jsonrpc !== '2.0' || typeof value.method !== 'string' || value.method.length === 0) {
+		return false;
+	}
+
+	if (value.id !== undefined && value.id !== null && typeof value.id !== 'string' && typeof value.id !== 'number') {
+		return false;
+	}
+
+	return value.params === undefined || isRecord(value.params);
+};
+
 /** Build the tool list for this request, honouring the extended-toolset setting. */
 const listTools = (): McpTool[] => {
 	if (settings.get<boolean>('MCP_Expose_Extended_API')) {
@@ -50,19 +68,26 @@ const toToolDefinition = ({ name, description, inputSchema }: McpTool) => ({ nam
  * Handle a single JSON-RPC message. Returns the response object, or `null` for
  * notifications (which must not produce a response per the JSON-RPC spec).
  */
-export const handleRpcMessage = async (message: JsonRpcRequest, auth: McpAuth, clientIp?: string): Promise<JsonRpcResponse | null> => {
+export const handleRpcMessage = async (message: unknown, auth: McpAuth, clientIp?: string): Promise<JsonRpcResponse | null> => {
+	if (!isJsonRpcRequest(message)) {
+		return error(null, -32600, 'Invalid Request');
+	}
+
 	const { id, method, params } = message;
+	const respond = (response: JsonRpcResponse): JsonRpcResponse | null => (id === undefined ? null : response);
 
 	switch (method) {
 		case 'initialize':
-			return result(id, {
-				protocolVersion: params?.protocolVersion ?? DEFAULT_PROTOCOL_VERSION,
-				capabilities: { tools: { listChanged: false } },
-				serverInfo: {
-					name: 'rocketchat',
-					version: getTrimmedServerVersion(),
-				},
-			});
+			return respond(
+				result(id, {
+					protocolVersion: negotiateProtocolVersion(params?.protocolVersion),
+					capabilities: { tools: { listChanged: false } },
+					serverInfo: {
+						name: 'rocketchat',
+						version: getTrimmedServerVersion(),
+					},
+				}),
+			);
 
 		// Notifications — no response.
 		case 'notifications/initialized':
@@ -70,34 +95,43 @@ export const handleRpcMessage = async (message: JsonRpcRequest, auth: McpAuth, c
 			return null;
 
 		case 'ping':
-			return result(id, {});
+			return respond(result(id, {}));
 
 		case 'tools/list':
-			return result(id, { tools: listTools().map(toToolDefinition) });
+			return respond(result(id, { tools: listTools().map(toToolDefinition) }));
 
 		case 'tools/call': {
 			const name = params?.name;
+			const args = params?.arguments;
+			if (typeof name !== 'string' || (args !== undefined && !isRecord(args))) {
+				return respond(error(id, -32602, 'Invalid tools/call parameters'));
+			}
+
 			const tool = listTools().find((t) => t.name === name);
 
 			if (!tool) {
-				return error(id, -32602, `Unknown tool: ${name}`);
+				return respond(error(id, -32602, `Unknown tool: ${name}`));
 			}
 
 			try {
-				const dispatch = await dispatchTool(tool, params?.arguments ?? {}, auth, clientIp);
-				return result(id, {
-					content: [{ type: 'text', text: JSON.stringify(dispatch.body) }],
-					isError: !dispatch.ok,
-				});
+				const dispatch = await dispatchTool(tool, args ?? {}, auth, clientIp);
+				return respond(
+					result(id, {
+						content: [{ type: 'text', text: JSON.stringify(dispatch.body) }],
+						isError: !dispatch.ok,
+					}),
+				);
 			} catch (err) {
-				return result(id, {
-					content: [{ type: 'text', text: `Tool execution failed: ${err instanceof Error ? err.message : String(err)}` }],
-					isError: true,
-				});
+				return respond(
+					result(id, {
+						content: [{ type: 'text', text: `Tool execution failed: ${err instanceof Error ? err.message : String(err)}` }],
+						isError: true,
+					}),
+				);
 			}
 		}
 
 		default:
-			return error(id, -32601, `Method not found: ${method}`);
+			return respond(error(id, -32601, `Method not found: ${method}`));
 	}
 };

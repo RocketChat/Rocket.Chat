@@ -10,9 +10,15 @@ export type AISettingsSectionProps = {
 	section: AISettingsSectionName;
 };
 
+const sectionTitles: Record<AISettingsSectionName, string> = {
+	Intelligent_Search: 'Intelligent_Search',
+	AI_LLM_Provider: 'AI_Center_LLM_Providers',
+	MCP: 'MCP',
+};
+
 const AISettingsSection = ({ section }: AISettingsSectionProps): ReactElement => {
 	const router = useRouter();
-	const title = section === 'Intelligent_Search' ? 'Intelligent_Search' : section === 'AI_LLM_Provider' ? 'AI_Center_LLM_Providers' : 'MCP';
+	const title = sectionTitles[section];
 
 	return (
 		<EditableSettingsProvider>

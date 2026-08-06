@@ -7,6 +7,42 @@ export type DispatchResult = {
 	body: unknown;
 };
 
+const TOOL_CALL_TIMEOUT_MS = 20_000;
+const MAX_TOOL_RESPONSE_BYTES = 5 * 1024 * 1024;
+
+const readResponseText = async (response: Response): Promise<string> => {
+	const contentLength = Number(response.headers.get('content-length'));
+	if (Number.isFinite(contentLength) && contentLength > MAX_TOOL_RESPONSE_BYTES) {
+		throw new Error('MCP tool response exceeds the 5 MiB limit');
+	}
+
+	if (!response.body) {
+		return '';
+	}
+
+	const reader = response.body.getReader();
+	const decoder = new TextDecoder();
+	const chunks: string[] = [];
+	let receivedBytes = 0;
+
+	while (true) {
+		const { done, value } = await reader.read();
+		if (done) {
+			break;
+		}
+
+		receivedBytes += value.byteLength;
+		if (receivedBytes > MAX_TOOL_RESPONSE_BYTES) {
+			await reader.cancel();
+			throw new Error('MCP tool response exceeds the 5 MiB limit');
+		}
+		chunks.push(decoder.decode(value, { stream: true }));
+	}
+
+	chunks.push(decoder.decode());
+	return chunks.join('');
+};
+
 /**
  * Execute the REST endpoint a tool maps to, as the authenticated user.
  *
@@ -37,7 +73,12 @@ export const dispatchTool = async (
 	};
 
 	let url = base + tool.path;
-	const init: RequestInit = { method: tool.method.toUpperCase(), headers };
+	const init: RequestInit = {
+		method: tool.method.toUpperCase(),
+		headers,
+		redirect: 'error',
+		signal: AbortSignal.timeout(TOOL_CALL_TIMEOUT_MS),
+	};
 
 	if (tool.method === 'get' || tool.method === 'delete') {
 		const qs = new URLSearchParams();
@@ -53,7 +94,15 @@ export const dispatchTool = async (
 	}
 
 	const res = await fetch(url, init);
-	const body = await res.json().catch(() => ({}));
+	const responseText = await readResponseText(res);
+	let body: unknown = responseText;
+	if (responseText) {
+		try {
+			body = JSON.parse(responseText);
+		} catch {
+			// Keep non-JSON REST responses as text so callers receive the actual result.
+		}
+	}
 
 	return { ok: res.ok, status: res.status, body };
 };

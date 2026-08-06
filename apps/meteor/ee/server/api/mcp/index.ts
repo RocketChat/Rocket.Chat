@@ -1,9 +1,8 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 
 import './permissions';
-import { handleRpcMessage, type JsonRpcRequest, type McpAuth } from './server';
+import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
 import { API } from '../../../../server/api';
 import { settings } from '../../../../server/settings/cached';
 
@@ -13,14 +12,16 @@ const disabledResponse = {
 };
 
 type McpActionContext = {
-	bodyParams: JsonRpcRequest | JsonRpcRequest[];
+	bodyParams: unknown;
 	userId: string;
 	user: IUser;
 	requestIp: string;
 	request: Request;
 };
 
-const handleMcpPost = async function (this: McpActionContext) {
+const MAX_BATCH_SIZE = 20;
+
+export const handleMcpPost = async function (this: McpActionContext) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
@@ -36,7 +37,16 @@ const handleMcpPost = async function (this: McpActionContext) {
 	const clientIp = this.requestIp;
 
 	if (Array.isArray(message)) {
-		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp)))).filter(Boolean);
+		if (message.length === 0 || message.length > MAX_BATCH_SIZE) {
+			return {
+				statusCode: 400,
+				body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } },
+			};
+		}
+
+		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp)))).filter(
+			(response): response is JsonRpcResponse => response !== null,
+		);
 		return responses.length ? { statusCode: 200, body: responses } : { statusCode: 202, body: {} };
 	}
 
@@ -46,12 +56,10 @@ const handleMcpPost = async function (this: McpActionContext) {
 		return { statusCode: 202, body: {} };
 	}
 
-	// Per the Streamable-HTTP spec, a session id is assigned on `initialize` only.
-	const headers = message.method === 'initialize' ? { 'Mcp-Session-Id': Random.id() } : undefined;
-	return { statusCode: 200, body: response, ...(headers && { headers }) };
+	return { statusCode: 200, body: response };
 };
 
-const handleMcpGet = () => {
+export const handleMcpGet = () => {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}

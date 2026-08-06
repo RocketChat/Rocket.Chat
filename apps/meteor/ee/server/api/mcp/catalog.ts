@@ -333,14 +333,24 @@ const collectTools = (isRouteAllowed: (baseName: string) => boolean): McpTool[] 
 };
 
 /** The minimal default toolset — the hand-picked {@link CURATED} routes. */
-export const getCuratedTools = (): McpTool[] =>
-	CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(
+let curatedTools: McpTool[] | undefined;
+
+export const getCuratedTools = (): McpTool[] => {
+	curatedTools ??= CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(
 		({ name, path, method, fallbackDescription }) => toolsForRoute(name, path, method, fallbackDescription),
 	);
+
+	return curatedTools;
+};
 
 /**
  * The extended toolset — the full catalog filtered by {@link ALLOWED_TOOL_NAMES}. The
  * entire API is never exposed; routes outside the allow-list (and `Missing Documentation`
  * routes) are excluded.
  */
-export const getExtendedTools = (): McpTool[] => collectTools((baseName) => ALLOWED_TOOL_NAMES.has(baseName));
+let extendedTools: McpTool[] | undefined;
+
+export const getExtendedTools = (): McpTool[] => {
+	extendedTools ??= collectTools((baseName) => ALLOWED_TOOL_NAMES.has(baseName));
+	return extendedTools;
+};

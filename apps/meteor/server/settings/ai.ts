@@ -188,6 +188,7 @@ export const createAISettings = async (): Promise<void> => {
 		modules: [AI_LICENSE_MODULE],
 		invalidValue: false,
 		enableQuery: { _id: 'MCP_Enabled', value: true },
+		alert: 'MCP_Extended_API_Alert',
 		i18nLabel: 'MCP_Expose_Extended_API',
 		i18nDescription: 'MCP_Expose_Extended_API_Description',
 	});

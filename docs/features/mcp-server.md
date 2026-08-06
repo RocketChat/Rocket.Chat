@@ -21,7 +21,7 @@ The endpoint is registered as an ordinary API route via `API.v1.addRoute('mcp', 
 
 The MCP handshake is the standard JSON-RPC flow:
 
-1. **`initialize`** — client and server exchange protocol version + capabilities. The server echoes the client's `protocolVersion` (default `2024-11-05`), advertises `{ tools: { listChanged: false } }`, and returns an `Mcp-Session-Id` header.
+1. **`initialize`** — client and server exchange protocol version + capabilities. The server negotiates the handshake-based Streamable HTTP revisions it supports (`2025-03-26`, `2025-06-18`, and `2025-11-25`) and advertises `{ tools: { listChanged: false } }`. The transport is stateless and does not issue a session id.
 2. **`tools/list`** — returns the available tools (name, description, `inputSchema`).
 3. **`tools/call`** — runs a tool by name with arguments and returns its result as `content`.
 
@@ -83,7 +83,7 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 - `X-User-Id` + `X-Auth-Token` (the caller's PAT), so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
 - `X-Real-IP` set to the resolved client address (`this.requestIp`), so the target endpoint's per-route rate limiter keys on the real client rather than the loopback address.
 
-The REST JSON body is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`.
+The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds, and responses are capped at 5 MiB.
 
 ## Rate limiting
 
@@ -120,6 +120,7 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 ## Limitations
 
 - **Alpha**, off by default.
+- Implements the handshake-based Streamable HTTP lifecycle through protocol version `2025-11-25`; newer lifecycle methods are not yet supported.
 - Requires the **Rocket.Chat AI add-on** — both the route and the settings are gated by it.
 - Single request/response per POST; no server-initiated SSE stream (`GET` → `405`).
 - The official `@modelcontextprotocol/sdk` is intentionally not used; the files are structured so it can be dropped into the transport/server layer later for SSE and richer session handling.
