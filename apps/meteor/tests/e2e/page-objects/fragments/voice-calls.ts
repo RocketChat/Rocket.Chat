@@ -137,6 +137,10 @@ export class Widget {
 		return this.root.getByRole('button', { name: 'Show call here' });
 	}
 
+	get modalTransfer() {
+		return this.transferModal;
+	}
+
 	async showCallHere(): Promise<void> {
 		await this.btnShowCallHere.click();
 		await expect(this.btnShowCallHere).not.toBeVisible();
@@ -234,6 +238,30 @@ export class Widget {
 
 	peerCard(username: string): Locator {
 		return this.root.getByText(username);
+	}
+}
+
+export class DockedWidget extends Widget {
+	constructor(page: Page) {
+		super(page, page.getByRole('complementary', { name: 'Calls' }).getByRole('dialog', { name: 'Voice Call', exact: false }));
+	}
+
+	public override async hangup(): Promise<void> {
+		await this.controls.hangup.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async reject(): Promise<void> {
+		await this.controls.hangup.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async transferCall(username: string): Promise<void> {
+		await this.controls.transfer.click();
+		await expect(this.modalTransfer.content).toBeVisible();
+		await this.modalTransfer.transferCall(username);
+		await expect(this.modalTransfer.content).not.toBeVisible();
+		await expect(this.content).toBeVisible();
 	}
 }
 
@@ -366,10 +394,7 @@ export class VoiceCalls {
 	constructor(page: Page) {
 		this.page = page;
 		this.widget = new Widget(page);
-		this.dockedWidget = new Widget(
-			page,
-			page.getByRole('complementary', { name: 'Calls' }).getByRole('dialog', { name: 'Voice Call', exact: false }),
-		);
+		this.dockedWidget = new DockedWidget(page);
 		this.roomSection = new RoomSection(page.getByRole('region', { name: 'Voice call' }));
 	}
 

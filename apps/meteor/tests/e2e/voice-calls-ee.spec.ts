@@ -544,8 +544,10 @@ test.describe.only('Internal Voice Calls - Docked Widget (call panel) - Enterpri
 
 		await test.step('should show docked widget and hide regular when on call panel', async () => {
 			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			// widget fragment matches both docked and regular widget due to lack of specificity and shared components
+			// To ensure we only have the docked widget visible, we assert there's only one and that the visible one is the docked.
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toHaveCount(1);
 			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
-			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 
 		await test.step('should end the call from user1', async () => {
