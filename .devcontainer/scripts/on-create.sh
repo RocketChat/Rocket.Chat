@@ -8,6 +8,9 @@
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Derived, not hardcoded: the workspace path carries the checkout's directory
+# name (see devcontainer.json), so it differs per worktree.
+root="$(cd "$here/../.." && pwd)"
 
 source "$here/lib/features.sh"
 
@@ -45,8 +48,8 @@ sudo chown vscode:vscode /home/vscode/.yarn /home/vscode/.yarn/berry
 # populated node_modules would add minutes to every container create.
 log "claiming build volume mount points"
 sudo chown vscode:vscode \
-	/workspaces/rocket.chat/node_modules \
-	/workspaces/rocket.chat/apps/meteor/.meteor/local
+	"$root/node_modules" \
+	"$root/apps/meteor/.meteor/local"
 
 # Your git author identity, read off the host by scripts/init-git-identity.sh and
 # passed in as environment on the service. Written as real config rather than left

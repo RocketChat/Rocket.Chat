@@ -5,10 +5,9 @@
 #
 # Creates the named volume that holds Claude Code's config directory — auth
 # (`.credentials.json`), settings, history, and the skills install-skills.sh
-# copies in. One subdirectory, mounted at its canonical path in the container by
-# docker-compose.yml:
-#
-#   claude/ -> /home/vscode/.claude
+# copies in. The volume root *is* ~/.claude: claude-code/initialize.sh mounts it
+# whole at that canonical path, with no subpath in between, since there is only
+# ever the one directory in here to carry.
 #
 # Same shape and the same reasons as ensure-gh-auth.sh, so read that one for the
 # long version. In short: *external* with a fixed name is what makes it shared —
@@ -17,14 +16,9 @@
 # and each copy starts empty, meaning one `claude` login per checkout forever.
 # External also puts it out of reach of `docker compose down -v`.
 #
-# The subpath buys the same thing it does for gh: the volume root stays a
-# container for named entries rather than being ~/.claude itself, so a sibling
-# can be added later without moving what is already stored here. It also has to
-# exist before the container starts — a subpath mount fails on a missing path
-# ("cannot access path ...: no such file or directory") and Docker will not
-# create it — which is the second reason this can't wait for a container-side
-# hook. The first is that compose refuses to create the container at all when an
-# external volume is missing.
+# This can't wait for a container-side hook: compose refuses to create the
+# container at all when an external volume is missing, and the root has to
+# arrive owned by the container user, which compose has no way to do either.
 #
 # Note this is deliberately NOT scoped per project the way the old
 # `claude-code-config-${devcontainerId}` mount was: the point is that every
@@ -53,6 +47,6 @@ docker volume create "$volume" >/dev/null
 # 0700: this holds the OAuth credentials Claude Code writes to
 # ~/.claude/.credentials.json.
 docker run --rm -v "$volume":/v busybox:1.37 \
-	sh -c "mkdir -p /v/claude && chown -R $uid:$uid /v && chmod 700 /v/claude"
+	sh -c "chown -R $uid:$uid /v && chmod 700 /v"
 
 log "created shared volume $volume — run \`claude\` and sign in once, in any worktree"

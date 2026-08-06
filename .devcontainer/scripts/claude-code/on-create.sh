@@ -8,8 +8,8 @@ set -euo pipefail
 log() { printf '\033[1;34m[on-create:claude-code]\033[0m %s\n' "$1"; }
 
 # The shared claude-config volume already arrives owned by the right uid —
-# ensure-claude-config.sh sets that up on the host, because the subpath directory
-# has to exist before the container starts anyway. This is the belt-and-braces
+# ensure-claude-config.sh sets that up on the host, because the volume has to
+# exist before the container starts anyway. This is the belt-and-braces
 # pass for a volume seeded some other way (restored, copied in by hand); 0700
 # because it holds the OAuth credentials in ~/.claude/.credentials.json.
 #

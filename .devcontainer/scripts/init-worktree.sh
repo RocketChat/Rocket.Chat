@@ -50,8 +50,8 @@ admin="${admin%/}"
 	# resolve unchanged inside the container.
 	echo "- \"$common:$common\""
 	# The back-pointer: .git/worktrees/<name>/gitdir records where the worktree's
-	# .git file lives on the host. Inside the container that path is
-	# /workspaces/rocket.chat/.git instead, so without this git sees a worktree
+	# .git file lives on the host. Inside the container that path is somewhere
+	# under /workspaces instead, so without this git sees a worktree
 	# pointing at a non-existent location and considers it prunable — meaning a
 	# `git gc` in the container could eventually delete the worktree's admin dir
 	# out of the shared repo. Binding the single file keeps the check satisfied.

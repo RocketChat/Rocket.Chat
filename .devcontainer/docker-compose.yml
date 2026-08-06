@@ -6,22 +6,20 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ..:/workspaces/rocket.chat:cached
-      # Keep node_modules/meteor caches off the host bind mount for speed.
-      - rc-node-modules:/workspaces/rocket.chat/node_modules
-      # .meteor/local must NOT be shared with the host: Meteor writes absolute
-      # paths into it (notably the dev_bundle symlink, which points into the
-      # running user's ~/.meteor). A host-written dev_bundle dangles in here —
-      # /home/<hostuser> does not exist in the container — and Meteor then spins
-      # on any in-project command, burning CPU and printing nothing. It also
-      # holds db/, the mongod data dir that `meteor` populates in dev, which the
-      # two sides must not share.
+      # The workspace bind mount and the two build volumes nested inside it
+      # (node_modules and apps/meteor/.meteor/local) are NOT here: their targets
+      # must track `workspaceFolder`, which is per-worktree and built from a
+      # variable no compose file can resolve. They are `mounts` entries in
+      # devcontainer.json instead, which is where the reasoning for each lives.
+      # So this file alone no longer describes a usable container — bring the
+      # stack up through the devcontainer CLI or VS Code, never `docker compose
+      # up` by hand.
       #
       # No mongo service is defined here on purpose: `meteor` starts its own
       # bundled mongod (127.0.0.1:3001) and only does so while MONGO_URL is
       # UNSET. Do not add MONGO_URL to this file or devcontainer.json — setting
       # it makes Meteor skip its local mongod and connect out instead.
-      - rc-meteor-local:/workspaces/rocket.chat/apps/meteor/.meteor/local
+      #
       # Anything a devcontainer *feature* owns is NOT here — the shared gh auth
       # and Claude Code config volumes both used to be. They live in the
       # generated docker-compose.overrides.yml instead, contributed by
@@ -61,8 +59,10 @@ services:
     command: sleep infinity
 
 volumes:
-  rc-node-modules:
-  rc-meteor-local:
+  # rc-node-modules and rc-meteor-local are not declared here either: the CLI
+  # declares them in the override it generates for devcontainer.json's `mounts`,
+  # with the same project prefix this file would have given them.
+  #
   # The feature-owned volumes (rc-devcontainer-gh-auth,
   # rc-devcontainer-claude-config) are declared in the generated
   # docker-compose.overrides.yml, beside the mounts that use them — see the note

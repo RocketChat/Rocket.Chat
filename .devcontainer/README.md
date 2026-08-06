@@ -55,13 +55,16 @@ namespaced per worktree:
 | --- | --- |
 | Yarn package cache (`rc-devcontainer-yarn-cache`) | `node_modules` |
 | Turborepo remote cache (own compose project) | `apps/meteor/.meteor/local` |
-| Playwright browsers (`rc-devcontainer-playwright-browsers`) | |
+| Playwright browsers (`rc-devcontainer-playwright-browsers`) | Claude Code sessions under `~/.claude/projects/` |
 | `gh` + SSH and Claude Code logins, with those features enabled | |
 
 So a package built in one worktree replays as `>>> FULL TURBO` in the others, a
 package downloaded once is never downloaded again, and you log in once for all
 of them — while Meteor's absolute paths and each checkout's `node_modules` stay
 where they belong.
+
+The last row is the one thing that isn't a volume. It falls out of the workspace
+path instead — see **The workspace path** below.
 
 **Ports.** `3000` is the app, `3001` is Meteor's bundled mongod. There is no
 separate `mongo` service on purpose: `meteor` starts its own mongod, and only
@@ -185,8 +188,8 @@ unconditional or owned by a feature.
 
 | File | Purpose |
 | --- | --- |
-| `devcontainer.json` | User, features, env, lifecycle hooks |
-| `docker-compose.yml` | Service definition and the volumes no feature owns |
+| `devcontainer.json` | User, features, env, lifecycle hooks, workspace path and the mounts that track it |
+| `docker-compose.yml` | Service definition and the volumes neither a feature nor the workspace path owns |
 | `docker-compose.overrides.yml` | **Generated, gitignored** — worktree git-dir mounts plus whatever the declared features contribute |
 | `Dockerfile` | Base image and toolchain, pinned from the repo |
 | `.env` | Compose variables (`PORT`, `DB_PORT`) |
@@ -254,6 +257,38 @@ else wires it up.
 
 ## Details
 
+**The workspace path.** `/workspaces/${localWorkspaceFolderBasename}/rocket.chat`
+— so `/workspaces/main/rocket.chat` for a checkout in `worktrees/main`, not the
+`/workspaces/rocket.chat` every worktree used to share.
+
+- The point is tools that key state by absolute path. Chief among them Claude
+  Code, whose `~/.claude/projects/<flattened-path>` would otherwise be one shared
+  entry for every checkout, since they all mount the one config volume.
+- `rocket.chat` stays the leaf, so the directory name shows up in neither the VS
+  Code window title nor the shell prompt. `pwd` is where you'll see it.
+- Two checkouts whose directories share a name would collide — but that's the
+  same bet the compose project name already makes, so it's not a new failure mode.
+- **Not `${devcontainerId}`**, which is what you'd reach for first and is broken
+  for this: `devcontainer up` substitutes it, but `devcontainer exec` resolves the
+  config with *no* id labels, so the literal `${devcontainerId}` survives into the
+  exec cwd and every command fails with `chdir to cwd (…) no such file or
+  directory`. Nothing on the command line fixes it, `--id-label` included. (The id
+  itself is well behaved — a base32 SHA-256 of the checkout path plus the config
+  file path, stable across rebuilds. It's the substitution coverage that isn't.)
+- The workspace bind mount and the two volumes nested inside it therefore live in
+  `devcontainer.json`'s `mounts` rather than `docker-compose.yml`: their targets
+  have to track this path, and no compose file can resolve these variables. The
+  CLI writes them into a generated override, where the named ones come out
+  project-prefixed exactly as the compose file would have made them —
+  `<project>_rc-node-modules` — so no volume is orphaned by the move.
+- One consequence: `docker compose -f .devcontainer/docker-compose.yml up` by
+  hand now yields a container with no source in it. Use the devcontainer CLI or
+  VS Code.
+- Never hardcode the path in a container-side script. Derive it — the scripts
+  under `scripts/` walk up from `${BASH_SOURCE[0]}`, and lifecycle hooks run with
+  it as their cwd (`${containerWorkspaceFolder}` also expands in
+  `devcontainer.json`).
+
 **Git identity.** Your `user.name` and `user.email` are read on the host at
 `initializeCommand` and written into the container's global git config at create,
 so commits made in here are authored by you instead of failing with "Please tell
@@ -284,7 +319,7 @@ several mounts, and need Compose ≥ 2.26 / Engine ≥ 25.
 | --- | --- | --- | --- |
 | `rc-devcontainer-yarn-cache` | `berry/` | `~/.yarn/berry` | Yarn's package cache (~650MB warm) and metadata index |
 | `rc-devcontainer-playwright-browsers` | `ms-playwright/` | `~/.cache/ms-playwright` | Playwright's browser builds, one directory per version |
-| `rc-devcontainer-claude-config` | `claude/` | `~/.claude` | Claude Code credentials, settings, history, skills |
+| `rc-devcontainer-claude-config` | — | `~/.claude` | Claude Code credentials, settings, history, skills |
 | `rc-devcontainer-gh-auth` | `gh/` | `~/.config/gh` | `hosts.yml`, i.e. the GitHub OAuth token |
 | `rc-devcontainer-gh-auth` | `ssh/` | `~/.ssh` | The SSH key `gh auth login` generates, plus `known_hosts` |
 
@@ -298,10 +333,11 @@ several mounts, and need Compose ≥ 2.26 / Engine ≥ 25.
   container user's, since devcontainers matches them). The Yarn and Playwright ones
   are pure cache: `docker volume rm rc-devcontainer-yarn-cache` costs one slow
   install and `rc-devcontainer-playwright-browsers` one re-download, nothing more.
-- `~/.claude` is shared *state*, not just credentials. Every worktree mounts at
-  `/workspaces/rocket.chat`, so they all resolve to the same entry under
-  `~/.claude/projects/` — `claude --resume` in one worktree lists sessions
-  started in another.
+- `~/.claude` is shared *state*, not just credentials — the login, settings,
+  skills and history all come from the one volume. Per-project state does not
+  cross over, though: `workspaceFolder` is per-worktree, so each checkout
+  resolves to its own entry under `~/.claude/projects/` and
+  `claude --resume` only lists that worktree's sessions.
 - To log out everywhere: `claude /logout` and `gh auth logout`, or
   `docker volume rm rc-devcontainer-claude-config rc-devcontainer-gh-auth` with no devcontainer running.
 

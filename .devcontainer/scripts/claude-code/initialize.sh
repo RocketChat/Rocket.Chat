@@ -30,16 +30,14 @@ YAML
 # ordinary volume (or a devcontainer.json `mounts` entry, which becomes one) would
 # be namespaced per worktree instead.
 #
-# The `claude/` subpath keeps the volume root a container for named entries rather
-# than being ~/.claude itself, so a sibling can be added later without moving what
-# is already stored. ensure-claude-config.sh creates it — a subpath mount fails on
-# a path that is not already in the volume.
+# No subpath, unlike gh's two-in-one volume: this one carries a single mount, so
+# the root simply *is* ~/.claude. ensure-claude-config.sh still has to run on the
+# host, because the root has to arrive owned by the container user and compose
+# has no chown.
 overrides_add claude-code service-volumes <<-'YAML'
 	- type: volume
 	  source: claude-config
 	  target: /home/vscode/.claude
-	  volume:
-	    subpath: claude
 YAML
 
 overrides_add claude-code volumes <<-'YAML'
