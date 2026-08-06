@@ -34,11 +34,11 @@ export const handleMessagesDeleted = async (message: IMessage, { room }: { room:
 };
 
 export const fillFirstDaysOfMessagesIfNeeded = async (date: Date): Promise<void> => {
-	const messagesFromAnalytics = await Analytics.findByTypeBeforeDate({
+	const messagesFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'messages',
 		date: convertDateToInt(date),
-	}).toArray();
-	if (!messagesFromAnalytics.length) {
+	});
+	if (!messagesFromAnalytics) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
 		const messages = await Messages.getTotalOfMessagesSentByDate({
 			start: startOfPeriod,

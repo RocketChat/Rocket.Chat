@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import Counter from './Counter';
 
-type CounterSetProps = {
+export type CounterSetProps = {
 	counters: {
 		count: ReactNode;
 		variation?: number;

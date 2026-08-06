@@ -2,7 +2,9 @@ import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 
-const AppLayoutThemeWrapper = ({ children }: { children: ReactNode }) => {
+export type AppLayoutThemeWrapperProps = { children: ReactNode };
+
+const AppLayoutThemeWrapper = ({ children }: AppLayoutThemeWrapperProps) => {
 	const dark = useDarkMode();
 	return (
 		<>

@@ -39,10 +39,10 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 
 ## Licensing
 
-The feature is gated behind the **`experimental-enterprise-features` license module** (defined in `packages/core-typings/src/license/LicenseModule.ts`):
+The feature is gated behind the **Rocket.Chat AI add-on** (`chat.rocket.rc-ai`):
 
-- The route is registered with `license: ['experimental-enterprise-features']`, so requests are rejected unless the workspace license includes the module.
-- The `MCP_*` settings are registered under `this.with({ enterprise: true, modules: ['experimental-enterprise-features'] }, …)` with `invalidValue: false`, so without the module they fall back to **off** and the feature cannot be enabled.
+- The route is registered with `license: [AI_LICENSE_MODULE]`, so requests are rejected unless the workspace license includes the module.
+- The `MCP_*` settings use the same module and an `invalidValue` of `false`, so without the add-on they fall back to **off** and the feature cannot be enabled.
 
 ## Tool catalog
 
@@ -91,7 +91,7 @@ The endpoint reuses Rocket.Chat's **built-in per-route rate limiter** (enabled b
 
 ## Settings
 
-Registered under **Admin → General → MCP** (EE settings, `ee/server/settings/mcp.ts`):
+Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -120,7 +120,7 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 ## Limitations
 
 - **Alpha**, off by default.
-- Requires the **`experimental-enterprise-features` license module** — both the route and the settings are gated by it.
+- Requires the **Rocket.Chat AI add-on** — both the route and the settings are gated by it.
 - Single request/response per POST; no server-initiated SSE stream (`GET` → `405`).
 - The official `@modelcontextprotocol/sdk` is intentionally not used; the files are structured so it can be dropped into the transport/server layer later for SSE and richer session handling.
 
@@ -128,13 +128,13 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 
 | Layer | File |
 |-------|------|
-| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate | `ee/app/api-enterprise/server/mcp/index.ts` |
-| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…) | `ee/app/api-enterprise/server/mcp/server.ts` |
-| Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/app/api-enterprise/server/mcp/catalog.ts` |
-| Tool dispatch (loopback to REST as the user) | `ee/app/api-enterprise/server/mcp/dispatch.ts` |
-| Permission seed (`access-mcp`) | `ee/app/api-enterprise/server/mcp/permissions.ts` |
-| EE module load | `ee/app/api-enterprise/server/index.ts` |
-| Settings (license-gated) | `ee/server/settings/mcp.ts` (registered via `ee/server/startup/mcp.ts`) |
-| License module (`experimental-enterprise-features`) | `packages/core-typings/src/license/LicenseModule.ts` |
+| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate | `ee/server/api/mcp/index.ts` |
+| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…) | `ee/server/api/mcp/server.ts` |
+| Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/server/api/mcp/catalog.ts` |
+| Tool dispatch (loopback to REST as the user) | `ee/server/api/mcp/dispatch.ts` |
+| Permission seed (`access-mcp`) | `ee/server/api/mcp/permissions.ts` |
+| EE module load | `ee/server/api/index.ts` |
+| Settings (license-gated) | `server/settings/ai.ts` |
+| License module | `packages/ai-search/src/constants.ts` (`AI_LICENSE_MODULE`) |
 | Schema descriptions reused as tool docs | `packages/rest-typings/src/v1/chat.ts`, `packages/rest-typings/src/v1/users/UsersInfoParamsGet.ts` |
 | i18n | `packages/i18n/src/locales/en.i18n.json` (`MCP_*` keys) |

@@ -1,5 +1,40 @@
 # @rocket.chat/abac
 
+## 0.3.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/models@2.4.0-rc.0
+  - @rocket.chat/core-services@0.15.0-rc.0
+  - @rocket.chat/server-fetch@0.2.3-rc.0
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#40634](https://github.com/RocketChat/Rocket.Chat/pull/40634)) Allows using Virtru as the attribute store for ABAC decisions.
+
+  ### Important
+
+  - When using virtru as the store, the internal attribute store is disabled.
+  - On switch, existing ABAC attributes from rooms will be removed. Rooms will continue to be private & no users will be removed until you add attributes again.
+  - Users are only allowed to see & edit rooms they have access to. Access decision is evaluated on Virtru
+  - A user/app with the `bypass-abac-store-validation` permission can assign any attributes to rooms, even if the user doesn't have them assigned on Virtru.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/models@2.3.1
+  - @rocket.chat/core-services@0.14.2
+  - @rocket.chat/core-typings@8.6.0
+  - @rocket.chat/server-fetch@0.2.2
+  </details>
+
 ## 0.3.0-rc.0
 
 ### Minor Changes

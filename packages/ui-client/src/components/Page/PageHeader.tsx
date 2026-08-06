@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import PageContext from './PageContext';
 import PageHeaderNoShadow from './PageHeaderNoShadow';
 
-type PageHeaderProps = {
+export type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
 	borderBlockEndColor?: string;

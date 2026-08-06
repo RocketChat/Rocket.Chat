@@ -40,7 +40,7 @@ const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefin
 
 const INCOMING_TYPE = 'webhook-incoming';
 
-type EditIncomingWebhookProps = {
+export type EditIncomingWebhookProps = {
 	webhookData?: Serialized<IIncomingIntegration>;
 };
 

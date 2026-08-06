@@ -18,7 +18,7 @@ import useRegisterView from '../../context/useRegisterView';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
-type MediaCallRoomSectionProps = {
+export type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
@@ -58,7 +58,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	} = useMediaCallView();
 	const { currentViews } = useMediaCallInstance();
 
-	const isPopout = currentViews.includes('popout');
+	const isPopout = currentViews.has('popout');
 
 	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
@@ -76,8 +76,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	return (
 		<Box
 			id='outer-element'
-			w='full'
-			bg='surface-tint'
+			width='full'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
@@ -88,7 +88,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
+					<Box color='default' alignContent='center' paddingInlineStart={16}>
 						<Timer startAt={startedAt} />
 					</Box>
 				}

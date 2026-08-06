@@ -103,7 +103,10 @@ type UsersPresencePayload = {
 };
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
@@ -378,6 +381,30 @@ export type UsersEndpoints = {
 
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
+	};
+
+	'/v1/users.verifyEmail': {
+		POST: (params: { token: string }) => void;
+	};
+
+	'/v1/users.enableTotp': {
+		POST: () => { secret: string; url: string };
+	};
+
+	'/v1/users.disableTotp': {
+		POST: (params: { code: string }) => { disabled: boolean };
+	};
+
+	'/v1/users.validateTotp': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.regenerateTotpCodes': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.totpCodesRemaining': {
+		GET: () => { remaining: number };
 	};
 };
 

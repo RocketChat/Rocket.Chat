@@ -13,7 +13,7 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
-type GazzodownTextProps = {
+export type GazzodownTextProps = {
 	children: ReactNode;
 	mentions?: {
 		type?: 'user' | 'team';
@@ -53,7 +53,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
-	const useEmoji = Boolean(useUserPreference('useEmojis'));
+	const useEmoji = useUserPreference<boolean>('useEmojis', true);
 	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));

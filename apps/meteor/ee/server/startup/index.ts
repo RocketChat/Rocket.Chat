@@ -1,8 +1,7 @@
-import '../../app/authorization/server';
+import '../hooks/auth/callback';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
-import './mcp';
 import './maxRoomsPerGuest';
 import './upsell';
 import './services';

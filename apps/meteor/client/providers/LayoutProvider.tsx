@@ -11,7 +11,7 @@ const hiddenActionsDefaultValue = {
 	userToolbox: [],
 };
 
-type LayoutProviderProps = {
+export type LayoutProviderProps = {
 	children?: ReactNode;
 };
 

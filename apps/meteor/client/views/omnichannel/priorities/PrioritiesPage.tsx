@@ -12,7 +12,7 @@ import type { PriorityFormData } from './PriorityEditForm';
 import PriorityList from './PriorityList';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 
-type PrioritiesPageProps = {
+export type PrioritiesPageProps = {
 	priorityId: string;
 	context: 'edit' | undefined;
 };

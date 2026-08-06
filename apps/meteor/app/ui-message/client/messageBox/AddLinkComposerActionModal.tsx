@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { isValidLink } from '../../../../client/views/room/MessageList/lib/isValidLink';
 
-type AddLinkComposerActionModalProps = {
+export type AddLinkComposerActionModalProps = {
 	selectedText?: string;
 	onConfirm: (url: string, text: string) => void;
 	onClose: () => void;

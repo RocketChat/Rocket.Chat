@@ -66,6 +66,7 @@ export interface ISubscription extends IRocketChatRecord {
 	department?: unknown;
 
 	draft?: string;
+	threadDrafts?: Record<string, string>;
 
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';

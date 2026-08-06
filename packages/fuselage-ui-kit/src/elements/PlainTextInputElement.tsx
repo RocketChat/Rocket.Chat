@@ -6,7 +6,7 @@ import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type PlainTextInputElementProps = BlockProps<UiKit.PlainTextInputElement>;
+export type PlainTextInputElementProps = BlockProps<UiKit.PlainTextInputElement>;
 
 const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);

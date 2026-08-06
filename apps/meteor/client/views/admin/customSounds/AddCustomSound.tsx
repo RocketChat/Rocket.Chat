@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomSoundProps = {
+export type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
@@ -93,7 +93,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || t('None')}

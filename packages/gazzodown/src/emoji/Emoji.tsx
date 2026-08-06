@@ -5,7 +5,7 @@ import { MarkupInteractionContext } from '../MarkupInteractionContext';
 import EmojiRenderer from './EmojiRenderer';
 import PlainSpan from '../elements/PlainSpan';
 
-type EmojiProps = MessageParser.Emoji & {
+export type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;
 	preview?: boolean;
 };

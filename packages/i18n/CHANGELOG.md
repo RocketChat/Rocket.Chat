@@ -1,5 +1,48 @@
 # @rocket.chat/i18n
 
+## 3.3.0-rc.0
+
+### Minor Changes
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+- ([#41142](https://github.com/RocketChat/Rocket.Chat/pull/41142)) Adds inline JSON validation feedback to admin settings that hold JSON (`code: application/json`), showing an error in the editor and blocking save while the value is malformed
+
+- ([#41120](https://github.com/RocketChat/Rocket.Chat/pull/41120)) Added a persistent audio player. Playing an audio attachment now continues across room navigation: the audio keeps playing when you switch or close the conversation, and a "Now playing" card appears at the top of the sidebar with play/pause, seek, playback speed (1x/1.5x/2x), and a shortcut back to the originating conversation.
+
+- ([#40916](https://github.com/RocketChat/Rocket.Chat/pull/40916)) Adds a manage license flow to the subscription admin page, allowing license verification before applying it and an option to remove the license. Note: From this point license management should be made in subscription page instead of the Enterprise settings page.
+
+## 3.2.0
+
+### Minor Changes
+
+- ([#40988](https://github.com/RocketChat/Rocket.Chat/pull/40988)) Added Tagalog (`tl`) as a selectable interface language. It appears in the user's **Account → Preferences → Localization → Language** dropdown; interface strings fall back to English until translations are contributed (same approach as other not-yet-translated locales).
+
+- ([#40826](https://github.com/RocketChat/Rocket.Chat/pull/40826)) Shows a confirmation modal when switching attribute store setting
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- ([#40900](https://github.com/RocketChat/Rocket.Chat/pull/40900)) Added LibreTranslate as a message auto-translation provider, alongside Google, DeepL and Microsoft. LibreTranslate can be self-hosted, enabling fully on-premise / offline message auto-translation. Configure the instance URL (and optional API key) under **Admin → Settings → Message → Auto-Translate → LibreTranslate** and select it as the Service Provider.
+
 ## 3.2.0-rc.0
 
 ### Minor Changes

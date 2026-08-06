@@ -15,7 +15,7 @@ import { memo } from 'react';
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
-type ExtendedProps = {
+export type ExtendedProps = {
 	icon?: ReactNode;
 	title: ReactNode;
 	avatar?: ReactNode;
@@ -42,7 +42,7 @@ const Extended = ({
 	menu,
 	menuOptions: _menuOptions,
 	subtitle = '',
-	titleIcon: _titleIcon,
+	titleIcon,
 	badges,
 	threadUnread: _threadUnread,
 	unread,
@@ -53,7 +53,7 @@ const Extended = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item title={title} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarV2Item href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
@@ -63,6 +63,7 @@ const Extended = ({
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{titleIcon}
 					{badges}
 					{actions}
 					{menu && (

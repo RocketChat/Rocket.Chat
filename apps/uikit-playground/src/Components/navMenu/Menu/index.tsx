@@ -8,7 +8,9 @@ import Wrapper from './Wrapper';
 import { context, templatesToggleAction, updatePayloadAction } from '../../../Context';
 import SurfaceSelect from '../../SurfaceSelect';
 
-const Menu = ({ isOpen }: { isOpen: boolean }) => {
+export type MenuProps = { isOpen: boolean };
+
+const Menu = ({ isOpen }: MenuProps) => {
 	const {
 		state: { screens, activeScreen },
 		dispatch,
@@ -35,7 +37,7 @@ const Menu = ({ isOpen }: { isOpen: boolean }) => {
 			position='absolute'
 			width='min(85%, 280px)'
 			height='100%'
-			bg='default'
+			backgroundColor='default'
 			className={[basicStyle, toggleStyle]}
 			onClick={(e) => {
 				e.stopPropagation();

@@ -2,9 +2,9 @@ import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../server/lib/notifyListener';
+import { settings } from '../../../../server/settings';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list: Record<string, NodeJS.Timeout> = {};
@@ -49,7 +49,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
 			},
@@ -80,7 +80,7 @@ class ReadReceiptClass {
 			}
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Promise.resolve([message]);
 			},
@@ -101,7 +101,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findUnreadThreadMessagesByDate(message.rid, tmid, userId, userLastSeen).toArray();
 			},

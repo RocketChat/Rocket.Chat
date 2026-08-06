@@ -20,7 +20,7 @@ import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFrom
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type ThreadMessageContentProps = {
+export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
 };
 
@@ -51,12 +51,22 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				</MessageBody>
 			)}
 
-			{!!quotes?.length && <Attachments attachments={quotes} />}
+			{!!quotes?.length && (
+				<Attachments
+					attachments={quotes}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
-						<MessageContentBody md={normalizedMessage.md} mentions={normalizedMessage.mentions} channels={normalizedMessage.channels} />
+						<MessageContentBody
+							md={normalizedMessage.md}
+							msg={normalizedMessage.mdSource}
+							mentions={normalizedMessage.mentions}
+							channels={normalizedMessage.channels}
+						/>
 					)}
 				</>
 			)}
@@ -65,7 +75,13 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+			{!!attachments && (
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={attachments}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

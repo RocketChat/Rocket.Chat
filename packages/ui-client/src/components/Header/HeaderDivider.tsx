@@ -1,5 +1,5 @@
 import { Divider } from '@rocket.chat/fuselage';
 
-const HeaderDivider = () => <Divider mbs={-2} mbe={0} />;
+const HeaderDivider = () => <Divider marginBlockStart={-2} marginBlockEnd={0} />;
 
 export default HeaderDivider;

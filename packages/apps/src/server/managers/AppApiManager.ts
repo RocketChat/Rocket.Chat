@@ -5,7 +5,6 @@ import type { IApi, IApiEndpointMetadata, IApiRequest, IApiResponse } from '@roc
 import type { AppManager } from '../AppManager';
 import type { ApiBridge } from '../bridges';
 import { PathAlreadyExistsError } from '../errors';
-import type { AppAccessorManager } from './AppAccessorManager';
 import { AppApi } from './AppApi';
 
 /**
@@ -18,15 +17,12 @@ import { AppApi } from './AppApi';
 export class AppApiManager {
 	private readonly bridge: ApiBridge;
 
-	private readonly accessors: AppAccessorManager;
-
 	// Variable that contains the api's which have been provided by apps.
 	// The key of the top map is app id and the key of the inner map is the path
 	private providedApis: Map<string, Map<string, AppApi>>;
 
 	constructor(private readonly manager: AppManager) {
 		this.bridge = this.manager.getBridges().getApiBridge();
-		this.accessors = this.manager.getAccessorManager();
 		this.providedApis = new Map<string, Map<string, AppApi>>();
 	}
 
@@ -123,7 +119,7 @@ export class AppApiManager {
 			};
 		}
 
-		return api.runExecutor(request, this.manager.getLogStorage(), this.accessors);
+		return api.runExecutor(request, this.manager.getLogStorage());
 	}
 
 	/**

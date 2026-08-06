@@ -19,7 +19,7 @@ import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
-type OutlookEventsListProps = {
+export type OutlookEventsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };
@@ -93,7 +93,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 					)}
 				</ButtonGroup>
 				{hasOutlookMethods && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 								{authEnabled ? t('Sync') : t('Log_in_to_sync')}

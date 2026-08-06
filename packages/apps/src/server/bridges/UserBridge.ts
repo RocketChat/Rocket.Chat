@@ -72,7 +72,7 @@ export abstract class UserBridge extends BaseBridge {
 
 	public async doSetActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 		appId: string,
 	): Promise<void> {
 		if (this.hasWritePermission(appId)) {
@@ -80,9 +80,9 @@ export abstract class UserBridge extends BaseBridge {
 		}
 	}
 
-	public async doEndActiveState(userId: IUser['id'], appId: string): Promise<void> {
+	public async doEndActiveState(userId: IUser['id'], appId: string, statusId?: string): Promise<void> {
 		if (this.hasWritePermission(appId)) {
-			await this.endActiveState(userId, appId);
+			await this.endActiveState(userId, appId, statusId);
 		}
 	}
 
@@ -152,11 +152,11 @@ export abstract class UserBridge extends BaseBridge {
 
 	protected abstract setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 		appId: string,
 	): Promise<void>;
 
-	protected abstract endActiveState(userId: IUser['id'], appId: string): Promise<void>;
+	protected abstract endActiveState(userId: IUser['id'], appId: string, statusId?: string): Promise<void>;
 
 	private hasReadPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.user.read)) {

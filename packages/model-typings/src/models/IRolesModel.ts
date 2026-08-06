@@ -22,7 +22,6 @@ export interface IRolesModel extends IBaseModel<IRole> {
 		_idsOrNames: IRole['_id'][] | IRole['name'][],
 		options?: FindOptions<IRole>,
 	): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
-	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole>;
 	updateById(
 		_id: IRole['_id'],

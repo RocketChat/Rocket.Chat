@@ -2,22 +2,16 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
-
-class OmnichannelMonitorsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Monitors' }));
-	}
-}
 
 export class OmnichannelMonitors extends OmnichannelAdmin {
-	readonly table: OmnichannelMonitorsTable;
+	protected readonly route = 'monitors';
+
+	protected readonly title = 'Monitors';
 
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelMonitorsTable(page);
 		this.listbox = new Listbox(page);
 	}
 

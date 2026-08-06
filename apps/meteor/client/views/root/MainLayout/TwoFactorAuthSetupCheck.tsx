@@ -9,13 +9,15 @@ import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 
-const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }) => {
+export type TwoFactorAuthSetupCheckProps = { children: ReactNode };
+
+const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 	const require2faSetup = useRequire2faSetup();
 
 	if (require2faSetup) {
 		return (
-			<Box bg='surface-light' id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
+			<Box backgroundColor='surface-light' id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
 				<MainContent>
 					<AccountSecurityPage />
 				</MainContent>

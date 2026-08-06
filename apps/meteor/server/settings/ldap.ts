@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createLdapSettings = () =>
 	settingsRegistry.addGroup('LDAP', async function () {
@@ -228,6 +228,7 @@ export const createLdapSettings = () =>
 
 				await this.add('LDAP_DataSync_VariableMap', '{}', {
 					type: 'code',
+					code: 'application/json',
 					multiline: true,
 					enableQuery: [enableQuery, { _id: 'LDAP_DataSync_UseVariables', value: true }],
 					invalidValue: '{}',

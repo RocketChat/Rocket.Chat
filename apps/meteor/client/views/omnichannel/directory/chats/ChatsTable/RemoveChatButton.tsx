@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 
-type RemoveChatButtonProps = { _id: string };
+export type RemoveChatButtonProps = { _id: string };
 
 const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 	const removeCurrentChatMutation = useRemoveCurrentChatMutation();

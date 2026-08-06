@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 
-type MediumProps = {
+export type MediumProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
@@ -18,14 +18,15 @@ type MediumProps = {
 	menuOptions?: any;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }: MediumProps) => {
+const Medium = ({ icon, title, titleIcon, avatar, actions, badges, unread, menu, ...props }: MediumProps) => {
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item title={title} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarV2Item {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			{titleIcon}
 			{badges}
 			{actions}
 			{menu && (

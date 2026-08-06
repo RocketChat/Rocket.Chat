@@ -9,18 +9,26 @@ import { useTranslation } from 'react-i18next';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-type TwoFactorEmailModalProps = {
+export type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	invalidAttempt?: boolean;
-	emailOrUsername: string;
-};
+} & (
+	| {
+			emailOrUsername: string;
+			challengeId?: never;
+	  }
+	| {
+			challengeId: string;
+			emailOrUsername?: never;
+	  }
+);
 
 type TwoFactorEmailFormData = {
 	code: string;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttempt }: TwoFactorEmailModalProps) => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUsername, challengeId }: TwoFactorEmailModalProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
@@ -45,10 +53,15 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 	}, [invalidAttempt, setError, t]);
 
 	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
+	const sendEmailCodeByChallengeId = useEndpoint('POST', '/v1/twoFactorChallenges.sendEmailCode');
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {
-			await sendEmailCode({ emailOrUsername });
+			if (emailOrUsername) {
+				await sendEmailCode({ emailOrUsername });
+			} else if (challengeId) {
+				await sendEmailCodeByChallengeId({ challengeId });
+			}
 			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error) {
 			dispatchToastMessage({
@@ -109,7 +122,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 					{errors.code && <FieldError>{errors.code.message}</FieldError>}
 				</Field>
 			</FieldGroup>
-			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small mbs={24}>
+			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small marginBlockStart={24}>
 				{t('Cloud_resend_email')}
 			</Button>
 		</GenericModal>

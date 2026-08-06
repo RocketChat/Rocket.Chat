@@ -24,7 +24,7 @@ import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
-type RoomMessageProps = {
+export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
 	showUserAvatar: boolean;
 	sequential: boolean;

@@ -1,8 +1,8 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { AdminSettings } from '../admin-settings';
 
-export class OmnichannelSettings extends OmnichannelAdmin {
+export class OmnichannelSettings extends AdminSettings {
 	get labelLivechatLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]');
 	}

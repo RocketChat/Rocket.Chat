@@ -685,6 +685,7 @@ export const isChatSyncThreadMessagesProps = ajvQuery.compile<ChatSyncThreadMess
 
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
+	aroundId?: string;
 }>;
 
 const ChatGetThreadMessagesSchema = {
@@ -693,6 +694,11 @@ const ChatGetThreadMessagesSchema = {
 		tmid: {
 			type: 'string',
 			minLength: 1,
+		},
+		aroundId: {
+			type: 'string',
+			minLength: 1,
+			nullable: true,
 		},
 		count: {
 			type: 'number',
