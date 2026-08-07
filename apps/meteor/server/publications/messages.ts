@@ -140,13 +140,16 @@ export function mountPreviousCursor(
 	return mountCursorFromMessage(messages[0], type);
 }
 
-export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
-	const query = { $gt: lastUpdate };
+export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date, fromTs?: Date) {
 	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
 
 	const [updatedMessages, deletedMessages] = await Promise.all([
-		Messages.findForUpdates(rid, query, options).toArray(),
-		Messages.trashFindDeletedAfter(lastUpdate, { rid }, { projection: { _id: 1, _deletedAt: 1 }, ...options }).toArray(),
+		Messages.findForUpdates(rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, options).toArray(),
+		Messages.trashFindDeletedAfter(
+			lastUpdate,
+			{ rid, ...(fromTs && { ts: { $gte: fromTs } }) },
+			{ projection: { _id: 1, _deletedAt: 1 }, ...options },
+		).toArray(),
 	]);
 
 	return {
@@ -173,7 +176,7 @@ export async function handleCursorPagination(
 
 	const response =
 		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, query, options).toArray()
+			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
 			: ((await Messages.trashFind(
 					{ rid, _deletedAt: query },
 					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
@@ -200,6 +203,7 @@ export const getMessageHistory = async (
 	fromId: string,
 	{
 		lastUpdate,
+		fromTs,
 		latestDate = new Date(),
 		oldestDate,
 		inclusive = false,
@@ -210,6 +214,7 @@ export const getMessageHistory = async (
 		type,
 	}: {
 		lastUpdate?: Date;
+		fromTs?: Date;
 		latestDate?: Date;
 		oldestDate?: Date;
 		inclusive?: boolean;
@@ -262,7 +267,7 @@ export const getMessageHistory = async (
 	}
 
 	if (lastUpdate) {
-		return handleWithoutPagination(rid, lastUpdate);
+		return handleWithoutPagination(rid, lastUpdate, fromTs);
 	}
 
 	if (!type) {

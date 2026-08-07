@@ -213,11 +213,30 @@ describe('handleWithoutPagination', () => {
 			deleted: deletedMessages,
 		});
 
-		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { $gt: lastUpdate }, { sort: { ts: -1 } });
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: undefined }, { sort: { ts: -1 } });
 		sinon.assert.calledWith(
 			messagesMock.trashFindDeletedAfter,
 			lastUpdate,
 			{ rid },
+			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
+		);
+	});
+
+	it('should bound both queries by `ts` when fromTs is provided', async () => {
+		const rid = 'roomId';
+		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
+		const fromTs = new Date('2024-01-01T00:00:00.000Z');
+
+		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+
+		await handleWithoutPagination(rid, lastUpdate, fromTs);
+
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
+		sinon.assert.calledWith(
+			messagesMock.trashFindDeletedAfter,
+			lastUpdate,
+			{ rid, ts: { $gte: fromTs } },
 			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
 		);
 	});
@@ -248,6 +267,8 @@ describe('handleCursorPagination', () => {
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
 		expect(messagesMock.findForUpdates.calledOnce).to.be.true;
+		// the cursor path has no `ts` bound to apply — it paginates on `_updatedAt` alone
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: new Date(0) } }, { sort: { _updatedAt: 1 } });
 		expect(result.updated).to.deep.equal(messages);
 		expect(result.cursor).to.have.keys(['next', 'previous']);
 	});
