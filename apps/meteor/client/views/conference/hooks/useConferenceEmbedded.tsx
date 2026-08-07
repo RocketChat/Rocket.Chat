@@ -104,7 +104,6 @@ export const useConferenceEmbedded = (callId: string) => {
 		mutate: join,
 		isPending,
 		error,
-		variables,
 	} = useMutation({
 		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
 			// Naming is not worth failing the join over: if it doesn't take, the toast says so and the user still
@@ -168,11 +167,6 @@ export const useConferenceEmbedded = (callId: string) => {
 			embedded: data ? data.url === '' : false,
 			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */
 			joined: !!data,
-			/**
-			 * How the user chose to arrive, for a provider that needs telling. Absent for a window that joined on
-			 * the start screen and found the result in the cache — the provider's own defaults stand there.
-			 */
-			preferences: variables?.state,
 			loading: isPending,
 			error,
 			join,

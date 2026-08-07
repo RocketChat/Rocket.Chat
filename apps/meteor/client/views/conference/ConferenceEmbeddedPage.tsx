@@ -18,6 +18,7 @@ import PageLoading from '../root/PageLoading';
 import CallBar from './components/CallBar/CallBar';
 import CallBarAction from './components/CallBar/CallBarAction';
 import CallPanel from './components/CallPanel/CallPanel';
+import { useCallPreferences } from './hooks/useCallPreferences';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
@@ -51,14 +52,14 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// call has to end for its history to be written.
 	const { leaveNow } = useLeaveConferenceOnClose(callId);
 
+	// How the user chose to arrive. Read from where the preflight put it rather than from this window's own
+	// join, because starting a call joins on the *start* screen — this window then finds the result in the
+	// cache, having never asked, and would otherwise hand the provider nothing and get its defaults.
+	const { preferences } = useCallPreferences(call.capabilities);
+
 	// A provider that runs the call in here is connected by a tree above this route, so joining has to tell it
 	// which call this window is showing.
-	useEmbeddedConferenceCall({
-		callId,
-		rid: room.rid,
-		embedded: conference.embedded,
-		preferences: conference.preferences,
-	});
+	useEmbeddedConferenceCall({ callId, rid: room.rid, embedded: conference.embedded, preferences });
 
 	// How the embedded call should name and picture the viewer — it has no room membership to read that from.
 	const user = useUser();
@@ -96,10 +97,16 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// How many people are actually in the call, which is the number worth glancing at.
 	const presentCount = call.members.filter(isInVideoConference).length;
 
-	// Where the call puts its own controls. A node rather than a boolean because the call renders them itself
-	// and we only say where — see `actionsContainer`. State, not a ref, so the first render after the node
-	// exists is the one that hands it over.
-	const [callControls, setCallControls] = useState<HTMLElement | null>(null);
+	// Where the call puts its own controls — see `actionsContainer`. Created up front rather than captured from
+	// a ref, so it is non-null on the very first render: a ref would still be empty then, and the call would
+	// build a whole strip of its own before being told not to.
+	const controlsHost = useMemo(() => document.createElement('div'), []);
+	const mountControlsHost = useCallback(
+		(node: HTMLElement | null) => {
+			node?.appendChild(controlsHost);
+		},
+		[controlsHost],
+	);
 
 	// This window's own panels, at the end of the same bar.
 	const panelActions = (
@@ -170,7 +177,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 			{room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
-				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
+				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
 					{/* A provider with a page of its own gets an iframe; one that runs the call in here renders it
 					    directly, reading the connection from the bridge above this route. That one brings its own
 					    control strip -- mic, camera, screen, hang up -- so the panel toggles join it there rather
@@ -183,7 +190,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 							onToggleChat={() => togglePanel('chat')}
 							user={self}
 							hideChatToggle
-							actionsContainer={callControls}
+							actionsContainer={controlsHost}
 						/>
 					)}
 				</Box>
@@ -206,7 +213,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</CallPanel>
 			</Box>
 
-			<CallBar centre={<Box ref={setCallControls} display='flex' alignItems='center' />}>{panelActions}</CallBar>
+			<CallBar centre={<Box ref={mountControlsHost} display='flex' alignItems='center' />}>{panelActions}</CallBar>
 		</Box>
 	);
 };
