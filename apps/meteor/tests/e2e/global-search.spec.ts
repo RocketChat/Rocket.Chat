@@ -67,33 +67,25 @@ test.describe.serial('Global Search', () => {
 		await page.goto('/home');
 	});
 
-	test('should open the correct message when jumping from global search in group to channel thread', async ({ page }) => {
+	test('should open the correct message when jumping from global search in group to channel thread', async () => {
 		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); // fill partial text to match search
-
-		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
-		await message.hover();
-		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
-		await jumpToMessageButton.click();
-
+		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); 
+		await poHomeChannel.tabs.searchMessages.jumpToMessage(threadMessage.msg);
+		
 		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
-		await expect(page.getByText(threadMessage.msg)).toBeVisible();
+		await expect(poHomeChannel.tabs.threads.getThreadMessageByText(threadMessage.msg)).toBeVisible();
 	});
 
-	test('should open the correct message when jumping from global search in group to channel message', async ({ page }) => {
+	test('should open the correct message when jumping from global search in group to channel message', async () => {
 		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await poHomeChannel.tabs.searchMessages.search('regular', { global: true });
-
-		const message = await poHomeChannel.tabs.searchMessages.getResultItem(regularMessage.msg);
-		await message.hover();
-		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
-		await jumpToMessageButton.click();
+		await poHomeChannel.tabs.searchMessages.search(regularMessage.msg.slice(10), { global: true });
+		await poHomeChannel.tabs.searchMessages.jumpToMessage(regularMessage.msg);
 
 		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
-		await expect(page.getByText(regularMessage.msg)).toBeVisible();
+		await expect(poHomeChannel.content.getMessageByText(regularMessage.msg)).toBeVisible();
 	});
 });
