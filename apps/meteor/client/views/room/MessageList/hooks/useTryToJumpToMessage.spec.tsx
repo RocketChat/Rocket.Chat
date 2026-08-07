@@ -26,6 +26,7 @@ jest.mock('../../../../providers/RouterProvider', () => ({
 
 const mockedRoomHistoryManager = jest.mocked(RoomHistoryManager);
 const mockedGoToRoom = jest.fn().mockResolvedValue(undefined);
+const mockedSetIsJumpingToMessage = jest.fn();
 
 beforeEach(() => {
 	jest.mocked(useGoToRoom).mockReturnValue(mockedGoToRoom);
@@ -41,7 +42,7 @@ const renderJumpHook = (rid: string, message: unknown) =>
 			useTryToJumpToMessage({
 				rid,
 				virtualizerRef: { current: { scrollToIndex: jest.fn() } } as unknown as MutableRefObject<WindowVirtualizerHandle | null>,
-				setIsJumpingToMessage: jest.fn(),
+				setIsJumpingToMessage: mockedSetIsJumpingToMessage,
 				messages: [{ _id: 'another-msg' }],
 			}),
 		{
@@ -95,7 +96,7 @@ describe('useTryToJumpToMessage', () => {
 	it('should not navigate for a cross-room thread message, as it is handled by useTryToJumpToThreadMessage', async () => {
 		renderJumpHook('room-1', { ...message, rid: 'room-2', tmid: 'parent-msg-1', tshow: true });
 
-		await waitFor(() => new Promise((resolve) => setTimeout(resolve, 100)));
+		await waitFor(() => expect(mockedSetIsJumpingToMessage).toHaveBeenCalledWith(true));
 
 		expect(mockedGoToRoom).not.toHaveBeenCalled();
 		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();

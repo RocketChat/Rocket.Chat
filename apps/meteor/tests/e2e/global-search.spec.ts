@@ -13,6 +13,7 @@ test.describe.serial('Global Search', () => {
 	let targetChannel: { name: string; _id: string };
 	let targetGroup: { name: string; _id: string };
 	let threadMessage: IMessage;
+	let regularMessage: IMessage;
 	let poHomeChannel: HomeChannel;
 
 	const fillMessages = async (api: BaseTest['api']) => {
@@ -24,6 +25,11 @@ test.describe.serial('Global Search', () => {
 			await api.post('/chat.postMessage', { roomId: targetChannel._id, text: `This is thread message in channel`, tmid: parentMessage._id })
 		).json();
 		threadMessage = childMessage;
+
+		const { message: standaloneMessage } = await (
+			await api.post('/chat.postMessage', { roomId: targetChannel._id, text: 'This is regular message in channel' })
+		).json();
+		regularMessage = standaloneMessage;
 	};
 
 	test.beforeAll(async ({ api }) => {
@@ -72,7 +78,22 @@ test.describe.serial('Global Search', () => {
 		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
 		await jumpToMessageButton.click();
 
-		await expect(page.locator('header').getByRole('button').filter({ hasText: targetChannel.name })).toBeVisible(); // match channel name in room header
+		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
 		await expect(page.getByText(threadMessage.msg)).toBeVisible();
+	});
+
+	test('should open the correct message when jumping from global search in group to channel message', async ({ page }) => {
+		await poHomeChannel.navbar.openChat(targetGroup.name);
+		await poHomeChannel.roomToolbar.btnSearchMessages.click();
+
+		await poHomeChannel.tabs.searchMessages.search('regular', { global: true });
+
+		const message = await poHomeChannel.tabs.searchMessages.getResultItem(regularMessage.msg);
+		await message.hover();
+		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
+		await jumpToMessageButton.click();
+
+		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
+		await expect(page.getByText(regularMessage.msg)).toBeVisible();
 	});
 });
