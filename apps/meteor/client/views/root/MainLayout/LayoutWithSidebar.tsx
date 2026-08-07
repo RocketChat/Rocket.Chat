@@ -20,7 +20,10 @@ const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
-	const { isEmbedded: embeddedLayout, isMobile } = useLayout();
+	const {
+		isEmbedded: embeddedLayout,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
@@ -59,7 +62,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 		<>
 			<AccessibilityShortcut />
 			{!embeddedLayout && (
-				<FeaturePreview feature='sidebarRail' disabled={isMobile}>
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle}>
 					<FeaturePreviewOn>
 						<SidebarRailHeader />
 					</FeaturePreviewOn>
@@ -74,7 +77,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				<FeaturePreview feature='sidebarRail' disabled={isMobile || embeddedLayout}>
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
 					<FeaturePreviewOn>
 						<SidebarRail />
 					</FeaturePreviewOn>
