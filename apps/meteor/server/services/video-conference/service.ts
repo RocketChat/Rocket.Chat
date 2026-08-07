@@ -23,7 +23,6 @@ import type {
 	VideoConferenceChatAccess,
 	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
-	VideoConferenceWithDiscussion,
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
@@ -80,9 +79,6 @@ import { settings } from '../../settings';
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
-
-/** How many faces a joinable call carries. Enough for a row of avatars and a "+3" after them. */
-const JOINABLE_PARTICIPANTS_SHOWN = 3;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -280,7 +276,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async list(
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
-	): Promise<PaginatedResult<{ data: VideoConferenceWithDiscussion[] }>> {
+	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
 		const { cursor, totalCount } = VideoConferenceModel.findPaginatedByRoomId(roomId, pagination);
 
 		const [data, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -1378,8 +1374,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 						(isGroupVideoConference(call) && call.title) || subscription?.fname || subscription?.name || (await this.getRoomName(call.rid)),
 					createdAt: call.createdAt,
 					usersCount: present.length,
-					// A handful of faces for the lists that show them; the count above stays the whole number.
-					participants: present.slice(0, JOINABLE_PARTICIPANTS_SHOWN).map(({ _id, username, name }) => ({ _id, username, name })),
 					joined: !!member && isInVideoConference(member),
 					declined: !!member?.declined,
 					// Whether that ring is still live is the reader's to decide, so the moment is what travels.

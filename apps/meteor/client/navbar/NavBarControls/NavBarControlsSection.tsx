@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import NavBarControlsWithData from './NavBarControlsWithData';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
-import NavBarItemOngoingCalls from '../NavBarItemOngoingCalls';
 import NavBarOmnichannelGroup from '../NavBarOmnichannelGroup';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from '../NavBarSettingsToolbar';
 import NavBarVoipGroup from '../NavBarVoipGroup';
@@ -21,7 +20,6 @@ const NavBarControlsSection = () => {
 	if (isMobile) {
 		return (
 			<NavBarSection>
-				<NavBarItemOngoingCalls />
 				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
 				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
@@ -33,7 +31,6 @@ const NavBarControlsSection = () => {
 
 	return (
 		<NavBarSection>
-			<NavBarItemOngoingCalls />
 			{callAction && <NavBarVoipGroup />}
 			{showOmnichannel && <NavBarOmnichannelGroup />}
 			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>

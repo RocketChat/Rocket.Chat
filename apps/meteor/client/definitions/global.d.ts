@@ -4,13 +4,6 @@ declare global {
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
 
-		// Bridge injected into the desktop app's internal video-chat window (separate from
-		// `RocketChatDesktop`, which is only present in the main app webview).
-		videoCallWindow?: {
-			// Navigate the main app window to an in-app route (e.g. "/channel/general") and focus it.
-			openInMainWindow?: (path: string) => void;
-		};
-
 		/** @deprecated use `window.RTCPeerConnection` */
 		mozRTCPeerConnection?: RTCPeerConnection;
 		/** @deprecated use `window.RTCPeerConnection` */

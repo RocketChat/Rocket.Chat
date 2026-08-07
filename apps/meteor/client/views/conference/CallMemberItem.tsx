@@ -4,7 +4,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import type { ConferenceMember } from './hooks/useCallOutcome';
+import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { getUserDisplayNames } from '../../../lib/getUserDisplayNames';
 import type { ConferenceMemberStatus } from '../../../lib/videoConference/memberStatus';
 import { canRingConferenceMember, getConferenceMemberStatus } from '../../../lib/videoConference/memberStatus';

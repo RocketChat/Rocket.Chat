@@ -185,17 +185,15 @@ describe('VideoConfService.listJoinableCalls', () => {
 			const [call] = await service.listJoinableCalls(me);
 
 			expect(call.usersCount).to.equal(4);
-			expect(call.participants).to.have.length(3);
-			expect(call.participants[0]).to.have.keys(['_id', 'username', 'name']);
 		});
 
-		it('carries nobody who is not in the call', async () => {
+		it('counts nobody who is not in the call', async () => {
 			running = [buildGroupCall([buildMember({ _id: 'present' }), buildMember({ _id: 'gone', leftAt: new Date() })], { rid: 'channel' })];
 			subscribedRids = ['channel'];
 
 			const [call] = await service.listJoinableCalls(me);
 
-			expect(call.participants.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['present']);
+			expect(call.usersCount).to.equal(1);
 		});
 
 		it('names a group conference by its title', async () => {

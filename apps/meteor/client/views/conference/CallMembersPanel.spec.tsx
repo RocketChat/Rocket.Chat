@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CallMembersPanel from './CallMembersPanel';
-import type { ConferenceMember } from './hooks/useCallOutcome';
+import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { buildChatAccess, buildConferenceMember } from './testFixtures';
 
 const ring = jest.fn(() => ({ rang: [], success: true }) as any);

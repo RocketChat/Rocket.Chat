@@ -1,18 +1,39 @@
-import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
-import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useEndpoint, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import type { ConferenceMember } from './useCallOutcome';
 import type { CallPreferences } from './useCallPreferences';
-import { useConferenceCallUrl } from './useConferenceCallUrl';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 
+/**
+ * A member of the call, as this window holds them: who they are, and where they stand with the call.
+ *
+ * Narrower than `IVideoConferenceUser` on purpose — the avatar etag and the `ts` are of no interest to anything
+ * rendering a member, and leaving them out keeps the fixtures honest about what the UI actually reads.
+ */
+export type ConferenceMember = Pick<
+	IVideoConferenceUser,
+	'_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'
+>;
+
 /** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
 export type ConferenceChatAccess = VideoConferenceChatAccess & {
 	members: ConferenceMember[];
+};
+
+/** Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous. */
+const withDisplayName = (callUrl: string, displayName?: string): string => {
+	if (!displayName) {
+		return callUrl;
+	}
+
+	const url = new URL(callUrl);
+	url.searchParams.set('name', displayName);
+	return url.toString();
 };
 
 export const useConferenceEmbedded = (callId: string) => {
@@ -20,10 +41,12 @@ export const useConferenceEmbedded = (callId: string) => {
 	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
-	const getConferenceCallUrl = useConferenceCallUrl();
 	const subscribeToVideoConference = useStream('video-conference');
 	const queryClient = useQueryClient();
 	const uid = useUserId();
+	// The provider is told who is arriving, so the name in the call is the one the workspace shows.
+	const user = useUser();
+	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
 	// The chat room comes from the conference record: show `discussionRid` when it's set (a discussion was
 	// created), otherwise the conference's `rid` (the original room). The `rid` never changes.
@@ -135,7 +158,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			chatAccess,
 		} as const,
 		conference: {
-			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
+			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
 			loading: isPending,
 			error,
 			join,

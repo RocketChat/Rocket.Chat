@@ -8,10 +8,6 @@ const callId = 'call-id';
 // `ts` is required on a membership entry and arrives as a string over REST, so the fixture carries one.
 const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider', ts: '2026-08-01T10:00:00.000Z' };
 
-jest.mock('./useConferenceCallUrl', () => ({
-	useConferenceCallUrl: () => (url: string) => url,
-}));
-
 // The conference is read again after every change, so what the second read returns is the whole point: the
 // first says a member can't see the chat, the second says the situation is resolved.
 const buildInfo = (membersWithoutAccess: string[]) =>
@@ -131,7 +127,7 @@ describe('joining', () => {
 		result.current.conference.join({ state: { mic: false, cam: true } });
 
 		await waitFor(() => expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } }));
-		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example'));
+		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example/?name=john.doe'));
 	});
 
 	it('says who may name the call', async () => {
@@ -193,6 +189,6 @@ describe('naming on the way in', () => {
 		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
 
 		await waitFor(() => expect(join).toHaveBeenCalled());
-		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example'));
+		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example/?name=john.doe'));
 	});
 });

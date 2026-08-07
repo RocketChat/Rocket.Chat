@@ -1,8 +1,7 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-
-import CallParticipants from './CallParticipants';
+import { useTranslation } from 'react-i18next';
 
 type CallSummaryProps = {
 	call: JoinableVideoConference;
@@ -18,17 +17,23 @@ type CallSummaryProps = {
  * Shared by the ringing item and the ordinary row, because that much is the same for both — what differs is what
  * they offer, and a ringing call gets its actions on a line of their own.
  */
-const CallSummary = ({ call, ringing, children }: CallSummaryProps) => (
-	<Box display='flex' alignItems='center' style={{ gap: 8 }}>
-		<Icon name='video' size='x20' color={ringing ? 'status-font-on-danger' : undefined} />
-		<Box minWidth={0} flexGrow={1}>
-			<Box fontScale='p2b' color='default' withTruncatedText>
-				{call.name}
+const CallSummary = ({ call, ringing, children }: CallSummaryProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<Box display='flex' alignItems='center' style={{ gap: 8 }}>
+			<Icon name='video' size='x20' color={ringing ? 'status-font-on-danger' : undefined} />
+			<Box minWidth={0} flexGrow={1}>
+				<Box fontScale='p2b' color='default' withTruncatedText>
+					{call.name}
+				</Box>
+				<Box fontScale='micro' color='hint'>
+					{t('__count__people_in_the_call', { count: call.usersCount })}
+				</Box>
 			</Box>
-			<CallParticipants participants={call.participants} usersCount={call.usersCount} />
+			{children}
 		</Box>
-		{children}
-	</Box>
-);
+	);
+};
 
 export default CallSummary;

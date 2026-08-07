@@ -1,7 +1,6 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 
-import type { ConferenceMember } from './hooks/useCallOutcome';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import type { ConferenceChatAccess, ConferenceMember } from './hooks/useConferenceEmbedded';
 
 /**
  * The shapes the conference specs keep rebuilding, in one place — the server harness's counterpart on this side.
@@ -16,7 +15,6 @@ export const buildJoinableCall = (
 	name: `Call ${overrides.callId}`,
 	createdAt: new Date('2026-08-03T10:00:00.000Z'),
 	usersCount: 2,
-	participants: [{ _id: 'someone', username: 'someone', name: 'Someone' }],
 	joined: false,
 	declined: false,
 	...overrides,
