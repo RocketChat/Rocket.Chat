@@ -16,7 +16,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import FloatingGroupCallWidget from './FloatingGroupCallWidget';
 import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
 
 const headersOf = () => ({
@@ -754,11 +753,6 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 	return (
 		<MediaCallViewContext.Provider value={ctxValue as any}>
 			{children}
-			{/* Floating mini-view of the call, shown when the user has navigated
-			    away from the call's room. Renders nothing while in the call room
-			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
-			    no group call is active. */}
-			<FloatingGroupCallWidget />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(
 						// Apply preflight mic/cam preferences from the VC

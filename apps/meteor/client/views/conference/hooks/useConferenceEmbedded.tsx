@@ -104,6 +104,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		mutate: join,
 		isPending,
 		error,
+		variables,
 	} = useMutation({
 		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
 			// Naming is not worth failing the join over: if it doesn't take, the toast says so and the user still
@@ -159,6 +160,19 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		conference: {
 			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
+			/**
+			 * A provider that runs the call inside Rocket.Chat rather than at a URL of its own. The server says so
+			 * by answering the join with an empty url — there is no page to send anyone to — so that is what this
+			 * reads, rather than a second capability the two sides would have to keep in step.
+			 */
+			embedded: data ? data.url === '' : false,
+			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */
+			joined: !!data,
+			/**
+			 * How the user chose to arrive, for a provider that needs telling. Absent for a window that joined on
+			 * the start screen and found the result in the cache — the provider's own defaults stand there.
+			 */
+			preferences: variables?.state,
 			loading: isPending,
 			error,
 			join,

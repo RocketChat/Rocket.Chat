@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
@@ -269,11 +270,20 @@ type MediaCallRoomSectionProps = {
 		displayName: string;
 		avatarUrl: string;
 	};
-	/** When true, suppresses the chat-toggle button (used by the floating widget which has no chat slot). */
+	/** When true, suppresses the chat-toggle button (used where the surrounding surface owns the chat toggle). */
 	hideChatToggle?: boolean;
+	/**
+	 * Where to put the call's controls, when the surface hosting the call already has a bar of its own. The
+	 * conference window does: it has a bottom bar carrying its members and chat toggles, and the call's mic,
+	 * camera and hang-up belong beside them rather than in a second strip stacked above.
+	 *
+	 * The controls are the same ones either way — they are moved, not rebuilt, so the two placements cannot
+	 * drift apart.
+	 */
+	actionsContainer?: HTMLElement | null;
 };
 
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, actionsContainer }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -616,6 +626,87 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		}
 	}, [liveLevel, localHandRaised, onToggleHand]);
 
+	const callControls = (
+		<>
+			<Box className={controlGroupStyles}>
+				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				<Box className={chevronWrapStyles}>
+					<DevicePicker chevron />
+				</Box>
+			</Box>
+			{onToggleCamera && (
+				<Box className={controlGroupStyles}>
+					<ToggleButton
+						label={t('Camera')}
+						icons={['video', 'video-off']}
+						titles={[t('Stop_camera'), t('Start_camera')]}
+						pressed={!(localCamera?.active ?? false)}
+						onToggle={onToggleCamera}
+					/>
+					<Box className={chevronWrapStyles}>
+						<CameraPicker />
+					</Box>
+				</Box>
+			)}
+			{!isLiveKitCall && (
+				<ToggleButton
+					label={t('Hold')}
+					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+					titles={[t('Hold'), t('Resume')]}
+					pressed={held}
+					onToggle={onHold}
+				/>
+			)}
+			<ToggleButton
+				label={t('Share_screen')}
+				icons={['desktop-arrow-up', 'desktop-cross']}
+				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
+				pressed={localScreen?.active ?? false}
+				onToggle={onToggleScreenSharing}
+			/>
+			{onToggleHand && (
+				<ToggleButton
+					label='Raise hand'
+					icons={['hand-pointer', 'hand-pointer']}
+					titles={['Raise hand', 'Lower hand']}
+					pressed={Boolean(localHandRaised)}
+					onToggle={onToggleHand}
+				/>
+			)}
+			{onSendReaction && (
+				<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
+					<ToggleButton
+						label='Send reaction'
+						icons={['emoji', 'emoji']}
+						titles={['Send reaction', 'Send reaction']}
+						pressed={reactionPickerOpen}
+						onToggle={() => setReactionPickerOpen((p) => !p)}
+					/>
+					{reactionPickerOpen && (
+						<Box className={reactionPickerStyles}>
+							{REACTION_EMOJIS.map((emoji) => (
+								<Box
+									key={emoji}
+									is='button'
+									type='button'
+									title={`Send ${emoji}`}
+									className={reactionButtonStyles}
+									onClick={() => onSendReaction(emoji)}
+								>
+									{emoji}
+								</Box>
+							))}
+						</Box>
+					)}
+				</Box>
+			)}
+			{isOneOnOne && !isLiveKitCall && (
+				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+			)}
+			<ActionButton label={t('Voice_call__user__hangup', { user: hangupTarget })} icon='phone-off' danger onClick={onEndCall} />
+		</>
+	);
+
 	if (isPopout) {
 		return (
 			<Box
@@ -688,20 +779,18 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 							style={{ '--rcx-pill-active-bg': 'rgb(38 102 200)', '--rcx-pill-active-bg-hover': 'rgb(28 80 165)' } as React.CSSProperties}
 							onClick={onToggleTakeNotes}
 							disabled={notesBusy}
-							title={notesEnabled ? 'Stop taking notes' : 'Take notes'}
+							title={notesEnabled ? t('Stop_taking_notes') : t('Take_notes')}
 						>
 							<Icon name='edit' size='x14' />
 							{notesEnabled ? (
 								<Box is='span' data-hover-swap>
-									<Box is='span' data-idle>
-										Taking notes…
-									</Box>
+									<Box is='span' data-idle>{`${t('Taking_notes')}…`}</Box>
 									<Box is='span' data-hover>
-										Stop taking notes
+										{t('Stop_taking_notes')}
 									</Box>
 								</Box>
 							) : (
-								<Box is='span'>Take notes</Box>
+								<Box is='span'>{t('Take_notes')}</Box>
 							)}
 						</Box>
 					)}
@@ -717,10 +806,10 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 							className={[pillStyles, captionsEnabledLocally ? 'active' : null]}
 							style={{ '--rcx-pill-active-bg': 'rgb(67 122 178)', '--rcx-pill-active-bg-hover': 'rgb(50 96 142)' } as React.CSSProperties}
 							onClick={onToggleCaptions}
-							title={captionsEnabledLocally ? 'Hide captions' : 'Show captions'}
+							title={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
 						>
 							<Icon name='quote' size='x14' />
-							<Box is='span'>{captionsEnabledLocally ? 'Captions on' : 'Captions'}</Box>
+							<Box is='span'>{captionsEnabledLocally ? t('Captions_on') : t('Captions')}</Box>
 						</Box>
 					)}
 					{/* Call-language pill — abbreviation only ("US", "BR", …) to
@@ -785,101 +874,32 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 				reactionsByParticipant={reactionsByParticipant}
 				captionsByParticipant={activeCaptions}
 			/>
-			<ActionStrip
-				rightSlot={
-					!hideChatToggle ? (
-						<ButtonGroup>
-							<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
-							<ToggleButton
-								label={t('Open_in_new_window')}
-								titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
-								icons={['arrow-to-square-box', 'arrow-from-cross-box']}
-								pressed={isPopout}
-								onToggle={isPopout ? onClosePopout : onOpenPopout}
-								danger={false}
-							/>
-							<DevicePicker secondary />
-						</ButtonGroup>
-					) : undefined
-				}
-			>
-				<Box className={controlGroupStyles}>
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-					<Box className={chevronWrapStyles}>
-						<DevicePicker chevron />
-					</Box>
-				</Box>
-				{onToggleCamera && (
-					<Box className={controlGroupStyles}>
-						<ToggleButton
-							label={t('Camera')}
-							icons={['video', 'video-off']}
-							titles={[t('Stop_camera'), t('Start_camera')]}
-							pressed={!(localCamera?.active ?? false)}
-							onToggle={onToggleCamera}
-						/>
-						<Box className={chevronWrapStyles}>
-							<CameraPicker />
-						</Box>
-					</Box>
-				)}
-				{!isLiveKitCall && (
-					<ToggleButton
-						label={t('Hold')}
-						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-						titles={[t('Hold'), t('Resume')]}
-						pressed={held}
-						onToggle={onHold}
-					/>
-				)}
-				<ToggleButton
-					label={t('Share_screen')}
-					icons={['desktop-arrow-up', 'desktop-cross']}
-					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
-					pressed={localScreen?.active ?? false}
-					onToggle={onToggleScreenSharing}
-				/>
-				{onToggleHand && (
-					<ToggleButton
-						label='Raise hand'
-						icons={['hand-pointer', 'hand-pointer']}
-						titles={['Raise hand', 'Lower hand']}
-						pressed={Boolean(localHandRaised)}
-						onToggle={onToggleHand}
-					/>
-				)}
-				{onSendReaction && (
-					<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
-						<ToggleButton
-							label='Send reaction'
-							icons={['emoji', 'emoji']}
-							titles={['Send reaction', 'Send reaction']}
-							pressed={reactionPickerOpen}
-							onToggle={() => setReactionPickerOpen((p) => !p)}
-						/>
-						{reactionPickerOpen && (
-							<Box className={reactionPickerStyles}>
-								{REACTION_EMOJIS.map((emoji) => (
-									<Box
-										key={emoji}
-										is='button'
-										type='button'
-										title={`Send ${emoji}`}
-										className={reactionButtonStyles}
-										onClick={() => onSendReaction(emoji)}
-									>
-										{emoji}
-									</Box>
-								))}
-							</Box>
-						)}
-					</Box>
-				)}
-				{isOneOnOne && !isLiveKitCall && (
-					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
-				)}
-				<ActionButton label={t('Voice_call__user__hangup', { user: hangupTarget })} icon='phone-off' danger onClick={onEndCall} />
-			</ActionStrip>
+			{/* The same controls either way: a surface with a bar of its own is handed them to place, and
+			    otherwise they sit in the call's own strip below the stage. */}
+			{actionsContainer ? (
+				createPortal(<ButtonGroup large>{callControls}</ButtonGroup>, actionsContainer)
+			) : (
+				<ActionStrip
+					rightSlot={
+						!hideChatToggle ? (
+							<ButtonGroup>
+								<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+								<ToggleButton
+									label={t('Open_in_new_window')}
+									titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+									icons={['arrow-to-square-box', 'arrow-from-cross-box']}
+									pressed={isPopout}
+									onToggle={isPopout ? onClosePopout : onOpenPopout}
+									danger={false}
+								/>
+								<DevicePicker secondary />
+							</ButtonGroup>
+						) : undefined
+					}
+				>
+					{callControls}
+				</ActionStrip>
+			)}
 		</Box>
 	);
 };

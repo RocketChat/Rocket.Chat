@@ -1,8 +1,10 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useUser, useUserAvatarPath, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { MediaCallRoomSection } from '@rocket.chat/ui-voip';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallMembersPanel from './CallMembersPanel';
@@ -12,15 +14,16 @@ import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
+import PageLoading from '../root/PageLoading';
 import CallBar from './components/CallBar/CallBar';
 import CallBarAction from './components/CallBar/CallBarAction';
 import CallPanel from './components/CallPanel/CallPanel';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
+import { useEmbeddedConferenceCall } from './hooks/useEmbeddedConferenceCall';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
-import PageLoading from '../root/PageLoading';
 
 type ConferenceEmbeddedPageProps = {
 	callId: string;
@@ -48,6 +51,28 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// call has to end for its history to be written.
 	const { leaveNow } = useLeaveConferenceOnClose(callId);
 
+	// A provider that runs the call in here is connected by a tree above this route, so joining has to tell it
+	// which call this window is showing.
+	useEmbeddedConferenceCall({
+		callId,
+		rid: room.rid,
+		embedded: conference.embedded,
+		preferences: conference.preferences,
+	});
+
+	// How the embedded call should name and picture the viewer — it has no room membership to read that from.
+	const user = useUser();
+	const getUserAvatarPath = useUserAvatarPath();
+	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
+	const self = useMemo(
+		() => ({
+			id: user?._id || 'local',
+			displayName: selfDisplayName || '',
+			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
+		}),
+		[user?._id, selfDisplayName, getUserAvatarPath],
+	);
+
 	// Members is the one open on arrival: the useful question then is who else is here, and for the caller of a
 	// call still ringing it is the only place that answers it. Toggling the open one closes it.
 	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>('members');
@@ -71,6 +96,34 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// How many people are actually in the call, which is the number worth glancing at.
 	const presentCount = call.members.filter(isInVideoConference).length;
 
+	// Where the call puts its own controls. A node rather than a boolean because the call renders them itself
+	// and we only say where — see `actionsContainer`. State, not a ref, so the first render after the node
+	// exists is the one that hands it over.
+	const [callControls, setCallControls] = useState<HTMLElement | null>(null);
+
+	// This window's own panels, at the end of the same bar.
+	const panelActions = (
+		<>
+			<CallBarAction
+				icon='team'
+				label={t('Members')}
+				pressed={activePanel === 'members'}
+				badgeCount={presentCount}
+				badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
+				onClick={() => togglePanel('members')}
+			/>
+			<CallBarAction
+				icon='balloon'
+				label={t('Chat')}
+				pressed={chatVisible}
+				badgeCount={unread}
+				badgeVariant={unreadVariant}
+				badgeTitle={unreadTitle}
+				onClick={() => togglePanel('chat')}
+			/>
+		</>
+	);
+
 	// No access to the conference's room — show the unauthorized screen for the whole page rather than a
 	// broken split with a "not found" chat panel.
 	if (room.error) {
@@ -88,7 +141,10 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// Not in the call yet: the user says how they want to arrive, and joining is what turns that into the
 	// provider's URL. Waiting for the conference to load first means the name and the devices on offer are the
 	// real ones.
-	if (!conference.url) {
+	//
+	// An embedded provider never produces a url — the join itself is what puts the user in the call — so for
+	// those it is having joined, not having a url, that says the preflight is done.
+	if (!conference.joined) {
 		if (room.loading) {
 			return <PageLoading />;
 		}
@@ -115,7 +171,21 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
-					<ConferenceIframe url={conference.url} />
+					{/* A provider with a page of its own gets an iframe; one that runs the call in here renders it
+					    directly, reading the connection from the bridge above this route. That one brings its own
+					    control strip -- mic, camera, screen, hang up -- so the panel toggles join it there rather
+					    than sitting in a second bar beneath it. */}
+					{conference.url ? (
+						<ConferenceIframe url={conference.url} />
+					) : (
+						<MediaCallRoomSection
+							showChat={chatVisible}
+							onToggleChat={() => togglePanel('chat')}
+							user={self}
+							hideChatToggle
+							actionsContainer={callControls}
+						/>
+					)}
 				</Box>
 
 				{/* One panel at a time: they share the same space, and two side panels would leave the call a
@@ -136,25 +206,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</CallPanel>
 			</Box>
 
-			<CallBar>
-				<CallBarAction
-					icon='team'
-					label={t('Members')}
-					pressed={activePanel === 'members'}
-					badgeCount={presentCount}
-					badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
-					onClick={() => togglePanel('members')}
-				/>
-				<CallBarAction
-					icon='balloon'
-					label={t('Chat')}
-					pressed={chatVisible}
-					badgeCount={unread}
-					badgeVariant={unreadVariant}
-					badgeTitle={unreadTitle}
-					onClick={() => togglePanel('chat')}
-				/>
-			</CallBar>
+			<CallBar centre={<Box ref={setCallControls} display='flex' alignItems='center' />}>{panelActions}</CallBar>
 		</Box>
 	);
 };
