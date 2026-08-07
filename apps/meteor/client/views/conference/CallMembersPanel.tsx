@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import AddParticipantsModal from './AddParticipantsModal';
 import CallMemberItem from './CallMemberItem';
 import CallPanelHeader from './CallPanelHeader';
-import type { ConferenceMember } from './hooks/useCallOutcome';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import type { ConferenceChatAccess, ConferenceMember } from './hooks/useConferenceEmbedded';
 import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import { MembersListDivider } from '../room/contextualBar/RoomMembers/MembersListDivider';
 

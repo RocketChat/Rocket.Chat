@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 
 import { useConfinedNavigation } from './useConfinedNavigation';
-import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavigation';
 
 const mockRouter: {
 	navigate: jest.Mock;
@@ -36,6 +35,8 @@ const clickAnchor = (anchor: HTMLAnchorElement, init: MouseEventInit = {}): Mous
 	return event;
 };
 
+const tabFor = (path: string) => [new URL(path, window.location.href).href, '_blank', 'noopener'] as const;
+
 describe('useConfinedNavigation', () => {
 	let openSpy: jest.SpyInstance;
 
@@ -48,30 +49,30 @@ describe('useConfinedNavigation', () => {
 		mockRouter.buildRoutePath = jest.fn((to) => (typeof to === 'string' ? to : (to?.pathname ?? '/')));
 
 		openSpy = jest.spyOn(window, 'open').mockReturnValue(null);
-
-		delete (window as any).opener;
-		delete (window as any).videoCallWindow;
 	});
 
 	afterEach(() => {
 		openSpy.mockRestore();
 		document.body.innerHTML = '';
-		delete (window as any).opener;
-		delete (window as any).videoCallWindow;
 	});
 
 	describe('anchor click interception', () => {
-		it('intercepts a same-origin different-path link and routes via the desktop bridge', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
+		it('sends a link that would leave the call to a new tab', () => {
 			renderHook(() => useConfinedNavigation());
 
-			const anchor = createAnchor('/channel/general');
-			const event = clickAnchor(anchor);
+			const event = clickAnchor(createAnchor('/channel/general'));
 
 			expect(event.defaultPrevented).toBe(true);
-			expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
+			expect(openSpy).toHaveBeenCalledWith(...tabFor('/channel/general'));
+		});
+
+		it('sends a cross-origin link to a new tab too', () => {
+			renderHook(() => useConfinedNavigation());
+
+			const event = clickAnchor(createAnchor('https://evil.example/x'));
+
+			expect(event.defaultPrevented).toBe(true);
+			expect(openSpy).toHaveBeenCalledWith('https://evil.example/x', '_blank', 'noopener');
 		});
 
 		/**
@@ -82,6 +83,7 @@ describe('useConfinedNavigation', () => {
 		it.each([
 			['a same-path link that only changes the hash', `${CONFERENCE_PATH}#hash`, {}, {}],
 			['a same-path link that only changes the query', `${CONFERENCE_PATH}?jump=x`, {}, {}],
+			['a link to another conference', '/conference/other', {}, {}],
 			['a modifier-key click', '/channel/general', {}, { metaKey: true }],
 			['a non-primary button click', '/channel/general', {}, { button: 1 }],
 			['an anchor asking for a new tab', '/channel/general', { target: '_blank' }, {}],
@@ -89,124 +91,18 @@ describe('useConfinedNavigation', () => {
 			['a mailto: anchor', 'mailto:someone@example.com', {}, {}],
 			['a tel: anchor', 'tel:+15551234567', {}, {}],
 		])('leaves %s alone', (_case, href, attrs, clickInit) => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
 			renderHook(() => useConfinedNavigation());
 
-			const event = clickAnchor(createAnchor(href, attrs as Record<string, string>), clickInit as MouseEventInit);
+			const event = clickAnchor(createAnchor(href as string, attrs as Record<string, string>), clickInit as MouseEventInit);
 
 			expect(event.defaultPrevented).toBe(false);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-		});
-
-		it('intercepts a cross-origin link via a noopener new tab, not the bridge', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('https://evil.example/x');
-			const event = clickAnchor(anchor);
-
-			expect(event.defaultPrevented).toBe(true);
-			expect(openInMainWindow).not.toHaveBeenCalled();
-			expect(openSpy).toHaveBeenCalledWith('https://evil.example/x', '_blank', 'noopener');
-		});
-	});
-
-	// The window is *becoming* a conference when it starts one: it opens on `/conference/new` and moves to
-	// `/conference/:callId` the moment the call exists. Sending that move to the opener left the preflight sitting
-	// on a call that had already started, in a window that was not the call's.
-	describe('the conference this window is becoming', () => {
-		it('lets a programmatic navigation to another conference through', () => {
-			window.history.replaceState({}, '', '/conference/new?rid=room-1');
-			const original = mockRouter.navigate;
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			act(() => {
-				mockRouter.navigate({ pathname: '/conference/the-new-call' } as any, { replace: true });
-			});
-
-			expect(original).toHaveBeenCalledWith({ pathname: '/conference/the-new-call' }, { replace: true });
-			expect(openInMainWindow).not.toHaveBeenCalled();
 			expect(openSpy).not.toHaveBeenCalled();
-		});
-
-		it('still sends anything else away', () => {
-			window.history.replaceState({}, '', '/conference/new?rid=room-1');
-			const original = mockRouter.navigate;
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-
-			renderHook(() => useConfinedNavigation());
-
-			act(() => {
-				mockRouter.navigate({ pathname: '/channel/general' } as any);
-			});
-
-			expect(original).not.toHaveBeenCalled();
-			expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
-		});
-	});
-
-	describe('openInOpenerOrTab strategy order', () => {
-		it('uses the desktop bridge for internal nav without touching opener or window.open', () => {
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-			(window as any).opener = { closed: false, name: '', focus: jest.fn() };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general');
-			clickAnchor(anchor);
-
-			expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
-			expect(openSpy).not.toHaveBeenCalled();
-		});
-
-		it('asks the opener to navigate client-side and focuses its tab when no bridge is present', () => {
-			const postMessage = jest.fn();
-			(window as any).opener = { closed: false, name: 'rocketchat-main', postMessage };
-
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general');
-			clickAnchor(anchor);
-
-			// In-app navigation request to the opener (no full reload)…
-			expect(postMessage).toHaveBeenCalledWith({ type: NAVIGATE_TO_ROUTE_MESSAGE, path: '/channel/general' }, window.location.origin);
-			// …then focus the opener tab by name with an empty URL (no navigation).
-			expect(openSpy).toHaveBeenCalledWith('', 'rocketchat-main');
-		});
-
-		it('falls back to a noopener new tab when neither bridge nor opener is available', () => {
-			renderHook(() => useConfinedNavigation());
-
-			const anchor = createAnchor('/channel/general');
-			clickAnchor(anchor);
-
-			const expectedHref = new URL('/channel/general', window.location.href).href;
-			expect(openSpy).toHaveBeenCalledWith(expectedHref, '_blank', 'noopener');
 		});
 	});
 
 	describe('router.navigate patching', () => {
-		it('replaces router.navigate with a wrapper on mount', () => {
+		it('sends a programmatic navigation away from the call to a new tab, not through the router', () => {
 			const original = mockRouter.navigate;
-
-			renderHook(() => useConfinedNavigation());
-
-			expect(mockRouter.navigate).not.toBe(original);
-		});
-
-		it('routes patched programmatic navigation via openInOpenerOrTab without calling the original', () => {
-			const original = mockRouter.navigate;
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
 			mockRouter.buildRoutePath.mockReturnValue('/channel/x');
 
 			renderHook(() => useConfinedNavigation());
@@ -215,7 +111,7 @@ describe('useConfinedNavigation', () => {
 				mockRouter.navigate('/channel/x' as any);
 			});
 
-			expect(openInMainWindow).toHaveBeenCalledWith('/channel/x');
+			expect(openSpy).toHaveBeenCalledWith(...tabFor('/channel/x'));
 			expect(original).not.toHaveBeenCalled();
 		});
 
@@ -231,20 +127,24 @@ describe('useConfinedNavigation', () => {
 			expect(original).toHaveBeenCalledWith(-1);
 		});
 
-		it('allows same-pathname navigation through to the original navigate', () => {
+		// The window is *becoming* a conference when it starts one: it opens on `/conference/new` and moves to
+		// `/conference/:callId` the moment the call exists. Sending that move away would leave the preflight
+		// sitting on a call that had already started, in a window that was not the call's.
+		it.each([
+			['the same path', CONFERENCE_PATH],
+			['the conference this window is becoming', '/conference/the-new-call'],
+		])('allows navigation to %s through to the original navigate', (_case, path) => {
 			const original = mockRouter.navigate;
-			const openInMainWindow = jest.fn();
-			(window as any).videoCallWindow = { openInMainWindow };
-			mockRouter.buildRoutePath.mockReturnValue(CONFERENCE_PATH);
+			mockRouter.buildRoutePath.mockReturnValue(path);
 
 			renderHook(() => useConfinedNavigation());
 
 			act(() => {
-				mockRouter.navigate(CONFERENCE_PATH as any);
+				mockRouter.navigate(path as any);
 			});
 
 			expect(original).toHaveBeenCalled();
-			expect(openInMainWindow).not.toHaveBeenCalled();
+			expect(openSpy).not.toHaveBeenCalled();
 		});
 
 		it('restores the original navigate on unmount', () => {

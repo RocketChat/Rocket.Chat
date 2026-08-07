@@ -5,10 +5,9 @@ import type {
 	IUser,
 	VideoConference,
 	VideoConferenceStatus,
-	VideoConferenceWithDiscussion,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -16,7 +15,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number },
-	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>>;
+	): FindPaginated<FindCursor<VideoConference>>;
 
 	findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>>;
 

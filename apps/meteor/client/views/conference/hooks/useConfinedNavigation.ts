@@ -2,10 +2,6 @@ import type { RouterContextValue, To } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavigation';
-
-const OPENER_WINDOW_NAME = 'rocketchat-main';
-
 /**
  * Whether a URL is a conference — the one place this window is allowed to go.
  *
@@ -15,47 +11,20 @@ const OPENER_WINDOW_NAME = 'rocketchat-main';
  */
 const isConference = (url: URL): boolean => url.origin === window.location.origin && url.pathname.startsWith('/conference/');
 
-// Internal app routes are sent to the window that launched the conference, so this window stays on
-// the call and the target opens as an in-app (client-side) navigation rather than a full reload:
-// - desktop app: there's no `window.opener` (the conference is a standalone Electron window), so the
-//   internal video window's bridge routes + focuses the main window;
-// - browser: ask the opener to navigate client-side (postMessage) and focus its tab;
-// - otherwise: open in a new tab.
-const openInOpenerOrTab = (url: URL) => {
-	const route = `${url.pathname}${url.search}${url.hash}`;
-
-	// Desktop: the internal video window exposes its own bridge (`window.videoCallWindow`), separate
-	// from `RocketChatDesktop` which only exists in the main app webview.
-	const openInMainWindow = window.videoCallWindow?.openInMainWindow;
-	if (openInMainWindow) {
-		openInMainWindow(route);
-		return;
-	}
-
-	const opener = window.opener as Window | null;
-	if (opener && !opener.closed) {
-		try {
-			// Tell the main app to navigate client-side (no reload)…
-			opener.postMessage({ type: NAVIGATE_TO_ROUTE_MESSAGE, path: route }, window.location.origin);
-			// …then bring its tab to the front. `opener.focus()` can't switch the active tab, but opening
-			// the opener by window name with an empty URL focuses it without navigating.
-			if (!opener.name) {
-				opener.name = OPENER_WINDOW_NAME;
-			}
-			window.open('', opener.name);
-			return;
-		} catch {
-			// Opener not accessible — fall back to a new tab.
-		}
-	}
-
+/**
+ * Anything that isn't this conference opens in a new tab, leaving the call where it is.
+ *
+ * Handing internal routes to the window that opened the call — so they land in the app the user already has
+ * open, client-side — reads better and is worth doing, but it needs a desktop bridge and a `postMessage`
+ * handshake with the opener. A tab is the honest one-line version until that earns its own change.
+ */
+const openElsewhere = (url: URL) => {
 	window.open(url.href, '_blank', 'noopener');
 };
 
-// The conference page lives in its own window/tab; navigating it away (a chat link, a channel
-// mention, an external URL) would tear down the call. This pins the window to the conference:
-// in-page links (`?jump=`, `#hash`) are left untouched, internal routes go to the opener, and
-// external links open in a new tab. It covers both `<a href>` clicks and programmatic
+// The conference page lives in its own window; navigating it away (a chat link, a channel mention, an external
+// URL) would tear down the call. This pins the window to the conference: in-page links (`?jump=`, `#hash`) are
+// left untouched and everything else opens in a new tab. It covers both `<a href>` clicks and programmatic
 // `router.navigate` (channel/user mentions, room links).
 export const useConfinedNavigation = () => {
 	const router = useRouter();
@@ -99,12 +68,7 @@ export const useConfinedNavigation = () => {
 			event.preventDefault();
 			event.stopPropagation();
 
-			if (url.origin === window.location.origin) {
-				openInOpenerOrTab(url);
-				return;
-			}
-
-			window.open(url.href, '_blank', 'noopener');
+			openElsewhere(url);
 		};
 
 		// Capture phase so we run before React/the router's own click handlers.
@@ -147,7 +111,7 @@ export const useConfinedNavigation = () => {
 				return;
 			}
 
-			openInOpenerOrTab(targetUrl);
+			openElsewhere(targetUrl);
 		}) as RouterContextValue['navigate'] & { _confined?: boolean };
 		wrapped._confined = true;
 

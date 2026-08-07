@@ -61,16 +61,16 @@ Every call type opens its window **on the click that asked for it**, inside the 
 used to be the exception: it rang the callee and kept the caller waiting in the room, opening the window only once
 the answer arrived, which is exactly the refusable case.
 
-So the wait moves into the call window, which is also where its outcome is reported — see
-[When nobody picks up](#when-nobody-picks-up) — and the room stops showing an outgoing popup for a call the user is
-already sitting in.
+So the wait moves into the call window, and the room stops showing an outgoing popup for a call the user is
+already sitting in. Telling the caller that nobody picked up is [deferred](#deferred-to-follow-ups); for now the
+members panel shows the other side still ringing.
 
 ### When the callee is rung
 
 Creating a direct call is not asking anyone to answer it. The caller lands on the [preflight](#the-preflight-screen)
 first, so the ring waits for them to actually enter the call: `addUserToCall` rings the other side when the
-**caller** arrives, and only members who have never been rung — a rejoin rings nobody, and a second attempt is
-what the call window's own *ring again* is for.
+**caller** arrives, and only members who have never been rung — a rejoin rings nobody. A second attempt is what
+the members panel's per-member *ring* is for.
 
 Being rung into a call whose caller is still choosing a camera means answering to an empty room, which is what
 this avoids. The screen says as much before it happens ("Alice will be notified when you start the call") and the
@@ -83,7 +83,7 @@ the callee from the room, on the 1:1 handshake it always used.
 
 A call opens as a **popout** — a dedicated window sized to 1280×800 (capped to the available screen) and centred — mirroring the desktop app's dedicated video window and keeping the call visible while the user works in the main app. If the popout is refused, it falls back to an ordinary **tab**; some browsers and extensions block popup-shaped windows while still allowing a plain one. Only if both are blocked does `VideoConfBlockModal` ask the user to allow it.
 
-`noopener` is deliberately **never** in the features string. The conference page posts navigation requests back to its opener (see [Confined Navigation](#confined-navigation)), and `noopener` would both sever that link and make `window.open` return `null` — which would look identical to a blocked popup.
+`noopener` is deliberately **never** in the features string: it makes `window.open` return `null`, which is indistinguishable from a blocked popup, and the opener link is what lets the main app notice the call window closing (see [The window that opened the call watches it](#the-window-that-opened-the-call-watches-it)).
 
 Same-origin (in-product) conferences share a named window, `rocketchat-conference`, so repeated joins reuse it instead of stacking duplicates:
 
@@ -192,7 +192,7 @@ app shell — while it resolves the user, so `AuthenticationCheck` and `Username
 node, defaulting to `HomeSkeleton` so no existing route changes. The conference route passes `PageLoading`, which
 is also what the conference shows while joining, making startup one continuous state rather than two.
 
-Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
+Because it has no `MainContent` ancestor to inherit height from, `ConferenceRoute` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
 
 ### Call chrome
 
@@ -290,15 +290,12 @@ The chat panel is a full room UI, so a link, channel reference or user mention w
 - **`<a href>` clicks** — intercepted on the *capture* phase, so it runs before React/router handlers. Left alone: modified/non-primary clicks, `target` other than self/top/parent, `download`, non-http(s) protocols, and same-path URLs (`?jump=<msgId>`, `#hash`) which the app handles in place.
 - **Programmatic `router.navigate`** — mentions and room links don't go through an anchor, so the shared `navigate` is monkey-patched. The patch is idempotent (`_confined` marker) and cleanup only restores when its own wrapper is still installed, so a newer patch is never clobbered and a stale one never reinstated. Numeric deltas and same-pathname navigations pass through untouched.
 
-Internal routes are handed to the window that launched the conference rather than opened as a fresh tab, so the target is a client-side navigation (no full reload), in this order:
+Anything that would leave the conference opens in a **`noopener` new tab**, internal or external alike.
 
-1. **Desktop app** — no `window.opener` (the conference is a standalone Electron window), so `window.videoCallWindow.openInMainWindow(route)` routes and focuses the main window. This bridge is distinct from `window.RocketChatDesktop`, which only exists in the main app webview.
-2. **Browser** — `postMessage` a `rocketchat:navigate-to-route` request to the opener (same-origin only), then focus its tab. `opener.focus()` can't switch the active tab, so the opener is re-opened by window name with an empty URL, which focuses without navigating.
-3. **Fallback** — a `noopener` new tab.
-
-`useExternalRouteNavigation` is the receiving half, running in the main app (`AppLayout`). It listens for that `postMessage` and registers the desktop `onNavigateToRoute` bridge, turning both into `router.navigate`.
-
-External (cross-origin) links always open in a `noopener` new tab.
+Handing internal routes to the window that launched the call would read better — the link would land in the app
+the user already has open, as a client-side navigation rather than a fresh tab — but it needs a desktop bridge and
+a `postMessage` handshake with the opener. That is [deferred](#deferred-to-follow-ups); a tab is the honest
+one-line version until it earns its own change.
 
 ## Adding Participants
 
@@ -369,59 +366,7 @@ Two gaps this leaves, both ending in the same place — the next join, which rec
 [One call at a time](#one-call-at-a-time)) — or the expiry cron: a popup the browser blocked outright (the user
 is joined with no window at all), and the main app being closed alongside the call window.
 
-## When nobody picks up
-
-Because the caller lands in the call window immediately, that window is where they find out the call went
-nowhere. `useCallOutcome` watches the other members and reports one of two things:
-
-| Outcome | When |
-|---|---|
-| **declined** | every other member has declined *this* ring. A decline is an answer, so this is reported at once |
-| **unanswered** | nobody else is present once the ring has had its chance |
-
-How long "its chance" is depends on which ring it was. The first attempt gets 40s, longer than both things that
-ring it: the caller's client republishing (30s) and the server's own direct-call timeout (40s). A ring the user
-asked for gets 15s, because a server-originated ring is one-shot — the callee's client aborts it after 10s and
-nothing repeats it, so waiting the full window would leave the caller in front of a call that stopped ringing
-half a minute ago.
-
-"Declined *this* ring" matters because `declined` never goes back to false. Taken at face value, a member who
-declined once would keep the call reported as declined forever, and ringing again would put the modal straight
-back up instead of waiting to see what they do this time. So each ring records which decline each entry already
-showed — `declinedAt` is what changes when they decline again — and only a different one counts. Comparing the
-recorded values rather than "declined before now" keeps it honest across the gap between the server's clock and
-the browser's.
-
-Nothing is reported while anyone else is present, or when there is nobody else to wait for — a conference
-started in a channel rings nobody in particular, and silence there isn't an outcome. A member who joined and
-left counts as unanswered rather than declined: they are absent, but they did answer, and saying they declined
-would be untrue.
-
-`CallOutcomeModal` goes through the app's modal region (`useSetModal`), which is what puts it in a portal over a
-backdrop with focus trapped. Rendered inline it sat in the page's flex column and pushed the call and the chat
-panel down the screen. It offers the three things the caller might reasonably want — **stay**, **ring again**, or
-**leave**. Closing the window for them would be presumptuous, and a call window that vanishes reads as a crash.
-Ringing again is offered only for a direct call, since that is the only case where a particular person was
-called.
-
-`POST /v1/video-conference.ring` rings every member who isn't in the call, which includes someone who joined and
-left — "call them back" is exactly that case. It exists because a ring is one-shot and adding an existing member
-again rings nobody, so there was previously no way to try a second time.
-
-On the receiving side, a fresh ring has to survive a **dismissal**. Dismissal exists to stop the caller's client
-re-ringing someone with the `call` it publishes on a loop, and it deliberately outlives the call — so a callee
-who had declined or let the ring time out was refusing to ring again, and "Ring again" arrived silently. A
-server-originated `ring` now clears it, since it is the opposite thing: a deliberate new attempt. The caller's
-own repeats stay suppressed.
-
-The desktop notification that accompanies a ring is explicitly silent (`audioNotificationValue: 'none'`). The
-ringing popup plays the ringtone; left unset, the notification would also play the new-message sound, so a call
-announced itself as a message arriving.
-
-Membership state reaches the window over the conference stream: `video-conference.updated` fires whenever someone
-joins, declines, leaves or is added, and the window re-reads the conference.
-
-### Being called makes you a member
+## Being called makes you a member
 
 Starting a direct call registers the callee with `joined: false`, exactly as being added to a group conference
 does. That is what lets anything tell "still ringing" from "nobody was called", and what gives a missed 1:1 call a
@@ -454,20 +399,6 @@ Discussion type comes from `roomCoordinator.getRoomDirectives(parent.t).getDiscu
 Whichever way it goes, the chat is built from `discussionRid || rid` — the room the chat is *currently* in.
 Building from the room the call started in instead is how a second discussion used to drop everyone added since
 the first one.
-
-## Provider → Parent Bridge
-
-A provider embedded in the conference iframe usually renders its own in-call toolbar, including a chat toggle. Rather than showing two competing sets of controls, it can drive ours by posting to the parent window:
-
-```js
-parent.postMessage({ type: 'rocketchat:conference', command: 'set-call-bar-visible', visible: false }, '*');
-parent.postMessage({ type: 'rocketchat:conference', command: 'set-chat-visible', visible: true }, '*');
-parent.postMessage({ type: 'rocketchat:conference', command: 'toggle-chat' }, '*');
-```
-
-`useProviderCallBridge` owns both pieces of chrome state, so our own bar button and the provider's messages drive one source of truth rather than fighting over two.
-
-**Trust model:** the iframe is cross-origin, so `event.origin` cannot be allow-listed against our own origin. Instead every message must have come from `iframeRef.current.contentWindow` — the exact window we embedded, which no other frame or tab can forge. Messages failing that check, carrying an unknown `command`, or with a non-boolean `visible`, are ignored. `useProviderCallBridge.spec.ts` covers each rejection path.
 
 ## Realtime Updates
 
@@ -539,10 +470,9 @@ reading "in call" left them with something they could do nothing about. Rows are
 a *Show all N calls* toggle for the rest and a `40vh` scroll region with that toggle outside it: this is a route to
 a call, not a place to read a list.
 
-Each row shows **who is already in the call** rather than a count — three avatars and a `+N` for the rest, from
-the `participants` the joinable list carries (capped server-side; `usersCount` stays the whole number, and is what
-the `+N` is worked out from). Faces answer the question a count never did, which is whether this is a call worth
-walking into. The group keeps the count as its accessible label, so nothing is lost to a screen reader.
+Each row says how many people are in the call. Faces would answer the question better — whether this is a call
+worth walking into — and the payload was built to carry a few participants for exactly that, but a count is what
+the first release ships; see [Deferred to follow-ups](#deferred-to-follow-ups).
 
 ### A ringing call is listed, not popped
 
@@ -567,13 +497,11 @@ ringing right now would miss it entirely.
 ### Where the list lives
 
 `components/OngoingCalls` is the list; both places that show it render the same component, unchanged.
-`sidebar/sections/OngoingCallsSection` docks it at the top of the sidebar. `navbar/NavBarItemOngoingCalls` stands in
-for that when the sidebar is collapsed, which would otherwise hide the only place these calls appear — including one
-ringing right now. The button is blue for calls that are simply running and red while something is ringing, and it
-opens itself when a ring starts: a ringing call the user has to go looking for is a missed call.
+`sidebar/sections/OngoingCallsSection` docks it at the top of the sidebar, asking `useOngoingCallsList` only
+whether there is anything to make room for — the decline and silence wiring belongs to whoever renders the rows.
 
-Both containers ask `useOngoingCallsList` only whether there is anything to make room for; the decline and silence
-wiring belongs to whoever renders the rows.
+A collapsed sidebar therefore hides the only place these calls appear, including one ringing right now. Standing in
+for it in the navbar is [deferred](#deferred-to-follow-ups).
 
 ### What the server answers with
 
@@ -750,7 +678,7 @@ control, which keeps one interactive element rather than nesting a button inside
 ### A member who can't read the chat is told so, not shown an error
 
 The server already works out who can't read the chat, so `ConferenceChat` asks `hasConferenceChatAccess` about the
-current user and renders `ConferenceChatNotShared` rather than attempting a fetch that is known to fail — which
+current user and renders the not-shared state rather than attempting a fetch that is known to fail — which
 would land on *"The page does not exist or you may not have access permission"* and read as something being broken.
 
 `ChatAccessNotice` hides itself from those same members for the same reason: it offers to share the chat, and
@@ -792,15 +720,11 @@ and the two can't drift.
 `packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular import
 that leaves it uninitialized when the module is loaded directly by jest.
 
-There is also an end-to-end REST suite at `apps/meteor/tests/end-to-end/apps/video-conference-membership.ts`,
-covering the endpoints against a real server and real Mongo: membership without room access, authorization by
-membership, decline, leave, ring, `chatAccess`, and both `share-chat` modes. It follows the provider-app harness
-in `apps/meteor/tests/end-to-end/apps/video-conferences.ts` — a test app supplies the conference provider — and
-is EE-gated, since a private app is never enabled outside EE.
-
-> It has **not** been run locally. The API suite authenticates as the fixture admin
-> `rocketchat.internal.admin.test`, which a real development workspace doesn't have; it is type-checked, and CI
-> seeds that user. Treat its first CI run as the real one.
+An end-to-end REST suite covering these endpoints against a real server and real Mongo — membership without room
+access, authorization by membership, decline, leave, ring, `chatAccess`, and both `share-chat` modes — is written
+and held back for a PR of its own; see [Deferred to follow-ups](#deferred-to-follow-ups). It follows the
+provider-app harness in `apps/meteor/tests/end-to-end/apps/video-conferences.ts` and is EE-gated, since a private
+app is never enabled outside EE.
 
 ### Nothing else "ends" a Jitsi conference
 
@@ -831,6 +755,41 @@ no outgoing popup; after the ring window the call window reported "Nobody answer
 again restarted the wait. Closing the window then ended the call and settled both history rows — `ended`/`outbound`
 for the caller, `not-answered`/`inbound` for the callee — while leaving a call someone else was still in only set
 `leftAt`.
+
+## Deferred to follow-ups
+
+Six things were built, reviewed and then held back from the first release to keep it reviewable. Each is a
+complete improvement on its own, which is what makes it a good follow-up rather than a gap. All of them are in
+git — `git show 5ab58858d7d:<path>` restores any of them intact.
+
+| Deferred | Why it can wait | What ships instead |
+|---|---|---|
+| **Telling the caller nobody picked up** (`CallOutcomeModal`, `useCallOutcome`) | the caller is in the call either way; this only names what already happened | the members panel shows each member still ringing, waiting, or declined |
+| **The provider → parent bridge** (`useProviderCallBridge`) | **no provider implements it** — not the bundled Jitsi app, which declares only `{ mic, cam, title }` | our own bar owns the panels; a provider showing its own toolbar shows two |
+| **Faces in the calls list** (`CallParticipants`, `participants` on the joinable payload) | polish over a number that answers the same question less well | `__count__people_in_the_call` |
+| **The navbar stand-in** (`NavBarItemOngoingCalls`) | only reachable with the sidebar collapsed | nothing there; the sidebar card covers the rest |
+| **Handing internal links to the opener** (the desktop bridge and the `postMessage` handshake) | needs a bridge on both sides for a nicer landing | a `noopener` new tab — see [Confined Navigation](#confined-navigation) |
+| **Regrouping the room's call list** into Ongoing/Past, named after the discussion | a redesign of a list that already works, and one every workspace sees | the existing flat list, with the fix that it no longer counts members who never joined |
+
+The end-to-end REST suite (`tests/end-to-end/apps/video-conference-membership.ts`) is held back for a different
+reason: it has never been run locally — the API suite authenticates as a fixture admin a dev workspace does not
+have — so its first CI run is its real first run, and that belongs in a PR of its own rather than reddening a
+feature PR. Until it lands, the endpoints are covered by unit tests only.
+
+### The design worth keeping for the provider bridge
+
+If a provider ever asks for it: an embedded provider posts to the parent window to hide our bar and drive our chat
+panel, rather than showing two competing sets of controls.
+
+```js
+parent.postMessage({ type: 'rocketchat:conference', command: 'set-call-bar-visible', visible: false }, '*');
+parent.postMessage({ type: 'rocketchat:conference', command: 'set-chat-visible', visible: true }, '*');
+parent.postMessage({ type: 'rocketchat:conference', command: 'toggle-chat' }, '*');
+```
+
+The trust model is the part worth preserving: the iframe is cross-origin, so `event.origin` cannot be allow-listed
+against our own. Every message must instead have come from `iframeRef.current.contentWindow` — the exact window we
+embedded, which no other frame or tab can forge.
 
 ## Improvement suggestions
 
@@ -897,17 +856,15 @@ could not be loaded" panel, because the detail panel is contact-call-shaped.
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
 | Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `ConferenceIframe.tsx`, `components/CallBar/`, `components/CallPanel/` |
-| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceStoresReady.tsx`, `CallPanelHeader.tsx` |
-| Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx`, `useConferenceCallUrl.ts` |
-| Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
-| Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
+| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceStoresReady.tsx`, `CallPanelHeader.tsx`, `ConferenceChatNotShared.tsx` |
+| Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx` |
+| Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`) |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
-| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ConferenceChatNotShared.tsx` |
-| Call outcome | `apps/meteor/client/views/conference/CallOutcomeModal.tsx`, `hooks/useCallOutcome.ts`, `ConferenceMemberRow.tsx` |
+| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx` |
 | Preflight | `apps/meteor/client/views/conference/ConferencePreflight.tsx`, `ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `hooks/useCallPreferences.ts` |
 | Members panel | `apps/meteor/client/views/conference/CallMembersPanel.tsx`, `CallMemberItem.tsx`, `client/hooks/useRingingExpiry.ts` |
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
-| Reaching a call | `apps/meteor/client/components/OngoingCalls/` (the list, its rows and `useOngoingCalls`), `client/sidebar/sections/OngoingCallsSection.tsx`, `client/navbar/NavBarItemOngoingCalls.tsx`, `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
+| Reaching a call | `apps/meteor/client/components/OngoingCalls/` (the list, its rows and `useOngoingCalls`), `client/sidebar/sections/OngoingCallsSection.tsx`, `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |

@@ -1,12 +1,11 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallMembersPanel from './CallMembersPanel';
-import CallOutcomeModal from './CallOutcomeModal';
 import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
@@ -16,18 +15,19 @@ import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import CallBar from './components/CallBar/CallBar';
 import CallBarAction from './components/CallBar/CallBarAction';
 import CallPanel from './components/CallPanel/CallPanel';
-import { useCallOutcome } from './hooks/useCallOutcome';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
-import { useProviderCallBridge } from './hooks/useProviderCallBridge';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceEmbeddedPageProps = {
 	callId: string;
 };
+
+/** The two things that can share the space beside the call. One at a time — two would leave the call a sliver. */
+type ConferencePanel = 'members' | 'chat';
 
 /** Stands in until the subscription loads, or for a member who has none because they can't read the chat. */
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
@@ -48,42 +48,10 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// call has to end for its history to be written.
 	const { leaveNow } = useLeaveConferenceOnClose(callId);
 
-	// The caller now lands here while the other side is still ringing, so this window is where they find out it
-	// went nowhere.
-	const { outcome, others, onRang, onDismiss } = useCallOutcome(call.members);
-
-	// Through the app's modal region rather than rendered here: that is what puts it in a portal, over a
-	// backdrop, with focus trapped. Rendered inline it would sit in the page's flex column and push the call
-	// and the chat panel down the screen.
-	const setModal = useSetModal();
-
-	useEffect(() => {
-		// Not while the user is still on the preflight: they are deciding how to arrive, and "nobody answered —
-		// stay, ring again or leave" is a question about a call they are already in.
-		if (!outcome || !conference.url) {
-			return;
-		}
-
-		setModal(
-			<CallOutcomeModal
-				callId={callId}
-				outcome={outcome}
-				others={others}
-				canRing={call.canRing}
-				onRang={onRang}
-				onStay={onDismiss}
-				onLeave={leaveNow}
-			/>,
-		);
-
-		// Anything that resolves the wait — someone answering, a fresh ring, the user choosing — clears `outcome`,
-		// and should take the modal down with it.
-		return () => setModal(null);
-	}, [outcome, others, call.canRing, callId, conference.url, onRang, onDismiss, leaveNow, setModal]);
-
-	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
-	const iframeRef = useRef<HTMLIFrameElement>(null);
-	const { callBarVisible, activePanel, togglePanel } = useProviderCallBridge(iframeRef);
+	// Members is the one open on arrival: the useful question then is who else is here, and for the caller of a
+	// call still ringing it is the only place that answers it. Toggling the open one closes it.
+	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>('members');
+	const togglePanel = useCallback((panel: ConferencePanel) => setActivePanel((current) => (current === panel ? undefined : panel)), []);
 	const chatVisible = activePanel === 'chat';
 
 	// On narrow viewports the panel floats over the call instead of squeezing it.
@@ -147,7 +115,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
-					<ConferenceIframe ref={iframeRef} url={conference.url} />
+					<ConferenceIframe url={conference.url} />
 				</Box>
 
 				{/* One panel at a time: they share the same space, and two side panels would leave the call a
@@ -168,27 +136,25 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</CallPanel>
 			</Box>
 
-			{callBarVisible && (
-				<CallBar>
-					<CallBarAction
-						icon='team'
-						label={t('Members')}
-						pressed={activePanel === 'members'}
-						badgeCount={presentCount}
-						badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
-						onClick={() => togglePanel('members')}
-					/>
-					<CallBarAction
-						icon='balloon'
-						label={t('Chat')}
-						pressed={chatVisible}
-						badgeCount={unread}
-						badgeVariant={unreadVariant}
-						badgeTitle={unreadTitle}
-						onClick={() => togglePanel('chat')}
-					/>
-				</CallBar>
-			)}
+			<CallBar>
+				<CallBarAction
+					icon='team'
+					label={t('Members')}
+					pressed={activePanel === 'members'}
+					badgeCount={presentCount}
+					badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
+					onClick={() => togglePanel('members')}
+				/>
+				<CallBarAction
+					icon='balloon'
+					label={t('Chat')}
+					pressed={chatVisible}
+					badgeCount={unread}
+					badgeVariant={unreadVariant}
+					badgeTitle={unreadTitle}
+					onClick={() => togglePanel('chat')}
+				/>
+			</CallBar>
 		</Box>
 	);
 };
