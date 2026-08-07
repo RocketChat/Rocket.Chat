@@ -2,4 +2,4 @@
 '@rocket.chat/ui-client': patch
 ---
 
-Deprecates prop `button` on `GenericMenu` component to enforce semantic HTML and accessibility standards.
+Deprecates prop `button` on `GenericMenu` component in favor of semantic HTML and accessibility standards.
