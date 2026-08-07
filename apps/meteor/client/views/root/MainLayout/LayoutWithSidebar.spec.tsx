@@ -13,8 +13,16 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 jest.mock('../../../navbar', () => () => <div>NavBar</div>);
 jest.mock('../../../sidebar/SidebarRail', () => () => <div>SidebarRail</div>);
 jest.mock('../../../sidebar/SidebarRail/SidebarRailHeader', () => () => <div>SidebarRailHeader</div>);
-jest.mock('./SecondaryPanel', () => () => <div>SecondaryPanel</div>);
 jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
+jest.mock('../../navigation/providers/RoomsNavigationProvider', () => () => <div>Navigationprovider</div>);
+jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
+jest.mock('../../../sidebar', () => () => <div>Sidebar</div>);
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	FeaturePreview: ({ children }: any) => children,
+	FeaturePreviewOn: ({ children }: any) => children,
+	FeaturePreviewOff: () => null,
+}));
 
 const mockedUseCurrentRoutePath = useCurrentRoutePath as jest.MockedFunction<typeof useCurrentRoutePath>;
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
