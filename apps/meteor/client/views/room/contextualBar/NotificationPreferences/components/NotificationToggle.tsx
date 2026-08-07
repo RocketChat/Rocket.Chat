@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldDescription, FieldGroup, ToggleSwitch, FieldRow
 import type { ComponentProps } from 'react';
 import { memo, useId } from 'react';
 
-type NotificationToggleProps = {
+export type NotificationToggleProps = {
 	label: string;
 	description?: string;
 	onChange: (e: unknown) => void;

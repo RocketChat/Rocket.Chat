@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type DropTargetOverlayProps = {
+export type DropTargetOverlayProps = {
 	enabled: boolean;
 	reason?: ReactNode;
 	onFileDrop?: (files: File[]) => void;

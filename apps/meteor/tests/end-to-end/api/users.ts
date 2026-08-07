@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
-import { imgURL } from '../../data/interactions';
+import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
@@ -2223,6 +2223,19 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+			it('should reject non-renderable image types (e.g. TIFF)', (done) => {
+				void request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', tiffURL)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+					})
+					.end(done);
+			});
 			it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 				void request
 					.post(api('users.setAvatar'))
@@ -3618,14 +3631,23 @@ describe('[Users]', () => {
 		});
 
 		describe('[Password Policy]', () => {
+			let previousMinLength: Awaited<ReturnType<typeof getSettingValueById>>;
+			let previousMaxLength: Awaited<ReturnType<typeof getSettingValueById>>;
+
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				[previousMinLength, previousMaxLength] = await Promise.all([
+					getSettingValueById('Accounts_Password_Policy_MinLength'),
+					getSettingValueById('Accounts_Password_Policy_MaxLength'),
+				]);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+				await updateSetting('Accounts_Password_Policy_MaxLength', previousMaxLength);
+				await updateSetting('Accounts_Password_Policy_MinLength', previousMinLength);
 			});
 
 			it('should throw an error if the password length is less than the minimum length', async () => {
@@ -3654,6 +3676,8 @@ describe('[Users]', () => {
 			});
 
 			it('should throw an error if the password length is greater than the maximum length', async () => {
+				// max must stay >= min, so lower the minimum before capping the maximum at 5
+				await updateSetting('Accounts_Password_Policy_MinLength', 1);
 				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
 				const expectedError = {
@@ -6554,6 +6578,59 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+	});
+
+	describe('[/users.verifyEmail]', () => {
+		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
+
+		it('should fail with 403 when the token does not match any user', () =>
+			request
+				.post(api('users.verifyEmail'))
+				.send({ token: 'this-token-does-not-exist' })
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				}));
+
+		describe('when a valid token is provided', () => {
+			let user: TestUser<IUser>;
+			const email = `verify.email.${Date.now()}@rocket.chat`;
+			const token = `valid-verification-token-${Date.now()}`;
+
+			before(async () => {
+				user = await createUser({ email, verified: false });
+				// The verification token is never exposed by any endpoint, so seed a known one directly.
+				await updateUserInDb(user._id, {
+					'emails.0.verified': false,
+					'services.email.verificationTokens': [{ token, address: email, when: new Date() }],
+				} as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should verify the email and consume the token', async () => {
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const updatedUser = await getUserByUsername<IUser>(user.username);
+				expect(updatedUser.emails[0]).to.have.property('verified', true);
+
+				// The token was pulled on success, so reusing it must now be rejected.
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
 		});
 	});
 });

@@ -34,7 +34,7 @@ const NewCall = () => {
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
 				{peerInfo && (
-					<Box mb={8}>
+					<Box marginBlock={8}>
 						<PeerInfo {...peerInfo} />
 					</Box>
 				)}

@@ -9,7 +9,7 @@ type InviteUsersProps = {
 
 const InviteUsersLoading = ({ onClose, onClickBack: onClickBackMembers }: InviteUsersProps) => (
 	<InviteUsersWrapper onClose={onClose} onClickBack={onClickBackMembers}>
-		<Skeleton w='full' />
+		<Skeleton width='full' />
 	</InviteUsersWrapper>
 );
 

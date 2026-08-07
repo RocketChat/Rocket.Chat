@@ -4,7 +4,7 @@ import { useLanguages } from '@rocket.chat/ui-contexts';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type LanguageSettingInputProps = SettingInputProps<string, string | number>;
+export type LanguageSettingInputProps = SettingInputProps<string, string | number>;
 
 function LanguageSettingInput({
 	_id,

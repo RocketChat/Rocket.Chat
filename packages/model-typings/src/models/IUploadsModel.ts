@@ -5,8 +5,6 @@ import type { FindPaginated } from './IBaseModel';
 import type { IBaseUploadsModel } from './IBaseUploadsModel';
 
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
-	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload>;
-
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findImagesByRoomId(
@@ -18,6 +16,8 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;
 
 	setFederationInfo(fileId: IUpload['_id'], info: Required<IUpload>['federation']): Promise<UpdateResult>;
+
+	setFederationRoomInfo(fileId: IUpload['_id'], rid: IRoom['_id'], mrid: string): Promise<UpdateResult>;
 
 	findAllByOriginalFileId(originalFileId: string, options?: FindOptions<IUpload>): FindCursor<IUpload>;
 }

@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type ActionToggleChatProps = {
+export type ActionToggleChatProps = {
 	pressed: boolean;
 	onClick: () => void;
 };

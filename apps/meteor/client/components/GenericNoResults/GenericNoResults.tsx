@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; linkHref?: never };
 type ButtonProps = { buttonTitle: string; buttonAction: () => void } | { buttonTitle?: never; buttonAction?: never };
 
-type GenericNoResultsProps = {
+export type GenericNoResultsProps = {
 	icon?: IconName | null;
 	title?: string;
 	description?: string;

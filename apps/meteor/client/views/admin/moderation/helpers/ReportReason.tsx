@@ -2,7 +2,9 @@ import { Box, Tag } from '@rocket.chat/fuselage';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-const ReportReason = ({ ind, uinfo, msg, ts }: { ind: number; uinfo: string | undefined; msg: string; ts: Date }) => {
+export type ReportReasonProps = { ind: number; uinfo: string | undefined; msg: string; ts: Date };
+
+const ReportReason = ({ ind, uinfo, msg, ts }: ReportReasonProps) => {
 	const formatDate = useFormatDate();
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlock={10}>

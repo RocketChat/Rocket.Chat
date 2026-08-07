@@ -10,7 +10,7 @@ export default {
 	component: CustomSoundsTable,
 	decorators: [
 		(fn) => (
-			<PageContent mb='neg-x8'>
+			<PageContent marginBlock='neg-x8'>
 				<Margins block={8}>{fn()}</Margins>
 			</PageContent>
 		),

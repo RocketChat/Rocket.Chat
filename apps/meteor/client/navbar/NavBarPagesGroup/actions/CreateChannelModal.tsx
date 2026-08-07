@@ -34,7 +34,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type CreateChannelModalProps = {
+export type CreateChannelModalProps = {
 	teamId?: string;
 	mainRoom?: IRoom;
 	onClose: () => void;
@@ -200,8 +200,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
-				<FieldGroup mbe={24}>
+			<ModalContent marginBlockEnd={2}>
+				<FieldGroup marginBlockEnd={24}>
 					<Field>
 						<FieldLabel required>{t('Name')}</FieldLabel>
 						<FieldRow>
@@ -216,7 +216,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<TextInput
 										{...field}
 										error={errors.name?.message}
-										addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
+										endAddon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
 										aria-required='true'
 									/>
 								)}

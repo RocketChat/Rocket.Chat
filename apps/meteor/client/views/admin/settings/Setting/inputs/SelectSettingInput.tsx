@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type SelectSettingInputProps = SettingInputProps & {
+export type SelectSettingInputProps = SettingInputProps & {
 	values?: { key: string; i18nLabel: TranslationKey }[];
 };
 

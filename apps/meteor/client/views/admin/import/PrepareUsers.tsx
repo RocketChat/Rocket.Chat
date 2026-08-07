@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UserDescriptor } from './UserDescriptor';
 
-type PrepareUsersProps = {
+export type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;

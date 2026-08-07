@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
-type SidebarItemProps = {
+export type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	icon?: ReactNode;

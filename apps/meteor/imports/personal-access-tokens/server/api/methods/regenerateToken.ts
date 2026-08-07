@@ -3,8 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { isPersonalAccessToken } from '@rocket.chat/core-typings';
 
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
+import { twoFactorRequired } from '../../../../../server/lib/2fa/twoFactorRequired';
 import { removePersonalAccessTokenOfUser } from './removeToken';
 import { generatePersonalAccessTokenOfUser } from './generateToken';
 declare module '@rocket.chat/ddp-client' {

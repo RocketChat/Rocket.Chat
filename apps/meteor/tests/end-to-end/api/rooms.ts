@@ -2569,6 +2569,18 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+		it('should return the customFields of a private room', async () => {
+			const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: testGroup._id, roomCustomFields }).expect(200);
+
+			const res = await request.get(api('rooms.adminRooms')).set(credentials).query({ filter: nameRoom }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.rooms).to.have.lengthOf(1);
+			expect(res.body.rooms[0]._id).to.equal(testGroup._id);
+			expect(res.body.rooms[0]).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
 	});
 
 	describe('/rooms.adminRooms.privateRooms', () => {
@@ -2672,6 +2684,56 @@ describe('[Rooms]', () => {
 
 				expect(res.body).to.have.property('success', false);
 			});
+		});
+	});
+
+	describe('/rooms.adminRooms.getRoom', () => {
+		let roomOwner: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let privateRoom: IRoom;
+		const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+		before(async () => {
+			await updatePermission('view-room-administration', ['admin']);
+
+			roomOwner = await createUser();
+			ownerCredentials = await login(roomOwner.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `admin-getroom-${Date.now()}`, credentials: ownerCredentials })).body.group;
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: privateRoom._id, roomCustomFields }).expect(200);
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(roomOwner),
+				updatePermission('view-room-administration', ['admin']),
+			]),
+		);
+
+		it('should not expose the private room through groups.info to an admin that is not a member', async () => {
+			const res = await request.get(api('groups.info')).set(credentials).query({ roomId: privateRoom._id });
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should return the private room customFields for an admin that is not a member', async () => {
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('_id', privateRoom._id);
+			expect(res.body).to.have.property('t', 'p');
+			expect(res.body).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
+
+		it('should return an error for users without view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+
+			await updatePermission('view-room-administration', ['admin']);
 		});
 	});
 
@@ -5009,6 +5071,137 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'error-user-not-banned');
 				});
+		});
+	});
+
+	describe('/rooms.bannedUsers', () => {
+		let testChannel: IRoom;
+		let bannedUsers: TestUser<IUser>[];
+		let bannedUserIds: string[];
+
+		before(async () => {
+			const result = await createRoom({ type: 'c', name: `banned-users-list-${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			bannedUsers = await Promise.all([createUser(), createUser(), createUser()]);
+			bannedUserIds = bannedUsers.map((user) => user._id);
+
+			for (const user of bannedUsers) {
+				await request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: user._id,
+					})
+					.expect(200);
+
+				await request
+					.post(api('rooms.banUser'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: user._id,
+					})
+					.expect(200);
+			}
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await Promise.all(bannedUsers.map((user) => deleteUser(user)));
+		});
+
+		it('should list every banned user of the room with only the projected fields', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('count', bannedUsers.length);
+			expect(res.body).to.have.property('offset', 0);
+			expect(res.body.bannedUsers).to.be.an('array').with.lengthOf(bannedUsers.length);
+			expect(res.body.bannedUsers.map((u: IUser) => u._id)).to.have.members(bannedUserIds);
+
+			res.body.bannedUsers.forEach((user: IUser) => {
+				expect(user).to.have.property('_id').that.is.a('string');
+				expect(user).to.have.property('username').that.is.a('string');
+				expect(Object.keys(user)).to.satisfy(
+					(keys: string[]) => keys.every((key) => ['_id', 'username', 'name'].includes(key)),
+					'response should only contain the projected fields (_id, username, name)',
+				);
+			});
+		});
+
+		it('should limit the number of banned users returned when count is provided', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 2,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('count', 2);
+			expect(res.body).to.have.property('offset', 0);
+			expect(res.body.bannedUsers).to.be.an('array').with.lengthOf(2);
+		});
+
+		it('should skip banned users when offset is provided', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					offset: 2,
+					count: 2,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('offset', 2);
+			expect(res.body.bannedUsers)
+				.to.be.an('array')
+				.with.lengthOf(bannedUsers.length - 2);
+		});
+
+		it('should paginate through all banned users without overlapping results', async () => {
+			const firstPage = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 2,
+				})
+				.expect(200);
+
+			const secondPage = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					offset: 2,
+					count: 2,
+				})
+				.expect(200);
+
+			const firstPageIds = firstPage.body.bannedUsers.map((u: IUser) => u._id);
+			const secondPageIds = secondPage.body.bannedUsers.map((u: IUser) => u._id);
+
+			expect(firstPageIds.filter((id: string) => secondPageIds.includes(id))).to.be.empty;
+			expect([...firstPageIds, ...secondPageIds]).to.have.members(bannedUserIds);
 		});
 	});
 });

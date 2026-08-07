@@ -12,7 +12,7 @@ import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
-type ContactInfoDetailsProps = {
+export type ContactInfoDetailsProps = {
 	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 	emails?: string[];
 	phones?: string[];
@@ -61,7 +61,7 @@ const ContactInfoDetails = ({ contact, emails, phones, createdAt, customFieldEnt
 
 				{customFieldEntries.length > 0 && (
 					<>
-						<Divider mi={-24} />
+						<Divider marginInline={-24} />
 						{customFieldEntries?.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
 					</>
 				)}

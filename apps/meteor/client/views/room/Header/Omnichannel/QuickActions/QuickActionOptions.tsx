@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
-type QuickActionOptionsProps = {
+export type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
 	action: (id: string) => void;
 	room: IOmnichannelRoom;

@@ -49,10 +49,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.findOne<P>({ _id }, {}, extra);
 	}
 
-	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
-		return this.deleteMany(query);
-	}
-
 	async createOrUpdateUnit(
 		_id: string | null,
 		{ name, visibility }: { name: string; visibility: IOmnichannelBusinessUnit['visibility'] },

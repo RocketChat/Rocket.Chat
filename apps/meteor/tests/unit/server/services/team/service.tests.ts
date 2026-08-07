@@ -31,29 +31,29 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'@rocket.chat/string-helpers': {
 		escapeRegExp: (value: string) => value,
 	},
-	'../../../app/channel-settings/server': {
+	'../../lib/rooms/settings': {
 		saveRoomName: sinon.stub(),
 	},
-	'../../../app/channel-settings/server/functions/saveRoomType': {
+	'../../lib/rooms/settings/saveRoomType': {
 		saveRoomType: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/addUserToRoom': {
+	'../../lib/rooms/addUserToRoom': {
 		addUserToRoom,
 	},
-	'../../../app/lib/server/functions/checkUsernameAvailability': {
+	'../../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/getRoomsWithSingleOwner': {
+	'../../lib/rooms/getRoomsWithSingleOwner': {
 		getSubscribedRoomsForUserWithDetails: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/removeUserFromRoom': {
+	'../../lib/rooms/removeUserFromRoom': {
 		removeUserFromRoom: sinon.stub(),
 	},
-	'../../../app/lib/server/lib/notifyListener': {
+	'../../lib/notifyListener': {
 		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
 		notifyOnRoomChangedById: sinon.stub(),
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: { get: sinon.stub() },
 	},
 });

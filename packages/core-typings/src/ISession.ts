@@ -75,7 +75,9 @@ export type OSSessionAggregation = Pick<ISession, '_id'> & {
 	time: number;
 };
 
-export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'device' | 'host' | 'ip' | 'logoutAt' | 'userId' | 'loginAt'>;
+export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'device' | 'host' | 'ip' | 'logoutAt' | 'userId' | 'loginAt'> & {
+	current?: boolean;
+};
 
 export type DeviceManagementPopulatedSession = DeviceManagementSession & {
 	_user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;

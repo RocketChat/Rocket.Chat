@@ -26,6 +26,10 @@ on:
       release:
         required: true
         type: string
+      fips:
+        default: false
+        required: false
+        type: boolean
       shard:
         default: '[1]'
         required: false
@@ -68,9 +72,14 @@ env:
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
 
     env:
       # if building for production on develop branch or release, add suffix for coverage images
@@ -108,13 +117,13 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -125,7 +134,7 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
       - uses: ./.github/actions/restore-packages
 
@@ -134,7 +143,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
+          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.fips && 'docker-image-*-amd64-fips' || 'docker-image-*-amd64-coverage') }}
           path: /tmp/docker-images
           merge-multiple: true
 
@@ -162,7 +171,7 @@ jobs:
         run: echo "DEBUG_LOG_LEVEL=2" >> "$GITHUB_ENV"
 
       - name: Start httpbin container and wait for it to be ready
-        if: inputs.type == 'api' || inputs.type == 'api-livechat'
+        if: startsWith(inputs.type, 'api')
         run: |
           docker compose -f docker-compose-ci.yml up -d httpbin
 
@@ -181,7 +190,7 @@ jobs:
           # behavior on (rate-limiter bypass, short cache TTLs) while letting
           # the deprecation logger log without throwing. Other suites use the
           # docker-compose default of TEST_MODE='true'.
-          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
+          TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
         run: |
           # when we are testing CE, we only need to start the rocketchat container
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
@@ -192,9 +201,12 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
-          TEST_MODE: ${{ (inputs.type == 'api' || inputs.type == 'api-livechat') && 'api' || 'true' }}
+          TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
+          APPS_ENGINE_RUNTIME_BACKEND: ${{ inputs.type == 'api-apps-node' && 'node' || '' }}
+          FIPS_OVERRIDE: ${{ inputs.fips && '-f docker-compose-ci.fips.yml' || '' }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
+          read -r -a fips_override <<< "$FIPS_OVERRIDE"
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml "${fips_override[@]}" up -d --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
@@ -223,6 +235,23 @@ jobs:
           set -o xtrace
 
           npm run testapi || s=$?
+
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -la "$COVERAGE_DIR"
+          exit "${s:-0}"
+
+      # This step should be temporary, only here until we remove the deno-runtime
+      - name: E2E Test API (apps + node-runtime)
+        if: (inputs.type == 'api-apps-node' && inputs.release == 'ee')
+        working-directory: ./apps/meteor
+        env:
+          WEBHOOK_TEST_URL: 'http://httpbin'
+          IS_EE: 'true'
+        run: |
+          set -o xtrace
+
+          npm run testapi:apps || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
@@ -285,7 +314,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: playwright-test-trace-${{ inputs.release }}${{ inputs.fips && '-fips' || '' }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
@@ -296,6 +325,10 @@ jobs:
       - name: Show mongo logs if E2E test failed
         if: failure()
         run: docker compose -f docker-compose-ci.yml logs mongo
+
+      - name: Show traefik logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs traefik
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version

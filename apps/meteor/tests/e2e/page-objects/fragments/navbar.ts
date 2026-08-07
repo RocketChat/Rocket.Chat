@@ -62,6 +62,10 @@ export class Navbar {
 		return this.pagesGroup.getByRole('button', { name: 'Directory' });
 	}
 
+	get btnMarketplace(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Marketplace' });
+	}
+
 	get btnMenuPages(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}
@@ -72,6 +76,30 @@ export class Navbar {
 
 	get menuDisplay(): Locator {
 		return this.root.getByRole('menu', { name: 'Display' });
+	}
+
+	get groupDisplay(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Display' });
+	}
+
+	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
+		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupSortBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Sort by' });
+	}
+
+	getSortMenuItem(mode: 'Activity' | 'Name'): Locator {
+		return this.groupSortBy.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupGroupBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Group by' });
+	}
+
+	getGroupByMenuItem(mode: 'Unread' | 'Favorites' | 'Types'): Locator {
+		return this.groupGroupBy.getByRole('menuitemcheckbox', { name: mode });
 	}
 
 	get btnCreateNew(): Locator {
@@ -268,28 +296,17 @@ export class Navbar {
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
-		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.btnSwitchOmnichannelStatus;
 		await expect(toggleButton).toBeVisible();
 
-		enum StatusTitleMap {
-			offline = 'Turn on answer chats',
-			online = 'Turn off answer chats',
-		}
+		const expectedTitle = status === 'offline' ? 'Turn on answer chats' : 'Turn off answer chats';
 
 		const currentStatus = await toggleButton.getAttribute('title');
-		if (status === 'offline') {
-			if (currentStatus === StatusTitleMap.online) {
-				await toggleButton.click();
-			}
-		} else if (currentStatus === StatusTitleMap.offline) {
+		if (currentStatus !== expectedTitle) {
 			await toggleButton.click();
 		}
 
-		await this.root.waitForTimeout(500);
-
-		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
-		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
+		await expect(toggleButton).toHaveAttribute('title', expectedTitle);
 	}
 
 	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {

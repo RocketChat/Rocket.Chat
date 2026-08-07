@@ -15,7 +15,7 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
 
-type ThreadChatProps = {
+export type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
 };
 
@@ -128,7 +128,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 										onChange={() => setSendToChannel((checked) => !checked)}
 										name='alsoSendThreadToChannel'
 									/>
-									<FieldLabel mis='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+									<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 										{t('Also_send_to_channel')}
 									</FieldLabel>
 								</FieldRow>

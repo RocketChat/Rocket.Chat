@@ -22,7 +22,7 @@ const Templates = () => {
 						display='flex'
 						justifyContent='center'
 						alignItems='flex-start'
-						bg='white'
+						backgroundColor='white'
 						zIndex={100}
 						overflow='auto'
 						className={css`

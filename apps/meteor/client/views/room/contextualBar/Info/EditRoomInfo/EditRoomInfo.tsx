@@ -53,7 +53,7 @@ import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACMana
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-type EditRoomInfoProps = {
+export type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
 	onClickClose: () => void;
 	onClickBack: () => void;
@@ -243,7 +243,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<Box display='flex' justifyContent='center'>
 						<Controller

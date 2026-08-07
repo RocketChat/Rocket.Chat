@@ -1386,6 +1386,132 @@ describe('[Groups]', () => {
 		});
 	});
 
+	describe('group access as a regular member', () => {
+		let testGroup: IRoom;
+		let member: TestUser<IUser>;
+		let memberCredentials: Credentials;
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+		const memberGroupName = `member-access-group-${Date.now()}-${Math.random()}`;
+
+		before(async () => {
+			member = await createUser();
+			memberCredentials = await login(member.username, password);
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+
+			const result = await createRoom({ type: 'p', name: memberGroupName, members: [member.username] });
+			testGroup = result.body.group;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: testGroup._id });
+			await Promise.all([deleteUser(member), deleteUser(outsider)]);
+		});
+
+		it('should return the group info to a regular member', async () => {
+			const res = await request
+				.get(api('groups.info'))
+				.set(memberCredentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('group._id', testGroup._id);
+			expect(res.body).to.have.nested.property('group.name', memberGroupName);
+			expect(res.body).to.have.nested.property('group.t', 'p');
+		});
+
+		it('should not return the group info to a non-member', async () => {
+			const res = await request
+				.get(api('groups.info'))
+				.set(outsiderCredentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-room-not-found');
+		});
+
+		it('should return the group history to a regular member', async () => {
+			const res = await request
+				.get(api('groups.history'))
+				.set(memberCredentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages').that.is.an('array');
+		});
+
+		it('should close the group for a regular member', async () => {
+			await request
+				.post(api('groups.close'))
+				.set(memberCredentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should report the group as already closed on a second close (subscription open flag is read)', async () => {
+			await request
+				.post(api('groups.close'))
+				.set(memberCredentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `The private group, ${memberGroupName}, is already closed to the sender`);
+				});
+		});
+
+		it('should open the group back for a regular member', async () => {
+			await request
+				.post(api('groups.open'))
+				.set(memberCredentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should report the group as already open on a second open (subscription open flag is read)', async () => {
+			await request
+				.post(api('groups.open'))
+				.set(memberCredentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `The private group, ${memberGroupName}, is already open for the sender`);
+				});
+		});
+	});
+
 	describe('/groups.list', () => {
 		it('should list the groups the caller is part of', (done) => {
 			void request

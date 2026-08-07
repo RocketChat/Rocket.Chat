@@ -16,7 +16,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 
-type AdminUserInfoWithDataProps = {
+export type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	tab: AdminUsersTab;
@@ -108,7 +108,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	if (error || !user || !data?.user) {
 		return (
-			<ContextualbarContent pb={16}>
+			<ContextualbarContent paddingBlock={16}>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
 			</ContextualbarContent>
 		);
