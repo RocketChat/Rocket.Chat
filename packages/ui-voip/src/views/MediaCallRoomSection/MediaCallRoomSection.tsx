@@ -325,7 +325,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 
 	const { muted, held, connectionState, startedAt, callId } = sessionState;
 	const isOneOnOne = remoteParticipants.length === 1;
-	const hangupTarget = isOneOnOne ? remoteParticipants[0].displayName : t('Call');
+	// A one-to-one call is left *with* someone, so it can name them. A group call has no single other side —
+	// "End call with Call" is what naming one anyway produced — so it just says what the button does.
+	const hangupLabel = isOneOnOne ? t('Voice_call__user__hangup', { user: remoteParticipants[0].displayName }) : t('Leave_call');
 	// LK group calls don't support Hold (no SIP-style hold concept) and don't
 	// support Forward (no caller/callee transfer model). onToggleHand is only
 	// wired up by LiveKitMediaCallProvider, so its presence is a reliable
@@ -703,7 +705,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 			{isOneOnOne && !isLiveKitCall && (
 				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 			)}
-			<ActionButton label={t('Voice_call__user__hangup', { user: hangupTarget })} icon='phone-off' danger onClick={onEndCall} />
+			<ActionButton label={hangupLabel} icon='phone-off' danger onClick={onEndCall} />
 		</>
 	);
 
