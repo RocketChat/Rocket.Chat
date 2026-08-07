@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Option, OptionAvatar, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 
@@ -9,12 +9,12 @@ const ConferenceMemberRow = ({ member }: { member: Pick<ConferenceMember, '_id' 
 	const displayName = useUserDisplayName(member);
 
 	return (
-		<Box display='flex' alignItems='center' marginBlockStart={8}>
-			<UserAvatar username={member.username} size='x24' />
-			<Box marginInlineStart={8} fontScale='p2m' color='default' withTruncatedText>
-				{displayName}
-			</Box>
-		</Box>
+		<Option>
+			<OptionAvatar>
+				<UserAvatar username={member.username} size='x24' />
+			</OptionAvatar>
+			<OptionContent>{displayName}</OptionContent>
+		</Option>
 	);
 };
 

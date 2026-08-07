@@ -1,9 +1,9 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Field, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
+import { VideoConfController, VideoConfPopupControllers } from '@rocket.chat/ui-video-conf';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallBarAction from './components/CallBar/CallBarAction';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
 
@@ -131,26 +131,34 @@ const ConferencePreflight = ({
 					)}
 
 					{/* Only the devices the provider can be told about — today that is this pair, on or off. A native
-					    conference will have inputs and outputs to choose from, in this same place. */}
+					    conference will have inputs and outputs to choose from, in this same place.
+
+					    The same controls the room's start-call popup uses, because they are the same two toggles: a
+					    user who sets them in one place and then meets the other should not have to read a new
+					    control to know what it says. */}
 					<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
-						<ButtonGroup>
+						<VideoConfPopupControllers>
 							{capabilities.mic && (
-								<CallBarAction
+								<VideoConfController
+									small={false}
+									active={preferences.mic}
 									icon={preferences.mic ? 'mic' : 'mic-off'}
-									label={preferences.mic ? t('Mic_on') : t('Mic_off')}
-									pressed={preferences.mic}
+									title={preferences.mic ? t('Mic_on') : t('Mic_off')}
+									aria-label={preferences.mic ? t('Mic_on') : t('Mic_off')}
 									onClick={() => toggle('mic')}
 								/>
 							)}
 							{capabilities.cam && (
-								<CallBarAction
+								<VideoConfController
+									small={false}
+									active={preferences.cam}
 									icon={preferences.cam ? 'video' : 'video-off'}
-									label={preferences.cam ? t('Cam_on') : t('Cam_off')}
-									pressed={preferences.cam}
+									title={preferences.cam ? t('Cam_on') : t('Cam_off')}
+									aria-label={preferences.cam ? t('Cam_on') : t('Cam_off')}
 									onClick={() => toggle('cam')}
 								/>
 							)}
-						</ButtonGroup>
+						</VideoConfPopupControllers>
 					</Box>
 				</Box>
 
