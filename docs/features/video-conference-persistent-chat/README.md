@@ -8,6 +8,29 @@ The chat room is resolved from the conference record: `discussionRid` when a dis
 
 Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (requires `Discussion_enabled`, module `videoconference-enterprise`).
 
+## The flows at a glance
+
+Four diagrams covering a call's life. They describe the feature with persistent chat **on**; with it off none of it
+applies — see [Opening a Conference](#opening-a-conference) for what happens instead.
+
+| | |
+|---|---|
+| [Starting a call](./starting-a-call.svg) | the camera button, the preflight, and what confirming creates |
+| [Being called](./being-called.svg) | accept, decline, silence or ignore — and where each leaves the call |
+| [Adding people and chat access](./adding-people-and-chat-access.svg) | who can read the chat, and the two ways to fix it |
+| [Ending a call](./ending-a-call.svg) | the four ways a call stops, and what the history records |
+
+[How this compares to MatrixRTC](./matrix-comparison.md) sets our answers to "who is in this call" and "who may
+join it" against Matrix's, and lists the three things worth borrowing.
+
+<img src="./starting-a-call.svg" alt="Starting a call: the camera button opens a call window at /conference/new showing a preflight; nothing is created until the user confirms, after which the conference exists and the other side rings." width="680">
+
+<img src="./being-called.svg" alt="Being called: a ring reaches you in your call list or as a notification; accepting joins outright, declining is recorded against your own membership only, silencing stops the sound, and ignoring lets the ring lapse after 15 seconds." width="680">
+
+<img src="./adding-people-and-chat-access.svg" alt="Adding people: someone already in the room can read the chat, someone from outside cannot; once they join, a notice offers either adding them to the room or moving the chat to a discussion, depending on the room type." width="680">
+
+<img src="./ending-a-call.svg" alt="Ending a call: the last person leaving, joining another call, or the 24-hour expiry all end it; an emptied call waits ten seconds so a reload survives, and each member's history row settles to ended or not-answered." width="680">
+
 ## Opening a Conference
 
 **Placing a call** (`startCall`) with persistent chat on posts *nothing*. It opens the call window at
