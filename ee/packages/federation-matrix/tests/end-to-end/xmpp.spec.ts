@@ -259,7 +259,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	let secondUserRequestConfig: IRequestConfig;
 	let sourceRoomId: string;
 	let testBridge: XmppAppserviceTestBridgeClient;
-	let stopTestBridge: () => Promise<void>;
 	let runtimeConfig: XmppRuntimeConfig;
 	let testRunId: string;
 	let xmppRoomAlias: string;
@@ -290,7 +289,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 		});
 
 		testBridge = bridge.client;
-		stopTestBridge = bridge.stop;
 		await testBridge.reset();
 
 		await configureXmppFederation({
@@ -327,15 +325,11 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	});
 
 	afterAll(async () => {
-		try {
-			if (createChannelRoles) {
-				await updatePermissionRoles({ permission: 'create-c', roles: createChannelRoles, config: rc1AdminRequestConfig });
-			}
-			if (settingsSnapshot) {
-				await restoreSettingsSnapshot(rc1AdminRequestConfig, settingsSnapshot);
-			}
-		} finally {
-			await stopTestBridge?.();
+		if (createChannelRoles) {
+			await updatePermissionRoles({ permission: 'create-c', roles: createChannelRoles, config: rc1AdminRequestConfig });
+		}
+		if (settingsSnapshot) {
+			await restoreSettingsSnapshot(rc1AdminRequestConfig, settingsSnapshot);
 		}
 	});
 

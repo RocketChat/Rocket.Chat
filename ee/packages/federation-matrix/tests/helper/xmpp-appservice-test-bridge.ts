@@ -1,6 +1,4 @@
-import { spawn, type ChildProcess } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import path from 'node:path';
 
 import { wait } from './synapse-client';
 
@@ -47,9 +45,8 @@ export const xmppAppserviceTestBridgeConfig = {
 	asToken: process.env.FEDERATION_XMPP_BRIDGE_AS_TOKEN || 'xmpp_as_token',
 };
 
-type XmppAppserviceTestBridgeProcess = {
+type XmppAppserviceTestBridgeConnection = {
 	client: XmppAppserviceTestBridgeClient;
-	stop: () => Promise<void>;
 };
 
 type StartXmppAppserviceTestBridgeOptions = {
@@ -221,98 +218,27 @@ function assertBridgeConfigMatches({
 	);
 }
 
-async function stopProcess(childProcess: ChildProcess): Promise<void> {
-	if (childProcess.exitCode !== null) {
-		return;
-	}
-
-	await new Promise<void>((resolve) => {
-		let exited = false;
-		const killTimer = setTimeout(() => {
-			if (!exited) {
-				try {
-					childProcess.kill('SIGKILL');
-				} catch {
-					// The process may have exited between the timer check and signal delivery.
-				}
-			}
-		}, 1000);
-
-		childProcess.once('exit', () => {
-			exited = true;
-			clearTimeout(killTimer);
-			resolve();
-		});
-
-		try {
-			if (childProcess.kill()) {
-				return;
-			}
-		} catch {
-			// The process may have exited after the exitCode check above.
-		}
-
-		if (!exited) {
-			clearTimeout(killTimer);
-			resolve();
-		}
-	});
-}
-
-async function getRunningBridgeHealth(client: XmppAppserviceTestBridgeClient): Promise<XmppAppserviceTestBridgeHealth | undefined> {
-	try {
-		return await client.health();
-	} catch {
-		return undefined;
-	}
-}
-
 export async function ensureXmppAppserviceTestBridgeRunning({
 	baseUrl = xmppAppserviceTestBridgeConfig.url,
 	homeserverUrl,
 	serverName,
 	hsToken = xmppAppserviceTestBridgeConfig.hsToken,
 	asToken = xmppAppserviceTestBridgeConfig.asToken,
-}: StartXmppAppserviceTestBridgeOptions): Promise<XmppAppserviceTestBridgeProcess> {
+}: StartXmppAppserviceTestBridgeOptions): Promise<XmppAppserviceTestBridgeConnection> {
 	const client = new XmppAppserviceTestBridgeClient(baseUrl);
-	const health = await getRunningBridgeHealth(client);
-
-	if (health) {
-		assertBridgeConfigMatches({
-			baseUrl,
-			health,
-			homeserverUrl,
-			serverName,
-			hsToken,
-			asToken,
-		});
-		return {
-			client,
-			stop: async () => undefined,
-		};
-	}
-
-	const bridgeUrl = new URL(baseUrl);
-	const bridgeProcess = spawn(
-		process.execPath,
-		[path.resolve(__dirname, '../xmpp-appservice-test-bridge/xmpp-appservice-test-bridge.mjs')],
-		{
-			env: {
-				...process.env,
-				PORT: bridgeUrl.port || '3300',
-				HOMESERVER_URL: homeserverUrl,
-				SERVER_NAME: serverName,
-				HS_TOKEN: hsToken,
-				AS_TOKEN: asToken,
-			},
-			stdio: 'inherit',
-		},
-	);
-
 	await client.waitUntilReady({ maxRetries: 30, delay: 500 });
+	const health = await client.health();
+
+	assertBridgeConfigMatches({
+		baseUrl,
+		health,
+		homeserverUrl,
+		serverName,
+		hsToken,
+		asToken,
+	});
 
 	return {
 		client,
-		stop: async () => stopProcess(bridgeProcess),
 	};
 }
