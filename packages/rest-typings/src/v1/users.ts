@@ -271,6 +271,10 @@ export type UsersEndpoints = {
 		POST: (params: { email: string }) => void;
 	};
 
+	'/v1/users.resetPassword': {
+		POST: (params: { token: string; newPassword: string }) => { token: string };
+	};
+
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];

@@ -1066,6 +1066,43 @@ describe('[Users]', () => {
 						users.push(res.body.user);
 					});
 			});
+
+			describe('[/misc.registrationSecretCheck]', () => {
+				it('should return valid: true for the configured secret', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.query({ hash: 'valid-secret' })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('valid', true);
+						});
+				});
+
+				it('should return valid: false for a wrong secret', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.query({ hash: 'wrong-secret' })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('valid', false);
+						});
+				});
+
+				it('should fail when the hash query param is missing', async () => {
+					await request
+						.get(api('misc.registrationSecretCheck'))
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-params');
+						});
+				});
+			});
 		});
 
 		describe('manual approval', () => {
@@ -3968,6 +4005,80 @@ describe('[Users]', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'invalid-params');
 			expect(res.body).to.have.property('error', "must have required property 'email'");
+		});
+	});
+
+	describe('[/users.resetPassword]', () => {
+		let resetUser: TestUser<IUser>;
+		let resetEmail: string;
+		const initialPassword = 'initial-pass-123';
+		const newPassword = 'reset-pass-456';
+
+		before(async () => {
+			await updateSetting('Accounts_PasswordReset', true);
+			resetEmail = `reset.test.${Date.now()}@rocket.chat`;
+			resetUser = await createUser<IUser>({ email: resetEmail, password: initialPassword });
+		});
+
+		after(async () => {
+			await deleteUser(resetUser);
+		});
+
+		// The reset token is normally emailed; seed it directly so the flow is deterministic.
+		const seedResetToken = (token: string) =>
+			updateUserInDb(resetUser._id, {
+				'services.password.reset': { token, when: new Date(), email: resetEmail, reason: 'reset' },
+			} as any);
+
+		it('should reset the password with a valid token and return a login token', async () => {
+			await seedResetToken('valid-reset-token');
+
+			await request
+				.post(api('users.resetPassword'))
+				.send({ token: 'valid-reset-token', newPassword })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('token').that.is.a('string');
+				});
+
+			// The new password works (proves the reset actually happened) and the old one no longer does.
+			await login(resetUser.username, newPassword);
+		});
+
+		it('should invalidate the reset token after use', async () => {
+			await request
+				.post(api('users.resetPassword'))
+				.send({ token: 'valid-reset-token', newPassword: 'another-pass-789' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should fail for an invalid/unknown token', async () => {
+			await request
+				.post(api('users.resetPassword'))
+				.send({ token: 'does-not-exist', newPassword })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should fail when required params are missing', async () => {
+			await request
+				.post(api('users.resetPassword'))
+				.send({ token: 'valid-reset-token' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
 		});
 	});
 

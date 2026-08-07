@@ -884,3 +884,38 @@ API.v1.post(
 		return API.v1.success();
 	},
 );
+
+API.v1.get(
+	'misc.registrationSecretCheck',
+	{
+		authRequired: false,
+		rateLimiterOptions: {
+			numRequestsAllowed: 10,
+			intervalTimeInMS: 60000,
+		},
+		query: ajv.compile<{ hash: string }>({
+			type: 'object',
+			properties: {
+				hash: { type: 'string', minLength: 1 },
+			},
+			required: ['hash'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ valid: boolean }>({
+				type: 'object',
+				properties: {
+					valid: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['valid', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
+		const { hash } = this.queryParams;
+		return API.v1.success({ valid: hash === settings.get('Accounts_RegistrationForm_SecretURL') });
+	},
+);

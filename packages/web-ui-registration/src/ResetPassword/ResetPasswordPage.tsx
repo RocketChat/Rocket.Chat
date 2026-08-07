@@ -8,7 +8,6 @@ import {
 	useRouter,
 	useRouteParameter,
 	useUser,
-	useMethod,
 	useTranslation,
 	useLoginWithToken,
 	useEndpoint,
@@ -27,7 +26,7 @@ const ResetPasswordPage = () => {
 	const user = useUser();
 	const t = useTranslation();
 	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
-	const resetPassword = useMethod('resetPassword');
+	const resetPassword = useEndpoint('POST', '/v1/users.resetPassword');
 	const token = useRouteParameter('token');
 
 	const resetPasswordFormRef = useRef<HTMLElement>(null);
@@ -69,7 +68,7 @@ const ResetPasswordPage = () => {
 	const handleResetPassword = async ({ password }: { password: string }) => {
 		try {
 			if (token) {
-				const result = await resetPassword(token, password);
+				const result = await resetPassword({ token: token ?? '', newPassword: password });
 				await loginWithToken(result.token);
 				router.navigate('/home');
 			} else {

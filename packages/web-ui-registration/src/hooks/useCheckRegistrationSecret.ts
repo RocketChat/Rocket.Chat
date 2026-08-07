@@ -1,8 +1,8 @@
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCheckRegistrationSecret = (hash?: string) => {
-	const checkRegistrationSecretURL = useMethod('checkRegistrationSecretURL');
+	const checkRegistrationSecretURL = useEndpoint('GET', '/v1/misc.registrationSecretCheck');
 
 	return useQuery({
 		queryKey: ['secretURL', hash],
@@ -11,7 +11,8 @@ export const useCheckRegistrationSecret = (hash?: string) => {
 			if (!hash) {
 				return false;
 			}
-			return checkRegistrationSecretURL(hash);
+			const { valid } = await checkRegistrationSecretURL({ hash });
+			return valid;
 		},
 	});
 };

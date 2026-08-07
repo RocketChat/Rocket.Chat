@@ -260,4 +260,8 @@ export type MiscEndpoints = {
 			isSMTPConfigured: boolean;
 		};
 	};
+
+	'/v1/misc.registrationSecretCheck': {
+		GET: (params: { hash: string }) => { valid: boolean };
+	};
 };
