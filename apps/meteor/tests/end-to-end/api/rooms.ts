@@ -2070,6 +2070,14 @@ describe('[Rooms]', () => {
 			return body.messages.find((message: IMessage & { drid: IRoom['_id'] }) => message.drid === discussion._id);
 		};
 
+		const saveDiscussionSettings = (settings: Record<string, unknown>) =>
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({ rid: discussion._id, ...settings })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
 		beforeEach(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
 
@@ -2085,27 +2093,55 @@ describe('[Rooms]', () => {
 		// deleting the parent channel also deletes its discussions
 		afterEach(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should count the message just sent on the discussion', async () => {
-			const sentMessage = await sendSimpleMessage({ roomId: discussion._id });
-			const discussionMessage = await getDiscussionMessage();
+		describe('with no system message hidden', () => {
+			it('should count the message just sent on the discussion', async () => {
+				const sentMessage = await sendSimpleMessage({ roomId: discussion._id });
+				const discussionMessage = await getDiscussionMessage();
 
-			expect(discussionMessage).to.have.property('dcount', 1);
-			expect(discussionMessage).to.have.property('dlm', sentMessage.body.message.ts);
+				expect(discussionMessage).to.have.property('dcount', 1);
+				expect(discussionMessage).to.have.property('dlm', sentMessage.body.message.ts);
+			});
+
+			it('should count the system messages of the discussion', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
 		});
 
-		it('should count the system message just sent on the discussion', async () => {
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: discussion._id,
-					roomName: 'edited-discussion-name',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			const discussionMessage = await getDiscussionMessage();
+		describe('with system messages hidden on the discussion', () => {
+			beforeEach(() => saveDiscussionSettings({ systemMessages: ['r'] }));
 
-			expect(discussionMessage).to.have.property('dcount', 1);
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+
+			it('should count them again once they are not hidden anymore', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await saveDiscussionSettings({ systemMessages: [] });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+		});
+
+		describe('with system messages hidden by the global setting', () => {
+			before(() => updateSetting('Hide_System_Messages', ['r']));
+
+			// the setting applies to the whole workspace, so it has to be restored
+			after(() => updateSetting('Hide_System_Messages', []));
+
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
 		});
 	});
 
