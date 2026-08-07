@@ -7,7 +7,6 @@
 '@rocket.chat/ddp-client': minor
 '@rocket.chat/fuselage-ui-kit': minor
 '@rocket.chat/ui-client': minor
-'@rocket.chat/ui-contexts': minor
 '@rocket.chat/ui-kit': minor
 '@rocket.chat/ui-voip': minor
 '@rocket.chat/i18n': minor

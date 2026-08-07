@@ -22,8 +22,8 @@ export const useCallsRoomAction = () => {
 		return {
 			id: 'calls',
 			groups: ['channel', 'group', 'team', 'direct', 'direct_multiple'],
-			icon: 'history',
-			title: 'Conference_call_history',
+			icon: 'phone',
+			title: 'Calls',
 			...(federated && {
 				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
 				disabled: true,

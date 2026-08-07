@@ -5,13 +5,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { videoConferenceQueryKeys } from '../../../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../../../lib/utils/mapVideoConfUserFromApi';
 
-// Hoisted so react-query can reuse the previous select result — an inline arrow is a new function
-// identity every render, which makes query-core re-run select and hand back a fresh array each time.
-const selectVideoConfs = ({ pages }: { pages: { items: VideoConference[]; itemCount: number }[] }) => ({
-	videoConfs: pages.flatMap((page) => page.items),
-	total: pages.at(-1)?.itemCount,
-});
-
 export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 	const getVideoConfs = useEndpoint('GET', '/v1/video-conference.list');
 
@@ -45,6 +38,9 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 			if (nextOffset >= lastPage.itemCount) return undefined;
 			return nextOffset;
 		},
-		select: selectVideoConfs,
+		select: ({ pages }) => ({
+			videoConfs: pages.flatMap((page) => page.items),
+			total: pages.at(-1)?.itemCount,
+		}),
 	});
 };

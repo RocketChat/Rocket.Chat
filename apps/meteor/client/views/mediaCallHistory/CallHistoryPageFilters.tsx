@@ -25,7 +25,7 @@ const typeOptions = [
 
 const statesOptions = [
 	{ id: 'filter_by_status', text: 'Filter_By_Status', isGroupTitle: true },
-	{ id: 'ongoing', text: 'Ongoing', icon: { name: 'phone', color: 'success' } },
+	{ id: 'ongoing', text: 'Ongoing', icon: { name: 'phone', color: 'default' } },
 	{ id: 'ended', text: 'Ended', icon: { name: 'phone-off', color: 'default' } },
 	{ id: 'transferred', text: 'Transferred', icon: { name: 'arrow-forward', color: 'default' } },
 	{ id: 'not-answered', text: 'Not_answered', icon: { name: 'phone-question-mark', color: 'warning' } },
