@@ -71,9 +71,9 @@ test.describe.serial('Global Search', () => {
 		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); 
+		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true });
 		await poHomeChannel.tabs.searchMessages.jumpToMessage(threadMessage.msg);
-		
+
 		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
 		await expect(poHomeChannel.tabs.threads.getThreadMessageByText(threadMessage.msg)).toBeVisible();
 	});

@@ -77,26 +77,26 @@ const message = {
 };
 
 it('should navigate to the message room when the message belongs to another room', async () => {
-		renderJumpHook('room-1', { ...message, rid: 'room-2' });
+	renderJumpHook('room-1', { ...message, rid: 'room-2' });
 
-		await waitFor(() => expect(mockedGoToRoom).toHaveBeenCalledWith('room-2'));
+	await waitFor(() => expect(mockedGoToRoom).toHaveBeenCalledWith('room-2'));
 
-		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
-	});
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+});
 
-	it('should load surrounding messages in place when the message belongs to the current room', async () => {
-		renderJumpHook('room-1', { ...message, rid: 'room-1' });
+it('should load surrounding messages in place when the message belongs to the current room', async () => {
+	renderJumpHook('room-1', { ...message, rid: 'room-1' });
 
-		await waitFor(() => expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalled());
+	await waitFor(() => expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalled());
 
-		expect(mockedGoToRoom).not.toHaveBeenCalled();
-	});
+	expect(mockedGoToRoom).not.toHaveBeenCalled();
+});
 
-	it('should not navigate for a cross-room thread message, as it is handled by useTryToJumpToThreadMessage', async () => {
-		renderJumpHook('room-1', { ...message, rid: 'room-2', tmid: 'parent-msg-1', tshow: true });
+it('should not navigate for a cross-room thread message, as it is handled by useTryToJumpToThreadMessage', async () => {
+	renderJumpHook('room-1', { ...message, rid: 'room-2', tmid: 'parent-msg-1', tshow: true });
 
-		await waitFor(() => expect(mockedSetIsJumpingToMessage).toHaveBeenCalledWith(true));
+	await waitFor(() => expect(mockedSetIsJumpingToMessage).toHaveBeenCalledWith(true));
 
-		expect(mockedGoToRoom).not.toHaveBeenCalled();
-		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
-	});
+	expect(mockedGoToRoom).not.toHaveBeenCalled();
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+});
