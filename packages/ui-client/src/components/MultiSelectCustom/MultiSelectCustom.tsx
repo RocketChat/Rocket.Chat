@@ -27,7 +27,7 @@ export type OptionProp = {
 	text: string;
 	checked?: boolean;
 	isGroupTitle?: boolean;
-	icon?: { name: IconNames; color?: 'default' | 'danger' | 'warning' | 'success' };
+	icon?: { name: IconNames; color?: 'default' | 'danger' | 'warning' };
 };
 
 /**

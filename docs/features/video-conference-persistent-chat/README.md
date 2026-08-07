@@ -758,7 +758,7 @@ for the caller, `not-answered`/`inbound` for the callee — while leaving a call
 
 ## Deferred to follow-ups
 
-Six things were built, reviewed and then held back from the first release to keep it reviewable. Each is a
+Eight things were built, reviewed and then held back from the first release to keep it reviewable. Each is a
 complete improvement on its own, which is what makes it a good follow-up rather than a gap. All of them are in
 git — `git show 5ab58858d7d:<path>` restores any of them intact.
 
@@ -770,6 +770,13 @@ git — `git show 5ab58858d7d:<path>` restores any of them intact.
 | **The navbar stand-in** (`NavBarItemOngoingCalls`) | only reachable with the sidebar collapsed | nothing there; the sidebar card covers the rest |
 | **Handing internal links to the opener** (the desktop bridge and the `postMessage` handshake) | needs a bridge on both sides for a nicer landing | a `noopener` new tab — see [Confined Navigation](#confined-navigation) |
 | **Regrouping the room's call list** into Ongoing/Past, named after the discussion | a redesign of a list that already works, and one every workspace sees | the existing flat list, with the fix that it no longer counts members who never joined |
+| **Disabling join on message blocks inside the call window** (`videoConfJoinDisabled`, `useCurrentRouteName`) | reached across `ui-contexts` and `fuselage-ui-kit` to stop something that isn't broken | the buttons stay live; joining from inside a call opens a second call window |
+
+Two changes were dropped rather than deferred, because they were never this feature's to make. The room kebab's
+Calls item keeps its own name and icon — renaming it to *Conference call history* belonged to the regrouping
+above, and shipping the rename alone would change what every workspace sees for nothing. The *Ongoing* filter on
+the call-history page uses an existing icon colour, rather than teaching `MultiSelectCustom` a new one for a
+single green phone.
 
 The end-to-end REST suite (`tests/end-to-end/apps/video-conference-membership.ts`) is held back for a different
 reason: it has never been run locally — the API suite authenticates as a fixture admin a dev workspace does not

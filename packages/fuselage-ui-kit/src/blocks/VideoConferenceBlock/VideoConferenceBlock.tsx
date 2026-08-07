@@ -38,7 +38,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { action, viewId = undefined, rid, videoConfJoinDisabled = false } = useContext(UiKitContext);
+	const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -157,9 +157,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				<VideoConfMessageFooter>
 					{data.type === 'direct' && (
 						<>
-							<VideoConfMessageButton disabled={videoConfJoinDisabled} onClick={callAgainHandler}>
-								{isUserCaller ? t('Call_again') : t('Call_back')}
-							</VideoConfMessageButton>
+							<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
 							{[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
 								<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
 							)}
@@ -208,7 +206,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary disabled={videoConfJoinDisabled} onClick={joinHandler}>
+				<VideoConfMessageButton primary onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
 				{Boolean(joinedUsers.length) && (

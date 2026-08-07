@@ -15,9 +15,9 @@ import { useJoinableCalls } from '../../views/conference/hooks/useJoinableCalls'
  *
  * A call ringing now is being asked of the user; the rest are there to be joined. Both lists are freshest first.
  *
- * Separate from the actions below because the two containers — the sidebar's card and the navbar's dropdown —
- * only need to know whether there is anything to make room for, and how much is ringing. Wiring up a decline and
- * a silence list to answer that gave each of them a second, unused copy of both.
+ * Separate from the actions below because the sidebar's card only needs to know whether there is anything to
+ * make room for, and how much is ringing. Wiring up a decline and a silence list to answer that gave it a
+ * second, unused copy of both.
  */
 export const useOngoingCallsList = () => {
 	const { calls } = useJoinableCalls();

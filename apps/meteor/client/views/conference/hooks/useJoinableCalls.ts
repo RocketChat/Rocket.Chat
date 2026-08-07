@@ -19,9 +19,8 @@ const POLL_INTERVAL = 20_000;
 /**
  * The calls running now that this user may join, freshest first.
  *
- * Both the sidebar and the call-history page read this one query, with different eyes: the sidebar leaves out
- * calls the user declined, while the history keeps them, because the history is the way back to a call that was
- * turned down.
+ * Kept whole here — declined calls included — because who filters what is the reader's business: the sidebar
+ * leaves out the ones turned down, and anything showing a way *back* to a declined call needs them.
  */
 export const useJoinableCalls = () => {
 	const getJoinable = useEndpoint('GET', '/v1/video-conference.joinable');

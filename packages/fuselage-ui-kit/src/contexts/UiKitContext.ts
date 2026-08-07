@@ -22,9 +22,6 @@ type UiKitContextValue = {
 	values: Record<ActionId, { value: unknown } | undefined>;
 	viewId?: string;
 	rid?: string;
-	// When set, video conference join/call-back actions in message blocks are disabled (e.g. while the
-	// chat is rendered inside a conference window, to stop opening other conferences).
-	videoConfJoinDisabled?: boolean;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
