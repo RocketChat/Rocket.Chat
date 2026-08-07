@@ -76,8 +76,7 @@ const message = {
 	_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 };
 
-describe('useTryToJumpToMessage', () => {
-	it('should navigate to the message room when the message belongs to another room', async () => {
+it('should navigate to the message room when the message belongs to another room', async () => {
 		renderJumpHook('room-1', { ...message, rid: 'room-2' });
 
 		await waitFor(() => expect(mockedGoToRoom).toHaveBeenCalledWith('room-2'));
@@ -101,4 +100,3 @@ describe('useTryToJumpToMessage', () => {
 		expect(mockedGoToRoom).not.toHaveBeenCalled();
 		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
 	});
-});
