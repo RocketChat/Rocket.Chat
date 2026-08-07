@@ -65,3 +65,17 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		}
 	}
 }
+
+.rcx-message-reactions {
+	&__emoji {
+		/* Can't be written as `&--custom` like the .rcx-message rule above: custom emojis here
+		carry the renderer's global `.emoji--custom` class, not a block modifier. */
+		/* stylelint-disable-next-line selector-class-pattern */
+		&:not(.emoji--custom) {
+			width: auto;
+			height: auto;
+			font-size: 1rem;
+			line-height: 1.2;
+		}
+	}
+}
