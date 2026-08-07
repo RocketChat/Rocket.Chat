@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/passport-x",
-	"version": "0.1.0-rc.0",
+	"version": "0.1.0",
 	"private": true,
 	"description": "Fork of passport-twitter for X (Twitter) OAuth",
 	"main": "./dist/index.js",

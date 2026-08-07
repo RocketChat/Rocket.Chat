@@ -1,5 +1,24 @@
 # @rocket.chat/apps
 
+## 0.8.0
+
+### Minor Changes
+
+- ([#41019](https://github.com/RocketChat/Rocket.Chat/pull/41019)) Adds an alternative runtime runner for apps. It can be enabled via environment variable `APPS_ENGINE_RUNTIME_BACKEND='node'`
+
+### Patch Changes
+
+- ([#40947](https://github.com/RocketChat/Rocket.Chat/pull/40947) by [@dsaicharan072-cmyk](https://github.com/dsaicharan072-cmyk)) Fixes an issue that would cause apps to fail with 'Module not found' errors in some cases
+
+- ([#41338](https://github.com/RocketChat/Rocket.Chat/pull/41338) by [@AlgoArtist06](https://github.com/AlgoArtist06)) Fixes app startup failing with EACCES errors in docker deployments running with specified UIDs
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 4186deb7febee0aa653bb48b27022afa36529b21, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 6041285601ce6f9586f85cff72fb167642893245]:</summary>
+
+  - @rocket.chat/model-typings@2.4.0
+  - @rocket.chat/core-typings@8.7.0
+  - @rocket.chat/apps-engine@1.65.1
+  </details>
+
 ## 0.8.0-rc.0
 
 ### Minor Changes
