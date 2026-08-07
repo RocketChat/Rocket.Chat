@@ -1,0 +1,787 @@
+/* eslint-disable react/no-multi-comp */
+import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import {
+	MediaCallViewContext,
+	defaultMediaCallContextValue,
+	playJoinChime,
+	DEFAULT_CALL_LANGUAGE,
+	findCallLanguage,
+	type CallLanguage,
+	type RemoteParticipantInfo,
+} from '@rocket.chat/ui-voip';
+import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
+import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+
+import FloatingGroupCallWidget from './FloatingGroupCallWidget';
+import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
+
+const headersOf = () => ({
+	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
+	'X-User-Id': localStorage.getItem('Meteor.userId') || '',
+});
+
+type LKCreds = { serverUrl: string; token: string; roomName: string };
+
+const fetchTransportConfig = async (callId: string): Promise<LKCreds | null> => {
+	const res = await fetch(`/api/v1/video-conference.livekit.transport.config?callId=${encodeURIComponent(callId)}`, {
+		headers: headersOf(),
+	});
+	if (!res.ok) return null;
+	const data = (await res.json()) as { service: string; livekit?: LKCreds };
+	return data.service === 'livekit' && data.livekit ? data.livekit : null;
+};
+
+/**
+ * Tell the server the user has left this group call. Best-effort: server-side
+ * is idempotent, and the call doc only closes once participants is empty, so
+ * a missed leave just delays cleanup until expiresAt.
+ *
+ * `keepalive` lets this complete after a page-unload tear-down (when the user
+ * closes the tab); inside the running app a normal fetch is fine.
+ */
+const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
+	try {
+		void fetch('/api/v1/video-conference.livekit.leave', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', ...headersOf() },
+			body: JSON.stringify({ callId }),
+			keepalive: opts?.keepalive,
+		}).catch(() => undefined);
+	} catch {
+		/* unload-time errors are not actionable */
+	}
+};
+
+/**
+ * Inner bridge: lives inside <LiveKitRoom> as a sibling of children. Reads LK
+ * hooks every render, computes the MediaCallViewContext value, and pushes it
+ * up to the parent via onContextChange. Renders nothing — children stay in
+ * their stable position in the React tree above, avoiding a full app remount
+ * when the LK room mounts/unmounts on call start/end.
+ */
+const InnerProvider = ({
+	callId,
+	onLeave,
+	onContextChange,
+}: {
+	callId: string;
+	onLeave: () => void;
+	onContextChange: (value: unknown) => void;
+}) => {
+	const room = useRoomContext();
+	const { localParticipant } = useLocalParticipant();
+	const allParticipants = useParticipants();
+	const startedAt = useRef(new Date()).current;
+
+	const [micEnabled, setMicEnabled] = useState(localParticipant.isMicrophoneEnabled);
+	const [camEnabled, setCamEnabled] = useState(localParticipant.isCameraEnabled);
+	const [screenEnabled, setScreenEnabled] = useState(localParticipant.isScreenShareEnabled);
+
+	useEffect(() => {
+		const sync = () => {
+			setMicEnabled(localParticipant.isMicrophoneEnabled);
+			setCamEnabled(localParticipant.isCameraEnabled);
+			setScreenEnabled(localParticipant.isScreenShareEnabled);
+		};
+		sync();
+		const evts = ['trackMuted', 'trackUnmuted', 'localTrackPublished', 'localTrackUnpublished'];
+		evts.forEach((e) => localParticipant.on(e as any, sync));
+		return () => {
+			evts.forEach((e) => localParticipant.off(e as any, sync));
+		};
+	}, [localParticipant]);
+
+	// LK marks agent participants with kind=AGENT, but that property can be set
+	// after the participant first appears — useParticipants() may not re-emit
+	// when only `kind` flips, leaving the agent tile rendered for whichever
+	// client happened to subscribe before the update. We additionally check
+	// the identity prefix (LK auto-generates agent identities as
+	// `agent-AJ_<jobId>` when the worker doesn't set its own), which is
+	// race-free because identity is set at join time.
+	const isAgentParticipant = (p: { identity: string; kind?: ParticipantKind }) => {
+		if (p.kind === ParticipantKind.AGENT) return true;
+		const id = p.identity || '';
+		return id.startsWith('agent-') || id.startsWith('agent_') || /^AJ_[A-Za-z0-9]+$/.test(id);
+	};
+	const remotes = useMemo(
+		() =>
+			allParticipants.filter(
+				(p) => p.identity !== localParticipant.identity && !isAgentParticipant(p as { identity: string; kind?: ParticipantKind }),
+			),
+		[allParticipants, localParticipant.identity],
+	);
+	const remoteCameraTracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
+	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { onlySubscribed: true });
+	const remoteAudioTracks = useTracks([Track.Source.Microphone], { onlySubscribed: true });
+
+	// LK uses participant.identity == userId, so we can derive each remote's
+	// avatar through the same hook used for the local user. Without this, every
+	// remote tile fell back to the generic user-placeholder icon.
+	const getUserAvatarPath = useUserAvatarPath();
+
+	const remoteParticipants: RemoteParticipantInfo[] = useMemo(() => {
+		return remotes.map((p) => {
+			const cam = remoteCameraTracks.find((t) => t.participant.identity === p.identity);
+			const scr = remoteScreenTracks.find((t) => t.participant.identity === p.identity);
+			const aud = remoteAudioTracks.find((t) => t.participant.identity === p.identity);
+			const micPub = p.getTrackPublication(Track.Source.Microphone);
+			// Skip the camera/screen streams when the remote publication is
+			// muted — useTracks() can still surface the publication after the
+			// remote disables their camera, and a "muted" video stream renders
+			// as a black frame instead of falling back to the avatar.
+			const camMuted = cam?.publication?.isMuted ?? true;
+			const scrMuted = scr?.publication?.isMuted ?? true;
+			return {
+				id: p.identity,
+				displayName: p.name || p.identity,
+				avatarUrl: getUserAvatarPath({ userId: p.identity }),
+				muted: Boolean(!micPub || micPub.isMuted),
+				held: false,
+				cameraStream: cam && !camMuted ? cam.publication?.track?.mediaStream : undefined,
+				screenStream: scr && !scrMuted ? scr.publication?.track?.mediaStream : undefined,
+				audioStream: aud?.publication?.track?.mediaStream,
+			};
+		});
+	}, [remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath]);
+
+	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
+	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
+	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
+	const localCameraStream = useMemo(
+		() => (localCameraPub?.track?.mediaStream ? { active: camEnabled, stream: localCameraPub.track.mediaStream } : undefined),
+		[localCameraPub?.track?.mediaStream, camEnabled],
+	);
+	const localScreenStream = useMemo(
+		() => (localScreenPub?.track?.mediaStream ? { active: screenEnabled, stream: localScreenPub.track.mediaStream } : undefined),
+		[localScreenPub?.track?.mediaStream, screenEnabled],
+	);
+	const localMicrophoneStream = useMemo(
+		() => (localMicPub?.track?.mediaStream ? { active: micEnabled, stream: localMicPub.track.mediaStream } : undefined),
+		[localMicPub?.track?.mediaStream, micEnabled],
+	);
+
+	// Apply Krisp noise filter to the local mic track whenever it's (re)published.
+	// Dynamic import keeps the WASM bundle out of the main JS chunk; if loading or
+	// support detection fails we silently fall back to the raw mic — the filter is
+	// quality-of-life, not load-bearing.
+	useEffect(() => {
+		const audioTrack = localMicPub?.track as LocalAudioTrack | undefined;
+		if (!audioTrack) {
+			console.debug('[Krisp] no local mic track yet, skipping');
+			return;
+		}
+		if (typeof audioTrack.setProcessor !== 'function') {
+			console.warn('[Krisp] setProcessor not available on this livekit-client version');
+			return;
+		}
+		let cancelled = false;
+		void (async () => {
+			try {
+				console.debug('[Krisp] loading module…');
+				const mod = await import('@livekit/krisp-noise-filter');
+				if (cancelled) return;
+				const supported = mod.isKrispNoiseFilterSupported();
+				console.debug('[Krisp] supported?', supported);
+				if (!supported) return;
+				console.debug('[Krisp] attaching processor to track', audioTrack.sid);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, new-cap
+				await audioTrack.setProcessor(mod.KrispNoiseFilter());
+				console.info('[Krisp] processor attached');
+			} catch (err) {
+				console.warn('[Krisp] noise filter unavailable', err);
+			}
+		})();
+		return () => {
+			cancelled = true;
+			void audioTrack.stopProcessor?.().catch(() => undefined);
+		};
+	}, [localMicPub?.track]);
+
+	const onToggleMic = useCallback(() => void localParticipant.setMicrophoneEnabled(!micEnabled), [localParticipant, micEnabled]);
+	const onToggleCamera = useCallback(() => void localParticipant.setCameraEnabled(!camEnabled), [localParticipant, camEnabled]);
+	const onToggleScreen = useCallback(() => void localParticipant.setScreenShareEnabled(!screenEnabled), [localParticipant, screenEnabled]);
+
+	// Raise-hand state, broadcast over the LK data channel. raisedAt is used to
+	// sort the queue position shown on the tile. A late-joining peer only sees
+	// hands that are raised after they join (LK data channel doesn't replay).
+	const [handsMap, setHandsMap] = useState<Record<string, number>>({});
+	const [localHandRaised, setLocalHandRaised] = useState(false);
+	const localRaisedAtRef = useRef(0);
+
+	// Reactions: floating emoji broadcast from a participant to everyone in the
+	// call. The visible life of each one is the CSS animation duration; the
+	// state entry sticks around for REACTION_TTL_MS before auto-removal so
+	// React unmounts the DOM after the animation completes.
+	const [activeReactions, setActiveReactions] = useState<
+		{ id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[]
+	>([]);
+	const REACTION_TTL_MS = 3500;
+
+	// Live captions published by the transcription agent. Each speaker's
+	// latest text replaces the previous one (interim updates supersede each
+	// other). Finals are kept for CAPTION_FINAL_TTL_MS then cleared so the
+	// overlay doesn't linger forever after someone stops talking.
+	const [activeCaptions, setActiveCaptions] = useState<Record<string, { text: string; isFinal: boolean; updatedAt: number }>>({});
+	const CAPTION_FINAL_TTL_MS = 5000;
+	const CAPTION_INTERIM_TTL_MS = 8000;
+
+	// Per-user caption opt-in. The local toggle is purely a personal pref —
+	// it doesn't propagate as "captions on for the room". What DOES propagate
+	// is a `captions-request` signal: the agent only spins up Gemini sessions
+	// while at least one participant has requested captions. The agent
+	// publishes transcripts to everyone over the data channel; here we drop
+	// incoming transcript frames when the local user hasn't opted in, so
+	// caption overlays are gated client-side too.
+	const [captionsEnabledLocally, setCaptionsEnabledLocally] = useState(false);
+
+	// Shared call language. Any participant can change it; the agent
+	// restarts active Gemini sessions with the new language so both live
+	// captions and the persisted transcript stay consistent.
+	const [callLanguage, setCallLanguage] = useState<CallLanguage>(DEFAULT_CALL_LANGUAGE);
+	// Ref mirror so the (stable-deps) data-channel handler can read the
+	// current opt-in without re-binding on every toggle.
+	const captionsEnabledRef = useRef(false);
+	useEffect(() => {
+		captionsEnabledRef.current = captionsEnabledLocally;
+	}, [captionsEnabledLocally]);
+
+	// Reactive state shared via the LK data channel. Replaces the previous
+	// 5s polling of /recording-status and /transcription.status. Whoever
+	// toggles the feature also broadcasts the change to everyone in the
+	// room, so other participants update within a single round-trip
+	// instead of waiting for the next poll tick.
+	const [liveRecordingActive, setLiveRecordingActive] = useState<{ isRecording: boolean; updatedAt: number } | undefined>();
+	const [liveTranscriptionActive, setLiveTranscriptionActive] = useState<{ enabled: boolean; updatedAt: number } | undefined>();
+
+	useEffect(() => {
+		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
+			let msg: {
+				type?: string;
+				raised?: boolean;
+				raisedAt?: number;
+				emoji?: string;
+				reactionId?: string;
+				participantId?: string;
+				text?: string;
+				isFinal?: boolean;
+			};
+			try {
+				msg = JSON.parse(new TextDecoder().decode(payload));
+			} catch {
+				return;
+			}
+			if (msg.type === 'hand') {
+				if (!participant) return;
+				setHandsMap((prev) => ({
+					...prev,
+					[participant.identity]: msg.raised ? msg.raisedAt || Date.now() : 0,
+				}));
+				return;
+			}
+			if (msg.type === 'reaction' && msg.emoji) {
+				const senderId = participant?.identity ?? localParticipant.identity;
+				const now = Date.now();
+				setActiveReactions((prev) => [
+					...prev,
+					{
+						id: msg.reactionId || `${senderId}-${now}-${Math.random().toString(36).slice(2, 6)}`,
+						participantId: senderId,
+						emoji: msg.emoji as string,
+						sentAt: now,
+						expiresAt: now + REACTION_TTL_MS,
+					},
+				]);
+				return;
+			}
+			if (msg.type === 'transcript' && msg.text && msg.participantId) {
+				// Per-user opt-in: agent broadcasts transcripts to everyone
+				// over the data channel; we only render them when the local
+				// user has captions turned on. Reading the latest state via
+				// the ref so closing over a stale closure doesn't matter.
+				if (!captionsEnabledRef.current) return;
+				// The agent supplies the speaker's identity in `participantId`
+				// (since the data message itself comes from the agent, not the
+				// speaker, `participant?.identity` would be the agent's id).
+				const speaker = msg.participantId;
+				const { text } = msg;
+				const isFinal = Boolean(msg.isFinal);
+				setActiveCaptions((prev) => ({
+					...prev,
+					[speaker]: { text, isFinal, updatedAt: Date.now() },
+				}));
+				return;
+			}
+			if (msg.type === 'recording-state') {
+				setLiveRecordingActive({ isRecording: Boolean((msg as any).isRecording), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'transcription-state') {
+				setLiveTranscriptionActive({ enabled: Boolean((msg as any).enabled), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'call-language') {
+				const code = (msg as any).code as string | undefined;
+				if (!code) return;
+				setCallLanguage(findCallLanguage(code));
+			}
+		};
+		room.on(RoomEvent.DataReceived, onData);
+		return () => {
+			room.off(RoomEvent.DataReceived, onData);
+		};
+	}, [room, localParticipant.identity]);
+
+	// Sweep stale captions: a final transcript hangs around for a few seconds
+	// of "afterglow", an interim that never got finalised expires a bit later.
+	useEffect(() => {
+		if (Object.keys(activeCaptions).length === 0) return undefined;
+		const handle = setInterval(() => {
+			const now = Date.now();
+			setActiveCaptions((prev) => {
+				const next: typeof prev = {};
+				let changed = false;
+				for (const [id, cap] of Object.entries(prev)) {
+					const ttl = cap.isFinal ? CAPTION_FINAL_TTL_MS : CAPTION_INTERIM_TTL_MS;
+					if (now - cap.updatedAt > ttl) {
+						changed = true;
+						continue;
+					}
+					next[id] = cap;
+				}
+				return changed ? next : prev;
+			});
+		}, 1000);
+		return () => clearInterval(handle);
+	}, [activeCaptions]);
+
+	// Sweep expired reactions out of state once a second so the lists stay
+	// bounded. Interval (not setTimeout per entry) so concurrent reactions
+	// don't fan out into many timers.
+	useEffect(() => {
+		if (activeReactions.length === 0) return undefined;
+		const handle = setInterval(() => {
+			const now = Date.now();
+			setActiveReactions((prev) => {
+				const next = prev.filter((r) => r.expiresAt > now);
+				return next.length === prev.length ? prev : next;
+			});
+		}, 1000);
+		return () => clearInterval(handle);
+	}, [activeReactions.length]);
+
+	const onSendReaction = useCallback(
+		(emoji: string) => {
+			const now = Date.now();
+			const reactionId = `${localParticipant.identity}-${now}-${Math.random().toString(36).slice(2, 6)}`;
+			// Render locally immediately — don't wait for the data-channel echo
+			// (LK doesn't deliver our own messages back to us).
+			setActiveReactions((prev) => [
+				...prev,
+				{
+					id: reactionId,
+					participantId: localParticipant.identity,
+					emoji,
+					sentAt: now,
+					expiresAt: now + REACTION_TTL_MS,
+				},
+			]);
+			const data = new TextEncoder().encode(JSON.stringify({ type: 'reaction', emoji, reactionId }));
+			void localParticipant.publishData(data, { reliable: false }).catch((err) => {
+				console.warn('reaction publish failed', err);
+			});
+		},
+		[localParticipant],
+	);
+
+	// Late joiners: rebroadcast our current hand state when someone new connects,
+	// so they see us in the queue if we already had our hand up before they joined.
+	useEffect(() => {
+		if (!localHandRaised) return undefined;
+		const rebroadcast = () => {
+			const data = new TextEncoder().encode(JSON.stringify({ type: 'hand', raised: true, raisedAt: localRaisedAtRef.current }));
+			void localParticipant.publishData(data, { reliable: true });
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, localHandRaised]);
+
+	// Toggle local captions opt-in. Side effects:
+	// - Publish a `captions-request` signal so the agent can ref-count and
+	//   start/stop Gemini sessions on the room's behalf. Reliable delivery —
+	//   missing one of these would leave the agent in the wrong state.
+	// - Clear the local activeCaptions map when turning off so the overlay
+	//   disappears immediately instead of waiting for the TTL sweep.
+	const onToggleCaptions = useCallback(() => {
+		setCaptionsEnabledLocally((prev) => {
+			const next = !prev;
+			const payload = JSON.stringify({ type: 'captions-request', requested: next });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('captions-request publish failed', err);
+			});
+			if (!next) setActiveCaptions({});
+			return next;
+		});
+	}, [localParticipant]);
+
+	// Late-join rebroadcast: the agent (or other late-joining peers) need to
+	// know our captions-request state if it was set before they connected.
+	// Mirrors the raise-hand rebroadcast above.
+	useEffect(() => {
+		if (!captionsEnabledLocally) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'captions-request', requested: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, captionsEnabledLocally]);
+
+	// Same shape, for the take-notes (transcription) state. Without this,
+	// an agent that restarts mid-call — or any participant joining after
+	// the original toggle broadcast — has no way to learn that take-notes
+	// is on. Whoever locally sees the state as enabled rebroadcasts.
+	useEffect(() => {
+		if (!liveTranscriptionActive?.enabled) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, liveTranscriptionActive?.enabled]);
+
+	const onChangeCallLanguage = useCallback(
+		(code: string) => {
+			const next = findCallLanguage(code);
+			setCallLanguage(next);
+			const payload = JSON.stringify({ type: 'call-language', code: next.code, label: next.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('call-language publish failed', err);
+			});
+		},
+		[localParticipant],
+	);
+
+	// Late-join rebroadcast for the call language so the agent (and any
+	// late peer) converges on the same choice as the rest of the room.
+	// Rebroadcast unconditionally — even the default is broadcast so the
+	// agent doesn't sit at its own default if it differs.
+	useEffect(() => {
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'call-language', code: callLanguage.code, label: callLanguage.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, callLanguage]);
+
+	const onToggleHand = useCallback(() => {
+		const raised = !localHandRaised;
+		const raisedAt = raised ? Date.now() : 0;
+		localRaisedAtRef.current = raisedAt;
+		setLocalHandRaised(raised);
+		setHandsMap((prev) => ({ ...prev, [localParticipant.identity]: raisedAt }));
+		const data = new TextEncoder().encode(JSON.stringify({ type: 'hand', raised, raisedAt }));
+		void localParticipant.publishData(data, { reliable: true }).catch((err) => {
+			console.warn('raise-hand publish failed', err);
+		});
+	}, [localHandRaised, localParticipant]);
+
+	const raisedHands = useMemo(
+		() =>
+			Object.entries(handsMap)
+				.filter(([, t]) => t > 0)
+				.map(([id, raisedAt]) => ({ id, raisedAt }))
+				.sort((a, b) => a.raisedAt - b.raisedAt),
+		[handsMap],
+	);
+
+	// If a participant leaves, drop them from the queue so positions stay correct.
+	useEffect(() => {
+		const onDisconnect = (participant: RemoteParticipant) => {
+			setHandsMap((prev) => {
+				if (!(participant.identity in prev)) return prev;
+				const { [participant.identity]: _drop, ...rest } = prev;
+				return rest;
+			});
+		};
+		room.on(RoomEvent.ParticipantDisconnected, onDisconnect);
+		return () => {
+			room.off(RoomEvent.ParticipantDisconnected, onDisconnect);
+		};
+	}, [room]);
+
+	// "Someone joined" plink. Gated by call size so big calls don't get a
+	// chime per joiner — the convention is to signal new arrivals only
+	// while the call is small enough that each face still matters.
+	// Threshold uses room.numParticipants (post-join, includes local) so
+	// the chime fires for joiners 2 through 6 inclusive (call growing
+	// 1→2, 2→3, 3→4, 4→5, 5→6), and goes silent from the 7th onward.
+	// Agent participants never trigger it.
+	const JOIN_CHIME_MAX_PARTICIPANTS = 6;
+	useEffect(() => {
+		const onConnect = (participant: RemoteParticipant) => {
+			if (isAgentParticipant(participant as { identity: string; kind?: ParticipantKind })) return;
+			if (room.numParticipants <= JOIN_CHIME_MAX_PARTICIPANTS) {
+				playJoinChime();
+			}
+		};
+		room.on(RoomEvent.ParticipantConnected, onConnect);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, onConnect);
+		};
+	}, [room]);
+
+	// Broadcast recording / transcription toggles to every participant
+	// over the LK data channel so they all converge to the same UI state
+	// without polling. We use reliable delivery because these are
+	// low-frequency state changes (not real-time captions where loss is
+	// acceptable) and the user-facing meaning of "missed broadcast" is
+	// "your pill stayed wrong for up to a poll interval" — which is the
+	// regression we're fixing in the first place.
+	const broadcastRecordingState = useCallback(
+		(isRecording: boolean) => {
+			const payload = JSON.stringify({ type: 'recording-state', isRecording });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveRecordingActive({ isRecording, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+	const broadcastTranscriptionState = useCallback(
+		(enabled: boolean) => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveTranscriptionActive({ enabled, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+
+	// Switch the active camera (videoinput) through the LK Room — LK's
+	// switchActiveDevice republishes the track on the chosen device so no
+	// renegotiation is needed at our level. The method lives on Room (not
+	// LocalParticipant) in livekit-client ≥1.6.
+	const onVideoInputChange = useCallback(
+		(deviceId: string) => {
+			void room.switchActiveDevice('videoinput', deviceId).catch((err: unknown) => {
+				console.warn('camera switch failed', err);
+			});
+		},
+		[room],
+	);
+
+	// Current camera deviceId is read from the published track's settings.
+	// We re-derive on each render of the bridge — useTracks ensures we
+	// rerender when the publication changes (e.g. after switchActiveDevice).
+	const currentCameraDeviceId = useMemo(() => {
+		const pub = localParticipant.getTrackPublication(Track.Source.Camera);
+		return pub?.track?.mediaStreamTrack?.getSettings().deviceId;
+	}, [localParticipant, camEnabled, localCameraPub?.trackSid]);
+
+	const ctxValue = useMemo(
+		() => ({
+			sessionState: {
+				state: 'ongoing' as const,
+				connectionState: room.state === 'connected' ? 'CONNECTED' : 'CONNECTING',
+				peerInfo: undefined,
+				transferredBy: undefined,
+				hidden: false,
+				muted: !micEnabled,
+				held: false,
+				remoteMuted: false,
+				remoteHeld: false,
+				callId,
+				startedAt,
+				supportedFeatures: ['audio', 'video', 'screen-share'] as any,
+			},
+			onMute: onToggleMic,
+			onHold: () => undefined,
+			onDeviceChange: () => undefined,
+			onForward: () => undefined,
+			onTone: () => undefined,
+			onEndCall: onLeave,
+			onCall: () => Promise.resolve(),
+			onAccept: () => Promise.resolve(),
+			onSelectPeer: () => undefined,
+			onToggleScreenSharing: onToggleScreen,
+			onToggleCamera,
+			onToggleHand,
+			localHandRaised,
+			raisedHands,
+			onSendReaction,
+			activeReactions,
+			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
+			onVideoInputChange,
+			currentCameraDeviceId,
+			liveRecordingActive,
+			liveTranscriptionActive,
+			broadcastRecordingState,
+			broadcastTranscriptionState,
+			remoteParticipants,
+			streams: {
+				localCamera: localCameraStream as any,
+				localScreen: localScreenStream as any,
+				localMicrophone: localMicrophoneStream as any,
+			},
+		}),
+		[
+			room.state,
+			micEnabled,
+			callId,
+			startedAt,
+			onToggleMic,
+			onLeave,
+			onToggleScreen,
+			onToggleCamera,
+			onToggleHand,
+			localHandRaised,
+			raisedHands,
+			onSendReaction,
+			activeReactions,
+			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
+			onVideoInputChange,
+			currentCameraDeviceId,
+			liveRecordingActive,
+			liveTranscriptionActive,
+			broadcastRecordingState,
+			broadcastTranscriptionState,
+			remoteParticipants,
+			localCameraStream,
+			localScreenStream,
+			localMicrophoneStream,
+		],
+	);
+
+	useEffect(() => {
+		onContextChange(ctxValue);
+	}, [ctxValue, onContextChange]);
+
+	return null;
+};
+
+/**
+ * App-level bridge for the LiveKit group-call connection. Always renders
+ * children in the same React tree position (no remount on call start/end).
+ * When a group call is active (per `useLiveKitVideoConf().activeCall`), the
+ * LK Room mounts into a sibling portal and an inner bridge pushes the
+ * populated MediaCallViewContext value upward via state. The result: the
+ * per-room MediaCallRoomActivity (rendered with provider={null}) sees the
+ * live LK context, and navigating between channels doesn't tear down LK.
+ *
+ * Note: this is a Video Conference feature and has zero dependency on the
+ * VoIP MediaSignalingSession. Active-call state is owned by the sibling
+ * LiveKitVideoConfProvider context.
+ */
+const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
+	const { activeCall, leaveCall } = useLiveKitVideoConf();
+	const callId = activeCall?.callId;
+	const [creds, setCreds] = useState<LKCreds | null>(null);
+	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
+
+	useEffect(() => {
+		if (!callId) {
+			setCreds(null);
+			setCtxValue(defaultMediaCallContextValue);
+			return;
+		}
+		let cancelled = false;
+		void fetchTransportConfig(callId).then((c) => {
+			if (!cancelled) setCreds(c);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [callId]);
+
+	const onLeave = useCallback(() => {
+		if (callId) {
+			requestLeaveGroup(callId);
+		}
+		leaveCall();
+	}, [leaveCall, callId]);
+
+	// Tab close / refresh / browser kill: fire the leave REST with keepalive so
+	// the server clears this user from participants[] before the connection
+	// dies. Without this the call doc stays "active" until expiresAt (8h) and
+	// the room header keeps showing "Join Call" for everyone else.
+	useEffect(() => {
+		if (!callId) return;
+		const handler = () => requestLeaveGroup(callId, { keepalive: true });
+		window.addEventListener('pagehide', handler);
+		return () => {
+			window.removeEventListener('pagehide', handler);
+		};
+	}, [callId]);
+
+	const lkActive = Boolean(callId && creds);
+
+	// The LK Room mounts into a hidden, app-lifetime detached node so it isn't
+	// part of any per-room DOM that might unmount on navigation. The React tree
+	// position of children above stays untouched.
+	const lkPortalTarget = useMemo(() => {
+		if (typeof document === 'undefined') return null;
+		const node = document.createElement('div');
+		node.setAttribute('data-livekit-host', '');
+		node.style.display = 'none';
+		document.body.appendChild(node);
+		return node;
+	}, []);
+	useEffect(() => {
+		return () => {
+			if (lkPortalTarget?.parentNode) lkPortalTarget.parentNode.removeChild(lkPortalTarget);
+		};
+	}, [lkPortalTarget]);
+
+	return (
+		<MediaCallViewContext.Provider value={ctxValue as any}>
+			{children}
+			{/* Floating mini-view of the call, shown when the user has navigated
+			    away from the call's room. Renders nothing while in the call room
+			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
+			    no group call is active. */}
+			<FloatingGroupCallWidget />
+			{lkActive && creds && callId && lkPortalTarget
+				? createPortal(
+						// Apply preflight mic/cam preferences from the VC
+						// popup as the initial `audio` / `video` flags so the
+						// LiveKitRoom publishes (or skips) tracks according
+						// to what the user chose. Defaults match the legacy
+						// behaviour: mic on, camera off.
+						<LiveKitRoom
+							token={creds.token}
+							serverUrl={creds.serverUrl}
+							connect={true}
+							audio={activeCall?.preferences?.mic ?? true}
+							video={activeCall?.preferences?.cam ?? false}
+							onDisconnected={onLeave}
+						>
+							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />
+							<RoomAudioRenderer />
+						</LiveKitRoom>,
+						lkPortalTarget,
+					)
+				: null}
+		</MediaCallViewContext.Provider>
+	);
+};
+
+export default LiveKitVideoConfBridge;

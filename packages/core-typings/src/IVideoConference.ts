@@ -129,6 +129,55 @@ export const isRingingVideoConferenceMember = (
 	return now - user.ringingAt.getTime() < VIDEO_CONF_RINGING_WINDOW_MS;
 };
 
+/**
+ * Per-participant join/leave tracking. Used by embedded-SFU providers
+ * (e.g. LiveKit) where the room may persist across users joining and leaving
+ * independently. URL-based providers (Jitsi/Meet/Zoom) leave this undefined
+ * — they only know if the call is open at all, not who's currently in.
+ */
+export type IVideoConferenceParticipant = {
+	id: IUser['_id'];
+	username?: string;
+	displayName?: string;
+	joinedAt?: Date;
+	leftAt?: Date;
+};
+
+export type IVideoConferenceRecording = {
+	/** Provider-specific id (e.g. LiveKit egressId). */
+	egressId: string;
+	startedAt: Date;
+	endedAt?: Date;
+	fileUrl?: string;
+	storage: 'local' | 's3' | 'filestore' | 'both';
+	uploadId?: string;
+	uploadKey?: string;
+	filename?: string;
+	messageSent?: boolean;
+};
+
+export type IVideoConferenceTranscription = {
+	enabled: boolean;
+	startedAt?: Date;
+	startedBy?: IUser['_id'];
+	endedAt?: Date;
+};
+
+export type IVideoConferenceTranscriptEntry = {
+	participantId: IUser['_id'];
+	text: string;
+	startedAt: Date;
+	endedAt?: Date;
+};
+
+export type IVideoConferenceSummary = {
+	generatedAt: Date;
+	/** Message id of the posted AI summary (thread reply under the call message). */
+	messageId?: IMessage['_id'];
+	/** Message id of the raw transcript posted as a .md file in the same thread. */
+	transcriptMessageId?: IMessage['_id'];
+};
+
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
 	rid: string;
@@ -151,6 +200,18 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+
+	/**
+	 * Optional embedded-SFU fields. Populated by providers that run the
+	 * call inside Rocket.Chat (LiveKit) rather than handing off to an
+	 * external URL. URL-based providers (Jitsi/Meet/Zoom) leave these
+	 * undefined.
+	 */
+	participants?: IVideoConferenceParticipant[];
+	recording?: IVideoConferenceRecording;
+	transcription?: IVideoConferenceTranscription;
+	transcript?: IVideoConferenceTranscriptEntry[];
+	summary?: IVideoConferenceSummary;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

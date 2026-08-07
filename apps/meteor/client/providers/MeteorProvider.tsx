@@ -22,6 +22,8 @@ import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
+import { LiveKitVideoConfProvider } from '../views/videoConference/livekit/LiveKitVideoConfContext';
+import LiveKitVideoConfBridge from '../views/videoConference/livekit/LiveKitVideoConfProvider';
 
 export type MeteorProviderProps = {
 	children?: ReactNode;
@@ -47,13 +49,17 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																	<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>
 																			<ActionManagerProvider>
-																				<VideoConfProvider>
-																					<MediaCallProvider>
-																						<OmnichannelProvider>
-																							<MediaPlayerProvider>{children}</MediaPlayerProvider>
-																						</OmnichannelProvider>
-																					</MediaCallProvider>
-																				</VideoConfProvider>
+																				<LiveKitVideoConfProvider>
+																					<VideoConfProvider>
+																						<MediaCallProvider>
+																							<LiveKitVideoConfBridge>
+																								<OmnichannelProvider>
+																									<MediaPlayerProvider>{children}</MediaPlayerProvider>
+																								</OmnichannelProvider>
+																							</LiveKitVideoConfBridge>
+																						</MediaCallProvider>
+																					</VideoConfProvider>
+																				</LiveKitVideoConfProvider>
 																			</ActionManagerProvider>
 																		</UserPresenceProvider>
 																	</OmnichannelRoomIconProvider>
