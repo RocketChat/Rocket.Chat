@@ -1,16 +1,5 @@
-import {
-	Button,
-	Field,
-	FieldRow,
-	Modal,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTitle,
-} from '@rocket.chat/fuselage';
+import { Field, FieldRow } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -84,36 +73,23 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	};
 
 	return (
-		<Modal>
-			<ModalHeader>
-				<ModalHeaderText>
-					<ModalTitle>{t('Add_participants')}</ModalTitle>
-				</ModalHeaderText>
-				<ModalClose title={t('Close')} onClick={onClose} />
-			</ModalHeader>
-			<ModalContent>
-				<Field>
-					<FieldRow>
-						{/* The product's own way of picking people, the same as adding them to a room — this used to be
-						    hand-rolled here, down to the chips and the remove buttons. */}
-						<UserAutoCompleteMultiple
-							value={selected}
-							onChange={setSelected}
-							exceptions={memberUsernames}
-							placeholder={t('Choose_users')}
-						/>
-					</FieldRow>
-				</Field>
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary loading={adding} disabled={!selected.length} onClick={handleAdd}>
-						{t('Add')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			icon={null}
+			title={t('Add_participants')}
+			confirmText={t('Add')}
+			confirmDisabled={!selected.length}
+			confirmLoading={adding}
+			onConfirm={handleAdd}
+			onCancel={onClose}
+		>
+			<Field>
+				<FieldRow>
+					{/* The product's own way of picking people, the same as adding them to a room — this used to be
+					    hand-rolled here, down to the chips and the remove buttons. */}
+					<UserAutoCompleteMultiple value={selected} onChange={setSelected} exceptions={memberUsernames} placeholder={t('Choose_users')} />
+				</FieldRow>
+			</Field>
+		</GenericModal>
 	);
 };
 

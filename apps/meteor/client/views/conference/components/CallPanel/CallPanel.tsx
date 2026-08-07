@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 type CallPanelProps = {
@@ -11,35 +12,31 @@ type CallPanelProps = {
 const PANEL_WIDTH = 400;
 
 /**
- * A side panel for conference content (today: the persistent chat).
+ * A side panel for conference content (the chat, the members).
  *
- * It is a sibling of the call area *above* the call bar, never a child of it, so opening and closing the
- * panel animates its own width without ever reflowing the bar. The inner box keeps its full width while
- * the outer one collapses, so the content slides rather than reflowing as it animates.
+ * It is the product's own contextual bar, so a panel beside the call has the same edges, background and
+ * elevation as one beside a room. What it adds is opening and closing: the outer width animates to zero while
+ * the inner box keeps its own, so the content slides out rather than reflowing as it goes.
+ *
+ * It is a sibling of the call area *above* the call bar, never a child of it, so that animation never reflows
+ * the bar.
  */
 const CallPanel = ({ visible, overlay = false, children }: CallPanelProps) => (
-	<Box
-		display='flex'
-		flexDirection='column'
-		flexShrink={0}
+	<Contextualbar
 		width={visible ? PANEL_WIDTH : 0}
 		minWidth={visible ? PANEL_WIDTH : 0}
-		height='100%'
-		backgroundColor='surface-light'
 		borderInlineStartWidth={visible ? 'default' : 0}
-		borderInlineStartStyle='solid'
-		borderInlineStartColor='stroke-extra-light'
 		position={overlay ? 'absolute' : 'relative'}
-		insetBlockStart={overlay ? 0 : undefined}
-		insetInlineEnd={overlay ? 0 : undefined}
-		zIndex={overlay ? 1 : undefined}
+		// The one thing not taken from the contextual bar's defaults, which is `surface-room`. Beside a call the
+		// panel is chrome rather than a room, and the chat inside it paints its own room background anyway.
+		backgroundColor='surface-light'
 		overflow='hidden'
 		style={{ transition: 'width 200ms ease, min-width 200ms ease' }}
 	>
 		<Box display='flex' flexDirection='column' width='100%' minWidth={PANEL_WIDTH} height='100%'>
 			{children}
 		</Box>
-	</Box>
+	</Contextualbar>
 );
 
 export default CallPanel;
