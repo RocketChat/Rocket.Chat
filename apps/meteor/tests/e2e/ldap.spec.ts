@@ -1,6 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import * as constants from './config/constants';
 import { Login } from './page-objects';
 import { getSettingValueById } from './utils/getSettingValueById';
 import { getUserInfo } from './utils/getUserInfo';
@@ -31,7 +30,6 @@ const ldapSettings: Setting[] = [
 	{ _id: 'LDAP_Sync_User_Avatar', value: true },
 	{ _id: 'LDAP_Avatar_Field', value: 'jpegPhoto' },
 	{ _id: 'LDAP_Find_User_After_Login', value: false },
-	{ _id: 'LDAP_Sync_User_Active_State', value: 'none' },
 ];
 
 const setSetting = async (api: BaseTest['api'], { _id, value }: Setting) => {
@@ -78,7 +76,6 @@ const deleteLdapUser = async (api: BaseTest['api']) => {
 };
 
 test.describe('LDAP', () => {
-	test.skip(!constants.IS_EE, 'Enterprise only');
 	let originalSettings: Setting[] | undefined;
 
 	test.beforeAll(async ({ api }) => {
