@@ -2,7 +2,6 @@ import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings'
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -11,14 +10,14 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import RoomFileItemWrapper from './RoomFileItemWrapper';
-import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
 type RoomFilesProps = {
@@ -28,7 +27,7 @@ type RoomFilesProps = {
 	type: string;
 	text: string;
 	filesItems: IUploadWithUser[];
-	loadMoreItems: () => void;
+	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
 	setType: (value: any) => void;
 	setText: (e: ChangeEvent<HTMLInputElement>) => void;
 	total: number;
@@ -52,6 +51,7 @@ const RoomFiles = ({
 }: RoomFilesProps) => {
 	const { t } = useTranslation();
 	const filesListId = useId();
+	const filesListLabel = t('Files_list');
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -97,23 +97,20 @@ const RoomFiles = ({
 					<Box w='full' h='full' id={filesListId} flexShrink={1} overflow='hidden'>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: '100%',
-										width: '100%',
-									}}
+							<Box h='full' w='full' style={{ minHeight: 0 }}>
+								<PaginatedVirtualList
+									items={filesItems}
 									totalCount={total}
-									endReached={loadMoreItems}
+									listLabel={filesListLabel}
 									overscan={100}
-									data={filesItems}
-									itemContent={(_, data) => <FileItem rid={rid} fileData={data} onClickDelete={onClickDelete} />}
-									components={{
-										List: RoomFilesListWrapper,
-										Item: RoomFileItemWrapper,
-									}}
+									onEndReached={loadMoreItems}
+									renderItem={(data) => (
+										<RoomFileItemWrapper>
+											<FileItem rid={rid} fileData={data} onClickDelete={onClickDelete} />
+										</RoomFileItemWrapper>
+									)}
 								/>
-							</VirtualizedScrollbars>
+							</Box>
 						)}
 					</Box>
 				)}

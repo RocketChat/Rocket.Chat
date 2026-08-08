@@ -1,4 +1,3 @@
-import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ComponentProps, Ref } from 'react';
@@ -11,25 +10,10 @@ const customClass = css`
 	}
 `;
 
-type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
+type RoomFileItemWrapperProps = ComponentProps<typeof Box>;
 
-const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
-	{ item, ...props }: RoomFileItemWrapperProps,
-	ref: Ref<HTMLDivElement>,
-) {
-	return (
-		<Box
-			ref={ref}
-			role='listitem'
-			aria-label={item.name}
-			display='flex'
-			pb={12}
-			pi={24}
-			borderRadius={4}
-			className={customClass}
-			{...props}
-		/>
-	);
+const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(props: RoomFileItemWrapperProps, ref: Ref<HTMLDivElement>) {
+	return <Box ref={ref} display='flex' pb={12} pi={24} borderRadius={4} className={customClass} {...props} />;
 });
 
 export default RoomFileItemWrapper;
