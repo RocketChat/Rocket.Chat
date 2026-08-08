@@ -36,9 +36,9 @@ describe('ReadReceipt.getReceipts', () => {
 
 		modelsMock.ReadReceipts.findByMessageId.returns({
 			toArray: sinon.stub().resolves([
+				{ _id: 'receipt-3', messageId: 'message-id', roomId: 'room-id', userId: 'user-3', ts: new Date('2026-01-03') },
 				{ _id: 'receipt-1', messageId: 'message-id', roomId: 'room-id', userId: 'user-1', ts: new Date('2026-01-01') },
 				{ _id: 'receipt-2', messageId: 'message-id', roomId: 'room-id', userId: 'user-2', ts: new Date('2026-01-02') },
-				{ _id: 'receipt-3', messageId: 'message-id', roomId: 'room-id', userId: 'user-3', ts: new Date('2026-01-03') },
 			]),
 		});
 		modelsMock.Users.findByIds.returns({

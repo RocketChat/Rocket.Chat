@@ -151,7 +151,9 @@ class ReadReceiptClass {
 		}
 
 		// Combine receipts from both storages
-		let receipts = [...new Map([...hotReceipts, ...coldReceipts].map((receipt) => [receipt._id, receipt])).values()];
+		let receipts = [...new Map([...hotReceipts, ...coldReceipts].map((receipt) => [receipt._id, receipt])).values()].sort((a, b) =>
+			a._id.localeCompare(b._id),
+		);
 
 		if (options) {
 			const offset = options.offset ?? 0;
