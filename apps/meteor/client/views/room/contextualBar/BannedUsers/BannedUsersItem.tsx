@@ -41,7 +41,8 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 			</OptionAvatar>
 			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={user._id} />}</OptionColumn>
 			<OptionContent>
-				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
+				{nameOrUsername}
+				{displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
 			</OptionContent>
 			<OptionMenu>
 				<GenericMenu detached title={t('More')} items={options} placement='bottom-end' />

@@ -1,5 +1,4 @@
 import { Box, Throbber } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
@@ -8,12 +7,10 @@ import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
-	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
-import BannedUsersItem from './BannedUsersItem';
+import BannedUsersVirtualList from './BannedUsersVirtualList';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 type BannedUsersProps = {
@@ -28,8 +25,6 @@ type BannedUsersProps = {
 
 const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClickClose, onClickUnban, onLoadMore }: BannedUsersProps) => {
 	const { t } = useTranslation();
-
-	const loadMoreBannedUsers = useDebouncedCallback(() => onLoadMore(), 300, [onLoadMore, bannedUsers]);
 
 	return (
 		<ContextualbarDialog>
@@ -53,15 +48,12 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 
 				{!loading && !error && bannedUsers.length > 0 && (
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{ height: '100%', width: '100%' }}
-								data={bannedUsers}
-								overscan={50}
-								endReached={loadMoreBannedUsers}
-								itemContent={(_index, user) => <BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />}
-							/>
-						</VirtualizedScrollbars>
+						<BannedUsersVirtualList
+							bannedUsers={bannedUsers}
+							useRealName={useRealName}
+							onClickUnban={onClickUnban}
+							onLoadMore={onLoadMore}
+						/>
 					</Box>
 				)}
 			</ContextualbarContent>
