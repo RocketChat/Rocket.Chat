@@ -22,6 +22,7 @@ addMigration({
 						authToken: 1,
 						enabled: 1,
 						createdAt: 1,
+						_updatedAt: '$$NOW',
 					},
 				},
 				{ $merge: { into: '_raix_push_app_tokens', whenMatched: 'replace', whenNotMatched: 'insert' } },
