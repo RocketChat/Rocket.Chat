@@ -17,6 +17,23 @@ objectClass: organizationalUnit
 objectClass: top
 ou: others
 
+dn: uid=ldap.e2e,ou=others,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: LDAP E2E
+sn: E2E
+mail: ldap.e2e@space.air
+uid: ldap.e2e
+jpegPhoto:: /9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHB
+ YWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCg
+ oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAACAAIDASIAAhEBAxEB/8QAFQAB
+ AQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAA
+ AAAB//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AIMAnDx//9k=
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
 dn: cn=astronauts,dc=space,dc=air
 objectClass: groupOfNames
 objectClass: top

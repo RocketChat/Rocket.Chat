@@ -1,5 +1,4 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { MongoClient } from 'mongodb';
 
 import * as constants from './config/constants';
 import { Login } from './page-objects';
@@ -9,7 +8,7 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
-const ldapUsernames = ['alan.bean', 'john.young', 'buzz.aldrin'];
+const ldapUsername = 'ldap.e2e';
 
 type Setting = {
 	_id: ISetting['_id'];
@@ -24,11 +23,13 @@ const ldapSettings: Setting[] = [
 	{ _id: 'LDAP_Authentication', value: true },
 	{ _id: 'LDAP_Authentication_UserDN', value: 'cn=admin,dc=space,dc=air' },
 	{ _id: 'LDAP_Authentication_Password', value: 'adminpassword' },
-	{ _id: 'LDAP_BaseDN', value: 'ou=users,dc=space,dc=air' },
+	{ _id: 'LDAP_BaseDN', value: 'ou=others,dc=space,dc=air' },
 	{ _id: 'LDAP_User_Search_Field', value: 'uid' },
 	{ _id: 'LDAP_Username_Field', value: 'uid' },
 	{ _id: 'LDAP_Email_Field', value: 'mail' },
 	{ _id: 'LDAP_Name_Field', value: 'cn' },
+	{ _id: 'LDAP_Sync_User_Avatar', value: true },
+	{ _id: 'LDAP_Avatar_Field', value: 'jpegPhoto' },
 	{ _id: 'LDAP_Find_User_After_Login', value: false },
 	{ _id: 'LDAP_Sync_User_Active_State', value: 'none' },
 ];
@@ -64,21 +65,16 @@ const waitForLdapConnection = async (api: BaseTest['api']) => {
 		.toBe(true);
 };
 
-const resetTestData = async () => {
-	const connection = await MongoClient.connect(constants.URL_MONGODB);
+const deleteLdapUser = async (api: BaseTest['api']) => {
+	const response = await api.post('/users.delete', { username: ldapUsername });
 
-	try {
-		await connection
-			.db()
-			.collection('users')
-			.deleteMany({
-				username: {
-					$in: ldapUsernames,
-				},
-			});
-	} finally {
-		await connection.close();
+	if (response.ok()) {
+		return;
 	}
+
+	expect(response.status()).toBe(400);
+	const result = await response.json();
+	expect(result.errorType).toBe('error-invalid-user');
 };
 
 test.describe('LDAP', () => {
@@ -93,14 +89,14 @@ test.describe('LDAP', () => {
 			})),
 		);
 
-		await resetTestData();
+		await deleteLdapUser(api);
 		await applyLdapSettings(api, ldapSettings, true);
 		await waitForLdapConnection(api);
 	});
 
 	test.afterAll(async ({ api }) => {
 		if (!originalSettings) {
-			await resetTestData();
+			await deleteLdapUser(api);
 			return;
 		}
 
@@ -111,12 +107,12 @@ test.describe('LDAP', () => {
 				originalSettings.filter(({ _id }) => _id !== 'LDAP_Enable'),
 				originalEnabled,
 			),
-			resetTestData(),
+			deleteLdapUser(api),
 		]);
 	});
 
 	test('Connection Test', async ({ api }) => {
-		await test.step('Expect to successfully execute a connection test', async () => {
+		await test.step('expect to successfully execute a connection test', async () => {
 			const response = await api.post('/ldap.testConnection', {});
 			expect(response.status()).toBe(200);
 			const result = await response.json();
@@ -125,9 +121,9 @@ test.describe('LDAP', () => {
 	});
 
 	test('User Search Test', async ({ api }) => {
-		await test.step('Expect to successfully search for LDAP users', async () => {
+		await test.step('expect to successfully search for LDAP users', async () => {
 			const response = await api.post('/ldap.testSearch', {
-				username: 'alan.bean',
+				username: ldapUsername,
 			});
 			expect(response.status()).toBe(200);
 			const result = await response.json();
@@ -139,22 +135,34 @@ test.describe('LDAP', () => {
 		const poLogin = new Login(page);
 		await page.goto('/home');
 
-		await test.step('Expect to be able to login with LDAP credentials', async () => {
+		await test.step('expect to be able to login with LDAP credentials', async () => {
 			await poLogin.waitForDisplay();
-			await poLogin.login('alan.bean', 'ldappassword');
+			await poLogin.login(ldapUsername, 'ldappassword');
 
 			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
 
-		await test.step('Expect LDAP user data to have been mapped to the correct fields', async () => {
-			const user = await getUserInfo(api, 'alan.bean');
+		await test.step('expect LDAP user data to have been mapped to the correct fields', async () => {
+			const user = await getUserInfo(api, ldapUsername);
 
 			expect(user).toBeDefined();
-			expect(user?.username).toBe('alan.bean');
-			expect(user?.name).toBe('Alan Bean');
+			expect(user?.username).toBe(ldapUsername);
+			expect(user?.name).toBe('LDAP E2E');
 			expect(user?.emails).toBeDefined();
-			expect(user?.emails?.[0].address).toBe('alan.bean@space.air');
+			expect(user?.emails?.[0].address).toBe('ldap.e2e@space.air');
+		});
+
+		await test.step('expect LDAP user avatar to have been synchronized', async () => {
+			await expect(async () => {
+				const response = await page.request.get(`/avatar/${ldapUsername}`);
+
+				expect(response.status()).toBe(200);
+				expect(response.headers()['content-type']).toBe('image/jpeg');
+				expect(await response.body()).toMatchSnapshot('ldap-avatar.jpeg', {
+					maxDiffPixelRatio: 0.01,
+				});
+			}).toPass();
 		});
 	});
 });
