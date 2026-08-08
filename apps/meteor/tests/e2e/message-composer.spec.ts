@@ -12,7 +12,7 @@ test.describe.serial('message-composer', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['rocket.cat'] });
 	});
 
 	test.beforeEach(async ({ page }) => {
