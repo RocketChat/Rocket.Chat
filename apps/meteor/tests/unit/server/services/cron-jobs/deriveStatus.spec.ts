@@ -42,6 +42,18 @@ describe('CronJobs deriveStatus', () => {
 		expect(result).to.be.equal('scheduled');
 	});
 
+	it('should return "failed" when failedAt equals lastFinishedAt', () => {
+		const now = new Date('2026-06-08T12:00:00Z');
+		const result = deriveStatus({
+			_id: '1',
+			failCount: 1,
+			failedAt: now,
+			lastFinishedAt: now,
+			nextRunAt: new Date(),
+		} as ICronJobItem);
+		expect(result).to.be.equal('failed');
+	});
+
 	it('should return "completed" if it is not disabled, running, scheduled, or failed', () => {
 		const result = deriveStatus({ _id: '1', lastFinishedAt: new Date() } as ICronJobItem);
 		expect(result).to.be.equal('completed');

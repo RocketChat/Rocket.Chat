@@ -15,7 +15,7 @@ export function deriveStatus(job: ICronJobItem): CronJobStatus {
 	}
 
 	if (job.failCount && job.failCount > 0 && job.failedAt) {
-		if (!job.lastFinishedAt || job.failedAt > job.lastFinishedAt) {
+		if (!job.lastFinishedAt || job.failedAt >= job.lastFinishedAt) {
 			return 'failed';
 		}
 	}
