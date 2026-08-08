@@ -135,13 +135,13 @@ export class MembersFlexTab extends FlexTab {
 
 	async muteUser(username: string) {
 		await this.openMemberOptionMoreActions(username);
-		await this.menu.selectMenuItem('Mute user');
+		await this.menu.selectMenuItem('Mute');
 		await this.confirmMuteModal.confirmMute();
 	}
 
 	async unmuteUser(username: string) {
 		await this.openMemberOptionMoreActions(username);
-		await this.menu.selectMenuItem('Unmute user');
+		await this.menu.selectMenuItem('Unmute');
 	}
 
 	async setUserAsModerator(username: string) {

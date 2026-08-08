@@ -11,6 +11,9 @@ export type AccountProfileFormValues = {
 	avatar: AvatarObject;
 	url: string;
 	bio: string;
+	title: string;
+	nationality: string;
+	languages: string;
 	customFields: Record<string, string>;
 	nickname: string;
 } & UserStatusInitialValues;
@@ -23,6 +26,9 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 		avatar: '' as AvatarObject,
 		url: '',
 		bio: user?.bio ?? '',
+		title: user?.title ?? '',
+		nationality: user?.nationality ?? '',
+		languages: user?.languages?.join(', ') ?? '',
 		customFields: user?.customFields ?? {},
 		nickname: user?.nickname ?? '',
 		...getUserStatusInitialValues(user),

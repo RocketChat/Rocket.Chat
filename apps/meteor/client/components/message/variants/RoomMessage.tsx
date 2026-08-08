@@ -22,7 +22,7 @@ import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListReadReceipts } from '../list/MessageListContext';
+import { useMessageListReadReceipts, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
 
 export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -77,7 +77,8 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const selecting = useIsSelecting();
 
@@ -126,10 +127,11 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
 						{...triggerProps}
 					/>
 				)}

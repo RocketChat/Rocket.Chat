@@ -16,7 +16,7 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 		}
 
 		return {
-			content: t('Direct_Message'),
+			content: t('Message'),
 			icon: 'balloon' as const,
 			onClick: openDirectMessage,
 			type: 'communication',

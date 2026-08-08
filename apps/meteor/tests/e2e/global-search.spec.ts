@@ -69,6 +69,11 @@ test.describe.serial('Global Search', () => {
 
 		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
 		await message.hover();
+
+		// Message lists inside the contextual bar do not open the user card on
+		// hover, so the row actions stay reachable without dismissing anything.
+		await expect(page.getByRole('dialog', { name: 'User card' })).toBeHidden();
+
 		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
 		await jumpToMessageButton.click();
 

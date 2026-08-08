@@ -7,7 +7,9 @@ export class UserInfoFlexTab extends FlexTab {
 	readonly menu: MenuMore;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		// The room contextual bar is titled "Full profile" since the user
+		// information redesign; admin still titles the same fragment "User Info".
+		super(page.getByRole('dialog', { name: /^(Full profile|User Info)$/ }));
 		this.menu = new MenuMore(page);
 	}
 

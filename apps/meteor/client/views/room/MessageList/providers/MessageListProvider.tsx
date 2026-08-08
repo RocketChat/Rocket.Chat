@@ -21,9 +21,16 @@ export type MessageListProviderProps = {
 		width?: number;
 		height?: number;
 	};
+	/**
+	 * Lists rendered inside the contextual bar pass `false`: the user card is
+	 * about as wide as the bar, so opening it on hover covers the very row it
+	 * came from, including its actions. Clicking the author still opens the
+	 * full profile.
+	 */
+	hoverUserCardEnabled?: boolean;
 };
 
-const MessageListProvider = ({ children, attachmentDimension }: MessageListProviderProps) => {
+const MessageListProvider = ({ children, attachmentDimension, hoverUserCardEnabled = true }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -93,6 +100,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			showRoles,
 			showRealName,
 			showUsername,
+			hoverUserCardEnabled,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -134,6 +142,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			showRoles,
 			showRealName,
 			showUsername,
+			hoverUserCardEnabled,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,

@@ -8,6 +8,7 @@ import {
 	useSetting,
 	usePermission,
 	useUserCard,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
@@ -35,24 +36,32 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);
+	const canCreateDirectMessage = usePermission('create-d');
+	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
 
 	const videoCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const action = async (): Promise<void> => {
-			if (isCalling || isRinging || !room) {
+			if (isCalling || isRinging || !user.username) {
 				return;
 			}
 
 			try {
+				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
 				await loadCapabilities();
 				closeUserCard();
-				dispatchPopup({ rid: room._id });
+				dispatchPopup({ rid });
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
 		};
 
 		const shouldShowStartCall =
-			room && !isRoomFederated(room) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+			(room ? !isRoomFederated(room) : canCreateDirectMessage) &&
+			user._id !== ownUserId &&
+			enabledForDMs &&
+			permittedToCallManagement &&
+			!isCalling &&
+			!isRinging;
 
 		return shouldShowStartCall
 			? {
@@ -65,6 +74,9 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	}, [
 		room,
 		user._id,
+		user.username,
+		canCreateDirectMessage,
+		createDirectMessage,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,
