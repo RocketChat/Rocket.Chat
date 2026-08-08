@@ -489,6 +489,8 @@ export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
 
 type ChatGetMessageReadReceipts = {
 	messageId: IMessage['_id'];
+	count?: number;
+	offset?: number;
 };
 
 const ChatGetMessageReadReceiptsSchema = {
@@ -497,12 +499,20 @@ const ChatGetMessageReadReceiptsSchema = {
 		messageId: {
 			type: 'string',
 		},
+		offset: {
+			type: 'integer',
+			minimum: 0,
+		},
+		count: {
+			type: 'integer',
+			minimum: 0,
+		},
 	},
 	required: ['messageId'],
 	additionalProperties: false,
 };
 
-export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
+export const isChatGetMessageReadReceiptsProps = ajvQuery.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 type GetStarredMessages = {
 	roomId: IRoom['_id'];
