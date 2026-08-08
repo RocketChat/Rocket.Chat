@@ -111,7 +111,7 @@ test.describe('LDAP', () => {
 		]);
 	});
 
-	test('Connection Test', async ({ api }) => {
+	test('connection', async ({ api }) => {
 		await test.step('expect to successfully execute a connection test', async () => {
 			const response = await api.post('/ldap.testConnection', {});
 			expect(response.status()).toBe(200);
@@ -120,7 +120,7 @@ test.describe('LDAP', () => {
 		});
 	});
 
-	test('User Search Test', async ({ api }) => {
+	test('user search', async ({ api }) => {
 		await test.step('expect to successfully search for LDAP users', async () => {
 			const response = await api.post('/ldap.testSearch', {
 				username: ldapUsername,
@@ -131,7 +131,7 @@ test.describe('LDAP', () => {
 		});
 	});
 
-	test('Login using LDAP credentials', async ({ page, api }) => {
+	test('login using LDAP credentials', async ({ page, api }) => {
 		const poLogin = new Login(page);
 		await page.goto('/home');
 
@@ -154,15 +154,13 @@ test.describe('LDAP', () => {
 		});
 
 		await test.step('expect LDAP user avatar to have been synchronized', async () => {
-			await expect(async () => {
-				const response = await page.request.get(`/avatar/${ldapUsername}`);
+			const response = await page.request.get(`/avatar/${ldapUsername}`);
 
-				expect(response.status()).toBe(200);
-				expect(response.headers()['content-type']).toBe('image/jpeg');
-				expect(await response.body()).toMatchSnapshot('ldap-avatar.jpeg', {
-					maxDiffPixelRatio: 0.01,
-				});
-			}).toPass();
+			expect(response.status()).toBe(200);
+			expect(response.headers()['content-type']).toBe('image/jpeg');
+			expect(await response.body()).toMatchSnapshot('ldap-avatar.jpeg', {
+				maxDiffPixelRatio: 0.01,
+			});
 		});
 	});
 });
