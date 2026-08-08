@@ -63,6 +63,17 @@ const isCronJobsActionParams = ajv.compile<{
 	additionalProperties: false,
 });
 
+const isCronJobParams = ajvQuery.compile<{
+	jobName: string;
+}>({
+	type: 'object',
+	properties: {
+		jobName: { type: 'string' },
+	},
+	required: ['jobName'],
+	additionalProperties: false,
+});
+
 const isCronJobsHistoryParams = ajvQuery.compile<{
 	jobName: string;
 	offset?: number;
@@ -229,7 +240,7 @@ const cronJobsEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['manage-scheduled-jobs'],
-			query: isCronJobsActionParams,
+			query: isCronJobParams,
 			response: {
 				200: isCronJobResponse,
 				400: validateBadRequestErrorResponse,
@@ -345,6 +356,6 @@ const cronJobsEndpoints = API.v1
 export type CronJobsEndpoints = ExtractRoutesFromAPI<typeof cronJobsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 	interface Endpoints extends CronJobsEndpoints {}
 }
