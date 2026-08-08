@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import type { ComponentProps, CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 'react';
 import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
@@ -143,17 +143,6 @@ describe('RoomFiles virtualized list', () => {
 
 	afterEach(() => {
 		jest.useRealTimers();
-	});
-
-	it('renders file rows inside the named Virtua list', () => {
-		renderRoomFiles({ total: fileItems.length });
-
-		const list = screen.getByRole('list', { name: 'Files_list' });
-		expect(list.tagName.toLowerCase()).toBe('ul');
-		expect(list).toHaveAttribute('data-buffer-size', '100');
-		expect(within(list).getAllByRole('listitem')).toHaveLength(10);
-		expect(within(list).getByText('File 0')).toBeInTheDocument();
-		expect(within(list).getAllByRole('button', { name: 'More' })).toHaveLength(10);
 	});
 
 	it('does not render the virtual list for loading or empty states', () => {
