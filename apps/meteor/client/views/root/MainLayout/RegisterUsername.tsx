@@ -83,8 +83,8 @@ const RegisterUsername = () => {
 				return setError('username', { type: 'error-field-unavailable', message: t('error-field-unavailable', { field: username }) });
 			}
 
-			if ([error.errorType].includes('')) {
-				return setError('username', { type: 'username-invalid', message: t('Username_invalid') });
+			if ([error.error, error.errorType].includes('error-invalid-username')) {
+				return setError('username', { type: 'error-invalid-username', message: t('error-invalid-username', { field: username }) });
 			}
 
 			dispatchToastMessage({ type: 'error', message: error });
