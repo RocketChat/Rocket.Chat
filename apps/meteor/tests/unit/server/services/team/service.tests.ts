@@ -5,10 +5,20 @@ import sinon from 'sinon';
 
 const Rooms = {
 	findDefaultRoomsForTeam: sinon.stub(),
+	findPaginatedByTeamIdContainingNameAndDefault: sinon.stub(),
 };
 
 const Users = {
 	findActiveByIds: sinon.stub(),
+	findOneById: sinon.stub(),
+};
+
+const Team = {
+	findOneById: sinon.stub(),
+};
+
+const TeamMember = {
+	findOneByUserIdAndTeamId: sinon.stub(),
 };
 
 const addUserToRoom = sinon.stub();
@@ -21,12 +31,15 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 		ServiceClassInternal: class {},
 		api: {},
 	},
+	'@rocket.chat/core-typings': {
+		TeamType: { PUBLIC: 0, PRIVATE: 1 },
+	},
 	'@rocket.chat/models': {
-		Team: {},
+		Team,
 		Rooms,
 		Subscriptions: {},
 		Users,
-		TeamMember: {},
+		TeamMember,
 	},
 	'@rocket.chat/string-helpers': {
 		escapeRegExp: (value: string) => value,
@@ -64,7 +77,58 @@ describe('Team service', () => {
 	beforeEach(() => {
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();
+		Rooms.findPaginatedByTeamIdContainingNameAndDefault.reset();
+		Team.findOneById.reset();
+		TeamMember.findOneByUserIdAndTeamId.reset();
 		Users.findActiveByIds.reset();
+		Users.findOneById.reset();
+	});
+
+	it('should trim the room name without shifting member filters or pagination', async () => {
+		Team.findOneById.resolves({ _id: 'team-id', type: 0 });
+		TeamMember.findOneByUserIdAndTeamId.resolves(undefined);
+		Users.findOneById.resolves({ __rooms: ['room-id'] });
+		Rooms.findPaginatedByTeamIdContainingNameAndDefault.returns({
+			cursor: { toArray: sinon.stub().resolves([]) },
+			totalCount: Promise.resolve(0),
+		});
+
+		await service.listRooms(
+			'user-id',
+			'team-id',
+			{ name: '  general  ', isDefault: false, getAllRooms: false, allowPrivateTeam: false },
+			{ offset: 5, count: 10 },
+		);
+
+		expect(
+			Rooms.findPaginatedByTeamIdContainingNameAndDefault.calledOnceWithExactly('team-id', 'general', false, ['room-id'], {
+				skip: 5,
+				limit: 10,
+			}),
+		).to.equal(true);
+	});
+
+	it('should trim the room name without shifting all-room filters or pagination', async () => {
+		Team.findOneById.resolves({ _id: 'team-id', type: 0 });
+		TeamMember.findOneByUserIdAndTeamId.resolves(undefined);
+		Rooms.findPaginatedByTeamIdContainingNameAndDefault.returns({
+			cursor: { toArray: sinon.stub().resolves([]) },
+			totalCount: Promise.resolve(0),
+		});
+
+		await service.listRooms(
+			'user-id',
+			'team-id',
+			{ name: '  general  ', isDefault: true, getAllRooms: true, allowPrivateTeam: false },
+			{ offset: 15, count: 20 },
+		);
+
+		expect(
+			Rooms.findPaginatedByTeamIdContainingNameAndDefault.calledOnceWithExactly('team-id', 'general', true, undefined, {
+				skip: 15,
+				limit: 20,
+			}),
+		).to.equal(true);
 	});
 
 	it('should wait for default room membership operations to finish', async function () {
