@@ -59,7 +59,9 @@ it('should return false for isSystemMessage if type is not registered', () => {
 it('should pass the username as a sprintf argument in welcome messages', () => {
 	registerCommonTypes(messageTypes);
 	const welcomeMessage = messageTypes.getType({ t: 'wm' });
-	const translate = jest.fn(() => 'Welcome <em>user</em>.') as unknown as TFunction;
+	const translate = jest.fn((_key: string, options: { postProcess?: string; sprintf?: string[] }) =>
+		options.postProcess === 'sprintf' ? `Welcome <em>${options.sprintf?.[0] ?? '%s'}</em>.` : 'Welcome <em>%s</em>.',
+	) as unknown as TFunction;
 
 	expect(welcomeMessage?.text(translate, { ...baseMessage, t: 'wm' })).toBe('Welcome <em>user</em>.');
 	expect(translate).toHaveBeenCalledWith('Welcome', { postProcess: 'sprintf', sprintf: ['user'] });
