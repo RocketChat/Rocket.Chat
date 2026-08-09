@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { useInfiniteMessageQueryUpdates } from '../../../../../hooks/useInfiniteMessageQueryUpdates';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
-import { getConfig } from '../../../../../lib/utils/getConfig';
+import { getNumericConfig } from '../../../../../lib/utils/getConfig';
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
 type ThreadsListOptions =
@@ -31,7 +31,7 @@ type ThreadsListOptions =
 export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
-	const count = parseInt(`${getConfig('threadsListSize', 10)}`, 10);
+	const count = getNumericConfig('threadsListSize', 10);
 
 	const userId = useUserId();
 

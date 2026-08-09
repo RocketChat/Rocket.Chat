@@ -1,5 +1,51 @@
 # @rocket.chat/core-typings
 
+## 8.7.0
+
+### Minor Changes
+
+- ([#40351](https://github.com/RocketChat/Rocket.Chat/pull/40351)) Adds `current` field to `DeviceManagementSession` type and `currentLoginToken` parameter to `aggregateSessionsByUserId`, allowing the sessions endpoint to identify and flag the caller's active session.
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#39324](https://github.com/RocketChat/Rocket.Chat/pull/39324)) Adds support for running Rocket.Chat in FIPS mode. The monolith and all microservices (ddp-streamer, account-service, authorization-service, presence-service, queue-worker, omnichannel-transcript) can now enforce FIPS-compliant cryptography via Node.js/OpenSSL FIPS, with dedicated FIPS Docker images. Running in FIPS mode requires a license including the new `fips` module, and FIPS status is now reported in server logs and statistics.
+
+### Patch Changes
+
+- ([#41174](https://github.com/RocketChat/Rocket.Chat/pull/41174)) Fixes race conditions in several check-then-write database flows by collapsing them into single atomic operations: CAS login tokens can no longer be consumed by two concurrent logins, revoking a room invite no longer emits duplicate removal notifications, and deleting an integration now enforces the creator-only permission scope in the delete itself
+
+- ([#41285](https://github.com/RocketChat/Rocket.Chat/pull/41285)) Fixes the Slack importer storing shared files as raw URLs in the message body. Imported file messages now stay hidden until "Download Pending Files" button fetches them, then display as native attachments with image previews. Failed downloads (e.g. invalidated export links) are no longer silently saved as the file's content — they are counted as errors and can be retried.
+
+- ([#41173](https://github.com/RocketChat/Rocket.Chat/pull/41173)) Fixes the password policy allowing a maximum length lower than the minimum length to be saved — a combination that made it impossible to set any valid password. The server now rejects such configurations when password policy settings are saved and shows an error explaining the constraint.
+
+- ([#41069](https://github.com/RocketChat/Rocket.Chat/pull/41069)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41112](https://github.com/RocketChat/Rocket.Chat/pull/41112)) Returns `custom fields` on admin rooms detail view
+
+- <details><summary>Updated dependencies [eec6083bb88f0caa1bd0de28b93b926a11c17507, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 4117a1d3fb07905e8c9488a96f368747b48d528e, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/message-parser@0.32.0
+  </details>
+
+## 8.7.0-rc.6
+
+## 8.7.0-rc.5
+
 ## 8.7.0-rc.4
 
 ## 8.7.0-rc.3

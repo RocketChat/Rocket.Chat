@@ -1,5 +1,34 @@
 # @rocket.chat/i18n
 
+## 3.3.0
+
+### Minor Changes
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+- ([#41142](https://github.com/RocketChat/Rocket.Chat/pull/41142)) Adds inline JSON validation feedback to admin settings that hold JSON (`code: application/json`), showing an error in the editor and blocking save while the value is malformed
+
+- ([#41120](https://github.com/RocketChat/Rocket.Chat/pull/41120)) Added a persistent audio player. Playing an audio attachment now continues across room navigation: the audio keeps playing when you switch or close the conversation, and a "Now playing" card appears at the top of the sidebar with play/pause, seek, playback speed (1x/1.5x/2x), and a shortcut back to the originating conversation.
+
+- ([#40916](https://github.com/RocketChat/Rocket.Chat/pull/40916)) Adds a manage license flow to the subscription admin page, allowing license verification before applying it and an option to remove the license. Note: From this point license management should be made in subscription page instead of the Enterprise settings page.
+
 ## 3.3.0-rc.0
 
 ### Minor Changes

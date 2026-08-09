@@ -795,6 +795,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	findOneAndIncMsgCountById(
+		_id: IRoom['_id'],
+		inc = 1,
+		options: Omit<FindOneAndUpdateOptions, 'returnDocument' | 'includeResultMetadata' | 'upsert'>,
+	): Promise<IRoom | null> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.findOneAndUpdate(query, update, { ...options, returnDocument: 'after' });
+	}
+
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom> {
 		return roomUpdater.inc('msgs', inc);
 	}
