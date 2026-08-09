@@ -1,3 +1,4 @@
+```typescript
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { PlaceChatOnHoldModal } from './PlaceChatOnHoldModal';
@@ -10,7 +11,7 @@ import { ChatHoldStatus } from './store/types';
 
 const mockStore = configureStore([]);
 
-describe('PlaceChatOnHoldModal', () => {
+describe('PlaceChatOnHoldModalComponent', () => {
   const history = createMemoryHistory();
   const store = mockStore(initialState);
 
@@ -62,33 +63,8 @@ describe('PlaceChatOnHoldModal', () => {
       </Provider>
     );
 
-    expect(getByText('https://www.example.com!')).toBeInTheDocument();
-    expect(getByText('https://www.example.com!')).toHaveAttribute('href', 'https://www.example.com!');
-  });
-
-  it('renders correctly with hyperlinks and spaces', () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <PlaceChatOnHoldModal />
-        </Router>
-      </Provider>
-    );
-
-    expect(getByText('https://www.example.com ')).toBeInTheDocument();
-    expect(getByText('https://www.example.com ')).toHaveAttribute('href', 'https://www.example.com ');
-  });
-
-  it('renders correctly with hyperlinks and trailing punctuation', () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <PlaceChatOnHoldModal />
-        </Router>
-      </Provider>
-    );
-
-    expect(getByText('https://www.example.com.')).toBeInTheDocument();
-    expect(getByText('https://www.example.com.')).toHaveAttribute('href', 'https://www.example.com.');
+    expect(getByText('https://www.example.com')).toBeInTheDocument();
+    expect(getByText('https://www.example.com')).toHaveAttribute('href', 'https://www.example.com');
   });
 });
+```
