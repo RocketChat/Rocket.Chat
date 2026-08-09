@@ -1,5 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
+import * as constants from './config/constants';
 import { Login } from './page-objects';
 import { getSettingValueById } from './utils/getSettingValueById';
 import { getUserInfo } from './utils/getUserInfo';
@@ -76,6 +77,7 @@ const deleteLdapUser = async (api: BaseTest['api']) => {
 };
 
 test.describe('LDAP', () => {
+	test.skip(!constants.IS_EE);
 	let originalSettings: Setting[] | undefined;
 
 	test.beforeAll(async ({ api }) => {

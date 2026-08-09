@@ -255,7 +255,6 @@ services:
     environment:
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=adminpassword
-      - LDAP_PASSWORD_HASH={SHA256}
       - LDAP_ROOT=dc=space,dc=air
       - LDAP_ADMIN_DN=cn=admin,dc=space,dc=air
       - LDAP_CUSTOM_LDIF_DIR=/opt/bitnami/openldap/data
