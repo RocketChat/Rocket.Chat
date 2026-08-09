@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { MouseEvent } from 'react';
+import type { ComponentProps, MouseEvent } from 'react';
 import { memo } from 'react';
 
 import RoomMembersItem from './RoomMembersItem';
@@ -14,15 +14,17 @@ type RoomMembersRowProps = {
 	index: number;
 	reload: () => void;
 	useRealName: boolean;
-};
+} & Pick<ComponentProps<typeof RoomMembersItem>, 'is' | 'role'>;
 
-const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps) => {
+const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName, is, role }: RoomMembersRowProps) => {
 	if (!user?._id) {
 		return <RoomMembersItem.Skeleton />;
 	}
 
 	return (
 		<RoomMembersItem
+			is={is}
+			role={role}
 			key={index}
 			useRealName={useRealName}
 			username={user.username}

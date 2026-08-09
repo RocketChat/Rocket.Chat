@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -18,11 +17,10 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GroupedVirtuoso } from 'react-virtuoso';
 
-import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import { RoomMembersVirtualList } from './RoomMembersVirtualList';
+import { buildRoomMembersListRows } from './roomMembersListRows';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
@@ -43,7 +41,7 @@ type RoomMembersProps = {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
-	loadMoreItems: () => void;
+	loadMoreItems: () => Promise<unknown> | void;
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 	isABACRoom?: boolean;
@@ -84,59 +82,9 @@ const RoomMembers = ({
 		[t],
 	);
 
-	const loadMoreMembers = useDebouncedCallback(
-		() => {
-			loadMoreItems();
-		},
-		300,
-		[loadMoreItems, members],
-	);
-
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { counts, titles } = useMemo(() => {
-		const owners: RoomMember[] = [];
-		const leaders: RoomMember[] = [];
-		const moderators: RoomMember[] = [];
-		const normalMembers: RoomMember[] = [];
-
-		members.forEach((member) => {
-			if (member.roles?.includes('owner')) {
-				owners.push(member);
-			} else if (member.roles?.includes('leader')) {
-				leaders.push(member);
-			} else if (member.roles?.includes('moderator')) {
-				moderators.push(member);
-			} else {
-				normalMembers.push(member);
-			}
-		});
-
-		const counts = [];
-		const titles = [];
-
-		if (owners.length > 0) {
-			counts.push(owners.length);
-			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
-		}
-
-		if (leaders.length > 0) {
-			counts.push(leaders.length);
-			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
-		}
-
-		if (moderators.length > 0) {
-			counts.push(moderators.length);
-			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
-		}
-
-		if (normalMembers.length > 0) {
-			counts.push(normalMembers.length);
-			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
-		}
-
-		return { counts, titles };
-	}, [members]);
+	const { rows, stickyIndexes } = useMemo(() => buildRoomMembersListRows(members), [members]);
 
 	return (
 		<ContextualbarDialog>
@@ -188,22 +136,25 @@ const RoomMembers = ({
 						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
-								<VirtualizedScrollbars>
-									<GroupedVirtuoso
-										style={{
-											height: '100%',
-											width: '100%',
-										}}
-										overscan={50}
-										groupCounts={counts}
-										groupContent={(index) => titles[index]}
-										// eslint-disable-next-line react/no-multi-comp
-										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-										itemContent={(index) => (
-											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-										)}
-									/>
-								</VirtualizedScrollbars>
+								<RoomMembersVirtualList
+									rows={rows}
+									stickyIndexes={stickyIndexes}
+									loadedMembersCount={members.length}
+									total={total}
+									loadMoreItems={loadMoreItems}
+									listLabel={isTeam ? t('Teams_members') : t('Members')}
+									renderMemberRow={(row) => (
+										<RowComponent
+											is='div'
+											role='option'
+											useRealName={useRealName}
+											data={itemData}
+											user={row.member}
+											index={row.memberIndex}
+											reload={reload}
+										/>
+									)}
+								/>
 							)}
 						</Box>
 					</>
