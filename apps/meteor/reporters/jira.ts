@@ -10,6 +10,13 @@ const EMPTY_ADF_DESCRIPTION = {
 	content: [] as const,
 };
 
+/** Jira REST API v3 also expects comment `body` as ADF; plain strings get HTTP 400. */
+const toADF = (text: string) => ({
+	type: 'doc',
+	version: 1,
+	content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+});
+
 class JIRAReporter implements Reporter {
 	private url: string;
 
@@ -60,6 +67,31 @@ class JIRAReporter implements Reporter {
 		throw new Error(`${LOG} ${context}: HTTP ${response.status} ${response.statusText}. Body: ${preview}`);
 	}
 
+	private async postFailureComment(issueKey: string, test: TestCase, run: number) {
+		const { location } = test;
+
+		const commentRes = await fetch(`${this.url}/rest/api/3/issue/${issueKey}/comment`, {
+			method: 'POST',
+			body: JSON.stringify({
+				body: toADF(`Test run ${run} failed
+author: ${this.author}
+PR: ${this.pr}
+https://github.com/RocketChat/Rocket.Chat/blob/${this.headSha}/${location.file.replace(
+					'/home/runner/work/Rocket.Chat/Rocket.Chat',
+					'',
+				)}#L${location.line}:${location.column}
+${this.run_url}
+`),
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Basic ${this.apiKey}`,
+			},
+		});
+		await JIRAReporter.ensureJiraOk(commentRes, `comment on ${issueKey}`);
+		console.log(`${LOG} comment posted on ${issueKey} for run ${run}.`);
+	}
+
 	async onTestEnd(test: TestCase, result: TestResult) {
 		try {
 			await this._onTestEnd(test, result);
@@ -102,6 +134,8 @@ class JIRAReporter implements Reporter {
 		const search = await fetch(
 			`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
 				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[()[\]-]/g, '')}'`,
+				// the /search/jql endpoint returns only issue ids unless fields are requested
+				fields: 'summary',
 			})}`,
 			{
 				method: 'GET',
@@ -125,8 +159,6 @@ class JIRAReporter implements Reporter {
 		if (existing) {
 			console.log(`${LOG} exact summary match on ${existing.key}; no new issue will be created (comment / label only).`);
 
-			const { location } = test;
-
 			if (this.pr === 0) {
 				const labelRes = await fetch(`${this.url}/rest/api/3/issue/${existing.key}`, {
 					method: 'PUT',
@@ -148,26 +180,7 @@ class JIRAReporter implements Reporter {
 				console.log(`${LOG} label update OK for ${existing.key}`);
 			}
 
-			const commentRes = await fetch(`${this.url}/rest/api/3/issue/${existing.key}/comment`, {
-				method: 'POST',
-				body: JSON.stringify({
-					body: `Test run ${payload.run} failed
-author: ${this.author}
-PR: ${this.pr}
-https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/${location.file.replace(
-						'/home/runner/work/Rocket.Chat/Rocket.Chat',
-						'',
-					)}#L${location.line}:${location.column}
-${this.run_url}
-`,
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Basic ${this.apiKey}`,
-				},
-			});
-			await JIRAReporter.ensureJiraOk(commentRes, `comment on ${existing.key}`);
-			console.log(`${LOG} comment posted on ${existing.key} for run ${payload.run}.`);
+			await this.postFailureComment(existing.key, test, payload.run);
 			return;
 		}
 
@@ -217,28 +230,7 @@ ${this.run_url}
 
 		console.log(`${LOG} created issue ${issue}.`);
 
-		const { location } = test;
-
-		const commentRes = await fetch(`${this.url}/rest/api/3/issue/${issue}/comment`, {
-			method: 'POST',
-			body: JSON.stringify({
-				body: `Test run ${payload.run} failed
-author: ${this.author}
-PR: ${this.pr}
-https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/${location.file.replace(
-					'/home/runner/work/Rocket.Chat/Rocket.Chat',
-					'',
-				)}#L${location.line}:${location.column}
-${this.run_url}
-`,
-			}),
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Basic ${this.apiKey}`,
-			},
-		});
-		await JIRAReporter.ensureJiraOk(commentRes, `comment on ${issue}`);
-		console.log(`${LOG} comment posted on ${issue}; done for run ${payload.run}.`);
+		await this.postFailureComment(issue, test, payload.run);
 	}
 }
 
