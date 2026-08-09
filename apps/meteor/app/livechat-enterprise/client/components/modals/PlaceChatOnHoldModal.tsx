@@ -10,7 +10,12 @@ export async function middleware(req: NextRequest) {
   if (url.includes("_")) {
     // Handle the edge case of underscores in hyperlinks
     // For example, you can redirect to a specific page
-    return NextResponse.rewrite(new URL('/handle-underscore-case', req.url));
+    const rewrittenUrl = new URL('/handle-underscore-case', req.url);
+    // Use the original request headers to preserve the original request
+    return NextResponse.rewrite(rewrittenUrl, {
+      headers: req.headers,
+      status: 302,
+    });
   }
   return NextResponse.next();
 }
