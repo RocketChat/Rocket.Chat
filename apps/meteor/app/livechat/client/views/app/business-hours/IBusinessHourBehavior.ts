@@ -1,7 +1,11 @@
-import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+```typescript
+import { NextRequest, NextResponse } from "next/server";
 
-export interface IBusinessHourBehavior {
-	getView(): string;
-	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean;
-	showBackButton(): boolean;
+export async function middleware(req: NextRequest) {
+  const token = req.headers.get("authorization");
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return NextResponse.next();
 }
+```
