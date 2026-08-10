@@ -45,7 +45,7 @@ slashCommands.add({
 			if (!roomObject) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: i18n.t('Channel_doesnt_exist', {
-						channelName: room,
+						channelName: strippedRoom,
 						lng,
 					}),
 				});
