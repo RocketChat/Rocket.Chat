@@ -1,5 +1,64 @@
 # @rocket.chat/rest-typings
 
+## 8.7.0
+
+### Minor Changes
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+- ([#40916](https://github.com/RocketChat/Rocket.Chat/pull/40916)) Adds a new `licenses.validate` REST endpoint that validates a Rocket.Chat license (V2 or V3 JWT) against the current workspace without applying it, so a license can be previewed before it is applied from the UI. A valid license responds with success; an invalid one responds with the validation behaviors that rejected it.
+
+- ([#40728](https://github.com/RocketChat/Rocket.Chat/pull/40728)) Added `POST /v1/cloud.connectWorkspace` (replaces the deprecated `cloud:connectWorkspace` DDP method). Body is `{ token }`; auth-gated with `manage-cloud` permission. The legacy DDP method remains registered with a deprecation log pointing at the new route.
+
+- ([#40728](https://github.com/RocketChat/Rocket.Chat/pull/40728)) Added `POST /v1/integrations.clearHistory` and `POST /v1/integrations.replayOutgoing` (replace the deprecated `clearIntegrationHistory` and `replayOutgoingIntegration` DDP methods). Bodies `{ integrationId }` and `{ integrationId, historyId }` respectively. Permissions (`manage-outgoing-integrations` or `manage-own-outgoing-integrations`) are enforced the same way the DDP methods did. Legacy DDP methods remain registered with deprecation logs pointing at the new routes.
+
+- ([#40728](https://github.com/RocketChat/Rocket.Chat/pull/40728)) Added `POST /v1/permissions.addRole` and `POST /v1/permissions.removeRole` (replace the deprecated `authorization:addPermissionToRole` and `authorization:removeRoleFromPermission` DDP methods). Body is `{ permissionId, role }` on both. The same per-user permission checks (`access-permissions`, `access-setting-permissions`) the DDP methods enforced are reused. Legacy DDP methods remain registered with deprecation logs pointing at the new routes.
+
+- ([#40728](https://github.com/RocketChat/Rocket.Chat/pull/40728)) Added `POST /v1/users.verifyEmail` (replaces the two-call DDP flow of `verifyEmail` + `afterVerifyEmail`). Body is `{ token }`; the server resolves the user, marks the email verified, and runs the anonymous→user role swap in a single request. The deprecated `afterVerifyEmail` DDP method keeps its registration with a deprecation log pointing at the new route.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, eec6083bb88f0caa1bd0de28b93b926a11c17507, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 4117a1d3fb07905e8c9488a96f368747b48d528e, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0
+  - @rocket.chat/message-parser@0.32.0
+  </details>
+
+## 8.7.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.6
+  </details>
+
+## 8.7.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.5
+  </details>
+
 ## 8.7.0-rc.4
 
 ### Patch Changes

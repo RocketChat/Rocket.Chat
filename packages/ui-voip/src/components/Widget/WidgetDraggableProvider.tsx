@@ -13,7 +13,7 @@ const WidgetDraggableProvider = ({ children }: WidgetDraggableProviderProps) => 
 	const { widgetPositionTracker } = useMediaCallView();
 	const [draggableRef, boundingRef, handleRef] = useDraggable({
 		onChangePosition: widgetPositionTracker?.onChangePosition,
-		restorePosition: widgetPositionTracker?.getRestorePosition(),
+		restorePosition: widgetPositionTracker?.lastKnownPosition,
 	});
 
 	useLayoutEffect(() => {

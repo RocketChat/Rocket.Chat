@@ -1138,6 +1138,7 @@
   "Call_unavailable_for_federation": "Call is unavailable for Federated rooms",
   "Call_was_not_answered": "Call was not answered",
   "Call_without_mic": "Call without mic",
+  "Call_window": "Call window",
   "Caller": "Caller",
   "Caller_Id": "Caller ID",
   "Calling": "Calling",
