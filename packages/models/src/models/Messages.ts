@@ -1588,7 +1588,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					dcount,
-					dlm,
+					...(dlm && { dlm }),
 				},
 			},
 			{ returnDocument: 'after' },
