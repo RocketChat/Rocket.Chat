@@ -8,7 +8,7 @@ import type { Response } from 'supertest';
 import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { followMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -4602,6 +4602,38 @@ describe('Threads', () => {
 			expect(res.body).to.have.property('count');
 			expect(res.body.messages).to.have.lengthOf(1);
 			expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
+		});
+
+		describe('Message_KeepHistory', () => {
+			describe('when enabled', () => {
+				before(() => updateSetting('Message_KeepHistory', true));
+				after(() => updateSetting('Message_KeepHistory', false));
+
+				it('should exclude hidden message edit history from pagination results', async () => {
+					await updateMessage({
+						msgId: threadMessage._id,
+						updatedMessage: 'Edited thread message',
+						roomId: testChannel._id,
+					});
+
+					const res = await request
+						.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.property('_id', threadMessage._id);
+					expect(res.body.messages[0]).to.have.property('msg', 'Edited thread message');
+					expect(res.body.messages[0]).to.not.have.property('_hidden');
+				});
+			});
 		});
 	});
 
