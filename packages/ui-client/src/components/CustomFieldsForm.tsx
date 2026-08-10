@@ -53,9 +53,9 @@ const CustomField = <T extends FieldValues>({
 				case 'required':
 					return t('Required_field', { field: label || name });
 				case 'minLength':
-					return t('Min_length_is', { postProcess: 'sprintf', sprintf: [props?.minLength] });
+					return t('Min_length_is', { limit: props?.minLength });
 				case 'maxLength':
-					return t('Max_length_is', { postProcess: 'sprintf', sprintf: [props?.maxLength] });
+					return t('Max_length_is', { limit: props?.maxLength });
 				default:
 					return error?.message || '';
 			}
