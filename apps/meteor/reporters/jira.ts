@@ -3,6 +3,8 @@ import fetch from 'node-fetch';
 
 const LOG = '[JIRA reporter]';
 
+const escapeJqlTextSearch = (value: string): string => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+
 /** Jira REST API v3 expects `description` as Atlassian Document Format, not a plain string. */
 const EMPTY_ADF_DESCRIPTION = {
 	type: 'doc',
@@ -98,10 +100,10 @@ class JIRAReporter implements Reporter {
 		console.log(`${LOG} preparing notification for flaky/unexpected failure: ${JSON.stringify(payload)}`);
 
 		// first search and check if there is an existing issue
-		// replace all ()[]- with nothing
+		const summarySearch = escapeJqlTextSearch(payload.name);
 		const search = await fetch(
 			`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
-				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[()[\]-]/g, '')}'`,
+				jql: `project = FLAKY AND summary ~ '"${summarySearch}"'`,
 			})}`,
 			{
 				method: 'GET',
