@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom } from '../../lib/authorization/isABACManagedRoom';
+import { SystemLogger } from '../../lib/logger/system';
 import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -335,8 +336,12 @@ const settingSavers: RoomSettingsSavers = {
 	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			await saveRoomSystemMessages(rid, value);
-			if (room.prid) {
-				await updateAndNotifyParentRoomWithParentMessage({ ...room, sysMes: value });
+			if (room?.prid) {
+				try {
+					await updateAndNotifyParentRoomWithParentMessage(room);
+				} catch (err) {
+					SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+				}
 			}
 		}
 	},
