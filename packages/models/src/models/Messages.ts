@@ -762,26 +762,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	countVisibleByRoomIdNotContainingTypes(roomId: string, types: MessageTypesValues[], showThreadMessages = true): Promise<number> {
+	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number> {
 		const query: Filter<IMessage> = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-			...(Array.isArray(types) &&
-				types.length > 0 && {
-					t: { $nin: types },
-				}),
+			t: { $in: types },
 		};
 
 		return this.countDocuments(query);

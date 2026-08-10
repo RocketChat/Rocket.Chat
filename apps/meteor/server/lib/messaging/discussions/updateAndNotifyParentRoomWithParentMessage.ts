@@ -22,13 +22,16 @@ const getHiddenMessageTypes = (room: DiscussionRoom): MessageTypesValues[] => {
 };
 
 const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number> => {
-	const hiddenMessageTypes = getHiddenMessageTypes(room);
+	// `rm` messages are already discounted from the room messages count when they are removed
+	const hiddenMessageTypes = getHiddenMessageTypes(room).filter((type) => type !== 'rm');
 
 	if (!hiddenMessageTypes.length) {
 		return room.msgs;
 	}
 
-	return Messages.countVisibleByRoomIdNotContainingTypes(room._id, hiddenMessageTypes);
+	const hiddenMessagesCount = await Messages.countVisibleByRoomIdContainingTypes(room._id, hiddenMessageTypes);
+
+	return Math.max(room.msgs - hiddenMessagesCount, 0);
 };
 
 /**
