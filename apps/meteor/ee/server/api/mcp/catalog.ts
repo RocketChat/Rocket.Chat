@@ -165,7 +165,7 @@ const ALLOWED_TOOL_NAMES = new Set<string>([
 	// 'post_uploads_delete',
 	// users — writing
 	'post_users_create',
-	'post_users_register',
+	// `users.register` rejects authenticated callers, while every MCP call is authenticated.
 	'post_users_setStatus',
 	'post_users_update',
 	'post_users_updateOwnBasicInfo',
@@ -243,6 +243,33 @@ const rawSchemaForRoute = (path: string, method: McpMethod): unknown => {
 
 const VARIANT_KEYS = ['oneOf', 'anyOf'] as const;
 
+const mergeSchemaVariant = (
+	root: Record<string, unknown>,
+	variantKey: (typeof VARIANT_KEYS)[number],
+	variant: unknown,
+): Record<string, unknown> => {
+	const { [variantKey]: _variants, ...baseSchema } = root;
+	if (!variant || typeof variant !== 'object' || Array.isArray(variant)) {
+		return ensureObjectSchema(baseSchema);
+	}
+
+	const branch = variant as Record<string, unknown>;
+	const baseProperties =
+		baseSchema.properties && typeof baseSchema.properties === 'object' && !Array.isArray(baseSchema.properties)
+			? (baseSchema.properties as Record<string, unknown>)
+			: undefined;
+	const branchProperties =
+		branch.properties && typeof branch.properties === 'object' && !Array.isArray(branch.properties)
+			? (branch.properties as Record<string, unknown>)
+			: undefined;
+
+	return ensureObjectSchema({
+		...baseSchema,
+		...branch,
+		...((baseProperties || branchProperties) && { properties: { ...baseProperties, ...branchProperties } }),
+	});
+};
+
 /** A branch's discriminator = its `required` keys (e.g. `channel`, `roomId`, `userId`). */
 const discriminatorOf = (schema: Record<string, unknown>): string | undefined => {
 	const { required } = schema;
@@ -268,7 +295,7 @@ const variantsForRoute = (path: string, method: McpMethod): SchemaVariant[] => {
 		const key = VARIANT_KEYS.find((k) => Array.isArray(root[k]) && (root[k] as unknown[]).length > 1);
 		if (key) {
 			const mainDescription = typeof root.description === 'string' ? root.description : undefined;
-			const branches = (root[key] as unknown[]).map(ensureObjectSchema);
+			const branches = (root[key] as unknown[]).map((branch) => mergeSchemaVariant(root, key, branch));
 			const discriminators = branches.map(discriminatorOf);
 			const allDistinct = discriminators.every(Boolean) && new Set(discriminators).size === discriminators.length;
 			if (allDistinct) {

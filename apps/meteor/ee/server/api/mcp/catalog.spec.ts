@@ -37,10 +37,44 @@ jest.mock('../../../../server/api', () => ({
 						parameters: [{ schema: { type: 'object', properties: { updatedSince: { type: 'string' } } } }],
 					},
 				},
+				'/api/v1/rooms.isMember': {
+					get: {
+						tags: ['Rooms'],
+						parameters: [
+							{
+								schema: {
+									type: 'object',
+									properties: {
+										roomId: { type: 'string' },
+										userId: { type: 'string' },
+										username: { type: 'string' },
+									},
+									oneOf: [
+										{ type: 'object', required: ['roomId', 'userId'] },
+										{ type: 'object', required: ['roomId', 'username'] },
+									],
+									additionalProperties: false,
+								},
+							},
+						],
+					},
+				},
 				'/api/v1/users.delete': {
 					post: {
 						tags: ['Users'],
 						requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+					},
+				},
+				'/api/v1/users.register': {
+					post: {
+						tags: ['Users'],
+						requestBody: {
+							content: {
+								'application/json': {
+									schema: { type: 'object', properties: { username: { type: 'string' } }, required: ['username'] },
+								},
+							},
+						},
 					},
 				},
 			},
@@ -64,8 +98,26 @@ describe('MCP tool catalog', () => {
 	it('only exposes allow-listed routes in the extended catalog', () => {
 		const tools = getExtendedTools();
 
-		expect(tools.map(({ name }) => name)).toEqual(['post_chat_postMessage_by_roomId', 'post_chat_postMessage_by_channel', 'get_rooms_get']);
+		expect(tools.map(({ name }) => name)).toEqual([
+			'post_chat_postMessage_by_roomId',
+			'post_chat_postMessage_by_channel',
+			'get_rooms_get',
+			'get_rooms_isMember_by_roomId_userId',
+			'get_rooms_isMember_by_roomId_username',
+		]);
 		expect(tools.some(({ name }) => name.includes('users_delete'))).toBe(false);
+		expect(tools.some(({ name }) => name.includes('users_register'))).toBe(false);
+	});
+
+	it('preserves parent properties when variants only declare required fields', () => {
+		const tools = getExtendedTools().filter(({ name }) => name.startsWith('get_rooms_isMember'));
+
+		for (const { inputSchema } of tools) {
+			const properties = inputSchema.properties as Record<string, unknown>;
+			for (const requiredProperty of inputSchema.required as string[]) {
+				expect(properties).toHaveProperty(requiredProperty);
+			}
+		}
 	});
 
 	it('reuses the generated catalogs between requests', () => {
