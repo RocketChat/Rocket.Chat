@@ -28,6 +28,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 		msg: i18n.t('SlackBridge_start', {
 			username: user.username,
 			channelName: channel,
+			interpolation: { escapeValue: false },
 			lng: user.language,
 		}),
 	});
@@ -56,6 +57,7 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						ts: new Date(),
 						msg: i18n.t('SlackBridge_finish', {
 							channelName: channel,
+							interpolation: { escapeValue: false },
 							lng: user.language,
 						}),
 					});
