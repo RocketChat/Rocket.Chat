@@ -4,20 +4,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FSResult = {
-	fullscreen: boolean;
-	enabled: boolean;
-};
-
-type FullScreenToggleReturn = {
 	/** wether any element in the current document (uses OwnerDocument from fuselage) is in fullscreen state */
 	fullscreen: boolean;
 	/** wether requestFullscreen is supported*/
 	enabled: boolean;
+};
+
+type FullScreenToggleReturn = FSResult & {
 	/** Calls documentElement.requestFullscreen, or document.exitFullscreen if {fullscreen} is false */
 	toggleFullscreen: () => Promise<void>;
 };
 
-const getFullscreenState = (ownerDocument: Document): { fullscreen: boolean; enabled: boolean } => {
+const getFullscreenState = (ownerDocument: Document): FSResult => {
 	return { fullscreen: Boolean(ownerDocument.fullscreenElement), enabled: ownerDocument.fullscreenEnabled };
 };
 
@@ -29,10 +27,7 @@ const getFullscreenState = (ownerDocument: Document): { fullscreen: boolean; ena
 export const useFullscreenToggle = (): FullScreenToggleReturn => {
 	const { t } = useTranslation();
 	const { document: ownerDocument } = useOwnerDocument();
-	const [{ fullscreen, enabled }, setState] = useState<FSResult>(() => ({
-		fullscreen: Boolean(ownerDocument.fullscreenElement),
-		enabled: ownerDocument.fullscreenEnabled,
-	}));
+	const [{ fullscreen, enabled }, setState] = useState<FSResult>(() => getFullscreenState(ownerDocument));
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {
