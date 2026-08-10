@@ -146,7 +146,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		});
 
 		await test.step('user2 declines the call', async () => {
-			await user2.poHomeChannel.voiceCalls.widget.endCall();
+			await user2.poHomeChannel.voiceCalls.widget.rejectCall();
 		});
 
 		await test.step('Verify call widget disappears', async () => {

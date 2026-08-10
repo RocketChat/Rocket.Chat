@@ -25,8 +25,12 @@ export class VoiceCallControls {
 		return this._controls.getByRole('button', { name: 'Accept', exact: true });
 	}
 
+	get btnReject(): Locator {
+		return this._controls.getByRole('button', { name: 'Reject', exact: true });
+	}
+
 	get hangup(): Locator {
-		return this._controls.getByRole('button', { name: /End call|Reject/, exact: true });
+		return this._controls.getByRole('button', { name: /^End call with .+$/ });
 	}
 
 	get cancel(): Locator {
@@ -152,6 +156,11 @@ export class Widget {
 
 	async endCall(): Promise<void> {
 		await this.callControls.hangup.click();
+		await expect(this.content).not.toBeVisible();
+	}
+
+	async rejectCall(): Promise<void> {
+		await this.callControls.btnReject.click();
 		await expect(this.content).not.toBeVisible();
 	}
 
