@@ -1,0 +1,65 @@
+packages/rest-typings/src/v1/groups/GroupsCreateProps.ts
+  s_bad883804e82a0::t_316f27946197b9 63-66
+  s_bad883804e82a0::t_a3d3f01cc9419f 12-14
+ee/packages/xmpp-server/src/muc/stanzas.ts
+  s_bad883804e82a0::t_23b39115e66fe6 1-51,53-114
+  s_bad883804e82a0::t_7c2abb733c761b 52
+ee/packages/xmpp-server/src/index.ts
+  s_bad883804e82a0::t_f58797e2ed6d20 2
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_bad883804e82a0::t_58d6baf3eb80a9 1-5,7-97,101-109,118-134,137,140-198
+  s_bad883804e82a0::t_39edc003f5d939 135-136,138-139
+  s_bad883804e82a0::t_7c2abb733c761b 6,98-100,110-117
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_bad883804e82a0::t_b065837adfe4d6 1-4,7-117
+  s_bad883804e82a0::t_7c2abb733c761b 5-6
+packages/rest-typings/src/v1/channels/ChannelsCreateProps.ts
+  s_bad883804e82a0::t_681ea0b58249f0 15
+  s_bad883804e82a0::t_dda840f2b92dbf 64-66
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_bad883804e82a0::t_ff25e0c3557b82 3,7
+  s_bad883804e82a0::t_61b78b2c13676f 72-106
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_bad883804e82a0::t_b966bf21d97f82 297-299,304-315
+  s_bad883804e82a0::t_80b19e224d08c3 119,123,126-127,132-138,141-145
+  s_bad883804e82a0::t_2c221b9b776294 92-94
+  s_bad883804e82a0::t_cc7532b5443128 174,185
+  s_bad883804e82a0::t_9a1387a12eeef0 53
+  s_bad883804e82a0::t_a5658f49e2a86c 146
+  s_bad883804e82a0::t_83bda0748ad5c8 316
+ee/packages/xmpp-server/src/muc/MucService.ts
+  s_bad883804e82a0::t_7c2abb733c761b 63
+  s_bad883804e82a0::t_98df5d25a1bcda 1-62,64-129
+packages/i18n/src/locales/en.i18n.json
+  s_bad883804e82a0::t_9f1c5c2cb7b732 2297-2298
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_bad883804e82a0::t_7c2abb733c761b 208-209
+  s_bad883804e82a0::t_e73839778d9b0b 51,53-54,56,62-67,73-74
+  s_bad883804e82a0::t_f697152f3097e9 259-261,272-304
+  s_bad883804e82a0::t_aed61dc6100c9e 10-12
+  s_bad883804e82a0::t_cb09f3dcf6b55a 170-207,210-241
+ee/packages/xmpp-server/src/muc/stanzas.spec.ts
+  s_bad883804e82a0::t_6a9b05ad706b6e 1-31,38-42,50-69,73-80,84-85,92-107
+  s_bad883804e82a0::t_7c2abb733c761b 32-37,43-49,70-72,81-83,86-91
+ee/packages/xmpp-server/src/muc/MucRoom.spec.ts
+  s_bad883804e82a0::t_7c2abb733c761b 30-33,70-72,87-92,103-108
+  s_bad883804e82a0::t_cdb21c33e5ddd7 1-29,34-69,73-86,93-102,109-111
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_bad883804e82a0::t_23d09c74ffd428 115-142,144,146-147,150,153-168,242-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "25834128ed2cf839e42dae4f3f917f64a8909ce7",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
