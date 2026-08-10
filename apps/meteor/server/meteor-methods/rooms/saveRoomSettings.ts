@@ -338,7 +338,7 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomSystemMessages(rid, value);
 			if (room?.prid) {
 				try {
-					await updateAndNotifyParentRoomWithParentMessage(room);
+					await updateAndNotifyParentRoomWithParentMessage({ ...room, sysMes: value });
 				} catch (err) {
 					SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
 				}
