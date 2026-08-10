@@ -91,10 +91,37 @@ describe('parseIdpMetadata', () => {
 		expect(result.warnings).to.include('SAML_Metadata_warning_no_redirect_binding');
 	});
 
-	it('falls back to the first SingleLogoutService when none use the HTTP-Redirect binding', () => {
+	it('omits the SLO url and warns when no SingleLogoutService uses the HTTP-Redirect binding', () => {
 		const slo = `<SingleLogoutService Binding="${POST}" Location="https://idp.test/slo-post"/>`;
 		const result = parseIdpMetadata(metadata({ slo }));
-		expect(result.idpSLORedirectURL).to.equal('https://idp.test/slo-post');
+		expect(result.idpSLORedirectURL).to.be.undefined;
+		expect(result.warnings).to.include('SAML_Metadata_warning_no_slo_redirect_binding');
+	});
+
+	it('picks the Redirect SingleLogoutService even when a POST one comes first', () => {
+		const slo = `
+			<SingleLogoutService Binding="${POST}" Location="https://idp.test/slo-post"/>
+			<SingleLogoutService Binding="${REDIRECT}" Location="https://idp.test/slo-redirect"/>`;
+		const result = parseIdpMetadata(metadata({ slo }));
+		expect(result.idpSLORedirectURL).to.equal('https://idp.test/slo-redirect');
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_slo_redirect_binding');
+	});
+
+	it('does not warn about the SLO binding when metadata has no SingleLogoutService', () => {
+		const result = parseIdpMetadata(metadata({ slo: '' }));
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_slo_redirect_binding');
+	});
+
+	it('ignores services nested under Extensions instead of declared directly on the descriptor', () => {
+		const sso = `
+			<Extensions>
+				<SingleSignOnService Binding="${REDIRECT}" Location="https://attacker.test/sso"/>
+				<SingleLogoutService Binding="${REDIRECT}" Location="https://attacker.test/slo"/>
+			</Extensions>
+			<SingleSignOnService Binding="${REDIRECT}" Location="https://idp.test/sso"/>`;
+		const result = parseIdpMetadata(metadata({ sso, slo: '' }));
+		expect(result.entryPoint).to.equal('https://idp.test/sso');
+		expect(result.idpSLORedirectURL).to.be.undefined;
 	});
 
 	it('omits the entry point and warns when there is no SingleSignOnService element at all', () => {

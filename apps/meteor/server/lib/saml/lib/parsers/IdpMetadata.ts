@@ -25,7 +25,8 @@ const isHttpUrl = (value: string): boolean => {
 	}
 };
 
-const childrenOf = (el: Element | Document, tag: string): Element[] => Array.from(el.getElementsByTagNameNS(MD_NS, tag));
+const childrenOf = (el: Element | Document, tag: string): Element[] =>
+	Array.from(el.getElementsByTagNameNS(MD_NS, tag)).filter((child) => child.parentNode === el);
 
 const parseIdpDescriptor = (xml: string): Element => {
 	let parseError: Error | null = null;
@@ -47,7 +48,7 @@ const parseIdpDescriptor = (xml: string): Element => {
 		throw new InvalidIdpMetadataError('root-is-not-entity-descriptor');
 	}
 
-	const idpDescriptor = childrenOf(doc, 'IDPSSODescriptor')[0];
+	const idpDescriptor = childrenOf(entityDescriptors[0], 'IDPSSODescriptor')[0];
 	if (!idpDescriptor) {
 		throw new InvalidIdpMetadataError('no-idp-sso-descriptor');
 	}
@@ -83,10 +84,20 @@ const extractEntryPoint = (idp: Element, warnings: string[]): string | undefined
 	return entryPoint;
 };
 
-const extractSloUrl = (idp: Element): string | undefined => {
+const extractSloUrl = (idp: Element, warnings: string[]): string | undefined => {
 	const services = childrenOf(idp, 'SingleLogoutService');
-	const location = (services.find((s) => s.getAttribute('Binding') === REDIRECT_BINDING) ?? services[0])?.getAttribute('Location');
-	return location && isHttpUrl(location) ? location : undefined;
+	if (!services.length) {
+		return undefined;
+	}
+
+	const location = services
+		.filter((s) => s.getAttribute('Binding') === REDIRECT_BINDING)
+		.map((s) => s.getAttribute('Location'))
+		.find((location): location is string => !!location && isHttpUrl(location));
+	if (!location) {
+		warnings.push('SAML_Metadata_warning_no_slo_redirect_binding');
+	}
+	return location;
 };
 
 const extractIdentifierFormat = (idp: Element, warnings: string[]): string | undefined => {
@@ -105,7 +116,7 @@ export function parseIdpMetadata(xml: string): IdpMetadataResult {
 	return {
 		cert: extractSigningCert(idp, warnings),
 		entryPoint: extractEntryPoint(idp, warnings),
-		idpSLORedirectURL: extractSloUrl(idp),
+		idpSLORedirectURL: extractSloUrl(idp, warnings),
 		identifierFormat: extractIdentifierFormat(idp, warnings),
 		warnings,
 	};
