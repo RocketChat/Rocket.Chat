@@ -1580,7 +1580,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const query = {
 			drid,
-			...(dlm && { $or: [{ dlm: { $exists: false } }, { dlm: { $lte: dlm } }] }),
+			$or: [{ dlm: { $exists: false } }, ...(dlm ? [{ dlm: { $lte: dlm } }] : [])],
 		};
 
 		return this.findOneAndUpdate(
