@@ -11228,6 +11228,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
     "@types/node": "npm:~22.19.21"
     "@xmpp/jid": "npm:~0.13.1"
     eslint: "npm:~9.39.5"
