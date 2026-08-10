@@ -1,7 +1,13 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users, CronHistory } from '@rocket.chat/models';
+import {
+	LivechatRooms,
+	LivechatInquiry as LivechatInquiryRaw,
+	Users,
+	CronHistory,
+	OmnichannelQueueInactivityScheduler,
+} from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
@@ -85,6 +91,10 @@ export class OmnichannelQueueInactivityMonitorClass {
 		job.schedule(time);
 		job.unique({ 'data.inquiryId': inquiryId });
 		await job.save();
+		await OmnichannelQueueInactivityScheduler.updateOne(
+			{ _id: job.attrs._id, status: { $exists: false } },
+			{ $set: { status: 'scheduled' } },
+		);
 	}
 
 	async stop(): Promise<void> {

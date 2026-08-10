@@ -27,6 +27,9 @@ const mockCronHistory = {
 	insertOne: sinon.stub().resolves({ insertedId: 'mockId' }),
 	updateOne: sinon.stub().resolves(),
 };
+const mockOmnichannelAutoTransferScheduler = {
+	updateOne: sinon.stub().resolves(),
+};
 
 class MockAgendaClass {
 	constructor(opts: Record<string, any>) {
@@ -38,7 +41,8 @@ class MockAgendaClass {
 	}
 
 	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
+		mockAgendaScheduler(...args);
+		return { attrs: { _id: 'mock-job-id' } };
 	}
 
 	async cancel(...args: any) {
@@ -83,6 +87,7 @@ const mocks = {
 		LivechatRooms: mockLivechatRooms,
 		Users: mockUsers,
 		CronHistory: mockCronHistory,
+		OmnichannelAutoTransferScheduler: mockOmnichannelAutoTransferScheduler,
 	},
 	'@rocket.chat/random': { Random: { id: sinon.stub().returns('mock-random-id') } },
 };
