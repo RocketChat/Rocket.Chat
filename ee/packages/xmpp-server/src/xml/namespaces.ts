@@ -1,0 +1,14 @@
+export const NS_STREAMS = 'http://etherx.jabber.org/streams';
+export const NS_SERVER = 'jabber:server';
+export const NS_DIALBACK = 'jabber:server:dialback';
+export const NS_DIALBACK_FEATURE = 'urn:xmpp:features:dialback';
+export const NS_TLS = 'urn:ietf:params:xml:ns:xmpp-tls';
+export const NS_SASL = 'urn:ietf:params:xml:ns:xmpp-sasl';
+export const NS_STREAM_ERRORS = 'urn:ietf:params:xml:ns:xmpp-streams';
+export const NS_STANZA_ERRORS = 'urn:ietf:params:xml:ns:xmpp-stanzas';
+export const NS_DISCO_INFO = 'http://jabber.org/protocol/disco#info';
+export const NS_DISCO_ITEMS = 'http://jabber.org/protocol/disco#items';
+export const NS_PING = 'urn:xmpp:ping';
+export const NS_MUC = 'http://jabber.org/protocol/muc';
+export const NS_MUC_USER = 'http://jabber.org/protocol/muc#user';
+export const NS_CONFERENCE = 'jabber:x:conference';
