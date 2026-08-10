@@ -18,7 +18,12 @@ export type InboundSessionDeps = {
 	config: ResolvedXMPPServerConfig;
 	logger: Logger;
 	/** Receiving-server side of dialback: verify a db:result key with the claimed authoritative server. */
-	requestDialbackVerification(req: { originatingDomain: string; streamId: string; key: string }): Promise<DialbackVerdict>;
+	requestDialbackVerification(req: {
+		receivingDomain: string;
+		originatingDomain: string;
+		streamId: string;
+		key: string;
+	}): Promise<DialbackVerdict>;
 	/** Authoritative-server side of dialback: validate a db:verify key generated with our secret. */
 	answerDialbackVerify(req: { receivingDomain: string; originatingDomain: string; streamId: string; key: string }): 'valid' | 'invalid';
 	onDomainAuthenticated(session: InboundSession, domain: string, authMethod: 'dialback' | 'sasl-external'): void;
@@ -268,7 +273,7 @@ export class InboundSession {
 		}
 
 		const { streamId } = this;
-		const verdict = await this.deps.requestDialbackVerification({ originatingDomain, streamId, key });
+		const verdict = await this.deps.requestDialbackVerification({ receivingDomain: to, originatingDomain, streamId, key });
 
 		if (verdict === 'valid') {
 			this.addAuthenticatedDomain(originatingDomain, 'dialback');
