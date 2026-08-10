@@ -1571,17 +1571,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	/**
-	 * Copy metadata from the discussion to the system message in the parent channel
-	 * which links to the discussion.
-	 * Since we don't pass this metadata into the model's function, it is not a subject
-	 * to race conditions: If multiple updates occur, the current state will be updated
-	 * only if the new state of the discussion room is really newer.
+	 * Copy metadata from the discussion to the message in the parent channel which links to it.
+	 * The metadata is received from the caller, so the update is guarded to not overwrite the
+	 * parent message with an older state of the discussion room.
 	 */
 	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>> {
 		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
 			drid,
+			...(dlm && { $or: [{ dlm: { $exists: false } }, { dlm: { $lte: dlm } }] }),
 		};
 
 		return this.findOneAndUpdate(
