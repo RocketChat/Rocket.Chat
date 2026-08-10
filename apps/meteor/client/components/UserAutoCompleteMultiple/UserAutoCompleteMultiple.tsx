@@ -15,6 +15,8 @@ export type UserAutoCompleteMultipleProps = {
 	placeholder?: string;
 	federated?: boolean;
 	exceptions?: string[];
+	/** Allow selecting a not-yet-existing remote user by typing a bare XMPP JID (`user@remote.tld`). */
+	xmpp?: boolean;
 	error?: string;
 } & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange' | 'value'>;
 
@@ -29,9 +31,11 @@ type UserAutoCompleteOptions = {
 };
 
 const matrixRegex = new RegExp('@(.*:.*)');
+// A bare XMPP JID: `local@domain.tld` — has an `@` and a dotted domain, but no `:` (which is a Matrix MXID).
+const bareJidRegex = /^[^@:\s]+@[^@:\s]+\.[^@:\s]+$/;
 
 const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMultipleProps>(
-	({ onChange, value, placeholder, federated, exceptions, ...props }, ref) => {
+	({ onChange, value, placeholder, federated, xmpp, exceptions, ...props }, ref) => {
 		const [filter, setFilter] = useState('');
 		const [selectedCache, setSelectedCache] = useState<UserAutoCompleteOptions>({});
 
@@ -39,7 +43,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 		const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 		const { data } = useQuery({
-			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false, exceptions),
+			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, (federated ?? false) || (xmpp ?? false), exceptions),
 
 			queryFn: async () => {
 				const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, ...(exceptions?.length && { exceptions }) }) });
@@ -48,6 +52,11 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 				// Add extra option if filter text matches `username:server`
 				// Used to add federated users that do not exist yet
 				if (federated && matrixRegex.test(debouncedFilter)) {
+					options.unshift([debouncedFilter, { name: debouncedFilter, username: debouncedFilter, _federated: true }]);
+				}
+
+				// Same for a not-yet-existing remote user addressed by a bare XMPP JID
+				if (xmpp && !matrixRegex.test(debouncedFilter) && bareJidRegex.test(debouncedFilter)) {
 					options.unshift([debouncedFilter, { name: debouncedFilter, username: debouncedFilter, _federated: true }]);
 				}
 

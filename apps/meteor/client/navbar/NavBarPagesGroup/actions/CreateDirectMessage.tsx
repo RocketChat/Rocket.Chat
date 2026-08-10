@@ -24,6 +24,7 @@ export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: 
 const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);
 	const createDMFormId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -86,6 +87,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 										value={value}
 										onBlur={onBlur}
 										federated
+										xmpp={xmppEnabled}
 										aria-required='true'
 										error={errors.users?.message}
 									/>

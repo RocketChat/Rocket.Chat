@@ -13,6 +13,7 @@ import './local-services/ldap/service';
 import './meteor-methods/getReadReceipts';
 import './patches';
 import './hooks/federation';
+import './hooks/xmpp';
 
 export * from './apps/startup';
 export { registerEEBroker } from './startup';
