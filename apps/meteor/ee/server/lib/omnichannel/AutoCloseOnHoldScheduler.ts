@@ -1,7 +1,7 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, Users, CronHistory } from '@rocket.chat/models';
+import { LivechatRooms, Users, CronHistory, OmnichannelAutoCloseScheduler } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
@@ -54,7 +54,8 @@ export class AutoCloseOnHoldSchedulerClass {
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
-		await this.scheduler.schedule(when, jobName, { roomId, comment });
+		const job = await this.scheduler.schedule(when, jobName, { roomId, comment });
+		await OmnichannelAutoCloseScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
