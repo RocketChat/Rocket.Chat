@@ -1,0 +1,21 @@
+docs/features/xmpp-server-architecture.md
+  s_bad883804e82a0::t_aadbdad5852c7b 1-143
+docs/features/xmpp-server.md
+  s_bad883804e82a0::t_3c7372127e07f7 1-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "53a6758393b4bab7fc369be531da6197e808174b",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
