@@ -17,6 +17,10 @@ type FullScreenToggleReturn = {
 	toggleFullscreen: () => Promise<void>;
 };
 
+const getFullscreenState = (ownerDocument: Document): { fullscreen: boolean; enabled: boolean } => {
+	return { fullscreen: Boolean(ownerDocument.fullscreenElement), enabled: ownerDocument.fullscreenEnabled };
+};
+
 /**
  * @description Hook to transition and track full screen transitioning
  * 	- Uses {useOwnerDocument} from fuselage, take into consideration wrapped `OwnerDocument` contexts when using to ensure correct behaviour.
@@ -33,10 +37,8 @@ export const useFullscreenToggle = (): FullScreenToggleReturn => {
 
 	useEffect(() => {
 		const onChange = () => {
-			setState({ fullscreen: Boolean(ownerDocument.fullscreenElement), enabled: ownerDocument.fullscreenEnabled });
+			setState(getFullscreenState(ownerDocument));
 		};
-
-		onChange();
 
 		ownerDocument.addEventListener('fullscreenchange', onChange);
 		return () => {
@@ -45,6 +47,7 @@ export const useFullscreenToggle = (): FullScreenToggleReturn => {
 	}, [ownerDocument]);
 
 	const toggleFullscreen = useCallback(async () => {
+		const { fullscreen, enabled } = getFullscreenState(ownerDocument);
 		if (!enabled) {
 			return;
 		}
@@ -58,7 +61,7 @@ export const useFullscreenToggle = (): FullScreenToggleReturn => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Fullscreen_failed_to_switch_not_allowed') });
 		}
-	}, [ownerDocument, fullscreen, enabled, dispatchToastMessage, t]);
+	}, [ownerDocument, dispatchToastMessage, t]);
 
 	return {
 		fullscreen,
