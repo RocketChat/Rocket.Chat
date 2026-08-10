@@ -21,6 +21,7 @@ import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
+import type { IXMPPServerService } from './types/IXMPPServerService';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPEEService } from './types/ILDAPEEService';
@@ -86,6 +87,7 @@ export type {
 } from './types/IFederationService';
 
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
+export type { IXMPPServerService, XMPPServerConfiguration } from './types/IXMPPServerService';
 
 export type {
 	ConversationData,
@@ -220,5 +222,6 @@ export const Push = proxify<IPushService>('push');
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
+export const XMPPServer = proxify<IXMPPServerService>('xmpp-server');
 export const Abac = proxify<IAbacService>('abac');
 export const AISearch = proxify<IAISearchService>('ai-search');

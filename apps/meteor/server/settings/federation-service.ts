@@ -151,5 +151,79 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
 			});
 		});
+
+		// Native XMPP server (independent from the XMPP-via-Matrix bridge above)
+		await this.section('XMPP_Server', async function () {
+			await this.add('XMPP_Server_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['federation'],
+				i18nLabel: 'Enabled',
+				invalidValue: false,
+			});
+
+			const enableQuery = { _id: 'XMPP_Server_Enabled', value: true };
+
+			await this.add('XMPP_Server_Domain', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				alert: 'XMPP_Server_Domain_Alert',
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Port', 5269, {
+				type: 'int',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: 5269,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_TLS_Certificate', '', {
+				type: 'string',
+				multiline: true,
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				secret: true,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_TLS_Key', '', {
+				type: 'password',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				secret: true,
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_MUC_Subdomain', 'conference', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: 'conference',
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Domain_Allow_List', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery,
+			});
+
+			await this.add('XMPP_Server_Presence_Enabled', true, {
+				type: 'boolean',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: false,
+				enableQuery,
+			});
+		});
 	});
 };

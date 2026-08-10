@@ -223,6 +223,12 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	/** Native XMPP federation marker for a remote user. `jid` is the full bare JID (== username). */
+	xmppFederation?: {
+		version: 1;
+		jid: string;
+		origin: string;
+	};
 	banners?: {
 		[key: string]: {
 			id: string;
@@ -268,6 +274,18 @@ interface IUserNativeFederated extends IUser {
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
 	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
+
+interface IUserXMPPFederated extends IUser {
+	federated: true;
+	xmppFederation: {
+		version: 1;
+		jid: string;
+		origin: string;
+	};
+}
+
+export const isUserXMPPFederated = (user: Partial<IUser>): user is IUserXMPPFederated =>
+	'xmppFederation' in user && (user as Partial<IUserXMPPFederated>).xmppFederation !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;
