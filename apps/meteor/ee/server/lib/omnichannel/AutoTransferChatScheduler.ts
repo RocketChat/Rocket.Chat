@@ -66,10 +66,7 @@ export class AutoTransferChatSchedulerClass {
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		const job = await this.scheduler.schedule(when, jobName, { roomId });
-		await OmnichannelAutoTransferScheduler.updateOne(
-			{ _id: job.attrs._id, status: { $exists: false } },
-			{ $set: { status: 'scheduled' } },
-		);
+		await OmnichannelAutoTransferScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 		await LivechatRooms.setAutoTransferOngoingById(roomId);
 	}
 
