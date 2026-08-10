@@ -1952,7 +1952,7 @@
   "SlackBridge_Out_Enabled": "SlackBridge Çıxdı Enabled",
   "SlackBridge_Out_Enabled_Description": "SlackBridge'in mesajlarınızı da Slack'a geri göndermeyeceğini seçin",
   "SlackBridge_error": "Mesajlarınızı {{channelName}}: {{errorMessage}}-də idxal edərkən SlackBridge səhv var",
-  "SlackBridge_finish": "SlackBridge{{channelName}} mesajlarını idxal tamamladı. Xahiş edirik bütün mesajları keçirmək üçün yenidən yükləyin.",
+  "SlackBridge_finish": "SlackBridge {{channelName}} mesajlarını idxal tamamladı. Xahiş edirik bütün mesajları keçirmək üçün yenidən yükləyin.",
   "SlackBridge_start": "@{{username}} `#{{channelName}}`-da bir SlackBridge idxalına başladı. Bitirdiğiniz zaman sizə bildirəcəyik.",
   "Slack_Users": "Slack istifadəçiləri CSV",
   "Slash_Gimme_Description": "Mesajınızın qarşısını alır (つ ◕_◕) つ",
