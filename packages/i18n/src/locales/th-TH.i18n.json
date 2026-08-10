@@ -1943,7 +1943,7 @@
   "SlackBridge_Out_Channels_Description": "เลือกช่องที่จะส่งข้อความกลับไปที่ Slack",
   "SlackBridge_Out_Enabled": "ปิดใช้งาน SlackBridge Out",
   "SlackBridge_Out_Enabled_Description": "เลือกว่า SlackBridge ควรส่งข้อความของคุณกลับไปที่ Slack หรือไม่",
-  "SlackBridge_error": "SlackBridge เกิดข้อผิดพลาดขณะนำเข้าข้อความของคุณที่{{channelName}}:{{errorMessage}}",
+  "SlackBridge_error": "SlackBridge เกิดข้อผิดพลาดขณะนำเข้าข้อความของคุณที่{{channelName}}: {{errorMessage}}",
   "SlackBridge_finish": "SlackBridge ได้ดำเนินการการนำเข้าข้อความเสร็จสิ้นแล้วที่{{channelName}} โปรดโหลดใหม่เพื่อดูข้อความทั้งหมด",
   "SlackBridge_start": "@{{username}} ได้เริ่มการนำเข้า SlackBridge ที่ `#{{channelName}}` เราจะแจ้งให้คุณทราบเมื่อเสร็จสิ้น",
   "Slack_Users": "ผู้ใช้ Slack ของ CSV",

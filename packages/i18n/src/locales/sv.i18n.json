@@ -5008,7 +5008,7 @@
   "SlackBridge_SigningSecret": "Signering av hemlighet",
   "SlackBridge_SigningSecret_Description": "Du kan konfigurera flera slack-servrar genom att lägga till en signeringshemlighet per rad.",
   "SlackBridge_UseLegacy": "Använd äldre API-tokens",
-  "SlackBridge_error": "SlackBridge fick ett fel när du importerade dina meddelanden vid {{channelName}}:{{errorMessage}}",
+  "SlackBridge_error": "SlackBridge fick ett fel när du importerade dina meddelanden vid {{channelName}}: {{errorMessage}}",
   "SlackBridge_finish": "SlackBridge har slutat importera meddelandena till {{channelName}}. Vänligen ladda om för att se alla meddelanden.",
   "SlackBridge_start": "@{{username}} har startat en SlackBridge-import vid `#{{channelName}}`. Vi meddelar dig när det är klart.",
   "Slack_Users": "Slack-användare CSV",

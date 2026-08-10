@@ -1475,7 +1475,7 @@
   "Drop_to_upload_file": "Przeciągnij, aby przesłać plik",
   "Dry_run": "Próba",
   "Dry_run_description": "Wyśle tylko jedną wiadomość e-mail, na adres podany w polu `Od`. Adres e-mail musi należeć do istniejącego użytkownika.",
-  "Duplicate_archived_channel_name": "Zarchiwizowanej kanał o nazwie ' {{channelName}}' istnieje",
+  "Duplicate_archived_channel_name": "Zarchiwizowanej kanał o nazwie '{{channelName}}' istnieje",
   "Duplicate_file_name_found": "Znaleziono zduplikowany plik.",
   "Duplicated_Email_address_will_be_ignored": "Zduplikowany adres e-mail zostanie zignorowany.",
   "E2E_Enable_description": "Włącz opcję tworzenia zaszyfrowanych grup i możliwość zmiany grup, oraz szyfrowania bezpośrednich wiadomości",

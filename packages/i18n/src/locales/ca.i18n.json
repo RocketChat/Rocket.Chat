@@ -3307,7 +3307,7 @@
   "SlackBridge_Out_Enabled": "SlackBridge Out actiu",
   "SlackBridge_Out_Enabled_Description": "Escull si SlackBridge ha de reenviar els missatges a Slack",
   "SlackBridge_Remove_Channel_Links_Description": "Elimina l'enllaç intern entre els canals de Rocket.Chat i els canals de Slack. Posteriorment, els enllaços es tornaran a crear en funció dels noms dels canals.",
-  "SlackBridge_error": "SlackBridge va rebre un error en importar els seus missatges a {{channelName}}:{{errorMessage}}",
+  "SlackBridge_error": "SlackBridge va rebre un error en importar els seus missatges a {{channelName}}: {{errorMessage}}",
   "SlackBridge_finish": "SlackBridge ha finalitat la importació a {{channelName}}. Si us plau, refresqueu per veure tots els missatges.",
   "SlackBridge_start": "@{{username}} ha iniciat una importació SlackBridge a `#{{channelName}}`. Us avisarem quan finalitzi.",
   "Slack_Users": "CSV d'usuaris de Slack",

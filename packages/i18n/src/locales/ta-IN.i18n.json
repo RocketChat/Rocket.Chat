@@ -808,7 +808,7 @@
   "Drop_to_upload_file": "கோப்பை பதிவேற்ற கைவிட",
   "Dry_run": "உலர்ந்த ஓட்டம்",
   "Dry_run_description": "மட்டும் இருந்து அதே முகவரிக்கு, ஒரு மின்னஞ்சல் அனுப்ப வேண்டும். மின்னஞ்சல் சரியான பயனர் சேர்ந்தவை வேண்டும்.",
-  "Duplicate_archived_channel_name": "ஒரு ஆவண சேனல் பெயர் ' {{channelName}}' என்ற உள்ளது",
+  "Duplicate_archived_channel_name": "ஒரு ஆவண சேனல் பெயர் '{{channelName}}' என்ற உள்ளது",
   "Edit": "தொகு",
   "Edit_Custom_Field": "வழக்கமான புலம் திருத்து",
   "Edit_Department": "துறை திருத்து",

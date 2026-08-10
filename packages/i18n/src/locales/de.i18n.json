@@ -792,7 +792,7 @@
   "Channel_already_Unarchived": "Channel mit dem Namen '#{{channelName}}' ist bereits im unarchivierten Zustand",
   "Channel_already_exist": "Der Channel '#%s' ist bereits vorhanden.",
   "Channel_already_exist_static": "Der Channel existiert bereits",
-  "Channel_created": "Channel`#{{channelName}}` wurde angelegt.",
+  "Channel_created": "Channel `#{{channelName}}` wurde angelegt.",
   "Channel_doesnt_exist": "Der Channel `#{{channelName}}` existiert nicht.",
   "Channel_name": "Channel-Name",
   "Channel_to_listen_on": "Channel, auf dem gehört werden soll",

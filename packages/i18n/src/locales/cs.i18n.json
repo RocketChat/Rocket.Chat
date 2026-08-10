@@ -1140,7 +1140,7 @@
   "Drop_to_upload_file": "Pusťe soubor do okna pro jeho nahrání",
   "Dry_run": "Zkouška",
   "Dry_run_description": "Odešle pouze jeden e-mail, na stejnou adresu jako ve formuláři. K e-mailu musí patřit platný uživatel.",
-  "Duplicate_archived_channel_name": "Již existuje archivovaná místnost ' {{channelName}}'",
+  "Duplicate_archived_channel_name": "Již existuje archivovaná místnost '{{channelName}}'",
   "Duplicate_file_name_found": "Nalezen soubor s duplicitním názvem.",
   "Duplicated_Email_address_will_be_ignored": "Duplicitní e-mailová adresa bude ignorována.",
   "E2E_Enable_description": "Povolit možnost vytváření šifrovaných skupin a možnost měnit skupiny a přímé zprávy, které mají být šifrovány",

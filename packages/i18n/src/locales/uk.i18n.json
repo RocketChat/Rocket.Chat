@@ -2414,7 +2414,7 @@
   "SlackBridge_Out_Channels_Description": "Виберіть, які канали будуть відправляти повідомлення назад до Slack",
   "SlackBridge_Out_Enabled": "SlackBridge вимкнено",
   "SlackBridge_Out_Enabled_Description": "Виберіть, чи повинен SlackBridge також надіслати свої повідомлення назад до Slack",
-  "SlackBridge_error": "Під час імпорту повідомлень у {{channelName}}:{{errorMessage}} з'явилася помилка SlackBridge",
+  "SlackBridge_error": "Під час імпорту повідомлень у {{channelName}}: {{errorMessage}} з'явилася помилка SlackBridge",
   "SlackBridge_finish": "SlackBridge закінчив імпортувати повідомлення на {{channelName}}. Будь ласка, перезавантажте, щоб переглянути всі повідомлення.",
   "SlackBridge_start": "@{{username}} запустив імпорт SlackBridge на `#{{channelName}}`. Ми повідомимо вас, коли закінчиться.",
   "Slack_Users": "Користувачі Slack's CSV",

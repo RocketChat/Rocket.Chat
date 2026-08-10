@@ -1951,7 +1951,7 @@
   "SlackBridge_Out_Channels_Description": "Επιλέξτε ποια κανάλια θα στέλνουν μηνύματα πίσω στο Slack",
   "SlackBridge_Out_Enabled": "Η έξοδος SlackBridge είναι ενεργοποιημένη",
   "SlackBridge_Out_Enabled_Description": "Επιλέξτε εάν το SlackBridge πρέπει επίσης να στείλει τα μηνύματά σας πίσω στο Slack",
-  "SlackBridge_error": "Το SlackBridge έλαβε ένα σφάλμα κατά την εισαγωγή των μηνυμάτων σας στο{{channelName}}:{{errorMessage}}",
+  "SlackBridge_error": "Το SlackBridge έλαβε ένα σφάλμα κατά την εισαγωγή των μηνυμάτων σας στο {{channelName}}: {{errorMessage}}",
   "SlackBridge_finish": "Το SlackBridge ολοκλήρωσε την εισαγωγή των μηνυμάτων στο{{channelName}}. Κάντε επανάληψη φόρτωσης για να δείτε όλα τα μηνύματα.",
   "SlackBridge_start": "@{{username}} έχει ξεκινήσει μια εισαγωγή SlackBridge στο `#{{channelName}}`. Θα σας ενημερώσουμε όταν τελειώσει.",
   "Slack_Users": "Χρήστες του Slack CSV",

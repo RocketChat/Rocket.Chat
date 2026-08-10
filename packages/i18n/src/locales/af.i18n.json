@@ -1949,7 +1949,7 @@
   "SlackBridge_Out_Channels_Description": "Kies watter kanale boodskappe terug stuur na Slack",
   "SlackBridge_Out_Enabled": "SlackBridge Out aangeskakel",
   "SlackBridge_Out_Enabled_Description": "Kies of SlackBridge ook jou boodskappe na Slack moet stuur",
-  "SlackBridge_error": "SlackBridge het 'n fout tydens die invoer van jou boodskappe by{{channelName}}:{{errorMessage}}",
+  "SlackBridge_error": "SlackBridge het 'n fout tydens die invoer van jou boodskappe by {{channelName}}: {{errorMessage}}",
   "SlackBridge_finish": "SlackBridge het klaar met die invoer van die boodskappe by{{channelName}}. Herlaai asseblief om alle boodskappe te sien.",
   "SlackBridge_start": "@{{username}} het 'n SlackBridge invoer by `#{{channelName}}` begin. Ons sal jou laat weet wanneer dit klaar is.",
   "Slack_Users": "Slack se gebruikers CSV",

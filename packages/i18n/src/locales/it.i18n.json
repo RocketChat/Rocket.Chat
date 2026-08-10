@@ -1042,7 +1042,7 @@
   "Drop_to_upload_file": "Rilascia per caricare il file",
   "Dry_run": "Invio di prova",
   "Dry_run_description": "Verrà inviata solo un'email, allo stesso indirizzo del ,ittente. L'email deve appartenere ad un utente valido.",
-  "Duplicate_archived_channel_name": "Un canale archiviato con il nome ' {{channelName}}' già esiste",
+  "Duplicate_archived_channel_name": "Un canale archiviato con il nome '{{channelName}}' già esiste",
   "Duplicate_file_name_found": "È stato trovato un nome di file duplicato.",
   "Duplicated_Email_address_will_be_ignored": "Gli indirizzi e-mail duplicati saranno ignorati.",
   "E2E_Enabled": "E2E abilitato",
