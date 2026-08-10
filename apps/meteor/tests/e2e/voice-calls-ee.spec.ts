@@ -50,7 +50,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		});
 
 		await test.step('user2 ends the call', async () => {
-			await user2.poHomeChannel.voiceCalls.widget.endCall();
+			await user2.poHomeChannel.voiceCalls.widget.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
@@ -91,7 +91,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		});
 
 		await test.step('should end the call from user1', async () => {
-			await user1.poHomeChannel.voiceCalls.widget.endCall();
+			await user1.poHomeChannel.voiceCalls.widget.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
@@ -127,7 +127,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		});
 
 		await test.step('user3 ends the call', async () => {
-			await user3.poHomeChannel.voiceCalls.widget.endCall();
+			await user3.poHomeChannel.voiceCalls.widget.hangup();
 			await expect(user3.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
@@ -146,7 +146,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		});
 
 		await test.step('user2 declines the call', async () => {
-			await user2.poHomeChannel.voiceCalls.widget.endCall();
+			await user2.poHomeChannel.voiceCalls.widget.reject();
 		});
 
 		await test.step('Verify call widget disappears', async () => {
@@ -224,7 +224,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		});
 
 		await test.step('end call to clean up', async () => {
-			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await user1.poHomeChannel.voiceCalls.roomSection.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
 		});
@@ -269,7 +269,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		});
 
 		await test.step('end call to clean up', async () => {
-			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await user1.poHomeChannel.voiceCalls.roomSection.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
@@ -312,7 +312,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		});
 
 		await test.step('end call to clean up', async () => {
-			await user1.poHomeChannel.voiceCalls.roomSection.endCall();
+			await user1.poHomeChannel.voiceCalls.roomSection.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
 		});
@@ -396,7 +396,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 			await user1.poHomeChannel.voiceCalls.openPopoutRoom();
 			await expect(user1.poHomeChannel.voiceCalls.popout.content).toBeVisible();
 
-			await user1.poHomeChannel.voiceCalls.popout.endCall();
+			await user1.poHomeChannel.voiceCalls.popout.hangup();
 			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
 		});
@@ -443,7 +443,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 		});
 
 		await test.step('end call with user2 from the popout', async () => {
-			await user2.poHomeChannel.voiceCalls.popout.endCall();
+			await user2.poHomeChannel.voiceCalls.popout.hangup();
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
 		});
