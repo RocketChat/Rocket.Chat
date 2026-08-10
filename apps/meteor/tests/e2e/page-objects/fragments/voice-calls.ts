@@ -25,8 +25,12 @@ export class VoiceCallControls {
 		return this._controls.getByRole('button', { name: 'Accept', exact: true });
 	}
 
-	get hangup(): Locator {
+	get hangupOrReject(): Locator {
 		return this._controls.getByRole('button', { name: /End call|Reject/, exact: true });
+	}
+
+	get hangup(): Locator {
+		return this._controls.getByRole('button', { name: 'End call', exact: true });
 	}
 
 	get cancel(): Locator {
@@ -151,7 +155,7 @@ export class Widget {
 	}
 
 	async endCall(): Promise<void> {
-		await this.callControls.hangup.click();
+		await this.callControls.hangupOrReject.click();
 		await expect(this.content).not.toBeVisible();
 	}
 
@@ -266,7 +270,7 @@ export class RoomSection {
 	}
 
 	async endCall(): Promise<void> {
-		await this.callControls.hangup.click();
+		await this.callControls.hangupOrReject.click();
 		await expect(this.content).not.toBeVisible();
 	}
 
@@ -331,7 +335,7 @@ export class PopoutPage extends RoomSection {
 
 	override async endCall(): Promise<void> {
 		const pageClosed = new Promise((resolve) => this.page.on('close', () => resolve(true)));
-		await this.callControls.hangup.click();
+		await this.callControls.hangupOrReject.click();
 		await expect(pageClosed).resolves.toBe(true);
 	}
 }
