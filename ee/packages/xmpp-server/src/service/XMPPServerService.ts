@@ -112,31 +112,60 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 
-		const { role } = room.xmppFederation;
-		if (role !== 'dm') {
-			// host-muc / remote-muc handled in the MUC commit
+		const { role, muc, with: dmJid } = room.xmppFederation;
+
+		switch (role) {
+			case 'dm':
+				if (dmJid) {
+					await this.server.sendChatMessage({
+						from: `${user.username}@${this.server.domain}`,
+						to: dmJid,
+						body: message.msg,
+						id: message._id,
+					});
+				}
+				break;
+			case 'host-muc':
+				if (muc) {
+					this.server.mucBroadcastMessage({ roomId: muc.split('@')[0], fromNick: user.username, body: message.msg, id: message._id });
+				}
+				break;
+			case 'remote-muc':
+				if (muc) {
+					await this.server.mucSendToRemoteRoom({
+						localJid: `${user.username}@${this.server.domain}`,
+						roomJid: muc,
+						body: message.msg,
+						id: message._id,
+					});
+				}
+				break;
+		}
+	}
+
+	async registerHostedRoom(room: IRoom): Promise<void> {
+		if (!this.server || !isRoomXMPPFederated(room) || room.xmppFederation.role !== 'host-muc' || !room.xmppFederation.muc) {
 			return;
 		}
+		this.server.mucCreateRoom({ roomId: room.xmppFederation.muc.split('@')[0], public: room.t === 'c' });
+	}
 
-		const to = room.xmppFederation.with;
-		if (!to) {
+	async joinRemoteMUC(userId: string, rid: string): Promise<void> {
+		if (!this.server) {
 			return;
 		}
-
-		await this.server.sendChatMessage({
-			from: `${user.username}@${this.server.domain}`,
-			to,
-			body: message.msg,
-			id: message._id,
+		const [user, room] = await Promise.all([
+			Users.findOneById(userId, { projection: { username: 1 } }),
+			Rooms.findOneById(rid, { projection: { xmppFederation: 1 } }),
+		]);
+		if (!user?.username || !room || !isRoomXMPPFederated(room) || room.xmppFederation.role !== 'remote-muc' || !room.xmppFederation.muc) {
+			return;
+		}
+		await this.server.mucJoinRemoteRoom({
+			localJid: `${user.username}@${this.server.domain}`,
+			roomJid: room.xmppFederation.muc,
+			nick: user.username,
 		});
-	}
-
-	async registerHostedRoom(_room: IRoom): Promise<void> {
-		// implemented in the MUC commit
-	}
-
-	async joinRemoteMUC(_userId: string, _rid: string): Promise<void> {
-		// implemented in the MUC commit
 	}
 
 	async ensureXMPPUsersExistLocally(jids: string[]): Promise<void> {
@@ -210,6 +239,84 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		server.on('presence.subscriptionRequest', (event) => {
 			this.onSubscriptionRequest(event).catch((err) => this.logger.error({ msg: 'Failed to handle XMPP subscription request', err }));
 		});
+
+		server.on('muc.messageReceived', (event) => {
+			this.persistMucMessage(`${event.roomId}@${server.mucDomain}`, event.fromJid, event.body, event.id).catch((err) =>
+				this.logger.error({ msg: 'Failed to persist hosted MUC message', err }),
+			);
+		});
+
+		server.on('muc.remoteMessage', (event) => {
+			this.onRemoteMucMessage(event.roomJid, event.fromNick, event.body, event.id).catch((err) =>
+				this.logger.error({ msg: 'Failed to persist remote MUC message', err }),
+			);
+		});
+
+		server.on('muc.inviteReceived', (event) => {
+			this.onMucInvite(event).catch((err) => this.logger.error({ msg: 'Failed to handle MUC invite', err }));
+		});
+	}
+
+	/** Persists a message received in a hosted MUC room (author addressed by real JID). */
+	private async persistMucMessage(mucJid: string, fromJid: string, body: string, stanzaId?: string): Promise<void> {
+		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid }, { projection: { _id: 1 } });
+		if (!room) {
+			return;
+		}
+		const author = await createOrUpdateXMPPUser({ jid: toBareJid(fromJid) });
+		await this.saveFederatedMessage(room._id, author._id, domainOfJid(fromJid), body, stanzaId);
+	}
+
+	/** Persists a message received in a remote MUC we joined (author is an opaque nick). */
+	private async onRemoteMucMessage(roomJid: string, fromNick: string, body: string, stanzaId?: string): Promise<void> {
+		const room = await Rooms.findOne({ 'xmppFederation.muc': roomJid }, { projection: { _id: 1 } });
+		if (!room) {
+			return;
+		}
+		// Remote occupants rarely disclose a real JID; synthesize a stable per-nick JID
+		const syntheticJid = `${fromNick}#${roomJid}`;
+		const author = await createOrUpdateXMPPUser({ jid: syntheticJid, name: fromNick });
+		await this.saveFederatedMessage(room._id, author._id, domainOfJid(roomJid), body, stanzaId);
+	}
+
+	private async saveFederatedMessage(rid: string, fromId: string, originDomain: string, body: string, stanzaId?: string): Promise<void> {
+		const eventId = `xmpp:${originDomain}:${stanzaId ?? Random.id()}`;
+		if (await Messages.findOneByFederationId(eventId)) {
+			return;
+		}
+		await Message.saveMessageFromFederation({ fromId, rid, federation_event_id: eventId, msg: body, ts: new Date() });
+	}
+
+	/** Materializes a remote MUC as a shadow room and joins it on behalf of the invited local user. */
+	private async onMucInvite(event: { roomJid: string; toLocalJid: string; fromJid: string }): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const localUsername = toBareJid(event.toLocalJid).split('@')[0];
+		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1, username: 1 } });
+		if (!localUser) {
+			return;
+		}
+
+		await createOrUpdateXMPPUser({ jid: toBareJid(event.fromJid) });
+
+		let room = await Rooms.findOne({ 'xmppFederation.muc': event.roomJid }, { projection: { _id: 1, xmppFederation: 1 } });
+		if (!room) {
+			const roomName = event.roomJid.split('@')[0];
+			const created = await Room.create(localUser._id, {
+				type: 'c',
+				name: `xmpp_${roomName}`,
+				members: [localUser.username as string],
+				extraData: {
+					xmppFederation: { version: 1, role: 'remote-muc', muc: event.roomJid, origin: domainOfJid(event.roomJid) },
+				},
+			});
+			room = await Rooms.findOneById(created._id, { projection: { _id: 1, xmppFederation: 1 } });
+		}
+
+		if (room) {
+			await this.joinRemoteMUC(localUser._id, room._id);
+		}
 	}
 
 	private async broadcastLocalPresence(user: Pick<IUser, '_id' | 'username' | 'status'>): Promise<void> {

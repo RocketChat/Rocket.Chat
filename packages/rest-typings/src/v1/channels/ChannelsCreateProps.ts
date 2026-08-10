@@ -12,6 +12,7 @@ export type ChannelsCreateProps = {
 		teamId?: string;
 		topic?: string;
 		federated?: boolean;
+		xmppFederated?: boolean;
 	};
 	excludeSelf?: boolean;
 };
@@ -58,6 +59,9 @@ const channelsCreatePropsSchema = {
 					type: 'string',
 				},
 				federated: {
+					type: 'boolean',
+				},
+				xmppFederated: {
 					type: 'boolean',
 				},
 			},

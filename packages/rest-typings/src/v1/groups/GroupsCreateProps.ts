@@ -9,6 +9,9 @@ export type GroupsCreateProps = {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
+		federated?: boolean;
+		topic?: string;
+		xmppFederated?: boolean;
 	};
 	excludeSelf?: boolean;
 };
@@ -55,6 +58,10 @@ const GroupsCreatePropsSchema = {
 				},
 				topic: {
 					type: 'string',
+					nullable: true,
+				},
+				xmppFederated: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},
