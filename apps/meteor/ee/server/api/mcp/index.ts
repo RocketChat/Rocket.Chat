@@ -1,4 +1,5 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
+import { Users } from '@rocket.chat/models';
 
 import './permissions';
 import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
@@ -14,11 +15,40 @@ const disabledResponse = {
 type McpActionContext = {
 	bodyParams: unknown;
 	userId: string;
+	token: string;
 	requestIp: string;
 	request: Request;
 };
 
 const MAX_BATCH_SIZE = 20;
+const MAX_MCP_RESPONSE_BYTES = 5 * 1024 * 1024;
+
+const personalAccessTokenRequiredResponse = {
+	statusCode: 401,
+	body: { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Personal Access Token required' } },
+};
+
+const hasPersonalAccessToken = async ({ userId, token }: Pick<McpActionContext, 'userId' | 'token'>): Promise<boolean> =>
+	Boolean(
+		await Users.findOne(
+			{
+				'_id': userId,
+				'services.resume.loginTokens': { $elemMatch: { hashedToken: token, type: 'personalAccessToken' } },
+			},
+			{ projection: { _id: 1 } },
+		),
+	);
+
+const jsonResponse = (body: JsonRpcResponse | JsonRpcResponse[]) => {
+	if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_MCP_RESPONSE_BYTES) {
+		return {
+			statusCode: 413,
+			body: { jsonrpc: '2.0', id: null, error: { code: -32000, message: 'MCP response exceeds the 5 MiB limit' } },
+		};
+	}
+
+	return { statusCode: 200, body };
+};
 
 const validateTransportRequest = (request: Request) => {
 	if (!isMcpOriginAllowed(request.headers.get('origin'))) {
@@ -45,6 +75,9 @@ export const handleMcpPost = async function (this: McpActionContext) {
 	if (transportError) {
 		return transportError;
 	}
+	if (!(await hasPersonalAccessToken(this))) {
+		return personalAccessTokenRequiredResponse;
+	}
 
 	const message = this.bodyParams;
 	const auth: McpAuth = {
@@ -66,7 +99,7 @@ export const handleMcpPost = async function (this: McpActionContext) {
 		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp)))).filter(
 			(response): response is JsonRpcResponse => response !== null,
 		);
-		return responses.length ? { statusCode: 200, body: responses } : { statusCode: 202, body: undefined };
+		return responses.length ? jsonResponse(responses) : { statusCode: 202, body: undefined };
 	}
 
 	const response = await handleRpcMessage(message, auth, clientIp);
@@ -75,10 +108,10 @@ export const handleMcpPost = async function (this: McpActionContext) {
 		return { statusCode: 202, body: undefined };
 	}
 
-	return { statusCode: 200, body: response };
+	return jsonResponse(response);
 };
 
-export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
+export const handleMcpGet = async function (this: Pick<McpActionContext, 'request' | 'token' | 'userId'>) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
@@ -86,6 +119,9 @@ export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
 	const transportError = validateTransportRequest(this.request);
 	if (transportError) {
 		return transportError;
+	}
+	if (!(await hasPersonalAccessToken(this))) {
+		return personalAccessTokenRequiredResponse;
 	}
 
 	// This minimal transport doesn't offer a server-initiated SSE stream (spec allows 405).

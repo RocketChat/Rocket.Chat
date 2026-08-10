@@ -1,4 +1,5 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
+import { Users } from '@rocket.chat/models';
 
 import { handleMcpGet, handleMcpPost } from './index';
 import { handleRpcMessage } from './server';
@@ -6,6 +7,10 @@ import { API } from '../../../../server/api';
 import { settings } from '../../../../server/settings/cached';
 
 jest.mock('./permissions', () => ({}));
+
+jest.mock('@rocket.chat/models', () => ({
+	Users: { findOne: jest.fn() },
+}));
 
 jest.mock('./server', () => ({
 	handleRpcMessage: jest.fn(),
@@ -22,6 +27,7 @@ jest.mock('../../../../server/settings/cached', () => ({
 const context = {
 	bodyParams: { jsonrpc: '2.0', id: 1, method: 'ping' },
 	userId: 'user-id',
+	token: 'hashed-auth-token',
 	requestIp: '192.0.2.1',
 	request: new Request('http://localhost/api/v1/mcp', { headers: { 'x-auth-token': 'auth-token' } }),
 };
@@ -30,6 +36,7 @@ describe('MCP HTTP route', () => {
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(true);
 		jest.mocked(handleRpcMessage).mockReset();
+		jest.mocked(Users.findOne).mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
 	it('registers the endpoint with authentication, permission, and license gates', () => {
@@ -44,7 +51,7 @@ describe('MCP HTTP route', () => {
 		jest.mocked(settings.get).mockReturnValue(false);
 
 		await expect(handleMcpPost.call(context)).resolves.toMatchObject({ statusCode: 404 });
-		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 404 });
+		await expect(handleMcpGet.call(context)).resolves.toMatchObject({ statusCode: 404 });
 	});
 
 	it('rejects empty and oversized JSON-RPC batches', async () => {
@@ -82,7 +89,26 @@ describe('MCP HTTP route', () => {
 	});
 
 	it('returns method not allowed for GET requests', () => {
-		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+		return expect(handleMcpGet.call(context)).resolves.toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+	});
+
+	it('rejects authenticated sessions that are not personal access tokens', async () => {
+		jest.mocked(Users.findOne).mockResolvedValue(null);
+
+		await expect(handleMcpPost.call(context)).resolves.toMatchObject({
+			statusCode: 401,
+			body: { error: { message: 'Personal Access Token required' } },
+		});
+		expect(handleRpcMessage).not.toHaveBeenCalled();
+	});
+
+	it('rejects final encoded responses that exceed the MCP response limit', async () => {
+		jest.mocked(handleRpcMessage).mockResolvedValue({ jsonrpc: '2.0', id: 1, result: 'x'.repeat(5 * 1024 * 1024) });
+
+		await expect(handleMcpPost.call(context)).resolves.toMatchObject({
+			statusCode: 413,
+			body: { error: { message: 'MCP response exceeds the 5 MiB limit' } },
+		});
 	});
 
 	it('rejects browser requests from untrusted origins', async () => {
@@ -105,11 +131,12 @@ describe('MCP HTTP route', () => {
 			}),
 		).resolves.toMatchObject({ statusCode: 403 });
 		expect(handleRpcMessage).not.toHaveBeenCalled();
-		expect(
+		await expect(
 			handleMcpGet.call({
+				...context,
 				request: new Request('https://chat.example.com/api/v1/mcp', { headers: { origin: 'https://attacker.example' } }),
 			}),
-		).toMatchObject({ statusCode: 403 });
+		).resolves.toMatchObject({ statusCode: 403 });
 	});
 
 	it('rejects unsupported protocol-version headers', async () => {

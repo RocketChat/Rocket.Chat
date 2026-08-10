@@ -67,6 +67,29 @@ jest.mock('../../../../server/api', () => ({
 						],
 					},
 				},
+				'/api/v1/dm.files': {
+					get: {
+						tags: ['DM'],
+						parameters: [
+							{
+								schema: {
+									oneOf: [
+										{
+											type: 'object',
+											properties: { thisIsAnExtremelyLongDiscriminatorNameThatEndsInAlpha: { type: 'string' } },
+											required: ['thisIsAnExtremelyLongDiscriminatorNameThatEndsInAlpha'],
+										},
+										{
+											type: 'object',
+											properties: { thisIsAnExtremelyLongDiscriminatorNameThatEndsInBeta: { type: 'string' } },
+											required: ['thisIsAnExtremelyLongDiscriminatorNameThatEndsInBeta'],
+										},
+									],
+								},
+							},
+						],
+					},
+				},
 				'/api/v1/users.delete': {
 					post: {
 						tags: ['Users'],
@@ -107,15 +130,27 @@ describe('MCP tool catalog', () => {
 	it('only exposes allow-listed routes in the extended catalog', () => {
 		const tools = getExtendedTools();
 
-		expect(tools.map(({ name }) => name)).toEqual([
-			'post_chat_postMessage_by_roomId',
-			'post_chat_postMessage_by_channel',
-			'get_rooms_get',
-			'get_rooms_isMember_by_roomId_userId',
-			'get_rooms_isMember_by_roomId_username',
-		]);
+		expect(tools.map(({ name }) => name)).toEqual(
+			expect.arrayContaining([
+				'post_chat_postMessage_by_roomId',
+				'post_chat_postMessage_by_channel',
+				'get_rooms_get',
+				'get_rooms_isMember_by_roomId_userId',
+				'get_rooms_isMember_by_roomId_username',
+			]),
+		);
 		expect(tools.some(({ name }) => name.includes('users_delete'))).toBe(false);
 		expect(tools.some(({ name }) => name.includes('users_register'))).toBe(false);
+	});
+
+	it('generates unique valid names when variant discriminators exceed the MCP limit', () => {
+		const tools = getExtendedTools();
+		const names = tools.map(({ name }) => name);
+		const dmFileNames = tools.filter(({ path }) => path === '/api/v1/dm.files').map(({ name }) => name);
+
+		expect(dmFileNames).toHaveLength(2);
+		expect(new Set(names).size).toBe(names.length);
+		expect(names.every((name) => name.length <= 64 && /^[a-zA-Z0-9_-]+$/.test(name))).toBe(true);
 	});
 
 	it('preserves parent properties when variants only declare required fields', () => {

@@ -138,7 +138,11 @@ describe('Cors middleware', () => {
 
 		app.use(api.router);
 
-		const response = await request(app).options('/api/test').set('origin', 'http://localhost');
+		const response = await request(app)
+			.options('/api/test')
+			.set('origin', 'http://localhost')
+			.set('access-control-request-method', 'POST')
+			.set('access-control-request-headers', 'Content-Type, MCP-Protocol-Version');
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toHaveProperty('message', 'CORS test successful');
@@ -146,7 +150,7 @@ describe('Cors middleware', () => {
 		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
 		expect(response.headers).toHaveProperty(
 			'access-control-allow-headers',
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization, MCP-Protocol-Version',
 		);
 	});
 
@@ -189,7 +193,11 @@ describe('Cors middleware', () => {
 
 		app.use(api.router);
 
-		const response = await request(app).options('/api/test').set('origin', 'http://localhost');
+		const response = await request(app)
+			.options('/api/test')
+			.set('origin', 'http://localhost')
+			.set('access-control-request-method', 'POST')
+			.set('access-control-request-headers', 'Content-Type, MCP-Protocol-Version');
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toHaveProperty('message', 'CORS test successful');
@@ -197,7 +205,7 @@ describe('Cors middleware', () => {
 		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
 		expect(response.headers).toHaveProperty(
 			'access-control-allow-headers',
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization, MCP-Protocol-Version',
 		);
 	});
 

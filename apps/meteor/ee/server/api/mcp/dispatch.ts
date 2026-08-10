@@ -63,7 +63,12 @@ export const dispatchTool = async (
 	clientIp?: string,
 ): Promise<DispatchResult> => {
 	const port = process.env.PORT || '3000';
-	const base = `http://127.0.0.1:${port}`;
+	const runtimeConfig = (
+		globalThis as typeof globalThis & {
+			__meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string };
+		}
+	).__meteor_runtime_config__;
+	const base = `http://127.0.0.1:${port}${runtimeConfig?.ROOT_URL_PATH_PREFIX ?? ''}`;
 
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
@@ -83,6 +88,9 @@ export const dispatchTool = async (
 	if (tool.method === 'get' || tool.method === 'delete') {
 		const qs = new URLSearchParams();
 		for (const [key, value] of Object.entries(args ?? {})) {
+			if (value === undefined) {
+				continue;
+			}
 			qs.append(key, typeof value === 'string' ? value : JSON.stringify(value));
 		}
 		const query = qs.toString();

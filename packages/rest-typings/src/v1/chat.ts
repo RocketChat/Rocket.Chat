@@ -779,7 +779,8 @@ const ChatPostMessageSchema = {
 	oneOf: [
 		{
 			type: 'object',
-			description: 'Post a message to a room by its id. Provide `roomId` and `text`; optionally `tmid` to reply in a thread.',
+			description:
+				'Post a message to a room by its id. Provide `roomId`; optionally provide `text` or attachments, and `tmid` to reply in a thread.',
 			properties: {
 				roomId: {
 					oneOf: [
@@ -840,7 +841,8 @@ const ChatPostMessageSchema = {
 		},
 		{
 			type: 'object',
-			description: 'Post a message to a channel by its name (e.g. "#general"). Provide `channel` and `text`.',
+			description:
+				'Post a message to a channel by its name (e.g. "#general"). Provide `channel`; optionally provide `text` or attachments.',
 			properties: {
 				channel: {
 					oneOf: [

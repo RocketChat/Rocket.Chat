@@ -4,7 +4,8 @@ import type { CachedSettings } from '../../../settings/CachedSettings';
 
 const defaultHeaders = {
 	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+	'Access-Control-Allow-Headers':
+		'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization, MCP-Protocol-Version',
 };
 
 export const cors =

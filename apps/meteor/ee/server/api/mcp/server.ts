@@ -39,6 +39,14 @@ const error = (id: JsonRpcRequest['id'], code: number, message: string, data?: u
 
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
+const isInitializeParams = (params: unknown): params is Record<string, unknown> => {
+	if (!isRecord(params) || typeof params.protocolVersion !== 'string' || !isRecord(params.capabilities) || !isRecord(params.clientInfo)) {
+		return false;
+	}
+
+	return typeof params.clientInfo.name === 'string' && typeof params.clientInfo.version === 'string';
+};
+
 export const isJsonRpcRequest = (value: unknown): value is JsonRpcRequest => {
 	if (!isRecord(value) || value.jsonrpc !== '2.0' || typeof value.method !== 'string' || value.method.length === 0) {
 		return false;
@@ -74,10 +82,14 @@ export const handleRpcMessage = async (message: unknown, auth: McpAuth, clientIp
 	const respond = (response: JsonRpcResponse): JsonRpcResponse | null => (id === undefined ? null : response);
 
 	switch (method) {
-		case 'initialize':
+		case 'initialize': {
+			if (!isInitializeParams(params)) {
+				return respond(error(id, -32602, 'Invalid initialize parameters'));
+			}
+
 			return respond(
 				result(id, {
-					protocolVersion: negotiateProtocolVersion(params?.protocolVersion),
+					protocolVersion: negotiateProtocolVersion(params.protocolVersion),
 					capabilities: { tools: { listChanged: false } },
 					serverInfo: {
 						name: 'rocketchat',
@@ -85,6 +97,7 @@ export const handleRpcMessage = async (message: unknown, auth: McpAuth, clientIp
 					},
 				}),
 			);
+		}
 
 		// Notifications — no response.
 		case 'notifications/initialized':

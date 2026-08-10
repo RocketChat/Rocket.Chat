@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { API } from '../../../../server/api';
 
 export type McpMethod = 'get' | 'post' | 'put' | 'delete';
@@ -233,6 +235,7 @@ const rawSchemaForRoute = (path: string, method: McpMethod): unknown => {
 };
 
 const VARIANT_KEYS = ['oneOf', 'anyOf'] as const;
+const MAX_TOOL_NAME_LENGTH = 64;
 
 const mergeSchemaVariant = (
 	root: Record<string, unknown>,
@@ -303,10 +306,51 @@ const variantsForRoute = (path: string, method: McpMethod): SchemaVariant[] => {
 	return [{ description: typeof schema.description === 'string' ? schema.description : undefined, schema }];
 };
 
+const fitToolName = (baseName: string, discriminator?: string): string => {
+	const suffix = discriminator ? `_by_${discriminator.replace(/[^a-zA-Z0-9_-]+/g, '_')}` : '';
+	const fullName = `${baseName}${suffix}`;
+	if (fullName.length <= MAX_TOOL_NAME_LENGTH) {
+		return fullName;
+	}
+
+	const minimumBaseLength = Math.min(baseName.length, 16);
+	if (suffix.length <= MAX_TOOL_NAME_LENGTH - minimumBaseLength) {
+		return `${baseName.slice(0, MAX_TOOL_NAME_LENGTH - suffix.length)}${suffix}`;
+	}
+
+	const hash = createHash('sha256').update(fullName).digest('hex').slice(0, 8);
+	return `${fullName.slice(0, MAX_TOOL_NAME_LENGTH - hash.length - 1)}_${hash}`;
+};
+
+const ensureUniqueToolNames = (tools: McpTool[]): McpTool[] => {
+	const usedNames = new Set<string>();
+
+	return tools.map((tool, index) => {
+		if (!usedNames.has(tool.name)) {
+			usedNames.add(tool.name);
+			return tool;
+		}
+
+		let attempt = 0;
+		let candidate: string;
+		do {
+			const hash = createHash('sha256')
+				.update(`${tool.method}:${tool.path}:${tool.name}:${JSON.stringify(tool.inputSchema)}:${index}:${attempt}`)
+				.digest('hex')
+				.slice(0, 8);
+			candidate = `${tool.name.slice(0, MAX_TOOL_NAME_LENGTH - hash.length - 1)}_${hash}`;
+			attempt += 1;
+		} while (usedNames.has(candidate));
+
+		usedNames.add(candidate);
+		return { ...tool, name: candidate };
+	});
+};
+
 /** Expand a single route into one MCP tool per request variant. */
 const toolsForRoute = (baseName: string, path: string, method: McpMethod, fallbackDescription?: string): McpTool[] =>
 	variantsForRoute(path, method).map((variant) => ({
-		name: (variant.discriminator ? `${baseName}_by_${variant.discriminator}` : baseName).slice(0, 64),
+		name: fitToolName(baseName, variant.discriminator),
 		description: variant.description ?? fallbackDescription ?? `${method.toUpperCase()} ${path}`,
 		path,
 		method,
@@ -316,7 +360,7 @@ const toolsForRoute = (baseName: string, path: string, method: McpMethod, fallba
 /** Build a valid MCP tool name base from a route path + method. */
 const toolNameFor = (path: string, method: McpMethod): string => {
 	const slug = path.replace(/^\/api\/v\d+\//, '').replace(/[^a-zA-Z0-9]+/g, '_');
-	return `${method}_${slug}`.slice(0, 64);
+	return `${method}_${slug}`;
 };
 
 /**
@@ -347,15 +391,17 @@ const collectTools = (isRouteAllowed: (baseName: string) => boolean): McpTool[] 
 		}
 	}
 
-	return tools;
+	return ensureUniqueToolNames(tools);
 };
 
 /** The minimal default toolset — the hand-picked {@link CURATED} routes. */
 let curatedTools: McpTool[] | undefined;
 
 export const getCuratedTools = (): McpTool[] => {
-	curatedTools ??= CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(
-		({ name, path, method, fallbackDescription }) => toolsForRoute(name, path, method, fallbackDescription),
+	curatedTools ??= ensureUniqueToolNames(
+		CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(
+			({ name, path, method, fallbackDescription }) => toolsForRoute(name, path, method, fallbackDescription),
+		),
 	);
 
 	return curatedTools;

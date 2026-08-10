@@ -34,7 +34,7 @@ After initialization, clients should send the negotiated version in the `MCP-Pro
 Authentication is **reused from the REST layer** — no MCP-specific credential type:
 
 - The client sends a **Personal Access Token** as `X-User-Id` + `X-Auth-Token` headers on every request (including `initialize`), because the route is `authRequired: true`.
-- The standard auth middleware resolves the user; the action reads `this.user` / `this.userId`. A missing/invalid token yields `401` before any MCP logic runs.
+- The standard auth middleware resolves the user; the MCP action then verifies that the matching login-token record is a Personal Access Token. Missing, invalid, and session tokens are rejected with `401`.
 - Every MCP action additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page.
 
 > When creating the PAT, tick **"Ignore Two Factor Authentication"**, otherwise header auth is rejected with a 2FA challenge.
@@ -43,7 +43,7 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 
 The endpoint validates the `Origin` header to protect browser-accessible deployments from DNS-rebinding attacks. Requests without `Origin` are accepted for native MCP clients. Browser requests are accepted only when their normalized origin matches `Site_Url` or an explicit entry in `API_CORS_Origin` while CORS is enabled. The wildcard (`*`) does not authorize a browser origin for MCP.
 
-Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response is capped at 5 MiB.
+Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response and final encoded MCP response is capped at 5 MiB.
 
 ## Licensing
 
@@ -61,7 +61,7 @@ Two **bounded** sets are exposed, selected by the `MCP_Expose_Extended_API` sett
 | **off** (default)         | **Minimal curated set** — a small hand-picked list (`chat_postMessage`, `chat_getMessage`, `channels_create`, `channels_list_joined`, `rooms_get`, `users_info`). |
 | **on**                    | **Extended set** — the full catalog filtered by the `ALLOWED_TOOL_NAMES` allow-list (~100 routes), still excluding routes tagged `Missing Documentation`.         |
 
-The extended set is built by walking typed routes and filtering their generated base names against the allow-list. The curated set is built from its smaller explicit route list and additionally covers a few legacy endpoints (e.g. `channels.create`) that have no typed schema.
+Both sets are built from registered typed-route metadata. The extended set filters generated base names through the allow-list, while the curated set filters routes through its smaller explicit list and supplies fallback descriptions where metadata is incomplete.
 
 ### Tool naming & variant expansion
 
@@ -86,16 +86,16 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 
 ## Dispatch
 
-`tools/call` executes the target endpoint **as the authenticated user** via a loopback HTTP call to the local REST API (`http://127.0.0.1:<PORT>/api/v1/<route>`), forwarding:
+`tools/call` executes the target endpoint **as the authenticated user** via a loopback HTTP call to the local REST API (`http://127.0.0.1:<PORT><ROOT_URL_PATH_PREFIX>/api/v1/<route>`), forwarding:
 
 - `X-User-Id` + `X-Auth-Token` (the caller's PAT), so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
 - `X-Real-IP` set to the resolved client address (`this.requestIp`), so the target endpoint's per-route rate limiter keys on the real client rather than the loopback address.
 
-The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds, and responses are capped at 5 MiB.
+The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB.
 
 ## Rate limiting
 
-The endpoint reuses Rocket.Chat's **built-in per-route rate limiter** (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). Because the route runs through `remoteAddressMiddleware`, the limiter keys on the correctly-resolved client IP; the loopback dispatch propagates that same IP to each target endpoint's limiter.
+The endpoint reuses Rocket.Chat's **built-in per-route rate limiter** (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). The route uses the client address resolved by `remoteAddressMiddleware` and propagates it to the target endpoint. As with every Rocket.Chat REST route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly; MCP does not introduce a separate proxy-trust policy.
 
 ## Settings
 
@@ -130,20 +130,20 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 - **Alpha**, off by default.
 - Implements the handshake-based Streamable HTTP lifecycle through protocol version `2025-11-25`; newer lifecycle methods are not yet supported.
 - Requires the **Rocket.Chat AI add-on** — both the route and the settings are gated by it.
-- Single request/response per POST; no server-initiated SSE stream (`GET` → `405`).
+- One HTTP response per POST; the implementation accepts one JSON-RPC message or a bounded batch of up to 20 messages. There is no server-initiated SSE stream (`GET` → `405`).
 - The official `@modelcontextprotocol/sdk` is intentionally not used; the files are structured so it can be dropped into the transport/server layer later for SSE and richer session handling.
 
 ## Key Files
 
 | Layer                                                                        | File                                                                                               |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                      | `ee/server/api/mcp/index.ts`                                                                       |
-| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `ee/server/api/mcp/server.ts`                                                                      |
-| Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/server/api/mcp/catalog.ts`                                                                     |
-| Tool dispatch (loopback to REST as the user)                                 | `ee/server/api/mcp/dispatch.ts`                                                                    |
-| Permission seed (`access-mcp`)                                               | `ee/server/api/mcp/permissions.ts`                                                                 |
-| EE module load                                                               | `ee/server/api/index.ts`                                                                           |
-| Settings (license-gated)                                                     | `server/settings/ai.ts`                                                                            |
+| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                      | `apps/meteor/ee/server/api/mcp/index.ts`                                                           |
+| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `apps/meteor/ee/server/api/mcp/server.ts`                                                          |
+| Tool catalog (curated + extended allow-list, variants, schema normalization) | `apps/meteor/ee/server/api/mcp/catalog.ts`                                                         |
+| Tool dispatch (loopback to REST as the user)                                 | `apps/meteor/ee/server/api/mcp/dispatch.ts`                                                        |
+| Permission seed (`access-mcp`)                                               | `apps/meteor/ee/server/api/mcp/permissions.ts`                                                     |
+| EE module load                                                               | `apps/meteor/ee/server/api/index.ts`                                                               |
+| Settings (license-gated)                                                     | `apps/meteor/server/settings/ai.ts`                                                                |
 | License module                                                               | `packages/ai-search/src/constants.ts` (`AI_LICENSE_MODULE`)                                        |
 | Schema descriptions reused as tool docs                                      | `packages/rest-typings/src/v1/chat.ts`, `packages/rest-typings/src/v1/users/UsersInfoParamsGet.ts` |
 | i18n                                                                         | `packages/i18n/src/locales/en.i18n.json` (`MCP_*` keys)                                            |

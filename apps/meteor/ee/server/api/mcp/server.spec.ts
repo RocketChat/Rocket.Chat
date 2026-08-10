@@ -38,6 +38,12 @@ const extendedTool = {
 	name: 'get_chat_getMessage',
 };
 
+const initializeParams = {
+	protocolVersion: '2025-06-18',
+	capabilities: {},
+	clientInfo: { name: 'test-client', version: '1.0.0' },
+};
+
 describe('MCP JSON-RPC server', () => {
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(false);
@@ -58,9 +64,7 @@ describe('MCP JSON-RPC server', () => {
 	});
 
 	it('returns server capabilities during initialization', async () => {
-		await expect(
-			handleRpcMessage({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } }, auth),
-		).resolves.toEqual({
+		await expect(handleRpcMessage({ jsonrpc: '2.0', id: 1, method: 'initialize', params: initializeParams }, auth)).resolves.toEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			result: {
@@ -73,8 +77,22 @@ describe('MCP JSON-RPC server', () => {
 
 	it('falls back to the latest supported version when negotiation fails', async () => {
 		await expect(
-			handleRpcMessage({ jsonrpc: '2.0', id: 2, method: 'initialize', params: { protocolVersion: 'unsupported' } }, auth),
+			handleRpcMessage(
+				{
+					jsonrpc: '2.0',
+					id: 2,
+					method: 'initialize',
+					params: { ...initializeParams, protocolVersion: 'unsupported' },
+				},
+				auth,
+			),
 		).resolves.toMatchObject({ result: { protocolVersion: '2025-11-25' } });
+	});
+
+	it('rejects initialize requests without the required client information', async () => {
+		await expect(
+			handleRpcMessage({ jsonrpc: '2.0', id: 2, method: 'initialize', params: { protocolVersion: '2025-11-25' } }, auth),
+		).resolves.toMatchObject({ error: { code: -32602, message: 'Invalid initialize parameters' } });
 	});
 
 	it('lists the curated toolset by default', async () => {
@@ -121,6 +139,22 @@ describe('MCP JSON-RPC server', () => {
 				isError: false,
 			},
 		});
+	});
+
+	it('marks unsuccessful REST responses as tool errors', async () => {
+		jest.mocked(dispatchTool).mockResolvedValue({ ok: false, status: 403, body: { error: 'Forbidden' } });
+
+		await expect(
+			handleRpcMessage({ jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: tool.name, arguments: {} } }, auth),
+		).resolves.toMatchObject({ result: { isError: true, content: [{ text: JSON.stringify({ error: 'Forbidden' }) }] } });
+	});
+
+	it('returns thrown dispatch failures as tool errors', async () => {
+		jest.mocked(dispatchTool).mockRejectedValue(new Error('Connection failed'));
+
+		await expect(
+			handleRpcMessage({ jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: tool.name, arguments: {} } }, auth),
+		).resolves.toMatchObject({ result: { isError: true, content: [{ text: 'Tool execution failed: Connection failed' }] } });
 	});
 
 	it('rejects unknown tools without dispatching', async () => {
