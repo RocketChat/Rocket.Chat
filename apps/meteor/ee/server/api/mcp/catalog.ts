@@ -198,7 +198,7 @@ const mcpSafeSchema = (value: unknown): unknown => {
 		if (key === 'nullable' || key === 'not') {
 			continue;
 		}
-		node[key] = val;
+		node[key] = mcpSafeSchema(val);
 	}
 
 	const combinator = COMBINATOR_KEYS.find((key) => Array.isArray(node[key]) && (node[key] as unknown[]).length > 0);
@@ -210,15 +210,6 @@ const mcpSafeSchema = (value: unknown): unknown => {
 		// The first branch supplies the structure (type/properties/required); this node's
 		// own keys (e.g. a top-level `description`) win on top.
 		node = { ...firstBranch, ...node };
-	}
-
-	if (node.properties && typeof node.properties === 'object') {
-		node.properties = Object.fromEntries(
-			Object.entries(node.properties as Record<string, unknown>).map(([key, val]) => [key, mcpSafeSchema(val)]),
-		);
-	}
-	if (node.items) {
-		node.items = mcpSafeSchema(node.items);
 	}
 
 	return node;

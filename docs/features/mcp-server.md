@@ -6,16 +6,16 @@
 
 The MCP server exposes the Rocket.Chat REST API to [Model Context Protocol](https://modelcontextprotocol.io) clients (Claude Desktop/Code, IDE agents, custom agents). It speaks **JSON-RPC 2.0 over Streamable HTTP** and turns existing REST endpoints into MCP **tools**, so an AI client can drive a workspace (post messages, search, manage rooms, look up users, …) using the user's own credentials and permissions.
 
-It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal is _native + minimum changes_: it reuses the existing REST middleware chain (auth, rate limiting, remote-address resolution, CORS, logging, metrics) and the API's already-generated typed-route metadata instead of re-implementing any of it. There is **no new runtime dependency** — the JSON-RPC layer is implemented directly.
+It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal is _native + minimum changes_: it reuses the existing REST middleware chain (auth, rate limiting, remote-address resolution, logging, metrics) and the API's already-generated typed-route metadata instead of re-implementing any of it. The endpoint adds MCP-specific Origin validation for DNS-rebinding protection. There is **no new runtime dependency** — the JSON-RPC layer is implemented directly.
 
 ## Endpoint
 
-| Method | Endpoint | Behavior |
-|--------|----------|----------|
-| POST | `/api/v1/mcp` | JSON-RPC 2.0 request (single message or batch array). Response is `application/json`. |
-| GET | `/api/v1/mcp` | `405` — this transport does not offer a server-initiated SSE stream (spec-compliant "no stream"). |
+| Method | Endpoint      | Behavior                                                                                |
+| ------ | ------------- | --------------------------------------------------------------------------------------- |
+| POST   | `/api/v1/mcp` | JSON-RPC 2.0 request (single message or batch array). Response is `application/json`.   |
+| GET    | `/api/v1/mcp` | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream. |
 
-The endpoint is registered as an ordinary API route via `API.v1.addRoute('mcp', { authRequired: true }, …)`, so it flows through the same middleware as every other REST endpoint. When `MCP_Enabled` is off the action returns `404`.
+The endpoint is registered as an ordinary API route with authentication, `access-mcp` permission, and AI license requirements, so it flows through the same middleware as every other REST endpoint. When `MCP_Enabled` is off the action returns `404`.
 
 ## Request lifecycle
 
@@ -27,6 +27,8 @@ The MCP handshake is the standard JSON-RPC flow:
 
 Also handled: `ping`, and the `notifications/initialized` / `notifications/cancelled` notifications (acknowledged with `202`, no body).
 
+After initialization, clients should send the negotiated version in the `MCP-Protocol-Version` header. Requests with an unsupported version are rejected with `400`; the header may be omitted for compatibility with the `2025-03-26` transport revision.
+
 ## Authentication
 
 Authentication is **reused from the REST layer** — no MCP-specific credential type:
@@ -36,6 +38,12 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 - Every MCP action additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page.
 
 > When creating the PAT, tick **"Ignore Two Factor Authentication"**, otherwise header auth is rejected with a 2FA challenge.
+
+## Transport security
+
+The endpoint validates the `Origin` header to protect browser-accessible deployments from DNS-rebinding attacks. Requests without `Origin` are accepted for native MCP clients. Browser requests are accepted only when their normalized origin matches `Site_Url` or an explicit entry in `API_CORS_Origin` while CORS is enabled. The wildcard (`*`) does not authorize a browser origin for MCP.
+
+Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response is capped at 5 MiB.
 
 ## Licensing
 
@@ -48,12 +56,12 @@ The feature is gated behind the **Rocket.Chat AI add-on** (`chat.rocket.rc-ai`):
 
 Two **bounded** sets are exposed, selected by the `MCP_Expose_Extended_API` setting. The full unfiltered API is **never** exposed.
 
-| `MCP_Expose_Extended_API` | Exposed tools |
-|---|---|
-| **off** (default) | **Minimal curated set** — a small hand-picked list (`chat_postMessage`, `chat_getMessage`, `channels_create`, `channels_list_joined`, `rooms_get`, `users_info`). |
-| **on** | **Extended set** — the full catalog filtered by the `ALLOWED_TOOL_NAMES` allow-list (~100 routes), still excluding routes tagged `Missing Documentation`. |
+| `MCP_Expose_Extended_API` | Exposed tools                                                                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **off** (default)         | **Minimal curated set** — a small hand-picked list (`chat_postMessage`, `chat_getMessage`, `channels_create`, `channels_list_joined`, `rooms_get`, `users_info`). |
+| **on**                    | **Extended set** — the full catalog filtered by the `ALLOWED_TOOL_NAMES` allow-list (~100 routes), still excluding routes tagged `Missing Documentation`.         |
 
-Both sets are built by the same walker (`collectTools(isRouteAllowed)`); the curated set additionally covers a few legacy endpoints (e.g. `channels.create`) that have no typed schema.
+The extended set is built by walking typed routes and filtering their generated base names against the allow-list. The curated set is built from its smaller explicit route list and additionally covers a few legacy endpoints (e.g. `channels.create`) that have no typed schema.
 
 ### Tool naming & variant expansion
 
@@ -93,9 +101,9 @@ The endpoint reuses Rocket.Chat's **built-in per-route rate limiter** (enabled b
 
 Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `MCP_Enabled` | `false` | Enables the `/api/v1/mcp` endpoint. Flagged **alpha** via an admin warning callout (`MCP_Alpha_Alert`). |
+| Setting                   | Default | Description                                                                                                                                       |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MCP_Enabled`             | `false` | Enables the `/api/v1/mcp` endpoint. Flagged **alpha** via an admin warning callout (`MCP_Alpha_Alert`).                                           |
 | `MCP_Expose_Extended_API` | `false` | When on, exposes the extended allow-listed toolset instead of the minimal curated one. Gated behind `MCP_Enabled`. The full API is never exposed. |
 
 ## Connecting a client
@@ -127,15 +135,15 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 
 ## Key Files
 
-| Layer | File |
-|-------|------|
-| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate | `ee/server/api/mcp/index.ts` |
-| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…) | `ee/server/api/mcp/server.ts` |
-| Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/server/api/mcp/catalog.ts` |
-| Tool dispatch (loopback to REST as the user) | `ee/server/api/mcp/dispatch.ts` |
-| Permission seed (`access-mcp`) | `ee/server/api/mcp/permissions.ts` |
-| EE module load | `ee/server/api/index.ts` |
-| Settings (license-gated) | `server/settings/ai.ts` |
-| License module | `packages/ai-search/src/constants.ts` (`AI_LICENSE_MODULE`) |
-| Schema descriptions reused as tool docs | `packages/rest-typings/src/v1/chat.ts`, `packages/rest-typings/src/v1/users/UsersInfoParamsGet.ts` |
-| i18n | `packages/i18n/src/locales/en.i18n.json` (`MCP_*` keys) |
+| Layer                                                                        | File                                                                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                      | `ee/server/api/mcp/index.ts`                                                                       |
+| JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `ee/server/api/mcp/server.ts`                                                                      |
+| Tool catalog (curated + extended allow-list, variants, schema normalization) | `ee/server/api/mcp/catalog.ts`                                                                     |
+| Tool dispatch (loopback to REST as the user)                                 | `ee/server/api/mcp/dispatch.ts`                                                                    |
+| Permission seed (`access-mcp`)                                               | `ee/server/api/mcp/permissions.ts`                                                                 |
+| EE module load                                                               | `ee/server/api/index.ts`                                                                           |
+| Settings (license-gated)                                                     | `server/settings/ai.ts`                                                                            |
+| License module                                                               | `packages/ai-search/src/constants.ts` (`AI_LICENSE_MODULE`)                                        |
+| Schema descriptions reused as tool docs                                      | `packages/rest-typings/src/v1/chat.ts`, `packages/rest-typings/src/v1/users/UsersInfoParamsGet.ts` |
+| i18n                                                                         | `packages/i18n/src/locales/en.i18n.json` (`MCP_*` keys)                                            |

@@ -34,7 +34,15 @@ jest.mock('../../../../server/api', () => ({
 				'/api/v1/rooms.get': {
 					get: {
 						tags: ['Rooms'],
-						parameters: [{ schema: { type: 'object', properties: { updatedSince: { type: 'string' } } } }],
+						parameters: [
+							{
+								schema: {
+									type: 'object',
+									properties: { updatedSince: { type: 'string' } },
+									additionalProperties: { type: 'string', nullable: true },
+								},
+							},
+						],
 					},
 				},
 				'/api/v1/rooms.isMember': {
@@ -93,6 +101,7 @@ describe('MCP tool catalog', () => {
 			properties: { roomId: { type: 'string' }, text: { type: 'string' } },
 			required: ['roomId'],
 		});
+		expect(tools[2]?.inputSchema).toMatchObject({ additionalProperties: { type: 'string' } });
 	});
 
 	it('only exposes allow-listed routes in the extended catalog', () => {

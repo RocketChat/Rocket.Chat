@@ -1,7 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 
 import { handleMcpGet, handleMcpPost } from './index';
 import { handleRpcMessage } from './server';
+import { API } from '../../../../server/api';
 import { settings } from '../../../../server/settings/cached';
 
 jest.mock('./permissions', () => ({}));
@@ -21,7 +22,6 @@ jest.mock('../../../../server/settings/cached', () => ({
 const context = {
 	bodyParams: { jsonrpc: '2.0', id: 1, method: 'ping' },
 	userId: 'user-id',
-	user: { _id: 'user-id' } as IUser,
 	requestIp: '192.0.2.1',
 	request: new Request('http://localhost/api/v1/mcp', { headers: { 'x-auth-token': 'auth-token' } }),
 };
@@ -32,11 +32,19 @@ describe('MCP HTTP route', () => {
 		jest.mocked(handleRpcMessage).mockReset();
 	});
 
+	it('registers the endpoint with authentication, permission, and license gates', () => {
+		expect(API.v1.addRoute).toHaveBeenCalledWith(
+			'mcp',
+			{ authRequired: true, permissionsRequired: ['access-mcp'], license: [AI_LICENSE_MODULE] },
+			{ post: handleMcpPost, get: handleMcpGet },
+		);
+	});
+
 	it('returns not found while MCP is disabled', async () => {
 		jest.mocked(settings.get).mockReturnValue(false);
 
 		await expect(handleMcpPost.call(context)).resolves.toMatchObject({ statusCode: 404 });
-		expect(handleMcpGet()).toMatchObject({ statusCode: 404 });
+		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 404 });
 	});
 
 	it('rejects empty and oversized JSON-RPC batches', async () => {
@@ -56,10 +64,63 @@ describe('MCP HTTP route', () => {
 	it('acknowledges notifications without a response body', async () => {
 		jest.mocked(handleRpcMessage).mockResolvedValue(null);
 
-		await expect(handleMcpPost.call(context)).resolves.toEqual({ statusCode: 202, body: {} });
+		await expect(handleMcpPost.call(context)).resolves.toEqual({ statusCode: 202, body: undefined });
+		await expect(handleMcpPost.call({ ...context, bodyParams: [context.bodyParams] })).resolves.toEqual({
+			statusCode: 202,
+			body: undefined,
+		});
+	});
+
+	it('omits notification entries from batch responses', async () => {
+		const response = { jsonrpc: '2.0' as const, id: 1, result: {} };
+		jest.mocked(handleRpcMessage).mockResolvedValueOnce(response).mockResolvedValueOnce(null);
+
+		await expect(handleMcpPost.call({ ...context, bodyParams: [context.bodyParams, context.bodyParams] })).resolves.toEqual({
+			statusCode: 200,
+			body: [response],
+		});
 	});
 
 	it('returns method not allowed for GET requests', () => {
-		expect(handleMcpGet()).toMatchObject({ statusCode: 405 });
+		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+	});
+
+	it('rejects browser requests from untrusted origins', async () => {
+		jest.mocked(settings.get).mockImplementation((setting) => {
+			if (setting === 'MCP_Enabled') {
+				return true;
+			}
+			if (setting === 'Site_Url') {
+				return 'https://chat.example.com';
+			}
+			return false;
+		});
+
+		await expect(
+			handleMcpPost.call({
+				...context,
+				request: new Request('https://chat.example.com/api/v1/mcp', {
+					headers: { 'origin': 'https://attacker.example', 'x-auth-token': 'auth-token' },
+				}),
+			}),
+		).resolves.toMatchObject({ statusCode: 403 });
+		expect(handleRpcMessage).not.toHaveBeenCalled();
+		expect(
+			handleMcpGet.call({
+				request: new Request('https://chat.example.com/api/v1/mcp', { headers: { origin: 'https://attacker.example' } }),
+			}),
+		).toMatchObject({ statusCode: 403 });
+	});
+
+	it('rejects unsupported protocol-version headers', async () => {
+		await expect(
+			handleMcpPost.call({
+				...context,
+				request: new Request('http://localhost/api/v1/mcp', {
+					headers: { 'mcp-protocol-version': '2099-01-01', 'x-auth-token': 'auth-token' },
+				}),
+			}),
+		).resolves.toMatchObject({ statusCode: 400 });
+		expect(handleRpcMessage).not.toHaveBeenCalled();
 	});
 });

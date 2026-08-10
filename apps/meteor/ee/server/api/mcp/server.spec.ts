@@ -1,5 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { getCuratedTools, getExtendedTools } from './catalog';
 import { dispatchTool } from './dispatch';
 import { handleRpcMessage, isJsonRpcRequest, type McpAuth } from './server';
@@ -23,7 +21,6 @@ jest.mock('../../../../server/settings/cached', () => ({
 }));
 
 const auth: McpAuth = {
-	user: { _id: 'user-id' } as IUser,
 	userId: 'user-id',
 	authToken: 'auth-token',
 };
@@ -36,11 +33,16 @@ const tool = {
 	method: 'get' as const,
 };
 
+const extendedTool = {
+	...tool,
+	name: 'get_chat_getMessage',
+};
+
 describe('MCP JSON-RPC server', () => {
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(false);
-		jest.mocked(getCuratedTools).mockReturnValue([tool]);
-		jest.mocked(getExtendedTools).mockReturnValue([]);
+		jest.mocked(getCuratedTools).mockReset().mockReturnValue([tool]);
+		jest.mocked(getExtendedTools).mockReset().mockReturnValue([]);
 		jest.mocked(dispatchTool).mockReset();
 	});
 
@@ -83,6 +85,17 @@ describe('MCP JSON-RPC server', () => {
 		expect(response).toMatchObject({ result: { tools: [{ name: tool.name }] } });
 	});
 
+	it('lists the extended toolset when enabled', async () => {
+		jest.mocked(settings.get).mockReturnValue(true);
+		jest.mocked(getExtendedTools).mockReturnValue([extendedTool]);
+
+		const response = await handleRpcMessage({ jsonrpc: '2.0', id: 3, method: 'tools/list' }, auth);
+
+		expect(getExtendedTools).toHaveBeenCalledTimes(1);
+		expect(getCuratedTools).not.toHaveBeenCalled();
+		expect(response).toMatchObject({ result: { tools: [{ name: extendedTool.name }] } });
+	});
+
 	it('validates tool call parameters before dispatch', async () => {
 		await expect(
 			handleRpcMessage({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: tool.name, arguments: [] } }, auth),
@@ -108,6 +121,13 @@ describe('MCP JSON-RPC server', () => {
 				isError: false,
 			},
 		});
+	});
+
+	it('rejects unknown tools without dispatching', async () => {
+		await expect(
+			handleRpcMessage({ jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'unknown', arguments: {} } }, auth),
+		).resolves.toMatchObject({ error: { code: -32602, message: 'Unknown tool: unknown' } });
+		expect(dispatchTool).not.toHaveBeenCalled();
 	});
 
 	it('does not reply to notifications', async () => {

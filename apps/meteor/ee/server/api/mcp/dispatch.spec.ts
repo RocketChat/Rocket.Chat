@@ -1,10 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { dispatchTool } from './dispatch';
 import type { McpAuth } from './server';
 
 const auth: McpAuth = {
-	user: { _id: 'user-id' } as IUser,
 	userId: 'user-id',
 	authToken: 'auth-token',
 };
@@ -69,6 +66,24 @@ describe('MCP tool dispatch', () => {
 				auth,
 			),
 		).resolves.toEqual({ ok: false, status: 503, body: 'Service unavailable' });
+	});
+
+	it('handles empty REST responses', async () => {
+		jest.spyOn(global, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+
+		await expect(
+			dispatchTool(
+				{
+					name: 'subscriptions_read',
+					description: 'Mark a subscription as read',
+					inputSchema: { type: 'object' },
+					path: '/api/v1/subscriptions.read',
+					method: 'post',
+				},
+				{ rid: 'room-id' },
+				auth,
+			),
+		).resolves.toEqual({ ok: true, status: 204, body: '' });
 	});
 
 	it('rejects responses that exceed the MCP result size limit', async () => {

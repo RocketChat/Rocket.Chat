@@ -1,19 +1,16 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { getCuratedTools, getExtendedTools, type McpTool } from './catalog';
 import { dispatchTool } from './dispatch';
+import { SUPPORTED_PROTOCOL_VERSIONS } from './transport';
 import { getTrimmedServerVersion } from '../../../../server/api/lib/getTrimmedServerVersion';
 import { settings } from '../../../../server/settings/cached';
 
 export type McpAuth = {
-	user: IUser;
 	userId: string;
 	/** The raw (unhashed) Personal Access Token, forwarded to the REST layer on dispatch. */
 	authToken: string;
 };
 
 const DEFAULT_PROTOCOL_VERSION = '2025-11-25';
-const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-11-25', '2025-06-18', '2025-03-26']);
 
 const negotiateProtocolVersion = (requestedVersion: unknown): string =>
 	typeof requestedVersion === 'string' && SUPPORTED_PROTOCOL_VERSIONS.has(requestedVersion) ? requestedVersion : DEFAULT_PROTOCOL_VERSION;

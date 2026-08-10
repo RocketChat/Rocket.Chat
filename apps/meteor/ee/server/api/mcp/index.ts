@@ -1,8 +1,8 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
-import type { IUser } from '@rocket.chat/core-typings';
 
 import './permissions';
 import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
+import { isMcpOriginAllowed, isMcpProtocolVersionSupported } from './transport';
 import { API } from '../../../../server/api';
 import { settings } from '../../../../server/settings/cached';
 
@@ -14,21 +14,40 @@ const disabledResponse = {
 type McpActionContext = {
 	bodyParams: unknown;
 	userId: string;
-	user: IUser;
 	requestIp: string;
 	request: Request;
 };
 
 const MAX_BATCH_SIZE = 20;
 
+const validateTransportRequest = (request: Request) => {
+	if (!isMcpOriginAllowed(request.headers.get('origin'))) {
+		return {
+			statusCode: 403,
+			body: { jsonrpc: '2.0', id: null, error: { code: -32000, message: 'Origin is not allowed' } },
+		};
+	}
+	if (!isMcpProtocolVersionSupported(request.headers.get('mcp-protocol-version'))) {
+		return {
+			statusCode: 400,
+			body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Unsupported MCP protocol version' } },
+		};
+	}
+	return undefined;
+};
+
 export const handleMcpPost = async function (this: McpActionContext) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
 
+	const transportError = validateTransportRequest(this.request);
+	if (transportError) {
+		return transportError;
+	}
+
 	const message = this.bodyParams;
 	const auth: McpAuth = {
-		user: this.user,
 		userId: this.userId,
 		// The auth middleware already validated this token; forward the raw value so the
 		// loopback dispatch authenticates as the same user.
@@ -47,32 +66,44 @@ export const handleMcpPost = async function (this: McpActionContext) {
 		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp)))).filter(
 			(response): response is JsonRpcResponse => response !== null,
 		);
-		return responses.length ? { statusCode: 200, body: responses } : { statusCode: 202, body: {} };
+		return responses.length ? { statusCode: 200, body: responses } : { statusCode: 202, body: undefined };
 	}
 
 	const response = await handleRpcMessage(message, auth, clientIp);
 	if (!response) {
 		// Notification — acknowledge without a body.
-		return { statusCode: 202, body: {} };
+		return { statusCode: 202, body: undefined };
 	}
 
 	return { statusCode: 200, body: response };
 };
 
-export const handleMcpGet = () => {
+export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
+
+	const transportError = validateTransportRequest(this.request);
+	if (transportError) {
+		return transportError;
+	}
+
 	// This minimal transport doesn't offer a server-initiated SSE stream (spec allows 405).
-	return { statusCode: 405, body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Only POST is supported' } } };
+	return {
+		statusCode: 405,
+		headers: { Allow: 'POST' },
+		body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Only POST is supported' } },
+	};
 };
 
 /**
  * MCP Streamable-HTTP endpoint, mounted on the existing API router at `/api/v1/mcp`.
  * Registering it as a normal route means it reuses the whole REST middleware chain —
  * PAT authentication (`this.user`/`this.userId`), remote-address resolution
- * (`this.requestIp`), CORS, logging, metrics, and the built-in per-route rate limiter —
+ * (`this.requestIp`), logging, metrics, and the built-in per-route rate limiter —
  * instead of re-implementing them. The JSON-RPC handling lives in `./server`.
+ * Browser origins are validated here because the MCP transport requires stricter
+ * DNS-rebinding protection than the shared REST CORS middleware provides.
  *
  * Gated behind the Rocket.Chat AI add-on: requests are
  * rejected unless the workspace license includes it (the same gate also applies to the
