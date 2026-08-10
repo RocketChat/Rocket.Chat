@@ -99,6 +99,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
+				key: { 'xmppFederation.muc': 1 },
+				sparse: true,
+			},
+			{
+				key: { 'xmppFederation.role': 1, 'uids': 1 },
+				sparse: true,
+			},
+			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
 				},
