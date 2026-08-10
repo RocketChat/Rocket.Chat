@@ -24,7 +24,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           />
         </span>
       </button>
@@ -42,7 +42,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             ABC
           </span>
@@ -62,7 +62,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             DEF
           </span>
@@ -82,7 +82,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             GHI
           </span>
@@ -102,7 +102,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             JKL
           </span>
@@ -122,7 +122,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             MNO
           </span>
@@ -142,7 +142,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             PQRS
           </span>
@@ -162,7 +162,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             TUV
           </span>
@@ -182,7 +182,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             WXYZ
           </span>
@@ -202,7 +202,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           />
         </span>
       </button>
@@ -221,7 +221,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           >
             +
           </span>
@@ -241,7 +241,7 @@ exports[`renders KeypadStory without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+            class="rcx-box rcx-box--full rcx-css-1d37srp"
           />
         </span>
       </button>

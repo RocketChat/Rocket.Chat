@@ -12,7 +12,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
         style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
       >
         <button
-          class="rcx-box rcx-box--full rcx-box--focusable rcx-css-10zv1ic rcx-css-ylkbm1"
+          class="rcx-box rcx-box--full rcx-box--focusable rcx-css-18snyms rcx-css-ylkbm1"
           role="button"
         >
           <span
@@ -54,7 +54,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           role="region"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-f9cemo"
+            class="rcx-box rcx-box--full rcx-css-7xptou"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-9j23vx"
@@ -64,7 +64,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             b97ce445-b9ff-4513-8206-966afd799cd6
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-s4z8zc"
+            class="rcx-box rcx-box--full rcx-css-1a1k2uz"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-9j23vx"
@@ -74,7 +74,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             6ms
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-s4z8zc"
+            class="rcx-box rcx-box--full rcx-css-1a1k2uz"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-9j23vx"
@@ -84,7 +84,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             June 2nd, 2025 1:06 PM
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-s4z8zc"
+            class="rcx-box rcx-box--full rcx-css-1a1k2uz"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-9j23vx"
@@ -94,7 +94,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             app:checkPostMessageSent
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-f07qm2"
+            class="rcx-box rcx-box--full rcx-css-1oo4fj"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-9j23vx"
@@ -103,7 +103,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-e3nij6"
+            class="rcx-box rcx-box--full rcx-css-181gwrw"
           >
             <div
               class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"

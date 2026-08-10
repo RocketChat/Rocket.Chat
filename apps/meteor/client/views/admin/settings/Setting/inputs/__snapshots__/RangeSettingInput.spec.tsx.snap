@@ -43,11 +43,11 @@ exports[`renders Default without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-1izkbpi"
+              class="rcx-css-17kny15"
               style="position: relative;"
             >
               <div
-                class="rcx-css-cn88oj"
+                class="rcx-css-fjdcgm"
                 style="position: absolute; left: 0%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -121,11 +121,11 @@ exports[`renders Disabled without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-tn00x0"
+              class="rcx-css-lbl0bp"
               style="position: relative;"
             >
               <div
-                class="rcx-css-7xkfa"
+                class="rcx-css-1182hde"
                 style="position: absolute; left: 0%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -208,11 +208,11 @@ exports[`renders WithHint without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-1fa7y2g"
+              class="rcx-css-1hhfhpb"
               style="position: relative;"
             >
               <div
-                class="rcx-css-cn88oj"
+                class="rcx-css-fjdcgm"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -298,11 +298,11 @@ exports[`renders WithResetButton without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-1fa7y2g"
+              class="rcx-css-1hhfhpb"
               style="position: relative;"
             >
               <div
-                class="rcx-css-cn88oj"
+                class="rcx-css-fjdcgm"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -376,11 +376,11 @@ exports[`renders WithValue without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-1fa7y2g"
+              class="rcx-css-1hhfhpb"
               style="position: relative;"
             >
               <div
-                class="rcx-css-cn88oj"
+                class="rcx-css-fjdcgm"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div

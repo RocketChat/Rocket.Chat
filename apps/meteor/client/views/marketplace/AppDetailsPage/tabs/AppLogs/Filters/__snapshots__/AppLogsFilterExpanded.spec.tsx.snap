@@ -108,14 +108,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
             type="button"
           >
             <span
-              class="rcx-box rcx-box--full rcx-css-e3nij6"
+              class="rcx-box rcx-box--full rcx-css-181gwrw"
               id="react-aria-_r_7_"
             >
               All_time
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1ku6woc"
             >
               
             </i>
@@ -199,14 +199,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
             type="button"
           >
             <span
-              class="rcx-box rcx-box--full rcx-css-e3nij6"
+              class="rcx-box rcx-box--full rcx-css-181gwrw"
               id="react-aria-_r_f_"
             >
               All
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1ku6woc"
             >
               
             </i>

@@ -4,10 +4,10 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1kqj8l3"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1gfq70m"
+        class="rcx-box rcx-box--full rcx-css-e8r6o4"
       >
         <div>
           ParentRoom
@@ -20,7 +20,7 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
           >
             <div
               aria-label="rocket.cat"
-              class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
+              class="rcx-box rcx-box--full rcx-css-89p3dy rcx-css-f2vsf1"
               role="button"
               tabindex="0"
             >
@@ -29,13 +29,13 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1wz6xj9"
+                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1ku6woc"
                 >
                   
                 </i>
               </div>
               <h1
-                class="rcx-box rcx-box--full rcx-css-uuz7h"
+                class="rcx-box rcx-box--full rcx-css-e1lw7w"
               >
                 rocket.cat
               </h1>
