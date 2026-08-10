@@ -155,6 +155,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.startScheduler();
 			const job = await this.scheduler.schedule(when, id, this.decorateJobData(data, appId));
+			void AppScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 			return job.attrs._id.toString();
 		} catch (err) {
 			this.orch.getRocketChatLogger().error({ err });
@@ -190,6 +191,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 			const job = await this.scheduler.every(interval, id, this.decorateJobData(data, appId), {
 				skipImmediate,
 			});
+			void AppScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 			return job.attrs._id.toString();
 		} catch (err) {
 			this.orch.getRocketChatLogger().error({ err });

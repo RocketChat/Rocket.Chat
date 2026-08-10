@@ -157,7 +157,8 @@ export class AgendaCronJobs {
 		}
 
 		await this.define(name, callback);
-		await this.scheduler.every(schedule, name, {}, {});
+		const job = await this.scheduler.every(schedule, name, {}, {});
+		await CronJobs.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 		logger.debug({ msg: `Cron job "${name}" scheduled`, jobName: name, schedule });
 	}
 
@@ -167,7 +168,8 @@ export class AgendaCronJobs {
 		}
 
 		await this.define(name, callback);
-		await this.scheduler.schedule(when, name, {});
+		const job = await this.scheduler.schedule(when, name, {});
+		await CronJobs.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 		logger.debug({ msg: `Cron job "${name}" scheduled at timestamp`, jobName: name, when });
 	}
 
