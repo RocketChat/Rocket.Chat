@@ -88,21 +88,25 @@ function parseRoomAlias(roomAlias) {
 		throw new Error(`Invalid Matrix room alias: ${roomAlias}`);
 	}
 
+	const localAlias = match[1];
+	const aliasServerName = match[2];
+	if (!localAlias.startsWith('_xmpp_')) {
+		throw new Error(`Room alias is outside the XMPP appservice namespace: ${roomAlias}`);
+	}
+	if (aliasServerName !== serverName) {
+		throw new Error(`Room alias belongs to unexpected server ${aliasServerName}`);
+	}
+
 	return {
-		localAlias: match[1],
-		serverName: match[2],
-		externalAlias: match[1].replace(/^_xmpp_/, ''),
+		localAlias,
+		externalAlias: localAlias.slice('_xmpp_'.length),
 	};
 }
 
 function xmppLocalpart(value) {
-	return `_xmpp_${String(value)
-		.toLowerCase()
-		.replace(/=/g, '=3d')
-		.replace(/\//g, '=2f')
-		.replace(/@/g, '=40')
-		.replace(/:/g, '=3a')
-		.replace(/\s+/g, '_')}`;
+	const encoded = String(value).replace(/[^A-Za-z0-9._=-]/g, (character) => `=${character.charCodeAt(0).toString(16)}`);
+
+	return `_xmpp_${encoded}`;
 }
 
 function buildUserId(localpart) {
@@ -127,7 +131,6 @@ function requestToHomeserver(method, path, body, { userId } = {}) {
 			url,
 			{
 				method,
-				rejectUnauthorized: false,
 				headers: {
 					Authorization: `Bearer ${asToken}`,
 					...(payload && {
@@ -355,9 +358,11 @@ async function handleAppserviceRoomQuery(req, res, encodedAlias) {
 		}
 
 		const room = await ensureBridgeRoom(localAlias, externalAlias);
-		sendJson(res, 200, {
-			room_id: room.roomId,
-		});
+		if (!room.roomId) {
+			throw new Error(`Homeserver did not return a room ID for alias ${localAlias}`);
+		}
+
+		sendJson(res, 200, {});
 	} catch (error) {
 		sendJson(res, 500, {
 			errcode: 'M_UNKNOWN',
