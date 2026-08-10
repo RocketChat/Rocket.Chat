@@ -51,6 +51,7 @@ type CreateChannelModalPayload = {
 	encrypted: boolean;
 	broadcast: boolean;
 	federated: boolean;
+	xmppFederated: boolean;
 };
 
 const getFederationHintKey = (federationModule: boolean, featureToggle: boolean, federationAccessPermission: boolean): TranslationKey => {
@@ -90,6 +91,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 	const canUseFederation = federationModule && federationEnabled && federationAccessPermission;
 	const federationFieldHint = getFederationHintKey(federationModule, federationEnabled, federationAccessPermission);
 
+	const xmppServerEnabled = useSetting('XMPP_Server_Enabled', false);
+	const canUseXmpp = federationModule && xmppServerEnabled && federationAccessPermission;
+
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
@@ -114,19 +118,33 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			federated: false,
+			xmppFederated: false,
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
+	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted } = watch();
 
 	useEffect(() => {
-		if (federated) {
-			// if room is federated, it cannot be encrypted or broadcast or readOnly
+		if (federated || xmppFederated) {
+			// a federated room cannot be encrypted, broadcast or read-only
 			setValue('encrypted', false);
 			setValue('broadcast', false);
 			setValue('readOnly', false);
 		}
+	}, [federated, xmppFederated, setValue]);
+
+	// Matrix and XMPP federation are mutually exclusive on a single room
+	useEffect(() => {
+		if (federated) {
+			setValue('xmppFederated', false);
+		}
 	}, [federated, setValue]);
+
+	useEffect(() => {
+		if (xmppFederated) {
+			setValue('federated', false);
+		}
+	}, [xmppFederated, setValue]);
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -161,7 +179,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
+	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated, xmppFederated }: CreateChannelModalPayload) => {
 		let roomData;
 		const params = {
 			name,
@@ -172,6 +190,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 				broadcast,
 				encrypted,
 				...(federated && { federated }),
+				...(xmppFederated && { xmppFederated }),
 				...(teamId && { teamId }),
 			},
 		};
@@ -290,10 +309,25 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 									<Controller
 										control={control}
 										name='federated'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch {...field} checked={value} disabled={!canUseFederation || xmppFederated} />
+										)}
 									/>
 								</FieldRow>
 								<FieldHint>{t(federationFieldHint)}</FieldHint>
+							</Field>
+							<Field>
+								<FieldRow>
+									<FieldLabel>{t('XMPP_Federated')}</FieldLabel>
+									<Controller
+										control={control}
+										name='xmppFederated'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch {...field} checked={value} disabled={!canUseXmpp || federated} />
+										)}
+									/>
+								</FieldRow>
+								<FieldHint>{t('XMPP_Federated_Description')}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>

@@ -7,6 +7,9 @@ import { resolveConfig } from './config';
 import { ServerNotRunningError } from './errors';
 import type { ConnectionStatus, XMPPServerEventMap } from './events';
 import type { Logger } from './logger';
+import { MucService } from './muc/MucService';
+import { RemoteMucSession } from './muc/RemoteMucSession';
+import { splitOccupantJid } from './muc/stanzas';
 import { StanzaRouter } from './router/StanzaRouter';
 import { S2SManager } from './s2s/S2SManager';
 import type { XmppDnsResolver } from './s2s/dnsResolver';
@@ -28,9 +31,6 @@ export type SendPresenceParams = {
 };
 export type SubscriptionType = 'subscribe' | 'subscribed' | 'unsubscribe' | 'unsubscribed';
 
-/** Lists the hosted MUC rooms to advertise via disco#items — set by the MUC layer. */
-export type PublicRoomsProvider = () => { jid: string; name?: string }[];
-
 /**
  * Public entrypoint for the native XMPP S2S server. Owns the S2S transport and
  * exposes a typed event surface (via `@rocket.chat/emitter`) plus imperative
@@ -48,30 +48,31 @@ export class XMPPServer {
 
 	private readonly router: StanzaRouter;
 
+	private readonly muc: MucService;
+
+	/** Remote MUC sessions keyed by `${localBareJid}|${roomJid}`. */
+	private readonly remoteMucSessions = new Map<string, RemoteMucSession>();
+
 	private s2s: S2SManager | undefined;
-
-	private publicRoomsProvider: PublicRoomsProvider = () => [];
-
-	/** Installed by the MUC layer to consume MUC-domain-addressed stanzas. */
-	protected mucStanzaHandler?: (stanza: Element) => boolean;
 
 	constructor(config: XMPPServerConfig, options: XMPPServerOptions = {}) {
 		this.config = resolveConfig(config);
 		this.logger = this.config.logger;
 		this.resolver = options.resolver ?? resolveXmppServer;
+		this.muc = new MucService({
+			config: this.config,
+			events: this.emitter,
+			logger: this.logger,
+			send: (stanza) => this.reply(stanza),
+		});
 		this.router = new StanzaRouter({
 			config: this.config,
 			events: this.emitter,
 			logger: this.logger,
 			reply: (stanza) => this.reply(stanza),
-			listPublicRooms: () => this.publicRoomsProvider(),
-			handleMucStanza: (stanza) => this.mucStanzaHandler?.(stanza) ?? false,
+			listPublicRooms: () => this.muc.listPublicRooms(),
+			handleMucStanza: (stanza) => this.muc.handleStanza(stanza),
 		});
-	}
-
-	/** Registers the disco#items source for hosted rooms. */
-	setPublicRoomsProvider(provider: PublicRoomsProvider): void {
-		this.publicRoomsProvider = provider;
 	}
 
 	get domain(): string {
@@ -166,6 +167,78 @@ export class XMPPServer {
 		await this.send(xml('presence', { from: params.from, to: params.to, type: params.type }));
 	}
 
+	// --- Hosted MUC ---
+
+	mucCreateRoom(params: { roomId: string; public?: boolean }): void {
+		this.muc.createRoom(params);
+	}
+
+	mucDestroyRoom(roomId: string): void {
+		this.muc.destroyRoom(roomId);
+	}
+
+	mucAddLocalOccupant(params: { roomId: string; localJid: string; nick: string; role?: 'moderator' | 'participant' }): void {
+		this.muc.createRoom({ roomId: params.roomId }).addLocalOccupant({ nick: params.nick, realJid: params.localJid, role: params.role });
+	}
+
+	mucRemoveLocalOccupant(params: { roomId: string; nick: string }): void {
+		this.muc.getRoom(params.roomId)?.removeLocalOccupant(params.nick);
+	}
+
+	mucBroadcastMessage(params: { roomId: string; fromNick: string; body: string; id?: string }): void {
+		this.muc.getRoom(params.roomId)?.broadcastFromLocal({ fromNick: params.fromNick, body: params.body, id: params.id });
+	}
+
+	mucKickOccupant(params: { roomId: string; nick: string; reason?: string }): void {
+		this.muc.getRoom(params.roomId)?.kick(params.nick, params.reason);
+	}
+
+	// --- Remote MUC (we join as a client on behalf of a local user) ---
+
+	async mucJoinRemoteRoom(params: { localJid: string; roomJid: string; nick: string }): Promise<void> {
+		const key = this.remoteKey(params.localJid, params.roomJid);
+		if (this.remoteMucSessions.has(key)) {
+			return;
+		}
+		const session = new RemoteMucSession({
+			roomJid: params.roomJid,
+			localJid: params.localJid,
+			nick: params.nick,
+			send: (stanza) => this.send(stanza),
+			onJoined: (occupants) =>
+				this.emitter.emit('muc.remoteJoined', { roomJid: params.roomJid, localJid: params.localJid, nick: params.nick, occupants }),
+			onJoinFailed: (condition) => {
+				this.remoteMucSessions.delete(key);
+				this.emitter.emit('muc.remoteJoinFailed', { roomJid: params.roomJid, localJid: params.localJid, condition });
+			},
+			onOccupantJoined: (occupant) => this.emitter.emit('muc.remoteOccupantJoined', { roomJid: params.roomJid, occupant }),
+			onOccupantLeft: (nick) => this.emitter.emit('muc.remoteOccupantLeft', { roomJid: params.roomJid, nick }),
+			onMessage: (msg) => this.emitter.emit('muc.remoteMessage', { roomJid: params.roomJid, ...msg }),
+		});
+		this.remoteMucSessions.set(key, session);
+		await session.join();
+	}
+
+	async mucLeaveRemoteRoom(params: { localJid: string; roomJid: string }): Promise<void> {
+		const key = this.remoteKey(params.localJid, params.roomJid);
+		const session = this.remoteMucSessions.get(key);
+		if (session) {
+			this.remoteMucSessions.delete(key);
+			await session.leave();
+		}
+	}
+
+	async mucSendToRemoteRoom(params: { localJid: string; roomJid: string; body: string; id?: string }): Promise<void> {
+		const session = this.remoteMucSessions.get(this.remoteKey(params.localJid, params.roomJid));
+		if (session) {
+			await session.sendMessage({ body: params.body, id: params.id });
+		}
+	}
+
+	private remoteKey(localJid: string, roomJid: string): string {
+		return `${localJid.split('/')[0]}|${roomJid}`;
+	}
+
 	/** Low-level send used by the routing/handler layers. Rejects if the server is stopped. */
 	protected send(stanza: Element): Promise<void> {
 		if (!this.s2s) {
@@ -183,6 +256,9 @@ export class XMPPServer {
 
 	private handleInboundStanza(stanza: Element): void {
 		try {
+			if (this.tryHandleRemoteMuc(stanza) || this.tryHandleInvite(stanza)) {
+				return;
+			}
 			this.router.dispatch(stanza);
 		} catch (error) {
 			this.logger.error({ err: error, name: stanza.name }, 'Error dispatching inbound stanza');
@@ -192,5 +268,38 @@ export class XMPPServer {
 				raw: stanza,
 			});
 		}
+	}
+
+	/** Routes stanzas coming FROM a remote room we joined to the matching session. */
+	private tryHandleRemoteMuc(stanza: Element): boolean {
+		if (stanza.name !== 'message' && stanza.name !== 'presence') {
+			return false;
+		}
+		const [roomJid] = splitOccupantJid(stanza.attrs.from ?? '');
+		const to = stanza.attrs.to?.split('/')[0];
+		if (!roomJid || !to) {
+			return false;
+		}
+		const session = this.remoteMucSessions.get(this.remoteKey(to, roomJid));
+		if (!session) {
+			return false;
+		}
+		if (stanza.name === 'presence') {
+			session.handlePresence(stanza);
+		} else if (stanza.attrs.type === 'groupchat') {
+			session.handleMessage(stanza);
+		}
+		return true;
+	}
+
+	private tryHandleInvite(stanza: Element): boolean {
+		if (stanza.name !== 'message') {
+			return false;
+		}
+		const to = stanza.attrs.to?.split('/')[0];
+		if (!to) {
+			return false;
+		}
+		return this.muc.handlePossibleInvite(stanza, to);
 	}
 }

@@ -7486,6 +7486,8 @@
   "Would_you_like_to_return_the_inquiry": "Would you like to return the inquiry?",
   "Would_you_like_to_return_the_queue": "Would you like to move back this room to the queue? All conversation history will be kept on the room.",
   "Wrap_up_conversation": "Wrap up conversation",
+  "XMPP_Federated": "XMPP Federated",
+  "XMPP_Federated_Description": "Make this a dedicated XMPP room that remote XMPP users can join over federation. Requires the native XMPP server to be enabled.",
   "XMPP_Server": "XMPP Server (Native)",
   "XMPP_Server_Enabled": "Enabled",
   "XMPP_Server_Enabled_Description": "Run Rocket.Chat as a native XMPP server that federates directly with other XMPP servers over server-to-server (S2S).",
