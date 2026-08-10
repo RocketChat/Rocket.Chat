@@ -127,6 +127,7 @@ test.describe('LDAP', () => {
 			expect(response.status()).toBe(200);
 			const result = await response.json();
 			expect(result.success).toBe(true);
+			expect(result.message).toBe('LDAP_User_Found');
 		});
 	});
 
