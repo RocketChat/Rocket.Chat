@@ -1,43 +1,11 @@
 import { useOwnerDocument } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FSResult = {
 	fullscreen: boolean;
 	enabled: boolean;
-};
-
-/**
- * @description
- * Creates subscribe/getSnapshot for use within useSyncExternalStore
- * Tracks if any elements in the passed document are in fullscreen state by listening to `fullscreenchange` event
- */
-const makeFullscreenSubscription = (ownerDocument: Document) => {
-	let result: FSResult = { fullscreen: Boolean(ownerDocument.fullscreenElement), enabled: ownerDocument.fullscreenEnabled };
-
-	const getSnapshot = () => {
-		const fullscreen = Boolean(ownerDocument.fullscreenElement);
-		const enabled = ownerDocument.fullscreenEnabled;
-
-		if (result.fullscreen !== fullscreen || result.enabled !== enabled) {
-			result = { fullscreen, enabled };
-		}
-		return result;
-	};
-
-	const subscribe = (onStoreChange: () => void) => {
-		const onChange = () => {
-			onStoreChange();
-		};
-
-		ownerDocument.addEventListener('fullscreenchange', onChange);
-		return () => {
-			ownerDocument.removeEventListener('fullscreenchange', onChange);
-		};
-	};
-
-	return { subscribe, getSnapshot };
 };
 
 type FullScreenToggleReturn = {
@@ -57,9 +25,24 @@ type FullScreenToggleReturn = {
 export const useFullscreenToggle = (): FullScreenToggleReturn => {
 	const { t } = useTranslation();
 	const { document: ownerDocument } = useOwnerDocument();
-	const { subscribe, getSnapshot } = useMemo(() => makeFullscreenSubscription(ownerDocument), [ownerDocument]);
-	const { fullscreen, enabled } = useSyncExternalStore(subscribe, getSnapshot);
+	const [{ fullscreen, enabled }, setState] = useState<FSResult>(() => ({
+		fullscreen: Boolean(ownerDocument.fullscreenElement),
+		enabled: ownerDocument.fullscreenEnabled,
+	}));
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	useEffect(() => {
+		const onChange = () => {
+			setState({ fullscreen: Boolean(ownerDocument.fullscreenElement), enabled: ownerDocument.fullscreenEnabled });
+		};
+
+		onChange();
+
+		ownerDocument.addEventListener('fullscreenchange', onChange);
+		return () => {
+			ownerDocument.removeEventListener('fullscreenchange', onChange);
+		};
+	}, [ownerDocument]);
 
 	const toggleFullscreen = useCallback(async () => {
 		if (!enabled) {
