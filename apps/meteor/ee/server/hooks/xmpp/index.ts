@@ -1,8 +1,10 @@
 import { XMPPServer } from '@rocket.chat/core-services';
 import { isRoomXMPPFederated, isUserXMPPFederated } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { settings } from '../../../../server/settings';
 
 const logger = new Logger('XMPPServerHooks');
@@ -66,4 +68,39 @@ callbacks.add(
 	},
 	callbacks.priority.HIGH,
 	'xmpp-server-before-create-direct-room',
+);
+
+// The create-channel modal sends a transient `xmppFederated` boolean; convert it into
+// the persisted room marker. Never coexist with Matrix federation on the same room.
+prepareCreateRoomCallback.add(
+	({ extraData }) => {
+		const data = extraData as Partial<IRoom> & { xmppFederated?: boolean };
+		if (!data.xmppFederated) {
+			return;
+		}
+		delete data.xmppFederated;
+
+		if (!xmppEnabled() || data.federated) {
+			return;
+		}
+
+		const name = data.name ?? '';
+		const mucSubdomain = settings.get<string>('XMPP_Server_MUC_Subdomain') || 'conference';
+		const domain = settings.get<string>('XMPP_Server_Domain');
+		data.xmppFederation = { version: 1, role: 'host-muc', muc: `${name}@${mucSubdomain}.${domain}`, origin: domain };
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-prepare-create-room',
+);
+
+// Register the hosted MUC room with the protocol core once the room exists.
+callbacks.add(
+	'afterCreateRoom',
+	async (_owner, room) => {
+		if (xmppEnabled() && isRoomXMPPFederated(room) && room.xmppFederation.role === 'host-muc') {
+			await XMPPServer.registerHostedRoom(room);
+		}
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-after-create-room',
 );
