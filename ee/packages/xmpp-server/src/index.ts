@@ -6,3 +6,6 @@ export { escapeLocalpart, unescapeLocalpart } from './jid/escaping';
 export { normalizeDomain } from './jid/normalize';
 export { XmppError, InvalidJidError, DomainNotAllowedError, ServerNotRunningError } from './errors';
 export type { Logger } from './logger';
+
+// Rocket.Chat integration service (imports @rocket.chat/core-services & models).
+export { XMPPServerService } from './service/XMPPServerService';

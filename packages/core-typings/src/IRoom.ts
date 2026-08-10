@@ -73,6 +73,14 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	/** Native XMPP federation marker. Independent from Matrix `federated`/`federation`. */
+	xmppFederation?: {
+		version: 1;
+		role: 'dm' | 'host-muc' | 'remote-muc';
+		muc?: string;
+		with?: string;
+		origin: string;
+	};
 	/* @deprecated */
 	customFields?: Record<string, any>;
 
@@ -133,6 +141,26 @@ export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated =>
 
 export const isRoomNativeFederated = (room: Partial<IRoom>): room is IRoomNativeFederated =>
 	isRoomFederated(room) && 'federation' in room && room.federation !== undefined;
+
+/**
+ * A room federated over native XMPP. Deliberately does NOT set `federated: true`
+ * so it never trips the Matrix `FederationActions` guard or Matrix hooks.
+ * - `dm`: 1:1 with a remote XMPP user (`with` holds their bare JID)
+ * - `host-muc`: a MUC room we host (`muc` holds `<room>@<mucSubdomain>.<domain>`)
+ * - `remote-muc`: a shadow of a MUC hosted on a remote server (`muc` holds the remote room JID)
+ */
+export interface IRoomXMPPFederated extends IRoom {
+	xmppFederation: {
+		version: 1;
+		role: 'dm' | 'host-muc' | 'remote-muc';
+		muc?: string;
+		with?: string;
+		origin: string;
+	};
+}
+
+export const isRoomXMPPFederated = (room: Partial<IRoom>): room is IRoomXMPPFederated =>
+	'xmppFederation' in room && (room as Partial<IRoomXMPPFederated>).xmppFederation !== undefined;
 
 export interface ICreatedRoom extends IRoom {
 	rid: string;
