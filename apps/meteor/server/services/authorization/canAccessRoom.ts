@@ -106,7 +106,7 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 ];
 
 export const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
-	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
+	return Boolean(user && Object.keys(user).length === 1 && user._id);
 };
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
