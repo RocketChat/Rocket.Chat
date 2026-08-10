@@ -448,26 +448,17 @@ const extraPlaceholders = describeTask('extra-placeholders', async function* () 
 });
 
 const findPositionalParams = describeTask('find-sprintf-params', async function* () {
-	const sprintfRegex = /%s/g;
-
 	const resource = await readResource(baseLanguage);
 
 	for (const { key, plural, translation } of listTranslations(resource)) {
-		const match = sprintfRegex.exec(translation);
-		if (!match) continue;
+		if (!translation.includes('%s')) continue;
 
 		yield {
 			lint: async (reportError) => {
 				if (plural) {
-					reportError(
-						'key %o (plural %o) has positional parameter %o, should be named parameter like %o',
-						key,
-						plural,
-						match[0],
-						'{{param}}',
-					);
+					reportError('key %o (plural %o) has positional parameter %o, should be named parameter like %o', key, plural, '%s', '{{param}}');
 				} else {
-					reportError('key %o has positional parameter %o, should be named parameter like %o', key, match[0], '{{param}}');
+					reportError('key %o has positional parameter %o, should be named parameter like %o', key, '%s', '{{param}}');
 				}
 			},
 		};

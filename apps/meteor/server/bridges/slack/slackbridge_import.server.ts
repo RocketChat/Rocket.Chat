@@ -25,14 +25,11 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 		rid: message.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
-		msg: i18n.t(
-			'SlackBridge_start',
-			{
-				postProcess: 'sprintf',
-				sprintf: [user.username, channel],
-			},
-			user.language,
-		),
+		msg: i18n.t('SlackBridge_start', {
+			username: user.username,
+			channelName: channel,
+			lng: user.language,
+		}),
 	});
 
 	try {
@@ -44,14 +41,12 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: i18n.t(
-							'SlackBridge_error',
-							{
-								postProcess: 'sprintf',
-								sprintf: [channel, error.message],
-							},
-							user.language,
-						),
+						msg: i18n.t('SlackBridge_error', {
+							channelName: channel,
+							errorMessage: error.message,
+							interpolation: { escapeValue: false },
+							lng: user.language,
+						}),
 					});
 				} else {
 					msgStream.emit(message.rid, {
@@ -59,14 +54,10 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: i18n.t(
-							'SlackBridge_finish',
-							{
-								postProcess: 'sprintf',
-								sprintf: [channel],
-							},
-							user.language,
-						),
+						msg: i18n.t('SlackBridge_finish', {
+							channelName: channel,
+							lng: user.language,
+						}),
 					});
 				}
 			});
@@ -77,14 +68,12 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 			rid: message.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
-			msg: i18n.t(
-				'SlackBridge_error',
-				{
-					postProcess: 'sprintf',
-					sprintf: [channel, error.message],
-				},
-				user.language,
-			),
+			msg: i18n.t('SlackBridge_error', {
+				channelName: channel,
+				errorMessage: error.message,
+				interpolation: { escapeValue: false },
+				lng: user.language,
+			}),
 		});
 		throw error;
 	}
