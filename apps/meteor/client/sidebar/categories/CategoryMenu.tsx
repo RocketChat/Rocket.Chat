@@ -2,7 +2,7 @@ import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -48,6 +48,8 @@ const CategoryMenu = ({
 	} = useCustomCategories();
 	const { toggleShowUnreads: toggleSystemShowUnreads } = useShowUnreadsGroups();
 	const { toggleKeepUnreadsOnTop: toggleSystemKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
+	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread');
+	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
 	const handleNewChannel = () => {
 		close();
@@ -126,14 +128,16 @@ const CategoryMenu = ({
 			icon: 'flag',
 			content: t('Always_display'),
 			onClick: handleToggleShowUnreads,
-			addon: <ToggleSwitch checked={showUnreads} onChange={() => undefined} />,
+			addon: <ToggleSwitch disabled={disableAlwaysDisplay} checked={!disableAlwaysDisplay && showUnreads} onChange={() => undefined} />,
+			disabled: disableAlwaysDisplay,
 		},
 		{
 			id: 'keep-unreads-on-top',
 			icon: 'sort-amount-down',
 			content: t('Keep_on_top'),
 			onClick: handleToggleKeepUnreadsOnTop,
-			addon: <ToggleSwitch checked={keepUnreadsOnTop} onChange={() => undefined} />,
+			addon: <ToggleSwitch disabled={sidebarShowUnread} checked={!sidebarShowUnread && keepUnreadsOnTop} onChange={() => undefined} />,
+			disabled: sidebarShowUnread,
 		},
 	];
 

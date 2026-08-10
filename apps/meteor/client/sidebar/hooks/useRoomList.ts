@@ -123,18 +123,18 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				// A room in a custom category is shown only there (exclusive with everything below). An explicit
-				// category assignment wins over the Unread/Favorites groupings; "keep unreads on top" handles
-				// unread emphasis within the category. When custom categories are hidden, the room falls through.
+				// "Unread" grouping has priority over everything below, including custom categories.
+				if (sidebarShowUnread && isUnreadRoom(room)) {
+					return unread.add(room);
+				}
+
+				// A room in a custom category is shown only there (exclusive with everything below).
+				// "keep unreads on top" handles unread emphasis within the category.
+				// When custom categories are hidden, the room falls through.
 				const categoryId = roomToCategory.get(room.rid);
 				if (categoryId && customSets.has(categoryId)) {
 					customSets.get(categoryId)?.add(room);
 					return;
-				}
-
-				// "Unread" grouping: pull unread rooms to a dedicated group when the toggle is on.
-				if (sidebarShowUnread && isUnreadRoom(room)) {
-					return unread.add(room);
 				}
 
 				// "Favorites" grouping: gated by its own "Group by" checkbox.
