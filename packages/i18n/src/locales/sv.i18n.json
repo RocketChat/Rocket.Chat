@@ -1109,7 +1109,7 @@
   "Channel_already_exist": "Kanalen `#%s` finns redan.",
   "Channel_already_exist_static": "Kanalen finns redan.",
   "Channel_created": "Kanalen `#{{channelName}}` skapades.",
-  "Channel_doesnt_exist": "Kanalen `#{{channelName}}`existerar inte.",
+  "Channel_doesnt_exist": "Kanalen `#{{channelName}}` existerar inte.",
   "Channel_info": "Kanal info",
   "Channel_name": "Kanalnamn",
   "Channel_not_joined": "Kanal inte ansluten",
