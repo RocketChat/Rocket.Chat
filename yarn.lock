@@ -11217,6 +11217,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/xmpp-server@workspace:ee/packages/xmpp-server":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/xmpp-server@workspace:ee/packages/xmpp-server"
+  dependencies:
+    "@rocket.chat/emitter": "npm:^0.33.0"
+    "@rocket.chat/jest-presets": "workspace:^"
+    "@types/node": "npm:~22.19.21"
+    "@xmpp/jid": "npm:~0.13.1"
+    eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
+    ltx: "npm:^2.10.0"
+    pino: "npm:10.3.1"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rolldown/binding-android-arm64@npm:1.0.3":
   version: 1.0.3
   resolution: "@rolldown/binding-android-arm64@npm:1.0.3"
@@ -16092,6 +16108,13 @@ __metadata:
   version: 0.8.13
   resolution: "@xmldom/xmldom@npm:0.8.13"
   checksum: 10/f8f3d56fa91d5026885c0c5c00b07eae47647bda0d742ecbf8e51e06bb287ab30222977b20529ee15c364031606225ebca58907a8ecc76a3add6b3f10e6ddfc6
+  languageName: node
+  linkType: hard
+
+"@xmpp/jid@npm:~0.13.1":
+  version: 0.13.2
+  resolution: "@xmpp/jid@npm:0.13.2"
+  checksum: 10/0ab93c130142568ea6970f664d86d4b8f722f7202aa0ebdac2079752f87648109e26b5824b545b49b4611bbf38ffb42646c0cb98e2fd785c88632f190742f37a
   languageName: node
   linkType: hard
 
@@ -27860,6 +27883,15 @@ __metadata:
   dependencies:
     yallist: "npm:^4.0.0"
   checksum: 10/fc1fe2ee205f7c8855fa0f34c1ab0bcf14b6229e35579ec1fd1079f31d6fc8ef8eb6fd17f2f4d99788d7e339f50e047555551ebd5e434dda503696e7c6591825
+  languageName: node
+  linkType: hard
+
+"ltx@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "ltx@npm:2.10.0"
+  dependencies:
+    inherits: "npm:^2.0.4"
+  checksum: 10/af76d5fc7054a77151f8c272e92dbba70838a383a21d4c009aaee9c4ad06d706a3a8d6565c333da05d2417d7ecce6a32732e4ccc3b0cea648508edf868f4340e
   languageName: node
   linkType: hard
 
