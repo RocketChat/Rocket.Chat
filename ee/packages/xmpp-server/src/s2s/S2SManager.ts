@@ -336,11 +336,17 @@ export class S2SManager {
 	 * the source connection) on a dedicated verify connection and ask it to
 	 * validate the key.
 	 */
-	private async requestDialbackVerification(req: { originatingDomain: string; streamId: string; key: string }): Promise<DialbackVerdict> {
+	private async requestDialbackVerification(req: {
+		receivingDomain: string;
+		originatingDomain: string;
+		streamId: string;
+		key: string;
+	}): Promise<DialbackVerdict> {
 		const session = new OutboundSession({
 			config: this.deps.config,
 			logger: this.logger,
-			localDomain: this.deps.config.domain,
+			// The db:verify `from` must be the domain the db:result was addressed to
+			localDomain: req.receivingDomain,
 			targetDomain: req.originatingDomain,
 			resolver: this.deps.resolver,
 		});
