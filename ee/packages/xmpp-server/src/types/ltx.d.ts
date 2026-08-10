@@ -80,6 +80,7 @@ declare module 'ltx' {
 	import type Element from 'ltx/lib/Element';
 
 	export { Element };
+	export function parse(data: string): Element;
 	export function escapeXML(text: string): string;
 	export function unescapeXML(text: string): string;
 	export function escapeXMLText(text: string): string;
