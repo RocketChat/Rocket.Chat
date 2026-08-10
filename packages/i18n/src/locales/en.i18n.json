@@ -3546,7 +3546,7 @@
   "Master_volume_hint": "Controls the volume for all sounds coming from your workspace",
   "Max_Retry": "Maximum attemps to reconnect to the server",
   "MCP": "MCP",
-  "MCP_Alpha_Alert": "This is an alpha feature. It may change or be removed in future releases — avoid relying on it in production.",
+  "MCP_Alpha_Alert": "MCP is currently in alpha. Its capabilities and configuration may evolve as we gather feedback.",
   "MCP_Enabled": "Enable MCP endpoint",
   "MCP_Enabled_Description": "Exposes a Model Context Protocol (MCP) endpoint at `/api/v1/mcp` so MCP-capable AI clients can call the Rocket.Chat API. Clients authenticate with a Personal Access Token (`X-User-Id` + `X-Auth-Token`).",
   "MCP_Extended_API_Alert": "The extended toolset includes actions that can modify users, rooms, messages, and teams. Enable it only for trusted clients and grant the Access MCP permission to the minimum required roles.",

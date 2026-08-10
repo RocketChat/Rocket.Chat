@@ -1,6 +1,6 @@
 # MCP Server (Model Context Protocol)
 
-> **Status: Alpha.** Off by default. The feature may change or be removed in future releases.
+> **Status: Alpha.** Off by default. Its capabilities and configuration may evolve as we gather feedback.
 
 ## Overview
 
