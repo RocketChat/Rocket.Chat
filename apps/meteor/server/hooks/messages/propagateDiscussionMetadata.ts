@@ -1,19 +1,27 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
 
 import { callbacks } from '../../lib/callbacks';
-import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
-const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const parentMessage = await Messages.refreshDiscussionMetadata(room);
-	if (!parentMessage) {
-		return;
-	}
-	void notifyOnMessageChange({
-		id: parentMessage._id,
-		data: parentMessage,
-	});
+/**
+ * The messages count and the last message timestamp of the room are only written to the database
+ * once every `afterSaveMessage` callback ran, so the changes staged for the message being saved
+ * have to be applied on top of the stored room, otherwise the discussion metadata would always
+ * be left one message behind.
+ */
+const withPendingRoomChanges = (room: IRoom, roomUpdater?: Updater<IRoom>): IRoom => {
+	const { $inc, $set } = roomUpdater?.getRawUpdateFilter() ?? {};
+	const pendingMsgs = typeof $inc?.msgs === 'number' ? $inc.msgs : 0;
+	const pendingLm = $set?.lm instanceof Date ? $set.lm : undefined;
+
+	return {
+		...room,
+		msgs: room.msgs + pendingMsgs,
+		lm: pendingLm ?? room.lm,
+	};
 };
 
 /**
@@ -22,7 +30,7 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
  */
 callbacks.add(
 	'afterSaveMessage',
-	async (message, { room: { _id, prid } }) => {
+	async (message, { room: { _id, prid }, roomUpdater }) => {
 		if (!prid) {
 			return message;
 		}
@@ -38,7 +46,7 @@ callbacks.add(
 			return message;
 		}
 
-		await updateAndNotifyParentRoomWithParentMessage(room);
+		await updateAndNotifyParentRoomWithParentMessage(withPendingRoomChanges(room, roomUpdater));
 
 		return message;
 	},
