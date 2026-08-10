@@ -1,0 +1,21 @@
+ee/packages/xmpp-server/src/service/helpers/presence.ts
+  s_bad883804e82a0::t_115675c838151e 1-35
+ee/packages/xmpp-server/src/service/helpers/presence.spec.ts
+  s_bad883804e82a0::t_f476d0124468cd 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "878450bb14ed48493be2ed1bf3359195b26a9835",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
