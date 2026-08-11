@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
 import RoomMenu from './RoomMenu';
+import { createFakeLicenseInfo } from '../../tests/mocks/data';
 
 jest.mock('../../client/lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -27,8 +28,8 @@ const defaultProps = {
 	placement: 'right-start',
 };
 
-const renderOptions = {
-	wrapper: mockAppRoot()
+const buildBase = () =>
+	mockAppRoot()
 		.withTranslations('en', 'core', {
 			Hide: 'Hide',
 			Mark_unread: 'Mark Unread',
@@ -40,24 +41,47 @@ const renderOptions = {
 		})
 		.withSetting('Favorite_Rooms', true)
 		.withPermission('leave-c')
-		.withPermission('leave-p')
+		.withPermission('leave-p');
+
+const renderOptions = {
+	wrapper: buildBase().build(),
+};
+
+const enterpriseRenderOptions = {
+	wrapper: buildBase()
+		.withJohnDoe()
+		.withEndpoint('GET', '/v1/licenses.info', async () => ({
+			license: createFakeLicenseInfo({ hasValidLicense: true }),
+		}))
 		.build(),
 };
 
-it('should display all the menu options for regular rooms', async () => {
+it('should display Hide, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
 	render(<RoomMenu {...defaultProps} />, renderOptions);
 
-	const menu = screen.queryByRole('button');
-	await userEvent.click(menu as HTMLElement);
+	await userEvent.click(screen.queryByRole('button') as HTMLElement);
+
+	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Favorite' })).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: 'Move to' })).not.toBeInTheDocument();
+});
+
+it('should display Hide, Mark Unread, Leave and Move to for regular rooms with enterprise', async () => {
+	render(<RoomMenu {...defaultProps} />, enterpriseRenderOptions);
+
+	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
 	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Move to' })).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: 'Favorite' })).not.toBeInTheDocument();
 });
 
-it('should reveal Favorites inside the "Move to" submenu for regular rooms', async () => {
-	render(<RoomMenu {...defaultProps} />, renderOptions);
+it('should reveal Favorites and New category inside the "Move to" submenu for enterprise rooms', async () => {
+	render(<RoomMenu {...defaultProps} />, enterpriseRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
