@@ -1,3 +1,3 @@
 export class StartLine {
-  constructor(public s: number) {}
+	constructor(public s: number) {}
 }

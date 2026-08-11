@@ -1,3 +1,3 @@
 export class NumUsed {
-  num_used = 0;
+	num_used = 0;
 }

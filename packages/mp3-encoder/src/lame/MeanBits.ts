@@ -1,3 +1,3 @@
 export class MeanBits {
-  constructor(public bits: number) {}
+	constructor(public bits: number) {}
 }

@@ -1,9 +1,9 @@
 export interface HuffCodeTab {
-  xlen: number;
+	xlen: number;
 
-  linmax: number;
+	linmax: number;
 
-  table?: readonly number[];
+	table?: readonly number[];
 
-  hlen?: readonly number[];
+	hlen?: readonly number[];
 }
