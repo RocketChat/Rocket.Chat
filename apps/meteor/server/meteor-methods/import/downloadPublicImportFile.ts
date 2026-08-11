@@ -58,8 +58,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	await instance.startFileUpload(newFileName);
 	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
-	const importFileStore = RocketChatImportFileInstance as ImportFileStore;
-	const writeStream = importFileStore.createWriteStream(newFileName);
+	const writeStream = (RocketChatImportFileInstance as ImportFileStore).createWriteStream(newFileName);
 
 	writeStream.on('error', () => {
 		void instance.updateProgress(ProgressStep.ERROR);
