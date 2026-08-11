@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-z54li0"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -75,7 +75,7 @@ exports[`renders Default without crashing 1`] = `
                 <textarea
                   aria-describedby=""
                   aria-invalid="false"
-                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-b072o5"
+                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-vt30bf"
                   cols="1"
                   id="react-aria-_r_1_-label"
                   placeholder="Drag_and_drop_license_placeholder"
@@ -154,7 +154,7 @@ exports[`renders InvalidLicense without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-z54li0"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -219,7 +219,7 @@ exports[`renders InvalidLicense without crashing 1`] = `
                 <textarea
                   aria-describedby=""
                   aria-invalid="false"
-                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-b072o5"
+                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-vt30bf"
                   cols="1"
                   id="react-aria-_r_3_-label"
                   placeholder="Drag_and_drop_license_placeholder"
@@ -298,7 +298,7 @@ exports[`renders WithCurrentLicense without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-z54li0"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -363,7 +363,7 @@ exports[`renders WithCurrentLicense without crashing 1`] = `
                 <textarea
                   aria-describedby=""
                   aria-invalid="false"
-                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-b072o5"
+                  class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-vt30bf"
                   cols="1"
                   id="react-aria-_r_5_-label"
                   placeholder="Drag_and_drop_license_placeholder"

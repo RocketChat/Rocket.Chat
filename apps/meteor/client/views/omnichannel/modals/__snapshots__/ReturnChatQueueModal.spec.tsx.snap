@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-z54li0"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"

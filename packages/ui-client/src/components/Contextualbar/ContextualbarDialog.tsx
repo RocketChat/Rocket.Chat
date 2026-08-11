@@ -1,14 +1,13 @@
 import type { AriaDialogProps } from '@react-aria/dialog';
 import { useDialog } from '@react-aria/dialog';
 import { FocusScope } from '@react-aria/focus';
+import { Contextualbar, type ContextualbarProps } from '@rocket.chat/fuselage';
 import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
 
-import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
 
-export type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar> & { onClose?: () => void };
+export type ContextualbarDialogProps = AriaDialogProps & ContextualbarProps & { onClose?: () => void };
 
 /**
  * @prop onClose can be used to close contextualbar outside the room context with ESC key

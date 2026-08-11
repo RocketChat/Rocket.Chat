@@ -4,7 +4,7 @@ exports[`renders _MessageFooterCalloutAction without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+      class="rcx-box rcx-box--full rcx-css-cprfko"
     >
       Feedback text 
       <hr
@@ -29,7 +29,7 @@ exports[`renders MessageComposerBlocked without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+      class="rcx-box rcx-box--full rcx-css-cprfko"
     >
       <i
         aria-hidden="true"
@@ -47,7 +47,7 @@ exports[`renders MessageComposerBlockedLargeText without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+      class="rcx-box rcx-box--full rcx-css-cprfko"
     >
       <i
         aria-hidden="true"
@@ -56,7 +56,7 @@ exports[`renders MessageComposerBlockedLargeText without crashing 1`] = `
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-css-7o25pi"
+        class="rcx-box rcx-box--full rcx-css-60r3t"
       >
         Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text
       </div>
@@ -79,7 +79,7 @@ exports[`renders MessageComposerBlockedLargeTextDashed without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1r3svr2"
+      class="rcx-box rcx-box--full rcx-css-18ddpm4"
     >
       <i
         aria-hidden="true"
@@ -88,7 +88,7 @@ exports[`renders MessageComposerBlockedLargeTextDashed without crashing 1`] = `
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-css-7o25pi"
+        class="rcx-box rcx-box--full rcx-css-60r3t"
       >
         Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text
       </div>

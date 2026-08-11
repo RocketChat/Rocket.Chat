@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
     >
       <span
         data-focus-scope-start="true"
@@ -15,12 +15,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -59,7 +59,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-4k230l"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
               >
                 <div
                   data-testid="virtuoso-scroller"
@@ -332,7 +332,7 @@ exports[`renders Default without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-7rbsbd"
             />
           </div>
           <div
@@ -362,7 +362,7 @@ exports[`renders Empty without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
     >
       <span
         data-focus-scope-start="true"
@@ -373,12 +373,12 @@ exports[`renders Empty without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -453,7 +453,7 @@ exports[`renders Empty without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-7rbsbd"
             />
           </div>
           <div
@@ -483,7 +483,7 @@ exports[`renders Loading without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
     >
       <span
         data-focus-scope-start="true"
@@ -494,12 +494,12 @@ exports[`renders Loading without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -567,7 +567,7 @@ exports[`renders Loading without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-7rbsbd"
             />
           </div>
           <div
@@ -597,7 +597,7 @@ exports[`renders WithError without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
     >
       <span
         data-focus-scope-start="true"
@@ -608,12 +608,12 @@ exports[`renders WithError without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -688,7 +688,7 @@ exports[`renders WithError without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-7rbsbd"
             />
           </div>
           <div
@@ -718,7 +718,7 @@ exports[`renders WithRealNames without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
     >
       <span
         data-focus-scope-start="true"
@@ -729,12 +729,12 @@ exports[`renders WithRealNames without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -773,7 +773,7 @@ exports[`renders WithRealNames without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-4k230l"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
               >
                 <div
                   data-testid="virtuoso-scroller"
@@ -1064,7 +1064,7 @@ exports[`renders WithRealNames without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-7rbsbd"
             />
           </div>
           <div
