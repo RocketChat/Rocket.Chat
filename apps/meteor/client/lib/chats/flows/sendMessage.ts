@@ -9,6 +9,7 @@ import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
+import { processGroupMentionConfirmation } from './processGroupMentionConfirmation';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
@@ -23,6 +24,11 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	if (await processTooLongMessage(chat, message)) {
+		return;
+	}
+
+	if (await processGroupMentionConfirmation(chat, message)) {
+		chat.composer?.setText(message.msg);
 		return;
 	}
 

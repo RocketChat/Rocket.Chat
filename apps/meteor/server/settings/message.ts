@@ -165,6 +165,19 @@ export const createMessageSettings = () =>
 			type: 'int',
 			public: true,
 		});
+		await this.add('Message_ConfirmGroupMentions', true, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Message_ConfirmGroupMentions',
+			i18nDescription: 'Message_ConfirmGroupMentions_Description',
+		});
+		await this.add('Message_ConfirmGroupMentions_MinMembers', 10, {
+			type: 'int',
+			public: true,
+			i18nLabel: 'Message_ConfirmGroupMentions_MinMembers',
+			i18nDescription: 'Message_ConfirmGroupMentions_MinMembers_Description',
+			enableQuery: [{ _id: 'Message_ConfirmGroupMentions', value: true }],
+		});
 		await this.add('Message_MaxAllowedSize', 5000, {
 			type: 'int',
 			public: true,
