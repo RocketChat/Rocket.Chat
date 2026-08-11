@@ -10291,6 +10291,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mp3-encoder@workspace:packages/mp3-encoder"
   dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
     "@rollup/plugin-commonjs": "npm:~29.0.3"
     "@rollup/plugin-node-resolve": "npm:~16.0.3"
     "@rollup/plugin-typescript": "npm:~12.3.0"
@@ -10854,7 +10856,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/tsconfig@workspace:*, @rocket.chat/tsconfig@workspace:packages/tsconfig":
+"@rocket.chat/tsconfig@workspace:*, @rocket.chat/tsconfig@workspace:packages/tsconfig, @rocket.chat/tsconfig@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/tsconfig@workspace:packages/tsconfig"
   languageName: unknown

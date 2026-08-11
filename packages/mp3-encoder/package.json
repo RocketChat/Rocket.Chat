@@ -37,6 +37,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
 		"@rollup/plugin-commonjs": "~29.0.3",
 		"@rollup/plugin-node-resolve": "~16.0.3",
 		"@rollup/plugin-typescript": "~12.3.0",
