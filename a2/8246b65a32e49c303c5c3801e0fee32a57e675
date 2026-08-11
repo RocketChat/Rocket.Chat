@@ -1,0 +1,14 @@
+apps/meteor/tests/end-to-end/api/chat.ts
+  h_4c386397e672f4 3993
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a28246b65a32e49c303c5c3801e0fee32a57e675",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
