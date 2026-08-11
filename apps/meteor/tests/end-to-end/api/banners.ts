@@ -92,7 +92,7 @@ describe('banners', () => {
 					.updateOne(
 						{ _id: 'rocketchat.internal.admin.test' },
 						{
-							$unset: { banners: 1 },
+							$unset: { [`banners.${bannerId}`]: 1 },
 						},
 					);
 				await connection.close();
