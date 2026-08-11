@@ -1,0 +1,14 @@
+.changeset/sync-messages-from-ts.md
+  h_4c386397e672f4 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1713722f94b656c1f41c2cdd0f66526097469ae1",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
