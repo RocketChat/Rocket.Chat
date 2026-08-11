@@ -43,6 +43,7 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
+      fips-skip: ${{ steps.fips.outputs.fips-skip }}
       packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       github-actions-changed: ${{ steps.diff.outputs.actions-changed }}
@@ -142,6 +143,43 @@ jobs:
           DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> "$GITHUB_OUTPUT"
+
+      # How much of the FIPS suite to skip:
+      #   all      - build no fips images and run no fips tests
+      #   ui-suite - build the images, run the api suites, skip the expensive UI shards (default)
+      #   none     - skip nothing, the full fips suite runs
+      # Forks skip 'all': the fips base image (rocketchat/dhi-node) sits in a private DockerHub
+      # repo and secrets are unavailable to forks, so the pull could never succeed.
+      - id: fips
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REPO: ${{ github.repository }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO_IS_FORK: ${{ github.event.repository.fork }}
+          HAS_FIPS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'fips') }}
+        run: |
+          if [[ "$EVENT_NAME" == 'pull_request' ]]; then
+            if [[ "$PR_HEAD_REPO" == "$BASE_REPO" ]]; then
+              IS_FORK='false'
+            else
+              IS_FORK='true'
+            fi
+          else
+            IS_FORK="$REPO_IS_FORK"
+          fi
+
+          echo "EVENT_NAME: ${EVENT_NAME} / IS_FORK: ${IS_FORK}"
+
+          if [[ "$IS_FORK" == 'true' ]]; then
+            FIPS_SKIP='all'
+          elif [[ "$HAS_FIPS_LABEL" == 'true' ]]; then
+            FIPS_SKIP='none'
+          else
+            FIPS_SKIP='ui-suite'
+          fi
+
+          echo "FIPS_SKIP: ${FIPS_SKIP}"
+          echo "fips-skip=${FIPS_SKIP}" >> "$GITHUB_OUTPUT"
 
       - id: diff
         env:
@@ -365,6 +403,8 @@ jobs:
         exclude:
           - arch: arm64
             type: fips
+          # drop the whole fips leg when there is nothing downstream to consume it (fork PRs)
+          - type: ${{ needs.release-versions.outputs.fips-skip == 'all' && 'fips' || '' }}
         include:
           - arch: amd64
             service: [rocketchat]
@@ -763,6 +803,7 @@ jobs:
 
   test-api-fips:
     name: 🔨 Test API (FIPS)
+    if: needs.release-versions.outputs.fips-skip != 'all'
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -784,6 +825,7 @@ jobs:
 
   test-api-livechat-fips:
     name: 🔨 Test API Livechat (FIPS)
+    if: needs.release-versions.outputs.fips-skip != 'all'
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -805,7 +847,8 @@ jobs:
 
   test-ui-fips:
     name: 🔨 Test UI (FIPS)
-    if: contains(github.event.pull_request.labels.*.name, 'fips')
+    # only the 'fips' label opts a PR into the UI shards
+    if: needs.release-versions.outputs.fips-skip == 'none'
     needs: [checks, build-gh-docker-publish, release-versions]
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -1026,11 +1069,14 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-fips.result }}' != 'success' ]]; then
+          # the fips jobs are gated by the release-versions 'fips-skip' output, so any of them
+          # can legitimately report 'skipped' (always on fork PRs, and test-ui-fips unless the
+          # PR carries the 'fips' label)
+          if [[ '${{ needs.test-api-fips.result }}' != 'success' && '${{ needs.test-api-fips.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-livechat-fips.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-livechat-fips.result }}' != 'success' && '${{ needs.test-api-livechat-fips.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
