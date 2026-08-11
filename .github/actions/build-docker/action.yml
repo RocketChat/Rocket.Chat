@@ -199,7 +199,7 @@ runs:
         fi
 
     - name: Save Docker image as artifact
-      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      if: inputs.publish-image == 'false' && (inputs.arch == 'amd64' || inputs.type == 'fips')
       shell: bash
       env:
         SERVICE: ${{ inputs.service }}
@@ -225,7 +225,7 @@ runs:
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact
-      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      if: inputs.publish-image == 'false' && (inputs.arch == 'amd64' || inputs.type == 'fips')
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
