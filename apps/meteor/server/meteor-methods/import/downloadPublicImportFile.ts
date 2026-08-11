@@ -13,13 +13,17 @@ import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
 import { settings } from '../../settings';
 
-async function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): Promise<void> {
+type ImportFileStore = {
+	createWriteStream(fileName: string): fs.WriteStream;
+};
+
+async function getHttpFileStream(fileUrl: string): Promise<NodeJS.ReadableStream> {
 	const response = await fetch(fileUrl, {
 		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 
-	response.body.pipe(writeStream);
+	return response.body;
 }
 
 function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
@@ -54,28 +58,41 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	await instance.startFileUpload(newFileName);
 	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
-	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
+	const importFileStore = RocketChatImportFileInstance as ImportFileStore;
+	const writeStream = importFileStore.createWriteStream(newFileName);
 
 	writeStream.on('error', () => {
 		void instance.updateProgress(ProgressStep.ERROR);
 	});
 
+	let readStream: NodeJS.ReadableStream | undefined;
+	if (isUrl) {
+		try {
+			readStream = await getHttpFileStream(fileUrl);
+		} catch (error) {
+			writeStream.destroy();
+			await instance.updateProgress(ProgressStep.ERROR);
+			throw error;
+		}
+	}
+
 	writeStream.on('end', () => {
 		void instance.updateProgress(ProgressStep.FILE_LOADED);
 	});
 
-	if (isUrl) {
-		await downloadHttpFile(fileUrl, writeStream);
-	} else {
-		// If the url is actually a folder path on the current machine, skip moving it to the file store
-		if (fs.statSync(fileUrl).isDirectory()) {
-			await instance.updateRecord({ file: fileUrl });
-			await instance.updateProgress(ProgressStep.FILE_LOADED);
-			return;
-		}
-
-		copyLocalFile(fileUrl, writeStream);
+	if (readStream) {
+		readStream.pipe(writeStream);
+		return;
 	}
+
+	// If the url is actually a folder path on the current machine, skip moving it to the file store
+	if (fs.statSync(fileUrl).isDirectory()) {
+		await instance.updateRecord({ file: fileUrl });
+		await instance.updateProgress(ProgressStep.FILE_LOADED);
+		return;
+	}
+
+	copyLocalFile(fileUrl, writeStream);
 };
 
 declare module '@rocket.chat/ddp-client' {
