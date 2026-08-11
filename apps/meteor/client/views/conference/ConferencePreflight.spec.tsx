@@ -198,3 +198,51 @@ describe('what it says it is', () => {
 		expect(screen.queryByText('general')).not.toBeInTheDocument();
 	});
 });
+
+// Choosing a device is only offered where it can be honoured. A URL-based provider is told "camera on" and
+// nothing more, so offering a camera to pick would be a promise this screen cannot keep.
+describe('when the provider runs the call inside Rocket.Chat', () => {
+	const embedded = { ...bothDevices, embedded: true };
+
+	const mockDevices = (devices: Partial<MediaDeviceInfo>[]) => {
+		const track = { stop: jest.fn(), kind: 'video' };
+		Object.defineProperty(navigator, 'mediaDevices', {
+			configurable: true,
+			value: {
+				getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [track] }),
+				enumerateDevices: jest.fn().mockResolvedValue(devices),
+			},
+		});
+	};
+
+	it('offers the camera and microphone to choose from', async () => {
+		mockDevices([
+			{ kind: 'videoinput', deviceId: 'cam-1', label: 'Built-in camera' },
+			{ kind: 'audioinput', deviceId: 'mic-1', label: 'Built-in microphone' },
+		]);
+
+		renderPreflight({ capabilities: embedded });
+
+		expect(await screen.findByRole('button', { name: 'Camera' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Microphone' })).toBeInTheDocument();
+	});
+
+	// The chosen device is the client's business — the join endpoint takes only on/off, and rejects anything else.
+	it('still confirms with only the on/off state', async () => {
+		mockDevices([{ kind: 'videoinput', deviceId: 'cam-1', label: 'Built-in camera' }]);
+
+		renderPreflight({ capabilities: embedded });
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Join_call' }));
+
+		expect(onConfirm).toHaveBeenCalledWith({ mic: true, cam: false }, 'general');
+	});
+});
+
+it('offers no device to choose when the provider could not be told which', async () => {
+	renderPreflight();
+
+	expect(await screen.findByRole('button', { name: 'Join_call' })).toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: 'Camera' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: 'Microphone' })).not.toBeInTheDocument();
+});

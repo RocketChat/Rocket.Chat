@@ -18,6 +18,17 @@ import { createPortal } from 'react-dom';
 
 import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
 
+/**
+ * Turns the preflight's choice into what `LiveKitRoom` takes for a track: `false` to not publish it at all,
+ * a device id when the user picked one, and otherwise `true` for whatever the browser prefers.
+ */
+const captureOptions = (on: boolean, deviceId?: string): boolean | { deviceId: string } => {
+	if (!on) {
+		return false;
+	}
+	return deviceId ? { deviceId } : true;
+};
+
 const headersOf = () => ({
 	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
 	'X-User-Id': localStorage.getItem('Meteor.userId') || '',
@@ -764,8 +775,8 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 							token={creds.token}
 							serverUrl={creds.serverUrl}
 							connect={true}
-							audio={activeCall?.preferences?.mic ?? true}
-							video={activeCall?.preferences?.cam ?? false}
+							audio={captureOptions(activeCall?.preferences?.mic ?? true, activeCall?.preferences?.micId)}
+							video={captureOptions(activeCall?.preferences?.cam ?? false, activeCall?.preferences?.camId)}
 							onDisconnected={onLeave}
 						>
 							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />

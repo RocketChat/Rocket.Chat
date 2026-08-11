@@ -55,11 +55,20 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// How the user chose to arrive. Read from where the preflight put it rather than from this window's own
 	// join, because starting a call joins on the *start* screen — this window then finds the result in the
 	// cache, having never asked, and would otherwise hand the provider nothing and get its defaults.
-	const { preferences } = useCallPreferences(call.capabilities);
+	const { preferences, devices } = useCallPreferences(call.capabilities);
 
 	// A provider that runs the call in here is connected by a tree above this route, so joining has to tell it
 	// which call this window is showing.
-	useEmbeddedConferenceCall({ callId, rid: room.rid, embedded: conference.embedded, preferences });
+	useEmbeddedConferenceCall({
+		callId,
+		rid: room.rid,
+		embedded: conference.embedded,
+		preferences,
+		devices,
+		// Hanging up ends what this window is for, so it reports leaving and closes — the same thing Cancel on
+		// the preflight does, and what closing the window would have done anyway.
+		onEnded: leaveNow,
+	});
 
 	// How the embedded call should name and picture the viewer — it has no room membership to read that from.
 	const user = useUser();

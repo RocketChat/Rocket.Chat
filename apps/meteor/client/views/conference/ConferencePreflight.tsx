@@ -1,9 +1,11 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Field, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
 import { VideoConfController, VideoConfPopupControllers } from '@rocket.chat/ui-video-conf';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallDeviceMenu from './CallDeviceMenu';
+import { useCallDevicePreview } from './hooks/useCallDevicePreview';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
 
@@ -34,11 +36,11 @@ type ConferencePreflightProps = {
  * join is what turns these preferences into the provider's URL, so it waits here rather than happening on the way
  * in. It is also the only place devices are configured, which is what let the popups in the room stop asking.
  *
- * There is deliberately **no camera preview**. All today's providers can be told is whether to start with the
- * camera and microphone on — not *which* devices to use — so a self-view would promise a choice this screen can't
- * make, and would show a camera the call may not even end up using. It states what will happen instead, and says
- * where the choice does live. A native provider is what makes a real preview honest — in the same tile, with the
- * device controls that already sit inside it.
+ * Whether it shows a **camera preview** depends on what the provider can be told. A URL-based provider takes
+ * only "camera on" — not *which* camera — so a self-view there would promise a choice this screen can't make and
+ * might show a camera the call never uses; it says what will happen instead. A provider that runs the call in
+ * here takes the devices as well, so the preview is the honest thing: the camera it will actually send, with the
+ * device menus beside the toggles that own them.
  */
 const ConferencePreflight = ({
 	name,
@@ -51,7 +53,24 @@ const ConferencePreflight = ({
 	onCancel,
 }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
-	const { preferences, toggle } = useCallPreferences(capabilities);
+	const { preferences, devices, toggle, selectDevice } = useCallPreferences(capabilities);
+
+	// Only a provider that runs the call in here can be told which devices to use. Offering the choice to one
+	// that can't would be a promise this screen has no way to keep.
+	const canChooseDevices = Boolean(capabilities.embedded);
+
+	const preview = useCallDevicePreview(canChooseDevices, preferences, devices);
+	const selfView = canChooseDevices && preferences.cam && !!preview.stream;
+
+	// Assigned rather than passed as a prop: `srcObject` is not an attribute, so React cannot set it.
+	const videoRef = useCallback(
+		(node: HTMLVideoElement | null) => {
+			if (node) {
+				node.srcObject = preview.stream;
+			}
+		},
+		[preview.stream],
+	);
 
 	const [title, setTitle] = useState(defaultName ?? name);
 	const [confirming, setConfirming] = useState(false);
@@ -104,9 +123,9 @@ const ConferencePreflight = ({
 					</Box>
 				)}
 
-				{/* Where a self-view would go, saying what will actually happen: the provider is told on or off, and
-				    nothing more, so this is the honest version of a preview until a native provider can offer one.
-				    The devices sit inside it, where a preview's own controls would be. */}
+				{/* A provider that runs the call in here takes the devices too, so this shows what will actually be
+				    sent: the camera itself, and which camera and microphone it is. A URL-based provider takes
+				    neither, so there it keeps saying what will happen rather than promising a choice it can't make. */}
 				<Box
 					position='relative'
 					width='100%'
@@ -120,43 +139,84 @@ const ConferencePreflight = ({
 					paddingInline={24}
 					style={{ aspectRatio: '16 / 9' }}
 				>
-					<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='hint' />
-					<Box fontScale='p2b' color='hint' marginBlockStart={8} textAlign='center'>
-						{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
-					</Box>
-					{preferences.cam && (
-						<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center'>
-							{t('Which_devices_are_used_is_chosen_in_the_call')}
-						</Box>
+					{selfView ? (
+						<Box
+							is='video'
+							ref={videoRef}
+							autoPlay
+							playsInline
+							muted
+							width='100%'
+							height='100%'
+							borderRadius='x8'
+							// Mirrored, because a self-view that isn't reads as someone else's camera.
+							style={{ objectFit: 'cover', transform: 'scaleX(-1)' }}
+						/>
+					) : (
+						<>
+							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='hint' />
+							<Box fontScale='p2b' color='hint' marginBlockStart={8} textAlign='center'>
+								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
+							</Box>
+							{preferences.cam && !canChooseDevices && (
+								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center'>
+									{t('Which_devices_are_used_is_chosen_in_the_call')}
+								</Box>
+							)}
+							{preferences.cam && canChooseDevices && preview.error && (
+								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center'>
+									{t('Could_not_access_your_camera')}
+								</Box>
+							)}
+						</>
 					)}
 
-					{/* Only the devices the provider can be told about — today that is this pair, on or off. A native
-					    conference will have inputs and outputs to choose from, in this same place.
-
-					    The same controls the room's start-call popup uses, because they are the same two toggles: a
-					    user who sets them in one place and then meets the other should not have to read a new
-					    control to know what it says. */}
+					{/* The same controls the room's start-call popup uses, because they are the same two toggles: a user
+					    who sets them in one place and then meets the other should not have to read a new control to know
+					    what it says. Each carries its device menu beside it, where the in-call strip also puts it. */}
 					<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
 						<VideoConfPopupControllers>
 							{capabilities.mic && (
-								<VideoConfController
-									small={false}
-									active={preferences.mic}
-									icon={preferences.mic ? 'mic' : 'mic-off'}
-									title={preferences.mic ? t('Mic_on') : t('Mic_off')}
-									aria-label={preferences.mic ? t('Mic_on') : t('Mic_off')}
-									onClick={() => toggle('mic')}
-								/>
+								<>
+									<VideoConfController
+										small={false}
+										active={preferences.mic}
+										icon={preferences.mic ? 'mic' : 'mic-off'}
+										title={preferences.mic ? t('Mic_on') : t('Mic_off')}
+										aria-label={preferences.mic ? t('Mic_on') : t('Mic_off')}
+										onClick={() => toggle('mic')}
+									/>
+									{canChooseDevices && (
+										<CallDeviceMenu
+											title={t('Microphone')}
+											devices={preview.audioInputs}
+											selectedId={devices.micId}
+											onSelect={(deviceId) => selectDevice('mic', deviceId)}
+											disabled={!preferences.mic}
+										/>
+									)}
+								</>
 							)}
 							{capabilities.cam && (
-								<VideoConfController
-									small={false}
-									active={preferences.cam}
-									icon={preferences.cam ? 'video' : 'video-off'}
-									title={preferences.cam ? t('Cam_on') : t('Cam_off')}
-									aria-label={preferences.cam ? t('Cam_on') : t('Cam_off')}
-									onClick={() => toggle('cam')}
-								/>
+								<>
+									<VideoConfController
+										small={false}
+										active={preferences.cam}
+										icon={preferences.cam ? 'video' : 'video-off'}
+										title={preferences.cam ? t('Cam_on') : t('Cam_off')}
+										aria-label={preferences.cam ? t('Cam_on') : t('Cam_off')}
+										onClick={() => toggle('cam')}
+									/>
+									{canChooseDevices && (
+										<CallDeviceMenu
+											title={t('Camera')}
+											devices={preview.videoInputs}
+											selectedId={devices.camId}
+											onSelect={(deviceId) => selectDevice('cam', deviceId)}
+											disabled={!preferences.cam}
+										/>
+									)}
+								</>
 							)}
 						</VideoConfPopupControllers>
 					</Box>
