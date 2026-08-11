@@ -77,14 +77,15 @@ Usually **none** — this is standard XMPP federation, and public XMPP servers f
 ### From the Rocket.Chat side
 
 - **Direct message a remote XMPP user**: open the new Direct Message dialog and type the person's full JID (e.g. `alice@remote.tld`). A DM room is created; messages you send are delivered to the remote server, replies arrive in the same room. The remote user shows up like any other (federated) user.
-- **Create an XMPP room**: in the channel-creation dialog, enable the **XMPP Federated** toggle (visible when the feature is enabled and you hold the `access-federation` permission). This creates a normal-looking Rocket.Chat channel that is simultaneously a MUC room at `<name>@conference.chat.example.com`, joinable by anyone on the XMPP network (subject to the domain allow list).
+- **Create an XMPP room**: in the channel-creation dialog, enable the **XMPP Federated** toggle (visible when the feature is enabled and you hold the `access-federation` permission). This creates a normal-looking Rocket.Chat channel that is simultaneously a MUC room at `<name>@conference.chat.example.com`. Public channels are joinable by anyone on the XMPP network (subject to the domain allow list); private groups only by users you invited.
+- **Invite a remote XMPP user to a room you host**: add them by full JID (e.g. `alice@remote.tld`) either in the members field of the channel-creation dialog or later through **Team/Members → Add users**. They are added as a member and receive a MUC invitation; joining puts them in the room's roster and their messages land in the channel.
 - **Join a room hosted on a remote XMPP server**: you cannot join proactively from Rocket.Chat in v1. A remote user must invite you (see below); accepting the invite joins you to the remote room, which appears as a channel in your sidebar.
 
 ### From the XMPP side
 
 - **Direct message a Rocket.Chat user**: message `username@chat.example.com` from any XMPP client — the Rocket.Chat username is the JID localpart. No prior contact or subscription is required for messages to be delivered.
 - **Presence**: send a subscription request to a Rocket.Chat user you already share a DM with; it is auto-accepted and status updates flow both ways. Requests from strangers are declined (v1 policy).
-- **Join a Rocket.Chat-hosted XMPP room**: join `<room>@conference.chat.example.com` as a regular MUC from any client. Discovery works too: a disco query on `chat.example.com` lists the conference service and its public rooms.
+- **Join a Rocket.Chat-hosted XMPP room**: join `<room>@conference.chat.example.com` as a regular MUC from any client. Public channels admit anyone; private groups require an invitation (a join without one is refused with `registration-required`). Discovery works too: a disco query on `chat.example.com` lists the conference service and its public rooms.
 - **Invite a Rocket.Chat user to a room on your server**: send a MUC invite (mediated, XEP-0045 §7.8, or direct, XEP-0249) to `username@chat.example.com`. The Rocket.Chat user receives a room invitation; on accepting it, Rocket.Chat joins the remote MUC on their behalf and mirrors the room as a channel.
 
 ## v1 limitations

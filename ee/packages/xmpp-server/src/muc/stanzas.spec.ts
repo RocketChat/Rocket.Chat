@@ -1,7 +1,14 @@
 import { parse } from 'ltx';
 import type Element from 'ltx/lib/Element';
 
-import { buildGroupchatMessage, buildOccupantPresence, parseJoinPresence, parseMucInvite, splitOccupantJid } from './stanzas';
+import {
+	buildGroupchatMessage,
+	buildMediatedInvite,
+	buildOccupantPresence,
+	parseJoinPresence,
+	parseMucInvite,
+	splitOccupantJid,
+} from './stanzas';
 
 const p = (xmlString: string): Element => parse(xmlString) as unknown as Element;
 
@@ -49,6 +56,33 @@ describe('buildGroupchatMessage', () => {
 		});
 		expect(message.attrs).toMatchObject({ from: 'team@conference.rc.tld/alice', to: 'bob@remote.tld', type: 'groupchat', id: 'm1' });
 		expect(message.getChildText('body')).toBe('hi');
+	});
+});
+
+describe('buildMediatedInvite', () => {
+	it('is sent by the room and carries the inviter and reason', () => {
+		const invite = buildMediatedInvite({
+			roomJid: 'team@conference.rc.tld',
+			inviterJid: 'diego@rc.tld',
+			to: 'alice@remote.tld',
+			reason: 'join us',
+		});
+
+		expect(invite.attrs).toMatchObject({ from: 'team@conference.rc.tld', to: 'alice@remote.tld' });
+		const element = invite.getChild('x');
+		expect(element?.attrs.xmlns).toBe('http://jabber.org/protocol/muc#user');
+		expect(element?.getChild('invite')?.attrs.from).toBe('diego@rc.tld');
+		expect(element?.getChild('invite')?.getChildText('reason')).toBe('join us');
+	});
+
+	it('round-trips through the invite parser', () => {
+		const invite = buildMediatedInvite({ roomJid: 'team@conference.rc.tld', inviterJid: 'diego@rc.tld', to: 'alice@remote.tld' });
+
+		expect(parseMucInvite(invite, 'alice@remote.tld')).toMatchObject({
+			roomJid: 'team@conference.rc.tld',
+			toLocalJid: 'alice@remote.tld',
+			fromJid: 'diego@rc.tld',
+		});
 	});
 });
 

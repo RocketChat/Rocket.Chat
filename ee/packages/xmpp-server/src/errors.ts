@@ -36,6 +36,13 @@ export class ConnectionFailedError extends XmppError {
 	}
 }
 
+export class NotJoinedToRemoteRoomError extends XmppError {
+	constructor(roomJid: string, localJid: string) {
+		super(`No session for ${localJid} in remote room ${roomJid}`, 'not-joined-to-remote-room');
+		this.name = 'NotJoinedToRemoteRoomError';
+	}
+}
+
 export class ServerNotRunningError extends XmppError {
 	constructor() {
 		super('XMPP server is not running', 'not-running');

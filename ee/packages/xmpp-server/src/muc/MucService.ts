@@ -3,6 +3,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { ResolvedXMPPServerConfig } from '../config';
 import type { XMPPServerEventMap } from '../events';
+import type { MucRoomDescription } from '../iq/disco';
 import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
@@ -23,21 +24,36 @@ export type MucServiceDeps = {
 export class MucService {
 	private readonly rooms = new Map<string, MucRoom>();
 
+	/** Rooms that disco#items advertises; private ones stay hidden but remain routable. */
+	private readonly publicRooms = new Set<string>();
+
 	private readonly logger: Logger;
 
 	constructor(private readonly deps: MucServiceDeps) {
 		this.logger = deps.logger.child({ component: 'muc' });
 	}
 
-	createRoom(params: { roomId: string; public?: boolean }): MucRoom {
+	createRoom(params: { roomId: string; public?: boolean; subject?: string }): MucRoom {
+		if (params.public !== undefined) {
+			if (params.public) {
+				this.publicRooms.add(params.roomId);
+			} else {
+				this.publicRooms.delete(params.roomId);
+			}
+		}
+
 		const existing = this.rooms.get(params.roomId);
 		if (existing) {
+			if (params.subject !== undefined) {
+				existing.setSubject(params.subject);
+			}
 			return existing;
 		}
 
 		const roomJid = `${params.roomId}@${this.deps.config.mucDomain}`;
 		const room = new MucRoom({
 			roomJid,
+			subject: params.subject,
 			send: this.deps.send,
 			authorizeJoin: this.deps.config.delegates.authorizeMucJoin,
 			emit: (event, ...args) => this.forwardRoomEvent(params.roomId, event, args),
@@ -46,8 +62,18 @@ export class MucService {
 		return room;
 	}
 
+	/** Describes a hosted room for disco#info; undefined when the room is unknown. */
+	describeRoom(roomId: string): MucRoomDescription | undefined {
+		const room = this.rooms.get(roomId);
+		if (!room) {
+			return undefined;
+		}
+		return { roomId, public: this.publicRooms.has(roomId), subject: room.currentSubject };
+	}
+
 	destroyRoom(roomId: string): void {
 		this.rooms.delete(roomId);
+		this.publicRooms.delete(roomId);
 	}
 
 	getRoom(roomId: string): MucRoom | undefined {
@@ -55,7 +81,7 @@ export class MucService {
 	}
 
 	listPublicRooms(): { jid: string; name?: string }[] {
-		return [...this.rooms.values()].map((room) => ({ jid: room.roomJid }));
+		return [...this.rooms.entries()].filter(([roomId]) => this.publicRooms.has(roomId)).map(([, room]) => ({ jid: room.roomJid }));
 	}
 
 	/** Handles a stanza addressed to the MUC service domain. Returns true if consumed. */
