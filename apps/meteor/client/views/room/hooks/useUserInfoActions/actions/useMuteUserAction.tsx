@@ -94,7 +94,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 			return setModal(
 				<GenericModal variant='danger' confirmText={t('Yes_mute_user')} onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm}>
-					{t('The_user_wont_be_able_to_type_in_s', roomName)}
+					{t('The_user_wont_be_able_to_type_in_s', { roomName })}
 				</GenericModal>,
 			);
 		};
