@@ -193,8 +193,9 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			});
 
 			await this.add('XMPP_Server_TLS_Key', '', {
-				type: 'password',
+				type: 'string',
 				enterprise: true,
+				multiline: true,
 				modules: ['federation'],
 				invalidValue: '',
 				secret: true,

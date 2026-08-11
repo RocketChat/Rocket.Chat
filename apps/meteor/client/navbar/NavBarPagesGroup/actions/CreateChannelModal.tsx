@@ -179,7 +179,16 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated, xmppFederated }: CreateChannelModalPayload) => {
+	const handleCreateChannel = async ({
+		name,
+		members,
+		readOnly,
+		topic,
+		broadcast,
+		encrypted,
+		federated,
+		xmppFederated,
+	}: CreateChannelModalPayload) => {
 		let roomData;
 		const params = {
 			name,
@@ -275,7 +284,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 								validate: (members) =>
 									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
 							}}
-							render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
+							render={({ field }) => (
+								<UserAutoCompleteMultiple {...field} federated={federated} xmpp={xmppFederated} placeholder={t('Add_people')} />
+							)}
 						/>
 						{errors.members && <FieldError>{errors.members.message}</FieldError>}
 					</Field>
