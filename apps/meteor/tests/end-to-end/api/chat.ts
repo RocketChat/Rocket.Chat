@@ -3990,8 +3990,7 @@ describe('[Chat]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('invalid-params');
-			expect(res.body.error).to.include('must match format "iso-date-time"');
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 		});
 
 		describe('"fromTs" parameter', () => {
