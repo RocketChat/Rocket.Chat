@@ -41,8 +41,19 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 
 		await upsertMessageBulk({ msgs: result.updated.map((msg) => mapMessageFromApi(msg)), subscription });
 
+		const deletedIds = new Set<IMessage['_id']>();
+
 		for (const { _id } of result.deleted) {
 			Messages.state.delete(_id);
+			deletedIds.add(_id);
+		}
+
+		if (deletedIds.size > 0) {
+			// remove thread reference from deleted messages
+			Messages.state.update(
+				(record) => record.tmid !== undefined && deletedIds.has(record.tmid),
+				({ tmid: _, ...record }) => record,
+			);
 		}
 	} catch (error) {
 		console.error('Error loading missed messages:', error);
