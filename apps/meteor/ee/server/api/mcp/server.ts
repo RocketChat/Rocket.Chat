@@ -1,5 +1,5 @@
 import { getCuratedTools, getExtendedTools, type McpTool } from './catalog';
-import { dispatchTool } from './dispatch';
+import { dispatchTool, type McpResponseBudget } from './dispatch';
 import { SUPPORTED_PROTOCOL_VERSIONS } from './transport';
 import { getTrimmedServerVersion } from '../../../../server/api/lib/getTrimmedServerVersion';
 import { settings } from '../../../../server/settings/cached';
@@ -73,7 +73,12 @@ const toToolDefinition = ({ name, description, inputSchema }: McpTool) => ({ nam
  * Handle a single JSON-RPC message. Returns the response object, or `null` for
  * notifications (which must not produce a response per the JSON-RPC spec).
  */
-export const handleRpcMessage = async (message: unknown, auth: McpAuth, clientIp?: string): Promise<JsonRpcResponse | null> => {
+export const handleRpcMessage = async (
+	message: unknown,
+	auth: McpAuth,
+	clientIp?: string,
+	responseBudget?: McpResponseBudget,
+): Promise<JsonRpcResponse | null> => {
 	if (!isJsonRpcRequest(message)) {
 		return error(null, -32600, 'Invalid Request');
 	}
@@ -124,7 +129,7 @@ export const handleRpcMessage = async (message: unknown, auth: McpAuth, clientIp
 			}
 
 			try {
-				const dispatch = await dispatchTool(tool, args ?? {}, auth, clientIp);
+				const dispatch = await dispatchTool(tool, args ?? {}, auth, clientIp, responseBudget);
 				return respond(
 					result(id, {
 						content: [{ type: 'text', text: JSON.stringify(dispatch.body) }],

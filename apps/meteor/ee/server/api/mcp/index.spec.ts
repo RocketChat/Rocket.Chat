@@ -36,7 +36,10 @@ describe('MCP HTTP route', () => {
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(true);
 		jest.mocked(handleRpcMessage).mockReset();
-		jest.mocked(Users.findOne).mockResolvedValue({ _id: 'user-id' } as never);
+		jest
+			.mocked(Users.findOne)
+			.mockReset()
+			.mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
 	it('registers the endpoint with authentication, permission, and license gates', () => {
@@ -51,7 +54,7 @@ describe('MCP HTTP route', () => {
 		jest.mocked(settings.get).mockReturnValue(false);
 
 		await expect(handleMcpPost.call(context)).resolves.toMatchObject({ statusCode: 404 });
-		await expect(handleMcpGet.call(context)).resolves.toMatchObject({ statusCode: 404 });
+		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 404 });
 	});
 
 	it('rejects empty and oversized JSON-RPC batches', async () => {
@@ -86,10 +89,14 @@ describe('MCP HTTP route', () => {
 			statusCode: 200,
 			body: [response],
 		});
+		const [firstCall, secondCall] = jest.mocked(handleRpcMessage).mock.calls;
+		expect(firstCall?.[3]).toBeDefined();
+		expect(firstCall?.[3]).toBe(secondCall?.[3]);
 	});
 
 	it('returns method not allowed for GET requests', () => {
-		return expect(handleMcpGet.call(context)).resolves.toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+		expect(Users.findOne).not.toHaveBeenCalled();
 	});
 
 	it('rejects authenticated sessions that are not personal access tokens', async () => {
@@ -131,12 +138,11 @@ describe('MCP HTTP route', () => {
 			}),
 		).resolves.toMatchObject({ statusCode: 403 });
 		expect(handleRpcMessage).not.toHaveBeenCalled();
-		await expect(
+		expect(
 			handleMcpGet.call({
-				...context,
 				request: new Request('https://chat.example.com/api/v1/mcp', { headers: { origin: 'https://attacker.example' } }),
 			}),
-		).resolves.toMatchObject({ statusCode: 403 });
+		).toMatchObject({ statusCode: 403 });
 	});
 
 	it('rejects unsupported protocol-version headers', async () => {

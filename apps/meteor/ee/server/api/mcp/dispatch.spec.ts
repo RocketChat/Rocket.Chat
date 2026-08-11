@@ -1,4 +1,4 @@
-import { dispatchTool } from './dispatch';
+import { createMcpResponseBudget, dispatchTool } from './dispatch';
 import type { McpAuth } from './server';
 
 const auth: McpAuth = {
@@ -137,5 +137,20 @@ describe('MCP tool dispatch', () => {
 				auth,
 			),
 		).rejects.toThrow('MCP tool response exceeds the 5 MiB limit');
+	});
+
+	it('shares the response size budget across batched tool calls', async () => {
+		jest.spyOn(global, 'fetch').mockImplementation(async () => new Response('abc', { status: 200 }));
+		const responseBudget = createMcpResponseBudget(5);
+		const tool = {
+			name: 'rooms_get',
+			description: 'Get rooms',
+			inputSchema: { type: 'object' },
+			path: '/api/v1/rooms.get',
+			method: 'get' as const,
+		};
+
+		await expect(dispatchTool(tool, {}, auth, undefined, responseBudget)).resolves.toMatchObject({ body: 'abc' });
+		await expect(dispatchTool(tool, {}, auth, undefined, responseBudget)).rejects.toThrow('MCP batch response exceeds the 5 MiB limit');
 	});
 });

@@ -130,7 +130,7 @@ describe('MCP JSON-RPC server', () => {
 			'192.0.2.1',
 		);
 
-		expect(dispatchTool).toHaveBeenCalledWith(tool, { msgId: 'message-id' }, auth, '192.0.2.1');
+		expect(dispatchTool).toHaveBeenCalledWith(tool, { msgId: 'message-id' }, auth, '192.0.2.1', undefined);
 		expect(response).toEqual({
 			jsonrpc: '2.0',
 			id: 4,

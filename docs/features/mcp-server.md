@@ -34,7 +34,7 @@ After initialization, clients should send the negotiated version in the `MCP-Pro
 Authentication is **reused from the REST layer** — no MCP-specific credential type:
 
 - The client sends a **Personal Access Token** as `X-User-Id` + `X-Auth-Token` headers on every request (including `initialize`), because the route is `authRequired: true`.
-- The standard auth middleware resolves the user; the MCP action then verifies that the matching login-token record is a Personal Access Token. Missing, invalid, and session tokens are rejected with `401`.
+- For POST requests, the standard auth middleware resolves the user; the MCP action then verifies that the matching login-token record is a Personal Access Token. Missing, invalid, and session tokens are rejected with `401`. GET is still covered by route authentication but returns `405` without performing the additional token-type lookup because it cannot execute tools.
 - Every MCP action additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page.
 
 > When creating the PAT, tick **"Ignore Two Factor Authentication"**, otherwise header auth is rejected with a 2FA challenge.
@@ -43,7 +43,7 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 
 The endpoint validates the `Origin` header to protect browser-accessible deployments from DNS-rebinding attacks. Requests without `Origin` are accepted for native MCP clients. Browser requests are accepted only when their normalized origin matches `Site_Url` or an explicit entry in `API_CORS_Origin` while CORS is enabled. The wildcard (`*`) does not authorize a browser origin for MCP.
 
-Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response and final encoded MCP response is capped at 5 MiB.
+Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response and final encoded MCP response is capped at 5 MiB. Concurrent calls in a batch share the same 5 MiB streaming response budget.
 
 ## Licensing
 
@@ -91,7 +91,7 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 - `X-User-Id` + `X-Auth-Token` (the caller's PAT), so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
 - `X-Real-IP` set to the resolved client address (`this.requestIp`), so the target endpoint's per-route rate limiter keys on the real client rather than the loopback address.
 
-The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB.
+The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB; batched calls share a single streaming body budget so concurrent results cannot accumulate beyond that bound in application memory.
 
 ## Rate limiting
 

@@ -7,10 +7,28 @@ export type DispatchResult = {
 	body: unknown;
 };
 
+export type McpResponseBudget = {
+	consume: (bytes: number) => void;
+};
+
 const TOOL_CALL_TIMEOUT_MS = 20_000;
 const MAX_TOOL_RESPONSE_BYTES = 5 * 1024 * 1024;
 
-const readResponseText = async (response: Response): Promise<string> => {
+export const createMcpResponseBudget = (maxBytes = MAX_TOOL_RESPONSE_BYTES): McpResponseBudget => {
+	let remainingBytes = maxBytes;
+
+	return {
+		consume(bytes) {
+			if (bytes > remainingBytes) {
+				throw new Error('MCP batch response exceeds the 5 MiB limit');
+			}
+
+			remainingBytes -= bytes;
+		},
+	};
+};
+
+const readResponseText = async (response: Response, responseBudget?: McpResponseBudget): Promise<string> => {
 	const contentLength = Number(response.headers.get('content-length'));
 	if (Number.isFinite(contentLength) && contentLength > MAX_TOOL_RESPONSE_BYTES) {
 		throw new Error('MCP tool response exceeds the 5 MiB limit');
@@ -35,6 +53,13 @@ const readResponseText = async (response: Response): Promise<string> => {
 		if (receivedBytes > MAX_TOOL_RESPONSE_BYTES) {
 			await reader.cancel();
 			throw new Error('MCP tool response exceeds the 5 MiB limit');
+		}
+
+		try {
+			responseBudget?.consume(value.byteLength);
+		} catch (error) {
+			await reader.cancel();
+			throw error;
 		}
 		chunks.push(decoder.decode(value, { stream: true }));
 	}
@@ -61,6 +86,7 @@ export const dispatchTool = async (
 	args: Record<string, unknown>,
 	auth: McpAuth,
 	clientIp?: string,
+	responseBudget?: McpResponseBudget,
 ): Promise<DispatchResult> => {
 	const port = process.env.PORT || '3000';
 	const runtimeConfig = (
@@ -102,7 +128,7 @@ export const dispatchTool = async (
 	}
 
 	const res = await fetch(url, init);
-	const responseText = await readResponseText(res);
+	const responseText = await readResponseText(res, responseBudget);
 	let body: unknown = responseText;
 	if (responseText) {
 		try {

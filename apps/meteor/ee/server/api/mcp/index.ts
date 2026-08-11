@@ -2,6 +2,7 @@ import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { Users } from '@rocket.chat/models';
 
 import './permissions';
+import { createMcpResponseBudget } from './dispatch';
 import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
 import { isMcpOriginAllowed, isMcpProtocolVersionSupported } from './transport';
 import { API } from '../../../../server/api';
@@ -96,7 +97,8 @@ export const handleMcpPost = async function (this: McpActionContext) {
 			};
 		}
 
-		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp)))).filter(
+		const responseBudget = createMcpResponseBudget(MAX_MCP_RESPONSE_BYTES);
+		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp, responseBudget)))).filter(
 			(response): response is JsonRpcResponse => response !== null,
 		);
 		return responses.length ? jsonResponse(responses) : { statusCode: 202, body: undefined };
@@ -111,7 +113,7 @@ export const handleMcpPost = async function (this: McpActionContext) {
 	return jsonResponse(response);
 };
 
-export const handleMcpGet = async function (this: Pick<McpActionContext, 'request' | 'token' | 'userId'>) {
+export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
@@ -120,10 +122,6 @@ export const handleMcpGet = async function (this: Pick<McpActionContext, 'reques
 	if (transportError) {
 		return transportError;
 	}
-	if (!(await hasPersonalAccessToken(this))) {
-		return personalAccessTokenRequiredResponse;
-	}
-
 	// This minimal transport doesn't offer a server-initiated SSE stream (spec allows 405).
 	return {
 		statusCode: 405,
