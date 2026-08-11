@@ -1,6 +1,7 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
+import { isMongoBulkWriteError, MongoErrorCode } from '@rocket.chat/tools';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { settings } from '../../../server/settings';
@@ -47,18 +48,13 @@ export async function archiveOldReadReceipts(): Promise<void> {
 			} catch (error: unknown) {
 				// If we get duplicate key errors, some receipts were already archived, which is fine
 				// We'll continue to mark messages and delete from hot storage
-				if (error && typeof error === 'object' && ('code' in error || 'writeErrors' in error)) {
-					const mongoError = error as {
-						code?: number;
-						result?: { insertedCount?: number };
-						writeErrors?: Array<{ code?: number }>;
-					};
-					const onlyDuplicateErrors = mongoError.writeErrors?.length
-						? mongoError.writeErrors.every((writeError) => writeError.code === 11000)
-						: mongoError.code === 11000;
+				if (isMongoBulkWriteError(error)) {
+					const onlyDuplicateErrors =
+						error.writeErrors?.every((writeError) => writeError.code === MongoErrorCode.DuplicateKey) ??
+						error.code === MongoErrorCode.DuplicateKey;
 
 					if (onlyDuplicateErrors) {
-						const insertedCount = mongoError.result?.insertedCount || 0;
+						const insertedCount = error.result?.insertedCount || 0;
 						logger.info({ msg: 'Archived read receipts (some were already archived)', insertedCount, batchNumber });
 					} else {
 						throw error;

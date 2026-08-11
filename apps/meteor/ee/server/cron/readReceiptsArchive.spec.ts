@@ -176,6 +176,7 @@ describe('Read Receipts Archive', () => {
 		const duplicateError = Object.assign(new Error('Duplicate key'), {
 			code: 11000,
 			result: { insertedCount: 0 },
+			writeErrors: [],
 		});
 		(ReadReceiptsArchive.insertMany as jest.Mock).mockRejectedValue(duplicateError);
 		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 1 });

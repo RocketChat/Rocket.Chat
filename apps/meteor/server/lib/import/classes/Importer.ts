@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
+import { isMongoServerError } from '@rocket.chat/tools';
 import AdmZip from 'adm-zip';
 import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
@@ -415,6 +416,6 @@ export class Importer {
 	 * Utility method to check if the passed in error is a `MongoServerError` with the `codeName` of `'CursorNotFound'`.
 	 */
 	protected isCursorNotFoundError(error: unknown): error is MongoServerError & { codeName: 'CursorNotFound' } {
-		return typeof error === 'object' && error !== null && 'codeName' in error && error.codeName === 'CursorNotFound';
+		return isMongoServerError(error) && error.codeName === 'CursorNotFound';
 	}
 }

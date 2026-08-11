@@ -10,6 +10,7 @@ import url from 'node:url';
 
 import { Message } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
 import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
@@ -1037,10 +1038,8 @@ export default class SlackAdapter {
 			}
 			try {
 				await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
-			} catch (e) {
-				// http://www.mongodb.org/about/contributors/error-codes/
-				// 11000 == duplicate key error
-				if (e.name === 'MongoError' && e.code === 11000) {
+			} catch (e: unknown) {
+				if (isMongoServerError(e) && e.code === MongoErrorCode.DuplicateKey) {
 					return;
 				}
 

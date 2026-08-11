@@ -2,11 +2,10 @@ import crypto from 'crypto';
 
 import type { ISamlUsedAssertions, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISamlUsedAssertionsModel } from '@rocket.chat/model-typings';
-import type { MongoServerError, Collection, Db, IndexDescription } from 'mongodb';
+import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-
-const DUPLICATE_KEY_ERROR_CODE = 11000;
 
 export class SamlUsedAssertionsRaw extends BaseRaw<ISamlUsedAssertions> implements ISamlUsedAssertionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISamlUsedAssertions>>) {
@@ -28,7 +27,7 @@ export class SamlUsedAssertionsRaw extends BaseRaw<ISamlUsedAssertions> implemen
 			});
 			return true;
 		} catch (error: unknown) {
-			if (typeof error === 'object' && error !== null && (error as MongoServerError).code === DUPLICATE_KEY_ERROR_CODE) {
+			if (isMongoServerError(error) && error.code === MongoErrorCode.DuplicateKey) {
 				return false;
 			}
 			throw error;
