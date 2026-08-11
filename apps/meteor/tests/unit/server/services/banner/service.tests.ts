@@ -27,6 +27,10 @@ class BannerDismissModel extends BaseRaw<any> {
 	findByUserIdAndBannerId(): FindCursor<Pick<IBannerDismiss, 'bannerId'>> {
 		return {} as unknown as FindCursor<Pick<IBannerDismiss, 'bannerId'>>;
 	}
+
+	override insertOne(): Promise<any> {
+		return Promise.resolve({});
+	}
 }
 
 class UserModel extends BaseRaw<any> {
