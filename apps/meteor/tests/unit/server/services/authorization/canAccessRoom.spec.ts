@@ -4,42 +4,44 @@ import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+const sandbox = sinon.createSandbox();
+
 const modelsMock = {
 	Subscriptions: {
-		findOneBannedSubscription: sinon.stub(),
-		countByRoomIdAndUserId: sinon.stub(),
+		findOneBannedSubscription: sandbox.stub(),
+		countByRoomIdAndUserId: sandbox.stub(),
 	},
 	Rooms: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 	TeamMember: {
-		findOneByUserIdAndTeamId: sinon.stub(),
+		findOneByUserIdAndTeamId: sandbox.stub(),
 	},
 	Team: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 	Users: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 };
 
 const coreServicesMock = {
 	Authorization: {
-		hasPermission: sinon.stub(),
-		canAccessRoom: sinon.stub(),
+		hasPermission: sandbox.stub(),
+		canAccessRoom: sandbox.stub(),
 	},
 	License: {
-		hasModule: sinon.stub(),
+		hasModule: sandbox.stub(),
 	},
 	Abac: {
-		canAccessObject: sinon.stub(),
+		canAccessObject: sandbox.stub(),
 	},
 	Settings: {
-		get: sinon.stub(),
+		get: sandbox.stub(),
 	},
 };
 
-const canAccessRoomLivechatMock = sinon.stub();
+const canAccessRoomLivechatMock = sandbox.stub();
 
 const { canAccessRoom } = p.noCallThru().load('../../../../../server/services/authorization/canAccessRoom.ts', {
 	'@rocket.chat/models': modelsMock,
@@ -49,7 +51,7 @@ const { canAccessRoom } = p.noCallThru().load('../../../../../server/services/au
 
 describe('canAccessRoom', () => {
 	beforeEach(() => {
-		sinon.reset();
+		sandbox.reset();
 
 		// sane defaults: everything denies access unless a test says otherwise
 		modelsMock.Subscriptions.findOneBannedSubscription.resolves(null);
@@ -80,8 +82,6 @@ describe('canAccessRoom', () => {
 		});
 
 		it('should throw when the partial user cannot be found', async () => {
-			modelsMock.Users.findOneById.resolves(null);
-
 			await expect(canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: 'user-id' })).to.be.rejectedWith('User not found');
 		});
 
