@@ -6,7 +6,11 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { BannerService } = proxyquire.noCallThru().load('../../../../../server/services/banner/service', {});
+const notifyOnUserChange = sinon.stub();
+
+const { BannerService } = proxyquire.noCallThru().load('../../../../../server/services/banner/service', {
+	'../../lib/notifyListener': { notifyOnUserChange },
+});
 
 class BannerModel extends BaseRaw<any> {
 	findActiveByRoleOrId(
@@ -29,6 +33,10 @@ class UserModel extends BaseRaw<any> {
 	override findOneById(): Promise<any> {
 		return Promise.resolve({});
 	}
+
+	setBannerReadById(_userId: string, _bannerId: string): Promise<any> {
+		return Promise.resolve({ matchedCount: 0, modifiedCount: 0 });
+	}
 }
 
 function findCursorFactory<T>(items: T[]): FindCursor<T> {
@@ -48,7 +56,10 @@ describe('Banners service', () => {
 		registerModel('IUsersModel', userModel);
 	});
 
-	afterEach(() => sinon.restore());
+	afterEach(() => {
+		notifyOnUserChange.reset();
+		sinon.restore();
+	});
 
 	it('should be defined', () => {
 		const service = new BannerService();
@@ -144,6 +155,88 @@ describe('Banners service', () => {
 			expect(banners).to.have.lengthOf(1);
 			expect(banners[0].view.viewId).to.be.equal(A_SECOND_FAKE_BANNER._id);
 			expect(banners[0].surface).to.be.equal('modal');
+		});
+	});
+
+	describe('dismiss', () => {
+		const FAKE_BANNER: IBanner = {
+			_id: 'fake-id',
+			view: {
+				appId: 'fake-app-id',
+				viewId: 'fake-view-id',
+			},
+		} as IBanner;
+
+		it('should throw an error if the params are invalid', async () => {
+			const service = new BannerService();
+
+			await expect(service.dismiss('', FAKE_BANNER._id)).to.be.rejectedWith('Invalid params');
+			await expect(service.dismiss('a-fake-user-id', '')).to.be.rejectedWith('Invalid params');
+		});
+
+		it('should dismiss a banner from the banners collection', async () => {
+			const service = new BannerService();
+
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(FAKE_BANNER)));
+			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({ _id: 'a-fake-user-id', username: 'fake.user' })));
+			const insertOneMock = sinon.replace(bannerDismissModel, 'insertOne', sinon.fake.returns(Promise.resolve({})));
+			const setBannerReadByIdMock = sinon.replace(userModel, 'setBannerReadById', sinon.fake.returns(Promise.resolve({})));
+
+			await expect(service.dismiss('a-fake-user-id', FAKE_BANNER._id)).to.eventually.be.true;
+
+			expect(insertOneMock.callCount).to.be.equal(1);
+			expect(insertOneMock.firstCall.firstArg).to.deep.include({
+				userId: 'a-fake-user-id',
+				bannerId: FAKE_BANNER._id,
+				dismissedBy: { _id: 'a-fake-user-id', username: 'fake.user' },
+			});
+			expect(setBannerReadByIdMock.callCount).to.be.equal(0);
+			expect(notifyOnUserChange.callCount).to.be.equal(0);
+		});
+
+		it("should mark the banner as read on the user's record if it is not on the banners collection", async () => {
+			const service = new BannerService();
+
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+			const insertOneMock = sinon.replace(bannerDismissModel, 'insertOne', sinon.fake.returns(Promise.resolve({})));
+			const setBannerReadByIdMock = sinon.replace(
+				userModel,
+				'setBannerReadById',
+				sinon.fake.returns(Promise.resolve({ matchedCount: 1, modifiedCount: 1 })),
+			);
+
+			await expect(service.dismiss('a-fake-user-id', 'a-user-banner-id')).to.eventually.be.true;
+
+			expect(setBannerReadByIdMock.callCount).to.be.equal(1);
+			expect(setBannerReadByIdMock.calledWith('a-fake-user-id', 'a-user-banner-id')).to.be.true;
+			expect(insertOneMock.callCount).to.be.equal(0);
+
+			expect(notifyOnUserChange.callCount).to.be.equal(1);
+			expect(notifyOnUserChange.firstCall.firstArg).to.be.deep.equal({
+				id: 'a-fake-user-id',
+				clientAction: 'updated',
+				diff: { 'banners.a-user-banner-id.read': true },
+			});
+		});
+
+		it("should succeed if the banner on the user's record was already read", async () => {
+			const service = new BannerService();
+
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+			sinon.replace(userModel, 'setBannerReadById', sinon.fake.returns(Promise.resolve({ matchedCount: 1, modifiedCount: 0 })));
+
+			await expect(service.dismiss('a-fake-user-id', 'a-user-banner-id')).to.eventually.be.true;
+		});
+
+		it('should throw an error if the banner is not found', async () => {
+			const service = new BannerService();
+
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+			sinon.replace(userModel, 'setBannerReadById', sinon.fake.returns(Promise.resolve({ matchedCount: 0, modifiedCount: 0 })));
+
+			await expect(service.dismiss('a-fake-user-id', 'an-unknown-banner-id')).to.be.rejectedWith('Banner not found');
+
+			expect(notifyOnUserChange.callCount).to.be.equal(0);
 		});
 	});
 });

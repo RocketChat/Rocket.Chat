@@ -5,6 +5,8 @@ import type { IBannerService } from '@rocket.chat/core-services';
 import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../lib/notifyListener';
+
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
 
@@ -87,7 +89,9 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const banner = await Banners.findOneById(bannerId);
 		if (!banner) {
-			throw new Error('Banner not found');
+			// Banners created by the server (such as the version update ones) are stored in the user's
+			// record instead of the banners collection, so they are dismissed by marking them as read
+			return this.dismissUserBanner(userId, bannerId);
 		}
 
 		const user = await Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {
@@ -113,6 +117,24 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 		};
 
 		await BannersDismiss.insertOne(doc);
+
+		return true;
+	}
+
+	private async dismissUserBanner(userId: string, bannerId: string): Promise<boolean> {
+		const { matchedCount } = await Users.setBannerReadById(userId, bannerId);
+
+		if (!matchedCount) {
+			throw new Error('Banner not found');
+		}
+
+		void notifyOnUserChange({
+			id: userId,
+			clientAction: 'updated',
+			diff: {
+				[`banners.${bannerId}.read`]: true,
+			},
+		});
 
 		return true;
 	}
