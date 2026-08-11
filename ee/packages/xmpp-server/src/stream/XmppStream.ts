@@ -103,6 +103,7 @@ export class XmppStream extends Emitter<XmppStreamEvents> {
 	 * `<proceed/>` already. Rejects (and destroys the socket) on handshake timeout.
 	 */
 	upgradeToTls(options: tls.TlsOptions & { isServer: boolean; servername?: string }): Promise<tls.TLSSocket> {
+		console.log('Upgrading to TLS with options:', options);
 		return new Promise((resolve, reject) => {
 			const rawSocket = this.socket;
 			this.detachSocket(rawSocket);

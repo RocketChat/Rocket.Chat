@@ -3,7 +3,7 @@ import type Element from 'ltx/lib/Element';
 import type { MucRemoteOccupant } from '../events';
 import { splitOccupantJid } from './stanzas';
 import { xml } from '../xml/build';
-import { NS_MUC, NS_MUC_USER } from '../xml/namespaces';
+import { NS_MUC, NS_MUC_USER, NS_SID } from '../xml/namespaces';
 
 const REMOTE_RESOURCE = 'rocketchat';
 
@@ -107,7 +107,10 @@ export class RemoteMucSession {
 		if (nick === this.deps.nick) {
 			return;
 		}
-		this.deps.onMessage({ fromNick: nick, body, id: message.attrs.id, raw: message });
+		// Every local member holds a session, so the same message arrives once per member:
+		// prefer the room-assigned XEP-0359 id, which makes deduplication reliable.
+		const stanzaId = message.getChild('stanza-id', NS_SID)?.attrs.id ?? message.attrs.id;
+		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, raw: message });
 	}
 
 	markStale(): void {

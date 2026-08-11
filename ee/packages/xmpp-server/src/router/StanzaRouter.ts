@@ -5,7 +5,7 @@ import type { ResolvedXMPPServerConfig } from '../config';
 import type { XMPPServerEventMap } from '../events';
 import { getSubscriptionType, parseAvailabilityPresence, parseChatMessage } from '../handlers/parse';
 import { buildDiscoReply } from '../iq/disco';
-import type { DiscoItemsProvider } from '../iq/disco';
+import type { DiscoItemsProvider, MucRoomDescriber } from '../iq/disco';
 import { buildPingReply, isPing } from '../iq/ping';
 import type { Logger } from '../logger';
 import { buildStanzaError } from '../xml/errors';
@@ -17,6 +17,7 @@ export type StanzaRouterDeps = {
 	/** Sends a reply stanza back over S2S (routed by its `to` domain). */
 	reply: (stanza: Element) => void;
 	listPublicRooms: DiscoItemsProvider;
+	describeRoom?: MucRoomDescriber;
 	/** Optional MUC-domain handler installed by the MUC layer; returns true if it consumed the stanza. */
 	handleMucStanza?: (stanza: Element) => boolean;
 };
@@ -108,7 +109,7 @@ export class StanzaRouter {
 			return this.deps.reply(buildPingReply(stanza));
 		}
 
-		const disco = buildDiscoReply(stanza, this.deps.config, this.deps.listPublicRooms);
+		const disco = buildDiscoReply(stanza, this.deps.config, this.deps.listPublicRooms, this.deps.describeRoom);
 		if (disco) {
 			return this.deps.reply(disco);
 		}

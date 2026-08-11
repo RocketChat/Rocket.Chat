@@ -45,6 +45,14 @@ export function buildGroupchatMessage(params: { roomJid: string; fromNick: strin
 	);
 }
 
+/**
+ * The room subject, which XEP-0045 §7.2.1 requires as the last step of a join —
+ * many clients keep showing "joining…" until it arrives, empty subject included.
+ */
+export function buildSubjectMessage(params: { roomJid: string; to: string; subject?: string }): Element {
+	return xml('message', { from: params.roomJid, to: params.to, type: 'groupchat' }, xml('subject', {}, params.subject ?? ''));
+}
+
 export type ParsedJoin = { nick: string; roomJid: string };
 
 /** Parses a join presence to a room: `to` is `room@service/nick` with a MUC `<x/>` child. */
@@ -69,6 +77,19 @@ export function splitOccupantJid(jid: string): [room: string, nick: string | und
 		return [jid, undefined];
 	}
 	return [jid.slice(0, slash), jid.slice(slash + 1)];
+}
+
+/**
+ * Builds a mediated invitation (XEP-0045 §7.8.2): the *room* invites the target,
+ * carrying the inviter's JID inside `<invite/>`. This is what a hosted room must
+ * send — the invitee's server sees the room as the sender.
+ */
+export function buildMediatedInvite(params: { roomJid: string; inviterJid: string; to: string; reason?: string }): Element {
+	const invite = xml('invite', { from: params.inviterJid });
+	if (params.reason) {
+		invite.cnode(xml('reason', {}, params.reason));
+	}
+	return xml('message', { from: params.roomJid, to: params.to, type: 'normal' }, xml('x', { xmlns: NS_MUC_USER }, invite));
 }
 
 export type ParsedMucInvite = {

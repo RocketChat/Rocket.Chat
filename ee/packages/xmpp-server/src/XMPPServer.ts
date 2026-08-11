@@ -4,9 +4,10 @@ import type Element from 'ltx/lib/Element';
 
 import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config';
 import { resolveConfig } from './config';
-import { ServerNotRunningError } from './errors';
+import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
 import type { ConnectionStatus, XMPPServerEventMap } from './events';
 import type { Logger } from './logger';
+import type { MucOccupant } from './muc/MucRoom';
 import { MucService } from './muc/MucService';
 import { RemoteMucSession } from './muc/RemoteMucSession';
 import { splitOccupantJid } from './muc/stanzas';
@@ -71,6 +72,7 @@ export class XMPPServer {
 			logger: this.logger,
 			reply: (stanza) => this.reply(stanza),
 			listPublicRooms: () => this.muc.listPublicRooms(),
+			describeRoom: (roomId) => this.muc.describeRoom(roomId),
 			handleMucStanza: (stanza) => this.muc.handleStanza(stanza),
 		});
 	}
@@ -169,7 +171,7 @@ export class XMPPServer {
 
 	// --- Hosted MUC ---
 
-	mucCreateRoom(params: { roomId: string; public?: boolean }): void {
+	mucCreateRoom(params: { roomId: string; public?: boolean; subject?: string }): void {
 		this.muc.createRoom(params);
 	}
 
@@ -185,12 +187,35 @@ export class XMPPServer {
 		this.muc.getRoom(params.roomId)?.removeLocalOccupant(params.nick);
 	}
 
+	/** Current roster of a hosted room; undefined when the room is not registered. */
+	listMucOccupants(roomId: string): MucOccupant[] | undefined {
+		return this.muc.getRoom(roomId)?.listOccupants();
+	}
+
 	mucBroadcastMessage(params: { roomId: string; fromNick: string; body: string; id?: string }): void {
 		this.muc.getRoom(params.roomId)?.broadcastFromLocal({ fromNick: params.fromNick, body: params.body, id: params.id });
 	}
 
+	/** Invites a remote JID into a hosted room on behalf of a local member. */
+	mucInvite(params: { roomId: string; inviteeJid: string; inviterJid: string; reason?: string }): void {
+		this.muc.getRoom(params.roomId)?.invite({
+			inviteeJid: params.inviteeJid,
+			inviterJid: params.inviterJid,
+			reason: params.reason,
+		});
+	}
+
 	mucKickOccupant(params: { roomId: string; nick: string; reason?: string }): void {
 		this.muc.getRoom(params.roomId)?.kick(params.nick, params.reason);
+	}
+
+	/** Kicks whoever occupies a hosted room with the given bare JID, if present. */
+	mucKickOccupantByJid(params: { roomId: string; bareJid: string; reason?: string }): void {
+		const room = this.muc.getRoom(params.roomId);
+		const occupant = room?.findOccupantByJid(params.bareJid);
+		if (room && occupant) {
+			room.kick(occupant.nick, params.reason);
+		}
 	}
 
 	// --- Remote MUC (we join as a client on behalf of a local user) ---
@@ -228,11 +253,17 @@ export class XMPPServer {
 		}
 	}
 
+	/** Whether we hold a session for this user in this remote room (sessions do not survive a restart). */
+	hasRemoteMucSession(params: { localJid: string; roomJid: string }): boolean {
+		return this.remoteMucSessions.has(this.remoteKey(params.localJid, params.roomJid));
+	}
+
 	async mucSendToRemoteRoom(params: { localJid: string; roomJid: string; body: string; id?: string }): Promise<void> {
 		const session = this.remoteMucSessions.get(this.remoteKey(params.localJid, params.roomJid));
-		if (session) {
-			await session.sendMessage({ body: params.body, id: params.id });
+		if (!session) {
+			throw new NotJoinedToRemoteRoomError(params.roomJid, params.localJid);
 		}
+		await session.sendMessage({ body: params.body, id: params.id });
 	}
 
 	private remoteKey(localJid: string, roomJid: string): string {

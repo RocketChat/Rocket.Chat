@@ -12,3 +12,5 @@ export const NS_PING = 'urn:xmpp:ping';
 export const NS_MUC = 'http://jabber.org/protocol/muc';
 export const NS_MUC_USER = 'http://jabber.org/protocol/muc#user';
 export const NS_CONFERENCE = 'jabber:x:conference';
+/** XEP-0359 unique and stable stanza ids. */
+export const NS_SID = 'urn:xmpp:sid:0';

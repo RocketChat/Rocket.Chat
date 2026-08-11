@@ -1,6 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import {
 	isRoomNativeFederated,
+	isRoomXMPPHostedMuc,
 	type IIntegration,
 	type IMessage,
 	type ITeam,
@@ -860,7 +861,8 @@ API.v1.post(
 
 		// Federated rooms invite by raw username: the federated user record is created
 		// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
-		if (groupRoom && isRoomNativeFederated(groupRoom)) {
+		// The same holds for XMPP-hosted MUCs, where members are addressed by bare JID.
+		if (groupRoom && (isRoomNativeFederated(groupRoom) || isRoomXMPPHostedMuc(groupRoom))) {
 			const usernames = await getUsernameListFromParams(this.bodyParams);
 
 			await addUsersToRoomMethod(this.userId, { rid, users: usernames }, this.user);

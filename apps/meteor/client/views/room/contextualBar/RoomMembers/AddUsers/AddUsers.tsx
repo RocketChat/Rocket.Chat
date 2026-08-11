@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, isRoomXMPPHostedMuc } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -38,6 +38,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
 	const isFederated = roomIsFederated && !isFederationBlocked;
+	// Hosted MUCs take remote members as bare JIDs, which are not resolvable by autocomplete
+	const isXmppHostedMuc = isRoomXMPPHostedMuc(room);
 
 	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
@@ -130,6 +132,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 							render={({ field }) => (
 								<UserAutoCompleteMultiple
 									federated={isFederated}
+									xmpp={isXmppHostedMuc}
 									placeholder={t('Choose_users')}
 									aria-describedby={`${usersFieldId}-error`}
 									{...field}

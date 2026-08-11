@@ -72,6 +72,58 @@ describe('MUC integration: hosted room joined across servers', () => {
 			}, 25);
 		});
 
+	// Regression: only the user who accepted the invite held a session, so every other local
+	// member of a mirrored room was silently unable to speak.
+	it('gives every local user of a remote room their own session', async () => {
+		hostServer.mucCreateRoom({ roomId: 'crowd', public: true });
+
+		const roomJid = `crowd@${hostServer.mucDomain}`;
+		const hostSideJoins: string[] = [];
+		const hostMessages: string[] = [];
+		hostServer.on('muc.occupantJoined', (e) => hostSideJoins.push(e.nick));
+		hostServer.on('muc.messageReceived', (e) => hostMessages.push(`${e.fromNick}:${e.body}`));
+
+		await remoteServer.mucJoinRemoteRoom({ localJid: 'carol@b.localhost', roomJid, nick: 'carol' });
+		await remoteServer.mucJoinRemoteRoom({ localJid: 'dave@b.localhost', roomJid, nick: 'dave' });
+		await waitFor(() => (hostSideJoins.includes('carol') && hostSideJoins.includes('dave') ? true : undefined));
+
+		await remoteServer.mucSendToRemoteRoom({ localJid: 'dave@b.localhost', roomJid, body: 'from dave', id: 'g2' });
+		expect(await waitFor(() => hostMessages.find((m) => m === 'dave:from dave'))).toBe('dave:from dave');
+
+		// A user with no session must fail loudly instead of dropping the message
+		await expect(remoteServer.mucSendToRemoteRoom({ localJid: 'erin@b.localhost', roomJid, body: 'lost' })).rejects.toThrow(/No session/);
+	});
+
+	it('invites a remote user into a hosted room and lets them accept', async () => {
+		hostServer.mucCreateRoom({ roomId: 'invited', public: false });
+		hostServer.mucAddLocalOccupant({
+			roomId: 'invited',
+			localJid: 'diego@a.localhost',
+			nick: 'diego',
+			role: 'moderator',
+		});
+
+		const roomJid = `invited@${hostServer.mucDomain}`;
+		const localAlice = 'alice@b.localhost';
+		const invites: { roomJid: string; fromJid: string; toLocalJid: string }[] = [];
+		const hostSideJoins: string[] = [];
+
+		remoteServer.on('muc.inviteReceived', (e) => invites.push(e));
+		hostServer.on('muc.occupantJoined', (e) => hostSideJoins.push(e.nick));
+
+		hostServer.mucInvite({ roomId: 'invited', inviteeJid: localAlice, inviterJid: 'diego@a.localhost', reason: 'join us' });
+
+		const invite = await waitFor(() => invites.find((i) => i.roomJid === roomJid));
+		expect(invite).toMatchObject({ toLocalJid: localAlice, fromJid: 'diego@a.localhost' });
+
+		// Accepting the invite is a plain join of the advertised room
+		await remoteServer.mucJoinRemoteRoom({ localJid: localAlice, roomJid: invite.roomJid, nick: 'alice' });
+		await waitFor(() => (hostSideJoins.includes('alice') ? true : undefined));
+
+		// The roster the newcomer receives includes the local (virtual) member who invited her
+		expect(hostServer.listMucOccupants('invited')?.map((o) => o.nick)).toEqual(expect.arrayContaining(['diego', 'alice']));
+	});
+
 	it('lets a remote user join a hosted room and exchange groupchat', async () => {
 		hostServer.mucCreateRoom({ roomId: 'team', public: true });
 

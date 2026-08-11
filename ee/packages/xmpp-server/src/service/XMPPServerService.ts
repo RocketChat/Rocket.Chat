@@ -1,14 +1,15 @@
 import { api, Message, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IXMPPServerService, XMPPServerConfiguration } from '@rocket.chat/core-services';
-import { isRoomXMPPFederated, isUserXMPPFederated } from '@rocket.chat/core-typings';
+import { isRoomXMPPFederated, isRoomXMPPHostedMuc, isRoomXMPPRemoteMuc, isUserXMPPFederated } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { XMPPServer } from '../XMPPServer';
-import type { XMPPServerConfig } from '../config';
+import type { MucJoinDecision, XMPPServerConfig } from '../config';
 import type { IncomingChatMessage, IncomingPresence } from '../events';
+import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
 import { domainOfJid, toBareJid } from './helpers/jid';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
@@ -35,6 +36,12 @@ function toCoreLogger(logger: Logger): CoreLogger {
 
 /** Fields that require the listener to be restarted when they change. */
 type ListenerFingerprint = string;
+
+/** Everything the hosted-MUC helpers need from a room document. */
+const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1 } as const;
+
+/** The room JID's localpart is the MUC room id used by the protocol core. */
+const mucLocalpart = (mucJid: string): string => mucJid.split('@')[0];
 
 export class XMPPServerService extends ServiceClass implements IXMPPServerService {
 	protected name = 'xmpp-server';
@@ -90,6 +97,15 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			this.logger.error({ msg: 'Failed to start XMPP server', err: error });
 			throw error;
 		}
+
+		// MUC state in the core is ephemeral and must be rebuilt from the database on every start.
+		// A failure here degrades group chat but must not take the listener down with it.
+		await this.restoreMucState().catch((error) => this.logger.error({ msg: 'Failed to restore MUC state', err: error }));
+	}
+
+	private async restoreMucState(): Promise<void> {
+		await this.registerHostedRooms();
+		await this.joinRemoteMucRooms();
 	}
 
 	async stop(): Promise<void> {
@@ -132,6 +148,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 				break;
 			case 'remote-muc':
 				if (muc) {
+					// Sessions are per user and never survive a restart; join before speaking
+					await this.joinRemoteMUC(user._id, room._id);
 					await this.server.mucSendToRemoteRoom({
 						localJid: `${user.username}@${this.server.domain}`,
 						roomJid: muc,
@@ -144,21 +162,129 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	}
 
 	async registerHostedRoom(room: IRoom): Promise<void> {
-		if (!this.server || !isRoomXMPPFederated(room) || room.xmppFederation.role !== 'host-muc' || !room.xmppFederation.muc) {
-			return;
-		}
-		this.server.mucCreateRoom({ roomId: room.xmppFederation.muc.split('@')[0], public: room.t === 'c' });
+		this.registerHostedRoomWithCore(room);
 	}
 
+	/** Invites a remote XMPP user into a room we host, on behalf of a local member. */
+	async inviteToHostedRoom(rid: string, inviterId: string, jid: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const [room, inviter] = await Promise.all([
+			Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION }),
+			Users.findOneById(inviterId, { projection: { username: 1 } }),
+		]);
+		if (!room || !isRoomXMPPHostedMuc(room) || !inviter?.username) {
+			return;
+		}
+
+		// A room created before this server started is not in the (ephemeral) core registry yet
+		this.registerHostedRoomWithCore(room);
+		this.server.mucInvite({
+			roomId: mucLocalpart(room.xmppFederation.muc),
+			inviteeJid: toBareJid(jid),
+			inviterJid: `${inviter.username}@${this.server.domain}`,
+		});
+		this.logger.debug({ msg: 'Sent MUC invite', room: room.xmppFederation.muc, to: jid });
+	}
+
+	/** Registers a local member as a virtual occupant so remote clients see them in the roster. */
+	async addHostedRoomMember(rid: string, userId: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const [room, user] = await Promise.all([
+			Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION }),
+			Users.findOneById(userId, { projection: { username: 1, federated: 1, xmppFederation: 1 } }),
+		]);
+		if (!room || !isRoomXMPPHostedMuc(room) || !user?.username || isUserXMPPFederated(user)) {
+			return;
+		}
+
+		this.registerHostedRoomWithCore(room);
+		this.server.mucAddLocalOccupant({
+			roomId: mucLocalpart(room.xmppFederation.muc),
+			localJid: `${user.username}@${this.server.domain}`,
+			nick: user.username,
+			role: room.u?._id === user._id ? 'moderator' : 'participant',
+		});
+	}
+
+	async removeHostedRoomMember(rid: string, userId: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const [room, user] = await Promise.all([
+			Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION }),
+			Users.findOneById(userId, { projection: { username: 1, federated: 1, xmppFederation: 1 } }),
+		]);
+		if (!room || !isRoomXMPPHostedMuc(room) || !user?.username) {
+			return;
+		}
+
+		const roomId = mucLocalpart(room.xmppFederation.muc);
+		if (isUserXMPPFederated(user)) {
+			this.server.mucKickOccupantByJid({ roomId, bareJid: user.username });
+			return;
+		}
+		this.server.mucRemoveLocalOccupant({ roomId, nick: user.username });
+	}
+
+	private registerHostedRoomWithCore(room: Pick<IRoom, 't' | 'topic' | 'xmppFederation'>): void {
+		if (!this.server || !isRoomXMPPHostedMuc(room)) {
+			return;
+		}
+		this.server.mucCreateRoom({
+			roomId: mucLocalpart(room.xmppFederation.muc),
+			public: room.t === 'c',
+			subject: room.topic ?? '',
+		});
+	}
+
+	/** MUC state in the core is ephemeral: rebuild the hosted-room registry from the database. */
+	private async registerHostedRooms(): Promise<void> {
+		const rooms = await Rooms.find({ 'xmppFederation.role': 'host-muc' }, { projection: HOSTED_ROOM_PROJECTION }).toArray();
+		for (const room of rooms) {
+			this.registerHostedRoomWithCore(room);
+			await this.registerLocalOccupants(room);
+		}
+		if (rooms.length) {
+			this.logger.debug(`Registered ${rooms.length} hosted MUC room(s)`);
+		}
+	}
+
+	/** Re-publishes the room's local members as virtual occupants after a restart. */
+	private async registerLocalOccupants(room: Pick<IRoom, '_id' | 't' | 'u' | 'xmppFederation'>): Promise<void> {
+		if (!this.server || !isRoomXMPPHostedMuc(room)) {
+			return;
+		}
+		const roomId = mucLocalpart(room.xmppFederation.muc);
+		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1, 'u.username': 1 } }).toArray();
+
+		for (const { u } of subscriptions) {
+			// Remote occupants join by themselves; only Rocket.Chat members are virtual
+			if (!u.username || u.username.includes('@')) {
+				continue;
+			}
+			this.server.mucAddLocalOccupant({
+				roomId,
+				localJid: `${u.username}@${this.server.domain}`,
+				nick: u.username,
+				role: room.u?._id === u._id ? 'moderator' : 'participant',
+			});
+		}
+	}
+
+	/** Joins a remote MUC on behalf of a local user. Idempotent: an existing session is reused. */
 	async joinRemoteMUC(userId: string, rid: string): Promise<void> {
 		if (!this.server) {
 			return;
 		}
 		const [user, room] = await Promise.all([
-			Users.findOneById(userId, { projection: { username: 1 } }),
+			Users.findOneById(userId, { projection: { username: 1, federated: 1, xmppFederation: 1 } }),
 			Rooms.findOneById(rid, { projection: { xmppFederation: 1 } }),
 		]);
-		if (!user?.username || !room || !isRoomXMPPFederated(room) || room.xmppFederation.role !== 'remote-muc' || !room.xmppFederation.muc) {
+		if (!user?.username || isUserXMPPFederated(user) || !room || !isRoomXMPPRemoteMuc(room)) {
 			return;
 		}
 		await this.server.mucJoinRemoteRoom({
@@ -166,6 +292,46 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			roomJid: room.xmppFederation.muc,
 			nick: user.username,
 		});
+	}
+
+	async leaveRemoteMUC(userId: string, rid: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const [user, room] = await Promise.all([
+			Users.findOneById(userId, { projection: { username: 1 } }),
+			Rooms.findOneById(rid, { projection: { xmppFederation: 1 } }),
+		]);
+		if (!user?.username || !room || !isRoomXMPPRemoteMuc(room)) {
+			return;
+		}
+		await this.server.mucLeaveRemoteRoom({
+			localJid: `${user.username}@${this.server.domain}`,
+			roomJid: room.xmppFederation.muc,
+		});
+	}
+
+	/**
+	 * Remote-MUC sessions are ephemeral client sessions, one per local member: without
+	 * this every member would go silent after a restart, and only the invitee could ever talk.
+	 */
+	private async joinRemoteMucRooms(): Promise<void> {
+		const rooms = await Rooms.find({ 'xmppFederation.role': 'remote-muc' }, { projection: { _id: 1, xmppFederation: 1 } }).toArray();
+
+		for (const room of rooms) {
+			if (!isRoomXMPPRemoteMuc(room)) {
+				continue;
+			}
+			const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
+			for (const { u } of subscriptions) {
+				await this.joinRemoteMUC(u._id, room._id).catch((err) =>
+					this.logger.warn({ msg: 'Failed to rejoin remote MUC', room: room.xmppFederation.muc, user: u._id, err }),
+				);
+			}
+		}
+		if (rooms.length) {
+			this.logger.debug(`Rejoined ${rooms.length} remote MUC room(s)`);
+		}
 	}
 
 	async ensureXMPPUsersExistLocally(jids: string[]): Promise<void> {
@@ -222,8 +388,36 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			requireTls: tlsProvided,
 			tls: tlsProvided ? { cert: config.tlsCert, key: config.tlsKey } : undefined,
 			allowedDomains: config.domainAllowList,
+			delegates: {
+				authorizeMucJoin: (params) =>
+					this.authorizeMucJoin(normalizeDomain(`${config.mucSubdomain || 'conference'}.${config.domain}`), params),
+			},
 			logger: toCoreLogger(this.logger),
 		};
+	}
+
+	/**
+	 * Hosted-room join policy: public channels are open to any federated domain,
+	 * private groups only to remote users who already hold a subscription (i.e. were invited).
+	 */
+	private async authorizeMucJoin(mucDomain: string, params: { roomId: string; occupantJid: string }): Promise<MucJoinDecision> {
+		const mucJid = `${params.roomId}@${mucDomain}`;
+		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid }, { projection: { _id: 1, t: 1 } });
+		if (!room) {
+			this.logger.warn({ msg: 'MUC join refused: no room hosts this JID', muc: mucJid, from: params.occupantJid });
+			return { allow: false, reason: 'forbidden' };
+		}
+		if (room.t === 'c') {
+			return { allow: true };
+		}
+
+		const user = await Users.findOneByUsername(toBareJid(params.occupantJid), { projection: { _id: 1 } });
+		const subscription = user && (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }));
+		if (!subscription) {
+			this.logger.warn({ msg: 'MUC join refused: not a member of this private room', muc: mucJid, from: params.occupantJid });
+			return { allow: false, reason: 'members-only' };
+		}
+		return { allow: true };
 	}
 
 	private attachHandlers(server: XMPPServer, _config: XMPPServerConfiguration): void {
@@ -238,6 +432,22 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		// v1 policy: auto-accept a subscription request only from someone we already share a DM with.
 		server.on('presence.subscriptionRequest', (event) => {
 			this.onSubscriptionRequest(event).catch((err) => this.logger.error({ msg: 'Failed to handle XMPP subscription request', err }));
+		});
+
+		server.on('muc.occupantJoined', (event) => {
+			this.onHostedOccupantJoined(`${event.roomId}@${server.mucDomain}`, event.jid).catch((err) =>
+				this.logger.error({ msg: 'Failed to handle hosted MUC join', err }),
+			);
+		});
+
+		// A kick is the echo of a Rocket.Chat removal — only a voluntary leave has to be mirrored back.
+		server.on('muc.occupantLeft', (event) => {
+			if (event.reason === 'kicked') {
+				return;
+			}
+			this.onHostedOccupantLeft(`${event.roomId}@${server.mucDomain}`, event.jid).catch((err) =>
+				this.logger.error({ msg: 'Failed to handle hosted MUC leave', err }),
+			);
 		});
 
 		server.on('muc.messageReceived', (event) => {
@@ -257,6 +467,36 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		});
 	}
 
+	/**
+	 * A remote occupant joined a room we host: materialize them locally and give them a
+	 * subscription so they show up in the members list. Invited users already have one.
+	 */
+	private async onHostedOccupantJoined(mucJid: string, occupantJid: string): Promise<void> {
+		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid });
+		if (!room) {
+			return;
+		}
+
+		const user = await createOrUpdateXMPPUser({ jid: toBareJid(occupantJid) });
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } });
+		if (subscription) {
+			return;
+		}
+
+		// Bypasses addUserToRoom on purpose: this is the echo of a join that already happened
+		await Room.createUserSubscription({ room, ts: new Date(), userToBeAdded: user });
+	}
+
+	private async onHostedOccupantLeft(mucJid: string, occupantJid: string): Promise<void> {
+		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid });
+		const user = room && (await Users.findOneByUsername(toBareJid(occupantJid)));
+		if (!room || !user) {
+			return;
+		}
+		// performUserRemoval runs no callbacks, so the removal does not bounce back as a kick
+		await Room.performUserRemoval(room, user);
+	}
+
 	/** Persists a message received in a hosted MUC room (author addressed by real JID). */
 	private async persistMucMessage(mucJid: string, fromJid: string, body: string, stanzaId?: string): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid }, { projection: { _id: 1 } });
@@ -271,6 +511,12 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	private async onRemoteMucMessage(roomJid: string, fromNick: string, body: string, stanzaId?: string): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': roomJid }, { projection: { _id: 1 } });
 		if (!room) {
+			return;
+		}
+
+		// Messages we relayed carry their Rocket.Chat message id and come back reflected to every
+		// local member's session — under a nick only the author's own session would recognize.
+		if (stanzaId && (await Messages.findOneById(stanzaId, { projection: { _id: 1 } }))) {
 			return;
 		}
 		// Remote occupants rarely disclose a real JID; synthesize a stable per-nick JID

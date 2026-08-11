@@ -63,11 +63,11 @@ The only request/response hook is the `authorizeMucJoin` config delegate (join a
 | `src/s2s/backoff.ts` | Exponential backoff with jitter for reconnects |
 | `src/router/StanzaRouter.ts` | Inbound dispatch: spoof check → JID validation → message/presence/iq branch, MUC-domain stanzas diverted to `MucService`/`RemoteMucSession` |
 | `src/handlers/{message,presence,iq}.ts` | Stanza → event translation for 1:1 traffic |
-| `src/iq/disco.ts`, `src/iq/ping.ts` | XEP-0030 on server + MUC domains; XEP-0199; unknown iq get/set answered with `service-unavailable` (interop requirement) |
-| `src/muc/MucService.ts` | Registry of hosted rooms; routes room-addressed stanzas; service-level disco |
-| `src/muc/MucRoom.ts` | Hosted-room state machine: occupants, nick conflicts, roles, presence fan-out, status codes (110/201/303/307), message broadcast + reflection. Rocket.Chat members are registered as **virtual occupants** (visible to remote users, delivered via events not sockets) |
-| `src/muc/RemoteMucSession.ts` | Rocket.Chat user joined into a *remote* MUC as a client over S2S (fixed resource `rocketchat`); tracks join state and remote occupant roster; surfaces disconnects as `muc.remoteSessionLost` |
-| `src/muc/stanzas.ts` | Pure builders/parsers for `muc#user`, invites (mediated XEP-0045 §7.8 + direct XEP-0249), status codes |
+| `src/iq/disco.ts`, `src/iq/ping.ts` | XEP-0030 on the server domain, the MUC domain **and individual room JIDs** (clients disco a room before joining and refuse it if the answer is not `conference/text`); XEP-0199; unknown iq get/set answered with `service-unavailable` (interop requirement) |
+| `src/muc/MucService.ts` | Registry of hosted rooms (plus which are public); routes room-addressed stanzas; service-level disco |
+| `src/muc/MucRoom.ts` | Hosted-room state machine: occupants, nick conflicts, roles, presence fan-out, status codes (110/303/307 — never 201, the room always pre-exists in Rocket.Chat), the subject that closes a join, message broadcast + reflection, outgoing invitations. Rocket.Chat members are registered as **virtual occupants** (visible to remote users, delivered via events not sockets) |
+| `src/muc/RemoteMucSession.ts` | Rocket.Chat user joined into a *remote* MUC as a client over S2S (fixed resource `rocketchat`); tracks join state and remote occupant roster; surfaces disconnects as `muc.remoteSessionLost`. **One session per local member**, keyed `${localBareJid}\|${roomJid}` — a member without one cannot speak, so `mucSendToRemoteRoom` throws rather than dropping the message |
+| `src/muc/stanzas.ts` | Pure builders/parsers for `muc#user`, invites (builds mediated XEP-0045 §7.8; parses mediated + direct XEP-0249), status codes |
 
 ### State ownership
 
@@ -75,9 +75,11 @@ The protocol core holds **only ephemeral state**, all rebuilt on `start()`: open
 
 ## Integration layer (`src/service/`)
 
-`XMPPServerService extends ServiceClass` (broker name `'xmpp-server'`), mirroring the posture of `FederationMatrix` in `ee/packages/federation-matrix`. Its interface (`IXMPPServerService` in `packages/core-services`, proxied as `XMPPServer`) exposes: `configure(config)`, `stop()`, `isRunning()`, `sendMessage(message, room, user)`, `registerHostedRoom(room)`, `joinRemoteMUC(userId, rid)`, `ensureXMPPUsersExistLocally(jids)`.
+`XMPPServerService extends ServiceClass` (broker name `'xmpp-server'`), mirroring the posture of `FederationMatrix` in `ee/packages/federation-matrix`. Its interface (`IXMPPServerService` in `packages/core-services`, proxied as `XMPPServer`) exposes: `configure(config)`, `stop()`, `isRunning()`, `sendMessage(message, room, user)`, `registerHostedRoom(room)`, `inviteToHostedRoom(rid, inviterId, jid)`, `addHostedRoomMember(rid, userId)`, `removeHostedRoomMember(rid, userId)`, `joinRemoteMUC(userId, rid)`, `ensureXMPPUsersExistLocally(jids)`.
 
-- `configure()` diffs the incoming settings against the running config: listener-affecting changes (domain/port/TLS) stop and restart the core; soft changes (allowlist, presence flag) are hot-applied. Core event handlers are attached in `configure()`, not `created()`, so a stopped service is fully inert. It also re-registers every hosted MUC room with the core so hosted rooms survive restarts.
+- `configure()` diffs the incoming settings against the running config: listener-affecting changes (domain/port/TLS) stop and restart the core; soft changes (allowlist, presence flag) are hot-applied. Core event handlers are attached in `configure()`, not `created()`, so a stopped service is fully inert.
+- Because MUC state in the core is ephemeral, every start rebuilds it from the database (`restoreMucState`, non-fatal by design — a failure degrades group chat but must not take the listener down): each `host-muc` room is re-registered with its local members re-seated as virtual occupants, and each `remote-muc` room is rejoined once per local member. Skipping the latter is why a mirrored room goes silent after a restart.
+- Join authorization is the one request/response path into Rocket.Chat: the `authorizeMucJoin` delegate allows any federated domain into a public channel (`t === 'c'`) but requires an existing subscription for a private group, which is what makes invitations meaningful.
 - Inbound handlers live in `src/service/events/{message,presence,muc}.ts` (mirroring `federation-matrix/src/events/`).
 - `src/service/helpers/createOrUpdateXMPPUser.ts` upserts remote users (see data model below).
 
@@ -102,6 +104,33 @@ user sends message → afterSaveMessage callback
       role 'host-muc'   → core.mucBroadcastMessage(fromNick = username)
       role 'remote-muc' → core.mucSendToRemoteRoom(as the user's occupant)
   → S2SManager.sendStanza → existing session, or queue + connect (SRV → TCP → STARTTLS → dialback)
+```
+
+**Membership** (same hook file), for rooms with role `host-muc`:
+
+```
+room created           → afterCreateRoom → registerHostedRoom
+                       → each initial member: local → mucAddLocalOccupant
+                                              JID   → mucInvite (mediated invite from the room)
+member added later     → beforeAddUsersToRoom: bare JIDs are materialized as local users first
+                                               (and rejected outright for non-XMPP rooms)
+                       → afterAddedToRoom: same local/remote split as above
+member leaves/removed  → local → occupant presence 'unavailable'
+                       → JID   → kicked from the room (status 307)
+remote occupant joins  → muc.occupantJoined → upsert user + subscription (so they appear as a member)
+remote occupant leaves → muc.occupantLeft ('left' only) → performUserRemoval, which runs no
+                         callbacks and therefore cannot bounce back as a kick
+```
+
+And for `remote-muc` (mirrored) rooms, where membership is a client session rather than a roster entry:
+
+```
+member added/joins     → afterAddedToRoom → joinRemoteMUC (its own session, nick = username)
+member leaves/removed  → leaveRemoteMUC
+message sent           → sendMessage joins first if the session is missing (restart, or never joined)
+inbound groupchat      → deduped on the room-assigned XEP-0359 id, since one copy arrives per
+                         member session, and reflections of our own messages are recognized by
+                         the Rocket.Chat message id we sent them with
 ```
 
 **Incoming**:
@@ -132,8 +161,9 @@ remote server connects (or reuses session) → InboundSession authenticates doma
 
 Deliberately minimal:
 
-- `CreateChannelModal.tsx`: an `xmppFederated` toggle, gated like the Matrix one (`XMPP_Server_Enabled` setting + `federation` license module + `access-federation` permission), mutually exclusive with the Matrix toggle; flows as `extraData.xmppFederated` (added to `ChannelsCreateProps`/`GroupsCreateProps` rest-typings) and is converted server-side by a `prepareCreateRoomCallback` into the `xmppFederation` room field.
-- `UserAutoCompleteMultiple.tsx`: fabricates a selectable chip for bare-JID input (parallel to the existing `@user:server` Matrix regex) so DMs can be started by typing a JID.
+- `CreateChannelModal.tsx`: an `xmppFederated` toggle, gated like the Matrix one (`XMPP_Server_Enabled` setting + `federation` license module + `access-federation` permission), mutually exclusive with the Matrix toggle; flows as `extraData.xmppFederated` (added to `ChannelsCreateProps`/`GroupsCreateProps` rest-typings) and is converted server-side by a `beforeCreateRoomCallback` into the `xmppFederation` room field — `beforeCreateRoom` rather than `prepareCreateRoom` because only the former sees the final room name, which becomes the MUC localpart.
+- `UserAutoCompleteMultiple.tsx`: fabricates a selectable chip for bare-JID input (parallel to the existing `@user:server` Matrix regex), enabled via the `xmpp` prop by the DM dialog, the create-channel members field and the Add-users panel of a hosted room.
+- `channels.invite`/`groups.invite` pass raw usernames through for hosted MUCs (as they already did for Matrix rooms), since the invited JID has no local user record yet.
 - Everything else renders as ordinary rooms/users — no dedicated views.
 
 ## Testing layout

@@ -162,6 +162,22 @@ export interface IRoomXMPPFederated extends IRoom {
 export const isRoomXMPPFederated = (room: Partial<IRoom>): room is IRoomXMPPFederated =>
 	'xmppFederation' in room && (room as Partial<IRoomXMPPFederated>).xmppFederation !== undefined;
 
+/** A MUC room hosted by this server — the only XMPP role that accepts invites of remote users. */
+export interface IRoomXMPPHostedMuc extends IRoomXMPPFederated {
+	xmppFederation: IRoomXMPPFederated['xmppFederation'] & { role: 'host-muc'; muc: string };
+}
+
+export const isRoomXMPPHostedMuc = (room: Partial<IRoom>): room is IRoomXMPPHostedMuc =>
+	isRoomXMPPFederated(room) && room.xmppFederation.role === 'host-muc' && !!room.xmppFederation.muc;
+
+/** The shadow of a MUC hosted elsewhere; `muc` is the remote room JID we join as a client. */
+export interface IRoomXMPPRemoteMuc extends IRoomXMPPFederated {
+	xmppFederation: IRoomXMPPFederated['xmppFederation'] & { role: 'remote-muc'; muc: string };
+}
+
+export const isRoomXMPPRemoteMuc = (room: Partial<IRoom>): room is IRoomXMPPRemoteMuc =>
+	isRoomXMPPFederated(room) && room.xmppFederation.role === 'remote-muc' && !!room.xmppFederation.muc;
+
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 	inserted: boolean;

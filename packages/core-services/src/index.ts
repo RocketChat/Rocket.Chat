@@ -21,7 +21,6 @@ import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
-import type { IXMPPServerService } from './types/IXMPPServerService';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPEEService } from './types/ILDAPEEService';
@@ -65,6 +64,7 @@ import type {
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type { AppStatusReport } from './types/IAppsEngineService';
 export type { IAbacService, AbacActor } from './types/IAbacService';
