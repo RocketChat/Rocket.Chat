@@ -178,7 +178,7 @@ test.describe.serial('Sidebar', () => {
 		test('should expand/collapse sidebar groups', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 			let isExpanded: boolean;
 
 			await collapser.click();
@@ -193,7 +193,7 @@ test.describe.serial('Sidebar', () => {
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
 			await expect(async () => {
 				await collapser.focus();

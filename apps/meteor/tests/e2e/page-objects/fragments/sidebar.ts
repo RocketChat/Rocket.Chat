@@ -67,7 +67,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.topChannelList.getByRole('region').first();
+		return this.topChannelList.getByRole('region').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -118,7 +118,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCategoryCollapser(name: string): Locator {
-		return this.channelsList.getByRole('region', { name: `Collapse ${name}` });
+		return this.root.getByRole('region', { name: `Collapse ${name}`, exact: true }).first();
 	}
 
 	getCategoryKebab(name: string): Locator {
