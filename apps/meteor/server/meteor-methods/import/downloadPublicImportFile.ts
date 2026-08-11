@@ -1,10 +1,9 @@
 import fs from 'node:fs';
-import http from 'node:http';
-import https from 'node:https';
 
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
@@ -12,12 +11,15 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { settings } from '../../settings';
 
-function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
-	const protocol = fileUrl.startsWith('https') ? https : http;
-	protocol.get(fileUrl, (response) => {
-		response.pipe(writeStream);
+async function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): Promise<void> {
+	const response = await fetch(fileUrl, {
+		ignoreSsrfValidation: false,
+		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
+
+	response.body.pipe(writeStream);
 }
 
 function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
@@ -63,7 +65,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	});
 
 	if (isUrl) {
-		downloadHttpFile(fileUrl, writeStream);
+		await downloadHttpFile(fileUrl, writeStream);
 	} else {
 		// If the url is actually a folder path on the current machine, skip moving it to the file store
 		if (fs.statSync(fileUrl).isDirectory()) {
