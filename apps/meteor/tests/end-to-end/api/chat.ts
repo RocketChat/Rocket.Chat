@@ -3990,8 +3990,8 @@ describe('[Chat]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-fromTs-param-invalid');
-			expect(res.body.error).to.include('The "fromTs" query parameter must be a valid date');
+			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.error).to.include('must match format "iso-date-time"');
 		});
 
 		describe('"fromTs" parameter', () => {

@@ -723,10 +723,6 @@ const chatEndpoints = API.v1
 				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
 			}
 
-			if (fromTs && isNaN(Date.parse(fromTs))) {
-				throw new Meteor.Error('error-fromTs-param-invalid', 'The "fromTs" query parameter must be a valid date');
-			}
-
 			const getMessagesQuery = {
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
 				...(fromTs && { fromTs: new Date(fromTs) }),

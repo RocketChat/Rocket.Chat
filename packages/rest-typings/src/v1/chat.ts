@@ -625,7 +625,7 @@ const ChatSyncMessagesSchema = {
 		},
 		fromTs: {
 			type: 'string',
-			nullable: true,
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
