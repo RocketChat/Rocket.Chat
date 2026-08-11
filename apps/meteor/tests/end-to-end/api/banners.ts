@@ -86,6 +86,15 @@ describe('banners', () => {
 			});
 
 			after(async () => {
+				await connection
+					.db()
+					.collection<IUser>('users')
+					.updateOne(
+						{ _id: 'rocketchat.internal.admin.test' },
+						{
+							$unset: { banners: 1 },
+						},
+					);
 				await connection.close();
 			});
 
