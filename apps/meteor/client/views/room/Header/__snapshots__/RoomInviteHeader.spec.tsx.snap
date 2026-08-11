@@ -19,12 +19,8 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1c6vtok"
           >
             <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-label="Move_to"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-              id="react-aria-_r_0_"
-              title="Move_to"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite rocket.cat"
               type="button"
             >
               <i
