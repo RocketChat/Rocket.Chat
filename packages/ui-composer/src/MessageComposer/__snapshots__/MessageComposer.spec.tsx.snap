@@ -197,7 +197,7 @@ exports[`renders Expandable without crashing 1`] = `
       role="group"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1uzskp3 rcx-css-1v3yn09"
+        class="rcx-box rcx-box--full rcx-css-1d9yk4f rcx-css-1v3yn09"
       >
         <button
           class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"

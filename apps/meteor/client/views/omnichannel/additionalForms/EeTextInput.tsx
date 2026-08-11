@@ -1,9 +1,9 @@
+import type { TextInputProps } from '@rocket.chat/fuselage';
 import { TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-export type EeTextInputProps = { label: string } & ComponentProps<typeof TextInput>;
+export type EeTextInputProps = { label: string } & TextInputProps;
 
 export const EeTextInput = ({ label, ...props }: EeTextInputProps) => {
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

@@ -1,5 +1,6 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../hooks/useClipboardWithToast';
@@ -21,7 +22,7 @@ const defaultWrapperRenderer = (text: string) => (
 export type TextCopyProps = {
 	text: string;
 	wrapper?: (text: string) => ReactNode;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopyProps) => {
 	const { t } = useTranslation();

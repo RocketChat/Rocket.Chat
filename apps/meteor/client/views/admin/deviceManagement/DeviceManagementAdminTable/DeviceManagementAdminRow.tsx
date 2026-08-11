@@ -11,7 +11,7 @@ import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DeviceRowProps = {
+export type DeviceManagementAdminRowProps = {
 	_id: string;
 	username?: string;
 	ip: string;
@@ -31,7 +31,7 @@ const DeviceManagementAdminRow = ({
 	deviceOSName = '',
 	loginAt,
 	rcVersion,
-}: DeviceRowProps) => {
+}: DeviceManagementAdminRowProps) => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();

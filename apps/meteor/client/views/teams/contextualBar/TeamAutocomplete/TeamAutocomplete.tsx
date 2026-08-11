@@ -1,13 +1,14 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 
-export type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type TeamAutocompleteProps<TLabel = ReactNode> = Omit<AutoCompleteProps<TLabel>, 'filter'>;
 
-const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) => {
+const TeamAutocomplete = <TLabel = ReactNode,>({ value, onChange, ...props }: TeamAutocompleteProps<TLabel>) => {
 	const [filter, setFilter] = useState('');
 
 	const teamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/teams.autocomplete');

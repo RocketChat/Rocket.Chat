@@ -1,13 +1,13 @@
 import type { IOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
+import type { BoxProps, IconProps } from '@rocket.chat/fuselage';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
 export type OmnichannelAppSourceRoomIconProps = {
 	source: IOmnichannelSourceFromApp;
-	color: ComponentProps<typeof Box>['color'];
-	size: ComponentProps<typeof Icon>['size'];
+	color: BoxProps['color'];
+	size: IconProps['size'];
 	placement: 'sidebar' | 'default';
 };
 

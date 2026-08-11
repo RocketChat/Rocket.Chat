@@ -10,13 +10,12 @@ import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import FormSkeleton from './template/FormSkeleton';
 
-export const RegisterSecretPageRouter = ({
-	setLoginRoute,
-	origin,
-}: {
+export type RegisterSecretPageRouterProps = {
 	setLoginRoute: DispatchLoginRouter;
 	origin: 'register' | 'secret-register' | 'invite-register';
-}) => {
+};
+
+export const RegisterSecretPageRouter = ({ setLoginRoute, origin }: RegisterSecretPageRouterProps) => {
 	const { t } = useTranslation();
 	const registrationMode = useSetting<'Public' | 'Disabled' | 'Secret URL'>('Accounts_RegistrationForm', 'Public');
 

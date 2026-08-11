@@ -26,16 +26,13 @@ import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
-const VideoConfListItem = ({
-	videoConfData,
-	className = [],
-	reload,
-	...props
-}: {
+export type VideoConfListItemProps = {
 	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
-}) => {
+};
+
+const VideoConfListItem = ({ videoConfData, className = [], reload, ...props }: VideoConfListItemProps) => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();

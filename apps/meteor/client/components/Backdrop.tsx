@@ -1,6 +1,6 @@
+import type { ModalBackdropProps } from '@rocket.chat/fuselage';
 import { ModalBackdrop } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type BackdropProps = ComponentProps<typeof ModalBackdrop>;
+export type BackdropProps = ModalBackdropProps;
 
 export const Backdrop = (props: BackdropProps) => <ModalBackdrop backgroundColor='transparent' {...props} />;

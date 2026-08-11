@@ -1,16 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ElementType, HTMLAttributes, ReactNode } from 'react';
-import { forwardRef } from 'react';
+import type { ElementType, HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-const MessageFooterCallout = forwardRef<
-	HTMLElement,
-	Omit<HTMLAttributes<HTMLElement>, 'is'> & {
-		children: ReactNode;
-		is?: ElementType<any>;
-		variant?: 'default' | 'error';
-		dashed?: boolean;
-	}
->(function MessageFooterCallout({ dashed, ...props }, ref) {
+export type MessageFooterCalloutProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+	children: ReactNode;
+	is?: ElementType<any>;
+	variant?: 'default' | 'error';
+	dashed?: boolean;
+} & RefAttributes<HTMLElement>;
+
+const MessageFooterCallout = ({ dashed, ref, ...props }: MessageFooterCalloutProps) => {
 	return (
 		<Box
 			ref={ref}
@@ -31,6 +29,6 @@ const MessageFooterCallout = forwardRef<
 			{...props}
 		/>
 	);
-});
+};
 
 export default MessageFooterCallout;

@@ -2,12 +2,12 @@ import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, S
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-type NotFoundProps = {
+export type NotFoundStateProps = {
 	title: string;
 	subtitle: string;
 };
 
-const NotFoundState = ({ title, subtitle }: NotFoundProps) => {
+const NotFoundState = ({ title, subtitle }: NotFoundStateProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 

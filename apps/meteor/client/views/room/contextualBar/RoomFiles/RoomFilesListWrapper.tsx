@@ -1,10 +1,11 @@
-import type { HTMLAttributes, Ref } from 'react';
-import { forwardRef } from 'react';
+import type { HTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const RoomFilesListWrapper = forwardRef(function RoomFilesListWrapper(props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) {
+export type RoomFilesListWrapperProps = HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>;
+
+const RoomFilesListWrapper = ({ ref, ...props }: RoomFilesListWrapperProps) => {
 	const { t } = useTranslation();
 	return <div role='list' aria-label={t('Files_list')} ref={ref} {...props} />;
-});
+};
 
 export default RoomFilesListWrapper;

@@ -1,13 +1,13 @@
+import type { PaginatedMultiSelectFilteredProps } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUnitsList } from '../hooks/useUnitsList';
 
 export type AutoCompleteUnitsProps = Omit<
-	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	PaginatedMultiSelectFilteredProps,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 >;
 
@@ -27,7 +27,7 @@ const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompl
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
-			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
+			setFilter={setUnitsFilter}
 			options={unitItems}
 			onChange={onChange}
 			endReached={() => fetchNextPage()}

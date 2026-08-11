@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
+import type { PaginatedSelectFilteredProps } from '@rocket.chat/fuselage';
 import { Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import useOutboundProvidersList from '../hooks/useOutboundProvidersList';
 import { findLastChatFromChannel } from '../utils/findLastChatFromChannel';
 
 export type AutoCompleteOutboundProviderProps = Omit<
-	ComponentProps<typeof PaginatedSelectFiltered>,
+	PaginatedSelectFilteredProps,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
 	contact?: Serialized<Omit<ILivechatContact, 'contactManager'>> | null;

@@ -10,8 +10,13 @@ import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 import GenericNoResults from '../../../components/GenericNoResults';
 
+export type UserMessagesProps = {
+	userId: string;
+	onRedirect: (mid: string) => void;
+};
+
 // TODO: We should use Contextualbar components here
-const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
+const UserMessages = ({ userId, onRedirect }: UserMessagesProps) => {
 	const { t } = useTranslation();
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 

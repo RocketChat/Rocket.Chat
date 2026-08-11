@@ -1,5 +1,5 @@
+import type { ModalProps } from '@rocket.chat/fuselage';
 import { Box, Modal } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +19,7 @@ export type IframeModalProps = {
 	confirm: (data: any) => void;
 	cancel: () => void;
 	wrapperHeight?: string;
-} & ComponentProps<typeof Modal>;
+} & ModalProps;
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
 	const { t } = useTranslation();

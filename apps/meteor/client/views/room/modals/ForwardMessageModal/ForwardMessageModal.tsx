@@ -25,13 +25,13 @@ import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomA
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
-type ForwardMessageProps = {
+export type ForwardMessageModalProps = {
 	onClose: () => void;
 	permalink: string;
 	message: IMessage;
 };
 
-const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProps) => {
+const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageModalProps) => {
 	const t = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();

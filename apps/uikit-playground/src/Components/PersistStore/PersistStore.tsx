@@ -3,7 +3,9 @@ import { type ComponentProps, Fragment, useContext, useEffect } from 'react';
 import { context } from '../../Context';
 import persistStore from '../../utils/persistStore';
 
-const PersistStore = (props: ComponentProps<'div'>) => {
+export type PersistStoreProps = ComponentProps<'div'>;
+
+const PersistStore = (props: PersistStoreProps) => {
 	const { state } = useContext(context);
 
 	useEffect(() => {

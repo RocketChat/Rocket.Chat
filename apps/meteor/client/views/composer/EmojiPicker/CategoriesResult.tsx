@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
-import type { MouseEvent } from 'react';
-import { forwardRef, memo, useRef } from 'react';
+import type { MouseEvent, Ref } from 'react';
+import { memo, useRef } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -15,12 +15,10 @@ export type CategoriesResultProps = {
 	handleLoadMore: () => void;
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
 	handleScroll: (range: ListRange) => void;
+	ref?: Ref<VirtuosoHandle>;
 };
 
-const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(function CategoriesResult(
-	{ items, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
-	ref,
-) {
+const CategoriesResult = ({ items, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll, ref }: CategoriesResultProps) => {
 	const wrapper = useRef<HTMLDivElement>(null);
 
 	return (
@@ -62,6 +60,6 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			</VirtualizedScrollbars>
 		</Box>
 	);
-});
+};
 
 export default memo(CategoriesResult);

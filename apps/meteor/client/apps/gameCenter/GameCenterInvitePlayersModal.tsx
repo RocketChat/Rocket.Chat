@@ -13,12 +13,12 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type Username = Exclude<IUser['username'], undefined>;
 
-interface IGameCenterInvitePlayersModalProps {
+export type GameCenterInvitePlayersModalProps = {
 	game: IGame;
 	onClose: () => void;
-}
+};
 
-const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps) => {
+const GameCenterInvitePlayersModal = ({ game, onClose }: GameCenterInvitePlayersModalProps) => {
 	const { t } = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 	const { name } = game;

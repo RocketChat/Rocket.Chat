@@ -1,23 +1,20 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IconProps } from '@rocket.chat/fuselage';
 import { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { isValidElement } from 'react';
 
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
-export const RoomIcon = ({
-	room,
-	size = 'x16',
-	isIncomingCall,
-	placement = 'default',
-}: {
+export type RoomIconProps = {
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>;
-	size?: ComponentProps<typeof Icon>['size'];
+	size?: IconProps['size'];
 	isIncomingCall?: boolean;
 	placement?: 'sidebar' | 'default';
-}) => {
+};
+
+export const RoomIcon = ({ room, size = 'x16', isIncomingCall, placement = 'default' }: RoomIconProps) => {
 	const iconPropsOrReactNode = useRoomIcon(room);
 
 	if (isIncomingCall) {

@@ -2,7 +2,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-const MessageComposerFileLoader = ({ className, ...props }: Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'is'>) => {
+export type MessageComposerFileLoaderProps = Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'is'>;
+
+const MessageComposerFileLoader = ({ className, ...props }: MessageComposerFileLoaderProps) => {
 	const customCSS = css`
 		animation: spin-animation 0.8s linear infinite;
 

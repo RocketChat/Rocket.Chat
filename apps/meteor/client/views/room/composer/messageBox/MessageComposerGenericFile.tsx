@@ -13,6 +13,8 @@ import { formatBytes } from '../../../../lib/utils/formatBytes';
 import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
 
+export type MessageComposerGenericFileProps = MessageComposerFileItemProps;
+
 const MessageComposerGenericFile = ({
 	upload,
 	onRemove,
@@ -22,7 +24,7 @@ const MessageComposerGenericFile = ({
 	previewUrl,
 	disabled,
 	...props
-}: MessageComposerFileItemProps) => {
+}: MessageComposerGenericFileProps) => {
 	const { t } = useTranslation();
 	const chat = useChat();
 	const [isActive, setIsActive] = useState(false);

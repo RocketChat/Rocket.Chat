@@ -1,3 +1,4 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import {
 	Box,
 	Button,
@@ -21,7 +22,6 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -153,9 +153,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	return (
 		<Modal
 			aria-labelledby={`${createTeamFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
-			)}
+			wrapperFunction={(props: BoxProps) => <Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />}
 		>
 			<ModalHeader>
 				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>

@@ -8,7 +8,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import { useDateRef } from '../../../providers/DateListProvider';
 
-type ThreadMessageProps = {
+export type ThreadMessageItemProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	previous: IThreadMessage | IThreadMainMessage;
 	sequential: boolean;
@@ -25,7 +25,7 @@ export const ThreadMessageItem = ({
 	showUserAvatar,
 	firstUnread,
 	system,
-}: ThreadMessageProps) => {
+}: ThreadMessageItemProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const ref = useDateRef();

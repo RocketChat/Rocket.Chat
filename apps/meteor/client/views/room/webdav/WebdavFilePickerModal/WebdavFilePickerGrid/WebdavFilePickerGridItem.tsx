@@ -1,6 +1,9 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 
-const WebdavFilePickerGridItem = ({ ...props }) => (
+export type WebdavFilePickerGridItemProps = BoxProps;
+
+const WebdavFilePickerGridItem = (props: WebdavFilePickerGridItemProps) => (
 	<Box
 		borderRadius='x4'
 		width='33.33%'

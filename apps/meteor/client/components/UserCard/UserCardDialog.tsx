@@ -1,10 +1,10 @@
 import type { AriaDialogProps } from '@react-aria/dialog';
 import { useDialog } from '@react-aria/dialog';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useRef } from 'react';
 
-export type UserCardDialogProps = AriaDialogProps & ComponentProps<typeof Box>;
+export type UserCardDialogProps = AriaDialogProps & BoxProps;
 
 const UserCardDialog = (props: UserCardDialogProps) => {
 	const ref = useRef(null);

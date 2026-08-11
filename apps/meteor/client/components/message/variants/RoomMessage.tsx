@@ -1,9 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { MessageProps } from '@rocket.chat/fuselage';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
+import type { KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +35,7 @@ export type RoomMessageProps = {
 	context?: MessageActionContext;
 	ignoredUser?: boolean;
 	searchText?: string;
-} & ComponentProps<typeof Message>;
+} & MessageProps;
 
 const getAriaLabelledBy = ({
 	readReceiptEnabled,

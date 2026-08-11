@@ -6,7 +6,9 @@ import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
 
-const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps, 'isDesktopOrLarger'>) => {
+export type ModConsoleUserActionsProps = Omit<ModConsoleUserRowProps, 'isDesktopOrLarger'>;
+
+const ModConsoleUserActions = ({ report, onClick }: ModConsoleUserActionsProps) => {
 	const { t } = useTranslation();
 	const {
 		reportedUser: { _id: uid },

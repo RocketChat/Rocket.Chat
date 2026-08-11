@@ -11,17 +11,14 @@ const legendItemsSpacing = 8;
 const legendSpacing = 24;
 const legendInlineSize = legendItemWidth + legendSpacing;
 
-export const PieChart = ({
-	data,
-	width,
-	height,
-	colors,
-}: {
+export type PieChartProps = {
 	data: { label: string; value: number; id: string; color?: string }[];
 	width: number;
 	height: number;
 	colors?: ComponentProps<typeof Pie>['colors'];
-}) => {
+};
+
+export const PieChart = ({ data, width, height, colors }: PieChartProps) => {
 	const breakpoints = useBreakpoints();
 	const isSmallScreen = !breakpoints.includes('md');
 	const legendBlockSize = data.length * (legendItemHeight + legendItemsSpacing) + legendSpacing;

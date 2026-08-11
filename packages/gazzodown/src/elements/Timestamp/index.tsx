@@ -6,7 +6,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { MarkupInteractionContext } from '../../MarkupInteractionContext';
 
-type BoldSpanProps = {
+export type TimestampWrapperProps = {
 	children: MessageParser.Timestamp;
 };
 
@@ -37,7 +37,7 @@ const Timestamp = ({ format, value }: TimestampProps) => {
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const TimestampWrapper = ({ children }: BoldSpanProps) => (
+const TimestampWrapper = ({ children }: TimestampWrapperProps) => (
 	<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
 		<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
 	</ErrorBoundary>

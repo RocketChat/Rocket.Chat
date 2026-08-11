@@ -1,5 +1,4 @@
-import type { Card } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { CardProps } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
@@ -9,7 +8,9 @@ import { links } from '../../../lib/links';
 const GOOGLE_PLAY_URL = links.go.mobileAppGoogle;
 const APP_STORE_URL = links.go.mobileAppApple;
 
-const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+export type MobileAppsCardProps = Omit<CardProps, 'type'>;
+
+const MobileAppsCard = (props: MobileAppsCardProps) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

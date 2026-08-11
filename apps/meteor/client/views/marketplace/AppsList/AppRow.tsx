@@ -11,8 +11,9 @@ import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import AddonChip from './AddonChip';
 
-// TODO: org props
-const AppRow = ({ className, ...props }: App & { className?: string }) => {
+export type AppRowProps = App & { className?: string };
+
+const AppRow = ({ className, ...props }: AppRowProps) => {
 	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const router = useRouter();

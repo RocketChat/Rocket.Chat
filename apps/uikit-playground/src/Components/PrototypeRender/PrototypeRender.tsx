@@ -9,19 +9,15 @@ import SurfaceRender from '../Preview/Display/Surface/SurfaceRender';
 import type { SurfaceOptions } from '../Preview/Display/Surface/constant';
 import RenderPayload from '../RenderPayload/RenderPayload';
 
-const PrototypeRender = ({
-	blocks,
-	surface,
-	flowEdges,
-	activeActions,
-	onSelectAction,
-}: {
+export type PrototypeRenderProps = {
 	blocks: ILayoutBlock[];
 	surface: SurfaceOptions;
 	flowEdges: Edge[];
 	activeActions: idType[];
 	onSelectAction: (id: idType) => void;
-}) => {
+};
+
+const PrototypeRender = ({ blocks, surface, flowEdges, activeActions, onSelectAction }: PrototypeRenderProps) => {
 	const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	const [glowActive, setGlowActive] = useState(false);

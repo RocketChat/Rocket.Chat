@@ -4,7 +4,9 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import OEmbedCollapsible from './OEmbedCollapsible';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-const OEmbedLinkPreview = ({ image, url, ...props }: OEmbedPreviewMetadata) => (
+export type OEmbedLinkPreviewProps = OEmbedPreviewMetadata;
+
+const OEmbedLinkPreview = ({ image, url, ...props }: OEmbedLinkPreviewProps) => (
 	<OEmbedCollapsible url={url} {...props}>
 		{image?.url && url && (
 			<ExternalLink to={url}>

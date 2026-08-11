@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 
-const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
+export type CustomRoleUpsellModalProps = {
+	onClose: () => void;
+};
+
+const CustomRoleUpsellModal = ({ onClose }: CustomRoleUpsellModalProps) => {
 	const { t } = useTranslation();
 	const { handleManageSubscription } = useUpsellActions();
 

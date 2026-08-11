@@ -1,9 +1,10 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
+import type { PaginationProps } from '@rocket.chat/fuselage';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../GenericNoResults/GenericNoResults';
@@ -13,11 +14,11 @@ import GenericNoResults from '../../GenericNoResults/GenericNoResults';
 type DeviceManagementTableProps<T> = UseQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
 	headers: ReactNode[];
 	renderRow: (data: Serialized<T>) => ReactNode;
-	current?: ComponentProps<typeof Pagination>['current'];
-	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
-	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
-	setItemsPerPage?: ComponentProps<typeof Pagination>['onSetItemsPerPage'];
-	paginationProps?: Partial<ComponentProps<typeof Pagination>>;
+	current?: PaginationProps['current'];
+	itemsPerPage?: PaginationProps['itemsPerPage'];
+	setCurrent?: PaginationProps['onSetCurrent'];
+	setItemsPerPage?: PaginationProps['onSetItemsPerPage'];
+	paginationProps?: Partial<PaginationProps>;
 };
 
 // TODO: Missing error state

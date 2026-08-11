@@ -1,8 +1,8 @@
 import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ForwardedRef, ReactNode } from 'react';
-import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
+import type { ReactNode, Ref } from 'react';
+import { useEffect, useId, useImperativeHandle } from 'react';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
@@ -14,18 +14,16 @@ export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopu
 	rid: string;
 	tmid?: string;
 	suspended: boolean;
-};
-
-const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
-	{ focused, items, title, rid, tmid, select, suspended }: ComposerBoxPopupPreviewProps,
-	ref: ForwardedRef<
+	ref?: Ref<
 		| {
 				getFilter?: () => unknown;
 				select?: (s: ComposerBoxPopupPreviewItem) => void;
 		  }
 		| undefined
-	>,
-) {
+	>;
+};
+
+const ComposerBoxPopupPreview = ({ focused, items, title, rid, tmid, select, suspended, ref }: ComposerBoxPopupPreviewProps) => {
 	const id = useId();
 	const chat = useChat();
 	const executeSlashCommandPreviewEndpoint = useEndpoint('POST', '/v1/commands.preview');
@@ -158,6 +156,6 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 			</Tile>
 		</Box>
 	);
-});
+};
 
 export default ComposerBoxPopupPreview;

@@ -1,13 +1,13 @@
+import type { PaginatedMultiSelectFilteredProps } from '@rocket.chat/fuselage';
 import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMonitorsList } from '../hooks/useMonitorsList';
 
 export type AutoCompleteMonitorsProps = Omit<
-	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	PaginatedMultiSelectFilteredProps,
 	'options' | 'setFilter' | 'endReached' | 'filter' | 'renderItem'
 >;
 

@@ -6,11 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-export const MockedServerContext = ({
-	handleRequest,
-	handleMethod,
-	children,
-}: {
+export type MockedServerContextProps = {
 	handleRequest?: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 		method: TMethod;
 		pathPattern: TPathPattern;
@@ -24,7 +20,9 @@ export const MockedServerContext = ({
 	children: ReactNode;
 
 	isEnterprise?: boolean;
-}): any => {
+};
+
+export const MockedServerContext = ({ handleRequest, handleMethod, children }: MockedServerContextProps): any => {
 	const [queryClient] = useState(() => new QueryClient());
 	return (
 		<ServerContext.Provider

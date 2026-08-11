@@ -1,13 +1,13 @@
+import type { PaginatedMultiSelectFilteredProps } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTagsList } from '../hooks/useTagsList';
 
 export type AutoCompleteTagsMultipleProps = Omit<
-	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	PaginatedMultiSelectFilteredProps,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
 	department?: string;

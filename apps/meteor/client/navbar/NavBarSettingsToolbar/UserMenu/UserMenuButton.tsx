@@ -2,8 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentPropsWithoutRef, ForwardedRef } from 'react';
-import { forwardRef } from 'react';
+import type { ComponentPropsWithoutRef, RefAttributes } from 'react';
 
 import { UserStatus } from '../../../components/UserStatus';
 
@@ -14,9 +13,9 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
+export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton> & RefAttributes<HTMLElement>;
 
-const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonProps, ref: ForwardedRef<HTMLElement>) {
+const UserMenuButton = ({ ref, ...props }: UserMenuButtonProps) => {
 	const user = useUser();
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
@@ -54,6 +53,6 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 			</Box>
 		</IconButton>
 	);
-});
+};
 
 export default UserMenuButton;

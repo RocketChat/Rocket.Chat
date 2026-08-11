@@ -3,7 +3,7 @@ import { Icon } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type SecondStepsProps = {
+export type SecondStepProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
@@ -13,7 +13,7 @@ type SecondStepsProps = {
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
-const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }: SecondStepsProps) => {
+const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }: SecondStepProps) => {
 	const { t } = useTranslation();
 
 	return (

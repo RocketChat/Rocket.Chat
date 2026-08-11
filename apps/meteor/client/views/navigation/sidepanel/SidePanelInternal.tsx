@@ -11,7 +11,7 @@ import { useOpenedRoom } from '../../../lib/RoomManager';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 import { usePreventDefault } from '../sidebar/hooks/usePreventDefault';
 
-type SidePanelProps<R = any> = {
+export type SidePanelInternalProps<R = any> = {
 	title: string;
 	currentTab: AllGroupsKeys;
 	unreadOnly: boolean;
@@ -24,7 +24,7 @@ type SidePanelProps<R = any> = {
 	}>;
 };
 
-const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
+const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelInternalProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -73,7 +73,7 @@ export const createSidePanel =
 		ItemContentComponent: ComponentType<{ room: R; openedRoom: ReturnType<typeof useOpenedRoom>; isRoomFilter: boolean }>,
 	) =>
 	// eslint-disable-next-line react/no-multi-comp, react/display-name
-	({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: Omit<SidePanelProps<R>, 'ItemContentComponent'>) => (
+	({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: Omit<SidePanelInternalProps<R>, 'ItemContentComponent'>) => (
 		<SidePanelInternal
 			title={title}
 			currentTab={currentTab}

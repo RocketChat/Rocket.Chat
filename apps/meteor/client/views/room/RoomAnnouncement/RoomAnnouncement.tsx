@@ -7,11 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
 
-type RoomAnnouncementParams = {
+export type RoomAnnouncementProps = {
 	announcement: string;
 };
 
-const RoomAnnouncement = ({ announcement }: RoomAnnouncementParams) => {
+const RoomAnnouncement = ({ announcement }: RoomAnnouncementProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

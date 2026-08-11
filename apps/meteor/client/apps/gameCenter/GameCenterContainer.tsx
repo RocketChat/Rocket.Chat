@@ -11,13 +11,13 @@ import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
 
-interface IGameCenterContainerProps {
+export type GameCenterContainerProps = {
 	handleClose: () => void;
 	handleBack: (e: any) => void;
 	game: IGame;
-}
+};
 
-const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps) => {
+const GameCenterContainer = ({ handleClose, handleBack, game }: GameCenterContainerProps) => {
 	const { t } = useTranslation();
 
 	return (

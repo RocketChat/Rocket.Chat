@@ -3,17 +3,14 @@ import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
-const EnabledAppsCount = ({
-	limit,
-	enabled,
-	context,
-	tooltip,
-}: {
+export type EnabledAppsCountProps = {
 	limit: number;
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	tooltip?: string;
-}) => {
+};
+
+const EnabledAppsCount = ({ limit, enabled, context, tooltip }: EnabledAppsCountProps) => {
 	const { t } = useTranslation();
 
 	const variant = useMemo(() => {

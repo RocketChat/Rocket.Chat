@@ -1,9 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
 import { useAddUserAction } from './actions/useAddUserAction';
@@ -26,7 +25,7 @@ export type UserInfoActionType = 'communication' | 'privileges' | 'management' |
 type UserInfoActionWithOnlyIcon = {
 	type?: UserInfoActionType;
 	content?: string;
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconProps['name'];
 	title: string;
 	variant?: 'danger';
 	onClick: () => void;
@@ -36,7 +35,7 @@ type UserInfoActionWithOnlyIcon = {
 type UserInfoActionWithContent = {
 	type?: UserInfoActionType;
 	content: string;
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconProps['name'];
 	title?: string;
 	variant?: 'danger';
 	onClick: () => void;

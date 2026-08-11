@@ -1,7 +1,11 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) => {
+export type AppsPageConnectionErrorProps = {
+	onButtonClick: () => void;
+};
+
+const AppsPageConnectionError = ({ onButtonClick }: AppsPageConnectionErrorProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -20,4 +24,4 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }) 
 	);
 };
 
-export default AppsPageContentError;
+export default AppsPageConnectionError;

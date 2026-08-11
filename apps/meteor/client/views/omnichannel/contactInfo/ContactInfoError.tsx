@@ -8,7 +8,11 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-const ContactInfoError = ({ onClose }: { onClose: () => void }) => {
+export type ContactInfoErrorProps = {
+	onClose: () => void;
+};
+
+const ContactInfoError = ({ onClose }: ContactInfoErrorProps) => {
 	const { t } = useTranslation();
 
 	return (

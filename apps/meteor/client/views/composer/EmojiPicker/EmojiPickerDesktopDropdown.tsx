@@ -1,7 +1,7 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useMergedRefs, usePosition } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, Ref, RefObject } from 'react';
-import { useMemo, useRef, forwardRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 const getDropdownContainer = (descendant: HTMLElement | null) => {
 	for (let element = descendant ?? document.body; element !== document.body; element = element.parentElement ?? document.body) {
@@ -45,16 +45,14 @@ const useDropdownPosition = (reference: RefObject<HTMLElement | null>, target: R
 export type EmojiPickerDesktopDropdownProps = {
 	children: ReactNode;
 	reference: RefObject<HTMLElement | null>;
+	ref?: Ref<HTMLElement>;
 };
 
 /**
  * @reference is the trigger element target
  * @ref is the dropdown element target
  *  */
-const EmojiPickerDesktopDropdown = forwardRef(function ToolboxDropdownDesktop(
-	{ reference, children }: EmojiPickerDesktopDropdownProps,
-	ref: Ref<HTMLElement>,
-) {
+const EmojiPickerDesktopDropdown = ({ reference, children, ref }: EmojiPickerDesktopDropdownProps) => {
 	const targetRef = useRef<HTMLElement>(null);
 	const mergedRef = useMergedRefs(ref, targetRef);
 
@@ -76,6 +74,6 @@ const EmojiPickerDesktopDropdown = forwardRef(function ToolboxDropdownDesktop(
 			</Box>
 		</Tile>
 	);
-});
+};
 
 export default EmojiPickerDesktopDropdown;

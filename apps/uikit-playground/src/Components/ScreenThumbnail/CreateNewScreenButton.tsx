@@ -1,14 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { IconProps } from '@rocket.chat/fuselage';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-const CreateNewScreenButton = ({
-	size = '60px',
-	name = 'plus',
-	...props
-}: {
-	size?: ComponentProps<typeof Icon>['size'];
-} & ComponentProps<typeof Icon>) => {
+export type CreateNewScreenButtonProps = {
+	size?: IconProps['size'];
+} & IconProps;
+
+const CreateNewScreenButton = ({ size = '60px', name = 'plus', ...props }: CreateNewScreenButtonProps) => {
 	return (
 		<Box width={size} height={size}>
 			<Icon

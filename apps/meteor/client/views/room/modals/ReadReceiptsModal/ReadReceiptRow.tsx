@@ -5,7 +5,9 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser) => {
+export type ReadReceiptRowProps = IReadReceiptWithUser;
+
+const ReadReceiptRow = ({ user, ts }: ReadReceiptRowProps) => {
 	const displayName = useUserDisplayName(user || {});
 	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 

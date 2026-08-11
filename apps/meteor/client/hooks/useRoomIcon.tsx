@@ -1,13 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { IconProps } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
 
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'abacAttributes'>,
-): ComponentProps<typeof Icon> | ReactElement<any> | null => {
+): IconProps | ReactElement<any> | null => {
 	if (room.abacAttributes) {
 		if (room.teamMain) {
 			return { name: 'team-shield' };

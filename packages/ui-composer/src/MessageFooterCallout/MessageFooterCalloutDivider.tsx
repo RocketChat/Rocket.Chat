@@ -1,8 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { RefAttributes } from 'react';
 
-const MessageFooterCalloutDivider = forwardRef<HTMLButtonElement>(function MessageFooterCalloutDivider(props, ref) {
-	return <Box is='hr' ref={ref} borderInlineStart='1px solid' marginInline={4} flexShrink={0} {...props} />;
-});
+export type MessageFooterCalloutDividerProps = RefAttributes<HTMLButtonElement>;
+
+const MessageFooterCalloutDivider = ({ ref, ...props }: MessageFooterCalloutDividerProps) => (
+	<Box is='hr' ref={ref} borderInlineStart='1px solid' marginInline={4} flexShrink={0} {...props} />
+);
 
 export default MessageFooterCalloutDivider;

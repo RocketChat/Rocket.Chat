@@ -1,5 +1,6 @@
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage';
-import { useId, type ComponentProps } from 'react';
+import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +9,12 @@ import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
 import { ActionSender } from './ActionSender';
 
-type SendMessageActionFormType = ComponentProps<typeof Field> & {
+export type SendMessageActionFormProps = FieldProps & {
 	index: number;
 	control: Control<TriggersPayload>;
 };
 
-export const SendMessageActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
+export const SendMessageActionForm = ({ control, index, ...props }: SendMessageActionFormProps) => {
 	const { t } = useTranslation();
 	const messageFieldId = useId();
 	const name = `actions.${index}.params.msg` as const;

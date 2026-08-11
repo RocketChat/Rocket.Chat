@@ -1,9 +1,10 @@
+import type { FramedIconProps } from '@rocket.chat/fuselage';
 import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { useId } from 'react';
 
 export type AICenterCapabilityCardProps = {
-	icon: ComponentProps<typeof FramedIcon>['icon'];
+	icon: FramedIconProps['icon'];
 	title: string;
 	description: string;
 	status?: ReactNode;

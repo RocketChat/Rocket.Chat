@@ -1,7 +1,7 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type VideoConfMessageRowProps = ComponentProps<typeof Box>;
+export type VideoConfMessageRowProps = BoxProps;
 
 const VideoConfMessageRow = (props: VideoConfMessageRowProps) => (
 	<Box padding={16} display='flex' justifyContent='space-between' {...props} />

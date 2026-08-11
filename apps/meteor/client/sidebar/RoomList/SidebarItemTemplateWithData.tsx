@@ -19,7 +19,7 @@ import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type RoomListRowProps = {
+export type SidebarItemTemplateWithDataProps = {
 	extended: boolean;
 	t: TFunction;
 	SidebarItemTemplate: ComponentType<
@@ -72,7 +72,7 @@ const SidebarItemTemplateWithData = ({
 	isAnonymous,
 	videoConfActions,
 	userId,
-}: RoomListRowProps) => {
+}: SidebarItemTemplateWithDataProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
@@ -164,7 +164,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = [
+const keys: (keyof SidebarItemTemplateWithDataProps)[] = [
 	'id',
 	'style',
 	'extended',

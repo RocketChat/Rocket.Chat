@@ -7,7 +7,9 @@ import { useE2EEState } from '../hooks/useE2EEState';
 
 const RoomToolboxE2EESetup = lazy(() => import('./RoomToolbox/RoomToolboxE2EESetup'));
 
-const RoomHeaderE2EESetup = ({ room }: RoomHeaderProps) => {
+export type RoomHeaderE2EESetupProps = RoomHeaderProps;
+
+const RoomHeaderE2EESetup = ({ room }: RoomHeaderE2EESetupProps) => {
 	const e2eeState = useE2EEState();
 	const e2eRoomState = useE2EERoomState(room._id);
 

@@ -8,7 +8,9 @@ import { useMemo, useState, useEffect } from 'react';
 import HistoryContent from './HistoryContent';
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
 
-const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
+export type OutgoingWebhookHistoryPageProps = ComponentProps<typeof Page>;
+
+const OutgoingWebhookHistoryPage = (props: OutgoingWebhookHistoryPageProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const router = useRouter();

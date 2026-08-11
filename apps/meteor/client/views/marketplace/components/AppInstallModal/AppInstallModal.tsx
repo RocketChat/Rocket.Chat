@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 
-type AppsInstallationModalProps = {
+export type AppInstallationModalProps = {
 	enabled: number;
 	limit: number;
 	appName: string;
@@ -29,7 +29,7 @@ const AppInstallationModal = ({
 	handleClose,
 	handleConfirm,
 	handleEnableUnlimitedApps,
-}: AppsInstallationModalProps) => {
+}: AppInstallationModalProps) => {
 	const { t } = useTranslation();
 
 	const getTitle = () => {

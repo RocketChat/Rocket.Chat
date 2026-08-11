@@ -1,10 +1,10 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, TableCell } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
-type GenericTableHeaderCellProps<T extends string> = Omit<ComponentProps<typeof Box>, 'onClick'> & {
+type GenericTableHeaderCellProps<T extends string> = Omit<BoxProps, 'onClick'> & {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
 	sort?: T;

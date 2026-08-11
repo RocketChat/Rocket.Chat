@@ -1,3 +1,4 @@
+import type { IconProps } from '@rocket.chat/fuselage';
 import {
 	Modal,
 	Button,
@@ -14,7 +15,6 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ type FormValues = {
 	usersToInvite: string[];
 };
 
-const verificationStatusAsIcon = (verificationStatus: string): ComponentProps<typeof Icon>['name'] => {
+const verificationStatusAsIcon = (verificationStatus: string): IconProps['name'] => {
 	if (verificationStatus === 'VERIFIED') {
 		return 'circle-check';
 	}

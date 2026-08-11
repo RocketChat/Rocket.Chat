@@ -233,6 +233,16 @@ const TranslationProvider = ({ children }: TranslationProviderProps) => {
 	);
 };
 
+type TranslationProviderInnerProps = {
+	children: ReactNode;
+	availableLanguages: {
+		en: string;
+		name: string;
+		ogName: string;
+		key: string;
+	}[];
+};
+
 /**
  * I was forced to create this component to keep the api useTranslation from rocketchat
  * rocketchat useTranslation invalidates the provider content, triggering all the places that use it
@@ -241,18 +251,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps) => {
  * and invalidating the provider content
  */
 // eslint-disable-next-line react/no-multi-comp
-const TranslationProviderInner = ({
-	children,
-	availableLanguages,
-}: {
-	children: ReactNode;
-	availableLanguages: {
-		en: string;
-		name: string;
-		ogName: string;
-		key: string;
-	}[];
-}) => {
+const TranslationProviderInner = ({ children, availableLanguages }: TranslationProviderInnerProps) => {
 	const { t, i18n } = useTranslation();
 
 	const value: TranslationContextValue = useMemo(

@@ -1,3 +1,4 @@
+import type { IconButtonProps } from '@rocket.chat/fuselage';
 import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,7 @@ import { useHandleMenuAction } from './hooks/useHandleMenuAction';
 
 type GenericMenuCommonProps = {
 	title: string;
-	icon?: ComponentProps<typeof IconButton>['icon'];
+	icon?: IconButtonProps['icon'];
 	disabled?: boolean;
 	callbackAction?: () => void;
 	isOpen?: boolean;

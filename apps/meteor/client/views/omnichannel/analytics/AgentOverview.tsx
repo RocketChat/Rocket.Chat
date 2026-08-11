@@ -6,15 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 const style = { width: '100%' };
 
-const AgentOverview = ({
-	type,
-	dateRange,
-	departmentId,
-}: {
+export type AgentOverviewProps = {
 	type: string;
 	dateRange: { start: string; end: string };
 	departmentId: string;
-}) => {
+};
+
+const AgentOverview = ({ type, dateRange, departmentId }: AgentOverviewProps) => {
 	const { t } = useTranslation();
 	const { start, end } = dateRange;
 

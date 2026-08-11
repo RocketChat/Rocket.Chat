@@ -1,14 +1,17 @@
+import type { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
-import type { Ref } from 'react';
-import { forwardRef } from 'react';
+import type { CSSProperties, RefAttributes } from 'react';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
-import type { BubbleDateProps } from '../hooks/useDateScroll';
 
-export const BubbleDate = forwardRef(function BubbleDate(
-	{ bubbleDate, showBubble, bubbleDateStyle, bubbleDateClassName }: BubbleDateProps,
-	ref: Ref<HTMLElement>,
-) {
+export type BubbleDateProps = {
+	bubbleDate: string | undefined;
+	bubbleDateClassName?: ReturnType<typeof css>;
+	showBubble: boolean;
+	bubbleDateStyle?: CSSProperties;
+} & RefAttributes<HTMLElement>;
+
+export const BubbleDate = ({ bubbleDate, showBubble, bubbleDateStyle, bubbleDateClassName, ref }: BubbleDateProps) => {
 	const formatDate = useFormatDate();
 	return (
 		<Box ref={ref} position='relative' display='flex' justifyContent='center'>
@@ -21,4 +24,4 @@ export const BubbleDate = forwardRef(function BubbleDate(
 			</Box>
 		</Box>
 	);
-});
+};

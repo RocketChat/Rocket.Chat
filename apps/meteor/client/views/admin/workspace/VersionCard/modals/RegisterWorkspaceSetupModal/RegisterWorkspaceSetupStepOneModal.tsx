@@ -24,7 +24,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { links } from '../../../../../../lib/links';
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
 
-type Props = {
+export type RegisterWorkspaceSetupStepOneModalProps = {
 	email: string;
 	setEmail: (email: string) => void;
 	step: number;
@@ -47,7 +47,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 	validInfo,
 	setIntentData,
 	...props
-}: Props) => {
+}: RegisterWorkspaceSetupStepOneModalProps) => {
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();

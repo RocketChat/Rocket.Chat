@@ -9,11 +9,11 @@ import type { ILayoutBlock } from '../../Context/initialState';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 
-type CodeMirrorProps = {
+export type CodeEditorProps = {
 	extensions?: Extension[];
 };
 
-const CodeEditor = ({ extensions }: CodeMirrorProps) => {
+const CodeEditor = ({ extensions }: CodeEditorProps) => {
 	const {
 		state: { screens, activeScreen },
 		dispatch,

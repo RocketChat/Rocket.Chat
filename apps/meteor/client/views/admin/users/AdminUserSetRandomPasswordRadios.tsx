@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
-type AdminUserSetRandomPasswordProps = {
+export type AdminUserSetRandomPasswordRadiosProps = {
 	isNewUserPage: boolean | undefined;
 	control: Control<UserFormProps, any>;
 	isSmtpEnabled: boolean | undefined;
@@ -20,7 +20,7 @@ const AdminUserSetRandomPasswordRadios = ({
 	isSmtpEnabled,
 	setRandomPasswordId,
 	setValue,
-}: AdminUserSetRandomPasswordProps) => {
+}: AdminUserSetRandomPasswordRadiosProps) => {
 	const { t } = useTranslation();
 
 	const setPasswordManuallyId = useId();

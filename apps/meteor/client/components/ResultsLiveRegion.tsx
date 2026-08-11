@@ -1,15 +1,13 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { useTranslation } from 'react-i18next';
 
-const ResultsLiveRegion = ({
-	shouldAnnounce,
-	itemCount,
-	isLoading = false,
-}: {
+export type ResultsLiveRegionProps = {
 	shouldAnnounce: boolean;
 	itemCount: number;
 	isLoading?: boolean;
-}) => {
+};
+
+const ResultsLiveRegion = ({ shouldAnnounce, itemCount, isLoading = false }: ResultsLiveRegionProps) => {
 	const { t } = useTranslation();
 
 	const message = (() => {

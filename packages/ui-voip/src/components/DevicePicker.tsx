@@ -4,7 +4,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
-import { forwardRef, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
@@ -18,12 +18,9 @@ export type DevicePickerButtonProps = {
 
 // GenericMenu for some reason passes `small: true` when the button is disabled (??).
 // so this is just a wrapper to stop that from happening.
-const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps>(function DevicePickerButton(
-	{ secondary = false, small: _small, ...props },
-	ref,
-) {
-	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='customize' icon='customize' ref={ref} />;
-});
+const DevicePickerButton = ({ secondary = false, small: _small, ref, ...props }: DevicePickerButtonProps) => (
+	<ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='customize' icon='customize' ref={ref} />
+);
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	content: (

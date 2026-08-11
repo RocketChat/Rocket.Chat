@@ -7,7 +7,7 @@ import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DevicesRowProps = {
+export type DeviceManagementAccountRowProps = {
 	_id: string;
 	deviceName?: string;
 	deviceType?: string;
@@ -16,7 +16,14 @@ type DevicesRowProps = {
 	current?: boolean;
 };
 
-const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, loginAt, current }: DevicesRowProps) => {
+const DeviceManagementAccountRow = ({
+	_id,
+	deviceName,
+	deviceType = 'browser',
+	deviceOSName,
+	loginAt,
+	current,
+}: DeviceManagementAccountRowProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');

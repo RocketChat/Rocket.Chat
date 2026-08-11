@@ -1,5 +1,6 @@
 import { MAX_SOURCE_MESSAGE_LENGTH } from '@rocket.chat/ai-search';
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { IconProps } from '@rocket.chat/fuselage';
 import {
 	Box,
 	Icon,
@@ -16,7 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -52,7 +53,7 @@ const getMessageHref = (item: AISearchResult): string | undefined => {
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
-const getRoomIcon = (roomType: IRoom['t'] | undefined): ComponentProps<typeof Icon>['name'] => {
+const getRoomIcon = (roomType: IRoom['t'] | undefined): IconProps['name'] => {
 	if (roomType === 'd') {
 		return 'at';
 	}

@@ -1,7 +1,7 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { AnimatedVisibility, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type PageFooterProps = { isDirty: boolean } & ComponentProps<typeof Box>;
+export type PageFooterProps = { isDirty: boolean } & BoxProps;
 
 const PageFooter = ({ children, isDirty, ...props }: PageFooterProps) => {
 	return (

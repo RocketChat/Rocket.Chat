@@ -27,7 +27,11 @@ type RoomFilters = {
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
-const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+export type RoomsTableProps = {
+	reload: MutableRefObject<() => void>;
+};
+
+const RoomsTable = ({ reload }: RoomsTableProps) => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 

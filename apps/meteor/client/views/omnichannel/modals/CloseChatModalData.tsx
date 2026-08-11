@@ -5,12 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import CloseChatModal from './CloseChatModal';
 import { FormSkeleton } from '../components/FormSkeleton';
 
-const CloseChatModalData = ({
-	departmentId,
-	visitorEmail,
-	onCancel,
-	onConfirm,
-}: {
+export type CloseChatModalDataProps = {
 	departmentId: ILivechatDepartment['_id'];
 	onCancel: () => void;
 	visitorEmail?: string;
@@ -19,7 +14,9 @@ const CloseChatModalData = ({
 		tags?: string[],
 		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 	) => Promise<void>;
-}) => {
+};
+
+const CloseChatModalData = ({ departmentId, visitorEmail, onCancel, onConfirm }: CloseChatModalDataProps) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });
 	const { data, isPending } = useQuery({
 		queryKey: ['/v1/livechat/department/:_id', departmentId],

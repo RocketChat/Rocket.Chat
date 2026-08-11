@@ -13,12 +13,12 @@ type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
 };
 
-type PlanCardProps = {
+export type PlanCardPremiumProps = {
 	licenseInformation: ILicenseV3['information'];
 	licenseLimits: LicenseLimits;
 };
 
-const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) => {
+const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardPremiumProps) => {
 	const { t } = useTranslation();
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();

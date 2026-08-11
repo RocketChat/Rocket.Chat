@@ -8,7 +8,9 @@ import type { ItemProps } from './types';
 import { context, updatePayloadAction } from '../../Context';
 import getUniqueId from '../../utils/getUniqueId';
 
-const Items = ({ label, children, layer, payload }: ItemProps) => {
+export type ItemsProps = ItemProps;
+
+const Items = ({ label, children, layer, payload }: ItemsProps) => {
 	const [isOpen, toggleItemOpen] = useState<boolean>(layer === 1);
 	const [hover, setHover] = useState<boolean>(false);
 	const { state, dispatch } = useContext(context);

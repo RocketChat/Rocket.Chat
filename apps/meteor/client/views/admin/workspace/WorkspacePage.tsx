@@ -11,7 +11,7 @@ import UsersUploadsCard from './UsersUploadsCard/UsersUploadsCard';
 import VersionCard from './VersionCard/VersionCard';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 
-type WorkspaceStatusPageProps = {
+export type WorkspacePageProps = {
 	canViewStatistics: boolean;
 	serverInfo: IWorkspaceInfo;
 	statistics: IStats;
@@ -29,7 +29,7 @@ const WorkspacePage = ({
 	instances,
 	onClickRefreshButton,
 	onClickDownloadInfo,
-}: WorkspaceStatusPageProps) => {
+}: WorkspacePageProps) => {
 	const { t } = useTranslation();
 
 	const { data } = useIsEnterprise();

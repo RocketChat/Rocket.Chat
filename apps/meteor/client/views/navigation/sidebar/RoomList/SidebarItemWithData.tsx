@@ -16,7 +16,7 @@ import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../..
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type RoomListRowProps = {
+export type SidebarItemWithDataProps = {
 	t: TFunction;
 	openedRoom?: string;
 	isAnonymous?: boolean;
@@ -31,7 +31,7 @@ type RoomListRowProps = {
 	};
 };
 
-const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
+const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: SidebarItemWithDataProps) => {
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
@@ -94,7 +94,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
+const keys: (keyof SidebarItemWithDataProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {

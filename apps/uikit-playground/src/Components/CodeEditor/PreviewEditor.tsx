@@ -6,11 +6,11 @@ import { context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import intendCode from '../../utils/intendCode';
 
-type CodeMirrorProps = {
+export type PreviewEditorProps = {
 	extensions?: Extension[];
 };
 
-const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
+const PreviewEditor = ({ extensions }: PreviewEditorProps) => {
 	const {
 		state: { screens, activeScreen },
 	} = useContext(context);

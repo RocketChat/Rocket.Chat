@@ -1,11 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type CollapsibleRegionProps = {
 	children: ReactNode;
 	expanded?: boolean;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 export const CollapsibleRegion = ({ children, expanded, ...props }: CollapsibleRegionProps) => {
 	return (

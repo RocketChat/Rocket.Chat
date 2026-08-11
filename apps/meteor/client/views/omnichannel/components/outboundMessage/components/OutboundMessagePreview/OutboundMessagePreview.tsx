@@ -5,8 +5,8 @@ import type {
 	IOutboundProviderTemplate,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box, Margins } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,7 @@ import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../types/template';
 import TemplatePreview from '../TemplatePreview';
 
-export type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
+export type OutboundMessagePreviewProps = BoxProps & {
 	template?: IOutboundProviderTemplate;
 	contactName?: ILivechatContact['name'];
 	providerName?: IOutboundProviderMetadata['providerName'];

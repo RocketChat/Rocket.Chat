@@ -1,20 +1,20 @@
 import { Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 
-type SanitizeProps = {
+export type OutlookEventItemContentProps = {
 	html: string;
 	options?: {
 		[key: string]: string;
 	};
 };
 
-const OutlookEventItemContent = ({ html, options }: SanitizeProps) => {
+const OutlookEventItemContent = ({ html, options }: OutlookEventItemContentProps) => {
 	const defaultOptions = {
 		ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br'],
 		ALLOWED_ATTR: ['href'],
 	};
 
-	const sanitize = (dirtyHTML: SanitizeProps['html'], options: SanitizeProps['options']) => ({
+	const sanitize = (dirtyHTML: OutlookEventItemContentProps['html'], options: OutlookEventItemContentProps['options']) => ({
 		__html: DOMPurify.sanitize(dirtyHTML, { ...defaultOptions, ...options }).toString(),
 	});
 

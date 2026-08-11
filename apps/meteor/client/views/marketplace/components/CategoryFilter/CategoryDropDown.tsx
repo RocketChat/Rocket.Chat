@@ -1,6 +1,5 @@
-import type { Button } from '@rocket.chat/fuselage';
+import type { ButtonProps } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
 import { useRef, useCallback } from 'react';
 
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
@@ -14,7 +13,7 @@ export type CategoryDropDownProps = {
 	categories: CategoryDropDownListProps['categories'];
 	onSelected: CategoryDropDownListProps['onSelected'];
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];
-} & ComponentProps<typeof Button>;
+} & ButtonProps;
 
 const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props }: CategoryDropDownProps) => {
 	const reference = useRef<HTMLInputElement>(null);

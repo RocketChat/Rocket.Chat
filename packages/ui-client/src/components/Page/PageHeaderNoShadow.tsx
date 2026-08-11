@@ -7,13 +7,13 @@ import { useDocumentTitle } from '../../hooks';
 import { HeaderToolbar } from '../Header';
 import { SidebarToggler } from '../SidebarToggler';
 
-type PageHeaderProps = {
+export type PageHeaderNoShadowProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
 	borderBlockEndColor?: string;
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'title'>;
 
-const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props }: PageHeaderProps) => {
+const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props }: PageHeaderNoShadowProps) => {
 	const { t } = useTranslation();
 	const { sidebar, isEmbedded } = useLayout();
 

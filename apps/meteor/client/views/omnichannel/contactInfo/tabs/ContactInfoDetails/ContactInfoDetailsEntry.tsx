@@ -1,8 +1,8 @@
-import type { IconProps } from '@rocket.chat/fuselage';
+import type { BoxProps, IconProps } from '@rocket.chat/fuselage';
 import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-export type ContactInfoDetailsEntryProps = Pick<ComponentProps<typeof Box>, 'is' | 'aria-labelledby'> & {
+export type ContactInfoDetailsEntryProps = Pick<BoxProps, 'is' | 'aria-labelledby'> & {
 	icon: IconProps['name'];
 	value: string;
 	actions?: ReactNode;

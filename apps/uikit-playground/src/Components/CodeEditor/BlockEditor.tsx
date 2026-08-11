@@ -10,11 +10,11 @@ import useCodeMirror from '../../hooks/useCodeMirror';
 import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
 import intendCode from '../../utils/intendCode';
 
-type CodeMirrorProps = {
+export type BlockEditorProps = {
 	extensions?: Extension[];
 };
 
-const BlockEditor = ({ extensions }: CodeMirrorProps) => {
+const BlockEditor = ({ extensions }: BlockEditorProps) => {
 	const {
 		state: { screens, activeScreen },
 		dispatch,

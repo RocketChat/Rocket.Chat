@@ -1,6 +1,6 @@
+import type { IconButtonProps } from '@rocket.chat/fuselage';
 import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import type { ComponentProps } from 'react';
 
 export type ToggleButtonProps = {
 	label: string; // label should not change due to a11y constraints
@@ -9,7 +9,7 @@ export type ToggleButtonProps = {
 	disabled?: boolean;
 	pressed?: boolean;
 	onToggle?: () => void;
-} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
+} & Omit<IconButtonProps, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
 const ToggleButton = ({
 	disabled,

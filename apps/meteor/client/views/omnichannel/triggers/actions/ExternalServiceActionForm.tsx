@@ -1,5 +1,6 @@
+import type { FieldProps } from '@rocket.chat/fuselage';
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
-import { useId, type ComponentProps, type FocusEvent } from 'react';
+import { useId, type FocusEvent } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -10,13 +11,13 @@ import { useFieldError } from '../hooks';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
 import { ActionSender } from './ActionSender';
 
-type SendMessageActionFormType = ComponentProps<typeof Field> & {
+export type ExternalServiceActionFormProps = FieldProps & {
 	index: number;
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 };
 
-export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: SendMessageActionFormType) => {
+export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: ExternalServiceActionFormProps) => {
 	const { t } = useTranslation();
 
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

@@ -3,7 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import * as React from 'react';
-import { Children, forwardRef, isValidElement } from 'react';
+import { Children, isValidElement } from 'react';
 
 import * as stories from './DiscussionsList.stories';
 
@@ -34,40 +34,41 @@ type MockVListProps = {
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: React.forwardRef(
-			(
-				{ children, onScroll, as: asRoot = 'div', item: asItem = 'div', shift: _shift, style, className }: MockVListProps,
-				ref: React.Ref<unknown>,
-			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
-				const Root = asRoot;
-				const Item = asItem;
-				const wrapped = Children.map(children, (child, index) => {
-					const key = isValidElement(child) && child.key != null ? String(child.key) : `row-${index}`;
-					return <Item key={key}>{child}</Item>;
-				});
+		Virtualizer: ({
+			children,
+			onScroll,
+			as: asRoot = 'div',
+			item: asItem = 'div',
+			shift: _shift,
+			style,
+			className,
+			ref,
+		}: MockVListProps & { ref?: React.Ref<unknown> }) => {
+			React.useImperativeHandle(ref, () => mockVirtualizerHandle);
+			const Root = asRoot;
+			const Item = asItem;
+			const wrapped = Children.map(children, (child, index) => {
+				const key = isValidElement(child) && child.key != null ? String(child.key) : `row-${index}`;
+				return <Item key={key}>{child}</Item>;
+			});
 
-				return (
-					<Root
-						className={className}
-						data-testid='discussions-virtual-list'
-						style={style ?? { height: '100%' }}
-						onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)}
-					>
-						{wrapped}
-					</Root>
-				);
-			},
-		),
+			return (
+				<Root
+					className={className}
+					data-testid='discussions-virtual-list'
+					style={style ?? { height: '100%' }}
+					onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)}
+				>
+					{wrapped}
+				</Root>
+			);
+		},
 	};
 });
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	...jest.requireActual('@rocket.chat/ui-client'),
-	CustomVirtuaScrollbars: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CustomVirtuaScrollbars(
-		{ children, ...props },
-		ref,
-	) {
+	CustomVirtuaScrollbars: ({ children, ref, ...props }: HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) => {
 		// eslint-disable-next-line testing-library/no-node-access
 		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
 
@@ -76,7 +77,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 				{content}
 			</div>
 		);
-	}),
+	},
 }));
 
 const composed = composeStories(stories);

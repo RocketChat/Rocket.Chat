@@ -25,13 +25,13 @@ import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageS
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
 import { useHistoryMessageList } from '../../../contactHistory/MessageList/useHistoryMessageList';
 
-type ContactHistoryMessagesListProps = {
+export type ContactInfoHistoryMessagesProps = {
 	chatId: string;
 	onBack: () => void;
 	onOpenRoom?: () => void;
 };
 
-const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHistoryMessagesListProps) => {
+const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactInfoHistoryMessagesProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');

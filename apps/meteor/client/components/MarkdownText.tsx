@@ -1,5 +1,5 @@
+import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import MarkdownTextInner from './MarkdownTextInner';
 import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
@@ -12,7 +12,7 @@ type MarkdownTextParams = {
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
-} & ComponentProps<typeof Box>;
+} & BoxProps;
 
 export type MarkdownTextProps = Partial<MarkdownTextParams>;
 

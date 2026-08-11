@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { BoxProps } from '@rocket.chat/fuselage';
 import {
 	Box,
 	Modal,
@@ -23,7 +24,6 @@ import {
 	usePermissionWithScopedRoles,
 	usePermission,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -192,7 +192,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	return (
 		<Modal
 			aria-labelledby={`${createChannelFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+			wrapperFunction={(props: BoxProps) => (
 				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
 			)}
 		>

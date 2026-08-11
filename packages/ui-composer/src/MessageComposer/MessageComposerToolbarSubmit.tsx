@@ -1,6 +1,8 @@
+import type { ButtonGroupProps } from '@rocket.chat/fuselage';
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-const MessageComposerToolbarSubmit = (props: ComponentProps<typeof ButtonGroup>) => <ButtonGroup small {...props} />;
+export type MessageComposerToolbarSubmitProps = ButtonGroupProps;
+
+const MessageComposerToolbarSubmit = (props: MessageComposerToolbarSubmitProps) => <ButtonGroup small {...props} />;
 
 export default MessageComposerToolbarSubmit;

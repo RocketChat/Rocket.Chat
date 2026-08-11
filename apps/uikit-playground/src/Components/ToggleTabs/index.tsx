@@ -1,15 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 
-const ToggleTabs = ({
-	tabsItem,
-	onChange,
-	selectedTab,
-}: {
+export type ToggleTabsProps = {
 	tabsItem: string[];
 	onChange: (index: number) => void;
 	selectedTab: number;
-}) => {
+};
+
+const ToggleTabs = ({ tabsItem, onChange, selectedTab }: ToggleTabsProps) => {
 	const disableBorder = css`
 		border-left: none !important;
 		border-right: none !important;

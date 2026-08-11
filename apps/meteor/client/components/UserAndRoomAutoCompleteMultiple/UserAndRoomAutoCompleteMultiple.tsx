@@ -1,16 +1,17 @@
 import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { Rooms } from '../../stores';
 
-export type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+export type UserAndRoomAutoCompleteMultipleProps<TLabel = ReactNode> = Omit<AutoCompleteProps<TLabel>, 'filter'> & {
 	limit?: number;
 };
 
@@ -23,7 +24,12 @@ type OptionType = {
 	};
 }[];
 
-const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: UserAndRoomAutoCompleteMultipleProps) => {
+const UserAndRoomAutoCompleteMultiple = <TLabel = ReactNode,>({
+	value,
+	onChange,
+	limit,
+	...props
+}: UserAndRoomAutoCompleteMultipleProps<TLabel>) => {
 	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);

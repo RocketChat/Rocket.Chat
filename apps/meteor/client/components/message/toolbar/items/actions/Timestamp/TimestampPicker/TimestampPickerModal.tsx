@@ -18,12 +18,12 @@ type TimestampForm = {
 	timezone: TimezoneKey;
 };
 
-type TimestampPickerProps = {
+export type TimestampPickerModalProps = {
 	onClose: () => void;
 	composer?: ComposerAPI;
 };
 
-export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps) => {
+export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerModalProps) => {
 	const { t } = useTranslation();
 	const {
 		control,

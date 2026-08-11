@@ -3,7 +3,12 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onConfirm: () => void }) => {
+export type VideoConfBlockModalProps = {
+	onClose: () => void;
+	onConfirm: () => void;
+};
+
+const VideoConfBlockModal = ({ onClose, onConfirm }: VideoConfBlockModalProps) => {
 	const t = useTranslation();
 	const workspaceUrl = useSetting('Site_Url');
 

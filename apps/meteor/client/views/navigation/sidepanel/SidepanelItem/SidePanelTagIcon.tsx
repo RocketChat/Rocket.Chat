@@ -1,7 +1,7 @@
+import type { IconProps } from '@rocket.chat/fuselage';
 import { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type SidePanelTagIconProps = { icon: Pick<ComponentProps<typeof Icon>, 'name' | 'color'> | null };
+export type SidePanelTagIconProps = { icon: Pick<IconProps, 'name' | 'color'> | null };
 
 const SidePanelTagIcon = ({ icon }: SidePanelTagIconProps) => (icon ? <Icon size='x12' marginInlineEnd={4} {...icon} /> : null);
 

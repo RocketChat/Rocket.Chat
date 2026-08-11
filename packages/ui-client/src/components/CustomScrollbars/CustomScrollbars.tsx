@@ -1,6 +1,6 @@
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
-import type { HTMLAttributes, ReactNode } from 'react';
-import { useEffect, useRef, forwardRef, memo } from 'react';
+import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
+import { useEffect, useRef, memo } from 'react';
 
 import type { OverlayScrollbars } from '.';
 import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
@@ -9,9 +9,10 @@ export type CustomScrollbarsProps = {
 	children: ReactNode;
 	overflowX?: boolean;
 	onScroll?: (args: OverlayScrollbars) => void;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'> &
+	RefAttributes<HTMLElement>;
 
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars({ overflowX, onScroll, ...props }, ref) {
+const CustomScrollbars = ({ overflowX, onScroll, ref, ...props }: CustomScrollbarsProps) => {
 	const rootRef = useRef(null);
 	const scrollbarsOptions = getScrollbarsOptions(overflowX);
 	const [initialize, osInstance] = useOverlayScrollbars({
@@ -44,6 +45,6 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 	}, [initialize, osInstance, ref]);
 
 	return <BaseScrollbars ref={rootRef} {...props} />;
-});
+};
 
 export default memo(CustomScrollbars);

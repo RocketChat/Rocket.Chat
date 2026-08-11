@@ -1,7 +1,7 @@
 import type { OptionType } from '@rocket.chat/fuselage';
 import { Options } from '@rocket.chat/fuselage';
-import type { ComponentProps, Ref } from 'react';
-import { forwardRef, createContext, useContext } from 'react';
+import type { ComponentProps, RefAttributes } from 'react';
+import { createContext, useContext } from 'react';
 
 import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 
@@ -22,10 +22,9 @@ type OptionsContextValue = {
 export const OptionsContext = createContext<OptionsContextValue>({
 	options: [],
 });
-const UserAutoCompleteMultipleOptions = forwardRef(function UserAutoCompleteMultipleOptions(
-	{ onSelect, ...props }: ComponentProps<typeof Options>,
-	ref: Ref<HTMLElement>,
-) {
+export type UserAutoCompleteMultipleOptionsProps = ComponentProps<typeof Options> & RefAttributes<HTMLElement>;
+
+const UserAutoCompleteMultipleOptions = ({ onSelect, ref, ...props }: UserAutoCompleteMultipleOptionsProps) => {
 	const { options } = useContext(OptionsContext);
 	return (
 		<Options
@@ -37,6 +36,6 @@ const UserAutoCompleteMultipleOptions = forwardRef(function UserAutoCompleteMult
 			renderItem={UserAutoCompleteMultipleOption}
 		/>
 	);
-});
+};
 
 export default UserAutoCompleteMultipleOptions;

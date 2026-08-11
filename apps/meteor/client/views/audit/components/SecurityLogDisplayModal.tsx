@@ -10,7 +10,7 @@ import AuditModalField from './AuditModalField';
 import AuditModalLabel from './AuditModalLabel';
 import AuditModalText from './AuditModalText';
 
-type SecurityLogDisplayProps = {
+export type SecurityLogDisplayModalProps = {
 	timestamp: string;
 	actor: IAuditServerUserActor | IAuditServerSystemActor | IAuditServerAppActor;
 	setting: string;
@@ -19,7 +19,7 @@ type SecurityLogDisplayProps = {
 	onCancel: () => void;
 };
 
-const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
+const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayModalProps) => {
 	const { t } = useTranslation();
 
 	return (

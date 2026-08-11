@@ -31,19 +31,15 @@ import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
 
-const ContextMessage = ({
-	message,
-	room,
-	deleted,
-	onRedirect,
-	onChange,
-}: {
+export type ContextMessageProps = {
 	message: any;
 	room: MessageReport['room'];
 	deleted: boolean;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
-}) => {
+};
+
+const ContextMessage = ({ message, room, deleted, onRedirect, onChange }: ContextMessageProps) => {
 	const { t } = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);

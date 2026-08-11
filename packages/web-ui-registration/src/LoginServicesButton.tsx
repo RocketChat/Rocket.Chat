@@ -10,6 +10,14 @@ import type { LoginErrorState, LoginErrors } from './LoginForm';
 
 const servicesSupportedByMeteor = ['saml', 'cas', 'ldap'];
 
+export type LoginServicesButtonProps<T extends LoginService> = T & {
+	className?: string;
+	disabled?: boolean;
+	loginStyle?: 'popup' | 'redirect' | '';
+	setError?: Dispatch<SetStateAction<LoginErrorState>>;
+	enableModernOAuthFlow?: boolean;
+};
+
 const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
 	icon,
@@ -23,13 +31,7 @@ const LoginServicesButton = <T extends LoginService>({
 	loginStyle,
 	enableModernOAuthFlow,
 	...props
-}: T & {
-	className?: string;
-	disabled?: boolean;
-	loginStyle?: 'popup' | 'redirect' | '';
-	setError?: Dispatch<SetStateAction<LoginErrorState>>;
-	enableModernOAuthFlow?: boolean;
-}) => {
+}: LoginServicesButtonProps<T>) => {
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 

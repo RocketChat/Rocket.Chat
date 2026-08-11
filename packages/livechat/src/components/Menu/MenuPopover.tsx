@@ -5,13 +5,13 @@ import styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 import { PopoverTrigger } from '../Popover';
 
-type PopoverMenuProps = {
+export type MenuPopoverProps = {
 	children?: ComponentChildren;
 	trigger: (contextValue: { pop: () => void }) => ComponentChildren;
 	overlayed?: boolean;
 };
 
-const MenuPopover = ({ children = null, trigger, overlayed }: PopoverMenuProps) => (
+const MenuPopover = ({ children = null, trigger, overlayed }: MenuPopoverProps) => (
 	<PopoverTrigger
 		overlayProps={{
 			className: overlayed ? createClassName(styles, 'popover-menu__overlay') : null,

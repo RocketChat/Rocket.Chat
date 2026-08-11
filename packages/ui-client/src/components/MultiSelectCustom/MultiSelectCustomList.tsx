@@ -19,15 +19,13 @@ const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
 	}
 };
 
-const MultiSelectCustomList = ({
-	options,
-	onSelected,
-	searchBarText,
-}: {
+export type MultiSelectCustomListProps = {
 	options: OptionProp[];
 	onSelected: (item: OptionProp, e?: ChangeEvent<HTMLElement>) => void;
 	searchBarText?: string;
-}) => {
+};
+
+const MultiSelectCustomList = ({ options, onSelected, searchBarText }: MultiSelectCustomListProps) => {
 	const { t } = useTranslation();
 
 	const [text, setText] = useState('');

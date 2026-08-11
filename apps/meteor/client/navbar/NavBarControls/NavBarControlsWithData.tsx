@@ -9,9 +9,9 @@ import { useOmnichannelContactAction } from '../NavBarOmnichannelGroup/hooks/use
 import { useOmnichannelLivechatToggle } from '../NavBarOmnichannelGroup/hooks/useOmnichannelLivechatToggle';
 import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelQueueAction';
 
-type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarControlsWithDataProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
+const NavBarControlsWithData = (props: NavBarControlsWithDataProps) => {
 	const { t } = useTranslation();
 	const callAction = useMediaCallAction();
 

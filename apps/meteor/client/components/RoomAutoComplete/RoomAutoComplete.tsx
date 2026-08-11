@@ -6,8 +6,8 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
-import { forwardRef, memo, useMemo, useState } from 'react';
+import type { ReactNode, RefAttributes } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 type LabelType = { name: string; avatarETag?: string; type: IRoom['t']; encrypted?: IRoom['encrypted'] };
 
@@ -21,7 +21,7 @@ export type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'>
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactNode;
 	setSelectedRoom?: (room: IRoom | undefined) => void;
-};
+} & RefAttributes<HTMLInputElement>;
 
 const AVATAR_SIZE = 'x20';
 
@@ -36,10 +36,15 @@ const ROOM_AUTOCOMPLETE_PARAMS = {
 	},
 } as const;
 
-const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(function RoomAutoComplete(
-	{ value, onChange, scope = 'regular', renderRoomIcon, setSelectedRoom, ...props },
+const RoomAutoComplete = ({
+	value,
+	onChange,
+	scope = 'regular',
+	renderRoomIcon,
+	setSelectedRoom,
 	ref,
-) {
+	...props
+}: RoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', ROOM_AUTOCOMPLETE_PARAMS[scope].endpoint);
@@ -102,6 +107,6 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 			options={options}
 		/>
 	);
-});
+};
 
 export default memo(RoomAutoComplete);

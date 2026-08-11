@@ -1,12 +1,13 @@
+import type { StatusBulletProps } from '@rocket.chat/fuselage';
 import { Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { TextSeparator } from '@rocket.chat/ui-client';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type WorkspaceCardTextSeparatorProps = {
 	label: ReactNode;
 	icon?: Keys;
-	status?: ComponentProps<typeof StatusBullet>['status'];
+	status?: StatusBulletProps['status'];
 	value: ReactNode;
 };
 const WorkspaceCardTextSeparator = ({ icon, label, value, status }: WorkspaceCardTextSeparatorProps) => (

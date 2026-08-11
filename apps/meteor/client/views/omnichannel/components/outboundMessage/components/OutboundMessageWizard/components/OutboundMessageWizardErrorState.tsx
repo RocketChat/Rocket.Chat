@@ -1,13 +1,13 @@
 import { States, StatesIcon, StatesTitle, StatesActions, StatesAction, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type Props = {
+export type OutboundMessageWizardErrorStateProps = {
 	title?: string;
 	description?: string;
 	onRetry?(): void;
 };
 
-const OutboundMessageWizardErrorState = ({ title, description, onRetry }: Props) => {
+const OutboundMessageWizardErrorState = ({ title, description, onRetry }: OutboundMessageWizardErrorStateProps) => {
 	const { t } = useTranslation();
 	return (
 		<States width='100%' height='100%'>

@@ -11,7 +11,7 @@ import {
 	GenericTableLoadingTable,
 } from '.';
 
-export default {
+const meta: Meta<typeof GenericTable> = {
 	component: GenericTable,
 	parameters: {
 		layout: 'padded',
@@ -20,7 +20,9 @@ export default {
 	decorators: [
 		(fn) => <div style={{ height: '100vh', maxHeight: 300, display: 'flex', flexDirection: 'column', marginInline: 24 }}>{fn()}</div>,
 	],
-} satisfies Meta<typeof GenericTable>;
+};
+
+export default meta;
 
 const headers = (
 	<>

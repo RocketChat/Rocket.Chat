@@ -1,12 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import type { ComponentProps, RefAttributes } from 'react';
 import type { Components } from 'react-virtuoso';
 
 import OmnichannelFilters from './OmnichannelFilters';
 import TeamCollabFilters from './TeamCollabFilters';
 import { useOmnichannelEnabled } from '../../../omnichannel/hooks/useOmnichannelEnabled';
 
-const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrapper(_, ref) {
+export type RoomListFiltersProps = ComponentProps<NonNullable<Components['Header']>> & RefAttributes<HTMLElement>;
+
+const RoomListFilters = ({ ref }: RoomListFiltersProps) => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	return (
@@ -15,6 +17,6 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 			{showOmnichannel && <OmnichannelFilters />}
 		</Box>
 	);
-});
+};
 
 export default RoomListFilters;

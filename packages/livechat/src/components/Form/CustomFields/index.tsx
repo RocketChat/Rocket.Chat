@@ -17,14 +17,14 @@ export type CustomField = {
 	regexp?: RegExp;
 };
 
-type RenderCustomFieldsProps = {
+export type CustomFieldsProps = {
 	customFields: CustomField[];
 	loading: boolean;
 	control: Control<RegisterFormValues>;
 	errors: FieldErrors<FieldValues>;
 };
 
-export const CustomFields = ({ customFields, loading, control, errors }: RenderCustomFieldsProps) => {
+export const CustomFields = ({ customFields, loading, control, errors }: CustomFieldsProps) => {
 	const { t } = useTranslation();
 
 	const customFieldsList = customFields.map(({ _id, required = false, label, type, options, regexp, defaultValue }) => {

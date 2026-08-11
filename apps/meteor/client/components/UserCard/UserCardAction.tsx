@@ -1,7 +1,7 @@
+import type { IconButtonProps } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
-export type UserCardActionProps = ComponentProps<typeof IconButton>;
+export type UserCardActionProps = IconButtonProps;
 
 const UserCardAction = ({ label, icon, ...props }: UserCardActionProps) => <IconButton icon={icon} small title={label} {...props} />;
 
