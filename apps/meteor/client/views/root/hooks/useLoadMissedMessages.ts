@@ -1,39 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useConnectionStatus } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { useConnectionStatus, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useRef } from 'react';
 
-import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';
-import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling';
+import { LegacyRoomManager, upsertMessageBulk } from '../../../../app/ui-utils/client';
+import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { Messages, Subscriptions } from '../../../stores';
-
-/**
- * Loads missed messages for a room
- * @param rid - Room ID
- */
-const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
-	const lastMessage = Messages.state.findFirst(
-		(record) => record.rid === rid && record._hidden !== true && !record.temp,
-		(a, b) => b.ts.getTime() - a.ts.getTime(),
-	);
-
-	if (!lastMessage) {
-		return;
-	}
-
-	try {
-		// TODO(ddp-removal): this should move to `/v1/chat.syncMessages` so reconnect
-		// also reconciles edits/deletions made while offline, but that endpoint queries
-		// by `_updatedAt` (+ trash collection) and is currently too slow for this path.
-		// Evaluate/optimize the query before migrating; for now keep the DDP method.
-		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
-		if (result) {
-			const subscription = Subscriptions.state.find((record) => record.rid === rid);
-			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
-		}
-	} catch (error) {
-		console.error('Error loading missed messages:', error);
-	}
-};
 
 /**
  * React hook that loads missed messages when connection is restored
@@ -41,6 +12,47 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 export const useLoadMissedMessages = (): void => {
 	const { connected } = useConnectionStatus();
 	const connectionWasOnlineRef = useRef(connected);
+	const syncMessages = useEndpoint('GET', '/v1/chat.syncMessages');
+
+	/**
+	 * Loads missed messages for a room, reconciling both edits and deletions
+	 * that happened while the client was disconnected.
+	 * @param rid - Room ID
+	 */
+	const loadMissedMessages = useCallback(
+		async (rid: IRoom['_id']): Promise<void> => {
+			// The sync anchor must be `_updatedAt`, not `ts`: an offline edit/delete bumps
+			// `_updatedAt` without changing `ts`, so anchoring on `ts` would miss it.
+			// `_hidden` and `temp` (optimistic/local-only) messages are excluded so they never
+			// become the anchor for an epoch the server doesn't know about.
+			const lastMessage = Messages.state.findFirst(
+				(record) => record.rid === rid && record._hidden !== true && !record.temp,
+				(a, b) => b._updatedAt.getTime() - a._updatedAt.getTime(),
+			);
+
+			if (!lastMessage) {
+				return;
+			}
+
+			try {
+				const { result } = await syncMessages({ roomId: rid, lastUpdate: lastMessage._updatedAt.toISOString() });
+
+				const subscription = Subscriptions.state.find((record) => record.rid === rid);
+
+				if (result.updated.length) {
+					// `upsertMessageBulk` routes every message through the same pipeline used for
+					// live/history messages (`onClientMessageReceived`), so E2E decryption is
+					// applied transparently for encrypted rooms.
+					await upsertMessageBulk({ msgs: result.updated.map(mapMessageFromApi), subscription });
+				}
+
+				result.deleted.forEach(({ _id }) => Messages.state.delete(_id));
+			} catch (error) {
+				console.error('Error loading missed messages:', error);
+			}
+		},
+		[syncMessages],
+	);
 
 	useEffect(() => {
 		if (connected === true && connectionWasOnlineRef.current === false && LegacyRoomManager.openedRooms) {
@@ -53,5 +65,5 @@ export const useLoadMissedMessages = (): void => {
 		}
 
 		connectionWasOnlineRef.current = connected;
-	}, [connected]);
+	}, [connected, loadMissedMessages]);
 };

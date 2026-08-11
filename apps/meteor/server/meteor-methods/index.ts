@@ -54,7 +54,6 @@ import './messages/getUserMentionsByChannel';
 import './messages/getThreadMessages';
 import './messages/getThreadsList';
 import './messages/loadHistory';
-import './messages/loadMissedMessages';
 import './messages/loadNextMessages';
 import './messages/loadSurroundingMessages';
 import './messages/messageSearch';

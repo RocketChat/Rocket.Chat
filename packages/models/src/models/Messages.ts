@@ -41,6 +41,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			// Supports `findForUpdates` (reconnect sync: rid + _updatedAt range) used by
+			// `/v1/chat.syncMessages` for both `lastUpdate` and cursor-paginated queries.
+			{ key: { rid: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { 'u._id': 1 } },
 			{ key: { editedAt: 1 }, sparse: true },
