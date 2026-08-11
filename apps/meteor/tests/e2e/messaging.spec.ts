@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -33,7 +34,10 @@ test.describe('Messaging', () => {
 			await channelPage.roomToolbar.waitFor();
 		});
 
+		// TODO: this should be replaced by a unit test
 		test('should navigate on messages using keyboard', async ({ page }) => {
+			test.skip(IS_EE);
+
 			await test.step('open chat and send message', async () => {
 				await channelPage.content.sendMessage('msg1');
 				await channelPage.content.sendMessage('msg2');
@@ -57,7 +61,7 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the room title', async () => {
 				await page.keyboard.press('Shift+Tab');
-				await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+				await expect(page.getByRole('button', { name: `Favorite ${targetChannel}` })).toBeFocused();
 			});
 
 			await test.step('move focus to the channel list', async () => {
