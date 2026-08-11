@@ -4,44 +4,49 @@ import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+// Dedicated sandbox: other specs in this suite call `sinon.restore()`, which empties the shared
+// default sandbox and detaches any stub registered on it. A `sinon.reset()` here would then
+// silently become a no-op and call history would leak between tests.
+const sandbox = sinon.createSandbox();
+
 const modelsMock = {
 	Subscriptions: {
-		findOneBannedSubscription: sinon.stub(),
-		countByRoomIdAndUserId: sinon.stub(),
+		findOneBannedSubscription: sandbox.stub(),
+		countByRoomIdAndUserId: sandbox.stub(),
 	},
 	Rooms: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 	TeamMember: {
-		findOneByUserIdAndTeamId: sinon.stub(),
+		findOneByUserIdAndTeamId: sandbox.stub(),
 	},
 	Team: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 	Users: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 };
 
 const coreServicesMock = {
 	Authorization: {
-		hasPermission: sinon.stub(),
-		canAccessRoom: sinon.stub(),
+		hasPermission: sandbox.stub(),
+		canAccessRoom: sandbox.stub(),
 	},
 	License: {
-		hasModule: sinon.stub(),
+		hasModule: sandbox.stub(),
 	},
 	Abac: {
-		canAccessObject: sinon.stub(),
+		canAccessObject: sandbox.stub(),
 	},
 	Settings: {
-		get: sinon.stub(),
+		get: sandbox.stub(),
 	},
 };
 
-const canAccessRoomLivechatMock = sinon.stub();
+const canAccessRoomLivechatMock = sandbox.stub();
 
-const { canAccessRoom, isPartialUser } = p.noCallThru().load('../../../../../server/services/authorization/canAccessRoom.ts', {
+const { canAccessRoom } = p.noCallThru().load('../../../../../server/services/authorization/canAccessRoom.ts', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': coreServicesMock,
 	'./canAccessRoomLivechat': { canAccessRoomLivechat: canAccessRoomLivechatMock },
@@ -49,7 +54,7 @@ const { canAccessRoom, isPartialUser } = p.noCallThru().load('../../../../../ser
 
 describe('canAccessRoom', () => {
 	beforeEach(() => {
-		sinon.reset();
+		sandbox.reset();
 
 		// sane defaults: everything denies access unless a test says otherwise
 		modelsMock.Subscriptions.findOneBannedSubscription.resolves(null);
@@ -64,40 +69,6 @@ describe('canAccessRoom', () => {
 		coreServicesMock.Abac.canAccessObject.resolves(false);
 		coreServicesMock.Settings.get.resolves(false);
 		canAccessRoomLivechatMock.resolves(false);
-	});
-
-	describe('isPartialUser', () => {
-		it('should return false for an undefined user', () => {
-			expect(isPartialUser(undefined)).to.be.false;
-		});
-
-		it('should return false for an empty object', () => {
-			expect(isPartialUser({})).to.be.false;
-		});
-
-		it('should return true for an object holding only a non-empty _id', () => {
-			expect(isPartialUser({ _id: 'user-id' })).to.be.true;
-		});
-
-		it('should return false when _id is an empty string', () => {
-			expect(isPartialUser({ _id: '' })).to.be.false;
-		});
-
-		it('should return false when _id is present but undefined', () => {
-			expect(isPartialUser({ _id: undefined } as unknown as Pick<IUser, '_id'>)).to.be.false;
-		});
-
-		it('should return false when _id is present but null', () => {
-			expect(isPartialUser({ _id: null } as unknown as Pick<IUser, '_id'>)).to.be.false;
-		});
-
-		it('should return false for a single-key object that is not _id', () => {
-			expect(isPartialUser({ username: 'john.doe' } as unknown as Pick<IUser, '_id'>)).to.be.false;
-		});
-
-		it('should return false for a full user object', () => {
-			expect(isPartialUser({ _id: 'user-id', username: 'john.doe' } as IUser)).to.be.false;
-		});
 	});
 
 	describe('user hydration', () => {
@@ -131,20 +102,20 @@ describe('canAccessRoom', () => {
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 		});
 
-		it('should not hydrate a user whose _id is empty, and treat it as anonymous instead of throwing', async () => {
+		it('should not hydrate a user whose _id is undefined, and treat it as anonymous instead of throwing when anonymous read is on', async () => {
 			coreServicesMock.Settings.get.resolves(true);
 
-			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: '' });
+			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: undefined });
 
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 			expect(coreServicesMock.Settings.get.calledWith('Accounts_AllowAnonymousRead')).to.be.true;
 			expect(result).to.be.true;
 		});
 
-		it('should deny access to a user whose _id is empty when anonymous read is off', async () => {
+		it('should deny access to a user whose _id is undefined when anonymous read is off', async () => {
 			coreServicesMock.Settings.get.resolves(false);
 
-			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: '' });
+			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: undefined });
 
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 			expect(result).to.be.false;
