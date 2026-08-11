@@ -97,20 +97,20 @@ describe('canAccessRoom', () => {
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 		});
 
-		it('should not hydrate a user whose _id is empty, and treat it as anonymous instead of throwing when anonymous read is on', async () => {
+		it('should not hydrate a user whose _id is undefined, and treat it as anonymous instead of throwing when anonymous read is on', async () => {
 			coreServicesMock.Settings.get.resolves(true);
 
-			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: '' });
+			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: undefined });
 
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 			expect(coreServicesMock.Settings.get.calledWith('Accounts_AllowAnonymousRead')).to.be.true;
 			expect(result).to.be.true;
 		});
 
-		it('should deny access to a user whose _id is empty when anonymous read is off', async () => {
+		it('should deny access to a user whose _id is undefined when anonymous read is off', async () => {
 			coreServicesMock.Settings.get.resolves(false);
 
-			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: '' });
+			const result = await canAccessRoom({ _id: 'room-id', t: 'c' }, { _id: undefined });
 
 			expect(modelsMock.Users.findOneById.notCalled).to.be.true;
 			expect(result).to.be.false;
