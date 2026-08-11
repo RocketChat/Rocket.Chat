@@ -37,12 +37,14 @@ export type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
 	encryptedParentRoom?: boolean;
 	onClose: () => void;
+	onSuccess?: (rid: string) => void | Promise<void>;
 	defaultParentRoom?: IRoom['_id'];
 	nameSuggestion?: string;
 };
 
 const CreateDiscussion = ({
 	onClose,
+	onSuccess,
 	defaultParentRoom,
 	parentMessageId,
 	nameSuggestion,
@@ -87,6 +89,7 @@ const CreateDiscussion = ({
 		mutationFn: createDiscussion,
 		onSuccess: ({ discussion }) => {
 			goToRoom(discussion._id);
+			onSuccess?.(discussion._id);
 			onClose();
 		},
 	});

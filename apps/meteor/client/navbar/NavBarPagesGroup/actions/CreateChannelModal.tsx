@@ -39,7 +39,7 @@ export type CreateChannelModalProps = {
 	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
-	onSuccess?: (rid: string, name: string) => void | Promise<void>;
+	onSuccess?: (rid: string) => void | Promise<void>;
 };
 
 type CreateChannelModalPayload = {
@@ -172,11 +172,11 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
-				await onSuccess?.(roomData.group._id, name);
+				await onSuccess?.(roomData.group._id);
 				if (!teamId) goToRoom(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
-				await onSuccess?.(roomData.channel._id, name);
+				await onSuccess?.(roomData.channel._id);
 				if (!teamId) goToRoom(roomData.channel._id);
 			}
 

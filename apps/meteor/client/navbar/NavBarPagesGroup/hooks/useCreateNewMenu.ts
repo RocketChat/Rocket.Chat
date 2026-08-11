@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useCreateNewItems } from './useCreateNewItems';
 import { useCategoryModals } from '../../../sidebar/categories/useCategoryModals';
 import { useCustomCategories } from '../../../sidebar/hooks/useCustomCategories';
+import { useOutboundMessageAccess } from '../../../views/omnichannel/components/outboundMessage/hooks';
+import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
@@ -14,10 +16,23 @@ export const useCreateNewMenu = () => {
 	const { openCreate } = useCategoryModals();
 	const { isEnterprise } = useCustomCategories();
 
+	const canSendOutboundMessage = useOutboundMessageAccess();
+	const outboundMessageModal = useOutboundMessageModal();
+
 	const createRoomItems = useCreateNewItems();
+	const outboundMessageItem: GenericMenuItemProps = {
+		id: 'outbound-message',
+		content: t('Outbound_message'),
+		icon: 'send',
+		onClick: () => outboundMessageModal.open(),
+	};
 
 	const sections = [
-		{ title: t('Create_new'), items: createRoomItems, permission: showCreate },
+		{
+			title: t('Create_new'),
+			items: [...createRoomItems, ...(canSendOutboundMessage ? [outboundMessageItem] : [])],
+			permission: showCreate,
+		},
 		{
 			items: [{ id: 'category', icon: 'folder', content: t('Category'), onClick: () => openCreate() }] as GenericMenuItemProps[],
 			permission: isEnterprise,

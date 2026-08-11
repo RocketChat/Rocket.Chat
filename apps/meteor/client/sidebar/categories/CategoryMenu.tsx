@@ -1,13 +1,13 @@
 import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
-import { ToggleSwitch } from '@rocket.chat/fuselage';
+import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetModal, useUserPreference } from '@rocket.chat/ui-contexts';
+import { GenericMenuItem } from '@rocket.chat/ui-client';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './useCategoryModals';
-import CreateChannelModal from '../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
+import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
 import { useCustomCategories } from '../hooks/useCustomCategories';
 import { useKeepUnreadsOnTopGroups } from '../hooks/useKeepUnreadsOnTopGroups';
 import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
@@ -25,6 +25,19 @@ type CategoryMenuProps = {
 	onMoveDown: () => void;
 };
 
+const renderItem = (item: GenericMenuItemProps) => (
+	<MenuItem key={item.id} aria-label={typeof item.content === 'string' ? item.content : item.id}>
+		<GenericMenuItem {...item} />
+	</MenuItem>
+);
+
+const renderSubmenuItem = (item: GenericMenuItemProps) => (
+	<MenuItem key={item.id} aria-label={typeof item.content === 'string' ? item.content : item.id}>
+		{item.icon && <MenuItemIcon name={item.icon} />}
+		{item.content && <MenuItemContent>{item.content}</MenuItemContent>}
+	</MenuItem>
+);
+
 const CategoryMenu = ({
 	category,
 	groupKey,
@@ -39,7 +52,6 @@ const CategoryMenu = ({
 	const [isOpen, setIsOpen] = useState(false);
 	const close = () => setIsOpen(false);
 
-	const setModal = useSetModal();
 	const { openManage, openDelete } = useCategoryModals();
 	const {
 		toggleShowUnreads: toggleCustomShowUnreads,
@@ -51,16 +63,16 @@ const CategoryMenu = ({
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread');
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
-	const handleNewChannel = () => {
-		close();
-		const onClose = () => setModal(null);
-		setModal(
-			<CreateChannelModal
-				onClose={onClose}
-				onSuccess={category ? (rid, name) => moveRoom({ rid, name, isFavorite: false }, category._id) : undefined}
-			/>,
-		);
+	const onCreateSuccess = async (rid: string, name: string) => {
+		if (!category) {
+			return;
+		}
+
+		await moveRoom({ rid, name, isFavorite: false }, category._id, { silent: true });
 	};
+
+	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
+	const createItems = category ? rawCreateItems : [];
 
 	const handleToggleShowUnreads = () => (category ? toggleCustomShowUnreads(category._id) : toggleSystemShowUnreads(groupKey));
 	const handleToggleKeepUnreadsOnTop = () =>
@@ -87,16 +99,6 @@ const CategoryMenu = ({
 				onMoveDown();
 			},
 		},
-		...(category
-			? ([
-					{
-						id: 'new-channel',
-						icon: 'hash',
-						content: t('New_channel'),
-						onClick: handleNewChannel,
-					},
-				] as GenericMenuItemProps[])
-			: []),
 	];
 
 	const manageItems: GenericMenuItemProps[] = category
@@ -141,18 +143,45 @@ const CategoryMenu = ({
 		},
 	];
 
-	const sections = [{ items: [...orderItems, ...(category ? manageItems : [])] }, { title: t('Unreads'), items: unreadItems }];
+	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
+	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
+	const handleAction = (key: string | number) => {
+		const item = allItems.find((item) => item.id === String(key));
+		item?.onClick?.();
+	};
 
 	return (
-		<GenericMenu
-			title={t('Options')}
+		<Menu
 			icon='kebab'
+			title={t('Options')}
 			mini
 			selectionMode='multiple'
 			isOpen={isOpen}
 			onOpenChange={setIsOpen}
-			sections={sections}
-		/>
+			{...(disabledKeys.length ? { disabledKeys } : {})}
+			onAction={handleAction}
+		>
+			{[
+				<MenuSection key='main' aria-label={t('Options')}>
+					<>
+						{orderItems.map(renderItem)}
+						{category && createItems.length > 0 && (
+							<MenuSubmenuTrigger key='create-new' textValue={t('Create_new')}>
+								<MenuItem aria-label={t('Create_new')}>
+									<MenuItemIcon name='plus' />
+									<MenuItemContent>{t('Create_new')}</MenuItemContent>
+								</MenuItem>
+								<MenuSection items={createItems}>{renderSubmenuItem}</MenuSection>
+							</MenuSubmenuTrigger>
+						)}
+						{category && manageItems.map(renderItem)}
+					</>
+				</MenuSection>,
+				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
+					{renderItem}
+				</MenuSection>,
+			]}
+		</Menu>
 	);
 };
 

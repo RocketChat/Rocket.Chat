@@ -11,7 +11,7 @@ export const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export type CategoryNameError = 'empty' | 'duplicate';
 
-export type MovableRoom = { rid: string; name: string; isFavorite?: boolean };
+export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean };
 
 /** The `favorites` sentinel is mutually exclusive with the custom categories. */
 export const FAVORITES_TARGET = 'favorites';
@@ -110,7 +110,7 @@ export const useCustomCategories = () => {
 
 	/** Move a room into a custom category (by id) or to Favorites. Assignment is exclusive. */
 	const moveRoom = useCallback(
-		async (room: MovableRoom, target: string) => {
+		async (room: MovableRoom, target: string, { silent = false }: { silent?: boolean } = {}) => {
 			const stripped = stripRoom(categories, room.rid);
 
 			if (target === FAVORITES_TARGET) {
@@ -118,10 +118,12 @@ export const useCustomCategories = () => {
 				if (!room.isFavorite) {
 					await setFavorite(room.rid, true);
 				}
-				dispatchToastMessage({
-					type: 'success',
-					message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: t('Favorites') }),
-				});
+				if (!silent && room.name) {
+					dispatchToastMessage({
+						type: 'success',
+						message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: t('Favorites') }),
+					});
+				}
 				return;
 			}
 
@@ -135,10 +137,12 @@ export const useCustomCategories = () => {
 			if (room.isFavorite) {
 				await setFavorite(room.rid, false);
 			}
-			dispatchToastMessage({
-				type: 'success',
-				message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
-			});
+			if (!silent && room.name) {
+				dispatchToastMessage({
+					type: 'success',
+					message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
+				});
+			}
 		},
 		[categories, persist, setFavorite, dispatchToastMessage, t],
 	);
