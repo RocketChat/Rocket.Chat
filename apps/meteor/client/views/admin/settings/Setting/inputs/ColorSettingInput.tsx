@@ -1,5 +1,16 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldDescription,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	FlexItem,
+	InputBox,
+	Margins,
+	Select,
+	TextInput,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
@@ -97,7 +108,7 @@ function ColorSettingInput({
 				</FieldRow>
 			</Margins>
 			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 		</Field>
 	);
 }

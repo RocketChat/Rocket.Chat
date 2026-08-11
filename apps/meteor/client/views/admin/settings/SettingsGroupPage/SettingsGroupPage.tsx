@@ -1,6 +1,6 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
@@ -9,7 +9,11 @@ import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { EditableSetting } from '../../EditableSettingsContext';
-import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings, useEditableSettingsGroupSections } from '../../EditableSettingsContext';
+import SettingsSectionsToc from '../SettingsSectionsToc';
+
+// width of the fixed section TOC (x248) plus the scrollbar gutter it is inset by
+const TOC_RESERVED_WIDTH = 'x260';
 
 export type SettingsGroupPageProps = {
 	children: ReactNode;
@@ -28,13 +32,17 @@ const SettingsGroupPage = ({
 	onClickBack,
 	_id,
 	i18nLabel,
-	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
 }: SettingsGroupPageProps) => {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const groupSections = useEditableSettingsGroupSections(_id);
+	// below the 1024px breakpoint the TOC is dropped entirely to give the room back to the content
+	const isLargeViewport = useMediaQuery('(min-width: 1024px)');
+	const hasToc = useMemo(() => isLargeViewport && groupSections.filter((name) => name).length >= 2, [isLargeViewport, groupSections]);
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -139,24 +147,30 @@ const SettingsGroupPage = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader backgroundColor='tint' onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
 			</PageHeader>
 			{tabs}
 			{isCustom ? (
 				children
 			) : (
-				<PageScrollableContentWithShadow>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
+				<Box position='relative' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden' backgroundColor='tint'>
+					{/* rendered before the settings list so keyboard users reach the section navigation first; overlaid on
+					    the scroll area so the page scrollbar stays at the window edge (the inset keeps the gutter visible) */}
+					{hasToc && (
+						<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd='x12' zIndex={1}>
+							<SettingsSectionsToc groupId={_id} />
+						</Box>
+					)}
+					<PageScrollableContentWithShadow backgroundColor='tint'>
+						{/* the TOC width is reserved so the centered content never slides underneath it on narrow windows */}
+						<Box width='full' paddingInlineEnd={hasToc ? TOC_RESERVED_WIDTH : undefined}>
+							<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+								{children}
 							</Box>
-						)}
-
-						<Accordion>{children}</Accordion>
-					</Box>
-				</PageScrollableContentWithShadow>
+						</Box>
+					</PageScrollableContentWithShadow>
+				</Box>
 			)}
 			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
 				<ButtonGroup>

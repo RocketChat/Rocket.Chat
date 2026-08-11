@@ -65,7 +65,10 @@ export interface ISettingBase extends IRocketChatRecord {
 	// TODO: migrate settings with group and section with null to undefined
 	group?: string | null;
 	section?: string;
+	subsection?: string;
 	tab?: string;
+	/** Unit the persisted value of a `timespan` setting is stored in (defaults to milliseconds) */
+	timespanBaseUnit?: 'milliseconds' | 'seconds';
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;

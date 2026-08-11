@@ -65,7 +65,7 @@ export type MemoizedSettingProps = {
 	hasResetButton?: boolean;
 	disabled?: boolean;
 	required?: boolean;
-	showUpgradeButton?: ReactNode;
+	premiumRow?: ReactNode;
 	actionText?: string;
 };
 
@@ -78,7 +78,7 @@ const MemoizedSetting = ({
 	onChangeValue,
 	onChangeEditor,
 	disabled,
-	showUpgradeButton,
+	premiumRow = undefined,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
@@ -92,6 +92,7 @@ const MemoizedSetting = ({
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
 			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
+				{premiumRow}
 				<InputComponent
 					value={value}
 					hint={hint}
@@ -106,7 +107,6 @@ const MemoizedSetting = ({
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}
-				{showUpgradeButton}
 			</Box>
 		</Field>
 	);

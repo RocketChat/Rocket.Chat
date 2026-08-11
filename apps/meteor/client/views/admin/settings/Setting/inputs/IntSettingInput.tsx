@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -34,6 +34,7 @@ function IntSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<InputBox
 					id={_id}
@@ -46,7 +47,6 @@ function IntSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

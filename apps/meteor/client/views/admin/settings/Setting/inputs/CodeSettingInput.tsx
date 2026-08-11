@@ -1,4 +1,4 @@
-import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { getCodeSettingError } from '../../../../../lib/utils/getCodeSettingError';
@@ -44,7 +44,7 @@ function CodeSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<CodeMirrorBox label={label} error={errorKey ? t(errorKey) : undefined}>
 				<CodeMirror
 					id={_id}

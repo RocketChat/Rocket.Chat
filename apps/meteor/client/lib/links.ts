@@ -24,7 +24,7 @@ export const links = {
 		mobileAppGoogle: `${GO_ROCKET_CHAT_PREFIX}/i/hp-mobile-app-google`,
 		mobileAppApple: `${GO_ROCKET_CHAT_PREFIX}/i/hp-mobile-app-apple`,
 		omnichannelDocs: `${GO_ROCKET_CHAT_PREFIX}/i/omnichannel-docs`,
-		pricing: `${GO_ROCKET_CHAT_PREFIX}/i/see-paid-plan-customize-homepage`,
+		pricing: 'https://www.rocket.chat/plans',
 		pricingProduct: `${GO_ROCKET_CHAT_PREFIX}/i/pricing-product`,
 		registerInfoCollected: `${GO_ROCKET_CHAT_PREFIX}/i/register-info-collected`,
 		supportPrerequisites: `${GO_ROCKET_CHAT_PREFIX}/i/support-prerequisites`,

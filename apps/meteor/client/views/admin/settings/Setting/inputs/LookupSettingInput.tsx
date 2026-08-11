@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -47,6 +47,7 @@ function LookupSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<Select
 					id={_id}
@@ -59,7 +60,6 @@ function LookupSettingInput({
 					options={values.map(({ key, label }) => [key, label])}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

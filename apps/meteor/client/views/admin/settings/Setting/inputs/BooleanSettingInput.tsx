@@ -1,4 +1,4 @@
-import { Box, Field, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Field, FieldDescription, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -34,7 +34,7 @@ function BooleanSettingInput({
 					<ToggleSwitch id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
 				</Box>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 		</Field>
 	);
 }

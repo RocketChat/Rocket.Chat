@@ -1,4 +1,4 @@
-import { Slider, Field, FieldLabel, FieldRow, FieldHint } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, Slider } from '@rocket.chat/fuselage';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -33,7 +33,7 @@ function RangeSettingInput({
 			</FieldRow>
 			{hint && (
 				<FieldRow>
-					<FieldHint marginBlockEnd={4}>{hint}</FieldHint>
+					<FieldDescription marginBlockEnd={4}>{hint}</FieldDescription>
 				</FieldRow>
 			)}
 			<FieldRow>

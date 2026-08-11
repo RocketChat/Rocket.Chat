@@ -1,4 +1,4 @@
-import { FieldLabel, MultiSelectFiltered, MultiSelect, Field, FieldRow, FieldHint } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, MultiSelect, MultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -40,6 +40,7 @@ function MultiSelectSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<Component
 					max-width='full'
@@ -54,7 +55,6 @@ function MultiSelectSettingInput({
 					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

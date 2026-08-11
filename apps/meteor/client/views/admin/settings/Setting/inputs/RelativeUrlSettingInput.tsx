@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler } from 'react';
 
@@ -35,6 +35,7 @@ function RelativeUrlSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<UrlInput
 					id={_id}
@@ -46,7 +47,6 @@ function RelativeUrlSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

@@ -1,6 +1,6 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -19,9 +19,12 @@ export type SettingProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
+	/** how a premium-locked setting advertises the upgrade: an inline link (default) or nothing
+	 * (when the surrounding block already renders a premium callout) */
+	premiumCta?: 'link' | 'none';
 };
 
-function Setting({ className = undefined, settingId, sectionChanged }: SettingProps) {
+function Setting({ className = undefined, settingId, sectionChanged, premiumCta = 'link' }: SettingProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -136,30 +139,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
-	const showUpgradeButton = useMemo(
-		() =>
-			shouldDisableEnterprise ? (
-				<Button marginBlockStart={4} is='a' href={PRICING_URL} target='_blank'>
-					{t('See_Paid_Plan')}
-				</Button>
-			) : undefined,
-		[shouldDisableEnterprise, t],
-	);
-
-	const label = useMemo(() => {
-		if (!shouldDisableEnterprise) {
-			return labelText;
-		}
-
-		return (
-			<>
-				<Box is='span' marginInlineEnd={4}>
-					{labelText}
-				</Box>
-				<Tag variant='featured'>{t('Premium')}</Tag>
-			</>
-		);
-	}, [labelText, shouldDisableEnterprise, t]);
+	const label = labelText;
 
 	const hasResetButton =
 		!shouldDisableEnterprise &&
@@ -171,13 +151,37 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	// @todo: type check props based on setting type
 
+	// every isolated premium setting carries its own tag row above the field; the
+	// upgrade link only shows while the license does not cover it (blocks that are
+	// fully premium advertise once at the block level instead — premiumCta 'none').
+	// rendered inside the Field so the FieldGroup sibling spacing stays intact
+	const premiumRow =
+		setting.enterprise && premiumCta === 'link' ? (
+			<Box display='flex' alignItems='center' style={{ gap: '0.5rem' }}>
+				<Tag variant='featured'>{t('Premium')}</Tag>
+				{shouldDisableEnterprise && (
+					<Box
+						is='a'
+						href={PRICING_URL}
+						target='_blank'
+						rel='noopener noreferrer'
+						fontScale='c1'
+						color='info'
+						textDecorationLine='underline'
+					>
+						{t('Upgrade_to_unlock')}
+					</Box>
+				)}
+			</Box>
+		) : undefined;
+
 	return (
 		<MemoizedSetting
 			className={className}
 			label={label}
 			hint={hint}
 			callout={callout}
-			showUpgradeButton={showUpgradeButton}
+			premiumRow={premiumRow}
 			sectionChanged={sectionChanged}
 			{...setting}
 			disabled={disabled || shouldDisableEnterprise}
