@@ -12,7 +12,13 @@ const mergeHideSysMessages = (
 	sysMesArray1: Array<MessageTypesValues>,
 	sysMesArray2: Array<MessageTypesValues>,
 ): Array<MessageTypesValues> => {
-	return Array.from(new Set([...sysMesArray1, ...sysMesArray2]));
+	return Array.from(
+		new Set(
+			[...sysMesArray1, ...sysMesArray2].flatMap((messageType): MessageTypesValues[] =>
+				messageType === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [messageType],
+			),
+		),
+	);
 };
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
