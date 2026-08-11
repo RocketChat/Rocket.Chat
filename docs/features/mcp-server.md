@@ -43,7 +43,7 @@ Authentication is **reused from the REST layer** — no MCP-specific credential 
 
 The endpoint validates the `Origin` header to protect browser-accessible deployments from DNS-rebinding attacks. Requests without `Origin` are accepted for native MCP clients. Browser requests are accepted only when their normalized origin matches `Site_Url` or an explicit entry in `API_CORS_Origin` while CORS is enabled. The wildcard (`*`) does not authorize a browser origin for MCP.
 
-Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response and final encoded MCP response is capped at 5 MiB. Concurrent calls in a batch share the same 5 MiB streaming response budget.
+Tool dispatch is restricted to server-generated, allow-listed REST paths on `127.0.0.1`; client input cannot select a URL. Redirects are rejected, calls time out after 20 seconds, and each REST response and final encoded MCP response is capped at 5 MiB. Batches run at most four calls concurrently and share the same 5 MiB streaming response budget.
 
 ## Licensing
 
@@ -91,7 +91,7 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 - `X-User-Id` + `X-Auth-Token` (the caller's PAT), so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
 - `X-Real-IP` set to the resolved client address (`this.requestIp`), so the target endpoint's per-route rate limiter keys on the real client rather than the loopback address.
 
-The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB; batched calls share a single streaming body budget so concurrent results cannot accumulate beyond that bound in application memory.
+The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB; batched calls use bounded concurrency and share a single streaming body budget to limit retained response data.
 
 ## Rate limiting
 

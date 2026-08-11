@@ -22,6 +22,7 @@ type McpActionContext = {
 };
 
 const MAX_BATCH_SIZE = 20;
+const MAX_BATCH_CONCURRENCY = 4;
 const MAX_MCP_RESPONSE_BYTES = 5 * 1024 * 1024;
 
 const personalAccessTokenRequiredResponse = {
@@ -67,6 +68,22 @@ const validateTransportRequest = (request: Request) => {
 	return undefined;
 };
 
+const handleBatch = async (messages: unknown[], auth: McpAuth, clientIp: string): Promise<(JsonRpcResponse | null)[]> => {
+	const responseBudget = createMcpResponseBudget(MAX_MCP_RESPONSE_BYTES);
+	const responses = new Array<JsonRpcResponse | null>(messages.length);
+	let nextIndex = 0;
+
+	const processNext = async (): Promise<void> => {
+		while (nextIndex < messages.length) {
+			const index = nextIndex++;
+			responses[index] = await handleRpcMessage(messages[index], auth, clientIp, responseBudget);
+		}
+	};
+
+	await Promise.all(Array.from({ length: Math.min(messages.length, MAX_BATCH_CONCURRENCY) }, () => processNext()));
+	return responses;
+};
+
 export const handleMcpPost = async function (this: McpActionContext) {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
@@ -97,10 +114,7 @@ export const handleMcpPost = async function (this: McpActionContext) {
 			};
 		}
 
-		const responseBudget = createMcpResponseBudget(MAX_MCP_RESPONSE_BYTES);
-		const responses = (await Promise.all(message.map((m) => handleRpcMessage(m, auth, clientIp, responseBudget)))).filter(
-			(response): response is JsonRpcResponse => response !== null,
-		);
+		const responses = (await handleBatch(message, auth, clientIp)).filter((response): response is JsonRpcResponse => response !== null);
 		return responses.length ? jsonResponse(responses) : { statusCode: 202, body: undefined };
 	}
 

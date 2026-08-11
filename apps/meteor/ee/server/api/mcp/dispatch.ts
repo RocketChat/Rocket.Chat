@@ -13,14 +13,19 @@ export type McpResponseBudget = {
 
 const TOOL_CALL_TIMEOUT_MS = 20_000;
 const MAX_TOOL_RESPONSE_BYTES = 5 * 1024 * 1024;
+const BYTES_PER_MEBIBYTE = 1024 * 1024;
+
+const formatByteLimit = (bytes: number): string =>
+	bytes % BYTES_PER_MEBIBYTE === 0 ? `${bytes / BYTES_PER_MEBIBYTE} MiB` : `${bytes} bytes`;
 
 export const createMcpResponseBudget = (maxBytes = MAX_TOOL_RESPONSE_BYTES): McpResponseBudget => {
 	let remainingBytes = maxBytes;
+	const formattedLimit = formatByteLimit(maxBytes);
 
 	return {
 		consume(bytes) {
 			if (bytes > remainingBytes) {
-				throw new Error('MCP batch response exceeds the 5 MiB limit');
+				throw new Error(`MCP batch response exceeds the ${formattedLimit} limit`);
 			}
 
 			remainingBytes -= bytes;

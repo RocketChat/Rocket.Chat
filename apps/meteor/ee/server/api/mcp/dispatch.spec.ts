@@ -151,6 +151,6 @@ describe('MCP tool dispatch', () => {
 		};
 
 		await expect(dispatchTool(tool, {}, auth, undefined, responseBudget)).resolves.toMatchObject({ body: 'abc' });
-		await expect(dispatchTool(tool, {}, auth, undefined, responseBudget)).rejects.toThrow('MCP batch response exceeds the 5 MiB limit');
+		await expect(dispatchTool(tool, {}, auth, undefined, responseBudget)).rejects.toThrow('MCP batch response exceeds the 5 bytes limit');
 	});
 });

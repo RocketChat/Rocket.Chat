@@ -94,6 +94,27 @@ describe('MCP HTTP route', () => {
 		expect(firstCall?.[3]).toBe(secondCall?.[3]);
 	});
 
+	it('limits concurrent calls while preserving batch response order', async () => {
+		let inFlight = 0;
+		let maxInFlight = 0;
+		jest.mocked(handleRpcMessage).mockImplementation(async (message) => {
+			inFlight += 1;
+			maxInFlight = Math.max(maxInFlight, inFlight);
+			await Promise.resolve();
+			inFlight -= 1;
+			if (typeof message !== 'object' || message === null || !('id' in message) || typeof message.id !== 'number') {
+				throw new Error('Expected a numbered JSON-RPC request');
+			}
+			return { jsonrpc: '2.0', id: message.id, result: {} };
+		});
+		const bodyParams = Array.from({ length: 20 }, (_, id) => ({ jsonrpc: '2.0', id, method: 'ping' }));
+
+		const response = await handleMcpPost.call({ ...context, bodyParams });
+
+		expect(maxInFlight).toBe(4);
+		expect(response.body).toEqual(bodyParams.map(({ id }) => ({ jsonrpc: '2.0', id, result: {} })));
+	});
+
 	it('returns method not allowed for GET requests', () => {
 		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
 		expect(Users.findOne).not.toHaveBeenCalled();
