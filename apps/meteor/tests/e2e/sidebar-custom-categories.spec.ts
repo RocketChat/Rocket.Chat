@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { deleteChannel, setUserPreferences } from './utils';
@@ -22,6 +23,8 @@ test.describe.serial('sidebar custom categories', () => {
 	let targetChannel: string;
 	let targetChannelId: string;
 	let originalGroupByType: boolean | undefined;
+
+	test.skip(!IS_EE, 'Enterprise Only');
 
 	const uniqueName = (prefix: string) => `${prefix}-${faker.string.uuid().slice(0, 8)}`;
 
