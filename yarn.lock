@@ -9877,7 +9877,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mongo-adapter": "workspace:^"
-    "@rocket.chat/mp3-encoder": "npm:^0.31.26"
+    "@rocket.chat/mp3-encoder": "workspace:~"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
@@ -10287,14 +10287,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/mp3-encoder@npm:^0.31.26":
-  version: 0.31.26
-  resolution: "@rocket.chat/mp3-encoder@npm:0.31.26"
-  checksum: 10/e24094d9b63b836a3610f5e102c59cc13ce076c3b0923556361a441b9115dd0d8a96e56804e7a2322e641a3631d90029f249024c0d5c06c383b6fd456afef489
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/mp3-encoder@workspace:packages/mp3-encoder":
+"@rocket.chat/mp3-encoder@workspace:packages/mp3-encoder, @rocket.chat/mp3-encoder@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mp3-encoder@workspace:packages/mp3-encoder"
   dependencies:

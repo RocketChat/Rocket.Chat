@@ -133,7 +133,7 @@
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mongo-adapter": "workspace:^",
-		"@rocket.chat/mp3-encoder": "^0.31.26",
+		"@rocket.chat/mp3-encoder": "workspace:~",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omni-core": "workspace:^",
 		"@rocket.chat/omni-core-ee": "workspace:^",
