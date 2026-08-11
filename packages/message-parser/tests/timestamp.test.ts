@@ -53,6 +53,9 @@ test.each([
 	['<t:2025-07-22T10:00:00.000+00:00:R>', '1753178400', 'R' as const],
 	['<t:2025-07-22T10:00:00+00:00:R>', '1753178400', 'R' as const],
 	['<t:2025-07-24T20:19:58.154+00:00:R>', '1753388398', 'R' as const],
+	// Beyond the 2038-01-19 32-bit boundary: must not overflow to a negative
+	// (previously `| 0` turned this into -2085978496 -> a 1903 date).
+	['<t:2040-01-01T00:00:00.000+00:00:R>', '2208988800', 'R' as const],
 ])('parses %p', (input, value, format) => {
 	const node = timestampNode(value, format, [0, input.length]);
 	expect(parse(input)).toEqual([paragraph([node])]);
