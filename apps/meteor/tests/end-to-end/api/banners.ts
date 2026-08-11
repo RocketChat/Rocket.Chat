@@ -1,9 +1,12 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { getMe } from '../../data/users.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, getMe, login, updateUserInDb } from '../../data/users.helper';
 
 describe('banners', () => {
 	before((done) => getCredentials(done));
@@ -52,24 +55,79 @@ describe('banners', () => {
 			expect(res.body).to.have.property('success', false);
 		});
 
-		// Banners stored in the user record are dismissed by the same endpoint, by marking them as read.
-		// The endpoint only reads them, so this asserts an unknown id is not written to the record instead
-		it('should not add the banner to the user record if bannerId is invalid', async () => {
-			const bannerId = 'an-unknown-banner-id';
+		describe('banners stored in the user record', () => {
+			let testUser: TestUser<IUser>;
+			let testUserCredentials: Credentials;
 
-			const res = await request
-				.post(api('banners.dismiss'))
-				.set(credentials)
-				.send({
-					bannerId,
-				})
-				.expect(400);
+			const bannerId = 'alert-user-banner-test';
 
-			expect(res.body).to.have.property('success', false);
+			// `GET /v1/banners` only returns the banners of the `rocketchat_banner` collection, the ones
+			// stored in the user record are returned by `GET /v1/me`
+			const getUserBanners = async () => (await getMe<IUser>(testUserCredentials)).banners;
 
-			const me = await getMe<IUser>();
+			before(async () => {
+				testUser = await createUser();
+				testUserCredentials = await login(testUser.username, password);
 
-			expect(me.banners || {}).to.not.have.property(bannerId);
+				// these banners are only created by the server (`Users.addBannerById`), there is no endpoint for it
+				await updateUserInDb(testUser._id, {
+					banners: {
+						[bannerId]: {
+							id: bannerId,
+							priority: 10,
+							title: 'Banner_Title',
+							text: 'Banner_Text',
+							textArguments: [],
+							modifiers: [],
+							link: 'https://rocket.chat',
+						},
+					},
+				});
+			});
+
+			after(() => deleteUser(testUser));
+
+			it('should mark the banner as read on the user record', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(testUserCredentials)
+					.send({
+						bannerId,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+
+				expect(await getUserBanners()).to.have.nested.property(`${bannerId}.read`, true);
+			});
+
+			it('should succeed if the banner was already dismissed', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(testUserCredentials)
+					.send({
+						bannerId,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+
+				expect(await getUserBanners()).to.have.nested.property(`${bannerId}.read`, true);
+			});
+
+			it('should not add an unknown banner to the user record', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(testUserCredentials)
+					.send({
+						bannerId: 'an-unknown-banner-id',
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+
+				expect(await getUserBanners()).to.not.have.property('an-unknown-banner-id');
+			});
 		});
 	});
 

@@ -1,11 +1,13 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { MongoClient } from 'mongodb';
 import supertest from 'supertest';
 import type { Response } from 'supertest';
 
 import { api, credentials, methodCall, request } from './api-data';
 import { password } from './user';
+import { URL_MONGODB } from '../e2e/config/constants';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
 
@@ -104,6 +106,18 @@ export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, confi
 			userId: user._id,
 			...extraData,
 		});
+};
+
+/** For changing user data when it's not possible to do so via API */
+export const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) => {
+	const connection = await MongoClient.connect(URL_MONGODB);
+
+	await connection
+		.db()
+		.collection('users')
+		.updateOne({ _id: userId as any }, { $set: { ...userData } });
+
+	await connection.close();
 };
 
 export const getUserByUsername = <TUser extends IUser>(username: string, config?: IRequestConfig) =>

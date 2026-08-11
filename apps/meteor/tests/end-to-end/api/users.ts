@@ -6,7 +6,6 @@ import { Random } from '@rocket.chat/random';
 import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
-import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
@@ -21,8 +20,8 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
-import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
+import { createUser, login, deleteUser, getUserByUsername, updateUserInDb } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -170,18 +169,6 @@ const registerUser = async (
 	const result = await req.send({ email, name: username, username, pass: password, ...userData });
 
 	return result.body.user;
-};
-
-// For changing user data when it's not possible to do so via API
-const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) => {
-	const connection = await MongoClient.connect(URL_MONGODB);
-
-	await connection
-		.db()
-		.collection('users')
-		.updateOne({ _id: userId as any }, { $set: { ...userData } });
-
-	await connection.close();
 };
 
 describe('[Users]', () => {
