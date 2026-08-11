@@ -9263,7 +9263,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-forms@npm:^1.5.1":
+"@rocket.chat/fuselage-forms@npm:~1.5.1":
   version: 1.5.1
   resolution: "@rocket.chat/fuselage-forms@npm:1.5.1"
   dependencies:
@@ -9837,7 +9837,7 @@ __metadata:
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.7.0"
     "@rocket.chat/fuselage": "npm:^0.85.0"
-    "@rocket.chat/fuselage-forms": "npm:^1.5.1"
+    "@rocket.chat/fuselage-forms": "npm:~1.5.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
     "@rocket.chat/fuselage-toastbar": "npm:~0.36.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
