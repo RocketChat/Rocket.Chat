@@ -1,5 +1,4 @@
 import { proxify } from './lib/proxify';
-
 import type {
 	IAISearchService,
 	AISearchAnswerMessage,
