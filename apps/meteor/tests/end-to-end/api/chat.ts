@@ -3999,9 +3999,20 @@ describe('[Chat]', () => {
 			let newerMessage: IMessage;
 			let lastUpdate: string;
 
+			// the server filters with `ts: { $gte: fromTs }`, so a boundary taken from the newer message only
+			// excludes the older one when the two land on distinct milliseconds
+			const sendBoundaryMessages = async (olderText: string, newerText: string): Promise<[IMessage, IMessage]> => {
+				const older: IMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: olderText })).body.message;
+				await sleep(5);
+				const newer: IMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: newerText })).body.message;
+
+				expect(new Date(newer.ts).getTime()).to.be.greaterThan(new Date(older.ts).getTime());
+
+				return [older, newer];
+			};
+
 			before(async () => {
-				olderMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'Older Message' })).body.message;
-				newerMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'Newer Message' })).body.message;
+				[olderMessage, newerMessage] = await sendBoundaryMessages('Older Message', 'Newer Message');
 
 				// every edit below happens after this point, so both messages are candidates on `_updatedAt`
 				lastUpdate = new Date().toISOString();
@@ -4041,8 +4052,7 @@ describe('[Chat]', () => {
 			});
 
 			it('should omit deletions of messages older than "fromTs"', async () => {
-				const droppedMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'To Be Deleted' })).body.message;
-				const windowStart = (await sendSimpleMessage({ roomId: testChannel._id, text: 'Window Start' })).body.message;
+				const [droppedMessage, windowStart] = await sendBoundaryMessages('To Be Deleted', 'Window Start');
 
 				const deletionLastUpdate = new Date().toISOString();
 				await deleteMessage({ roomId: testChannel._id, msgId: droppedMessage._id });
