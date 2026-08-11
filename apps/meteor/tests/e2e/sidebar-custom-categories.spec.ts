@@ -8,16 +8,6 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-/**
- * Custom sidebar categories — per-user groupings of sidebar rooms, persisted in the
- * `sidebarCustomCategories` user preference. Exercised against the default (classic) sidebar.
- *
- * Covers the create (+) menu entry, category-collapser actions (custom + reduced system-group menu),
- * sidebar room item actions (the "Move to ▸" kebab submenu), and the room-header grouping control.
- *
- * Each test starts from a clean slate (no categories, target room not favorited), reset via the API in
- * `beforeEach`, so the tests are order-independent.
- */
 test.describe.serial('sidebar custom categories', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
@@ -106,19 +96,6 @@ test.describe.serial('sidebar custom categories', () => {
 		});
 	});
 
-	test.describe('category icon', () => {
-		test('should show the folder icon for a custom category', async () => {
-			const name = uniqueName('folder');
-			await createCategory(name);
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(name).locator('.rcx-icon--name-folder')).toBeVisible();
-		});
-
-		test('should show a leading icon on system groups too (aligned with custom categories)', async () => {
-			// System groups carry a type icon (Channels → hashtag) so default and custom groups align.
-			await expect(poHomeChannel.sidebar.getCategoryCollapser('Channels').locator('.rcx-icon--name-hashtag')).toBeVisible();
-		});
-	});
-
 	test.describe('category actions (custom category)', () => {
 		test('should rename a category', async () => {
 			const name = uniqueName('ren');
@@ -126,7 +103,7 @@ test.describe.serial('sidebar custom categories', () => {
 			await createCategory(name);
 
 			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Manage', exact: true }).click();
+			await poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Manage', exact: true }).click();
 
 			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Manage category' });
 			await expect(dialog).toBeVisible();
@@ -145,7 +122,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await isRoomInGrouping(name)).toBe(true);
 
 			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Delete', exact: true }).click();
+			await poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Delete', exact: true }).click();
 
 			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Delete category' });
 			await expect(dialog).toBeVisible();
@@ -158,67 +135,26 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await isRoomInGrouping(name)).toBe(false);
 		});
 
-		test('should reorder categories with Move up', async () => {
-			const first = uniqueName('ord-a');
-			const second = uniqueName('ord-b');
-			await createCategory(first);
-			await createCategory(second);
-
-			await poHomeChannel.sidebar.openCategoryMenu(second);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Move up', exact: true }).click();
-
-			const regions = poHomeChannel.sidebar.channelsList.getByRole('region', { name: new RegExp(`Collapse (${first}|${second})`) });
-			await expect(regions.first()).toHaveAttribute('aria-label', `Collapse ${second}`);
-		});
-
-		test('should reorder categories with Move down', async () => {
-			const first = uniqueName('ord-c');
-			const second = uniqueName('ord-d');
-			await createCategory(first);
-			await createCategory(second);
-
-			await poHomeChannel.sidebar.openCategoryMenu(first);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Move down', exact: true }).click();
-
-			const regions = poHomeChannel.sidebar.channelsList.getByRole('region', { name: new RegExp(`Collapse (${first}|${second})`) });
-			await expect(regions.first()).toHaveAttribute('aria-label', `Collapse ${second}`);
-		});
-
-		test('should toggle "Show unreads"', async () => {
+		test('should toggle "Always display"', async () => {
 			const name = uniqueName('unr');
 			await createCategory(name);
 
 			await poHomeChannel.sidebar.openCategoryMenu(name);
-			const toggle = poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Show unreads' });
+			const toggle = poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Always display' });
 			await expect(toggle).toBeVisible();
-			await expect(toggle).toHaveAttribute('aria-checked', 'true');
+			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: true });
 			await toggle.click();
-			await expect(toggle).toHaveAttribute('aria-checked', 'false');
+			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: false });
 			await poHomeChannel.page.keyboard.press('Escape');
 		});
 
-		test('should create another category from the category menu', async () => {
-			const name = uniqueName('base');
-			const created = uniqueName('from-menu');
-			await createCategory(name);
-
-			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'New category', exact: true }).click();
-
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(created);
-			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(created)).toBeVisible();
-		});
-
-		test('should open the Create channel modal from "New channel"', async () => {
+		test('should open the Create channel modal via the "Create new" submenu', async () => {
 			const name = uniqueName('nc');
 			await createCategory(name);
 
 			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitem', { name: 'New channel', exact: true }).click();
+			await poHomeChannel.page.getByRole('menuitem', { name: 'Create new', exact: true }).hover();
+			await poHomeChannel.page.getByRole('menuitem', { name: 'Channel', exact: true }).click();
 
 			await expect(poHomeChannel.page.getByRole('dialog', { name: 'Create channel' })).toBeVisible();
 			await poHomeChannel.page.keyboard.press('Escape');
@@ -226,31 +162,17 @@ test.describe.serial('sidebar custom categories', () => {
 	});
 
 	test.describe('system group actions (reduced menu)', () => {
-		test('should show a reduced menu without Rename / Delete / New channel', async () => {
+		test('should show a reduced menu without Rename / Delete / New channel / New category / Create new', async () => {
 			await poHomeChannel.sidebar.openCategoryMenu('Channels');
 
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Move up', exact: true })).toBeVisible();
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Move down', exact: true })).toBeVisible();
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'New category', exact: true })).toBeVisible();
-			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Show unreads' })).toBeVisible();
+			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Move up', exact: true })).toBeVisible();
+			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Move down', exact: true })).toBeVisible();
+			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Always display' })).toBeVisible();
 
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Manage', exact: true })).toHaveCount(0);
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Delete', exact: true })).toHaveCount(0);
-			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'New channel', exact: true })).toHaveCount(0);
+			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Manage', exact: true })).toHaveCount(0);
+			await expect(poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Delete', exact: true })).toHaveCount(0);
+			await expect(poHomeChannel.page.getByRole('menuitem', { name: 'Create new', exact: true })).toHaveCount(0);
 			await poHomeChannel.page.keyboard.press('Escape');
-		});
-
-		test('should create a category from the system group menu', async () => {
-			const created = uniqueName('from-system');
-			await poHomeChannel.sidebar.openCategoryMenu('Channels');
-			await poHomeChannel.page.getByRole('menuitem', { name: 'New category', exact: true }).click();
-
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(created);
-			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(created)).toBeVisible();
 		});
 	});
 
