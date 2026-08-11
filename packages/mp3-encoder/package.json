@@ -7,13 +7,12 @@
 		"mp3",
 		"encoder"
 	],
-	"homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
 	"bugs": {
-		"url": "https://github.com/RocketChat/fuselage/issues"
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/fuselage.git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/mp3-encoder"
 	},
 	"license": "MIT",
