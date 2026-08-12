@@ -6,7 +6,7 @@
 
 The MCP server exposes the Rocket.Chat REST API to [Model Context Protocol](https://modelcontextprotocol.io) clients (Claude Desktop/Code, IDE agents, custom agents). It speaks **JSON-RPC 2.0 over Streamable HTTP** and turns existing REST endpoints into MCP **tools**, so an AI client can drive a workspace (post messages, search, manage rooms, look up users, …) using the user's own credentials and permissions.
 
-It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal is _native + minimum changes_: it reuses the existing REST middleware chain (auth, rate limiting, remote-address resolution, logging, metrics) and the API's already-generated typed-route metadata instead of re-implementing any of it. The endpoint adds MCP-specific Origin validation for DNS-rebinding protection. There is **no new runtime dependency** — the JSON-RPC layer is implemented directly.
+It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal is _native + minimum changes_: it mounts on the existing Hono API router and reuses its authentication, permissions, license checks, remote-address resolution, logging, metrics, tracing, CORS, and generated typed-route metadata. Tool execution goes through the REST API, including each target endpoint's validation, authorization, and rate limiting. The endpoint adds MCP-specific Origin validation for DNS-rebinding protection. There is **no new runtime dependency** — the JSON-RPC layer is implemented directly.
 
 ## Endpoint
 
@@ -15,7 +15,7 @@ It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal i
 | POST   | `/api/v1/mcp` | JSON-RPC 2.0 request (single message or batch array). Response is `application/json`.   |
 | GET    | `/api/v1/mcp` | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream. |
 
-The endpoint is registered as an ordinary API route with authentication, `access-mcp` permission, and AI license requirements, so it flows through the same middleware as every other REST endpoint. When `MCP_Enabled` is off the action returns `404`.
+The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the action returns `404`.
 
 ## Request lifecycle
 
@@ -28,6 +28,7 @@ The MCP handshake is the standard JSON-RPC flow:
 Also handled: `ping`, and the `notifications/initialized` / `notifications/cancelled` notifications (acknowledged with `202`, no body).
 
 After initialization, clients should send the negotiated version in the `MCP-Protocol-Version` header. Requests with an unsupported version are rejected with `400`; the header may be omitted for compatibility with the `2025-03-26` transport revision.
+The shared CORS middleware advertises this request header only while MCP is enabled.
 
 ## Authentication
 
@@ -58,19 +59,19 @@ Two **bounded** sets are exposed, selected by the `MCP_Expose_Extended_API` sett
 
 | `MCP_Expose_Extended_API` | Exposed tools                                                                                                                                                     |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **off** (default)         | **Minimal curated set** — a small hand-picked list (`chat_postMessage`, `chat_getMessage`, `channels_create`, `channels_list_joined`, `rooms_get`, `users_info`). |
+| **off** (default)         | **Minimal curated set** — a small hand-picked list (`post_chat_postMessage`, `get_chat_getMessage`, `post_channels_create`, `get_channels_list_joined`, `get_rooms_get`, `get_users_info`). |
 | **on**                    | **Extended set** — the full catalog filtered by the `ALLOWED_TOOL_NAMES` allow-list (~100 routes), still excluding routes tagged `Missing Documentation`.         |
 
 Both sets are built from registered typed-route metadata. The extended set filters generated base names through the allow-list, while the curated set filters routes through its smaller explicit list and supplies fallback descriptions where metadata is incomplete.
 
 ### Tool naming & variant expansion
 
-A route's base tool name is `toolNameFor(path, method)` — e.g. `GET /api/v1/users.info` → `get_users_info` (the `v1` REST endpoints used by the curated set keep their short names like `users_info`).
+A route's base tool name is `toolNameFor(path, method)` — e.g. `GET /api/v1/users.info` → `get_users_info`. Curated and extended catalogs use the same names, so enabling the extended catalog only adds tools.
 
 When a route's request schema is a `oneOf`/`anyOf` of object sub-schemas with **distinct discriminators** (its `required` keys), each branch becomes its **own tool**, named `<base>_by_<discriminator>`:
 
-- `chat.postMessage` → `chat_postMessage_by_channel`, `chat_postMessage_by_roomId`
-- `users.info` → `users_info_by_userId`, `users_info_by_username`, `users_info_by_importId`, …
+- `chat.postMessage` → `post_chat_postMessage_by_channel`, `post_chat_postMessage_by_roomId`
+- `users.info` → `get_users_info_by_userId`, `get_users_info_by_username`, `get_users_info_by_importId`, …
 
 The allow-list is matched on the **base name**, so a single entry (`get_users_info`) admits all of that route's variants.
 
@@ -95,7 +96,7 @@ The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST r
 
 ## Rate limiting
 
-The endpoint reuses Rocket.Chat's **built-in per-route rate limiter** (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). The route uses the client address resolved by `remoteAddressMiddleware` and propagates it to the target endpoint. As with every Rocket.Chat REST route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly; MCP does not introduce a separate proxy-trust policy.
+Every tool call is subject to the target REST endpoint's **built-in per-route rate limiter** (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). The resolved client address is propagated to that endpoint rather than being counted as loopback traffic. MCP protocol requests are additionally bounded to 20 batch entries, four concurrent dispatches, 20-second calls, and a shared 5 MiB response budget. As with every Rocket.Chat API route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly.
 
 ## Settings
 
@@ -120,7 +121,7 @@ Raw smoke test:
 H=(-H "Content-Type: application/json" -H "X-User-Id: <uid>" -H "X-Auth-Token: <token>")
 curl -s "${H[@]}" http://localhost:3000/api/v1/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"chat_postMessage","arguments":{"channel":"#general","text":"hello from MCP"}}}'
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"post_chat_postMessage_by_channel","arguments":{"channel":"#general","text":"hello from MCP"}}}'
 ```
 
 > The client **must** send `Content-Type: application/json` on POST — the shared router only parses the body for that content type.
@@ -137,11 +138,11 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 
 | Layer                                                                        | File                                                                                               |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                      | `apps/meteor/ee/server/api/mcp/index.ts`                                                           |
+| Hono route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                 | `apps/meteor/ee/server/api/mcp/index.ts`                                                           |
 | JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `apps/meteor/ee/server/api/mcp/server.ts`                                                          |
 | Tool catalog (curated + extended allow-list, variants, schema normalization) | `apps/meteor/ee/server/api/mcp/catalog.ts`                                                         |
 | Tool dispatch (loopback to REST as the user)                                 | `apps/meteor/ee/server/api/mcp/dispatch.ts`                                                        |
-| Permission seed (`access-mcp`)                                               | `apps/meteor/ee/server/api/mcp/permissions.ts`                                                     |
+| License-gated permission seed (`access-mcp`)                                | `apps/meteor/ee/server/startup/mcp.ts`                                                             |
 | EE module load                                                               | `apps/meteor/ee/server/api/index.ts`                                                               |
 | Settings (license-gated)                                                     | `apps/meteor/server/settings/ai.ts`                                                                |
 | License module                                                               | `packages/ai-search/src/constants.ts` (`AI_LICENSE_MODULE`)                                        |

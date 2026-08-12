@@ -1793,6 +1793,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query);
 	}
 
+	findPersonalAccessTokenByHashedTokenAndUserId({ userId, hashedToken }: { userId: IUser['_id']; hashedToken: string }) {
+		return this.findOne(
+			{
+				'_id': userId,
+				'services.resume.loginTokens': { $elemMatch: { hashedToken, type: 'personalAccessToken' } },
+			},
+			{ projection: { _id: 1 } },
+		);
+	}
+
 	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean, acceptChatsWithNoAgents?: boolean) {
 		// TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);

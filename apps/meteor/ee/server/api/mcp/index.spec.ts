@@ -1,15 +1,21 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
 
 import { handleMcpGet, handleMcpPost } from './index';
 import { handleRpcMessage } from './server';
 import { API } from '../../../../server/api';
+import { authenticationMiddlewareForHono } from '../../../../server/api/v1/middlewares/authenticationHono';
+import { permissionsMiddleware } from '../../../../server/api/v1/middlewares/permissions';
 import { settings } from '../../../../server/settings/cached';
+import { license } from '../v1/middlewares/license';
 
-jest.mock('./permissions', () => ({}));
+jest.mock('meteor/accounts-base', () => ({ Accounts: { _hashLoginToken: jest.fn((token: string) => `hashed-${token}`) } }), {
+	virtual: true,
+});
 
 jest.mock('@rocket.chat/models', () => ({
-	Users: { findOne: jest.fn() },
+	Users: { findPersonalAccessTokenByHashedTokenAndUserId: jest.fn() },
 }));
 
 jest.mock('./server', () => ({
@@ -17,12 +23,32 @@ jest.mock('./server', () => ({
 }));
 
 jest.mock('../../../../server/api', () => ({
-	API: { v1: { addRoute: jest.fn() } },
+	API: {
+		v1: {
+			router: {
+				getHonoRouter: jest.fn(() => ({ use: jest.fn(), post: jest.fn(), get: jest.fn() })),
+			},
+		},
+	},
+}));
+
+jest.mock('../../../../server/api/v1/middlewares/authenticationHono', () => ({
+	authenticationMiddlewareForHono: jest.fn(() => jest.fn()),
+}));
+
+jest.mock('../../../../server/api/v1/middlewares/permissions', () => ({
+	permissionsMiddleware: jest.fn(() => jest.fn()),
+}));
+
+jest.mock('../v1/middlewares/license', () => ({
+	license: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('../../../../server/settings/cached', () => ({
 	settings: { get: jest.fn() },
 }));
+
+const mockRouter = jest.mocked(API.v1.router.getHonoRouter).mock.results[0]?.value;
 
 const context = {
 	bodyParams: { jsonrpc: '2.0', id: 1, method: 'ping' },
@@ -37,34 +63,63 @@ describe('MCP HTTP route', () => {
 		jest.mocked(settings.get).mockReturnValue(true);
 		jest.mocked(handleRpcMessage).mockReset();
 		jest
-			.mocked(Users.findOne)
+			.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId)
 			.mockReset()
 			.mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
 	it('registers the endpoint with authentication, permission, and license gates', () => {
-		expect(API.v1.addRoute).toHaveBeenCalledWith(
-			'mcp',
-			{ authRequired: true, permissionsRequired: ['access-mcp'], license: [AI_LICENSE_MODULE] },
-			{ post: handleMcpPost, get: handleMcpGet },
-		);
+		expect(API.v1.router.getHonoRouter).toHaveBeenCalledTimes(1);
+		expect(authenticationMiddlewareForHono).toHaveBeenCalledWith(API.v1, expect.objectContaining({ authRequired: true }));
+		expect(permissionsMiddleware).toHaveBeenCalledWith(expect.objectContaining({ permissionsRequired: ['access-mcp'] }));
+		expect(license).toHaveBeenCalledWith(expect.objectContaining({ license: [AI_LICENSE_MODULE] }), expect.anything());
+		expect(mockRouter.use).toHaveBeenCalledWith('/mcp', expect.any(Function), expect.any(Function), expect.any(Function));
+		expect(mockRouter.post).toHaveBeenCalledWith('/mcp', expect.any(Function));
+		expect(mockRouter.get).toHaveBeenCalledWith('/mcp', expect.any(Function));
+	});
+
+	it('adapts Hono POST requests to exact JSON-RPC responses', async () => {
+		const response = { jsonrpc: '2.0' as const, id: 7, result: {} };
+		jest.mocked(handleRpcMessage).mockResolvedValue(response);
+		const request = new Request('http://localhost/api/v1/mcp', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', 'x-auth-token': 'auth-token', 'x-user-id': 'user-id' },
+			body: JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'ping' }),
+		});
+		const handler = mockRouter.post.mock.calls[0]?.[1];
+		expect(handler).toBeDefined();
+		if (!handler) {
+			throw new Error('MCP POST handler was not registered');
+		}
+
+		const result = await handler({
+			req: { raw: request },
+			get: (key: string) => (key === 'user' ? { _id: 'user-id' } : '192.0.2.1'),
+		});
+
+		expect(result).toBeInstanceOf(Response);
+		expect(result.status).toBe(200);
+		await expect(result.json()).resolves.toEqual(response);
+		expect(Accounts._hashLoginToken).toHaveBeenCalledWith('auth-token');
+		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).toHaveBeenCalledWith({
+			userId: 'user-id',
+			hashedToken: 'hashed-auth-token',
+		});
 	});
 
 	it('returns not found while MCP is disabled', async () => {
 		jest.mocked(settings.get).mockReturnValue(false);
 
-		await expect(handleMcpPost.call(context)).resolves.toMatchObject({ statusCode: 404 });
-		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 404 });
+		await expect(handleMcpPost(context)).resolves.toMatchObject({ statusCode: 404 });
+		expect(handleMcpGet(context)).toMatchObject({ statusCode: 404 });
 	});
 
 	it('rejects empty and oversized JSON-RPC batches', async () => {
-		await expect(handleMcpPost.call({ ...context, bodyParams: [] })).resolves.toMatchObject({
+		await expect(handleMcpPost({ ...context, bodyParams: [] })).resolves.toMatchObject({
 			statusCode: 400,
 			body: { error: { code: -32600 } },
 		});
-		await expect(
-			handleMcpPost.call({ ...context, bodyParams: Array.from({ length: 21 }, () => context.bodyParams) }),
-		).resolves.toMatchObject({
+		await expect(handleMcpPost({ ...context, bodyParams: Array.from({ length: 21 }, () => context.bodyParams) })).resolves.toMatchObject({
 			statusCode: 400,
 			body: { error: { code: -32600 } },
 		});
@@ -74,8 +129,8 @@ describe('MCP HTTP route', () => {
 	it('acknowledges notifications without a response body', async () => {
 		jest.mocked(handleRpcMessage).mockResolvedValue(null);
 
-		await expect(handleMcpPost.call(context)).resolves.toEqual({ statusCode: 202, body: undefined });
-		await expect(handleMcpPost.call({ ...context, bodyParams: [context.bodyParams] })).resolves.toEqual({
+		await expect(handleMcpPost(context)).resolves.toEqual({ statusCode: 202, body: undefined });
+		await expect(handleMcpPost({ ...context, bodyParams: [context.bodyParams] })).resolves.toEqual({
 			statusCode: 202,
 			body: undefined,
 		});
@@ -85,7 +140,7 @@ describe('MCP HTTP route', () => {
 		const response = { jsonrpc: '2.0' as const, id: 1, result: {} };
 		jest.mocked(handleRpcMessage).mockResolvedValueOnce(response).mockResolvedValueOnce(null);
 
-		await expect(handleMcpPost.call({ ...context, bodyParams: [context.bodyParams, context.bodyParams] })).resolves.toEqual({
+		await expect(handleMcpPost({ ...context, bodyParams: [context.bodyParams, context.bodyParams] })).resolves.toEqual({
 			statusCode: 200,
 			body: [response],
 		});
@@ -109,21 +164,21 @@ describe('MCP HTTP route', () => {
 		});
 		const bodyParams = Array.from({ length: 20 }, (_, id) => ({ jsonrpc: '2.0', id, method: 'ping' }));
 
-		const response = await handleMcpPost.call({ ...context, bodyParams });
+		const response = await handleMcpPost({ ...context, bodyParams });
 
 		expect(maxInFlight).toBe(4);
 		expect(response.body).toEqual(bodyParams.map(({ id }) => ({ jsonrpc: '2.0', id, result: {} })));
 	});
 
 	it('returns method not allowed for GET requests', () => {
-		expect(handleMcpGet.call(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
-		expect(Users.findOne).not.toHaveBeenCalled();
+		expect(handleMcpGet(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
+		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
 	});
 
 	it('rejects authenticated sessions that are not personal access tokens', async () => {
-		jest.mocked(Users.findOne).mockResolvedValue(null);
+		jest.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId).mockResolvedValue(null);
 
-		await expect(handleMcpPost.call(context)).resolves.toMatchObject({
+		await expect(handleMcpPost(context)).resolves.toMatchObject({
 			statusCode: 401,
 			body: { error: { message: 'Personal Access Token required' } },
 		});
@@ -133,7 +188,7 @@ describe('MCP HTTP route', () => {
 	it('rejects final encoded responses that exceed the MCP response limit', async () => {
 		jest.mocked(handleRpcMessage).mockResolvedValue({ jsonrpc: '2.0', id: 1, result: 'x'.repeat(5 * 1024 * 1024) });
 
-		await expect(handleMcpPost.call(context)).resolves.toMatchObject({
+		await expect(handleMcpPost(context)).resolves.toMatchObject({
 			statusCode: 413,
 			body: { error: { message: 'MCP response exceeds the 5 MiB limit' } },
 		});
@@ -151,7 +206,7 @@ describe('MCP HTTP route', () => {
 		});
 
 		await expect(
-			handleMcpPost.call({
+			handleMcpPost({
 				...context,
 				request: new Request('https://chat.example.com/api/v1/mcp', {
 					headers: { 'origin': 'https://attacker.example', 'x-auth-token': 'auth-token' },
@@ -160,7 +215,7 @@ describe('MCP HTTP route', () => {
 		).resolves.toMatchObject({ statusCode: 403 });
 		expect(handleRpcMessage).not.toHaveBeenCalled();
 		expect(
-			handleMcpGet.call({
+			handleMcpGet({
 				request: new Request('https://chat.example.com/api/v1/mcp', { headers: { origin: 'https://attacker.example' } }),
 			}),
 		).toMatchObject({ statusCode: 403 });
@@ -168,7 +223,7 @@ describe('MCP HTTP route', () => {
 
 	it('rejects unsupported protocol-version headers', async () => {
 		await expect(
-			handleMcpPost.call({
+			handleMcpPost({
 				...context,
 				request: new Request('http://localhost/api/v1/mcp', {
 					headers: { 'mcp-protocol-version': '2099-01-01', 'x-auth-token': 'auth-token' },

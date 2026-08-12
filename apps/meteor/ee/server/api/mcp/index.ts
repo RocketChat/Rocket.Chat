@@ -1,14 +1,29 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
+import { License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
+import type { StatusCode } from 'hono/utils/http-status';
+import { Accounts } from 'meteor/accounts-base';
 
-import './permissions';
 import { createMcpResponseBudget } from './dispatch';
 import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
 import { isMcpOriginAllowed, isMcpProtocolVersionSupported } from './transport';
 import { API } from '../../../../server/api';
+import type { TypedOptions } from '../../../../server/api/definition';
+import { authenticationMiddlewareForHono } from '../../../../server/api/v1/middlewares/authenticationHono';
+import { permissionsMiddleware } from '../../../../server/api/v1/middlewares/permissions';
 import { settings } from '../../../../server/settings/cached';
+import { license } from '../v1/middlewares/license';
 
-const disabledResponse = {
+const logger = new Logger('MCP');
+
+type McpHttpResponse = {
+	statusCode: StatusCode;
+	body: JsonRpcResponse | JsonRpcResponse[] | undefined;
+	headers?: Record<string, string>;
+};
+
+const disabledResponse: McpHttpResponse = {
 	statusCode: 404,
 	body: { jsonrpc: '2.0', id: null, error: { code: -32601, message: 'MCP endpoint is disabled' } },
 };
@@ -25,23 +40,15 @@ const MAX_BATCH_SIZE = 20;
 const MAX_BATCH_CONCURRENCY = 4;
 const MAX_MCP_RESPONSE_BYTES = 5 * 1024 * 1024;
 
-const personalAccessTokenRequiredResponse = {
+const personalAccessTokenRequiredResponse: McpHttpResponse = {
 	statusCode: 401,
 	body: { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Personal Access Token required' } },
 };
 
 const hasPersonalAccessToken = async ({ userId, token }: Pick<McpActionContext, 'userId' | 'token'>): Promise<boolean> =>
-	Boolean(
-		await Users.findOne(
-			{
-				'_id': userId,
-				'services.resume.loginTokens': { $elemMatch: { hashedToken: token, type: 'personalAccessToken' } },
-			},
-			{ projection: { _id: 1 } },
-		),
-	);
+	Boolean(await Users.findPersonalAccessTokenByHashedTokenAndUserId({ userId, hashedToken: token }));
 
-const jsonResponse = (body: JsonRpcResponse | JsonRpcResponse[]) => {
+const jsonResponse = (body: JsonRpcResponse | JsonRpcResponse[]): McpHttpResponse => {
 	if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_MCP_RESPONSE_BYTES) {
 		return {
 			statusCode: 413,
@@ -52,7 +59,7 @@ const jsonResponse = (body: JsonRpcResponse | JsonRpcResponse[]) => {
 	return { statusCode: 200, body };
 };
 
-const validateTransportRequest = (request: Request) => {
+const validateTransportRequest = (request: Request): McpHttpResponse | undefined => {
 	if (!isMcpOriginAllowed(request.headers.get('origin'))) {
 		return {
 			statusCode: 403,
@@ -84,27 +91,25 @@ const handleBatch = async (messages: unknown[], auth: McpAuth, clientIp: string)
 	return responses;
 };
 
-export const handleMcpPost = async function (this: McpActionContext) {
+export const handleMcpPost = async (context: McpActionContext): Promise<McpHttpResponse> => {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
 
-	const transportError = validateTransportRequest(this.request);
+	const transportError = validateTransportRequest(context.request);
 	if (transportError) {
 		return transportError;
 	}
-	if (!(await hasPersonalAccessToken(this))) {
+	if (!(await hasPersonalAccessToken(context))) {
 		return personalAccessTokenRequiredResponse;
 	}
 
-	const message = this.bodyParams;
+	const message = context.bodyParams;
 	const auth: McpAuth = {
-		userId: this.userId,
-		// The auth middleware already validated this token; forward the raw value so the
-		// loopback dispatch authenticates as the same user.
-		authToken: String(this.request.headers.get('x-auth-token') ?? ''),
+		userId: context.userId,
+		authToken: String(context.request.headers.get('x-auth-token') ?? ''),
 	};
-	const clientIp = this.requestIp;
+	const clientIp = context.requestIp;
 
 	if (Array.isArray(message)) {
 		if (message.length === 0 || message.length > MAX_BATCH_SIZE) {
@@ -120,23 +125,21 @@ export const handleMcpPost = async function (this: McpActionContext) {
 
 	const response = await handleRpcMessage(message, auth, clientIp);
 	if (!response) {
-		// Notification — acknowledge without a body.
 		return { statusCode: 202, body: undefined };
 	}
 
 	return jsonResponse(response);
 };
 
-export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
+export const handleMcpGet = (context: Pick<McpActionContext, 'request'>): McpHttpResponse => {
 	if (!settings.get<boolean>('MCP_Enabled')) {
 		return disabledResponse;
 	}
 
-	const transportError = validateTransportRequest(this.request);
+	const transportError = validateTransportRequest(context.request);
 	if (transportError) {
 		return transportError;
 	}
-	// This minimal transport doesn't offer a server-initiated SSE stream (spec allows 405).
 	return {
 		statusCode: 405,
 		headers: { Allow: 'POST' },
@@ -144,21 +147,50 @@ export const handleMcpGet = function (this: Pick<McpActionContext, 'request'>) {
 	};
 };
 
-/**
- * MCP Streamable-HTTP endpoint, mounted on the existing API router at `/api/v1/mcp`.
- * Registering it as a normal route means it reuses the whole REST middleware chain —
- * PAT authentication (`this.user`/`this.userId`), remote-address resolution
- * (`this.requestIp`), logging, metrics, and the built-in per-route rate limiter —
- * instead of re-implementing them. The JSON-RPC handling lives in `./server`.
- * Browser origins are validated here because the MCP transport requires stricter
- * DNS-rebinding protection than the shared REST CORS middleware provides.
- *
- * Gated behind the Rocket.Chat AI add-on: requests are
- * rejected unless the workspace license includes it (the same gate also applies to the
- * `MCP_Enabled` setting). Every action additionally requires the `access-mcp` permission.
- */
-API.v1.addRoute(
-	'mcp',
-	{ authRequired: true, permissionsRequired: ['access-mcp'], license: [AI_LICENSE_MODULE] },
-	{ post: handleMcpPost, get: handleMcpGet },
+const routeOptions = {
+	response: {},
+	authRequired: true,
+	permissionsRequired: ['access-mcp'],
+	license: [AI_LICENSE_MODULE],
+} satisfies TypedOptions;
+
+const sendResponse = (response: McpHttpResponse): Response => {
+	const headers = { 'Content-Type': 'application/json', ...response.headers };
+	return new Response(response.body === undefined ? null : JSON.stringify(response.body), { status: response.statusCode, headers });
+};
+
+const router = API.v1.router.getHonoRouter();
+router.use(
+	'/mcp',
+	authenticationMiddlewareForHono(API.v1, { authRequired: true, logger }),
+	permissionsMiddleware(routeOptions),
+	license(routeOptions, License),
 );
+router.post('/mcp', async (c) => {
+	const request = c.req.raw;
+	const rawToken = request.headers.get('x-auth-token') ?? '';
+	const userId = request.headers.get('x-user-id');
+
+	if (!userId) {
+		return sendResponse(personalAccessTokenRequiredResponse);
+	}
+
+	let bodyParams: unknown;
+
+	try {
+		bodyParams = await request.clone().json();
+	} catch {
+		bodyParams = undefined;
+	}
+
+	return sendResponse(
+		await handleMcpPost({
+			bodyParams,
+			userId,
+			token: Accounts._hashLoginToken(rawToken) ?? '',
+			requestIp: c.get('remoteAddress'),
+			request,
+		}),
+	);
+});
+router.get('/mcp', (c) => sendResponse(handleMcpGet({ request: c.req.raw })));

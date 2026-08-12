@@ -117,7 +117,7 @@ describe('MCP tool catalog', () => {
 	it('creates one curated tool per discriminated request variant', () => {
 		const tools = getCuratedTools();
 
-		expect(tools.map(({ name }) => name)).toEqual(['chat_postMessage_by_roomId', 'chat_postMessage_by_channel', 'rooms_get']);
+		expect(tools.map(({ name }) => name)).toEqual(['post_chat_postMessage_by_roomId', 'post_chat_postMessage_by_channel', 'get_rooms_get']);
 		expect(tools[0]?.inputSchema).toEqual({
 			type: 'object',
 			description: 'Post by room id',
@@ -141,6 +141,12 @@ describe('MCP tool catalog', () => {
 		);
 		expect(tools.some(({ name }) => name.includes('users_delete'))).toBe(false);
 		expect(tools.some(({ name }) => name.includes('users_register'))).toBe(false);
+	});
+
+	it('keeps curated tool names stable when the extended catalog is enabled', () => {
+		const extendedNames = new Set(getExtendedTools().map(({ name }) => name));
+
+		expect(getCuratedTools().every(({ name }) => extendedNames.has(name))).toBe(true);
 	});
 
 	it('generates unique valid names when variant discriminators exceed the MCP limit', () => {

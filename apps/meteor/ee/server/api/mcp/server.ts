@@ -59,7 +59,6 @@ export const isJsonRpcRequest = (value: unknown): value is JsonRpcRequest => {
 	return value.params === undefined || isRecord(value.params);
 };
 
-/** Build the tool list for this request, honouring the extended-toolset setting. */
 const listTools = (): McpTool[] => {
 	if (settings.get<boolean>('MCP_Expose_Extended_API')) {
 		return getExtendedTools();
@@ -104,7 +103,6 @@ export const handleRpcMessage = async (
 			);
 		}
 
-		// Notifications — no response.
 		case 'notifications/initialized':
 		case 'notifications/cancelled':
 			return null;

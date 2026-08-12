@@ -14,34 +14,25 @@ export type McpTool = {
 	method: McpMethod;
 };
 
-/**
- * Minimal default toolset (exposed when the extended set is off). Each entry points at an
- * existing REST endpoint; the input schema and (where present) description are reused from
- * the route's typed metadata. `fallbackDescription` covers legacy endpoints with no
- * request schema (e.g. `channels.create`), which the extended allow-list excludes.
- */
-const CURATED: { name: string; path: string; method: McpMethod; fallbackDescription?: string }[] = [
-	{ name: 'chat_postMessage', path: '/api/v1/chat.postMessage', method: 'post' },
-	{ name: 'chat_getMessage', path: '/api/v1/chat.getMessage', method: 'get' },
+const CURATED: { path: string; method: McpMethod; fallbackDescription?: string }[] = [
+	{ path: '/api/v1/chat.postMessage', method: 'post' },
+	{ path: '/api/v1/chat.getMessage', method: 'get' },
 	{
-		name: 'channels_create',
 		path: '/api/v1/channels.create',
 		method: 'post',
 		fallbackDescription: 'Create a public channel. Requires `name`; optional `members` (array of usernames).',
 	},
 	{
-		name: 'channels_list_joined',
 		path: '/api/v1/channels.list.joined',
 		method: 'get',
 		fallbackDescription: 'List the public channels the authenticated user has joined.',
 	},
 	{
-		name: 'rooms_get',
 		path: '/api/v1/rooms.get',
 		method: 'get',
 		fallbackDescription: 'List rooms the authenticated user has access to (optionally updated since a timestamp).',
 	},
-	{ name: 'users_info', path: '/api/v1/users.info', method: 'get' },
+	{ path: '/api/v1/users.info', method: 'get' },
 ];
 
 /**
@@ -347,7 +338,6 @@ const ensureUniqueToolNames = (tools: McpTool[]): McpTool[] => {
 	});
 };
 
-/** Expand a single route into one MCP tool per request variant. */
 const toolsForRoute = (baseName: string, path: string, method: McpMethod, fallbackDescription?: string): McpTool[] =>
 	variantsForRoute(path, method).map((variant) => ({
 		name: fitToolName(baseName, variant.discriminator),
@@ -357,7 +347,6 @@ const toolsForRoute = (baseName: string, path: string, method: McpMethod, fallba
 		inputSchema: variant.schema,
 	}));
 
-/** Build a valid MCP tool name base from a route path + method. */
 const toolNameFor = (path: string, method: McpMethod): string => {
 	const slug = path.replace(/^\/api\/v\d+\//, '').replace(/[^a-zA-Z0-9]+/g, '_');
 	return `${method}_${slug}`;
@@ -394,13 +383,12 @@ const collectTools = (isRouteAllowed: (baseName: string) => boolean): McpTool[] 
 	return ensureUniqueToolNames(tools);
 };
 
-/** The minimal default toolset — the hand-picked {@link CURATED} routes. */
 let curatedTools: McpTool[] | undefined;
 
 export const getCuratedTools = (): McpTool[] => {
 	curatedTools ??= ensureUniqueToolNames(
-		CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(
-			({ name, path, method, fallbackDescription }) => toolsForRoute(name, path, method, fallbackDescription),
+		CURATED.filter(({ path, method }) => Boolean(API.api.typedRoutes?.[path]?.[method])).flatMap(({ path, method, fallbackDescription }) =>
+			toolsForRoute(toolNameFor(path, method), path, method, fallbackDescription),
 		),
 	);
 

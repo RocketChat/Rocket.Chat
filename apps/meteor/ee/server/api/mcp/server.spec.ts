@@ -26,7 +26,7 @@ const auth: McpAuth = {
 };
 
 const tool = {
-	name: 'chat_getMessage',
+	name: 'get_chat_getMessage',
 	description: 'Get a message',
 	inputSchema: { type: 'object' },
 	path: '/api/v1/chat.getMessage',
@@ -35,7 +35,9 @@ const tool = {
 
 const extendedTool = {
 	...tool,
-	name: 'get_chat_getMessage',
+	name: 'get_chat_search',
+	description: 'Search messages',
+	path: '/api/v1/chat.search',
 };
 
 const initializeParams = {
