@@ -39,17 +39,17 @@ export const useEmbeddedConferenceCall = ({ callId, rid, embedded, preferences, 
 
 	const mic = preferences?.mic;
 	const cam = preferences?.cam;
-	const { micId, camId } = devices ?? {};
+	const { micId, camId, speakerId } = devices ?? {};
 
 	useEffect(() => {
 		if (!embedded || !rid || !joinCall) {
 			return;
 		}
 
-		joinCall({ callId, rid, preferences: { mic, cam, micId, camId } });
+		joinCall({ callId, rid, preferences: { mic, cam, micId, camId, speakerId } });
 
 		return () => leaveCall?.();
-	}, [callId, rid, embedded, mic, cam, micId, camId, joinCall, leaveCall]);
+	}, [callId, rid, embedded, mic, cam, micId, camId, speakerId, joinCall, leaveCall]);
 
 	// The slot is empty before the join above lands, so emptiness only means "ended" once it has held this call.
 	// Without that, the first render would read as the call being over the moment the window opened.

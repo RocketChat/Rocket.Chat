@@ -75,9 +75,12 @@ const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
  */
 const InnerProvider = ({
 	callId,
+	speakerId,
 	onLeave,
 	onContextChange,
 }: {
+	/** The output device the preflight chose. Capture options can't carry it — it isn't a published track. */
+	speakerId?: string;
 	callId: string;
 	onLeave: () => void;
 	onContextChange: (value: unknown) => void;
@@ -578,6 +581,19 @@ const InnerProvider = ({
 		[localParticipant],
 	);
 
+	// The speaker is the one choice the connection can't be opened with: `audio`/`video` capture options describe
+	// tracks we publish, and an output device isn't one. So it is applied to the room once it exists, and again if
+	// the user picks another.
+	useEffect(() => {
+		if (!speakerId) {
+			return;
+		}
+
+		void room.switchActiveDevice('audiooutput', speakerId).catch((err: unknown) => {
+			console.warn('speaker switch failed', err);
+		});
+	}, [room, speakerId]);
+
 	// Switch the active camera (videoinput) through the LK Room — LK's
 	// switchActiveDevice republishes the track on the chosen device so no
 	// renegotiation is needed at our level. The method lives on Room (not
@@ -779,7 +795,12 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 							video={captureOptions(activeCall?.preferences?.cam ?? false, activeCall?.preferences?.camId)}
 							onDisconnected={onLeave}
 						>
-							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />
+							<InnerProvider
+								callId={callId}
+								speakerId={activeCall?.preferences?.speakerId}
+								onLeave={onLeave}
+								onContextChange={setCtxValue}
+							/>
 							<RoomAudioRenderer />
 						</LiveKitRoom>,
 						lkPortalTarget,

@@ -7,6 +7,7 @@ type CallDevicePreview = {
 	stream: MediaStream | null;
 	videoInputs: MediaDeviceInfo[];
 	audioInputs: MediaDeviceInfo[];
+	audioOutputs: MediaDeviceInfo[];
 	/** Set when the browser refused — no permission, or no device. The screen says so rather than showing nothing. */
 	error: boolean;
 };
@@ -19,9 +20,12 @@ type CallDevicePreview = {
  * a URL-based provider takes no device — so a self-view would have promised a choice the screen couldn't make.
  * A provider running the call in here takes both, so the honest thing is to show what will be sent.
  *
- * The preview opens the devices before the call does, which is also what grants the permission the labels below
- * need: `enumerateDevices` returns unnamed entries until something has been allowed. Everything is released when
- * this unmounts, so the call gets the devices back rather than finding them busy.
+ * Enumeration is deliberately separate from the preview: a device can be *chosen* while it is switched off — a
+ * user who arrives muted may still care which microphone gets unmuted later — so the lists do not depend on
+ * anything being open. Opening the preview is what earns the permission that puts *names* on those entries;
+ * until then the browser returns them unnamed, which is why the list can populate twice.
+ *
+ * Everything is released when this unmounts, so the call gets the devices back rather than finding them busy.
  */
 export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPreferences, { micId, camId }: CallDevices): CallDevicePreview => {
 	const [stream, setStream] = useState<MediaStream | null>(null);
@@ -31,6 +35,30 @@ export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPrefere
 	// Nothing is asked of the browser unless something is actually on: opening the camera to preview a camera the
 	// user turned off would light their webcam for no reason.
 	const wanted = enabled && (mic || cam);
+
+	// The lists, kept current on their own. `devicechange` covers a headset arriving or leaving mid-decision.
+	useEffect(() => {
+		if (!enabled || !navigator.mediaDevices?.enumerateDevices) {
+			return;
+		}
+
+		let cancelled = false;
+		const refresh = () => {
+			void navigator.mediaDevices.enumerateDevices().then((list) => {
+				if (!cancelled) {
+					setDevices(list);
+				}
+			});
+		};
+
+		refresh();
+		navigator.mediaDevices.addEventListener?.('devicechange', refresh);
+
+		return () => {
+			cancelled = true;
+			navigator.mediaDevices.removeEventListener?.('devicechange', refresh);
+		};
+	}, [enabled]);
 
 	useEffect(() => {
 		if (!wanted || !navigator.mediaDevices?.getUserMedia) {
@@ -79,6 +107,7 @@ export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPrefere
 
 	const videoInputs = useMemo(() => devices.filter(({ kind }) => kind === 'videoinput'), [devices]);
 	const audioInputs = useMemo(() => devices.filter(({ kind }) => kind === 'audioinput'), [devices]);
+	const audioOutputs = useMemo(() => devices.filter(({ kind }) => kind === 'audiooutput'), [devices]);
 
-	return { stream, videoInputs, audioInputs, error };
+	return { stream, videoInputs, audioInputs, audioOutputs, error };
 };

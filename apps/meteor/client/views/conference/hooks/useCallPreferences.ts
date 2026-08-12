@@ -15,7 +15,11 @@ export type CallPreferences = {
 export type CallDevices = {
 	micId?: string;
 	camId?: string;
+	speakerId?: string;
 };
+
+/** The three things there are to choose. The speaker is output-only, so it has no on/off of its own. */
+export type CallDeviceKind = 'mic' | 'cam' | 'speaker';
 
 type StoredCallPreferences = CallPreferences & CallDevices;
 
@@ -39,7 +43,10 @@ export const useCallPreferences = (capabilities: VideoConferenceCapabilities) =>
 		[capabilities.cam, capabilities.mic, stored.cam, stored.mic],
 	);
 
-	const devices = useMemo((): CallDevices => ({ micId: stored.micId, camId: stored.camId }), [stored.micId, stored.camId]);
+	const devices = useMemo(
+		(): CallDevices => ({ micId: stored.micId, camId: stored.camId, speakerId: stored.speakerId }),
+		[stored.micId, stored.camId, stored.speakerId],
+	);
 
 	const toggle = useCallback(
 		(device: keyof CallPreferences) => setStored((current) => ({ ...current, [device]: !current[device] })),
@@ -47,7 +54,7 @@ export const useCallPreferences = (capabilities: VideoConferenceCapabilities) =>
 	);
 
 	const selectDevice = useCallback(
-		(device: keyof CallPreferences, deviceId: string) => setStored((current) => ({ ...current, [`${device}Id`]: deviceId })),
+		(device: CallDeviceKind, deviceId: string) => setStored((current) => ({ ...current, [`${device}Id`]: deviceId })),
 		[setStored],
 	);
 

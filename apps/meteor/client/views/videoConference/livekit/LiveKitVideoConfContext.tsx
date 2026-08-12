@@ -9,7 +9,7 @@ export type ActiveLiveKitCall = {
 	 * told — which devices to use. The bridge applies them as the initial capture options on connect, so the
 	 * room reflects the choice instead of defaulting to "mic on, cam off, whatever device".
 	 */
-	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string };
+	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
 };
 
 type LiveKitVideoConfContextValue = {
