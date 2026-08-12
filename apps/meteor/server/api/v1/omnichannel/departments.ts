@@ -9,7 +9,6 @@ import {
 import { Match, check } from 'meteor/check';
 
 import { API } from '../..';
-import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -19,6 +18,7 @@ import {
 	findArchivedDepartments,
 } from './lib/departments';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	saveDepartment,
 	archiveDepartment,

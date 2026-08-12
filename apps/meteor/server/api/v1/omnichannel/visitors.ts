@@ -11,7 +11,6 @@ import {
 import { escapeRegExp } from '@rocket.chat/tools';
 
 import { API } from '../..';
-import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	findVisitorInfo,
 	findVisitedPages,
@@ -21,6 +20,7 @@ import {
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from './lib/visitors';
 import { canAccessRoomAsync } from '../../../lib/authorization';
+import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { normalizeMessagesForUser } from '../../../lib/utils/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
