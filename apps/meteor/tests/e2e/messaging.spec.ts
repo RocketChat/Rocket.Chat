@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -36,8 +35,6 @@ test.describe('Messaging', () => {
 
 		// TODO: this should be replaced by a unit test
 		test('should navigate on messages using keyboard', async ({ page }) => {
-			test.skip(IS_EE);
-
 			await test.step('open chat and send message', async () => {
 				await channelPage.content.sendMessage('msg1');
 				await channelPage.content.sendMessage('msg2');
