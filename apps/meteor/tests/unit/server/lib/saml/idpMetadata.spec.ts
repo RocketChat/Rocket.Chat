@@ -46,10 +46,11 @@ describe('parseIdpMetadata', () => {
 		expect(result.warnings).to.deep.equal([]);
 	});
 
-	it('omits the SLO url when metadata has no SingleLogoutService', () => {
+	it('omits the SLO url without warning when metadata has no SingleLogoutService', () => {
 		const result = parseIdpMetadata(metadata({ slo: '' }));
 		expect(result.idpSLORedirectURL).to.be.undefined;
 		expect(result.entryPoint).to.equal('https://idp.test/sso');
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_slo_redirect_binding');
 	});
 
 	it('uses the first signing cert (document order) and warns when there are multiple', () => {
@@ -64,9 +65,24 @@ describe('parseIdpMetadata', () => {
 		expect(result.cert).to.be.a('string');
 	});
 
-	it('skips a KeyDescriptor whose content is not a valid X.509 certificate', () => {
+	it('skips a KeyDescriptor whose content is not a valid X.509 certificate and warns', () => {
 		const result = parseIdpMetadata(metadata({ keys: keyDescriptor('aGVsbG8gd29ybGQ=') }));
 		expect(result.cert).to.be.undefined;
+		expect(result.warnings).to.include('SAML_Metadata_warning_no_valid_cert');
+	});
+
+	it('does not warn about multiple certs when only one of them is valid', () => {
+		const result = parseIdpMetadata(metadata({ keys: keyDescriptor('aGVsbG8gd29ybGQ=') + keyDescriptor(TEST_CERT_2) }));
+		expect(result.cert).to.be.a('string').and.to.include(TEST_CERT_2.substring(0, 40));
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_multiple_certs');
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_valid_cert');
+	});
+
+	it('warns that no valid cert was found when every KeyDescriptor is invalid', () => {
+		const result = parseIdpMetadata(metadata({ keys: keyDescriptor('aGVsbG8gd29ybGQ=') + keyDescriptor('bm90IGEgY2VydA==') }));
+		expect(result.cert).to.be.undefined;
+		expect(result.warnings).to.include('SAML_Metadata_warning_no_valid_cert');
+		expect(result.warnings).to.not.include('SAML_Metadata_warning_multiple_certs');
 	});
 
 	it('omits the entry point when only HTTP-POST SSO bindings exist', () => {
@@ -104,11 +120,6 @@ describe('parseIdpMetadata', () => {
 			<SingleLogoutService Binding="${REDIRECT}" Location="https://idp.test/slo-redirect"/>`;
 		const result = parseIdpMetadata(metadata({ slo }));
 		expect(result.idpSLORedirectURL).to.equal('https://idp.test/slo-redirect');
-		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_slo_redirect_binding');
-	});
-
-	it('does not warn about the SLO binding when metadata has no SingleLogoutService', () => {
-		const result = parseIdpMetadata(metadata({ slo: '' }));
 		expect(result.warnings).to.not.include('SAML_Metadata_warning_no_slo_redirect_binding');
 	});
 
@@ -157,6 +168,18 @@ describe('parseIdpMetadata', () => {
 
 	it('rejects a document whose root is not EntityDescriptor', () => {
 		expect(() => parseIdpMetadata('<html><body>nope</body></html>')).to.throw(InvalidIdpMetadataError);
+	});
+
+	it('rejects a federation aggregate wrapping EntityDescriptors', () => {
+		const aggregate = `<?xml version="1.0"?>
+<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+	<EntityDescriptor entityID="https://idp.test/metadata">
+		<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+			<SingleSignOnService Binding="${REDIRECT}" Location="https://idp.test/sso"/>
+		</IDPSSODescriptor>
+	</EntityDescriptor>
+</EntitiesDescriptor>`;
+		expect(() => parseIdpMetadata(aggregate)).to.throw(InvalidIdpMetadataError);
 	});
 
 	it('rejects an otherwise-valid document with an unclosed inner element', () => {

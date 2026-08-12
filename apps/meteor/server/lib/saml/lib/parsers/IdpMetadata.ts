@@ -14,6 +14,11 @@ type IdpMetadataResult = {
 	warnings: string[];
 };
 
+type ExtractedValue = {
+	value?: string;
+	warning?: string;
+};
+
 export class InvalidIdpMetadataError extends Error {}
 
 const isHttpUrl = (value: string): boolean => {
@@ -29,95 +34,99 @@ const childrenOf = (el: Element | Document, tag: string): Element[] =>
 	Array.from(el.getElementsByTagNameNS(MD_NS, tag)).filter((child) => child.parentNode === el);
 
 const parseIdpDescriptor = (xml: string): Element => {
-	let parseError: Error | null = null;
-	// xmldom auto-closes unclosed tags without firing `error`/`fatalError`, reporting it only through
-	// `warning` — so any warning is treated as fatal to reject malformed input.
-	const capture = (e: unknown): void => {
-		parseError = e instanceof Error ? e : new Error(String(e));
-	};
 	const doc = new xmldom.DOMParser({
-		errorHandler: { warning: capture, error: capture, fatalError: capture },
+		errorHandler: () => {
+			throw new InvalidIdpMetadataError('invalid-xml');
+		},
 	}).parseFromString(xml, 'text/xml');
 
-	if (!doc || parseError) {
+	if (!doc) {
 		throw new InvalidIdpMetadataError('invalid-xml');
 	}
 
-	const entityDescriptors = childrenOf(doc, 'EntityDescriptor');
-	if (entityDescriptors.length !== 1 || entityDescriptors[0] !== doc.documentElement) {
+	const entityDescriptor = childrenOf(doc, 'EntityDescriptor')[0];
+	if (!entityDescriptor) {
 		throw new InvalidIdpMetadataError('root-is-not-entity-descriptor');
 	}
 
-	const idpDescriptor = childrenOf(entityDescriptors[0], 'IDPSSODescriptor')[0];
+	const idpDescriptor = childrenOf(entityDescriptor, 'IDPSSODescriptor')[0];
 	if (!idpDescriptor) {
 		throw new InvalidIdpMetadataError('no-idp-sso-descriptor');
 	}
 	return idpDescriptor;
 };
 
-const extractSigningCert = (idp: Element, warnings: string[]): string | undefined => {
-	const signingKeys = childrenOf(idp, 'KeyDescriptor').filter((kd) => {
-		const use = kd.getAttribute('use');
-		return !use || use === 'signing';
-	});
-	if (signingKeys.length > 1) {
-		warnings.push('SAML_Metadata_warning_multiple_certs');
+const extractSigningCert = (idp: Element): ExtractedValue => {
+	const certs = childrenOf(idp, 'KeyDescriptor')
+		.filter((kd) => {
+			const use = kd.getAttribute('use');
+			return !use || use === 'signing';
+		})
+		.map((kd) => kd.getElementsByTagNameNS(DS_NS, 'X509Certificate')[0]?.textContent?.trim())
+		.map((raw) => (raw ? SAMLUtils.normalizeCert(raw) : undefined))
+		.filter((cert): cert is string => !!cert && SAMLUtils.isParsableCertificate(cert));
+
+	if (!certs.length) {
+		return { warning: 'SAML_Metadata_warning_no_valid_cert' };
 	}
-	for (const kd of signingKeys) {
-		const raw = kd.getElementsByTagNameNS(DS_NS, 'X509Certificate')[0]?.textContent?.trim();
-		const normalized = raw ? SAMLUtils.normalizeCert(raw) : undefined;
-		if (normalized && SAMLUtils.isValidCertificate(normalized)) {
-			return normalized;
-		}
-	}
-	return undefined;
+
+	const warning = certs.length > 1 ? 'SAML_Metadata_warning_multiple_certs' : undefined;
+
+	return { value: certs[0], warning };
 };
 
-const extractEntryPoint = (idp: Element, warnings: string[]): string | undefined => {
-	const entryPoint = childrenOf(idp, 'SingleSignOnService')
+const findRedirectLocation = (services: Element[]): string | undefined =>
+	services
 		.filter((s) => s.getAttribute('Binding') === REDIRECT_BINDING)
 		.map((s) => s.getAttribute('Location'))
 		.find((location): location is string => !!location && isHttpUrl(location));
-	if (!entryPoint) {
-		warnings.push('SAML_Metadata_warning_no_redirect_binding');
-	}
-	return entryPoint;
+
+const extractEntryPoint = (idp: Element): ExtractedValue => {
+	const value = findRedirectLocation(childrenOf(idp, 'SingleSignOnService'));
+	const warning = value ? undefined : 'SAML_Metadata_warning_no_redirect_binding';
+
+	return { value, warning };
 };
 
-const extractSloUrl = (idp: Element, warnings: string[]): string | undefined => {
+const extractSloUrl = (idp: Element): ExtractedValue => {
 	const services = childrenOf(idp, 'SingleLogoutService');
 	if (!services.length) {
-		return undefined;
+		return {};
 	}
 
-	const location = services
-		.filter((s) => s.getAttribute('Binding') === REDIRECT_BINDING)
-		.map((s) => s.getAttribute('Location'))
-		.find((location): location is string => !!location && isHttpUrl(location));
-	if (!location) {
-		warnings.push('SAML_Metadata_warning_no_slo_redirect_binding');
-	}
-	return location;
+	const value = findRedirectLocation(services);
+	const warning = value ? undefined : 'SAML_Metadata_warning_no_slo_redirect_binding';
+
+	return { value, warning };
 };
 
-const extractIdentifierFormat = (idp: Element, warnings: string[]): string | undefined => {
+const extractIdentifierFormat = (idp: Element): ExtractedValue => {
 	const formats = childrenOf(idp, 'NameIDFormat')
 		.map((n) => n.textContent?.trim())
 		.filter((v): v is string => !!v);
-	if (formats.length > 1) {
-		warnings.push('SAML_Metadata_warning_multiple_nameid_formats');
-	}
-	return formats[0];
+
+	const warning = formats.length > 1 ? 'SAML_Metadata_warning_multiple_nameid_formats' : undefined;
+
+	return {
+		value: formats[0],
+		warning,
+	};
 };
 
 export function parseIdpMetadata(xml: string): IdpMetadataResult {
 	const idp = parseIdpDescriptor(xml);
-	const warnings: string[] = [];
+
+	const cert = extractSigningCert(idp);
+	const entryPoint = extractEntryPoint(idp);
+	const sloUrl = extractSloUrl(idp);
+	const identifierFormat = extractIdentifierFormat(idp);
+	const warnings = [cert, entryPoint, sloUrl, identifierFormat].flatMap(({ warning }) => warning ?? []);
+
 	return {
-		cert: extractSigningCert(idp, warnings),
-		entryPoint: extractEntryPoint(idp, warnings),
-		idpSLORedirectURL: extractSloUrl(idp, warnings),
-		identifierFormat: extractIdentifierFormat(idp, warnings),
+		cert: cert.value,
+		entryPoint: entryPoint.value,
+		idpSLORedirectURL: sloUrl.value,
+		identifierFormat: identifierFormat.value,
 		warnings,
 	};
 }

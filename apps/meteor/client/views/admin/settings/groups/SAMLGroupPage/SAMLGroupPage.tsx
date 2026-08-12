@@ -31,19 +31,16 @@ function SAMLGroupPage({ _id, i18nLabel, onClickBack, ...group }: SAMLGroupPageP
 	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
 
 	const handleApply = useStableCallback((values: SamlMetadataValues) => {
-		const changes: { _id: string; value: string; changed: boolean }[] = [];
-
 		// identifier_format is only registered on Enterprise installs; skip any setting that isn't present.
-		const add = (setting: ISetting | undefined, value?: string): void => {
-			if (setting && value !== undefined) {
-				changes.push({ _id: setting._id, value, changed: JSON.stringify(setting.value) !== JSON.stringify(value) });
-			}
-		};
+		const add = (setting: ISetting | undefined, value?: string) =>
+			setting && value !== undefined ? [{ _id: setting._id, value, changed: JSON.stringify(setting.value) !== JSON.stringify(value) }] : [];
 
-		add(certSetting, values.cert);
-		add(entryPointSetting, values.entryPoint);
-		add(sloSetting, values.idpSLORedirectURL);
-		add(identifierFormatSetting, values.identifierFormat);
+		const changes = [
+			...add(certSetting, values.cert),
+			...add(entryPointSetting, values.entryPoint),
+			...add(sloSetting, values.idpSLORedirectURL),
+			...add(identifierFormatSetting, values.identifierFormat),
+		];
 
 		dispatch(changes);
 		closeModal();

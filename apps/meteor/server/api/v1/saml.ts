@@ -84,6 +84,7 @@ const samlEndpoints = API.v1.post(
 			const { warnings, ...values } = parseIdpMetadata(xml);
 			return API.v1.success({ ...values, warnings });
 		} catch (err) {
+			SystemLogger.warn({ msg: 'Failed to parse SAML IdP metadata', err });
 			return API.v1.failure('SAML_Metadata_invalid');
 		}
 	},
@@ -92,6 +93,6 @@ const samlEndpoints = API.v1.post(
 export type SAMLEndpoints = ExtractRoutesFromAPI<typeof samlEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 	interface Endpoints extends SAMLEndpoints {}
 }

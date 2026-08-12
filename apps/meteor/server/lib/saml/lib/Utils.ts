@@ -118,7 +118,7 @@ export class SAMLUtils {
 		return lines.join('\n');
 	}
 
-	public static isValidCertificate(cert: string): boolean {
+	public static isParsableCertificate(cert: string): boolean {
 		try {
 			void new crypto.X509Certificate(this.certToPEM(cert));
 			return true;
