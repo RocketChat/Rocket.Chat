@@ -43,7 +43,7 @@ export async function addManager(username: string) {
 }
 
 export async function addAgent(username: string) {
-	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1, status: 1 } });
 
 	if (!user) {
 		throw new Error('error-invalid-user');

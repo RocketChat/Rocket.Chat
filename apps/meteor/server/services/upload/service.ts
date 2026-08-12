@@ -57,7 +57,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
+	async canDeleteFile(
+		user: Pick<IUser, '_id' | 'username'>,
+		file: Pick<IUpload, '_id' | 'userId' | 'rid' | 'expiresAt' | 'uploadedAt'>,
+		msg: IMessage | null,
+	): Promise<boolean> {
 		if (msg) {
 			return canDeleteMessageAsync(user, msg);
 		}

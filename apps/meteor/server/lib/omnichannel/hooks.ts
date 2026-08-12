@@ -27,7 +27,7 @@ export async function afterAgentUserActivated(user: IUser) {
 	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 }
 
-export async function afterAgentAdded(user: IUser) {
+export async function afterAgentAdded(user: AtLeast<IUser, '_id' | 'status'>) {
 	await setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE);
 	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 

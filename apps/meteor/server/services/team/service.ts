@@ -783,9 +783,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const membersIds = members.map((m) => m.userId);
-		const usersToRemove = await Users.findByIds(membersIds, {
-			projection: { _id: 1, username: 1 },
-		}).toArray();
+		const usersToRemove = await Users.findByIds(membersIds).toArray();
 		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {
