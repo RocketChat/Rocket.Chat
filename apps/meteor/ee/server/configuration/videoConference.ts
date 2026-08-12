@@ -13,8 +13,6 @@ import { settings } from '../../../server/settings';
 import { registerGroupCallReconcileCron } from '../lib/livekit/cleanup';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { resumeActiveRecordingPollers } from '../lib/livekit/recordingPoller';
-import { generatePendingSummaries } from '../lib/livekit-agent/summary';
-import { installLiveKitAgentSettingsWatchers, startLiveKitAgentSupervisor } from '../lib/livekit-agent/supervisor';
 import { addSettings } from '../settings/video-conference';
 
 // Bind/unbind LK provider in the videoConfProviders registry based on whether
@@ -90,15 +88,5 @@ Meteor.startup(async () => {
 		// when the server last shut down (egressId persisted on the call doc,
 		// message not yet sent). Idempotent if there's nothing to resume.
 		await resumeActiveRecordingPollers();
-
-		// Transcription agent subprocess. Idempotent — no-op when mode is
-		// 'off' or required settings (LK creds + Gemini key) are missing.
-		installLiveKitAgentSettingsWatchers();
-		startLiveKitAgentSupervisor();
-
-		// Backfill: any calls that ended with a transcript but no summary
-		// message (server crashed between hangup and summary post). Best-
-		// effort; failures here don't block license validation.
-		void generatePendingSummaries();
 	});
 });

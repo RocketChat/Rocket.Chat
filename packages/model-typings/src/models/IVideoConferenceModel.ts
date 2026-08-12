@@ -5,9 +5,6 @@ import type {
 	IUser,
 	IVideoConferenceParticipant,
 	IVideoConferenceRecording,
-	IVideoConferenceSummary,
-	IVideoConferenceTranscription,
-	IVideoConferenceTranscriptEntry,
 	VideoConference,
 	VideoConferenceStatus,
 	IVoIPVideoConference,
@@ -95,7 +92,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	findActiveEmbeddedWithRecording(): Promise<VideoConference[]>;
 
-	findEndedAwaitingSummary(): Promise<VideoConference[]>;
 
 	findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]>;
 
@@ -109,9 +105,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	unsetRecordingById(callId: VideoConference['_id']): Promise<void>;
 
-	setTranscriptionById(callId: VideoConference['_id'], transcription: IVideoConferenceTranscription): Promise<void>;
 
-	appendTranscriptEntryById(callId: VideoConference['_id'], entry: IVideoConferenceTranscriptEntry): Promise<void>;
 
-	setSummaryById(callId: VideoConference['_id'], summary: IVideoConferenceSummary): Promise<void>;
 }

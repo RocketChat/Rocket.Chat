@@ -156,28 +156,6 @@ export type IVideoConferenceRecording = {
 	messageSent?: boolean;
 };
 
-export type IVideoConferenceTranscription = {
-	enabled: boolean;
-	startedAt?: Date;
-	startedBy?: IUser['_id'];
-	endedAt?: Date;
-};
-
-export type IVideoConferenceTranscriptEntry = {
-	participantId: IUser['_id'];
-	text: string;
-	startedAt: Date;
-	endedAt?: Date;
-};
-
-export type IVideoConferenceSummary = {
-	generatedAt: Date;
-	/** Message id of the posted AI summary (thread reply under the call message). */
-	messageId?: IMessage['_id'];
-	/** Message id of the raw transcript posted as a .md file in the same thread. */
-	transcriptMessageId?: IMessage['_id'];
-};
-
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
 	rid: string;
@@ -209,9 +187,6 @@ export interface IVideoConference extends IRocketChatRecord {
 	 */
 	participants?: IVideoConferenceParticipant[];
 	recording?: IVideoConferenceRecording;
-	transcription?: IVideoConferenceTranscription;
-	transcript?: IVideoConferenceTranscriptEntry[];
-	summary?: IVideoConferenceSummary;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

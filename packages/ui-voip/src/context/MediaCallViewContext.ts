@@ -73,34 +73,6 @@ type MediaCallViewContextValue = {
 	/** Send a reaction emoji from the local user. */
 	onSendReaction?: (emoji: string) => void;
 	/**
-	 * Latest caption text per participant. Populated by the transcription
-	 * agent (see apps/livekit-agent) via LK data messages — interim updates
-	 * supersede each other; final transcripts replace and then expire after
-	 * a short delay. Indexed by speaker id so the UI can overlay captions
-	 * on the matching tile.
-	 */
-	activeCaptions?: Record<string, { text: string; isFinal: boolean; updatedAt: number }>;
-	/**
-	 * Whether the local user has opted in to see live captions. Per-user
-	 * (does NOT propagate to other participants' UIs). When true, the
-	 * provider also broadcasts a "captions-request" signal so the agent
-	 * starts transcribing — captions are only processed + transmitted while
-	 * at least one participant in the call has captions enabled.
-	 */
-	captionsEnabledLocally?: boolean;
-	/** Toggle the local user's caption opt-in. */
-	onToggleCaptions?: () => void;
-	/**
-	 * Selected call language (BCP-47 code + English label). Shared across
-	 * all participants via the LK data channel — when any participant flips
-	 * it the agent restarts active transcribers with the new language so
-	 * captions and persisted transcripts both stay consistent. Defaults to
-	 * English (US).
-	 */
-	callLanguage?: { code: string; label: string };
-	/** Change the call's language. Broadcasts to peers + agent. */
-	onChangeCallLanguage?: (code: string) => void;
-	/**
 	 * Switch the active camera input (videoinput device). Only meaningful when
 	 * the underlying transport supports live device switching — currently
 	 * wired by the LiveKit provider. P2P providers may leave this undefined,
@@ -110,22 +82,16 @@ type MediaCallViewContextValue = {
 	/** Currently-active camera deviceId, used to mark the selected entry in the picker. */
 	currentCameraDeviceId?: string;
 	/**
-	 * Reactive recording/transcription state shared via the LK data channel.
-	 * Lets the action strip subscribe to state changes broadcast by other
-	 * participants without polling the server. `undefined` means "unknown
-	 * yet" (the local one-shot fetch hasn't completed and no broadcast has
-	 * arrived); `null`-like absence collapses to disabled at the UI layer.
+	 * Reactive recording state shared via the LK data channel. Lets the action strip subscribe to changes
+	 * broadcast by other participants without polling the server. `undefined` means "unknown yet" — the local
+	 * one-shot fetch hasn't completed and no broadcast has arrived.
 	 */
 	liveRecordingActive?: { isRecording: boolean; updatedAt: number };
-	liveTranscriptionActive?: { enabled: boolean; updatedAt: number };
 	/**
-	 * Broadcast a state change for recording / transcription to all
-	 * participants. Toggling clients call these after their REST call
-	 * succeeds; other clients receive the data-channel message and update
-	 * their local UI without needing to poll.
+	 * Broadcast a recording state change to all participants. The toggling client calls this after its REST
+	 * call succeeds; the others receive the data-channel message and update without polling.
 	 */
 	broadcastRecordingState?: (isRecording: boolean) => void;
-	broadcastTranscriptionState?: (enabled: boolean) => void;
 	onOpenPopout: () => void;
 	onClosePopout: () => void;
 	streams: MediaCallStreams;

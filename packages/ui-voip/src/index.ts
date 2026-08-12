@@ -44,5 +44,3 @@ export { playRecordingChime, playRecordingStopChime, playJoinChime } from './uti
 
 // Per-call language selection — shared list of choices + helpers used by
 // both the picker UI and the LK provider that synchronises the state.
-export { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE, findCallLanguage } from './utils/callLanguages';
-export type { CallLanguage } from './utils/callLanguages';
