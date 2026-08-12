@@ -140,12 +140,13 @@ const userServiceKeys: IUserService[] = ['emailCode', 'email2fa', 'totp', 'resum
 const isUserServiceKey = (key: string): key is IUserService =>
 	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
 
-const isDefaultOAuthUser = (user: IUser): boolean =>
+const isDefaultOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
 
-const isCustomOAuthUser = (user: IUser): boolean => !!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
+const isCustomOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
 
-export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
+export const isOAuthUser = (user: Pick<IUser, 'services'>): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
