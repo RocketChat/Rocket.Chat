@@ -9,6 +9,7 @@ import {
 import { Match, check } from 'meteor/check';
 
 import { API } from '../..';
+import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -254,10 +255,16 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
+			const parsedSelector = JSON.parse(selector);
+
+			if (parsedSelector.conditions && Object.keys(parsedSelector.conditions).length > 0) {
+				apiDeprecationLogger.parameter(this.route, 'conditions', '9.0.0', this.response);
+			}
+
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector: parsedSelector,
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					showArchived: showArchived === 'true',
 				}),
