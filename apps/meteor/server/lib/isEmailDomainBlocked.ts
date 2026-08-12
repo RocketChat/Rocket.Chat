@@ -9,6 +9,15 @@ import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
  * custom domain has been configured. Previously both checks were gated behind
  * the custom list being non-empty, so on a stock install the default list was
  * never consulted.
+ *
+ * Domains are case-insensitive, so the incoming domain is lowercased before
+ * comparison (the default list is stored lowercase); otherwise `user@0-MAIL.COM`
+ * would slip past a listed `0-mail.com`.
  */
-export const isEmailDomainBlocked = (emailDomain: string, blockList: string[], useDefaultList: boolean): boolean =>
-	(blockList.length > 0 && blockList.includes(emailDomain)) || (useDefaultList && emailDomainDefaultBlackList.includes(emailDomain));
+export const isEmailDomainBlocked = (emailDomain: string, blockList: string[], useDefaultList: boolean): boolean => {
+	const domain = emailDomain.toLowerCase();
+	return (
+		(blockList.length > 0 && blockList.some((blocked) => blocked.toLowerCase() === domain)) ||
+		(useDefaultList && emailDomainDefaultBlackList.includes(domain))
+	);
+};

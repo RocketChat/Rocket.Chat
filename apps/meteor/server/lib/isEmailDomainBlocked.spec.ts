@@ -19,4 +19,14 @@ describe('isEmailDomainBlocked', () => {
 	it('does not block a domain that is on neither list', () => {
 		expect(isEmailDomainBlocked('gmail.com', ['evil.example'], true)).toBe(false);
 	});
+
+	it('blocks a default-listed domain regardless of case', () => {
+		// A valid email can carry an upper-case domain (`user@0-MAIL.COM`); the
+		// lower-cased default entry must still match.
+		expect(isEmailDomainBlocked('0-MAIL.COM', [], true)).toBe(true);
+	});
+
+	it('matches the custom list case-insensitively', () => {
+		expect(isEmailDomainBlocked('EVIL.example', ['evil.EXAMPLE'], false)).toBe(true);
+	});
 });
