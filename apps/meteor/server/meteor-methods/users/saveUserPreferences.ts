@@ -133,7 +133,15 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarViewMode: Match.Optional(String),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
-		sidebarCustomCategories: Match.Optional([Match.ObjectIncluding({ _id: String, name: String })]),
+		sidebarCustomCategories: Match.Optional([
+			{
+				_id: String,
+				name: String,
+				showUnreads: Match.Optional(Boolean),
+				keepUnreadsOnTop: Match.Optional(Boolean),
+				rooms: Match.Optional([String]),
+			},
+		]),
 		sidebarCategoriesOrder: Match.Optional([String]),
 		muteFocusedConversations: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
