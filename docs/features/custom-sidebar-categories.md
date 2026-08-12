@@ -37,7 +37,7 @@ The array order **is** the render order (top to bottom). New categories are prep
 All category mutations are persisted through the existing user-preferences endpoint — there is **no new
 endpoint**:
 
-```
+```http
 POST /v1/users.setPreferences  { data: { sidebarCustomCategories: ISidebarCustomCategory[] } }
 ```
 
@@ -116,7 +116,7 @@ For non-livechat rooms, `RoomMenu.tsx` strips the `toggleFavorite` action and ad
 
 The submenu has two sections:
 1. Category targets — Favorites + each custom category, each with a check-mark `addon` when it is the current grouping. Built by `useRoomCategoryItems`.
-2. Utility actions — "New category" (opens `CategoryFormModal` seeded with the room) and "Remove from {category}" (danger item, only shown when the room is currently grouped).
+2. Utility actions — "New category" (opens `CreateCategoryModal` seeded with the room) and "Remove from {category}" (danger item, only shown when the room is currently grouped).
 
 ### Category collapser kebab — `CategoryMenu.tsx`
 
@@ -147,10 +147,10 @@ It renders two sections of items built by `useRoomCategoryItems`:
 
 | File | Purpose |
 |------|---------|
-| `CategoryFormModal.tsx` | Create or "create and move" — single name field, max 30 chars. |
-| `RenameCategoryModal.tsx` | Rename with duplicate/empty validation. |
+| `CreateCategoryModal.tsx` | Create or "create and move" — single name field, max 30 chars. |
+| `ManageCategoryModal.tsx` | Rename with duplicate/empty validation. |
 | `DeleteCategoryModal.tsx` | Confirmation before deleting a category. |
-| `useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openRename(category)` / `openDelete(category)`. |
+| `useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openManage(category)` / `openDelete(category)`. |
 
 ### Navbar create menu
 
