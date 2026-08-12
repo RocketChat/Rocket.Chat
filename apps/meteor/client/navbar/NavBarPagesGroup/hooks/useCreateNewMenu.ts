@@ -31,7 +31,7 @@ export const useCreateNewMenu = () => {
 		{
 			title: t('Create_new'),
 			items: [...createRoomItems, ...(canSendOutboundMessage ? [outboundMessageItem] : [])],
-			permission: showCreate,
+			permission: showCreate || canSendOutboundMessage,
 		},
 		{
 			items: [{ id: 'category', icon: 'folder', content: t('Category'), onClick: () => openCreate() }] as GenericMenuItemProps[],
