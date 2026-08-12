@@ -216,4 +216,31 @@ describe('Password Policy', () => {
 		// since its default value is 3
 		expect(policy.policy.length).toBe(1);
 	});
+	
+	it.each([-1, 0, 1.5, Number.NaN, 1e21, '3'])(
+	'should use the default repeating character count when configured with %p',
+	(count) => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: count as number,
+			throwError: false,
+		});
+
+		// Default count is 3 → "111" is allowed, "1111" is not
+		expect(passwordPolicy.validate('111')).toBe(true);
+		expect(passwordPolicy.validate('1111')).toBe(false);
+
+		expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
+			name: 'get-password-policy-forbidRepeatingCharactersCount',
+			isValid: false,
+			limit: 3,
+		});
+
+		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
+			'get-password-policy-forbidRepeatingCharactersCount',
+			{ forbidRepeatingCharactersCount: 3 },
+		]);
+	},
+);
 });

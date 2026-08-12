@@ -16,8 +16,8 @@ type PasswordPolicyName<K extends PasswordPolicyKey> = `get-password-policy-${K}
 
 type PasswordPolicyParametersEntry = {
 	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
-		? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
-		: [PasswordPolicyName<K>];
+	? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
+	: [PasswordPolicyName<K>];
 }[PasswordPolicyKey];
 
 type PasswordPolicyType<Entry = PasswordPolicyParametersEntry> = {
@@ -34,8 +34,8 @@ export type PasswordPolicyOptions = Partial<
 
 export type PasswordPolicyValidation = {
 	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
-		? { name: PasswordPolicyName<K>; limit: number }
-		: { name: PasswordPolicyName<K> };
+	? { name: PasswordPolicyName<K>; limit: number }
+	: { name: PasswordPolicyName<K> };
 }[PasswordPolicyKey] & { isValid: boolean };
 
 export class PasswordPolicy {
@@ -79,11 +79,17 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
 	}: PasswordPolicyOptions) {
+		const safeForbidRepeatingCharactersCount =
+			typeof forbidRepeatingCharactersCount === 'number' &&
+				Number.isSafeInteger(forbidRepeatingCharactersCount) &&
+				forbidRepeatingCharactersCount >= 1 ? forbidRepeatingCharactersCount : 3;
+
+
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
-		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
+		this.forbidRepeatingCharactersCount = safeForbidRepeatingCharactersCount;
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
@@ -91,7 +97,7 @@ export class PasswordPolicy {
 		this.throwError = throwError;
 
 		this.regex = {
-			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${forbidRepeatingCharactersCount},}`),
+			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${safeForbidRepeatingCharactersCount},}`),
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
