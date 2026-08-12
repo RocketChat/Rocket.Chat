@@ -1,0 +1,23 @@
+apps/meteor/server/meteor-methods/messages/createDiscussion.ts
+  s_757bbbab112d52::t_88281f242e6b58 127-131
+apps/meteor/server/meteor-methods/omnichannel/sendMessageLivechat.ts
+  s_757bbbab112d52::t_64a22f2a5cff44 46-47
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_757bbbab112d52::t_b7b76310f3a1b4 58-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d15aeb8fad20279f4b6db940c6a0c6332e2bad92",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
