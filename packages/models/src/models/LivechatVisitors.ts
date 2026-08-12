@@ -1,5 +1,6 @@
 import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
@@ -20,6 +21,8 @@ import { ObjectId } from 'mongodb';
 
 import { Settings } from '../index';
 import { BaseRaw } from './BaseRaw';
+
+const logger = new Logger('LivechatVisitors');
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
@@ -180,6 +183,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			custom_name: string;
 		}
 	> {
+		if (Object.keys(conditions).length > 0) {
+			logger.warn('The parameter "conditions" in "findByNameRegexWithExceptionsAndConditions" is deprecated and will be removed in 9.0.0');
+		}
+
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}

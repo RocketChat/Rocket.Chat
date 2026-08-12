@@ -1,10 +1,13 @@
 import type { ILivechatDepartment, LivechatDepartmentDTO, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription, AggregationCursor } from 'mongodb';
 
 import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../index';
 import { BaseRaw } from './BaseRaw';
+
+const logger = new Logger('LivechatDepartment');
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
@@ -76,6 +79,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		conditions: Filter<ILivechatDepartment> = {},
 		options: FindOptions<ILivechatDepartment> = {},
 	): FindCursor<ILivechatDepartment> {
+		if (Object.keys(conditions).length > 0) {
+			logger.warn('The parameter "conditions" in "findByNameRegexWithExceptionsAndConditions" is deprecated and will be removed in 9.0.0');
+		}
+
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
