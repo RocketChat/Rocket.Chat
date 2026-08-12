@@ -46,6 +46,7 @@ type UserPreferences = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	sidebarCustomCategories: ISidebarCustomCategory[];
+	sidebarCategoriesOrder: string[];
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
@@ -89,6 +90,17 @@ async function updateNotificationPreferences(
 	}
 }
 
+export const validateSidebarCustomCategories = (categories: ISidebarCustomCategory[]): void => {
+	const ids = categories.map((category) => category._id);
+	if (new Set(ids).size !== ids.length) {
+		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate category _id values');
+	}
+	const allRids = categories.flatMap((category) => category.rooms ?? []);
+	if (new Set(allRids).size !== allRids.length) {
+		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate room ids across categories');
+	}
+};
+
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
 	const keys = {
 		language: Match.Optional(String),
@@ -122,6 +134,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		sidebarCustomCategories: Match.Optional([Match.ObjectIncluding({ _id: String, name: String })]),
+		sidebarCategoriesOrder: Match.Optional([String]),
 		muteFocusedConversations: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
 		fontSize: Match.Optional(String),
@@ -134,6 +147,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		utcOffset: Match.Optional(Number),
 	};
 	check(settings, Match.ObjectIncluding(keys));
+
+	if (settings.sidebarCustomCategories) {
+		validateSidebarCustomCategories(settings.sidebarCustomCategories);
+	}
 
 	const user = await Users.findOneById(userId);
 	if (!user) {

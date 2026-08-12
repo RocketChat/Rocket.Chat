@@ -56,7 +56,7 @@ Three preferences are stored in `localStorage` (no server round-trip):
 
 | localStorage key | Hook | Purpose |
 |---|---|---|
-| `sidebarAllGroupsOrder` | `useAllGroupsOrder` | Unified order of all groups (custom + system). When empty, custom categories appear first then system groups in `sidebarSectionsOrder` order. |
+| `sidebarCategoriesOrder` | `useAllGroupsOrder` | Unified order of all groups (custom + system), persisted server-side. When empty, custom categories appear first then system groups in `sidebarSectionsOrder` order. |
 | `sidebarHiddenUnreadGroups` | `useShowUnreadsGroups` | System groups with "Show unreads" turned OFF (default ON for all). |
 | `sidebarKeepUnreadsOnTopGroups` | `useKeepUnreadsOnTopGroups` | System groups with "Keep unreads on top" turned ON (default OFF). |
 

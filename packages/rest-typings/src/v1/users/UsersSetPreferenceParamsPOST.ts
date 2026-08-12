@@ -40,6 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		sidebarCustomCategories?: ISidebarCustomCategory[];
+		sidebarCategoriesOrder?: string[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -214,6 +215,11 @@ const UsersSetPreferencesParamsPostSchema = {
 						required: ['_id', 'name'],
 						additionalProperties: false,
 					},
+				},
+				sidebarCategoriesOrder: {
+					type: 'array',
+					items: { type: 'string' },
+					nullable: true,
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
