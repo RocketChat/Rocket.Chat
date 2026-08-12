@@ -116,7 +116,12 @@ export const useCustomCategories = () => {
 			if (target === FAVORITES_TARGET) {
 				await persist(stripped);
 				if (!room.isFavorite) {
-					await setFavorite(room.rid, true);
+					try {
+						await setFavorite(room.rid, true);
+					} catch (e) {
+						await persist(categories);
+						throw e;
+					}
 				}
 				if (!silent && room.name) {
 					dispatchToastMessage({
@@ -131,11 +136,17 @@ export const useCustomCategories = () => {
 			if (!category) {
 				return;
 			}
-			await persist(
-				stripped.map((current) => (current._id === target ? { ...current, rooms: [...(current.rooms ?? []), room.rid] } : current)),
+			const next = stripped.map((current) =>
+				current._id === target ? { ...current, rooms: [...(current.rooms ?? []), room.rid] } : current,
 			);
+			await persist(next);
 			if (room.isFavorite) {
-				await setFavorite(room.rid, false);
+				try {
+					await setFavorite(room.rid, false);
+				} catch (e) {
+					await persist(categories);
+					throw e;
+				}
 			}
 			if (!silent && room.name) {
 				dispatchToastMessage({
@@ -160,7 +171,12 @@ export const useCustomCategories = () => {
 			};
 			await persist([category, ...stripped]);
 			if (room.isFavorite) {
-				await setFavorite(room.rid, false);
+				try {
+					await setFavorite(room.rid, false);
+				} catch (e) {
+					await persist(categories);
+					throw e;
+				}
 			}
 			dispatchToastMessage({
 				type: 'success',
@@ -192,7 +208,12 @@ export const useCustomCategories = () => {
 
 			await persist(stripRoom(categories, room.rid));
 			if (room.isFavorite) {
-				await setFavorite(room.rid, false);
+				try {
+					await setFavorite(room.rid, false);
+				} catch (e) {
+					await persist(categories);
+					throw e;
+				}
 			}
 			if (fromName) {
 				dispatchToastMessage({
