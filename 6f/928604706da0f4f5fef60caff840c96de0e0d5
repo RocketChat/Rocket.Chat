@@ -24,6 +24,7 @@ packages/model-typings/src/models/IPushTokenModel.ts
   s_d81a2915077aab::t_fd01e36e1664e1 12-24
 packages/models/src/models/Messages.ts
   s_d81a2915077aab::t_8b4284549454da 81-85,95-98,108-112,122-126,135-139,330-334,345-348,358-368,398-403,504-507,659-662,676-687,708-717,729-732,744-747,758-761,773-776,801-806,830-831,833-834,845-850,874-884,912-923,995-999,1025-1029,1360-1364,1370-1372
+  h_4c386397e672f4 832
 packages/models/src/models/ServerEvents.ts
   s_d81a2915077aab::t_8b4284549454da 92
 packages/model-typings/src/models/ILivechatDepartmentAgentsModel.ts
@@ -218,6 +219,11 @@ packages/model-typings/src/models/ILivechatCustomFieldModel.ts
   "git_ai_version": "1.6.20",
   "base_commit_sha": "6f928604706da0f4f5fef60caff840c96de0e0d5",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_d81a2915077aab": {
       "agent_id": {
