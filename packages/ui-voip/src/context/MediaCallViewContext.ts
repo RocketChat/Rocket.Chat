@@ -81,6 +81,17 @@ type MediaCallViewContextValue = {
 	onVideoInputChange?: (deviceId: string) => void;
 	/** Currently-active camera deviceId, used to mark the selected entry in the picker. */
 	currentCameraDeviceId?: string;
+	/**
+	 * Reactive recording state shared via the LK data channel. Lets the action strip subscribe to changes
+	 * broadcast by other participants without polling the server. `undefined` means "unknown yet" — the local
+	 * one-shot fetch hasn't completed and no broadcast has arrived.
+	 */
+	liveRecordingActive?: { isRecording: boolean; updatedAt: number };
+	/**
+	 * Broadcast a recording state change to all participants. The toggling client calls this after its REST
+	 * call succeeds; the others receive the data-channel message and update without polling.
+	 */
+	broadcastRecordingState?: (isRecording: boolean) => void;
 	onOpenPopout: () => void;
 	onClosePopout: () => void;
 	streams: MediaCallStreams;

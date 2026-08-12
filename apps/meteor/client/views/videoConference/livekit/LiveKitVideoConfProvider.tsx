@@ -225,6 +225,12 @@ const InnerProvider = ({
 		{ id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[]
 	>([]);
 	const REACTION_TTL_MS = 3500;
+	// Reactive state shared via the LK data channel. Replaces the previous
+	// 5s polling of /recording-status. Whoever
+	// toggles the feature also broadcasts the change to everyone in the
+	// room, so other participants update within a single round-trip
+	// instead of waiting for the next poll tick.
+	const [liveRecordingActive, setLiveRecordingActive] = useState<{ isRecording: boolean; updatedAt: number } | undefined>();
 
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
@@ -264,6 +270,10 @@ const InnerProvider = ({
 						expiresAt: now + REACTION_TTL_MS,
 					},
 				]);
+				return;
+			}
+			if (msg.type === 'recording-state') {
+				setLiveRecordingActive({ isRecording: Boolean((msg as any).isRecording), updatedAt: Date.now() });
 			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
@@ -382,6 +392,22 @@ const InnerProvider = ({
 		};
 	}, [room]);
 
+	// Broadcast recording toggles to every participant
+	// over the LK data channel so they all converge to the same UI state
+	// without polling. We use reliable delivery because these are
+	// low-frequency state changes (where loss is
+	// acceptable) and the user-facing meaning of "missed broadcast" is
+	// "your pill stayed wrong for up to a poll interval" — which is the
+	// regression we're fixing in the first place.
+	const broadcastRecordingState = useCallback(
+		(isRecording: boolean) => {
+			const payload = JSON.stringify({ type: 'recording-state', isRecording });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveRecordingActive({ isRecording, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+
 	// The speaker is the one choice the connection can't be opened with: `audio`/`video` capture options describe
 	// tracks we publish, and an output device isn't one. So it is applied to the room once it exists, and again if
 	// the user picks another.
@@ -450,6 +476,8 @@ const InnerProvider = ({
 			activeReactions,
 			onVideoInputChange,
 			currentCameraDeviceId,
+			liveRecordingActive,
+			broadcastRecordingState,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -473,6 +501,8 @@ const InnerProvider = ({
 			activeReactions,
 			onVideoInputChange,
 			currentCameraDeviceId,
+			liveRecordingActive,
+			broadcastRecordingState,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

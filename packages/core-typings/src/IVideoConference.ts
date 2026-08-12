@@ -143,6 +143,19 @@ export type IVideoConferenceParticipant = {
 	leftAt?: Date;
 };
 
+export type IVideoConferenceRecording = {
+	/** Provider-specific id (e.g. LiveKit egressId). */
+	egressId: string;
+	startedAt: Date;
+	endedAt?: Date;
+	fileUrl?: string;
+	storage: 'local' | 's3' | 'filestore' | 'both';
+	uploadId?: string;
+	uploadKey?: string;
+	filename?: string;
+	messageSent?: boolean;
+};
+
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
 	rid: string;
@@ -167,10 +180,13 @@ export interface IVideoConference extends IRocketChatRecord {
 	discussionRid?: IRoom['_id'];
 
 	/**
-	 * Populated by a provider that runs the call inside Rocket.Chat (LiveKit) rather than handing off to an
-	 * external URL. URL-based providers (Jitsi/Meet/Zoom) leave it undefined.
+	 * Optional embedded-SFU fields. Populated by providers that run the
+	 * call inside Rocket.Chat (LiveKit) rather than handing off to an
+	 * external URL. URL-based providers (Jitsi/Meet/Zoom) leave these
+	 * undefined.
 	 */
 	participants?: IVideoConferenceParticipant[];
+	recording?: IVideoConferenceRecording;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

@@ -51,6 +51,27 @@ const playTone = (frequency: number, startOffset: number, duration: number) => {
 };
 
 /**
+ * Played for every participant when recording starts. Two ascending notes
+ * (E5 → G5) — distinct enough from the join chime to be recognisable, and
+ * the rising pattern conventionally signals "started / on".
+ */
+export const playRecordingChime = (): void => {
+	playTone(659.25, 0, 0.16);
+	playTone(783.99, 0.13, 0.22);
+};
+
+/**
+ * Played for every participant when recording stops. The descending mirror
+ * of playRecordingChime (G5 → E5) — same notes in reverse so the pair
+ * reads unmistakably as "on / off" without users having to learn two
+ * unrelated jingles.
+ */
+export const playRecordingStopChime = (): void => {
+	playTone(783.99, 0, 0.16);
+	playTone(659.25, 0.13, 0.22);
+};
+
+/**
  * Played when a remote participant joins the call (and only while the call
  * is small — gated by the caller). Single brief high note so it lands as
  * a polite "plink" rather than a notification ding.

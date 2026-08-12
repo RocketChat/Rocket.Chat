@@ -11,7 +11,15 @@ import {
 import { API } from '../../../server/api/api';
 import { canAccessRoomAsync } from '../../../server/lib/authorization/canAccessRoom';
 import notifications from '../../../server/lib/notifications/core/lib/Notifications';
-import { createLiveKitAccessToken, getLiveKitConfig, isLiveKitFullyConfigured } from '../lib/livekit';
+import { settings } from '../../../server/settings';
+import {
+	createLiveKitAccessToken,
+	getLiveKitConfig,
+	isLiveKitFullyConfigured,
+	startMediaCallRecording,
+	stopMediaCallRecording,
+	getMediaCallRecordingState,
+} from '../lib/livekit';
 
 const logger = new Logger('VideoConference/LiveKit/API');
 
@@ -42,7 +50,7 @@ const livekitRoomNameFor = (callId: string) => `mc-${callId}`;
 // Resolves the call + verifies the caller has access to the call's room.
 // Returns the call doc on success; the API endpoint maps the error code to
 // the right HTTP response. LiveKit calls are always room-scoped, so any
-// room member is allowed to drive transport state.
+// room member is allowed to drive transport/recording/transcription state.
 async function authorizeCall(
 	callId: string | undefined,
 	userId: string,
@@ -155,5 +163,77 @@ API.v1.get(
 			logger.error({ msg: 'transport config mint failed', err: e });
 			return API.v1.failure((e as Error).message);
 		}
+	},
+);
+
+// ============================================================================
+// Recording
+// ============================================================================
+
+API.v1.post(
+	'video-conference.livekit.recording.start',
+	{
+		authRequired: true,
+		body: callIdBodySchema,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		if (!settings.get<boolean>('VideoConf_LiveKit_Enabled')) return API.v1.failure('livekit-not-enabled');
+		const { callId } = this.bodyParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		try {
+			return API.v1.success(await startMediaCallRecording(callId));
+		} catch (e) {
+			logger.error({ msg: 'start-recording failed', err: e });
+			return API.v1.failure((e as Error).message);
+		}
+	},
+);
+
+API.v1.post(
+	'video-conference.livekit.recording.stop',
+	{
+		authRequired: true,
+		body: callIdBodySchema,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		try {
+			await stopMediaCallRecording(callId);
+			return API.v1.success({});
+		} catch (e) {
+			return API.v1.failure((e as Error).message);
+		}
+	},
+);
+
+API.v1.get(
+	'video-conference.livekit.recording.status',
+	{
+		authRequired: true,
+		query: callIdQuerySchema,
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		const { callId } = this.queryParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		return API.v1.success(await getMediaCallRecordingState(callId));
 	},
 );

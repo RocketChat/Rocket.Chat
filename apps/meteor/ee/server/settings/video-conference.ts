@@ -99,6 +99,50 @@ export function addSettings(): Promise<void> {
 						invalidValue: '',
 						enableQuery: [livekitEnabled],
 					});
+
+					await this.add('VideoConf_LiveKit_Recording_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						enableQuery: [livekitEnabled],
+					});
+
+					const recordingEnabled = { _id: 'VideoConf_LiveKit_Recording_Enabled', value: true };
+
+					await this.add('VideoConf_LiveKit_Recording_Storage', 's3', {
+						type: 'select',
+						values: [
+							{ key: 'local', i18nLabel: 'Local_Disk' },
+							{ key: 's3', i18nLabel: 'S3_compatible' },
+							{ key: 'filestore', i18nLabel: 'Rocket_Chat_File_Store' },
+							{ key: 'both', i18nLabel: 'Both' },
+						],
+						invalidValue: 's3',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					const localStorage = { _id: 'VideoConf_LiveKit_Recording_Storage', value: 'local' };
+
+					await this.add('VideoConf_LiveKit_Recording_Local_Path', '/out', {
+						type: 'string',
+						invalidValue: '/out',
+						i18nDescription: 'VideoConf_LiveKit_Recording_Local_Path_Description',
+						enableQuery: [livekitEnabled, recordingEnabled, localStorage],
+					});
+
+					await this.add('VideoConf_LiveKit_Recording_S3_Access_Key', '', {
+						type: 'string',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Recording_S3_Secret_Key', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled, recordingEnabled],
+					});
 				});
 			},
 		);

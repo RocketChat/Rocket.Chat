@@ -36,11 +36,11 @@ export { default as MediaCallViewContext, defaultMediaCallContextValue } from '.
 export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';
 
 // In-call notification chimes used by the Video Conference (LiveKit) UI —
-// a remote participant joining. Synthesized via
+// recording started/stopped and remote-participant joined. Synthesized via
 // Web Audio so no asset files are needed. The legacy VoIP call sounds
 // (ringer/dialer/call-ended) intentionally still go through the MP3 path
 // in CustomSoundProvider.
-export { playJoinChime } from './utils/callChimes';
+export { playRecordingChime, playRecordingStopChime, playJoinChime } from './utils/callChimes';
 
 // Per-call language selection — shared list of choices + helpers used by
 // both the picker UI and the LK provider that synchronises the state.

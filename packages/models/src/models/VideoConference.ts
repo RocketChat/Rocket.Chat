@@ -7,6 +7,7 @@ import type {
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
 	IVideoConferenceParticipant,
+	IVideoConferenceRecording,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
@@ -374,7 +375,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	// --- Embedded SFU (LiveKit) helpers ---
 	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
-	// is described in the IVideoConferenceParticipant type in core-typings.
+	// is described in the IVideoConference{Participant,Recording} types in
+	// core-typings.
 
 	public async findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null> {
 		// "active" means the call is open (not ENDED/EXPIRED/DECLINED). Embedded
@@ -384,6 +386,17 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			providerName,
 			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
 		});
+	}
+
+	public async findActiveEmbeddedWithRecording(): Promise<VideoConference[]> {
+		// Used by the recording-poller resume-on-boot path: pick up any calls
+		// whose recording.egressId was set but whose recording.messageSent
+		// hasn't been flipped, regardless of call lifecycle (the file might
+		// finish uploading after the call ends).
+		return this.find({
+			'recording.egressId': { $exists: true },
+			'recording.messageSent': { $ne: true },
+		}).toArray();
 	}
 
 	public async findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]> {
@@ -410,5 +423,18 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id']): Promise<void> {
 		await this.updateOne({ '_id': callId, 'participants.id': userId }, { $set: { 'participants.$.leftAt': new Date() } } as any);
+	}
+
+	public async setRecordingById(callId: VideoConference['_id'], recording: IVideoConferenceRecording): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { recording } });
+	}
+
+	public async updateRecordingById(callId: VideoConference['_id'], partial: Partial<IVideoConferenceRecording>): Promise<void> {
+		const set = Object.fromEntries(Object.entries(partial).map(([k, v]) => [`recording.${k}`, v]));
+		await this.updateOne({ _id: callId }, { $set: set });
+	}
+
+	public async unsetRecordingById(callId: VideoConference['_id']): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { recording: 1 } });
 	}
 }

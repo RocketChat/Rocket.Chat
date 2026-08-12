@@ -1,0 +1,573 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Self-hosted LiveKit server on a single EC2 instance with managed TLS via
+  Caddy. Single-AZ, single-instance — for development / testing. Recording
+  is provisioned by the separate egress.yaml stack (ASG that scales 0->1 on
+  demand via LK webhooks). Provisions: VPC + public subnet, security group,
+  Elastic IP, IAM role, EC2 with user-data that installs Docker + Compose
+  and brings up the LiveKit stack.
+
+Parameters:
+  Domain:
+    Type: String
+    Description: >
+      Hostname browsers will connect to (e.g. livekit.example.com). After
+      stack creation, point an A record at the EIP shown in Outputs; Caddy
+      will then provision a Let's Encrypt cert automatically (~1 min).
+    AllowedPattern: ^[a-zA-Z0-9.-]+$
+
+  AdminEmail:
+    Type: String
+    Description: Contact email for Let's Encrypt registration.
+    AllowedPattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+
+  LiveKitApiKey:
+    Type: String
+    NoEcho: true
+    Description: >
+      LK API key clients will use. Generate with `openssl rand -hex 16`.
+      Has to match what Rocket.Chat sends in its mint-token calls.
+    MinLength: 16
+
+  LiveKitApiSecret:
+    Type: String
+    NoEcho: true
+    Description: >
+      LK API secret. Generate with `openssl rand -hex 32`. Server validates
+      JWTs signed with this secret.
+    MinLength: 32
+
+  InstanceType:
+    Type: String
+    Default: t4g.large
+    AllowedValues:
+      - t4g.large
+      - t4g.xlarge
+      - t3a.large
+      - t3a.xlarge
+      - m5.large
+      - m5.xlarge
+      - c5.xlarge
+      - c5.2xlarge
+    Description: >
+      Egress (Chromium-based recording) is the heavy tenant. m5.large is
+      OK for 1 concurrent recording; bump to c5.xlarge+ for several.
+
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 key pair name for SSH access.
+
+  AllowedSSHCIDR:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: >
+      CIDR allowed to reach SSH (22/tcp). Default open — narrow to your
+      office IP for anything resembling production.
+    AllowedPattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$
+
+  # Existing-VPC reuse — leave both blank to provision a fresh VPC.
+  # Useful when you're at the AWS per-region VPC quota (default 5).
+  ExistingVpcId:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. Pass a VPC ID (vpc-xxxx) to skip VPC/IGW/subnet/route-table
+      creation and place the instance inside an existing VPC. Must be paired
+      with ExistingPublicSubnetId.
+  ExistingPublicSubnetId:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. A subnet within ExistingVpcId that routes 0.0.0.0/0 to an
+      internet gateway (i.e. a "public" subnet). The instance will get a
+      public IP via the EIP.
+
+  # AL2023 latest AMI for each arch. The actual one used is picked at deploy
+  # time from InstanceType (see `UseArm64Ami` condition + `Instance.ImageId`),
+  # so you never need to override these unless you're pinning to an old AMI.
+  AmiX8664:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Used for non-Graviton instance types (t3a / m5 / c5).
+  AmiArm64:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+    Description: Used for Graviton instance types (t4g).
+
+  LiveKitServerVersion:
+    Type: String
+    Default: v1.12
+    Description: Docker tag for livekit/livekit-server.
+
+  # Polling cadence for the egress scaler (see scale-egress.py in user-data).
+  # The script polls LK locally; only when the desired ASG capacity actually
+  # changes does it call SetDesiredCapacity. So lower values = faster
+  # detection of room-start with no extra AWS cost.
+  ScalerPollIntervalSec:
+    Type: Number
+    Default: 5
+    MinValue: 1
+    MaxValue: 60
+
+Conditions:
+  # CFN can't pick an SSM parameter via FindInMap, so we materialize both
+  # arch-specific AMIs and choose at deploy time based on InstanceType.
+  # Extend this list when adding more Graviton instance types to AllowedValues.
+  UseArm64Ami: !Or
+    - !Equals [!Ref InstanceType, t4g.large]
+    - !Equals [!Ref InstanceType, t4g.xlarge]
+
+  # Create a new VPC + subnet + IGW unless the user wired an existing one in.
+  CreateVpc: !Equals [!Ref ExistingVpcId, '']
+
+Resources:
+  # ---------------------------------------------------------------------------
+  # Networking — provisioned only when ExistingVpcId is blank. Otherwise the
+  # instance is dropped into the existing VPC + subnet you passed in.
+  # ---------------------------------------------------------------------------
+  VPC:
+    Type: AWS::EC2::VPC
+    Condition: CreateVpc
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-vpc
+
+  IGW:
+    Type: AWS::EC2::InternetGateway
+    Condition: CreateVpc
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-igw
+
+  IGWAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.42.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-public
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Condition: CreateVpc
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Condition: CreateVpc
+    DependsOn: IGWAttach
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+
+  PublicSubnetRTAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateVpc
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # ---------------------------------------------------------------------------
+  # Security group — LK protocol + Caddy + SSH.
+  #   80/443  : Caddy (HTTP-01 challenge + HTTPS / WSS reverse proxy)
+  #   7881    : LiveKit TCP fallback for clients on UDP-hostile networks
+  #   50000-60000/udp : WebRTC media. LK randomly assigns within this range.
+  # ---------------------------------------------------------------------------
+  SG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: LiveKit server + Egress
+      VpcId: !If [CreateVpc, !Ref VPC, !Ref ExistingVpcId]
+      SecurityGroupIngress:
+        - { IpProtocol: tcp, FromPort: 22,    ToPort: 22,    CidrIp: !Ref AllowedSSHCIDR, Description: SSH }
+        - { IpProtocol: tcp, FromPort: 80,    ToPort: 80,    CidrIp: 0.0.0.0/0,           Description: HTTP (LE) }
+        - { IpProtocol: tcp, FromPort: 443,   ToPort: 443,   CidrIp: 0.0.0.0/0,           Description: HTTPS / WSS }
+        - { IpProtocol: tcp, FromPort: 7881,  ToPort: 7881,  CidrIp: 0.0.0.0/0,           Description: LK TCP fallback }
+        - { IpProtocol: udp, FromPort: 50000, ToPort: 60000, CidrIp: 0.0.0.0/0,           Description: WebRTC media }
+
+  # Membership-tag SG for egress.yaml's instances. The core SG's Redis
+  # ingress (below) is keyed off membership in this group, so any egress
+  # instance can reach Redis without us hard-coding CIDRs.
+  EgressClientsSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Membership tag for egress instances; grants Redis access
+      VpcId: !If [CreateVpc, !Ref VPC, !Ref ExistingVpcId]
+
+  SGRedisFromEgress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SG
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      SourceSecurityGroupId: !Ref EgressClientsSG
+      Description: Redis from egress instances
+
+  # ---------------------------------------------------------------------------
+  # IAM role / instance profile — SSM Session Manager + SetDesiredCapacity
+  # on the egress ASG (the local scaler polls LK and calls this). S3 creds
+  # are passed per-egress by the caller (Rocket.Chat), so the instance itself
+  # doesn't need bucket access.
+  # ---------------------------------------------------------------------------
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ec2.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: ScaleEgressAsg
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: autoscaling:SetDesiredCapacity
+                # egress.yaml creates the ASG with this conventional name.
+                Resource: !Sub "arn:${AWS::Partition}:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${AWS::StackName}-egress-asg"
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref InstanceRole]
+
+  # ---------------------------------------------------------------------------
+  # Elastic IP — stable address so the DNS A record survives instance replace.
+  # ---------------------------------------------------------------------------
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  EIPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt EIP.AllocationId
+      InstanceId: !Ref Instance
+
+  # ---------------------------------------------------------------------------
+  # EC2 — user-data bootstraps everything.
+  # ---------------------------------------------------------------------------
+  Instance:
+    Type: AWS::EC2::Instance
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT10M
+    Properties:
+      ImageId: !If [UseArm64Ami, !Ref AmiArm64, !Ref AmiX8664]
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      IamInstanceProfile: !Ref InstanceProfile
+      SubnetId: !If [CreateVpc, !Ref PublicSubnet, !Ref ExistingPublicSubnetId]
+      SecurityGroupIds: [!Ref SG]
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 30
+            VolumeType: gp3
+            DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-livekit
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euxo pipefail
+          exec > >(tee -a /var/log/user-data.log) 2>&1
+
+          dnf update -y
+          dnf install -y docker
+          systemctl enable --now docker
+          usermod -aG docker ec2-user
+
+          # Install docker compose plugin (AL2023 ships docker without it).
+          mkdir -p /usr/libexec/docker/cli-plugins
+          COMPOSE_VER=v2.30.3
+          ARCH=$(uname -m)
+          case "$ARCH" in
+            x86_64)  COMPOSE_ARCH=x86_64 ;;
+            aarch64) COMPOSE_ARCH=aarch64 ;;
+          esac
+          curl -fsSL \
+            "https://github.com/docker/compose/releases/download/${!COMPOSE_VER}/docker-compose-linux-${!COMPOSE_ARCH}" \
+            -o /usr/libexec/docker/cli-plugins/docker-compose
+          chmod +x /usr/libexec/docker/cli-plugins/docker-compose
+
+          mkdir -p /opt/livekit
+          cd /opt/livekit
+
+          # -------------------------------------------------------------------
+          # livekit-server config. `use_external_ip: true` makes LK probe its
+          # own public IP via STUN and advertise it in ICE — required when
+          # behind a NAT (which EC2 effectively is from a WebRTC view).
+          # -------------------------------------------------------------------
+          cat > livekit.yaml <<'YAML'
+          port: 7880
+          bind_addresses:
+            - ""
+          rtc:
+            tcp_port: 7881
+            port_range_start: 50000
+            port_range_end: 60000
+            use_external_ip: true
+          redis:
+            address: 127.0.0.1:6379
+          keys:
+            __LK_API_KEY__: __LK_API_SECRET__
+          log_level: info
+          YAML
+          sed -i "s|__LK_API_KEY__|${LiveKitApiKey}|; s|__LK_API_SECRET__|${LiveKitApiSecret}|" livekit.yaml
+
+          # -------------------------------------------------------------------
+          # Caddy reverse proxy + automatic Let's Encrypt.
+          # Caddy listens on 80/443, proxies HTTPS → LK's plain HTTP/WS on
+          # localhost:7880. WebRTC media on 7881/tcp + 50000-60000/udp bypass
+          # Caddy entirely — they're direct host ports.
+          # -------------------------------------------------------------------
+          cat > Caddyfile <<CADDY
+          {
+            email ${AdminEmail}
+          }
+          ${Domain} {
+            reverse_proxy host.docker.internal:7880
+          }
+          CADDY
+
+          # -------------------------------------------------------------------
+          # docker-compose: LK + Redis on host network (LK needs the UDP port
+          # range exposed without docker-proxy overhead); Caddy on bridge with
+          # host-gateway alias so it can reach LK's 7880. Redis binds 0.0.0.0
+          # so egress instances in the VPC can reach it across the network;
+          # SG controls who's actually allowed.
+          # -------------------------------------------------------------------
+          cat > docker-compose.yml <<YAML
+          services:
+            redis:
+              image: redis:7-alpine
+              network_mode: host
+              restart: unless-stopped
+              command: ["redis-server", "--bind", "0.0.0.0", "--protected-mode", "no"]
+
+            livekit-server:
+              image: livekit/livekit-server:${LiveKitServerVersion}
+              network_mode: host
+              restart: unless-stopped
+              volumes:
+                - ./livekit.yaml:/etc/livekit.yaml:ro
+              command: ["--config", "/etc/livekit.yaml"]
+              depends_on: [redis]
+
+            caddy:
+              image: caddy:2-alpine
+              restart: unless-stopped
+              ports:
+                - "80:80"
+                - "443:443"
+              extra_hosts:
+                - "host.docker.internal:host-gateway"
+              volumes:
+                - ./Caddyfile:/etc/caddy/Caddyfile:ro
+                - caddy_data:/data
+                - caddy_config:/config
+
+          volumes:
+            caddy_data:
+            caddy_config:
+          YAML
+
+          # Pull and start.
+          docker compose pull
+          docker compose up -d
+
+          # -------------------------------------------------------------------
+          # Egress scaler. Polls LK locally every ScalerPollIntervalSec, and
+          # only calls SetDesiredCapacity when the count changes. Keeps the
+          # ASG at 0 when no rooms / no active egress, 1 otherwise.
+          #
+          # This replaces the LK webhook → API Gateway → Lambda path so the
+          # core stack has zero output dependency on egress.yaml. The ASG
+          # name is by convention (${AWS::StackName}-egress-asg).
+          # -------------------------------------------------------------------
+          dnf install -y awscli
+
+          cat > /opt/livekit/scale-egress.py <<'PY'
+          #!/usr/bin/env python3
+          """Poll LK locally; scale the egress ASG on count transitions."""
+          import os, sys, json, hmac, hashlib, base64, time, subprocess
+          import urllib.request
+
+          LK_API_KEY    = os.environ["LK_API_KEY"]
+          LK_API_SECRET = os.environ["LK_API_SECRET"]
+          ASG_NAME      = os.environ["ASG_NAME"]
+          REGION        = os.environ["AWS_REGION"]
+          INTERVAL      = int(os.environ.get("POLL_INTERVAL_SEC", "5"))
+          STATE_FILE    = "/var/run/lk-scaler-state"
+
+          def _b64url(b): return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+
+          def lk_token(scope):
+              now = int(time.time())
+              h = _b64url(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
+              p = _b64url(json.dumps({"iss": LK_API_KEY, "exp": now + 300, **scope}, separators=(",", ":")).encode())
+              s = _b64url(hmac.new(LK_API_SECRET.encode(), f"{h}.{p}".encode(), hashlib.sha256).digest())
+              return f"{h}.{p}.{s}"
+
+          def lk_post(path, scope):
+              try:
+                  req = urllib.request.Request(
+                      f"http://127.0.0.1:7880/twirp/{path}",
+                      data=b"{}",
+                      headers={"Authorization": f"Bearer {lk_token(scope)}", "Content-Type": "application/json"},
+                      method="POST",
+                  )
+                  with urllib.request.urlopen(req, timeout=3) as r:
+                      return json.loads(r.read())
+              except Exception as e:
+                  print(f"lk_post {path} failed: {e}", file=sys.stderr, flush=True)
+                  return None
+
+          def count_active():
+              rooms = lk_post("livekit.RoomService/ListRooms", {"video": {"roomList": True}}) or {}
+              egress = lk_post("livekit.Egress/ListEgress", {"video": {"roomRecord": True}}) or {}
+              active_egress = sum(1 for e in egress.get("items", [])
+                                  if e.get("status") in ("EGRESS_STARTING", "EGRESS_ACTIVE"))
+              return len(rooms.get("rooms", [])) + active_egress
+
+          def read_last():
+              try:
+                  with open(STATE_FILE) as f: return int(f.read().strip())
+              except Exception: return None
+
+          def write_last(n):
+              with open(STATE_FILE, "w") as f: f.write(str(n))
+
+          def set_desired(n):
+              subprocess.run(
+                  ["aws", "autoscaling", "set-desired-capacity",
+                   "--auto-scaling-group-name", ASG_NAME,
+                   "--desired-capacity", str(n),
+                   "--region", REGION],
+                  check=False,
+              )
+
+          while True:
+              active = count_active()
+              desired = 1 if active > 0 else 0
+              last = read_last()
+              if desired != last:
+                  print(f"active={active} desired={desired} (was {last})", flush=True)
+                  set_desired(desired)
+                  write_last(desired)
+              time.sleep(INTERVAL)
+          PY
+          chmod +x /opt/livekit/scale-egress.py
+
+          cat > /etc/systemd/system/lk-scaler.service <<'UNIT'
+          [Unit]
+          Description=LiveKit Egress ASG Scaler
+          After=docker.service network-online.target
+          Wants=network-online.target
+
+          [Service]
+          Environment=LK_API_KEY=__LK_API_KEY__
+          Environment=LK_API_SECRET=__LK_API_SECRET__
+          Environment=ASG_NAME=__ASG_NAME__
+          Environment=AWS_REGION=__AWS_REGION__
+          Environment=POLL_INTERVAL_SEC=__POLL_INTERVAL_SEC__
+          ExecStart=/usr/bin/python3 /opt/livekit/scale-egress.py
+          Restart=always
+          RestartSec=10
+          StandardOutput=journal
+          StandardError=journal
+
+          [Install]
+          WantedBy=multi-user.target
+          UNIT
+          sed -i \
+            -e "s|__LK_API_KEY__|${LiveKitApiKey}|" \
+            -e "s|__LK_API_SECRET__|${LiveKitApiSecret}|" \
+            -e "s|__ASG_NAME__|${AWS::StackName}-egress-asg|" \
+            -e "s|__AWS_REGION__|${AWS::Region}|" \
+            -e "s|__POLL_INTERVAL_SEC__|${ScalerPollIntervalSec}|" \
+            /etc/systemd/system/lk-scaler.service
+
+          systemctl daemon-reload
+          systemctl enable --now lk-scaler.service
+
+          # Signal CloudFormation that the bootstrap completed.
+          dnf install -y aws-cfn-bootstrap || \
+            python3 -m pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+          /opt/aws/bin/cfn-signal -e $? \
+            --stack ${AWS::StackName} \
+            --resource Instance \
+            --region ${AWS::Region}
+
+Outputs:
+  PublicIP:
+    Description: Elastic IP — set a DNS A record from your Domain to this address.
+    Value: !Ref EIP
+
+  Domain:
+    Description: Hostname clients should connect to (after DNS is in place).
+    Value: !Sub wss://${Domain}
+
+  # ---------------------------------------------------------------------------
+  # Cross-stack exports — consumed by egress.yaml via Fn::ImportValue.
+  # ---------------------------------------------------------------------------
+  VpcId:
+    Description: VPC ID (created or existing).
+    Value: !If [CreateVpc, !Ref VPC, !Ref ExistingVpcId]
+    Export: { Name: !Sub "${AWS::StackName}-VpcId" }
+
+  SubnetId:
+    Description: Public subnet ID (egress instances launch here too).
+    Value: !If [CreateVpc, !Ref PublicSubnet, !Ref ExistingPublicSubnetId]
+    Export: { Name: !Sub "${AWS::StackName}-SubnetId" }
+
+  PrivateIp:
+    Description: Core instance's private IP — egress instances connect to Redis here.
+    Value: !GetAtt Instance.PrivateIp
+    Export: { Name: !Sub "${AWS::StackName}-PrivateIp" }
+
+  PublicDomain:
+    Description: Public hostname (the egress worker uses this as its LK ws_url).
+    Value: !Ref Domain
+    Export: { Name: !Sub "${AWS::StackName}-PublicDomain" }
+
+  EgressClientsSGId:
+    Description: SG that grants Redis ingress on the core box. Attach egress instances to it.
+    Value: !Ref EgressClientsSG
+    Export: { Name: !Sub "${AWS::StackName}-EgressClientsSGId" }
+
+  NextSteps:
+    Description: What to do after the stack reaches CREATE_COMPLETE.
+    Value: !Sub |
+      1) Create DNS A record:  ${Domain}  →  ${EIP}
+      2) Wait ~60s for Caddy to issue the Let's Encrypt cert
+         (tail logs:  ssh ec2-user@${EIP} sudo docker logs -f livekit-caddy-1)
+      3) Verify:  curl -sf https://${Domain}/   (should hit LK's HTTP endpoint)
+      4) Deploy egress.yaml passing CoreStackName=${AWS::StackName} — the
+         local scaler will then pick up the ASG on its next poll tick.
