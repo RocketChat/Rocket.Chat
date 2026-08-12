@@ -15,7 +15,7 @@ export const useAllGroupsOrder = () => {
 			if (!order.length) return groups;
 			const rank = (key: string) => {
 				const i = order.indexOf(key);
-				return i === -1 ? -1 : i;
+				return i === -1 ? order.length : i;
 			};
 			return [...groups].sort((a, b) => rank(a.key) - rank(b.key));
 		},
