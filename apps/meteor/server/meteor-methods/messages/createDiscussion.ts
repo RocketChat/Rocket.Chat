@@ -124,15 +124,11 @@ const create = async ({
 	}
 
 	if (pmid) {
-		const discussionAlreadyExists = await Rooms.findOne(
-			{
-				prid,
-				pmid,
-			},
-			{
-				projection: { _id: 1 },
-			},
-		);
+		// No projection: the full room is spread into the returned discussion below.
+		const discussionAlreadyExists = await Rooms.findOne({
+			prid,
+			pmid,
+		});
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
 			await addUserToRoom(discussionAlreadyExists._id, user);

@@ -55,7 +55,8 @@ export async function createDirectMessage(
 		if ((await hasPermissionAsync(userId, 'view-d-room')) && !Object.keys(roomUsers).some((user) => typeof user === 'string')) {
 			// Check if the direct room already exists, then return it
 			const uids = (roomUsers as IUser[]).map(({ _id }) => _id).sort();
-			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+			// No projection: the full room is spread into the ICreatedRoom-shaped return below.
+			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids);
 			if (room) {
 				return {
 					...room,
