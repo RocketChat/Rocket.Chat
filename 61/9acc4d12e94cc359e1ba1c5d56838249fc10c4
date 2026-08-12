@@ -1,0 +1,25 @@
+apps/meteor/server/lib/omnichannel/QueueManager.ts
+  s_757bbbab112d52::t_aaa9fd362186a6 61-62
+apps/meteor/server/lib/omnichannel/sendTranscript.ts
+  s_757bbbab112d52::t_09a95b2ad2c025 232-233
+apps/meteor/server/api/v1/omnichannel/lib/departments.ts
+  s_757bbbab112d52::t_4ad895487cb461 144
+apps/meteor/server/api/v1/omnichannel/lib/livechat.ts
+  s_757bbbab112d52::t_dc5b8085d8f49f 55-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "619acc4d12e94cc359e1ba1c5d56838249fc10c4",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
