@@ -97,7 +97,7 @@ describe('MessageForm', () => {
 				expect.objectContaining({
 					templateId: 'template-1',
 					template: template1,
-					templateParameters: { body: [{ type: 'text', format: 'text', value: 'Hello World' }] },
+					templateParameters: { body: [{ type: 'text', format: 'text', value: 'Hello World', placeholder: '{{1}}' }] },
 				}),
 			);
 		});

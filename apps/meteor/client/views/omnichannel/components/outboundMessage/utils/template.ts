@@ -69,18 +69,13 @@ export const processTemplatePreviewText = (text: string, parameters: TemplatePar
 
 	const processedText = replaceLineBreaks(text);
 
-	if (!parameters?.length) {
+	if (!parameters.length) {
 		return processedText;
 	}
 
-	return replacePlaceholders(processedText, (placeholder, captured) => {
-		const index = Number(captured) - 1;
+	return replacePlaceholders(processedText, (placeholder) => {
+		const parameter = parameters.find((param) => param.placeholder === placeholder);
 
-		if (!Number.isFinite(index) || index < 0) {
-			return placeholder;
-		}
-
-		const parameter = parameters[index];
 		return parameter?.value || placeholder;
 	});
 };

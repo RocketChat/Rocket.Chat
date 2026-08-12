@@ -27,7 +27,7 @@ const TemplatePlaceholderField = ({ control, metadata, contact, ...props }: Temp
 	} = useController({
 		control,
 		name: `templateParameters.${componentType}.${index}` as const,
-		defaultValue: { type, value: '', format } as TemplateParameter,
+		defaultValue: { type, value: '', format, placeholder } as TemplateParameter,
 		rules: { validate: (param) => (!param?.value?.trim() ? t('Required_field', { field: fieldLabel }) : true) },
 		shouldUnregister: true,
 	});
@@ -46,7 +46,7 @@ const TemplatePlaceholderField = ({ control, metadata, contact, ...props }: Temp
 					aria-describedby={error ? `${id}-error` : undefined}
 					value={field.value?.value ?? ''}
 					error={error?.message}
-					onChange={(value) => field.onChange({ type, value, format })}
+					onChange={(value) => field.onChange({ type, value, format, placeholder })}
 				/>
 			</FieldRow>
 			{error ? (
