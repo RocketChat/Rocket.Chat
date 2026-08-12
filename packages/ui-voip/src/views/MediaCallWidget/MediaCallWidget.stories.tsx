@@ -8,9 +8,10 @@ import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
-		New_Call: 'New Call',
-		Incoming_call: 'Incoming Call',
+		New_Call: 'New call',
+		Incoming_call: 'Incoming call',
 		Enter_username_or_number: 'Enter username or number',
+		meteor_status_connecting: 'Connecting...',
 		Call: 'Call',
 		Calling: 'Calling',
 		Cancel: 'Cancel',
@@ -71,6 +72,13 @@ export const IncomingCall: Story = {
 	},
 };
 
+export const IncomingCallConnecting: Story = {
+	args: {
+		state: 'ringing',
+		connectionState: 'CONNECTING',
+	},
+};
+
 export const IncomingCallTransfer: Story = {
 	args: {
 		state: 'ringing',
@@ -84,6 +92,13 @@ export const OutgoingCall: Story = {
 	},
 };
 
+export const OutgoingCallConnecting: Story = {
+	args: {
+		state: 'calling',
+		connectionState: 'CONNECTING',
+	},
+};
+
 export const OutgoingCallTransfer: Story = {
 	args: {
 		state: 'calling',
@@ -94,5 +109,12 @@ export const OutgoingCallTransfer: Story = {
 export const OngoingCall: Story = {
 	args: {
 		state: 'ongoing',
+	},
+};
+
+export const OngoingCallConnecting: Story = {
+	args: {
+		state: 'ongoing',
+		connectionState: 'CONNECTING',
 	},
 };

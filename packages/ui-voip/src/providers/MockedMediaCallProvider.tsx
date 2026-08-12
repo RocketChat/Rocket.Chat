@@ -5,11 +5,12 @@ import { useState } from 'react';
 import type { MockedInstanceProviderProps } from './MockedInstanceProvider';
 import MockedInstanceProvider, { avatarUrl, mockedPeers } from './MockedInstanceProvider';
 import MediaCallViewContext from '../context/MediaCallViewContext';
-import type { State, PeerInfo, SessionState } from '../context/definitions';
+import type { State, PeerInfo, SessionState, ConnectionState } from '../context/definitions';
 
 export type MockedMediaCallProviderProps = {
 	children: ReactNode;
 	state?: State;
+	connectionState?: ConnectionState;
 	transferredBy?: string;
 	remoteMuted?: boolean;
 	remoteHeld?: boolean;
@@ -22,6 +23,7 @@ export type MockedMediaCallProviderProps = {
 const MockedMediaCallProvider = ({
 	children,
 	state = 'none',
+	connectionState = 'CONNECTED',
 	onClickDirectMessage = undefined,
 	transferredBy = undefined,
 	remoteMuted = false,
@@ -111,7 +113,7 @@ const MockedMediaCallProvider = ({
 
 	const sessionState = {
 		state: widgetState,
-		connectionState: 'CONNECTED' as const,
+		connectionState,
 		peerInfo,
 		transferredBy,
 		hidden: false,
