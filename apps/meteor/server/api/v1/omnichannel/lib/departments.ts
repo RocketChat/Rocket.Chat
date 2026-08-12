@@ -141,7 +141,7 @@ export async function findDepartmentsToAutocomplete({
 	selector,
 	onlyMyDepartments = false,
 	showArchived = false,
-}: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartment[] }> {
+}: FindDepartmentToAutocompleteParams): Promise<{ items: Pick<ILivechatDepartment, '_id' | 'name'>[] }> {
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 
