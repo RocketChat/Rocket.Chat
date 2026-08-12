@@ -26,6 +26,8 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 			{
 				callId,
 			},
+			// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+			// note the model's `sort`/`limit` win over caller-supplied ones.
 			{
 				...options,
 				sort: {
