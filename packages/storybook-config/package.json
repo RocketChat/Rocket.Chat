@@ -19,10 +19,9 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
-		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
-		"@rocket.chat/storybook-dark-mode": "workspace:~",
+		"@rocket.chat/emitter": "^0.33.0",
+		"@rocket.chat/fuselage-hooks": "~0.43.0",
+		"@rocket.chat/fuselage-tokens": "~0.34.0",
 		"@storybook/addon-a11y": "^9.1.20",
 		"@storybook/addon-docs": "^9.1.20",
 		"@storybook/addon-styling-webpack": "^2.0.0",
