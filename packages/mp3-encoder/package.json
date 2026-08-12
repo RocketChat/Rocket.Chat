@@ -1,0 +1,57 @@
+{
+	"name": "@rocket.chat/mp3-encoder",
+	"version": "0.31.26",
+	"description": "A LAME encoder to be used in web workers",
+	"keywords": [
+		"rocket.chat",
+		"mp3",
+		"encoder"
+	],
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/mp3-encoder"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rollup -c",
+		"docs": "typedoc",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"start": "rollup -c -w",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@rollup/plugin-commonjs": "~29.0.3",
+		"@rollup/plugin-node-resolve": "~16.0.3",
+		"@rollup/plugin-typescript": "~12.3.0",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"jest-environment-jsdom": "~30.2.0",
+		"prettier": "~3.3.3",
+		"rollup": "~4.62.3",
+		"ts-jest": "~29.4.11",
+		"typedoc": "~0.28.20",
+		"typescript": "~5.9.3"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
