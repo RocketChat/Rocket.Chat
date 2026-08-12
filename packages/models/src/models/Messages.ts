@@ -791,11 +791,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findForUpdates(
+		roomId: IMessage['rid'],
+		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage> {
 		const query = {
 			rid: roomId,
 			_hidden: { $ne: true },
-			_updatedAt: timestamp,
+			_updatedAt: updatedAt,
+			...(minTs && { ts: { $gte: minTs } }),
 		};
 
 		return this.find(query, options);

@@ -709,7 +709,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+			const { roomId, lastUpdate, fromTs, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
 				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
@@ -725,6 +725,7 @@ const chatEndpoints = API.v1
 
 			const getMessagesQuery = {
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(fromTs && { fromTs: new Date(fromTs) }),
 				...(next && { next }),
 				...(previous && { previous }),
 				...(count && { count }),

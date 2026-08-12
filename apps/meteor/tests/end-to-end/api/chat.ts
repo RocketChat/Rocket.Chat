@@ -8,7 +8,7 @@ import type { Response } from 'supertest';
 import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { followMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -3979,6 +3979,127 @@ describe('[Chat]', () => {
 			expect(responseAfterDelete.body.result.deleted[0]._id).to.be.equal(firstMessage.body.message._id);
 
 			await deleteMessage({ roomId: testChannel._id, msgId: secondMessage.body.message._id });
+		});
+
+		it('should return an error when the "fromTs" parameter is invalid', async () => {
+			const res = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, lastUpdate: new Date().toISOString(), fromTs: 'invalid-date' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
+		});
+
+		it('should return an error when "fromTs" is sent along with cursor pagination', async () => {
+			const res = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: `${Date.now()}`, fromTs: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-fromTs-requires-lastUpdate');
+			expect(res.body.error).to.include('The "fromTs" parameter can only be used together with "lastUpdate"');
+		});
+
+		it('should return an error when "fromTs" is sent without "lastUpdate"', async () => {
+			const res = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', fromTs: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-fromTs-requires-lastUpdate');
+		});
+
+		describe('"fromTs" parameter', () => {
+			let olderMessage: IMessage;
+			let newerMessage: IMessage;
+			let lastUpdate: string;
+
+			// the server filters with `ts: { $gte: fromTs }`, so a boundary taken from the newer message only
+			// excludes the older one when the two land on distinct milliseconds
+			const sendBoundaryMessages = async (olderText: string, newerText: string): Promise<[IMessage, IMessage]> => {
+				const older: IMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: olderText })).body.message;
+				await sleep(5);
+				const newer: IMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: newerText })).body.message;
+
+				expect(new Date(newer.ts).getTime()).to.be.greaterThan(new Date(older.ts).getTime());
+
+				return [older, newer];
+			};
+
+			before(async () => {
+				[olderMessage, newerMessage] = await sendBoundaryMessages('Older Message', 'Newer Message');
+
+				// every edit below happens after this point, so both messages are candidates on `_updatedAt`
+				lastUpdate = new Date().toISOString();
+
+				await updateMessage({ roomId: testChannel._id, msgId: olderMessage._id, updatedMessage: 'Older Message edited' });
+				await updateMessage({ roomId: testChannel._id, msgId: newerMessage._id, updatedMessage: 'Newer Message edited' });
+			});
+
+			after(() =>
+				Promise.all([
+					deleteMessage({ roomId: testChannel._id, msgId: olderMessage._id }),
+					deleteMessage({ roomId: testChannel._id, msgId: newerMessage._id }),
+				]),
+			);
+
+			it('should return every edited message when "fromTs" is not provided', async () => {
+				const response = await request
+					.get(api('chat.syncMessages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, lastUpdate })
+					.expect(200);
+
+				expect(response.body.result.updated).to.have.lengthOf(2);
+				expect(response.body.result.updated.map((msg: IMessage) => msg._id)).to.have.members([olderMessage._id, newerMessage._id]);
+			});
+
+			it('should omit messages older than "fromTs" while still returning the ones inside the window', async () => {
+				const response = await request
+					.get(api('chat.syncMessages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, lastUpdate, fromTs: newerMessage.ts })
+					.expect(200);
+
+				expect(response.body.result.updated).to.have.lengthOf(1);
+				expect(response.body.result.updated[0]._id).to.be.equal(newerMessage._id);
+				expect(response.body.result.updated[0].msg).to.be.equal('Newer Message edited');
+			});
+
+			it('should omit deletions of messages older than "fromTs"', async () => {
+				const [droppedMessage, windowStart] = await sendBoundaryMessages('To Be Deleted', 'Window Start');
+
+				const deletionLastUpdate = new Date().toISOString();
+				await deleteMessage({ roomId: testChannel._id, msgId: droppedMessage._id });
+
+				const scoped = await request
+					.get(api('chat.syncMessages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, lastUpdate: deletionLastUpdate, fromTs: windowStart.ts })
+					.expect(200);
+
+				expect(scoped.body.result.deleted).to.have.lengthOf(0);
+
+				const unscoped = await request
+					.get(api('chat.syncMessages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, lastUpdate: deletionLastUpdate })
+					.expect(200);
+
+				expect(unscoped.body.result.deleted).to.have.lengthOf(1);
+				expect(unscoped.body.result.deleted[0]._id).to.be.equal(droppedMessage._id);
+
+				await deleteMessage({ roomId: testChannel._id, msgId: windowStart._id });
+			});
 		});
 
 		it('should return all updated messages with a cursor when "type" parameter is "UPDATED"', async () => {

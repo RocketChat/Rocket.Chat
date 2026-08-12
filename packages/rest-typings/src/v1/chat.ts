@@ -606,6 +606,7 @@ export const isChatGetMentionedMessagesProps = ajvQuery.compile<GetMentionedMess
 type ChatSyncMessages = {
 	roomId: IRoom['_id'];
 	lastUpdate?: string;
+	fromTs?: string;
 	count?: number;
 	next?: string;
 	previous?: string;
@@ -621,6 +622,10 @@ const ChatSyncMessagesSchema = {
 		lastUpdate: {
 			type: 'string',
 			nullable: true,
+		},
+		fromTs: {
+			type: 'string',
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
