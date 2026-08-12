@@ -260,6 +260,12 @@ export const getMessageHistory = async (
 		);
 	}
 
+	// `fromTs` only bounds the query on the `lastUpdate` path; neither cursor pagination nor the channel
+	// history fallback honors it, so accepting it there would silently widen the result set.
+	if (fromTs && !lastUpdate) {
+		throw new Meteor.Error('error-fromTs-requires-lastUpdate', 'The "fromTs" parameter can only be used together with "lastUpdate"');
+	}
+
 	const hasCursorPagination = !!((next || previous) && count !== null && type);
 
 	if (!hasCursorPagination && !lastUpdate) {

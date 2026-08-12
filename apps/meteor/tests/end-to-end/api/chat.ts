@@ -3993,6 +3993,31 @@ describe('[Chat]', () => {
 			expect(res.body.errorType).to.be.equal('error-invalid-params');
 		});
 
+		it('should return an error when "fromTs" is sent along with cursor pagination', async () => {
+			const res = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: `${Date.now()}`, fromTs: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-fromTs-requires-lastUpdate');
+			expect(res.body.error).to.include('The "fromTs" parameter can only be used together with "lastUpdate"');
+		});
+
+		it('should return an error when "fromTs" is sent without "lastUpdate"', async () => {
+			const res = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', fromTs: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-fromTs-requires-lastUpdate');
+		});
+
 		describe('"fromTs" parameter', () => {
 			let olderMessage: IMessage;
 			let newerMessage: IMessage;
