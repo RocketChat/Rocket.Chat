@@ -1,0 +1,21 @@
+apps/meteor/server/api/lib/webdav.ts
+  s_757bbbab112d52::t_ea253b66cef5c9 1,4
+packages/core-typings/src/IUser.ts
+  s_757bbbab112d52::t_dea777bb2c8d82 143,146-147,149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0257af375dfd4fbeefc77d229905f7a386914d21",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
