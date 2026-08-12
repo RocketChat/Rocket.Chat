@@ -5,4 +5,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Introduces custom, user-defined categories to the sidebar. Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header
+Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
