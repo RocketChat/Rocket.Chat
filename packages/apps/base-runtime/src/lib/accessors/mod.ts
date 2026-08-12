@@ -102,8 +102,9 @@ export class AppAccessors {
 	private notifier?: INotifier;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		// `getReader()` bakes the notifier into the Reader, so the notifier has to be
+		// resolvable before this line runs -- `getNotifier()` creates it on demand.
 		this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
-		this.notifier = new Notifier(this.getSenderFn());
 	}
 
 	public getSenderFn() {
@@ -361,7 +362,11 @@ export class AppAccessors {
 		return this.extender;
 	}
 
-	private getNotifier() {
+	private getNotifier(): INotifier {
+		if (!this.notifier) {
+			this.notifier = new Notifier(this.senderFn);
+		}
+
 		return this.notifier;
 	}
 }
