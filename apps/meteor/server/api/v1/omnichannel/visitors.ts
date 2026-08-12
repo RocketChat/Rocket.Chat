@@ -8,7 +8,7 @@ import {
 	isLivechatRidMessagesProps,
 	isGETLivechatVisitorsSearch,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { API } from '../..';
 import {

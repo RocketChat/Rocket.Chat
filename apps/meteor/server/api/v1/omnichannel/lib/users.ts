@@ -1,6 +1,6 @@
 import type { ILivechatAgent, IRole } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { FilterOperators } from 'mongodb';
 
 /**

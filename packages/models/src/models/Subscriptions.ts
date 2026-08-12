@@ -1,6 +1,6 @@
 import type { AtLeast, IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { compact } from 'lodash';
 import type {
 	Collection,

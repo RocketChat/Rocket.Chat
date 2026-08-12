@@ -1,5 +1,5 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';

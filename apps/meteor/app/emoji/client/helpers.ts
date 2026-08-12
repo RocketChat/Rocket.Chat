@@ -1,4 +1,4 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { EmojiCategory, EmojiItem } from '.';
@@ -217,7 +217,7 @@ export const getEmojisBySearchTerm = (
 
 export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis?: (emojis: string[]) => void) => {
 	const _emoji = emoji.replace(/(^:|:$)/g, '');
-	const pos = recentEmojis.indexOf(_emoji as never);
+	const pos = recentEmojis.indexOf(_emoji);
 
 	if (pos === -1) {
 		return;

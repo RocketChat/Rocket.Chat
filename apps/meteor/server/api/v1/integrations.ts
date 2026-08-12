@@ -14,7 +14,7 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 

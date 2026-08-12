@@ -1,7 +1,6 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 

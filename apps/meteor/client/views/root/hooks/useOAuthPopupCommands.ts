@@ -1,4 +1,4 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { type LocationPathname, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 

@@ -1168,7 +1168,7 @@ describe('SAML', () => {
 					Roles: {},
 				},
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
-				'@rocket.chat/string-helpers': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
+				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
 				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
 				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}`, Error } },
 				'./ServiceProvider': {

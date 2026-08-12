@@ -28,7 +28,7 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 		Users,
 		TeamMember: {},
 	},
-	'@rocket.chat/string-helpers': {
+	'@rocket.chat/tools': {
 		escapeRegExp: (value: string) => value,
 	},
 	'../../lib/rooms/settings': {
