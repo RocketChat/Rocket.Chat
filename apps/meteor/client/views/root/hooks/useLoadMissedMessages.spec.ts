@@ -3,8 +3,10 @@ import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useLoadMissedMessages } from './useLoadMissedMessages';
+import { upsertMessageBulk } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { Messages } from '../../../stores/Messages';
+import { Subscriptions } from '../../../stores/Subscriptions';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useConnectionStatus: jest.fn(),
@@ -35,6 +37,17 @@ const createMessage = (_id: string, ts: Date, extra: Partial<IMessage> = {}): IM
 		...extra,
 	}) as IMessage;
 
+/** Mimics what the API returns: the same shape as `createMessage`, but with dates serialized. */
+const createSerializedMessage = (_id: string, ts: Date, extra: Record<string, unknown> = {}) => ({
+	_id,
+	rid,
+	msg: _id,
+	ts: ts.toISOString(),
+	_updatedAt: ts.toISOString(),
+	u: { _id: 'user-id', username: 'user' },
+	...extra,
+});
+
 const mockSyncResponse = ({ updated = [], deleted = [] }: { updated?: unknown[]; deleted?: { _id: string }[] } = {}) => {
 	(sdk.rest.get as jest.Mock).mockResolvedValue({ result: { updated, deleted } });
 };
@@ -51,7 +64,10 @@ const renderReconnection = () => {
 beforeEach(() => {
 	jest.clearAllMocks();
 	Messages.state.replaceAll([]);
+	Subscriptions.state.replaceAll([]);
 	mockSyncResponse();
+	// stand-in for the real bulk upsert, which only stores the messages it is handed
+	(upsertMessageBulk as jest.Mock).mockImplementation(async ({ msgs }: { msgs: IMessage[] }) => Messages.state.storeMany(msgs));
 });
 
 describe('useLoadMissedMessages', () => {
@@ -79,6 +95,53 @@ describe('useLoadMissedMessages', () => {
 		rerender();
 
 		await waitFor(() => expect(sdk.rest.get).not.toHaveBeenCalled());
+	});
+
+	it('should merge the messages reported as updated into the store', async () => {
+		const ts = new Date(1_000);
+		const editedAt = new Date(2_000);
+		Messages.state.storeMany([createMessage('edited', ts), createMessage('untouched', ts)]);
+		mockSyncResponse({
+			updated: [
+				createSerializedMessage('edited', ts, { msg: 'edited text', editedAt: editedAt.toISOString() }),
+				createSerializedMessage('added', editedAt),
+			],
+		});
+
+		renderReconnection();
+
+		await waitFor(() => expect(Messages.state.get('edited')).toHaveProperty('msg', 'edited text'));
+		expect(Messages.state.get('edited')).toHaveProperty('editedAt', editedAt);
+		expect(Messages.state.get('added')).toHaveProperty('ts', editedAt);
+		expect(Messages.state.get('untouched')).toHaveProperty('msg', 'untouched');
+	});
+
+	it('should deserialize the dates of the messages reported as updated', async () => {
+		const ts = new Date(1_000);
+		const editedAt = new Date(2_000);
+		Messages.state.store(createMessage('edited', ts));
+		mockSyncResponse({ updated: [createSerializedMessage('edited', ts, { editedAt: editedAt.toISOString() })] });
+
+		renderReconnection();
+
+		await waitFor(() => expect(upsertMessageBulk).toHaveBeenCalled());
+		expect(upsertMessageBulk).toHaveBeenCalledWith(
+			expect.objectContaining({
+				msgs: [expect.objectContaining({ _id: 'edited', ts, _updatedAt: ts, editedAt })],
+			}),
+		);
+	});
+
+	it('should pass the room subscription along with the updated messages', async () => {
+		const ts = new Date(1_000);
+		const subscription = { _id: 'subscription-id', rid } as Parameters<typeof Subscriptions.state.store>[0];
+		Messages.state.store(createMessage('edited', ts));
+		Subscriptions.state.storeMany([subscription, { _id: 'other-subscription-id', rid: 'other-room-id' } as typeof subscription]);
+		mockSyncResponse({ updated: [createSerializedMessage('edited', ts)] });
+
+		renderReconnection();
+
+		await waitFor(() => expect(upsertMessageBulk).toHaveBeenCalledWith(expect.objectContaining({ subscription })));
 	});
 
 	it('should remove the messages reported as deleted', async () => {
