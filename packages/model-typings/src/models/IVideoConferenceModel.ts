@@ -89,17 +89,9 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null>;
 
-
-
 	findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]>;
 
 	addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void>;
 
 	markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id']): Promise<void>;
-
-
-
-
-
-
 }
