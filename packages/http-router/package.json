@@ -22,7 +22,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.20.0",
 		"express": "^4.21.2",
-		"hono": "4.12.31",
+		"hono": "4.12.34",
 		"qs": "^6.15.3"
 	},
 	"devDependencies": {
