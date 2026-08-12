@@ -829,7 +829,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
-		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date }
+		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
