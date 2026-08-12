@@ -8804,7 +8804,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -8951,7 +8950,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/node": "npm:~22.19.21"
@@ -9131,7 +9129,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
     "@types/jest": "npm:~30.0.0"
@@ -9895,7 +9892,6 @@ __metadata:
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
@@ -10260,7 +10256,7 @@ __metadata:
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
+    "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
@@ -10379,7 +10375,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
@@ -10577,7 +10572,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/node": "npm:~22.19.21"
@@ -10800,13 +10794,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/string-helpers@npm:~0.32.0":
-  version: 0.32.0
-  resolution: "@rocket.chat/string-helpers@npm:0.32.0"
-  checksum: 10/4f503a42e9a93ea9e6e85da320f125da5af5da1693e6782dee828ffc6c0d05e6ec76d75f7efc342d0738a4d37d67a729486a4d96b109642d70610660beb38e21
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/styled@npm:^0.34.1, @rocket.chat/styled@npm:~0.34.1":
   version: 0.34.1
   resolution: "@rocket.chat/styled@npm:0.34.1"
@@ -10907,6 +10894,7 @@ __metadata:
     "@rocket.chat/onboarding-ui": "npm:~0.37.2"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -33710,7 +33698,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/cookie": "npm:^0.5.4"
     "@types/cookie-parser": "npm:^1.4.10"

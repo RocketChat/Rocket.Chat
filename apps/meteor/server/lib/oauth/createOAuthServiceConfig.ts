@@ -1,5 +1,4 @@
-import { capitalize } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { capitalize, isTruthy } from '@rocket.chat/tools';
 import type { Strategy } from 'passport';
 
 import { OAuthConfigs } from './oauthConfigs';

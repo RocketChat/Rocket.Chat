@@ -1,5 +1,5 @@
 import type { IThreadMainMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 

@@ -1,6 +1,6 @@
 import type { ILivechatTag, FindTagsResult } from '@rocket.chat/core-typings';
 import { LivechatTag } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter, FindOptions } from 'mongodb';
 
 import { getDepartmentsWhichUserCanAccess } from './departments';

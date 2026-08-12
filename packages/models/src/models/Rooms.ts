@@ -10,7 +10,7 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
 	Collection,
@@ -834,11 +834,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndType<T extends Document = IRoom>(
-		roomId: IRoom['_id'],
-		type: IRoom['t'],
-		options: FindOptions<T> = {} as FindOptions<T>,
-	): Promise<T | null> {
+	findOneByIdAndType<T extends Document = IRoom>(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<T> = {}): Promise<T | null> {
 		return this.findOne<T>({ _id: roomId, t: type }, options);
 	}
 
@@ -1821,7 +1817,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{ _id, 'abacAttributes.key': { $ne: key } },
 			{ $push: { abacAttributes: { key, values } } },
 			{ returnDocument: 'after', projection: { abacAttributes: 1 } },
-		) as unknown as Promise<IRoom | null>;
+		);
 	}
 
 	updateAbacAttributeValuesArrayFilteredById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {

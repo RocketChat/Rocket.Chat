@@ -1,5 +1,5 @@
 import { asciiList } from '@rocket.chat/message-parser';
-import { escapeHTML, escapeRegExp, unescapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML, escapeRegExp, unescapeHTML } from '@rocket.chat/tools';
 
 import type { EmojiEntry } from './generateEmojiData';
 import { getEmojiData } from './generateEmojiData';

@@ -25,7 +25,6 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.20.0",
 		"bcrypt": "^6.0.0",
