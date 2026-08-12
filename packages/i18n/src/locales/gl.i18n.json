@@ -101,7 +101,7 @@
   "Channel": "Channel",
   "Channel_already_exist": "A canle `#{{channelName}}` xa existe",
   "Channel_already_exist_static": "A canle xa existe",
-  "Channel_doesnt_exist": "A canle `#%s` non existe",
+  "Channel_doesnt_exist": "A canle `#{{channelName}}` non existe",
   "Channel_what_is_this_channel_about": "De que vai esta canle?",
   "Channels": "Channel",
   "Channels_list": "Lista de canles públicas",
