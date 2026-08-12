@@ -64,6 +64,7 @@ packages/model-typings/src/models/ILivechatBusinessHoursModel.ts
   s_d81a2915077aab::t_e0b9c3ad38693d 5,18-20
 packages/model-typings/src/models/IMessagesModel.ts
   s_d81a2915077aab::t_e0b9c3ad38693d 25
+  h_4c386397e672f4 35-38,41-42,44,47-48,50,53-54,56,59-60,62,65-66,86,89-91,95-96,107,109-110,124-127,132,134,136,138-139,161,163-165,167-168,171,173-178,181,183-187,194-196,198-203,208-210,214-219,223,226,228-231,236,239,248,252-253,256,259-261,264-265,287,290-291,307-310,312-313
 packages/model-typings/src/models/IOAuthAuthCodesModel.ts
   s_d81a2915077aab::t_e0b9c3ad38693d 5,8
   s_d81a2915077aab::t_a86c3fcad88a93 2
@@ -117,6 +118,11 @@ packages/model-typings/src/models/IBannersModel.ts
   "git_ai_version": "1.6.20",
   "base_commit_sha": "40e6b1cafeefd72369c003eca418b768ce0ef27d",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_d81a2915077aab": {
       "agent_id": {
