@@ -1,5 +1,6 @@
 import { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +19,7 @@ export const useRoomCategoryItems = () => {
 	const { t } = useTranslation();
 	const { isEnterprise, categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
 	const { openCreate } = useCategoryModals();
+	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 
 	return useCallback(
 		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; isEnterprise: boolean } => {
@@ -25,13 +27,17 @@ export const useRoomCategoryItems = () => {
 			const selected = <Icon name='check' size='x16' />;
 
 			const moveToItems: MoveToItem[] = [
-				{
-					id: 'favorites',
-					icon: 'star',
-					content: t('Favorites'),
-					onClick: room.isFavorite ? () => void removeRoom(room) : () => void moveRoom(room, FAVORITES_TARGET),
-					addon: room.isFavorite ? selected : undefined,
-				},
+				...(isFavoritesEnabled
+					? [
+							{
+								id: 'favorites',
+								icon: 'star' as const,
+								content: t('Favorites'),
+								onClick: room.isFavorite ? () => void removeRoom(room) : () => void moveRoom(room, FAVORITES_TARGET),
+								addon: room.isFavorite ? selected : undefined,
+							},
+						]
+					: []),
 				...categories.map(
 					(category): MoveToItem => ({
 						id: category._id,
@@ -58,6 +64,6 @@ export const useRoomCategoryItems = () => {
 
 			return { moveToItems, removeItem, isEnterprise };
 		},
-		[isEnterprise, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
+		[isFavoritesEnabled, isEnterprise, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
 	);
 };

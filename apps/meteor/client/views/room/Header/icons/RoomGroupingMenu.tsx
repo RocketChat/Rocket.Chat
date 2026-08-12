@@ -11,7 +11,7 @@ import { useCustomCategories } from '../../../../sidebar/hooks/useCustomCategori
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
-const getGroupingIcon = (favorite: boolean, category: boolean): 'star-filled' | 'folder' | 'star' => {
+const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean): 'star-filled' | 'folder' | 'star' => {
 	if (favorite) {
 		return 'star-filled';
 	}
@@ -20,7 +20,7 @@ const getGroupingIcon = (favorite: boolean, category: boolean): 'star-filled' | 
 		return 'folder';
 	}
 
-	return 'star';
+	return isFavoritesEnabled ? 'star' : 'folder';
 };
 
 const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }) => {
@@ -40,11 +40,15 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 		toggleFavorite({ roomId: room._id, favorite: !favorite, roomName: room.name || '' });
 	});
 
-	if (!subscribed || !isFavoritesEnabled) {
+	if (!subscribed) {
 		return null;
 	}
 
 	if (!isEnterprise) {
+		if (!isFavoritesEnabled) {
+			return null;
+		}
+
 		const favoriteLabel = favorite ? `${t('Unfavorite')} ${room.name}` : `${t('Favorite')} ${room.name}`;
 
 		return (
@@ -60,7 +64,7 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 	}
 
 	const category = Boolean(getRoomCategory(room._id));
-	const groupingIcon = getGroupingIcon(favorite, category);
+	const groupingIcon = getGroupingIcon(favorite, category, isFavoritesEnabled);
 
 	const { moveToItems, removeItem } = buildCategoryItems({ rid: room._id, name: room.name || '', isFavorite: favorite });
 	const targetItems = moveToItems.filter((item) => item.id !== 'newCategory');
