@@ -93,6 +93,34 @@ const reactionLayerStyles = css`
 	gap: 8px;
 `;
 
+// Live caption — pinned to the bottom centre of the tile above the name
+// pill. Interim transcripts render slightly translucent so users perceive
+// them as "in progress"; finals snap to full opacity.
+const captionStyles = css`
+	position: absolute;
+	left: 8px;
+	right: 8px;
+	bottom: 32px;
+	padding: 4px 10px;
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	font-size: 13px;
+	line-height: 1.3;
+	text-align: center;
+	pointer-events: none;
+	max-height: 50%;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+`;
+
+const captionInterimStyles = css`
+	opacity: 0.7;
+	font-style: italic;
+`;
+
 const reactionFloatStyles = css`
 	font-size: 40px;
 	line-height: 1;
@@ -137,6 +165,8 @@ type CallTileProps = {
 	handPosition?: number;
 	/** Currently-active reactions to overlay on this tile (auto-cleared by the provider). */
 	reactions?: { id: string; emoji: string }[];
+	/** Latest caption text to display under the speaker — interim shown lighter. */
+	caption?: { text: string; isFinal: boolean };
 };
 
 const CallTile = ({
@@ -151,6 +181,7 @@ const CallTile = ({
 	compact,
 	handPosition,
 	reactions,
+	caption,
 }: CallTileProps) => {
 	const [videoRef] = usePlayMediaStream(cameraStream ?? null);
 	// Camera is "active" only while a video track is actually producing frames
@@ -254,6 +285,7 @@ const CallTile = ({
 					))}
 				</Box>
 			)}
+			{caption?.text && <Box className={[captionStyles, caption.isFinal ? null : captionInterimStyles]}>{caption.text}</Box>}
 		</Box>
 	);
 };

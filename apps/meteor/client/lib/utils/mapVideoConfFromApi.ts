@@ -6,8 +6,8 @@ import { mapVideoConfUserFromApi } from './mapVideoConfUserFromApi';
  * REST hands every date over as an ISO string; the in-memory model uses `Date`. Reifying here is what lets
  * every consumer rely on date methods rather than each one remembering which fields are strings.
  *
- * The native provider's own records — who was in the call, and what was recorded — are dated the same way, so
- * they are reified alongside rather than by whoever happens to read them.
+ * The native provider's own records — who was in the call, what was recorded, transcribed and summarised —
+ * are dated the same way, so they are reified alongside rather than by whoever happens to read them.
  */
 export const mapVideoConfFromApi = (videoConf: Serialized<VideoConference>): VideoConference =>
 	({
@@ -30,4 +30,19 @@ export const mapVideoConfFromApi = (videoConf: Serialized<VideoConference>): Vid
 				endedAt: videoConf.recording.endedAt ? new Date(videoConf.recording.endedAt) : undefined,
 			},
 		}),
+		...(videoConf.transcription && {
+			transcription: {
+				...videoConf.transcription,
+				startedAt: videoConf.transcription.startedAt ? new Date(videoConf.transcription.startedAt) : undefined,
+				endedAt: videoConf.transcription.endedAt ? new Date(videoConf.transcription.endedAt) : undefined,
+			},
+		}),
+		...(videoConf.transcript && {
+			transcript: videoConf.transcript.map((entry) => ({
+				...entry,
+				startedAt: new Date(entry.startedAt),
+				endedAt: entry.endedAt ? new Date(entry.endedAt) : undefined,
+			})),
+		}),
+		...(videoConf.summary && { summary: { ...videoConf.summary, generatedAt: new Date(videoConf.summary.generatedAt) } }),
 	}) as VideoConference;

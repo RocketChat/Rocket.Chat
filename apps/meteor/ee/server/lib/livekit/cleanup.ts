@@ -6,6 +6,7 @@ import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import { getLiveKitConfig, isLiveKitFullyConfigured } from './config';
 import { countRoomParticipants } from './roomService';
 import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
+import { maybeGenerateSummary } from '../livekit-agent/summary';
 
 const logger = new Logger('LiveKit/Cleanup');
 
@@ -54,6 +55,10 @@ export async function reconcileGroupCalls(): Promise<void> {
 					/* notify is best-effort */
 				}
 			}
+			// Best-effort summary generation. maybeGenerateSummary is idempotent
+			// (checks feature flag, transcript presence, and !summary.messageId
+			// before doing anything) so it's safe to call unconditionally.
+			void maybeGenerateSummary(call._id).catch((err) => logger.warn({ msg: 'summary post-cleanup failed', err, callId: call._id }));
 		} catch (err) {
 			logger.warn({ msg: 'reconciliation failed for call', err, callId: call._id });
 		}

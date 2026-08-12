@@ -108,6 +108,11 @@ API.v1.post(
 			await VideoConferenceModel.setEndedById(callId, undefined, new Date());
 			await VideoConferenceModel.setStatusById(callId, VideoConferenceStatus.ENDED);
 			if (updated?.rid) broadcastVideoConferenceState(updated.rid, { action: 'ended', callId });
+			// Fire summary generation. Idempotent and self-gated on the
+			// `VideoConf_LiveKit_Summary_Enabled` setting + presence of
+			// transcript entries, so it no-ops when not configured.
+			const { maybeGenerateSummary } = await import('../lib/livekit-agent/summary');
+			void maybeGenerateSummary(callId).catch(() => undefined);
 		}
 
 		return API.v1.success({});
@@ -235,5 +240,155 @@ API.v1.get(
 			return API.v1.failure(auth.error);
 		}
 		return API.v1.success(await getMediaCallRecordingState(callId));
+	},
+);
+
+// ============================================================================
+// Transcription ("take notes") + transcript ingestion
+// ============================================================================
+
+/** Turn on per-call transcription (take notes). Idempotent. */
+API.v1.post(
+	'video-conference.livekit.transcription.start',
+	{
+		authRequired: true,
+		body: callIdBodySchema,
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60_000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		if (!settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled')) return API.v1.failure('transcription-not-enabled');
+		const { callId } = this.bodyParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		await VideoConferenceModel.setTranscriptionById(callId, {
+			enabled: true,
+			startedAt: new Date(),
+			startedBy: this.userId,
+		});
+		return API.v1.success({ success: true });
+	},
+);
+
+/** Turn off per-call transcription. Existing transcript entries are preserved. */
+API.v1.post(
+	'video-conference.livekit.transcription.stop',
+	{
+		authRequired: true,
+		body: callIdBodySchema,
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60_000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		// Preserve startedAt/startedBy from prior transcription block so the
+		// summary job can still attribute who turned it on for this call.
+		const prev = auth.call.transcription;
+		await VideoConferenceModel.setTranscriptionById(callId, {
+			enabled: false,
+			startedAt: prev?.startedAt,
+			startedBy: prev?.startedBy,
+			endedAt: new Date(),
+		});
+		return API.v1.success({ success: true });
+	},
+);
+
+/** Current per-call transcription state — drives the "take notes" pill UI. */
+API.v1.get(
+	'video-conference.livekit.transcription.status',
+	{
+		authRequired: true,
+		query: callIdQuerySchema,
+		rateLimiterOptions: { numRequestsAllowed: 600, intervalTimeInMS: 60_000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		const { callId } = this.queryParams;
+		const auth = await authorizeCall(callId, this.userId);
+		if ('error' in auth) {
+			if (auth.error === 'forbidden') return API.v1.forbidden();
+			return API.v1.failure(auth.error);
+		}
+		const available = Boolean(
+			settings.get<boolean>('VideoConf_LiveKit_Summary_Enabled') && settings.get<string>('VideoConf_LiveKit_Agent_Mode') === 'embedded',
+		);
+		return API.v1.success({
+			success: true,
+			available,
+			enabled: Boolean(auth.call.transcription?.enabled),
+		});
+	},
+);
+
+const transcriptAppendBodySchema = ajv.compile<{
+	callId: string;
+	participantId: string;
+	text: string;
+	startedAt: string;
+	endedAt: string;
+}>({
+	type: 'object',
+	properties: {
+		callId: { type: 'string', minLength: 1 },
+		participantId: { type: 'string', minLength: 1 },
+		text: { type: 'string', minLength: 1 },
+		startedAt: { type: 'string' },
+		endedAt: { type: 'string' },
+	},
+	required: ['callId', 'participantId', 'text', 'startedAt', 'endedAt'],
+	additionalProperties: true,
+});
+
+/**
+ * Agent → server transcript ingestion. Called once per finalized utterance
+ * by the LiveKit agent worker. Auth is a shared-secret bearer token —
+ * `lkagent:<LK_API_SECRET>` — because the worker is a Meteor subprocess
+ * (it has the secret via env) and isn't acting as a Rocket.Chat user.
+ */
+API.v1.post(
+	'video-conference.livekit.transcript.append',
+	{
+		authRequired: false,
+		body: transcriptAppendBodySchema,
+		rateLimiterOptions: { numRequestsAllowed: 600, intervalTimeInMS: 60_000 },
+		response: looseSuccessResponse,
+	},
+	async function action() {
+		const auth = this.request.headers.get('authorization') || '';
+		const expected = `Bearer lkagent:${settings.get<string>('VideoConf_LiveKit_Api_Secret') || ''}`;
+		if (!auth || auth !== expected) return API.v1.unauthorized();
+
+		const { callId, participantId, text, startedAt, endedAt } = this.bodyParams;
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call) return API.v1.failure('invalid-call');
+
+		// Per-call "take notes" gate. The agent posts every final transcript
+		// it produces; the server decides to drop them when note-taking
+		// hasn't been opted into for this call. Returning success keeps the
+		// worker's retry logic happy without writing anything.
+		if (!call.transcription?.enabled) return API.v1.success({ success: true, skipped: true });
+
+		try {
+			await VideoConferenceModel.appendTranscriptEntryById(callId, {
+				participantId,
+				text,
+				startedAt: new Date(startedAt),
+				endedAt: new Date(endedAt),
+			});
+		} catch (err) {
+			logger.warn({ msg: 'failed to append transcript entry', err, callId });
+			return API.v1.failure('persist-failed');
+		}
+
+		return API.v1.success({ success: true });
 	},
 );

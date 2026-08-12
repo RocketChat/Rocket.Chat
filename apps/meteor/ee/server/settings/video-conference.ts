@@ -143,6 +143,55 @@ export function addSettings(): Promise<void> {
 						invalidValue: '',
 						enableQuery: [livekitEnabled, recordingEnabled],
 					});
+
+					await this.add('VideoConf_LiveKit_Agent_Mode', 'off', {
+						type: 'select',
+						values: [
+							{ key: 'off', i18nLabel: 'Disabled' },
+							{ key: 'embedded', i18nLabel: 'Embedded' },
+						],
+						invalidValue: 'off',
+						i18nDescription: 'VideoConf_LiveKit_Agent_Mode_Description',
+						enableQuery: [livekitEnabled],
+					});
+
+					const agentEmbedded = { _id: 'VideoConf_LiveKit_Agent_Mode', value: 'embedded' };
+
+					await this.add('VideoConf_LiveKit_Agent_Gemini_Api_Key', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						i18nDescription: 'VideoConf_LiveKit_Agent_Gemini_Api_Key_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VideoConf_LiveKit_Agent_Gemini_Model', '', {
+						type: 'string',
+						invalidValue: '',
+						i18nDescription: 'VideoConf_LiveKit_Agent_Gemini_Model_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VideoConf_LiveKit_Agent_Language_Hint', '', {
+						type: 'string',
+						invalidValue: '',
+						i18nDescription: 'VideoConf_LiveKit_Agent_Language_Hint_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VideoConf_LiveKit_Summary_Enabled', false, {
+						type: 'boolean',
+						invalidValue: false,
+						i18nDescription: 'VideoConf_LiveKit_Summary_Enabled_Description',
+						enableQuery: [livekitEnabled, agentEmbedded],
+					});
+
+					await this.add('VideoConf_LiveKit_Summary_Gemini_Model', 'gemini-2.5-flash', {
+						type: 'string',
+						invalidValue: 'gemini-2.5-flash',
+						i18nDescription: 'VideoConf_LiveKit_Summary_Gemini_Model_Description',
+						enableQuery: [livekitEnabled, agentEmbedded, { _id: 'VideoConf_LiveKit_Summary_Enabled', value: true }],
+					});
 				});
 			},
 		);

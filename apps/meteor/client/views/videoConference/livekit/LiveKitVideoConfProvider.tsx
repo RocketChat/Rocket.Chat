@@ -1,7 +1,15 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MediaCallViewContext, defaultMediaCallContextValue, playJoinChime, type RemoteParticipantInfo } from '@rocket.chat/ui-voip';
+import {
+	MediaCallViewContext,
+	defaultMediaCallContextValue,
+	playJoinChime,
+	DEFAULT_CALL_LANGUAGE,
+	findCallLanguage,
+	type CallLanguage,
+	type RemoteParticipantInfo,
+} from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -225,12 +233,42 @@ const InnerProvider = ({
 		{ id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number }[]
 	>([]);
 	const REACTION_TTL_MS = 3500;
+
+	// Live captions published by the transcription agent. Each speaker's
+	// latest text replaces the previous one (interim updates supersede each
+	// other). Finals are kept for CAPTION_FINAL_TTL_MS then cleared so the
+	// overlay doesn't linger forever after someone stops talking.
+	const [activeCaptions, setActiveCaptions] = useState<Record<string, { text: string; isFinal: boolean; updatedAt: number }>>({});
+	const CAPTION_FINAL_TTL_MS = 5000;
+	const CAPTION_INTERIM_TTL_MS = 8000;
+
+	// Per-user caption opt-in. The local toggle is purely a personal pref —
+	// it doesn't propagate as "captions on for the room". What DOES propagate
+	// is a `captions-request` signal: the agent only spins up Gemini sessions
+	// while at least one participant has requested captions. The agent
+	// publishes transcripts to everyone over the data channel; here we drop
+	// incoming transcript frames when the local user hasn't opted in, so
+	// caption overlays are gated client-side too.
+	const [captionsEnabledLocally, setCaptionsEnabledLocally] = useState(false);
+
+	// Shared call language. Any participant can change it; the agent
+	// restarts active Gemini sessions with the new language so both live
+	// captions and the persisted transcript stay consistent.
+	const [callLanguage, setCallLanguage] = useState<CallLanguage>(DEFAULT_CALL_LANGUAGE);
+	// Ref mirror so the (stable-deps) data-channel handler can read the
+	// current opt-in without re-binding on every toggle.
+	const captionsEnabledRef = useRef(false);
+	useEffect(() => {
+		captionsEnabledRef.current = captionsEnabledLocally;
+	}, [captionsEnabledLocally]);
+
 	// Reactive state shared via the LK data channel. Replaces the previous
-	// 5s polling of /recording-status. Whoever
+	// 5s polling of /recording-status and /transcription.status. Whoever
 	// toggles the feature also broadcasts the change to everyone in the
 	// room, so other participants update within a single round-trip
 	// instead of waiting for the next poll tick.
 	const [liveRecordingActive, setLiveRecordingActive] = useState<{ isRecording: boolean; updatedAt: number } | undefined>();
+	const [liveTranscriptionActive, setLiveTranscriptionActive] = useState<{ enabled: boolean; updatedAt: number } | undefined>();
 
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
@@ -272,8 +310,36 @@ const InnerProvider = ({
 				]);
 				return;
 			}
+			if (msg.type === 'transcript' && msg.text && msg.participantId) {
+				// Per-user opt-in: agent broadcasts transcripts to everyone
+				// over the data channel; we only render them when the local
+				// user has captions turned on. Reading the latest state via
+				// the ref so closing over a stale closure doesn't matter.
+				if (!captionsEnabledRef.current) return;
+				// The agent supplies the speaker's identity in `participantId`
+				// (since the data message itself comes from the agent, not the
+				// speaker, `participant?.identity` would be the agent's id).
+				const speaker = msg.participantId;
+				const { text } = msg;
+				const isFinal = Boolean(msg.isFinal);
+				setActiveCaptions((prev) => ({
+					...prev,
+					[speaker]: { text, isFinal, updatedAt: Date.now() },
+				}));
+				return;
+			}
 			if (msg.type === 'recording-state') {
 				setLiveRecordingActive({ isRecording: Boolean((msg as any).isRecording), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'transcription-state') {
+				setLiveTranscriptionActive({ enabled: Boolean((msg as any).enabled), updatedAt: Date.now() });
+				return;
+			}
+			if (msg.type === 'call-language') {
+				const code = (msg as any).code as string | undefined;
+				if (!code) return;
+				setCallLanguage(findCallLanguage(code));
 			}
 		};
 		room.on(RoomEvent.DataReceived, onData);
@@ -281,6 +347,29 @@ const InnerProvider = ({
 			room.off(RoomEvent.DataReceived, onData);
 		};
 	}, [room, localParticipant.identity]);
+
+	// Sweep stale captions: a final transcript hangs around for a few seconds
+	// of "afterglow", an interim that never got finalised expires a bit later.
+	useEffect(() => {
+		if (Object.keys(activeCaptions).length === 0) return undefined;
+		const handle = setInterval(() => {
+			const now = Date.now();
+			setActiveCaptions((prev) => {
+				const next: typeof prev = {};
+				let changed = false;
+				for (const [id, cap] of Object.entries(prev)) {
+					const ttl = cap.isFinal ? CAPTION_FINAL_TTL_MS : CAPTION_INTERIM_TTL_MS;
+					if (now - cap.updatedAt > ttl) {
+						changed = true;
+						continue;
+					}
+					next[id] = cap;
+				}
+				return changed ? next : prev;
+			});
+		}, 1000);
+		return () => clearInterval(handle);
+	}, [activeCaptions]);
 
 	// Sweep expired reactions out of state once a second so the lists stay
 	// bounded. Interval (not setTimeout per entry) so concurrent reactions
@@ -334,6 +423,82 @@ const InnerProvider = ({
 			room.off(RoomEvent.ParticipantConnected, rebroadcast);
 		};
 	}, [room, localParticipant, localHandRaised]);
+
+	// Toggle local captions opt-in. Side effects:
+	// - Publish a `captions-request` signal so the agent can ref-count and
+	//   start/stop Gemini sessions on the room's behalf. Reliable delivery —
+	//   missing one of these would leave the agent in the wrong state.
+	// - Clear the local activeCaptions map when turning off so the overlay
+	//   disappears immediately instead of waiting for the TTL sweep.
+	const onToggleCaptions = useCallback(() => {
+		setCaptionsEnabledLocally((prev) => {
+			const next = !prev;
+			const payload = JSON.stringify({ type: 'captions-request', requested: next });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('captions-request publish failed', err);
+			});
+			if (!next) setActiveCaptions({});
+			return next;
+		});
+	}, [localParticipant]);
+
+	// Late-join rebroadcast: the agent (or other late-joining peers) need to
+	// know our captions-request state if it was set before they connected.
+	// Mirrors the raise-hand rebroadcast above.
+	useEffect(() => {
+		if (!captionsEnabledLocally) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'captions-request', requested: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, captionsEnabledLocally]);
+
+	// Same shape, for the take-notes (transcription) state. Without this,
+	// an agent that restarts mid-call — or any participant joining after
+	// the original toggle broadcast — has no way to learn that take-notes
+	// is on. Whoever locally sees the state as enabled rebroadcasts.
+	useEffect(() => {
+		if (!liveTranscriptionActive?.enabled) return undefined;
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled: true });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, liveTranscriptionActive?.enabled]);
+
+	const onChangeCallLanguage = useCallback(
+		(code: string) => {
+			const next = findCallLanguage(code);
+			setCallLanguage(next);
+			const payload = JSON.stringify({ type: 'call-language', code: next.code, label: next.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch((err) => {
+				console.warn('call-language publish failed', err);
+			});
+		},
+		[localParticipant],
+	);
+
+	// Late-join rebroadcast for the call language so the agent (and any
+	// late peer) converges on the same choice as the rest of the room.
+	// Rebroadcast unconditionally — even the default is broadcast so the
+	// agent doesn't sit at its own default if it differs.
+	useEffect(() => {
+		const rebroadcast = () => {
+			const payload = JSON.stringify({ type: 'call-language', code: callLanguage.code, label: callLanguage.label });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+		};
+		room.on(RoomEvent.ParticipantConnected, rebroadcast);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, rebroadcast);
+		};
+	}, [room, localParticipant, callLanguage]);
 
 	const onToggleHand = useCallback(() => {
 		const raised = !localHandRaised;
@@ -392,10 +557,10 @@ const InnerProvider = ({
 		};
 	}, [room]);
 
-	// Broadcast recording toggles to every participant
+	// Broadcast recording / transcription toggles to every participant
 	// over the LK data channel so they all converge to the same UI state
 	// without polling. We use reliable delivery because these are
-	// low-frequency state changes (where loss is
+	// low-frequency state changes (not real-time captions where loss is
 	// acceptable) and the user-facing meaning of "missed broadcast" is
 	// "your pill stayed wrong for up to a poll interval" — which is the
 	// regression we're fixing in the first place.
@@ -404,6 +569,14 @@ const InnerProvider = ({
 			const payload = JSON.stringify({ type: 'recording-state', isRecording });
 			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
 			setLiveRecordingActive({ isRecording, updatedAt: Date.now() });
+		},
+		[localParticipant],
+	);
+	const broadcastTranscriptionState = useCallback(
+		(enabled: boolean) => {
+			const payload = JSON.stringify({ type: 'transcription-state', enabled });
+			void localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true }).catch(() => undefined);
+			setLiveTranscriptionActive({ enabled, updatedAt: Date.now() });
 		},
 		[localParticipant],
 	);
@@ -474,10 +647,17 @@ const InnerProvider = ({
 			raisedHands,
 			onSendReaction,
 			activeReactions,
+			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
 			onVideoInputChange,
 			currentCameraDeviceId,
 			liveRecordingActive,
+			liveTranscriptionActive,
 			broadcastRecordingState,
+			broadcastTranscriptionState,
 			remoteParticipants,
 			streams: {
 				localCamera: localCameraStream as any,
@@ -499,10 +679,17 @@ const InnerProvider = ({
 			raisedHands,
 			onSendReaction,
 			activeReactions,
+			activeCaptions,
+			captionsEnabledLocally,
+			onToggleCaptions,
+			callLanguage,
+			onChangeCallLanguage,
 			onVideoInputChange,
 			currentCameraDeviceId,
 			liveRecordingActive,
+			liveTranscriptionActive,
 			broadcastRecordingState,
+			broadcastTranscriptionState,
 			remoteParticipants,
 			localCameraStream,
 			localScreenStream,

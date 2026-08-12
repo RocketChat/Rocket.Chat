@@ -11,6 +11,7 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
+import { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE } from '../../utils/callLanguages';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
@@ -64,6 +65,50 @@ const reactionButtonStyles = css`
 // puts it just below the pill; `right: 0` aligns its right edge to the
 // pill so the menu hangs left into the call surface (the pill sits near
 // the right end of the header).
+const languagePickerWrapStyles = css`
+	position: relative;
+`;
+
+const languagePickerMenuStyles = css`
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	min-width: 180px;
+	padding: 4px;
+	background-color: rgba(20, 20, 25, 0.97);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+`;
+
+const languageMenuItemStyles = css`
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: none;
+	background: transparent;
+	color: white;
+	font-size: 13px;
+	line-height: 1.2;
+	cursor: pointer;
+	text-align: left;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	&.selected {
+		background-color: rgba(255, 255, 255, 0.12);
+	}
+`;
+// Header bar above the tiles: transparent strip carrying the call elapsed
+// timer on the left and a row of "session-scope" controls (recording etc.)
+// on the right. Visually independent of the action strip below the tiles,
+// which is for "my media" controls (mic / camera / share).
 const callHeaderStyles = css`
 	display: flex;
 	align-items: center;
@@ -83,7 +128,7 @@ const callHeaderTimerStyles = css`
 	font-variant-numeric: tabular-nums;
 `;
 
-// Shared "pill" styling for the recording header action. The
+// Shared "pill" styling for the recording + take-notes header actions. The
 // active-state colour is supplied via the --active-bg / --active-bg-hover
 // CSS variables on the consuming element. The hover-label swap (e.g.
 // "Recording…" → "Stop recording") is purely CSS — the parent renders both
@@ -256,8 +301,15 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 		raisedHands,
 		onSendReaction,
 		activeReactions,
+		activeCaptions,
+		captionsEnabledLocally,
+		onToggleCaptions,
+		callLanguage,
+		onChangeCallLanguage,
 		liveRecordingActive,
+		liveTranscriptionActive,
 		broadcastRecordingState,
+		broadcastTranscriptionState,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants: remoteParticipantsRaw,
 	} = useMediaCallView();
@@ -286,6 +338,20 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 	const [recordingBusy, setRecordingBusy] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+
+	const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+	const languagePickerRef = useRef<HTMLDivElement>(null);
+	const currentLanguage = callLanguage
+		? (CALL_LANGUAGES.find((l) => l.code === callLanguage.code) ?? DEFAULT_CALL_LANGUAGE)
+		: DEFAULT_CALL_LANGUAGE;
+
+	// Take-notes state: `available` reflects workspace setting + agent mode
+	// (true if the server has the feature configured), `enabled` is the
+	// per-call toggle. Both come from the polled status endpoint so users
+	// see each other's toggle changes within ~5s.
+	const [notesAvailable, setNotesAvailable] = useState(false);
+	const [notesEnabled, setNotesEnabled] = useState(false);
+	const [notesBusy, setNotesBusy] = useState(false);
 
 	// Fullscreen target is the call section's root. We listen to
 	// `fullscreenchange` rather than tracking state purely through the
@@ -349,6 +415,18 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 	}, [reactionPickerOpen]);
 
 	// Same click-outside dismissal for the language picker.
+	useEffect(() => {
+		if (!languagePickerOpen) return undefined;
+		const onPointerDown = (e: PointerEvent) => {
+			const node = languagePickerRef.current;
+			if (node && !node.contains(e.target as Node)) {
+				setLanguagePickerOpen(false);
+			}
+		};
+		document.addEventListener('pointerdown', onPointerDown);
+		return () => document.removeEventListener('pointerdown', onPointerDown);
+	}, [languagePickerOpen]);
+
 	// One-shot fetch on call join to seed the recording state. After that,
 	// changes propagate over the LK data channel (see liveRecordingActive
 	// sync effect below) — no polling, no 5s lag.
@@ -407,6 +485,72 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 			setRecordingBusy(false);
 		}
 	}, [callId, isRecording, recordingBusy, broadcastRecordingState]);
+
+	// One-shot fetch on call join to seed transcription state + availability.
+	// `available` is a workspace-level toggle (Summary feature on + agent
+	// embedded) that doesn't change mid-call, so a single fetch is enough.
+	// `enabled` (per-call) is then kept in sync via the data channel.
+	useEffect(() => {
+		if (!callId) return;
+		let cancelled = false;
+		void (async () => {
+			try {
+				const res = await fetch(`/api/v1/video-conference.livekit.transcription.status?callId=${encodeURIComponent(callId)}`, {
+					headers: {
+						'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
+						'X-User-Id': localStorage.getItem('Meteor.userId') || '',
+					},
+				});
+				if (!res.ok || cancelled) return;
+				const data = await res.json();
+				setNotesAvailable(Boolean(data.available));
+				setNotesEnabled(Boolean(data.enabled));
+				// Seed the data-channel-synced state so the agent (which
+				// only learns via data channel) sees take-notes-on for
+				// late joiners. broadcastTranscriptionState publishes AND
+				// updates the local liveTranscriptionActive on the LK
+				// provider, which in turn drives the ParticipantConnected
+				// rebroadcast so future joiners pick it up.
+				if (data.enabled) broadcastTranscriptionState?.(true);
+			} catch {
+				/* best-effort */
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [callId, broadcastTranscriptionState]);
+
+	// React to transcription-state broadcasts from other participants.
+	useEffect(() => {
+		if (liveTranscriptionActive) setNotesEnabled(liveTranscriptionActive.enabled);
+	}, [liveTranscriptionActive]);
+
+	const onToggleTakeNotes = useCallback(async () => {
+		if (!callId || notesBusy) return;
+		setNotesBusy(true);
+		try {
+			const endpoint = notesEnabled
+				? '/api/v1/video-conference.livekit.transcription.stop'
+				: '/api/v1/video-conference.livekit.transcription.start';
+			const res = await fetch(endpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
+					'X-User-Id': localStorage.getItem('Meteor.userId') || '',
+				},
+				body: JSON.stringify({ callId }),
+			});
+			if (res.ok) {
+				const next = !notesEnabled;
+				setNotesEnabled(next);
+				broadcastTranscriptionState?.(next);
+			}
+		} finally {
+			setNotesBusy(false);
+		}
+	}, [callId, notesEnabled, notesBusy, broadcastTranscriptionState]);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
@@ -629,6 +773,89 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 							)}
 						</Box>
 					)}
+					{notesAvailable && (
+						<Box
+							is='button'
+							type='button'
+							className={[pillStyles, notesEnabled ? 'active' : null]}
+							style={{ '--rcx-pill-active-bg': 'rgb(38 102 200)', '--rcx-pill-active-bg-hover': 'rgb(28 80 165)' } as React.CSSProperties}
+							onClick={onToggleTakeNotes}
+							disabled={notesBusy}
+							title={notesEnabled ? t('Stop_taking_notes') : t('Take_notes')}
+						>
+							<Icon name='edit' size='x14' />
+							{notesEnabled ? (
+								<Box is='span' data-hover-swap>
+									<Box is='span' data-idle>{`${t('Taking_notes')}…`}</Box>
+									<Box is='span' data-hover>
+										{t('Stop_taking_notes')}
+									</Box>
+								</Box>
+							) : (
+								<Box is='span'>{t('Take_notes')}</Box>
+							)}
+						</Box>
+					)}
+					{/* Captions toggle — per-user opt-in. Off by default; when
+					    the local user turns it on, the LiveKit provider also
+					    broadcasts a captions-request signal so the agent
+					    starts transcribing (and stops once nobody wants
+					    captions). Other participants stay unaffected. */}
+					{onToggleCaptions && (
+						<Box
+							is='button'
+							type='button'
+							className={[pillStyles, captionsEnabledLocally ? 'active' : null]}
+							style={{ '--rcx-pill-active-bg': 'rgb(67 122 178)', '--rcx-pill-active-bg-hover': 'rgb(50 96 142)' } as React.CSSProperties}
+							onClick={onToggleCaptions}
+							title={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+						>
+							<Icon name='quote' size='x14' />
+							<Box is='span'>{captionsEnabledLocally ? t('Captions_on') : t('Captions')}</Box>
+						</Box>
+					)}
+					{/* Call-language pill — abbreviation only ("US", "BR", …) to
+					    save space; full label in the dropdown. Broadcasts the
+					    choice over the LK data channel so the agent restarts
+					    active Gemini sessions with the new language. Hidden
+					    on 1:1 VoIP (provider doesn't supply
+					    onChangeCallLanguage). */}
+					{onChangeCallLanguage && (
+						<Box className={languagePickerWrapStyles} ref={languagePickerRef}>
+							<Box
+								is='button'
+								type='button'
+								className={pillStyles}
+								onClick={() => setLanguagePickerOpen((p) => !p)}
+								title={`Call language: ${currentLanguage.label}`}
+								aria-label={`Call language: ${currentLanguage.label}`}
+							>
+								<Icon name='globe' size='x14' />
+								<Box is='span'>{currentLanguage.abbr}</Box>
+							</Box>
+							{languagePickerOpen && (
+								<Box className={languagePickerMenuStyles}>
+									{CALL_LANGUAGES.map((lang) => (
+										<Box
+											key={lang.code}
+											is='button'
+											type='button'
+											className={[languageMenuItemStyles, lang.code === currentLanguage.code ? 'selected' : null]}
+											onClick={() => {
+												onChangeCallLanguage(lang.code);
+												setLanguagePickerOpen(false);
+											}}
+										>
+											<Box is='span' style={{ width: 28, opacity: 0.7, fontSize: 11 }}>
+												{lang.abbr}
+											</Box>
+											<Box is='span'>{lang.label}</Box>
+										</Box>
+									))}
+								</Box>
+							)}
+						</Box>
+					)}
 					<Box
 						is='button'
 						type='button'
@@ -647,6 +874,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 				onStopLocalScreenShare={onToggleScreenSharing}
 				handPositions={handPositions}
 				reactionsByParticipant={reactionsByParticipant}
+				captionsByParticipant={activeCaptions}
 			/>
 			{/* The same controls either way: a surface with a bar of its own is handed them to place, and
 			    otherwise they sit in the call's own strip below the stage. */}

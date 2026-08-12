@@ -8,6 +8,9 @@ import type {
 	IVoIPVideoConference,
 	IVideoConferenceParticipant,
 	IVideoConferenceRecording,
+	IVideoConferenceSummary,
+	IVideoConferenceTranscription,
+	IVideoConferenceTranscriptEntry,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
@@ -375,8 +378,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	// --- Embedded SFU (LiveKit) helpers ---
 	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
-	// is described in the IVideoConference{Participant,Recording} types in
-	// core-typings.
+	// is described in the IVideoConference{Participant,Recording,Transcription,
+	// TranscriptEntry,Summary} types in core-typings.
 
 	public async findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null> {
 		// "active" means the call is open (not ENDED/EXPIRED/DECLINED). Embedded
@@ -396,6 +399,16 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		return this.find({
 			'recording.egressId': { $exists: true },
 			'recording.messageSent': { $ne: true },
+		}).toArray();
+	}
+
+	public async findEndedAwaitingSummary(): Promise<VideoConference[]> {
+		// Used by the summary backfill path: ended calls that have a
+		// transcript but no summary message id yet.
+		return this.find({
+			'status': VideoConferenceStatus.ENDED,
+			'transcript.0': { $exists: true },
+			'summary.messageId': { $exists: false },
 		}).toArray();
 	}
 
@@ -436,5 +449,17 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async unsetRecordingById(callId: VideoConference['_id']): Promise<void> {
 		await this.updateOne({ _id: callId }, { $unset: { recording: 1 } });
+	}
+
+	public async setTranscriptionById(callId: VideoConference['_id'], transcription: IVideoConferenceTranscription): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { transcription } });
+	}
+
+	public async appendTranscriptEntryById(callId: VideoConference['_id'], entry: IVideoConferenceTranscriptEntry): Promise<void> {
+		await this.updateOne({ _id: callId }, { $push: { transcript: entry } } as any);
+	}
+
+	public async setSummaryById(callId: VideoConference['_id'], summary: IVideoConferenceSummary): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { summary } });
 	}
 }
