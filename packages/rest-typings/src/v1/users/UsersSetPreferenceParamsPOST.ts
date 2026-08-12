@@ -214,7 +214,6 @@ const UsersSetPreferencesParamsPostSchema = {
 						required: ['_id', 'name'],
 						additionalProperties: false,
 					},
-					nullable: true,
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
