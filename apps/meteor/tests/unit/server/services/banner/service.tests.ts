@@ -6,7 +6,13 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { BannerService } = proxyquire.noCallThru().load('../../../../../server/services/banner/service', {});
+const notifyOnUserChangeFake = sinon.fake();
+
+const { BannerService } = proxyquire.noCallThru().load('../../../../../server/services/banner/service', {
+	'../../lib/notifyListener': {
+		notifyOnUserChange: notifyOnUserChangeFake,
+	},
+});
 
 class BannerModel extends BaseRaw<any> {
 	findActiveByRoleOrId(
@@ -17,17 +23,29 @@ class BannerModel extends BaseRaw<any> {
 	): FindCursor<IBanner> {
 		return {} as unknown as FindCursor<IBanner>;
 	}
+
+	override findOneById(): Promise<any> {
+		return Promise.resolve(null);
+	}
 }
 
 class BannerDismissModel extends BaseRaw<any> {
 	findByUserIdAndBannerId(): FindCursor<Pick<IBannerDismiss, 'bannerId'>> {
 		return {} as unknown as FindCursor<Pick<IBannerDismiss, 'bannerId'>>;
 	}
+
+	override insertOne(): Promise<any> {
+		return Promise.resolve({ acknowledged: true });
+	}
 }
 
 class UserModel extends BaseRaw<any> {
 	override findOneById(): Promise<any> {
 		return Promise.resolve({});
+	}
+
+	setBannerReadById(): Promise<any> {
+		return Promise.resolve();
 	}
 }
 
@@ -48,7 +66,10 @@ describe('Banners service', () => {
 		registerModel('IUsersModel', userModel);
 	});
 
-	afterEach(() => sinon.restore());
+	afterEach(() => {
+		notifyOnUserChangeFake.resetHistory();
+		sinon.restore();
+	});
 
 	it('should be defined', () => {
 		const service = new BannerService();
@@ -144,6 +165,103 @@ describe('Banners service', () => {
 			expect(banners).to.have.lengthOf(1);
 			expect(banners[0].view.viewId).to.be.equal(A_SECOND_FAKE_BANNER._id);
 			expect(banners[0].surface).to.be.equal('modal');
+		});
+	});
+
+	describe('dismiss', () => {
+		it('should dismiss a banner from Banners collection', async () => {
+			const service = new BannerService();
+			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({ _id: 'user-1', username: 'testuser' })));
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve({ _id: 'banner-1' })));
+			const insertOneMock = sinon.replace(bannerDismissModel, 'insertOne', sinon.fake.returns(Promise.resolve({})));
+			const setBannerReadByIdMock = sinon.replace(
+				userModel,
+				'setBannerReadById',
+				sinon.fake.returns(Promise.resolve({ modifiedCount: 1 })),
+			);
+
+			const result = await service.dismiss('user-1', 'banner-1');
+
+			expect(result).to.be.true;
+			expect(insertOneMock.callCount).to.be.equal(1);
+			expect(setBannerReadByIdMock.callCount).to.be.equal(0);
+			expect(notifyOnUserChangeFake.callCount).to.be.equal(0);
+		});
+
+		it('should dismiss a user banner (user.banners)', async () => {
+			const service = new BannerService();
+			sinon.replace(
+				userModel,
+				'findOneById',
+				sinon.fake.returns(
+					Promise.resolve({
+						_id: 'user-1',
+						username: 'testuser',
+						banners: { 'versionUpdate-8_7_0': { id: 'versionUpdate-8_7_0' } },
+					}),
+				),
+			);
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+			const insertOneMock = sinon.replace(bannerDismissModel, 'insertOne', sinon.fake.returns(Promise.resolve({})));
+			const setBannerReadByIdMock = sinon.replace(
+				userModel,
+				'setBannerReadById',
+				sinon.fake.returns(Promise.resolve({ modifiedCount: 1 })),
+			);
+
+			const result = await service.dismiss('user-1', 'versionUpdate-8_7_0');
+
+			expect(result).to.be.true;
+			expect(setBannerReadByIdMock.callCount).to.be.equal(1);
+			expect(insertOneMock.callCount).to.be.equal(0);
+			expect(notifyOnUserChangeFake.callCount).to.be.equal(1);
+			expect(notifyOnUserChangeFake.firstCall.args[0]).to.be.deep.equal({
+				id: 'user-1',
+				clientAction: 'updated',
+				diff: {
+					'banners.versionUpdate-8_7_0.read': true,
+				},
+			});
+		});
+
+		it('should not send user notification if banner was concurrently removed before setBannerReadById', async () => {
+			const service = new BannerService();
+			sinon.replace(
+				userModel,
+				'findOneById',
+				sinon.fake.returns(
+					Promise.resolve({
+						_id: 'user-1',
+						username: 'testuser',
+						banners: { 'versionUpdate-8_7_0': { id: 'versionUpdate-8_7_0' } },
+					}),
+				),
+			);
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+			const setBannerReadByIdMock = sinon.replace(
+				userModel,
+				'setBannerReadById',
+				sinon.fake.returns(Promise.resolve({ modifiedCount: 0 })),
+			);
+
+			const result = await service.dismiss('user-1', 'versionUpdate-8_7_0');
+
+			expect(result).to.be.true;
+			expect(setBannerReadByIdMock.callCount).to.be.equal(1);
+			expect(notifyOnUserChangeFake.callCount).to.be.equal(0);
+		});
+
+		it('should throw error when banner is not found in Banners collection nor user.banners', async () => {
+			const service = new BannerService();
+			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({ _id: 'user-1', username: 'testuser' })));
+			sinon.replace(bannersModel, 'findOneById', sinon.fake.returns(Promise.resolve(null)));
+
+			try {
+				await service.dismiss('user-1', 'non-existent-banner');
+				expect.fail('Should have thrown an error');
+			} catch (err: any) {
+				expect(err.message).to.be.equal('Banner not found');
+			}
 		});
 	});
 });

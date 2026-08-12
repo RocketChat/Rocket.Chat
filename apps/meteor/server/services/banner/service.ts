@@ -5,6 +5,8 @@ import type { IBannerService } from '@rocket.chat/core-services';
 import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../lib/notifyListener';
+
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
 
@@ -85,34 +87,51 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 			throw new Error('Invalid params');
 		}
 
-		const banner = await Banners.findOneById(bannerId);
-		if (!banner) {
-			throw new Error('Banner not found');
-		}
-
-		const user = await Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {
-			projection: { username: 1 },
+		const user = await Users.findOneById<Pick<IUser, 'username' | '_id' | 'banners'>>(userId, {
+			projection: { username: 1, banners: 1 },
 		});
 		if (!user) {
 			throw new Error('User not found');
 		}
 
-		const dismissedBy = {
-			_id: user._id,
-			username: user.username,
-		};
+		const banner = await Banners.findOneById(bannerId);
+		const hasUserBanner = Boolean(user.banners?.[bannerId]);
 
-		const today = new Date();
+		if (!banner && !hasUserBanner) {
+			throw new Error('Banner not found');
+		}
 
-		const doc = {
-			userId,
-			bannerId,
-			dismissedBy,
-			dismissedAt: today,
-			_updatedAt: today,
-		};
+		if (hasUserBanner) {
+			const result = await Users.setBannerReadById(userId, bannerId);
+			if (result.modifiedCount) {
+				void notifyOnUserChange({
+					id: userId,
+					clientAction: 'updated',
+					diff: {
+						[`banners.${bannerId}.read`]: true,
+					},
+				});
+			}
+		}
 
-		await BannersDismiss.insertOne(doc);
+		if (banner) {
+			const dismissedBy = {
+				_id: user._id,
+				username: user.username,
+			};
+
+			const today = new Date();
+
+			const doc = {
+				userId,
+				bannerId,
+				dismissedBy,
+				dismissedAt: today,
+				_updatedAt: today,
+			};
+
+			await BannersDismiss.insertOne(doc);
+		}
 
 		return true;
 	}
