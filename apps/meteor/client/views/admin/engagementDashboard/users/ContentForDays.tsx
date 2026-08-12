@@ -1,6 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { format, subDays } from 'date-fns';
 import { useMemo } from 'react';
 
