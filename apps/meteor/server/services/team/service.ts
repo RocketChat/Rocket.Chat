@@ -575,7 +575,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 
-		const teamRooms: (IRoom & {
+		const teamRooms: (Pick<IRoom, '_id' | 't'> & {
 			userCanDelete?: boolean;
 		})[] = await Rooms.findByTeamId(teamId, {
 			projection: { _id: 1, t: 1 },
