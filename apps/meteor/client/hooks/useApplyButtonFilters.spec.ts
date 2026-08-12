@@ -134,6 +134,73 @@ describe('useApplyButtonAuthFilter', () => {
 		});
 	});
 
+	describe('Custom role name resolution', () => {
+		// A custom role gets a random id, so an app can only know its name.
+		const customRole = { _id: 'aBcDeF1234567890x', name: 'Support Agent' };
+
+		const buttonRequiring = (role: string): IUIActionButton => ({
+			appId: 'test-app',
+			actionId: 'test-action',
+			labelI18n: 'test_label',
+			context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+			when: {
+				hasOneRole: [role],
+			},
+		});
+
+		it('should show button when the user holds the role given by name', () => {
+			const { result } = renderHook(() => useApplyButtonAuthFilter(), {
+				wrapper: mockAppRoot().withJohnDoe().withRoleDefinition(customRole).withRole(customRole._id).build(),
+			});
+
+			expect(result.current(buttonRequiring(customRole.name))).toBe(true);
+		});
+
+		it('should filter button when the user does not hold the role given by name', () => {
+			const { result } = renderHook(() => useApplyButtonAuthFilter(), {
+				wrapper: mockAppRoot()
+					.withJohnDoe({ roles: ['user'] })
+					.withRoleDefinition(customRole)
+					.build(),
+			});
+
+			expect(result.current(buttonRequiring(customRole.name))).toBe(false);
+		});
+
+		it('should still show button when the role is given by id', () => {
+			const { result } = renderHook(() => useApplyButtonAuthFilter(), {
+				wrapper: mockAppRoot().withJohnDoe().withRoleDefinition(customRole).withRole(customRole._id).build(),
+			});
+
+			expect(result.current(buttonRequiring(customRole._id))).toBe(true);
+		});
+
+		it('should filter button when the role name is unknown', () => {
+			const { result } = renderHook(() => useApplyButtonAuthFilter(), {
+				wrapper: mockAppRoot().withJohnDoe().withRoleDefinition(customRole).withRole(customRole._id).build(),
+			});
+
+			expect(result.current(buttonRequiring('No Such Role'))).toBe(false);
+		});
+
+		it('should prefer the id over a role whose name collides with it', () => {
+			// `decoy.name` equals `customRole._id`. The user holds only the decoy, so
+			// resolving by name would wrongly show the button.
+			const decoy = { _id: 'zZyYxXw9876543210', name: customRole._id };
+
+			const { result } = renderHook(() => useApplyButtonAuthFilter(), {
+				wrapper: mockAppRoot()
+					.withJohnDoe({ roles: ['user'] })
+					.withRoleDefinition(customRole)
+					.withRoleDefinition(decoy)
+					.withRole(decoy._id)
+					.build(),
+			});
+
+			expect(result.current(buttonRequiring(customRole._id))).toBe(false);
+		});
+	});
+
 	describe('Permission-based filtering', () => {
 		it('should filter button when user does not have required permission (hasAllPermissions)', () => {
 			const button: IUIActionButton = {
