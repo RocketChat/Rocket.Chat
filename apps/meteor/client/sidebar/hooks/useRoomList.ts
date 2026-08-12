@@ -76,7 +76,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 
-	const { categories: customCategories } = useCustomCategories();
+	const { categories: customCategories, isEnterprise } = useCustomCategories();
 	const { isShowUnreads } = useShowUnreadsGroups();
 	const { isKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
 	const { sortGroups: sortAllGroups } = useAllGroupsOrder();
@@ -182,17 +182,15 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			// "Unread" grouping renders only when the toggle is on and there are unread rooms.
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 
-			// Favorites is a pre-created grouping: when its toggle is on it stays visible even when empty.
-			favoritesEnabled && groups.set('Favorites', favorite);
+			favoritesEnabled && (isEnterprise || favorite.size > 0) && groups.set('Favorites', favorite);
 
-			// System type categories always render (even when empty) so a room can be moved back to them.
-			sidebarGroupByType && groups.set('Teams', team);
+			sidebarGroupByType && (isEnterprise || team.size > 0) && groups.set('Teams', team);
 
-			sidebarGroupByType && isDiscussionEnabled && groups.set('Discussions', discussion);
+			sidebarGroupByType && isDiscussionEnabled && (isEnterprise || discussion.size > 0) && groups.set('Discussions', discussion);
 
-			sidebarGroupByType && groups.set('Channels', channels);
+			sidebarGroupByType && (isEnterprise || channels.size > 0) && groups.set('Channels', channels);
 
-			sidebarGroupByType && groups.set('Direct_Messages', direct);
+			sidebarGroupByType && (isEnterprise || direct.size > 0) && groups.set('Direct_Messages', direct);
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
@@ -284,7 +282,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	// Group ordering is applied AFTER the debounce so that "Move up / Move down"
 	// takes effect immediately rather than waiting for the 50 ms settling period.
-	const allGroups = sortAllGroups(unsortedGroups);
+	const allGroups = isEnterprise ? sortAllGroups(unsortedGroups) : unsortedGroups;
 	const groupsCount = allGroups.map((group) => (group.empty ? 0 : group.rooms.length));
 
 	return {
