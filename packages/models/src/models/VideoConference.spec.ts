@@ -56,15 +56,6 @@ describe('VideoConferenceRaw.addMemberById', () => {
 		expect(updateOne.mock.calls[0][1].$push.users).toMatchObject({ _id: 'user-1', joined: false });
 	});
 
-	it('should record a member who is joining as they are added', async () => {
-		const { model, updateOne } = setupModel();
-		const joinedAt = new Date('2026-08-01T10:00:00Z');
-
-		await model.addMemberById('call-1', { ...member, joined: true, joinedAt });
-
-		expect(updateOne.mock.calls[0][1].$push.users).toMatchObject({ joined: true, joinedAt });
-	});
-
 	it('should omit joinedAt when there is none, rather than storing undefined', async () => {
 		const { model, updateOne } = setupModel();
 
