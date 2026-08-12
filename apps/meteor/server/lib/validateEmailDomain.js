@@ -4,7 +4,7 @@ import util from 'node:util';
 import { validateEmail } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
+import { isEmailDomainBlocked } from './isEmailDomainBlocked';
 import { settings } from '../settings';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
@@ -50,11 +50,7 @@ export const validateEmailDomain = async function (email) {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
-	if (
-		emailDomainBlackList.length &&
-		(emailDomainBlackList.indexOf(emailDomain) !== -1 ||
-			(settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
-	) {
+	if (isEmailDomainBlocked(emailDomain, emailDomainBlackList, settings.get('Accounts_UseDefaultBlockedDomainsList'))) {
 		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',
 		});
