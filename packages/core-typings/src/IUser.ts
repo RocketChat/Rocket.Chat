@@ -252,7 +252,9 @@ export interface IRegisterUser extends IUser {
 	name: string;
 }
 
-export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+export const isRegisterUser = <T extends Pick<IUser, 'username' | 'name'>>(
+	user: T,
+): user is T & Required<Pick<IUser, 'username' | 'name'>> => user.username !== undefined && user.name !== undefined;
 
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 

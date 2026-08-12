@@ -22,7 +22,7 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 		return acc;
 	}, []);
 
-	const msgFn = (user: IUser): string => {
+	const msgFn = (user: Pick<IUser, 'language'>): string => {
 		const defaultLang = user.language || 'en';
 		const msg = `${i18n.t('App_request_enduser_message', { appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
 
