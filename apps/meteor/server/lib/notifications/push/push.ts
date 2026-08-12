@@ -195,11 +195,10 @@ class PushClass {
 	): Promise<void> {
 		logger.debug({ msg: 'send to token', tokenType: app.tokenType });
 
-		if ((app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
-			return;
-		}
-
 		if (app.tokenType === 'gcm') {
+			// No voip gate here: a separate voip token is an APNs/PushKit concept. Android carries call
+			// notifications on the same FCM token, so a `useVoipToken` notification must still be sent
+			// to gcm documents — the pre-`tokenValue` code ignored the flag on this branch too.
 			if (!app.tokenValue) {
 				return;
 			}
@@ -226,6 +225,12 @@ class PushClass {
 		}
 
 		if (app.tokenType === 'apn' || app.tokenType === 'voip') {
+			// An iOS device holds two APNs tokens, one per document. A voip notification belongs to the
+			// PushKit token and a regular one to the standard token, so send exactly one of the pair.
+			if ((app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+				return;
+			}
+
 			const topic = app.tokenType === 'voip' ? `${app.appName}.voip` : app.appName;
 
 			if (this.options.apn && app.tokenValue) {
@@ -235,7 +240,7 @@ class PushClass {
 			return;
 		}
 
-		throw new Error('send got a faulty query');
+		throw new Error(`send got a token document with an unknown tokenType: ${String(app.tokenType)}`);
 	}
 
 	private async getNativeNotificationAuthorizationCredentials(): Promise<{ token: string; projectId: string }> {
@@ -352,7 +357,9 @@ class PushClass {
 			maxRetries: notification.useVoipToken ? 0 : PUSH_GATEWAY_MAX_RETRIES,
 		};
 
-		if ((app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+		// Same pairing rule as the native path: gate the two APNs documents against each other, and never
+		// gate gcm — Android has no separate voip token and must receive the notification either way.
+		if ((app.tokenType === 'apn' || app.tokenType === 'voip') && (app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
 			return;
 		}
 
@@ -409,19 +416,26 @@ class PushClass {
 		for await (const app of appTokens) {
 			logger.debug({ msg: 'send to token', tokenType: app.tokenType });
 
-			if (this.shouldUseGateway()) {
-				await this.sendNotificationGateway(app, notification, countApn, countGcm);
-				continue;
-			}
+			// A single undeliverable device must not abort delivery to the user's remaining devices:
+			// the caller only logs this at debug level, so an unhandled throw here silently drops the
+			// notification for every device that comes after it in the cursor.
+			try {
+				if (this.shouldUseGateway()) {
+					await this.sendNotificationGateway(app, notification, countApn, countGcm);
+					continue;
+				}
 
-			// The workspace is configured to send through a push gateway, but the offline
-			// license forbids contacting it — skip quietly instead of falling back to the
-			// (unconfigured) native providers.
-			if (this.options.gateways && License.hasOfflineLicense()) {
-				continue;
-			}
+				// The workspace is configured to send through a push gateway, but the offline
+				// license forbids contacting it — skip quietly instead of falling back to the
+				// (unconfigured) native providers.
+				if (this.options.gateways && License.hasOfflineLicense()) {
+					continue;
+				}
 
-			await this.sendNotificationNative(app, notification, countApn, countGcm);
+				await this.sendNotificationNative(app, notification, countApn, countGcm);
+			} catch (err) {
+				logger.error({ msg: 'Failed to send notification to token', tokenId: app._id, tokenType: app.tokenType, err });
+			}
 		}
 
 		if (settings.get('Log_Level') === '2') {

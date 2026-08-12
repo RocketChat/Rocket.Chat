@@ -1,8 +1,15 @@
+import { pushTokenTypesWithVoip } from '@rocket.chat/core-typings';
 import type { IPushToken, IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { IPushTokenModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, FindOptions, IndexDescription, InsertOneResult, UpdateResult, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+// The send path throws on a document it cannot route, and that throw aborts the whole loop over the
+// user's devices. Documents written by an instance still running the pre-`tokenValue` schema (rolling
+// upgrade, restored backup) carry no `tokenType`, so keep them out of the cursors entirely — the old
+// queries filtered on `token.apn`/`token.gcm` existence and had the same effect.
+const deliverableTokenTypes = [...pushTokenTypesWithVoip];
 
 export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel {
 	constructor(db: Db) {
@@ -34,7 +41,7 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 	}
 
 	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T> {
-		return this.find<T>({ userId }, options);
+		return this.find<T>({ userId, tokenType: { $in: deliverableTokenTypes } }, options);
 	}
 
 	findTokensByUserIdExceptId<T extends IPushToken>(
@@ -42,7 +49,7 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		idToIgnore: IPushToken['_id'],
 		options?: FindOptions<IPushToken>,
 	): FindCursor<T> {
-		return this.find<T>({ _id: { $ne: idToIgnore }, userId }, options);
+		return this.find<T>({ _id: { $ne: idToIgnore }, userId, tokenType: { $in: deliverableTokenTypes } }, options);
 	}
 
 	async insertToken(

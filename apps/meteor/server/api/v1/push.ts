@@ -1,5 +1,5 @@
 import { Push } from '@rocket.chat/core-services';
-import { pushTokenTypes } from '@rocket.chat/core-typings';
+import { pushTokenTypes, pushTokenTypesWithVoip } from '@rocket.chat/core-typings';
 import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes, PushTokenTarget } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
@@ -120,7 +120,7 @@ const pushTokenEndpoints = API.v1
 								},
 								tokenType: {
 									type: 'string',
-									enum: [...pushTokenTypes, 'voip'],
+									enum: pushTokenTypesWithVoip,
 								},
 								tokenValue: {
 									type: 'string',

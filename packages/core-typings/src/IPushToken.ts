@@ -5,7 +5,15 @@ export const pushTokenTypes = ['gcm', 'apn'] as const;
 
 export type IPushTokenTypes = (typeof pushTokenTypes)[number];
 
-export type PushTokenType = IPushTokenTypes | 'voip';
+/**
+ * Every token type the send path knows how to deliver to. A document holding anything else
+ * (or nothing at all, e.g. a legacy document written by an instance still running the old
+ * schema during a rolling upgrade) is not deliverable and must be filtered out before it
+ * reaches the send path.
+ */
+export const pushTokenTypesWithVoip = [...pushTokenTypes, 'voip'] as const;
+
+export type PushTokenType = (typeof pushTokenTypesWithVoip)[number];
 
 export type PushTokenTarget = { apn: string } | { gcm: string };
 
