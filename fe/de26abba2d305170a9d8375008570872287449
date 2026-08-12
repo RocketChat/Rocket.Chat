@@ -1,11 +1,13 @@
 packages/models/src/models/CallHistory.ts
   s_d81a2915077aab::t_5b34a0b8f491ff 4
   s_d81a2915077aab::t_ef5f1d265a3edb 2,22,30,90
+  h_4c386397e672f4 17,20-21,25,28-29,51-54,62-63
 packages/models/src/models/LivechatCustomField.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,26,29,36
   s_d81a2915077aab::t_5b34a0b8f491ff 3
 packages/models/src/models/LivechatDepartment.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,73,99,107,120,131,139,298,312,331
+  h_4c386397e672f4 68,70-71,76-79,83-84,102,104-105,115-118,123-126,134,136-137,283,285-286,301,303-304,319,321-322,326-328
 packages/models/src/models/NpsVote.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 3,18,23,28,34,36,39,44,46
   s_d81a2915077aab::t_5b34a0b8f491ff 4
@@ -22,6 +24,7 @@ packages/models/src/models/Uploads.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2-3,67-68
 packages/models/src/models/LivechatContacts.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 168,229,295,320
+  h_4c386397e672f4 13-15,152,154-155,225,227-228,287-290,293-294,316,318-319
 packages/models/src/models/WebdavAccounts.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,28-29,32,34
   s_d81a2915077aab::t_5b34a0b8f491ff 3
@@ -35,6 +38,7 @@ packages/models/src/models/CustomUserStatus.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,26,30,35,38,44
 packages/models/src/models/Messages.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 12,81,88,91,98,101,108,111,117,120,127,311-312,322-323,332,359,362,375,463,471,615,618,629,647,650,659,662,671,674,682,685,694,697,719,722,743,754,757,778,781,806,809,835,881,889,907,913,1238,1244,1261
+  h_4c386397e672f4 746
 packages/models/src/models/Settings.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,39,50
   s_d81a2915077aab::t_5b34a0b8f491ff 3
@@ -73,6 +77,7 @@ packages/models/src/models/Roles.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,13,18,49,61,104,109,120,125
 packages/models/src/models/LivechatRooms.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 16,1679,1834,1859,1889,1904,1919,1934,1954,1970,2001,2017,2310,2764
+  h_4c386397e672f4 1663,1665-1666,1820-1823,1847-1850,1877,1879-1881,1892-1895,1907,1909-1911,1922-1925,1937-1940,1943,1945,1957,1960,1962,1990-1993,2004,2006-2008,2298,2301-2302,2760,2762-2763
 packages/models/src/models/BaseRaw.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,187,191,200,205
 packages/models/src/models/UserDataFiles.ts
@@ -109,6 +114,7 @@ packages/models/src/models/BaseUploadModel.ts
   s_d81a2915077aab::t_5b34a0b8f491ff 3
 packages/models/src/models/LivechatVisitors.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 2,122,129,147,158,241,271,523
+  h_4c386397e672f4 114,116-117,125,127-128,138,140-141,150,152-153,231-234,238-239,516,518-519
 packages/models/src/models/Rooms.ts
   s_d81a2915077aab::t_ef5f1d265a3edb 12,140,146,149,156,159,167,212,247,250,267,270,278,292,303,306,314,317,334,337,366,369,399,402,418,454,466,469,475,478,487,570-571,592,635,638,671,674,682,685,691,700,706,709,715,785,797,800-801,931-932,1009,1012,1024,1027,1030,1041,1045-1046,1049-1050,1053,1056,1059,1067,1070,1077,1080,1086,1089,1113,1116,1143,1146,1174,1178,1225,1228,1236,1239,1246,1249,1255,1258,1266,1269,1280,1283-1284,1300-1301,2035,2039,2056
 packages/models/src/models/TeamMember.ts
@@ -119,6 +125,11 @@ packages/models/src/models/TeamMember.ts
   "git_ai_version": "1.6.20",
   "base_commit_sha": "fede26abba2d305170a9d8375008570872287449",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_d81a2915077aab": {
       "agent_id": {
