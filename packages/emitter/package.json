@@ -33,9 +33,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "~29.0.3",
-		"@rollup/plugin-json": "~6.1.0",
-		"@rollup/plugin-node-resolve": "~16.0.3",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
 		"@rollup/plugin-terser": "~1.0.0",
 		"@rollup/plugin-typescript": "~12.3.0",
 		"eslint": "~9.39.5",
