@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Dropdown, Icon, Option, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useDropdownVisibility } from '../room/Header/Omnichannel/QuickActions/hooks/useDropdownVisibility';
 
 type CallDeviceMenuProps = {
 	icon: IconName;
@@ -29,23 +29,33 @@ const deviceName = (label: string): string =>
 		.trim();
 
 /**
- * One line, ellipsised: a device name is long, and a trigger that grows to fit one breaks the row of three.
+ * The device on the left, its name beside it, the chevron pushed to the far right — a control that says what it
+ * is, what it is set to, and that there is more behind it, read left to right.
  *
- * `Menu` clones this button and injects its own chevron as the leading icon, so the name is the only child —
- * putting a second icon inside fought that and wrapped the label onto its own line. The class goes on the menu
- * rather than the button for the same reason: the clone replaces the button's own `className`.
+ * Built on a plain button rather than `GenericMenu` because that one clones its trigger: it injects its own
+ * chevron as a *leading* icon and replaces the button's `className`, so neither the icon's place nor the name's
+ * alignment was ours to set. Owning the open state is also what lets the chevron turn over when it opens.
  */
 const triggerStyles = css`
-	/* Fills its grid column, so the three read as one set rather than three different-sized pills. */
 	width: 100%;
 	min-width: 0;
-	justify-content: flex-start;
 
 	& > .rcx-button--content {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
+		display: flex;
+		width: 100%;
+		min-width: 0;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 6px;
 	}
+`;
+
+const nameStyles = css`
+	overflow: hidden;
+	flex-grow: 1;
+	text-align: left;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 `;
 
 /**
@@ -53,16 +63,13 @@ const triggerStyles = css`
  *
  * Separate from `ui-voip`'s in-call pickers on purpose: those dispatch through the call's own view context to
  * switch a device mid-call, and there is no call here yet. This one only records a choice for the join to carry.
- *
- * It names the device on the button rather than hiding it behind a chevron, because the whole reason to look
- * here is to check *which* one is about to be used — and with nothing chosen it shows the first, since that is
- * what the browser will hand over.
  */
 const CallDeviceMenu = ({ icon, label, devices, selectedId, onSelect }: CallDeviceMenuProps) => {
 	const { t } = useTranslation();
 
-	const currentId = selectedId ?? devices.find(({ deviceId }) => deviceId === 'default')?.deviceId ?? devices[0]?.deviceId;
-	const current = devices.find(({ deviceId }) => deviceId === currentId);
+	const reference = useRef<HTMLButtonElement>(null);
+	const target = useRef<HTMLElement>(null);
+	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
 	/**
 	 * Browsers list the system default *twice*: once as the `default` alias, and again under its own id. Both
@@ -84,44 +91,56 @@ const CallDeviceMenu = ({ icon, label, devices, selectedId, onSelect }: CallDevi
 		return systemDefault ? [systemDefault, ...rest] : rest;
 	}, [devices]);
 
-	const items = useMemo(
-		(): GenericMenuItemProps[] =>
-			ordered.map((device) => ({
-				id: device.deviceId,
-				content: (
-					<Box>
-						{/* A device the browser hasn't named yet — permission was granted after it was enumerated. */}
-						<Box>{deviceName(device.label) || t('Default')}</Box>
-						{device.deviceId === 'default' && (
-							<Box fontScale='c1' color='hint'>
-								{t('System')} {t('Default').toLowerCase()}
-							</Box>
-						)}
-					</Box>
-				),
-				addon: device.deviceId === currentId ? <Icon name='check' size='x20' color='status-font-on-info' /> : undefined,
-				onClick: () => onSelect(device.deviceId),
-			})),
-		[ordered, currentId, onSelect, t],
-	);
+	const currentId = selectedId ?? ordered[0]?.deviceId;
+	const current = ordered.find(({ deviceId }) => deviceId === currentId);
 
-	// Shares the row evenly with its siblings and truncates, rather than pushing one onto a second line.
 	return (
-		<Box display='flex' alignItems='center' minWidth={0} style={{ gap: 4 }}>
-			<Icon name={icon} size='x16' color='hint' aria-hidden flexShrink={0} />
-			<GenericMenu
-				title={label}
-				icon='chevron-down'
-				placement='top-start'
+		<Box display='flex' alignItems='center' minWidth={0}>
+			<Button
+				ref={reference}
+				small
 				className={triggerStyles}
-				disabled={!devices.length}
-				items={items}
-				button={
-					<Button small aria-label={label} title={current ? deviceName(current.label) : label}>
-						{current ? deviceName(current.label) || t('Default') : label}
-					</Button>
-				}
-			/>
+				aria-label={label}
+				aria-haspopup='listbox'
+				aria-expanded={isVisible}
+				title={current ? deviceName(current.label) : label}
+				disabled={!ordered.length}
+				onClick={() => toggle()}
+			>
+				<Icon name={icon} size='x16' flexShrink={0} />
+				<Box className={nameStyles}>{current ? deviceName(current.label) || t('Default') : label}</Box>
+				<Icon name={isVisible ? 'chevron-up' : 'chevron-down'} size='x16' flexShrink={0} />
+			</Button>
+
+			{isVisible && (
+				<Dropdown reference={reference} ref={target} placement='top-start'>
+					{ordered.map((device) => (
+						<Option
+							key={device.deviceId}
+							selected={device.deviceId === currentId}
+							onClick={() => {
+								onSelect(device.deviceId);
+								toggle(false);
+							}}
+						>
+							<OptionContent>
+								{/* A device the browser hasn't named yet — permission was granted after it was enumerated. */}
+								<Box withTruncatedText>{deviceName(device.label) || t('Default')}</Box>
+								{device.deviceId === 'default' && (
+									<Box fontScale='c1' color='hint'>
+										{t('System')} {t('Default').toLowerCase()}
+									</Box>
+								)}
+							</OptionContent>
+							{device.deviceId === currentId && (
+								<OptionColumn>
+									<Icon name='check' size='x20' color='status-font-on-info' />
+								</OptionColumn>
+							)}
+						</Option>
+					))}
+				</Dropdown>
+			)}
 		</Box>
 	);
 };
