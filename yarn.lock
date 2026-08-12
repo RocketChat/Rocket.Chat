@@ -9426,6 +9426,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/emitter@workspace:packages/emitter":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/emitter@workspace:packages/emitter"
+  dependencies:
+    "@rollup/plugin-commonjs": "npm:~29.0.3"
+    "@rollup/plugin-json": "npm:~6.1.0"
+    "@rollup/plugin-node-resolve": "npm:~16.0.3"
+    "@rollup/plugin-terser": "npm:~1.0.0"
+    "@rollup/plugin-typescript": "npm:~12.3.0"
+    eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
+    prettier: "npm:~3.3.3"
+    rollup: "npm:~4.62.3"
+    ts-jest: "npm:~29.4.11"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/eslint-config@workspace:packages/eslint-config, @rocket.chat/eslint-config@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
@@ -11615,6 +11633,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-json@npm:~6.1.0":
+  version: 6.1.0
+  resolution: "@rollup/plugin-json@npm:6.1.0"
+  dependencies:
+    "@rollup/pluginutils": "npm:^5.1.0"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10/cc018d20c80242a2b8b44fae61a968049cf31bb8406218187cc7cda35747616594e79452dd65722e7da6dd825b392e90d4599d43cd4461a02fefa2865945164e
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-node-resolve@npm:~16.0.3":
   version: 16.0.3
   resolution: "@rollup/plugin-node-resolve@npm:16.0.3"
@@ -11630,6 +11662,22 @@ __metadata:
     rollup:
       optional: true
   checksum: 10/6848212994adc5c3fcd851eb268ad58b3905c5535272ae51d33a7ac1590ff428d102afe81702e031b0360481798e61efc0194b4ee39b812a3ae274c998f4d424
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-terser@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "@rollup/plugin-terser@npm:1.0.0"
+  dependencies:
+    serialize-javascript: "npm:^7.0.3"
+    smob: "npm:^1.0.0"
+    terser: "npm:^5.17.4"
+  peerDependencies:
+    rollup: ^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10/eb4389d427d704f10a4d9a8c316fda5d2f8c92419bf24e7cf69497739a10236aa2f3004249b0bbf4290174588a5c274b1653b22e63068cea06f844c8b09aa5cf
   languageName: node
   linkType: hard
 
@@ -35045,6 +35093,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"smob@npm:^1.0.0":
+  version: 1.6.2
+  resolution: "smob@npm:1.6.2"
+  checksum: 10/500799e7887cd8557de610666d206f1e2d073b34ef2732d9565c940afa9e9555f0e42268044e10eb7f061054fa3ed7c2a6f6387b13c1ceb3370f50f299acd34f
+  languageName: node
+  linkType: hard
+
 "snake-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "snake-case@npm:3.0.4"
@@ -36377,6 +36432,20 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: 10/c0a0fd62319e0ce66e800f57ae12ef4ca45f12e9422dac160b866f0d890d01f8b547c96de2557b8443d96953db36be5d900e8006436ef9f628dbd38082e8fe5d
+  languageName: node
+  linkType: hard
+
+"terser@npm:^5.17.4":
+  version: 5.50.0
+  resolution: "terser@npm:5.50.0"
+  dependencies:
+    "@jridgewell/source-map": "npm:^0.3.3"
+    acorn: "npm:^8.15.0"
+    commander: "npm:^2.20.0"
+    source-map-support: "npm:~0.5.20"
+  bin:
+    terser: bin/terser
+  checksum: 10/d94ccee6ab8cd73dfe041c9f34729026e3b00e26ed1544497e7b54bb90b0d162a44621d830c0dd26684dc1a0e3ac91a75a6aab2f233ee6b82df9c21c7bab3354
   languageName: node
   linkType: hard
 
