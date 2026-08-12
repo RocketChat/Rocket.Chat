@@ -1,0 +1,23 @@
+packages/model-typings/src/types/DocumentWithProjection.typetest.ts
+  s_d81a2915077aab::t_5da87c646789b3 1-64
+packages/model-typings/src/index.ts
+  s_d81a2915077aab::t_f3100f21ed79f3 79
+packages/model-typings/src/types/DocumentWithProjection.ts
+  s_d81a2915077aab::t_6833c06d1e22ea 1,7-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "1f8b4799b96df96519634b1703d03cc43b4e7066",
+  "prompts": {},
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
