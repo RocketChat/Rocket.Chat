@@ -1855,6 +1855,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			'servedBy': { $exists: true },
 		};
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `sort` wins over a caller-supplied one.
 		return this.findOne<T, O>(query, { ...options, sort: { closedAt: -1 } } as unknown as O);
 	}
 

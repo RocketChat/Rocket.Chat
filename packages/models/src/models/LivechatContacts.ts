@@ -165,6 +165,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			enabled: { $ne: false },
 		};
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
 		return this.findPaginated<T, O>({ ...match }, {
 			allowDiskUse: true,
 			...options,

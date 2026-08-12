@@ -376,6 +376,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			exceptions = [];
 		}
 		if (options == null) {
+			// `{}` is not assignable to `O` (a caller could pin it to a narrower type), but under-projecting only
+			// ever returns more fields than the declared type claims
 			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
@@ -422,6 +424,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			exceptions = [];
 		}
 		if (options == null) {
+			// `{}` is not assignable to `O` (a caller could pin it to a narrower type), but under-projecting only
+			// ever returns more fields than the declared type claims
 			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
@@ -546,6 +550,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 		const query = { username };
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
@@ -962,6 +967,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			conditions = {};
 		}
 		if (options == null) {
+			// `{}` is not assignable to `O` (a caller could pin it to a narrower type), but under-projecting only
+			// ever returns more fields than the declared type claims
 			options = {} as O;
 		}
 		if (!Array.isArray(exceptions)) {
@@ -2331,6 +2338,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			[`services.${serviceName}.id`]: userId,
 		};
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
@@ -2343,6 +2351,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { 'emails.address': String(emailAddress).trim() };
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
 		return this.findOne<T, O>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
@@ -2617,6 +2626,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `sort` wins over a caller-supplied one.
 		const options = {
 			...optionsParams,
 			sort: {

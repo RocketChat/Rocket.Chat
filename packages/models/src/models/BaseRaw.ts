@@ -182,6 +182,14 @@ export abstract class BaseRaw<
 		};
 	}
 
+	/*
+	 * Every finder below asserts its result. `this.col` is a `Collection<T>` and yields `WithId<T>`,
+	 * while the signatures return `DocumentWithProjection<P, O>` — a conditional type TS cannot reduce
+	 * while `P` and `O` are still type parameters, so it cannot verify the assignment either way.
+	 * Assert to the declared type rather than `any`, so a Promise/FindCursor mix-up still fails to compile.
+	 * The cursor cases need the `unknown` hop because `FindCursor` is invariant in its element type.
+	 */
+
 	public findOneAndUpdate<P extends Document = T, O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection>(
 		query: Filter<T>,
 		update: UpdateFilter<T> | T,
@@ -196,7 +204,9 @@ export abstract class BaseRaw<
 			} as Partial<T> & { _id: string };
 		}
 
-		return this.col.findOneAndUpdate(query, update, (options || {}) as FindOneAndUpdateOptions) as any;
+		const result = this.col.findOneAndUpdate(query, update, (options || {}) as FindOneAndUpdateOptions);
+
+		return result as Promise<DocumentWithDriverProjection<P, O> | null>;
 	}
 
 	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
@@ -213,9 +223,9 @@ export abstract class BaseRaw<
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		if (optionsDef) {
-			return this.col.findOne(q, optionsDef) as any;
+			return this.col.findOne(q, optionsDef) as Promise<DocumentWithProjection<P, O> | null>;
 		}
-		return this.col.findOne(q) as any;
+		return this.col.findOne(q) as Promise<DocumentWithProjection<P, O> | null>;
 	}
 
 	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
@@ -223,7 +233,7 @@ export abstract class BaseRaw<
 		options?: O,
 	): FindCursor<DocumentWithProjection<P, O>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		return this.col.find(query, optionsDef) as any;
+		return this.col.find(query, optionsDef) as unknown as FindCursor<DocumentWithProjection<P, O>>;
 	}
 
 	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
@@ -236,7 +246,7 @@ export abstract class BaseRaw<
 		const totalCount = this.col.countDocuments(query);
 
 		return {
-			cursor: cursor as any,
+			cursor: cursor as unknown as FindCursor<DocumentWithProjection<P, O>>,
 			totalCount,
 		};
 	}
@@ -350,7 +360,9 @@ export abstract class BaseRaw<
 		options?: O,
 	): Promise<DocumentWithDriverProjection<P, O> | null> {
 		if (!this.trash) {
-			return this.col.findOneAndDelete(filter, (options || {}) as FindOneAndDeleteOptions) as any;
+			const result = this.col.findOneAndDelete(filter, (options || {}) as FindOneAndDeleteOptions);
+
+			return result as Promise<DocumentWithDriverProjection<P, O> | null>;
 		}
 
 		// the trash path needs the whole document to archive it, so the projection is not applied here;
@@ -382,7 +394,8 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc as any;
+		// unprojected, per the note above: more fields than the type claims, which is the safe direction
+		return doc as unknown as DocumentWithDriverProjection<P, O>;
 	}
 
 	findOneAndDeleteById<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(

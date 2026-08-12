@@ -21,6 +21,8 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 			userId,
 		};
 
+		// merging into `O` is a lie only about `sort`; `DocumentWithProjection` reads `O['projection']`
+		// alone, and that comes straight from `options`, so the declared return type stays accurate
 		return this.findOne<T, O>(query, { ...options, sort: { _updatedAt: -1 } } as unknown as O);
 	}
 }
