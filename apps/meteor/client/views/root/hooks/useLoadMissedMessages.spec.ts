@@ -26,7 +26,7 @@ jest.mock('../../../../app/utils/client/lib/SDKClient', () => ({
 
 const rid = 'room-id';
 
-const createMessage = (_id: string, ts: Date, extra: Partial<IMessage> = {}): IMessage =>
+const createMessage = (_id: string, ts: Date, extra: Partial<IMessage & { temp: boolean }> = {}): IMessage =>
 	({
 		_id,
 		rid,
@@ -85,6 +85,59 @@ describe('useLoadMissedMessages', () => {
 				fromTs: oldest.toISOString(),
 			}),
 		);
+	});
+
+	it('should leave hidden and temp messages out of the sync window', async () => {
+		const oldest = new Date(2_000);
+		const newest = new Date(3_000);
+		Messages.state.storeMany([
+			createMessage('hidden', new Date(1_000), { _hidden: true }),
+			createMessage('oldest', oldest),
+			createMessage('newest', newest),
+			createMessage('temp', new Date(4_000), { temp: true }),
+		]);
+
+		renderReconnection();
+
+		await waitFor(() =>
+			expect(sdk.rest.get).toHaveBeenCalledWith('/v1/chat.syncMessages', {
+				roomId: rid,
+				lastUpdate: newest.toISOString(),
+				fromTs: oldest.toISOString(),
+			}),
+		);
+	});
+
+	it('should leave messages from other rooms out of the sync window', async () => {
+		const oldest = new Date(2_000);
+		const newest = new Date(3_000);
+		Messages.state.storeMany([
+			createMessage('other-older', new Date(1_000), { rid: 'other-room-id' }),
+			createMessage('oldest', oldest),
+			createMessage('newest', newest),
+			createMessage('other-newer', new Date(4_000), { rid: 'other-room-id' }),
+		]);
+
+		renderReconnection();
+
+		await waitFor(() =>
+			expect(sdk.rest.get).toHaveBeenCalledWith('/v1/chat.syncMessages', {
+				roomId: rid,
+				lastUpdate: newest.toISOString(),
+				fromTs: oldest.toISOString(),
+			}),
+		);
+	});
+
+	it('should not sync a room holding only hidden and temp messages', async () => {
+		Messages.state.storeMany([
+			createMessage('hidden', new Date(1_000), { _hidden: true }),
+			createMessage('temp', new Date(2_000), { temp: true }),
+		]);
+
+		renderReconnection();
+
+		await waitFor(() => expect(sdk.rest.get).not.toHaveBeenCalled());
 	});
 
 	it('should not sync while the connection stays online', async () => {
