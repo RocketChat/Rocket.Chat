@@ -363,7 +363,7 @@ export const timestampFromHours = (hours: string, minutes = '00', seconds = '00'
 
 	const yearMonthDay = date.toISOString().split('T')[0];
 
-	const timestamp = (new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone}`).getTime() / 1000) | 0;
+	const timestamp = Math.floor(new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone}`).getTime() / 1000);
 
 	return timestamp.toString();
 };

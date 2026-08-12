@@ -78,3 +78,21 @@ describe('relative hour timestamp parsing', () => {
 		expect(parse(input)).toEqual([paragraph([node])]);
 	});
 });
+
+describe('relative hour timestamp parsing after the signed 32-bit boundary', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2040-01-01T00:00:00.000Z'));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+	it('does not overflow an hour-only timestamp', () => {
+		const input = '<t:00:00+00:00:R>';
+		const node = timestampNode('2208988800', 'R', [0, input.length]);
+
+		expect(parse(input)).toEqual([paragraph([node])]);
+	});
+});
