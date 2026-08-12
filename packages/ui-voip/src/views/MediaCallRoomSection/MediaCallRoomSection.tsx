@@ -10,7 +10,6 @@ import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
-import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
@@ -83,64 +82,6 @@ const callHeaderTimerStyles = css`
 	font-variant-numeric: tabular-nums;
 `;
 
-// Shared "pill" styling for the recording header action. The
-// active-state colour is supplied via the --active-bg / --active-bg-hover
-// CSS variables on the consuming element. The hover-label swap (e.g.
-// "Recording…" → "Stop recording") is purely CSS — the parent renders both
-// the active and hover labels in sibling <span> elements and `:hover`
-// toggles which is visible. Avoids two pieces of React state.
-const pillStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	height: 28px;
-	padding: 0 12px;
-	border-radius: 14px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	background-color: transparent;
-	color: rgba(255, 255, 255, 0.9);
-	font-size: 12px;
-	line-height: 1;
-	cursor: pointer;
-	transition:
-		background-color 120ms ease,
-		color 120ms ease,
-		border-color 120ms ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: white;
-	}
-
-	&:disabled {
-		opacity: 0.55;
-		cursor: not-allowed;
-	}
-
-	&.active {
-		background-color: var(--rcx-pill-active-bg);
-		border-color: var(--rcx-pill-active-bg);
-		color: white;
-	}
-
-	&.active:hover:not(:disabled) {
-		background-color: var(--rcx-pill-active-bg-hover);
-		border-color: var(--rcx-pill-active-bg-hover);
-	}
-
-	/* Hover-label swap: parent renders both the idle and hover labels as
-	   children of [data-hover-swap]; CSS toggles which is visible. */
-	[data-hover-swap] > [data-hover] {
-		display: none;
-	}
-	&:hover [data-hover-swap] > [data-hover] {
-		display: inline;
-	}
-	&:hover [data-hover-swap] > [data-idle] {
-		display: none;
-	}
-`;
-
 // Visual grouping for "toggle + its device chevron": tightens the gap
 // between the toggle button and its adjacent device picker so they read
 // as one composite control rather than two unrelated buttons. The
@@ -157,7 +98,7 @@ const chevronWrapStyles = css`
 
 // Fullscreen toggle in the call header — small icon-only button styled
 // to read as "header action" rather than a primary control. White-on-
-// transparent with a subtle hover background, matching the recording
+// transparent with a subtle hover background, matching the other header
 // pill's chrome.
 const headerActionsRowStyles = css`
 	display: inline-flex;
@@ -183,29 +124,6 @@ const fullscreenButtonStyles = css`
 	&:hover {
 		background-color: rgba(255, 255, 255, 0.08);
 		color: white;
-	}
-`;
-
-const recordDotStyles = css`
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	background-color: rgb(200 54 45);
-	flex-shrink: 0;
-
-	&.recording {
-		background-color: white;
-		animation: rcx-record-blink 1.2s ease-in-out infinite;
-	}
-
-	@keyframes rcx-record-blink {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.25;
-		}
 	}
 `;
 
@@ -256,8 +174,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 		raisedHands,
 		onSendReaction,
 		activeReactions,
-		liveRecordingActive,
-		broadcastRecordingState,
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants: remoteParticipantsRaw,
 	} = useMediaCallView();
@@ -271,7 +187,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 	// purely defensive.
 	const remoteParticipants = remoteParticipantsRaw ?? [];
 
-	const { muted, held, connectionState, startedAt, callId } = sessionState;
+	const { muted, held, connectionState, startedAt } = sessionState;
 	const isOneOnOne = remoteParticipants.length === 1;
 	// A one-to-one call is left *with* someone, so it can name them. A group call has no single other side —
 	// "End call with Call" is what naming one anyway produced — so it just says what the button does.
@@ -281,9 +197,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 	// wired up by LiveKitMediaCallProvider, so its presence is a reliable
 	// "this is an LK call" signal without threading another prop through.
 	const isLiveKitCall = Boolean(onToggleHand);
-
-	const [isRecording, setIsRecording] = useState(false);
-	const [recordingBusy, setRecordingBusy] = useState(false);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
 
@@ -308,31 +221,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 		if (!node) return;
 		void node.requestFullscreen().catch(() => undefined);
 	}, []);
-
-	// Plays a chime on every client whenever the polled recording state
-	// transitions — ascending for off→on, descending mirror for on→off.
-	// We track the previous value so we don't chime on the initial mount
-	// (where the first poll might surface an already-running recording)
-	// and so we don't double-fire when the toggle handler optimistically
-	// sets the state — both the optimistic flip and the next poll
-	// converge to the same value.
-	const prevRecordingRef = useRef<boolean | null>(null);
-	useEffect(() => {
-		if (prevRecordingRef.current === null) {
-			// First observation. Record the value; never chime on first paint.
-			prevRecordingRef.current = isRecording;
-			return;
-		}
-		if (prevRecordingRef.current !== isRecording) {
-			if (isRecording) {
-				playRecordingChime();
-			} else {
-				playRecordingStopChime();
-			}
-		}
-		prevRecordingRef.current = isRecording;
-	}, [isRecording]);
-
 	// Click-outside dismiss for the reaction popover. Stays open while the
 	// user clicks emojis inside it (so they can send several in a row), but
 	// closes when they click anywhere else on the page.
@@ -349,65 +237,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 	}, [reactionPickerOpen]);
 
 	// Same click-outside dismissal for the language picker.
-	// One-shot fetch on call join to seed the recording state. After that,
-	// changes propagate over the LK data channel (see liveRecordingActive
-	// sync effect below) — no polling, no 5s lag.
-	useEffect(() => {
-		if (!callId) return;
-		let cancelled = false;
-		void (async () => {
-			try {
-				const res = await fetch(`/api/v1/video-conference.livekit.recording.status?callId=${encodeURIComponent(callId)}`, {
-					headers: {
-						'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
-						'X-User-Id': localStorage.getItem('Meteor.userId') || '',
-					},
-				});
-				if (!res.ok || cancelled) return;
-				const data = await res.json();
-				setIsRecording(Boolean(data.recording));
-			} catch {
-				/* best-effort */
-			}
-		})();
-		return () => {
-			cancelled = true;
-		};
-	}, [callId]);
-
-	// React to recording-state broadcasts from other participants. Whoever
-	// flips the recording pill broadcasts via the LK data channel; the
-	// provider stashes it in liveRecordingActive; we sync local UI.
-	useEffect(() => {
-		if (liveRecordingActive) setIsRecording(liveRecordingActive.isRecording);
-	}, [liveRecordingActive]);
-
-	const onToggleRecording = useCallback(async () => {
-		if (!callId || recordingBusy) return;
-		setRecordingBusy(true);
-		try {
-			const endpoint = isRecording ? '/api/v1/video-conference.livekit.recording.stop' : '/api/v1/video-conference.livekit.recording.start';
-			const res = await fetch(endpoint, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
-					'X-User-Id': localStorage.getItem('Meteor.userId') || '',
-				},
-				body: JSON.stringify({ callId }),
-			});
-			if (res.ok) {
-				const next = !isRecording;
-				setIsRecording(next);
-				// Tell other participants over the LK data channel so they
-				// flip the pill without waiting for a poll tick.
-				broadcastRecordingState?.(next);
-			}
-		} finally {
-			setRecordingBusy(false);
-		}
-	}, [callId, isRecording, recordingBusy, broadcastRecordingState]);
-
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
@@ -602,33 +431,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ac
 					<Timer startAt={startedAt} />
 				</Box>
 				<Box className={headerActionsRowStyles}>
-					{/* Recording is a Video Conference (LiveKit) feature — the
-					    pill only renders when the upstream provider supplies a
-					    broadcastRecordingState. 1:1 VoIP calls (which have no
-					    recording backend in this branch) skip it. */}
-					{broadcastRecordingState && (
-						<Box
-							is='button'
-							type='button'
-							className={[pillStyles, isRecording ? 'active' : null]}
-							style={{ '--rcx-pill-active-bg': 'rgb(200 54 45)', '--rcx-pill-active-bg-hover': 'rgb(168 41 33)' } as React.CSSProperties}
-							onClick={onToggleRecording}
-							disabled={recordingBusy}
-							title={isRecording ? t('Stop_recording') : t('Start_recording')}
-						>
-							<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
-							{isRecording ? (
-								<Box is='span' data-hover-swap>
-									<Box is='span' data-idle>{`${t('Recording')}…`}</Box>
-									<Box is='span' data-hover>
-										{t('Stop_recording')}
-									</Box>
-								</Box>
-							) : (
-								<Box is='span'>{t('Start_recording')}</Box>
-							)}
-						</Box>
-					)}
 					<Box
 						is='button'
 						type='button'

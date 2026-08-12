@@ -12,7 +12,6 @@ import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { settings } from '../../../server/settings';
 import { registerGroupCallReconcileCron } from '../lib/livekit/cleanup';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
-import { resumeActiveRecordingPollers } from '../lib/livekit/recordingPoller';
 import { addSettings } from '../settings/video-conference';
 
 // Bind/unbind LK provider in the videoConfProviders registry based on whether
@@ -74,19 +73,11 @@ Meteor.startup(async () => {
 		// setting change. isLiveKitFullyConfigured checks Enabled + URL +
 		// API key + API secret, so we re-evaluate whenever any of those flip.
 		refreshLiveKitProviderRegistration();
-		settings.watchByRegex(
-			/^VideoConf_LiveKit_(Enabled|Url|Api_Key|Api_Secret|Recording_(Enabled|Storage|Local_Path|S3_Access_Key|S3_Secret_Key))$/,
-			() => refreshLiveKitProviderRegistration(),
-		);
+		settings.watchByRegex(/^VideoConf_LiveKit_(Enabled|Url|Api_Key|Api_Secret)$/, () => refreshLiveKitProviderRegistration());
 
 		// Reconcile group calls against LK presence every minute so calls
 		// whose participants vanished (browser crash, missed leave POST)
 		// don't stay "active" indefinitely.
 		await registerGroupCallReconcileCron();
-
-		// Resume recording pollers for any recordings that were in flight
-		// when the server last shut down (egressId persisted on the call doc,
-		// message not yet sent). Idempotent if there's nothing to resume.
-		await resumeActiveRecordingPollers();
 	});
 });

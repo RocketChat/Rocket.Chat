@@ -12,12 +12,10 @@ export type VideoGrant = {
 	canPublishData?: boolean;
 	canPublishSources?: ('camera' | 'microphone' | 'screen_share' | 'screen_share_audio')[];
 	hidden?: boolean;
-	recorder?: boolean;
 	ingressAdmin?: boolean;
 	roomAdmin?: boolean;
 	roomCreate?: boolean;
 	roomList?: boolean;
-	roomRecord?: boolean;
 };
 
 export type AccessTokenInput = {
@@ -52,7 +50,7 @@ export async function createLiveKitAccessToken(input: AccessTokenInput): Promise
 	);
 }
 
-// Token used by the server itself to call LiveKit's HTTP API (RoomService, Egress).
+// Token used by the server itself to call LiveKit's HTTP API (RoomService).
 export async function createLiveKitApiToken(grant: VideoGrant): Promise<string> {
 	const cfg = getLiveKitConfig();
 	if (!cfg.apiKey || !cfg.apiSecret) {

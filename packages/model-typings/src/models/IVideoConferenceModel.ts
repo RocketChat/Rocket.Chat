@@ -4,7 +4,6 @@ import type {
 	IRoom,
 	IUser,
 	IVideoConferenceParticipant,
-	IVideoConferenceRecording,
 	VideoConference,
 	VideoConferenceStatus,
 	IVoIPVideoConference,
@@ -84,13 +83,12 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
 
 	// --- Embedded SFU (LiveKit) helpers ---
-	// These mirror the per-participant + recording + transcription bookkeeping
+	// These mirror the per-participant bookkeeping
 	// that URL-based providers don't need. URL providers (Jitsi/Meet/Zoom)
 	// never call these.
 
 	findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null>;
 
-	findActiveEmbeddedWithRecording(): Promise<VideoConference[]>;
 
 
 	findActiveExpiredEmbedded(maxAgeMs: number, providerName: string): Promise<VideoConference[]>;
@@ -99,11 +97,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id']): Promise<void>;
 
-	setRecordingById(callId: VideoConference['_id'], recording: IVideoConferenceRecording): Promise<void>;
 
-	updateRecordingById(callId: VideoConference['_id'], partial: Partial<IVideoConferenceRecording>): Promise<void>;
 
-	unsetRecordingById(callId: VideoConference['_id']): Promise<void>;
 
 
 
