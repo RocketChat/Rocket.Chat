@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import type { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -66,9 +67,14 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = (RocketChatImportFileInstance as ImportFileStore).createWriteStream(newFileName);
+	let errorProgressUpdate: Promise<unknown> | undefined;
+	const markImportAsFailed = (): Promise<unknown> => {
+		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR);
+		return errorProgressUpdate;
+	};
 
 	writeStream.on('error', () => {
-		void instance.updateProgress(ProgressStep.ERROR);
+		void markImportAsFailed();
 	});
 
 	let readStream: Readable | undefined;
@@ -77,7 +83,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 			readStream = await getHttpFileStream(fileUrl);
 		} catch (error) {
 			writeStream.destroy();
-			await instance.updateProgress(ProgressStep.ERROR);
+			await markImportAsFailed();
 			throw error;
 		}
 	}
@@ -87,11 +93,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	});
 
 	if (readStream) {
-		readStream.on('error', () => {
-			writeStream.destroy();
-			void instance.updateProgress(ProgressStep.ERROR);
-		});
-		readStream.pipe(writeStream);
+		void pipeline(readStream, writeStream).catch(() => markImportAsFailed());
 		return;
 	}
 

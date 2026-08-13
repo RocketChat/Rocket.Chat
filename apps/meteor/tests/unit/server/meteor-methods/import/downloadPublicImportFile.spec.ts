@@ -76,10 +76,26 @@ describe('executeDownloadPublicImportFile', () => {
 		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });
 
 		await executeDownloadPublicImportFile('user-id', 'https://example.com/import.zip', 'csv');
-		responseBody.emit('error', new Error('stream failed'));
+		const writeStreamClosed = new Promise<void>((resolve) => writeStream.once('close', resolve));
+		responseBody.destroy(new Error('stream failed'));
+		await writeStreamClosed;
 
 		expect(writeStream.destroyed).to.be.true;
-		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
+		expect(stubs.updateProgress.withArgs(progressStep.ERROR).calledOnce).to.be.true;
+		expect(stubs.updateProgress.calledWith(progressStep.FILE_LOADED)).to.be.false;
+	});
+
+	it('marks the import as failed and destroys the HTTP stream when the writable fails', async () => {
+		const responseBody = new PassThrough();
+		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });
+
+		await executeDownloadPublicImportFile('user-id', 'https://example.com/import.zip', 'csv');
+		const responseBodyClosed = new Promise<void>((resolve) => responseBody.once('close', resolve));
+		writeStream.destroy(new Error('stream failed'));
+		await responseBodyClosed;
+
+		expect(responseBody.destroyed).to.be.true;
+		expect(stubs.updateProgress.withArgs(progressStep.ERROR).calledOnce).to.be.true;
 		expect(stubs.updateProgress.calledWith(progressStep.FILE_LOADED)).to.be.false;
 	});
 
