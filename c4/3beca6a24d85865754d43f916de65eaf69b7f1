@@ -1,0 +1,52 @@
+ee/packages/federation-matrix/src/api/_matrix/media.ts
+  s_72c7717eccf972::t_c093642b32e351 78
+  s_72c7717eccf972::t_5403cc2390ea4d 132
+ee/packages/federation-matrix/src/api/_matrix/profiles.ts
+  s_72c7717eccf972::t_79b45efedc7cb0 370
+  s_72c7717eccf972::t_f64cbe9dd965df 414
+  s_72c7717eccf972::t_294be8954115b5 436
+  s_72c7717eccf972::t_b37c575597dfc0 458
+  s_72c7717eccf972::t_5a695a8390a164 510
+  s_72c7717eccf972::t_38aa5818aa2ff1 537
+.changeset/heavy-lions-attend.md
+  s_72c7717eccf972::t_5541923591a074 1-15
+ee/packages/federation-matrix/src/api/_matrix/send-join.ts
+  s_72c7717eccf972::t_2c62639adff171 120
+ee/packages/federation-matrix/src/api/.well-known/server.ts
+  s_72c7717eccf972::t_69a254af1e854c 23
+ee/packages/federation-matrix/src/api/_matrix/key/server.ts
+  s_72c7717eccf972::t_e4fbbe0a5b947a 36
+ee/packages/federation-matrix/src/api/_matrix/make-leave.ts
+  s_72c7717eccf972::t_5854bd0dcb7328 59
+ee/packages/federation-matrix/src/api/_matrix/rooms.ts
+  s_72c7717eccf972::t_9d4cac47944e91 148
+  s_72c7717eccf972::t_3ab20fa9b27cc4 180
+ee/packages/federation-matrix/src/api/_matrix/send-leave.ts
+  s_72c7717eccf972::t_da607e64428ab1 61
+ee/packages/federation-matrix/src/api/_matrix/versions.ts
+  s_72c7717eccf972::t_af13feaec542dc 28
+ee/packages/federation-matrix/src/api/_matrix/invite.ts
+  s_72c7717eccf972::t_af903d924c02ba 133
+ee/packages/federation-matrix/src/api/_matrix/transactions.ts
+  s_72c7717eccf972::t_443675e7a056aa 382
+  s_72c7717eccf972::t_aca5f8c4a9f902 416
+  s_72c7717eccf972::t_0071a9da2cdada 320
+  s_72c7717eccf972::t_bd7e06477a384c 270
+  s_72c7717eccf972::t_41594e88f80733 352
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c43beca6a24d85865754d43f916de65eaf69b7f1",
+  "prompts": {},
+  "sessions": {
+    "s_72c7717eccf972": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2aad1e5e-c543-4714-9ea2-7326a3a076ef",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
