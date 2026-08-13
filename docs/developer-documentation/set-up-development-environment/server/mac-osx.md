@@ -12,7 +12,7 @@ Before setting up Rocket.Chat on macOS, ensure you have installed:
 - **Xcode Command Line Tools**: `xcode-select --install`
 - **Homebrew**: Package manager for macOS
 - **Node.js**: `v22.22.3` (Recommended to install via `nvm` or `fnm`)
-- **Yarn**: `v4.12.0` (via Corepack)
+- **Yarn**: `v4.18.0` (via Corepack)
 - **MongoDB**: `v8.0`
 - **Meteor**: `v3.4.1` (Rocket.Chat build framework)
 
@@ -27,7 +27,7 @@ Open your terminal and install Xcode CLI tools and Homebrew:
 ```bash
 xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
 ```
 
 ---
@@ -45,7 +45,7 @@ corepack enable
 ```
 
 > [!NOTE]
-> If using zsh or fish shell, ensure `nvm` is sourced in your `~/.zshrc` or shell profile, or open a new terminal session before running `nvm install`.
+> `nvm` requires a POSIX-compliant shell (such as `bash` or `zsh`). If you use **Fish shell**, `nvm` is not supported; use [`fnm`](https://github.com/Schniz/fnm) (Fast Node Manager) instead (`fnm install 22.22.3 && fnm use 22.22.3`).
 
 ---
 

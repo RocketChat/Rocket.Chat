@@ -11,7 +11,7 @@ Inside your WSL2 environment, Rocket.Chat requires the standard stack:
 - **Windows**: Windows 10 (Build 19041+) or Windows 11
 - **WSL2**: Windows Subsystem for Linux version 2 (Ubuntu 22.04 LTS or 24.04 LTS)
 - **Node.js**: `v22.22.3` (inside WSL via `nvm`)
-- **Yarn**: `v4.12.0` (Corepack enabled inside WSL)
+- **Yarn**: `v4.18.0` (Corepack enabled inside WSL)
 - **MongoDB**: `v8.0` (inside WSL or via Docker for Windows)
 - **Meteor**: `v3.4.1` (Rocket.Chat build framework)
 

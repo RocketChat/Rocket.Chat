@@ -14,26 +14,28 @@ Click the button below or open the URL to launch a pre-configured Gitpod workspa
 
 ## 🛠️ What is Pre-Configured?
 
-When you launch Rocket.Chat on Gitpod, the `.gitpod.yml` configuration automatically sets up:
+When you launch Rocket.Chat on Gitpod, the `.gitpod/.gitpod.yml` configuration automatically sets up:
 
 - **Node.js**: `v22.22.3`
-- **Yarn**: `v4.12.0`
-- **MongoDB**: Automatically started container instance (`v8.0`)
-- **Meteor**: `v3.4.1`
-- **Dependencies**: Auto-run `yarn` installation
-- **Port Forwarding**: Port `3000` is automatically exposed with a public preview link.
+- **Yarn**: `v4.18.0`
+- **Meteor**: `v3.4.1` (with embedded development database)
+- **Dependencies**: Auto-run `yarn` installation during initialization
+- **Automatic Server Startup**: Automatically executes `yarn dsv` upon workspace start
+- **Port Forwarding**: Port `3000` is automatically exposed and opened in a side preview pane (`open-preview`)
 
 ---
 
 ## 🚀 Running the App in Gitpod
 
-Once the Gitpod workspace completes initialization, run:
+Once the Gitpod workspace completes initialization, the development server will launch automatically via `yarn dsv` and open a preview window on port `3000`.
+
+If you ever need to manually restart the development server, run:
 
 ```bash
-yarn dev
+yarn dsv
 ```
 
-Gitpod will prompt you with an option to open port `3000` in a browser window or side preview.
+*(You can also run `yarn dev` if you prefer the standard dev task).*
 
 ---
 

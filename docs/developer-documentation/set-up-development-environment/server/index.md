@@ -24,7 +24,7 @@ All setup paths carry equal support and weight. Select the environment that matc
 Regardless of which local platform you choose (**Mac OSX**, **Linux**, or **Windows WSL**), Rocket.Chat requires the following core software stack:
 
 - **Node.js**: `v22.22.3` (Managed via `nvm` or `fnm`)
-- **Package Manager**: `Yarn v4.12.0` (Corepack enabled)
+- **Package Manager**: `Yarn v4.18.0` (Corepack enabled)
 - **Framework**: `Meteor v3.4.1`
 - **Database**: `MongoDB v8.0`
 - **Version Control**: `Git`

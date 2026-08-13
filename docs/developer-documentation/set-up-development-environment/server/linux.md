@@ -9,7 +9,7 @@ This guide walks you through setting up a native local development environment f
 Like all local setup paths, Rocket.Chat requires the following core stack on Linux:
 
 - **Node.js**: `v22.22.3` (Managed via `nvm` or `fnm`)
-- **Yarn**: `v4.12.0` (Corepack enabled)
+- **Yarn**: `v4.18.0` (Corepack enabled)
 - **MongoDB**: `v8.0`
 - **Meteor**: `v3.4.1` (Rocket.Chat build framework)
 - **Build Tools**: `gcc`, `g++`, `make` (`build-essential` or `Development Tools`)
@@ -50,7 +50,7 @@ corepack enable
 ```
 
 > [!NOTE]
-> If using a non-bash shell (such as zsh or fish), restart your terminal session or source your shell configuration file after installing nvm.
+> `nvm` requires a POSIX-compliant shell (such as `bash` or `zsh`). If you use **Fish shell**, `nvm` is not supported; use [`fnm`](https://github.com/Schniz/fnm) (Fast Node Manager) instead (`fnm install 22.22.3 && fnm use 22.22.3`).
 
 ---
 
