@@ -142,7 +142,10 @@ describe('Imports', () => {
 		});
 
 		after(async () => {
-			await Promise.all([mockServerReset(), updateSetting('SSRF_Allowlist', previousSsrfAllowlist)]);
+			await Promise.all([
+				mockServerReset(),
+				previousSsrfAllowlist !== undefined ? updateSetting('SSRF_Allowlist', previousSsrfAllowlist) : Promise.resolve(),
+			]);
 		});
 
 		it('should reject a private target that is not on the SSRF allowlist and mark the operation as failed', async () => {

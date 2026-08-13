@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import type { Readable } from 'node:stream';
 
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -17,13 +18,19 @@ type ImportFileStore = {
 	createWriteStream(fileName: string): fs.WriteStream;
 };
 
-async function getHttpFileStream(fileUrl: string): Promise<NodeJS.ReadableStream> {
+async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 	const response = await fetch(fileUrl, {
 		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 
-	return response.body;
+	const body = response.body as Readable;
+	if (!response.ok) {
+		body.destroy();
+		throw new Error(`Unexpected response status ${response.status}`);
+	}
+
+	return body;
 }
 
 function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
@@ -64,7 +71,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		void instance.updateProgress(ProgressStep.ERROR);
 	});
 
-	let readStream: NodeJS.ReadableStream | undefined;
+	let readStream: Readable | undefined;
 	if (isUrl) {
 		try {
 			readStream = await getHttpFileStream(fileUrl);
@@ -75,11 +82,15 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		}
 	}
 
-	writeStream.on('end', () => {
+	writeStream.on('finish', () => {
 		void instance.updateProgress(ProgressStep.FILE_LOADED);
 	});
 
 	if (readStream) {
+		readStream.on('error', () => {
+			writeStream.destroy();
+			void instance.updateProgress(ProgressStep.ERROR);
+		});
 		readStream.pipe(writeStream);
 		return;
 	}
