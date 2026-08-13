@@ -9879,7 +9879,7 @@ __metadata:
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": "npm:~0.37.2"
+    "@rocket.chat/onboarding-ui": "npm:^0.37.3"
     "@rocket.chat/passport-x": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
@@ -10438,9 +10438,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:~0.37.2":
-  version: 0.37.2
-  resolution: "@rocket.chat/onboarding-ui@npm:0.37.2"
+"@rocket.chat/onboarding-ui@npm:^0.37.3, @rocket.chat/onboarding-ui@npm:~0.37.3":
+  version: 0.37.3
+  resolution: "@rocket.chat/onboarding-ui@npm:0.37.3"
   dependencies:
     i18next: "npm:~23.4.9"
     react-hook-form: "npm:~7.54.2"
@@ -10454,7 +10454,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/f9e9095858e97c635af7daac6303a463f627afcf18ea7c088578f0440b469d4328b5db4c18d7392c5b0210349025e7f4c32f5b839f785da2d4dfe1a795863e81
+  checksum: 10/7ba5cb2cdbbe1ad52069ea267a0806d665cb3db15bab50842cffae22a562716e75b5c353fa495d038449753679bee892d9feeeee902cfb67dcc7d324a750d518
   languageName: node
   linkType: hard
 
@@ -10891,7 +10891,7 @@ __metadata:
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
-    "@rocket.chat/onboarding-ui": "npm:~0.37.2"
+    "@rocket.chat/onboarding-ui": "npm:~0.37.3"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tools": "workspace:~"

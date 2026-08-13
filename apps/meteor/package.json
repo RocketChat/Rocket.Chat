@@ -138,7 +138,7 @@
 		"@rocket.chat/omni-core": "workspace:^",
 		"@rocket.chat/omni-core-ee": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
-		"@rocket.chat/onboarding-ui": "~0.37.2",
+		"@rocket.chat/onboarding-ui": "^0.37.3",
 		"@rocket.chat/passport-x": "workspace:~",
 		"@rocket.chat/password-policies": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",

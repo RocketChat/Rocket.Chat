@@ -18,7 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/onboarding-ui": "~0.37.2",
+		"@rocket.chat/onboarding-ui": "~0.37.3",
 		"@rocket.chat/tools": "workspace:~",
 		"dompurify": "~3.4.13"
 	},
