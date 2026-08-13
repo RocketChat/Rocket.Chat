@@ -33,7 +33,10 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	override findActiveByUnitIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(unitIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+	override findActiveByUnitIds<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(unitIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			enabled: true,
 			numAgents: { $gt: 0 },
