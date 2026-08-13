@@ -1,0 +1,32 @@
+ee/packages/federation-matrix/src/helpers/createOrUpdateFederatedUser.spec.ts
+  s_d87b2f2c7882c5::t_528df4b5329343 116-117,127-134
+  s_d87b2f2c7882c5::t_cbed2fbfeb42a9 135-136
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  s_0f79abe6b408e0::t_70a2d1751fa4b8 117-121
+ee/packages/federation-matrix/src/helpers/getOrCreateFederatedUser.spec.ts
+  s_d87b2f2c7882c5::t_f2eaa3f9d1ea36 104-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0e0b11827d4aa5d5def26ad570e29cf38924bdcc",
+  "prompts": {},
+  "sessions": {
+    "s_0f79abe6b408e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5363571f-4078-499f-9e92-26c054f55708",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_d87b2f2c7882c5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4d1998c8-e5a8-4b42-aab4-259685aabe0d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
