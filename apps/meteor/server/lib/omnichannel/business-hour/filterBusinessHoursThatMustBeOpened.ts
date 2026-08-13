@@ -42,7 +42,13 @@ export const filterBusinessHoursThatMustBeOpened = async (
 							localTimeFinish.add(1, 'week');
 						}
 
-						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(localTimeFinish);
+						// Work hours are configured at minute granularity, so a window stays open until the end of its
+						// `finish` minute. Treating `finish` as exclusive leaves consecutive daily windows disjoint:
+						// a 00:00-23:59 business hour (the only way the UI can express "always open") would close
+						// for the whole 23:59 minute, every day.
+						const afterFinishMinute = localTimeFinish.clone().add(1, 'minute');
+
+						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(afterFinishMinute);
 					}),
 		)
 		.map((businessHour) => ({
