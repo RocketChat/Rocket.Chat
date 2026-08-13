@@ -125,6 +125,7 @@ describe('MessageList scroll position', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		defaultProps.isAtBottom.current = false;
 		mockVirtualizerHandle.scrollToIndex.mockClear();
 		mockVirtualizerHandle.scrollTo.mockClear();
 		mockVirtualizerHandle.findItemIndex.mockImplementation((offset: number) => offset);
@@ -176,6 +177,45 @@ describe('MessageList scroll position', () => {
 		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />, { wrapper: root.build() });
 
 		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
+	});
+
+	it("should jump to bottom when the current user's optimistic message is appended", () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		const { rerender } = render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+		defaultProps.setShouldJumpToBottom.mockClear();
+
+		const ownOptimisticMessage = { ...createMessage('message-3'), temp: true } as IMessage;
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), ownOptimisticMessage]);
+		rerender(<MessageList {...defaultProps} />);
+
+		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
+	});
+
+	it('should not jump to bottom when someone else sends a message', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		const { rerender } = render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+		defaultProps.setShouldJumpToBottom.mockClear();
+
+		const otherUserMessage = {
+			...createMessage('message-3'),
+			u: { _id: 'other-user-id', username: 'other' },
+		} as IMessage;
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), otherUserMessage]);
+		rerender(<MessageList {...defaultProps} />);
+
+		expect(defaultProps.setShouldJumpToBottom).not.toHaveBeenCalledWith(true);
 	});
 
 	it('should do nothing if no previous scroll position is stored', () => {

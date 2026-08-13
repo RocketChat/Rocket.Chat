@@ -82,6 +82,8 @@ export const MessageList = function MessageList({
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const lastScrollSizeRef = useRef(0);
+	const prevMessagesLengthRef = useRef(0);
+	const ownUserId = user?._id;
 
 	const messages = useMessages({ rid });
 
@@ -178,10 +180,25 @@ export const MessageList = function MessageList({
 
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
-		if (shouldJumpToBottom === true) {
+
+		// Scroll to bottom when the user's own temp message is appended, so the list does not
+		// depend on streamNewMessage, which may not run for a message the client already added.
+		const prevMessagesLength = prevMessagesLengthRef.current;
+		prevMessagesLengthRef.current = messages.length;
+		if (messages.length > prevMessagesLength && ownUserId) {
+			const lastMessage = messages.at(-1);
+			if (lastMessage?.temp && lastMessage.u._id === ownUserId) {
+				setShouldJumpToBottom(true);
+			}
+		}
+
+		if (shouldJumpToBottom === true && handle) {
+			// Mark as at-bottom before the scroll runs, so useKeepAtBottom re-scrolls if the
+			// content grows in between. Only with a handle, otherwise nothing would scroll.
+			isAtBottom.current = true;
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
-			handle?.scrollToIndex(lastItemIndex + 1, {
+			handle.scrollToIndex(lastItemIndex + 1, {
 				align: 'center',
 			});
 		}
@@ -202,6 +219,7 @@ export const MessageList = function MessageList({
 		rid,
 		firstUnreadMessageId,
 		setShouldJumpToBottom,
+		ownUserId,
 	]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
