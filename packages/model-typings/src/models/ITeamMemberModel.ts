@@ -59,7 +59,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 		limit: number,
 		skip: number,
 		query?: Filter<ITeamMember>,
-	): FindPaginated<FindCursor<ITeamMember>>;
+	): FindPaginated<FindCursor<Pick<ITeamMember, '_id' | 'userId' | 'roles' | 'createdBy' | 'createdAt'>>>;
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateResult>;
 	createOneByTeamIdAndUserId(

@@ -261,7 +261,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
-	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null>;
+	getMinimumLastSeenByRoomId(rid: string): Promise<Pick<ISubscription, '_id' | 'ls'> | null>;
 
 	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult>;
 

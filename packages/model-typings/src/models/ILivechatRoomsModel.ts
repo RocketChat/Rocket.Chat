@@ -308,5 +308,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		contactId: ILivechatContact['_id'],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
-	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null>;
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<Pick<IOmnichannelRoom, '_id'> | null>;
 }
