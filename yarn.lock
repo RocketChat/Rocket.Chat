@@ -9419,14 +9419,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/emitter@npm:^0.33.0":
-  version: 0.33.0
-  resolution: "@rocket.chat/emitter@npm:0.33.0"
-  checksum: 10/3da59b699e71e3a10c1759cea9b9c9f91ff5d9d19b39cc1b843e09d53fba397d4999a9366f492376fee4dcd70cf89dc2c2bd2ba6fff134d69527d28023dc1417
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/emitter@workspace:packages/emitter, @rocket.chat/emitter@workspace:~":
+"@rocket.chat/emitter@npm:^0.33.0, @rocket.chat/emitter@workspace:packages/emitter, @rocket.chat/emitter@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/emitter@workspace:packages/emitter"
   dependencies:
