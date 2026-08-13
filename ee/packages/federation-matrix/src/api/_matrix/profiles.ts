@@ -157,20 +157,13 @@ const MakeJoinQuerySchema = {
 	type: 'object',
 	properties: {
 		ver: {
-			anyOf: [
-				{
-					type: 'string',
-					description: 'Supported room version',
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					minItems: 0,
-					description: 'Supported room versions',
-				},
-			],
+			// a string branch here would be redundant: ajvQuery coerces a single `?ver=` into a
+			// one-element array, and in a `oneOf` both branches would match and fail validation
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			description: 'Room versions supported by the sending server',
 		},
 	},
 };
@@ -260,6 +253,26 @@ const MakeJoinResponseSchema = {
 };
 
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
+
+const MakeJoinIncompatibleVersionResponseSchema = {
+	type: 'object',
+	properties: {
+		errcode: {
+			type: 'string',
+			const: 'M_INCOMPATIBLE_ROOM_VERSION',
+		},
+		error: {
+			type: 'string',
+		},
+		room_version: {
+			type: 'string',
+			description: 'The version of the room',
+		},
+	},
+	required: ['errcode', 'error', 'room_version'],
+};
+
+const isMakeJoinIncompatibleVersionResponseProps = ajv.compile(MakeJoinIncompatibleVersionResponseSchema);
 
 const GetMissingEventsParamsSchema = {
 	type: 'object',
@@ -446,6 +459,7 @@ export const getMatrixProfilesRoutes = () => {
 				query: isMakeJoinQueryProps,
 				response: {
 					200: isMakeJoinResponseProps,
+					400: isMakeJoinIncompatibleVersionResponseProps,
 				},
 				tags: ['Federation'],
 				license: ['federation'],
@@ -456,19 +470,37 @@ export const getMatrixProfilesRoutes = () => {
 				const url = new URL(c.req.url);
 				const verParams = url.searchParams.getAll('ver');
 
-				const response = await federationSDK.makeJoin(
-					roomIdSchema.parse(roomId),
-					userIdSchema.parse(userId),
-					verParams.length > 0 ? (verParams as RoomVersion[]) : ['1'],
-				);
+				try {
+					const response = await federationSDK.makeJoin(
+						roomIdSchema.parse(roomId),
+						userIdSchema.parse(userId),
+						// spec: "The room versions the sending server has support for. Defaults to [1]."
+						verParams.length > 0 ? (verParams as RoomVersion[]) : ['1'],
+					);
 
-				return {
-					body: {
-						room_version: response.room_version,
-						event: response.event,
-					},
-					statusCode: 200,
-				};
+					return {
+						body: {
+							room_version: response.room_version,
+							event: response.event,
+						},
+						statusCode: 200,
+					};
+				} catch (error) {
+					// the SDK throws when the room's version is not in the requested `ver` list
+					const incompatibleVersion = error instanceof Error && error.message.match(/^Unsupported room version: (.+)$/);
+					if (incompatibleVersion) {
+						return {
+							body: {
+								errcode: 'M_INCOMPATIBLE_ROOM_VERSION',
+								error: 'Your homeserver does not support the features required to join this room',
+								room_version: incompatibleVersion[1],
+							},
+							statusCode: 400,
+						};
+					}
+
+					throw error;
+				}
 			},
 		)
 		.post(
