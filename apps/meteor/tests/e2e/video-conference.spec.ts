@@ -53,6 +53,7 @@ test.describe('video conference', () => {
 
 		await test.step('opens video conference popup', async () => {
 			await page.keyboard.press('Tab');
+			await page.keyboard.press('Tab');
 			await page.keyboard.press('Space');
 
 			await expect(poHomeChannel.content.getVideoConfPopup(`Start a call in ${targetChannel}`)).toBeVisible();
