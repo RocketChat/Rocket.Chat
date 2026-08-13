@@ -256,7 +256,7 @@ export const isRegisterUser = (user: IUser): user is IRegisterUser => user.usern
 
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 
-interface IUserNativeFederated extends IUser {
+export interface IUserNativeFederated extends IUser {
 	federated: true;
 	username: `@${string}:${string}`;
 	federation: {
