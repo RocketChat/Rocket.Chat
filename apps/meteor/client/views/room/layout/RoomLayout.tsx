@@ -24,7 +24,7 @@ const useBreakpointsElement = () => {
 	const breakpoints = useMemo(
 		() =>
 			breakpointsDefinitions
-				.filter(({ minViewportWidth }) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
+				.filter(({ minViewportWidth }) => minViewportWidth && (!borderBoxSize.inlineSize || borderBoxSize.inlineSize >= minViewportWidth))
 				.map(({ name }) => name),
 		[borderBoxSize],
 	);
@@ -68,7 +68,17 @@ const RoomLayout = ({ classificationBanner, header, body, footer, aside, ...prop
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{aside && <Suspense fallback={null}>{aside}</Suspense>}
+					{aside && (
+						<Suspense fallback={null}>
+							{contextualbarPosition === 'absolute' ? (
+								<Box position='absolute' insetBlock={0} insetInlineEnd={0} width={contextualbarSize} zIndex={100}>
+									{aside}
+								</Box>
+							) : (
+								aside
+							)}
+						</Suspense>
+					)}
 				</Box>
 			</Box>
 		</LayoutContext.Provider>
