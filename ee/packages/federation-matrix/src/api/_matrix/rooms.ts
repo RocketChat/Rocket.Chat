@@ -4,19 +4,27 @@ import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
+// All query params are optional per spec.
 const PublicRoomsQuerySchema = {
 	type: 'object',
 	properties: {
-		include_all_networks: {
-			type: 'boolean',
-			description: 'Include all networks (ignored)',
-		},
 		limit: {
 			type: 'number',
 			description: 'Maximum number of rooms to return',
 		},
+		since: {
+			type: 'string',
+			description: 'Pagination token from a previous call',
+		},
+		include_all_networks: {
+			type: 'boolean',
+			description: 'Include all networks (ignored)',
+		},
+		third_party_instance_id: {
+			type: 'string',
+			description: 'Specific third-party network to request (ignored)',
+		},
 	},
-	required: ['include_all_networks', 'limit'],
 };
 
 const isPublicRoomsQueryProps = ajvQuery.compile(PublicRoomsQuerySchema);
@@ -86,17 +94,28 @@ const PublicRoomsResponseSchema = {
 
 const isPublicRoomsResponseProps = ajv.compile(PublicRoomsResponseSchema);
 
+// All body fields are optional per spec: "Options for which rooms to return, or empty object to use defaults."
 const PublicRoomsPostBodySchema = {
 	type: 'object',
 	properties: {
-		include_all_networks: {
-			type: 'string',
-			description: 'Include all networks (ignored)',
-			nullable: true,
-		},
 		limit: {
 			type: 'number',
 			description: 'Maximum number of rooms to return',
+			nullable: true,
+		},
+		since: {
+			type: 'string',
+			description: 'Pagination token from a previous request',
+			nullable: true,
+		},
+		include_all_networks: {
+			type: 'boolean',
+			description: 'Include all networks (ignored)',
+			nullable: true,
+		},
+		third_party_instance_id: {
+			type: 'string',
+			description: 'Specific third-party network to request (ignored)',
 			nullable: true,
 		},
 		filter: {
@@ -116,9 +135,9 @@ const PublicRoomsPostBodySchema = {
 					nullable: true,
 				},
 			},
+			nullable: true,
 		},
 	},
-	required: ['filter'],
 };
 
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
@@ -185,7 +204,7 @@ export const getMatrixRoomsRoutes = () => {
 					body: {
 						chunk: publicRooms
 							.filter((r) => {
-								if (filter.generic_search_term) {
+								if (filter?.generic_search_term) {
 									return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
 								}
 
