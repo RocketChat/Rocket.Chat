@@ -58,88 +58,6 @@ const GetEventResponseSchema = {
 
 const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
 
-const EventHashSchema = {
-	type: 'object',
-	properties: {
-		sha256: {
-			type: 'string',
-			description: 'SHA256 hash of the event',
-		},
-	},
-	required: ['sha256'],
-};
-
-const EventSignatureSchema = {
-	type: 'object',
-	description: 'Event signatures by server and key ID',
-};
-
-const EventBaseSchema = {
-	type: 'object',
-	properties: {
-		type: {
-			type: 'string',
-			description: 'Event type',
-		},
-		content: {
-			type: 'object',
-			description: 'Event content',
-		},
-		sender: {
-			type: 'string',
-			pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
-			description: 'Matrix user ID in format @user:server.com',
-		},
-		room_id: {
-			type: 'string',
-			pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
-			description: 'Matrix room ID in format !room:server.com',
-		},
-		origin_server_ts: {
-			type: 'number',
-			minimum: 0,
-			description: 'Unix timestamp in milliseconds',
-		},
-		depth: {
-			type: 'number',
-			minimum: 0,
-			description: 'Event depth',
-		},
-		prev_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Previous events in the room',
-		},
-		auth_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Authorization events',
-		},
-		origin: {
-			type: 'string',
-			description: 'Origin server',
-		},
-		hashes: {
-			...EventHashSchema,
-			nullable: true,
-		},
-		signatures: {
-			...EventSignatureSchema,
-			nullable: true,
-		},
-		unsigned: {
-			type: 'object',
-			description: 'Unsigned data',
-			nullable: true,
-		},
-	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events'],
-};
-
 const SendTransactionBodySchema = {
 	type: 'object',
 	properties: {
@@ -154,7 +72,12 @@ const SendTransactionBodySchema = {
 		},
 		pdus: {
 			type: 'array',
-			items: EventBaseSchema,
+			items: {
+				// deliberately unconstrained, matching the spec: the PDU format varies by room
+				// version, and a malformed PDU must be reported per-PDU in the 200 response's
+				// `pdus` map instead of failing the whole transaction with a 400
+				type: 'object',
+			},
 			description: 'Persistent data units (PDUs) to process',
 			default: [],
 		},
@@ -194,14 +117,14 @@ const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema
 const ErrorResponseSchema = {
 	type: 'object',
 	properties: {
+		errcode: {
+			type: 'string',
+		},
 		error: {
 			type: 'string',
 		},
-		details: {
-			type: 'object',
-		},
 	},
-	required: ['error', 'details'],
+	required: ['errcode', 'error'],
 };
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
@@ -307,7 +230,10 @@ const BackfillResponseSchema = {
 		},
 		pdus: {
 			type: 'array',
-			items: EventBaseSchema,
+			items: {
+				// spec: backfill responses "MUST NOT be validated" against PDU restrictions
+				type: 'object',
+			},
 			description: 'Events in reverse chronological order',
 		},
 	},
@@ -329,6 +255,7 @@ export const getMatrixTransactionsRoutes = () => {
 					response: {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
+						429: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -344,7 +271,7 @@ export const getMatrixTransactionsRoutes = () => {
 							return {
 								statusCode: 429,
 								body: {
-									errorcode: 'M_UNKNOWN',
+									errcode: 'M_UNKNOWN',
 									error: 'Too many concurrent transactions',
 								},
 							};
@@ -352,7 +279,10 @@ export const getMatrixTransactionsRoutes = () => {
 
 						return {
 							statusCode: 400,
-							body: {},
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to process transaction',
+							},
 						};
 					}
 
