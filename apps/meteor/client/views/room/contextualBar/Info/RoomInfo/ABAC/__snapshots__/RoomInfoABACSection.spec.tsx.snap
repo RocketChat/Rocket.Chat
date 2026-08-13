@@ -38,7 +38,7 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
       </div>
       ABAC_Managed_description
       <div
-        class="rcx-box rcx-box--full rcx-css-pr6nut"
+        class="rcx-box rcx-box--full rcx-css-1po16l8"
         id="room-attributes-list-label"
       >
         ABAC_Room_Attributes

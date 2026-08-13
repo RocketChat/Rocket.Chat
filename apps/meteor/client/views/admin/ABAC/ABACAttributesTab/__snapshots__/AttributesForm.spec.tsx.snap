@@ -4,13 +4,13 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-14zoraf"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1d8k487"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -172,13 +172,13 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-14zoraf"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1d8k487"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div

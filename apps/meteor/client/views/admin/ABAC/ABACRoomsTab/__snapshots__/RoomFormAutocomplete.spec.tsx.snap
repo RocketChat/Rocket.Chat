@@ -20,7 +20,7 @@ exports[`RoomFormAutocomplete renders Default without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1ku6woc"
+          class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-rm4moq"
         >
           
         </i>

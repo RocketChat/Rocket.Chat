@@ -4,7 +4,7 @@ exports[`renders AppInstances without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1o4svxq"
+      class="rcx-box rcx-box--full rcx-css-wuaqgn"
     >
       <span
         class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
@@ -24,7 +24,7 @@ exports[`renders AppInstances without crashing 2`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1o4svxq"
+      class="rcx-box rcx-box--full rcx-css-wuaqgn"
     >
       <span
         class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"

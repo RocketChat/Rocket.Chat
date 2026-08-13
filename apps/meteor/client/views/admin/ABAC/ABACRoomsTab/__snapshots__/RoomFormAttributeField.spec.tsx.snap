@@ -22,7 +22,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
             >
               <span
-                class="rcx-box rcx-box--full rcx-select__item rcx-css-ug26x0"
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-1rqlrtn"
               >
                 ABAC_Search_Attribute
               </span>
