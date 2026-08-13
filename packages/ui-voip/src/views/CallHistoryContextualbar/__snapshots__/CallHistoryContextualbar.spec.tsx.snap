@@ -12,12 +12,12 @@ exports[`renders Default without crashing 1`] = `
     >
       <div
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
         role="dialog"
         tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1e5pfjk"
+          class="rcx-box rcx-box--full rcx-css-lm07yg"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -74,7 +74,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -167,7 +167,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-message-block--width-fixed rcx-message-block"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1p2n691"
+                        class="rcx-box rcx-box--full rcx-css-111o8ye"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-avyjeq"
@@ -225,12 +225,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pr6nut"
+                      class="rcx-box rcx-box--full rcx-css-1po16l8"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1na28i0"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
                       1234567890
                     </div>
@@ -239,12 +239,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pr6nut"
+                      class="rcx-box rcx-box--full rcx-css-1po16l8"
                     >
                       Voice call extension
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1na28i0"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
                       0000
                     </div>
@@ -334,7 +334,7 @@ exports[`renders Default without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-7rbsbd"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div
@@ -371,12 +371,12 @@ exports[`renders ExternalContact without crashing 1`] = `
     >
       <div
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
         role="dialog"
         tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1e5pfjk"
+          class="rcx-box rcx-box--full rcx-css-lm07yg"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -433,7 +433,7 @@ exports[`renders ExternalContact without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-lxlmlg rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -500,7 +500,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-message-block--width-fixed rcx-message-block"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1p2n691"
+                        class="rcx-box rcx-box--full rcx-css-111o8ye"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-avyjeq"
@@ -558,12 +558,12 @@ exports[`renders ExternalContact without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pr6nut"
+                      class="rcx-box rcx-box--full rcx-css-1po16l8"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1na28i0"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
                       1234567890
                     </div>
@@ -637,7 +637,7 @@ exports[`renders ExternalContact without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-7rbsbd"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div

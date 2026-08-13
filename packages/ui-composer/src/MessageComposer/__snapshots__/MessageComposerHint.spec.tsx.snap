@@ -48,7 +48,7 @@ exports[`renders HintWithIconAndHelperText without crashing 1`] = `
         </span>
       </span>
       <div
-        class="rcx-box rcx-box--full rcx-css-13t1bpv"
+        class="rcx-box rcx-box--full rcx-css-1dp5kdc"
       >
         <strong>
           esc

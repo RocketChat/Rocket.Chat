@@ -9,7 +9,7 @@ exports[`renders FullWidget without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1qwxv62"
+      class="rcx-css-1gxjmy4"
       role="dialog"
     >
       <header
@@ -22,7 +22,7 @@ exports[`renders FullWidget without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-ypwnhj"
+          class="rcx-box rcx-box--full rcx-css-uge1yt"
           id="rcx-media-call-widget-title"
         >
           Incoming Call...
@@ -55,7 +55,7 @@ exports[`renders FullWidget without crashing 1`] = `
           On hold
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-css-l0ewnv"
+          class="rcx-box rcx-box--full rcx-css-z06lf7"
         >
            
           Muted

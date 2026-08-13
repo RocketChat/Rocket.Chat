@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@react-pdf/renderer": "~4.5.1",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"emojibase-data": "^16.0.3",
 		"moment": "^2.30.1",
 		"moment-timezone": "^0.5.48",

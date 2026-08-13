@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 const styles = StyleSheet.create({
 	header: {
@@ -20,20 +20,20 @@ const styles = StyleSheet.create({
 		color: colors.n900,
 	},
 	pagination: {
-		fontSize: fontScales.c1.fontSize,
+		fontSize: fontScale.c1.fontSize,
 		color: colors.n700,
 	},
 	title: {
-		fontSize: fontScales.h4.fontSize,
-		fontWeight: fontScales.h4.fontWeight,
+		fontSize: fontScale.h4.fontSize,
+		fontWeight: fontScale.h4.fontWeight,
 	},
 	subtitle: {
-		fontSize: fontScales.p2m.fontSize,
-		fontWeight: fontScales.p2m.fontWeight,
+		fontSize: fontScale.p2m.fontSize,
+		fontWeight: fontScale.p2m.fontWeight,
 		color: colors.n900,
 	},
 	container: {
-		fontSize: fontScales.c1.fontSize,
+		fontSize: fontScale.c1.fontSize,
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	},
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 		width: '50%',
 	},
 	key: {
-		fontWeight: fontScales.c2.fontWeight,
+		fontWeight: fontScale.c2.fontWeight,
 	},
 });
 
