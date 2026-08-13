@@ -30,9 +30,10 @@ export interface IUActionButtonWhen {
 	 * Each entry is a role id or a role name. Prefer the name for a custom role,
 	 * because its id differs between workspaces.
 	 *
-	 * Only roles with the `Users` scope are matched. A role scoped to
-	 * `Subscriptions` — `owner`, `moderator` and `leader` among them — never
-	 * matches.
+	 * A role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — is granted per room, so it matches only on surfaces bound to a room. On a
+	 * surface with no room of its own, the user dropdown for instance, only roles
+	 * scoped to `Users` match.
 	 */
 	hasOneRole?: Array<string>;
 	/**
@@ -41,9 +42,10 @@ export interface IUActionButtonWhen {
 	 * Each entry is a role id or a role name. Prefer the name for a custom role,
 	 * because its id differs between workspaces.
 	 *
-	 * Only roles with the `Users` scope are matched. A role scoped to
-	 * `Subscriptions` — `owner`, `moderator` and `leader` among them — never
-	 * matches.
+	 * A role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — is granted per room, so it matches only on surfaces bound to a room. On a
+	 * surface with no room of its own, the user dropdown for instance, only roles
+	 * scoped to `Users` match.
 	 */
 	hasAllRoles?: Array<string>;
 }

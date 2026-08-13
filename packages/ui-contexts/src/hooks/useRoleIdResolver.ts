@@ -23,6 +23,14 @@ export const useRoleIdResolver = (): ((role: string) => IRole['_id']) => {
 	const idsByName = useMemo(() => {
 		const index = new Map<IRole['name'], IRole['_id']>();
 		for (const role of roles.values()) {
+			// `roles.create` and `roles.update` reject a name already taken by another role, so a
+			// name maps to at most one role. Should duplicates still exist (e.g. written straight
+			// to the database), the first one iterated wins instead of the last, so adding another
+			// duplicate later does not silently repoint every check that names it.
+			if (index.has(role.name)) {
+				continue;
+			}
+
 			index.set(role.name, role._id);
 		}
 		return index;

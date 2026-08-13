@@ -237,7 +237,7 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	// Mutated by `withCustomRole` before render, then held stable, so the identity is
+	// Mutated by `withRoleDefinition` before render, then held stable, so the identity is
 	// a safe `useSyncExternalStore` snapshot.
 	private rolesMap = new Map<IRole['_id'], IRole>();
 
