@@ -130,6 +130,7 @@ const ProcessInviteResponseSchema = {
 const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 
 export const getMatrixInviteRoutes = () => {
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2inviteroomideventid
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{

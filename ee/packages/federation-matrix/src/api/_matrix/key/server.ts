@@ -33,6 +33,7 @@ const ServerKeyResponseSchema = {
 const isServerKeyResponseProps = ajv.compile(ServerKeyResponseSchema);
 
 export const getKeyServerRoutes = () => {
+	// https://spec.matrix.org/v1.19/server-server-api/#get_matrixkeyv2server
 	return new Router('/key').get(
 		'/v2/server',
 		{

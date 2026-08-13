@@ -264,10 +264,10 @@ const BackfillResponseSchema = {
 const isBackfillResponseProps = ajv.compile(BackfillResponseSchema);
 
 export const getMatrixTransactionsRoutes = () => {
-	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware())
+			// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv1sendtxnid
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -317,7 +317,7 @@ export const getMatrixTransactionsRoutes = () => {
 				},
 			)
 
-			// GET /_matrix/federation/v1/state_ids/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1state_idsroomid
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -349,6 +349,7 @@ export const getMatrixTransactionsRoutes = () => {
 					};
 				},
 			)
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1stateroomid
 			.get(
 				'/v1/state/:roomId',
 				{
@@ -378,7 +379,7 @@ export const getMatrixTransactionsRoutes = () => {
 					};
 				},
 			)
-			// GET /_matrix/federation/v1/event/{eventId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1eventeventid
 			.get(
 				'/v1/event/:eventId',
 				{
@@ -412,7 +413,7 @@ export const getMatrixTransactionsRoutes = () => {
 					};
 				},
 			)
-			// GET /_matrix/federation/v1/backfill/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1backfillroomid
 			.get(
 				'/v1/backfill/:roomId',
 				{
