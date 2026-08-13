@@ -2,6 +2,7 @@ import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
+import type { MiddlewareHandler } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 import { Accounts } from 'meteor/accounts-base';
 
@@ -39,6 +40,8 @@ type McpActionContext = {
 const MAX_BATCH_SIZE = 20;
 const MAX_BATCH_CONCURRENCY = 4;
 const MAX_MCP_RESPONSE_BYTES = 5 * 1024 * 1024;
+const MCP_ROUTE = 'mcp';
+const MCP_RATE_LIMIT_OPTIONS = { numRequestsAllowed: 60, intervalTimeInMS: 60_000 };
 
 const personalAccessTokenRequiredResponse: McpHttpResponse = {
 	statusCode: 401,
@@ -159,10 +162,44 @@ const sendResponse = (response: McpHttpResponse): Response => {
 	return new Response(response.body === undefined ? null : JSON.stringify(response.body), { status: response.statusCode, headers });
 };
 
+const isRateLimitError = (error: unknown): error is { error: 'error-too-many-requests'; reason?: string } =>
+	typeof error === 'object' && error !== null && 'error' in error && error.error === 'error-too-many-requests';
+
+const rateLimitMiddleware: MiddlewareHandler = async (c, next) => {
+	try {
+		await API.v1.enforceRateLimitForRoute({
+			route: MCP_ROUTE,
+			method: c.req.method.toLowerCase(),
+			request: c.req.raw,
+			response: c.res,
+			requestIp: c.get('remoteAddress'),
+			userId: c.req.header('x-user-id'),
+		});
+	} catch (error) {
+		if (!isRateLimitError(error)) {
+			throw error;
+		}
+
+		return sendResponse({
+			statusCode: 429,
+			body: { jsonrpc: '2.0', id: null, error: { code: -32000, message: error.reason ?? 'Too many requests' } },
+			headers: Object.fromEntries([...c.res.headers].filter(([name]) => name.toLowerCase().startsWith('x-ratelimit-'))),
+		});
+	}
+
+	const rateLimitHeaders = [...c.res.headers].filter(([name]) => name.toLowerCase().startsWith('x-ratelimit-'));
+	await next();
+	for (const [name, value] of rateLimitHeaders) {
+		c.res.headers.set(name, value);
+	}
+};
+
 const router = API.v1.router.getHonoRouter();
+API.v1.registerRateLimiterForRoute({ route: MCP_ROUTE, rateLimiterOptions: MCP_RATE_LIMIT_OPTIONS, methods: ['post'] });
 router.use(
 	'/mcp',
 	authenticationMiddlewareForHono(API.v1, { authRequired: true, logger }),
+	rateLimitMiddleware,
 	permissionsMiddleware(routeOptions),
 	license(routeOptions, License),
 );

@@ -403,6 +403,13 @@ export const getCuratedTools = (): McpTool[] => {
 let extendedTools: McpTool[] | undefined;
 
 export const getExtendedTools = (): McpTool[] => {
-	extendedTools ??= collectTools((baseName) => ALLOWED_TOOL_NAMES.has(baseName));
+	if (!extendedTools) {
+		const toolsByName = new Map(getCuratedTools().map((tool) => [tool.name, tool]));
+		for (const tool of collectTools((baseName) => ALLOWED_TOOL_NAMES.has(baseName))) {
+			toolsByName.set(tool.name, tool);
+		}
+		extendedTools = [...toolsByName.values()];
+	}
+
 	return extendedTools;
 };

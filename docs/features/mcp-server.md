@@ -96,7 +96,7 @@ The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST r
 
 ## Rate limiting
 
-Every tool call is subject to the target REST endpoint's **built-in per-route rate limiter** (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). The resolved client address is propagated to that endpoint rather than being counted as loopback traffic. MCP protocol requests are additionally bounded to 20 batch entries, four concurrent dispatches, 20-second calls, and a shared 5 MiB response budget. As with every Rocket.Chat API route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly.
+The MCP endpoint uses Rocket.Chat's **built-in per-route rate limiter** with a limit of 60 requests per minute (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). Every tool call is also subject to its target REST endpoint's rate limit. The resolved client address is propagated to that endpoint rather than being counted as loopback traffic. MCP protocol requests are additionally bounded to 20 batch entries, four concurrent dispatches, 20-second calls, and a shared 5 MiB response budget. As with every Rocket.Chat API route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly.
 
 ## Settings
 

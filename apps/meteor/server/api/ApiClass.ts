@@ -456,6 +456,40 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 	}
 
+	public registerRateLimiterForRoute({
+		route,
+		rateLimiterOptions = defaultRateLimiterOptions,
+		methods,
+	}: {
+		route: string;
+		rateLimiterOptions?: RateLimiterOptions;
+		methods: string[];
+	}): void {
+		if (!this.shouldAddRateLimitToRoute({ rateLimiterOptions })) {
+			return;
+		}
+
+		this.addRateLimiterRuleForRoutes({ routes: [route], rateLimiterOptions, endpoints: methods });
+	}
+
+	public enforceRateLimitForRoute({
+		route,
+		method,
+		request,
+		response,
+		requestIp,
+		userId,
+	}: {
+		route: string;
+		method: string;
+		request: Request;
+		response: Response;
+		requestIp: string;
+		userId?: string;
+	}): Promise<void> {
+		return this.enforceRateLimit({ IPAddr: requestIp, route: this.getFullRouteName(route, method) }, request, response, userId);
+	}
+
 	public reloadRoutesToRefreshRateLimiter(): void {
 		this._routes.forEach((route) => {
 			if (this.shouldAddRateLimitToRoute(route.options)) {

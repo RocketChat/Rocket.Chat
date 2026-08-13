@@ -45,6 +45,24 @@ jest.mock('../../../../server/api', () => ({
 						],
 					},
 				},
+				'/api/v1/channels.create': {
+					post: {
+						tags: ['Missing Documentation'],
+						requestBody: {
+							content: {
+								'application/json': {
+									schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] },
+								},
+							},
+						},
+					},
+				},
+				'/api/v1/channels.list.joined': {
+					get: {
+						tags: ['Missing Documentation'],
+						parameters: [{ schema: { type: 'object', properties: { count: { type: 'number' } } } }],
+					},
+				},
 				'/api/v1/rooms.isMember': {
 					get: {
 						tags: ['Rooms'],
@@ -117,14 +135,20 @@ describe('MCP tool catalog', () => {
 	it('creates one curated tool per discriminated request variant', () => {
 		const tools = getCuratedTools();
 
-		expect(tools.map(({ name }) => name)).toEqual(['post_chat_postMessage_by_roomId', 'post_chat_postMessage_by_channel', 'get_rooms_get']);
+		expect(tools.map(({ name }) => name)).toEqual([
+			'post_chat_postMessage_by_roomId',
+			'post_chat_postMessage_by_channel',
+			'post_channels_create',
+			'get_channels_list_joined',
+			'get_rooms_get',
+		]);
 		expect(tools[0]?.inputSchema).toEqual({
 			type: 'object',
 			description: 'Post by room id',
 			properties: { roomId: { type: 'string' }, text: { type: 'string' } },
 			required: ['roomId'],
 		});
-		expect(tools[2]?.inputSchema).toMatchObject({ additionalProperties: { type: 'string' } });
+		expect(tools[4]?.inputSchema).toMatchObject({ additionalProperties: { type: 'string' } });
 	});
 
 	it('only exposes allow-listed routes in the extended catalog', () => {
@@ -134,6 +158,8 @@ describe('MCP tool catalog', () => {
 			expect.arrayContaining([
 				'post_chat_postMessage_by_roomId',
 				'post_chat_postMessage_by_channel',
+				'post_channels_create',
+				'get_channels_list_joined',
 				'get_rooms_get',
 				'get_rooms_isMember_by_roomId_userId',
 				'get_rooms_isMember_by_roomId_username',
