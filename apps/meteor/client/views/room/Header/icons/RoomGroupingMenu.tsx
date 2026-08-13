@@ -27,7 +27,7 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 	const { t } = useTranslation();
 	const subscribed = useUserIsSubscribed();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true) && ['c', 'p', 'd', 't'].includes(room.t);
-	const { isEnterprise, getRoomCategory } = useCustomCategories();
+	const { hasLicenseModule, getRoomCategory } = useCustomCategories();
 	const buildCategoryItems = useRoomCategoryItems();
 	const favorite = Boolean(room.f);
 	const { mutate: toggleFavorite } = useToggleFavoriteMutation();
@@ -44,7 +44,7 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 		return null;
 	}
 
-	if (!isEnterprise) {
+	if (!hasLicenseModule) {
 		if (!isFavoritesEnabled) {
 			return null;
 		}

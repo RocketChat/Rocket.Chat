@@ -54,7 +54,7 @@ const CategoryMenu = ({
 
 	const { openManage, openDelete } = useCategoryModals();
 	const {
-		isEnterprise,
+		hasLicenseModule,
 		toggleShowUnreads: toggleCustomShowUnreads,
 		toggleKeepUnreadsOnTop: toggleCustomKeepUnreadsOnTop,
 		moveRoom,
@@ -75,7 +75,7 @@ const CategoryMenu = ({
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
 
-	if (!isEnterprise) {
+	if (!hasLicenseModule) {
 		return null;
 	}
 

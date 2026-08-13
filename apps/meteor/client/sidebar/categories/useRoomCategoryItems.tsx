@@ -17,12 +17,12 @@ export type MoveToItem = GenericMenuItemProps;
  */
 export const useRoomCategoryItems = () => {
 	const { t } = useTranslation();
-	const { isEnterprise, categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
+	const { hasLicenseModule, categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
 	const { openCreate } = useCategoryModals();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 
 	return useCallback(
-		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; isEnterprise: boolean } => {
+		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; hasLicenseModule: boolean } => {
 			const current = getRoomCategory(room.rid);
 			const selected = <Icon name='check' size='x16' />;
 
@@ -47,7 +47,7 @@ export const useRoomCategoryItems = () => {
 						addon: current?._id === category._id ? selected : undefined,
 					}),
 				),
-				...(isEnterprise
+				...(hasLicenseModule
 					? [{ id: 'newCategory', icon: 'plus' as const, content: t('New_category'), onClick: () => openCreate(room) }]
 					: []),
 			];
@@ -62,8 +62,8 @@ export const useRoomCategoryItems = () => {
 					}
 				: undefined;
 
-			return { moveToItems, removeItem, isEnterprise };
+			return { moveToItems, removeItem, hasLicenseModule };
 		},
-		[isFavoritesEnabled, isEnterprise, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
+		[isFavoritesEnabled, hasLicenseModule, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
 	);
 };

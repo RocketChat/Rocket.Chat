@@ -4,7 +4,7 @@ import { useEndpoint, useToastMessageDispatch, useUserId, useUserPreference } fr
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { toggleFavoriteRoom } from '../../lib/mutationEffects/room';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
@@ -31,10 +31,9 @@ export const useCustomCategories = () => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { data: enterpriseData } = useIsEnterprise();
-	const isEnterprise = Boolean(enterpriseData?.isEnterprise);
+	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const rawCategories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', EMPTY) ?? EMPTY;
-	const categories = isEnterprise ? rawCategories : EMPTY;
+	const categories = hasLicenseModule ? rawCategories : EMPTY;
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
@@ -236,7 +235,7 @@ export const useCustomCategories = () => {
 
 	return useMemo(
 		() => ({
-			isEnterprise,
+			hasLicenseModule,
 			categories,
 			validateName,
 			createCategory,
@@ -250,7 +249,7 @@ export const useCustomCategories = () => {
 			getRoomCategory,
 		}),
 		[
-			isEnterprise,
+			hasLicenseModule,
 			categories,
 			validateName,
 			createCategory,

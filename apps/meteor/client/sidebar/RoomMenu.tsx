@@ -58,16 +58,16 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	if (!hideDefaultOptions && type !== 'l') {
 		const isFavorite = Boolean(subscription?.f);
-		const { moveToItems, removeItem, isEnterprise } = buildCategoryItems({ rid, name, isFavorite });
+		const { moveToItems, removeItem, hasLicenseModule } = buildCategoryItems({ rid, name, isFavorite });
 
 		// Strip toggleFavorite only when showing the category submenu — it takes over the favorites action.
-		const actionSections = isEnterprise
+		const actionSections = hasLicenseModule
 			? allSections
 					.map((section) => ({ ...section, items: section.items.filter((item) => item.id !== 'toggleFavorite') }))
 					.filter((section) => section.items.length > 0)
 			: allSections;
 
-		if (isEnterprise) {
+		if (hasLicenseModule) {
 			// Separate "New category" from the regular category targets so it always goes last in the submenu.
 			const categoryTargets = moveToItems.filter((item) => item.id !== 'newCategory');
 			const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
