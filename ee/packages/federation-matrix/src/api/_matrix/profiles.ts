@@ -33,14 +33,14 @@ const QueryProfileQuerySchema = {
 	properties: {
 		user_id: UsernameSchema,
 		field: {
+			// open string, not an enum: the spec defines displayname, avatar_url and m.tz,
+			// and servers MAY allow arbitrary additional profile fields
 			type: 'string',
-			enum: ['displayname', 'avatar_url'],
 			description: 'Profile field to query',
 			nullable: true,
 		},
 	},
 	required: ['user_id'],
-	additionalProperties: false,
 };
 
 const isQueryProfileQueryProps = ajvQuery.compile(QueryProfileQuerySchema);
