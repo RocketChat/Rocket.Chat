@@ -143,85 +143,89 @@ const PublicRoomsPostBodySchema = {
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
 export const getMatrixRoomsRoutes = () => {
-	return new Router('/federation')
-		.use(isAuthenticatedMiddleware())
-		.get(
-			'/v1/publicRooms',
-			{
-				query: isPublicRoomsQueryProps,
-				response: {
-					200: isPublicRoomsResponseProps,
-				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async () => {
-				const defaultObj = {
-					join_rule: 'public',
-					guest_can_join: false, // trying to reduce required endpoint hits
-					world_readable: false, // ^^^
-					avatar_url: '', // ?? don't have any yet
-				};
-
-				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
-
-				return {
-					body: {
-						chunk: publicRooms.map((room) => ({
-							...defaultObj,
-							...room,
-						})),
+	return (
+		new Router('/federation')
+			.use(isAuthenticatedMiddleware())
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1publicrooms
+			.get(
+				'/v1/publicRooms',
+				{
+					query: isPublicRoomsQueryProps,
+					response: {
+						200: isPublicRoomsResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		)
-		.post(
-			'/v1/publicRooms',
-			{
-				body: isPublicRoomsPostBodyProps,
-				response: {
-					200: isPublicRoomsResponseProps,
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async (c) => {
-				const body = await c.req.json();
+				async () => {
+					const defaultObj = {
+						join_rule: 'public',
+						guest_can_join: false, // trying to reduce required endpoint hits
+						world_readable: false, // ^^^
+						avatar_url: '', // ?? don't have any yet
+					};
 
-				const defaultObj = {
-					join_rule: 'public',
-					guest_can_join: false, // trying to reduce required endpoint hits
-					world_readable: false, // ^^^
-					avatar_url: '', // ?? don't have any yet
-				};
+					const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
 
-				const { filter } = body;
-
-				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
-
-				return {
-					body: {
-						chunk: publicRooms
-							.filter((r) => {
-								if (filter?.generic_search_term) {
-									return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
-								}
-
-								// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
-								// TODO: https://rocketchat.atlassian.net/browse/FDR-152 -> Implement logic to handle custom room types
-								// if (filter.room_types) {
-								// }
-
-								return true;
-							})
-							.map((room) => ({
+					return {
+						body: {
+							chunk: publicRooms.map((room) => ({
 								...defaultObj,
 								...room,
 							})),
+						},
+						statusCode: 200,
+					};
+				},
+			)
+			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1publicrooms
+			.post(
+				'/v1/publicRooms',
+				{
+					body: isPublicRoomsPostBodyProps,
+					response: {
+						200: isPublicRoomsResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		);
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				async (c) => {
+					const body = await c.req.json();
+
+					const defaultObj = {
+						join_rule: 'public',
+						guest_can_join: false, // trying to reduce required endpoint hits
+						world_readable: false, // ^^^
+						avatar_url: '', // ?? don't have any yet
+					};
+
+					const { filter } = body;
+
+					const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
+
+					return {
+						body: {
+							chunk: publicRooms
+								.filter((r) => {
+									if (filter?.generic_search_term) {
+										return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
+									}
+
+									// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
+									// TODO: https://rocketchat.atlassian.net/browse/FDR-152 -> Implement logic to handle custom room types
+									// if (filter.room_types) {
+									// }
+
+									return true;
+								})
+								.map((room) => ({
+									...defaultObj,
+									...room,
+								})),
+						},
+						statusCode: 200,
+					};
+				},
+			)
+	);
 };

@@ -20,6 +20,7 @@ const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema
 // TODO: After changing the domain setting this route is still reporting the old domain until the server is restarted
 // TODO: this is wrong, is siteurl !== domain this path should return 404. this path is to discover the final address, domain being the "proxy" and siteurl the final destination, if domain is different, well-known should be served there, not here.
 export const getWellKnownRoutes = () => {
+	// https://spec.matrix.org/v1.19/server-server-api/#getwell-knownmatrixserver
 	return new Router('/matrix').get(
 		'/server',
 		{

@@ -58,6 +58,7 @@ const isSendLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixSendLeaveRoutes = () => {
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2send_leaveroomideventid
 	return new Router('/federation').put(
 		'/v2/send_leave/:roomId/:eventId',
 		{
