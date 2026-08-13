@@ -532,6 +532,32 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	/**
+	 * Grants a role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — in a single room. Unlike {@link withRole}, the grant is not workspace-wide: a
+	 * check only passes when it carries that room as its scope, which is how the real
+	 * provider resolves a subscription role. The role is deliberately kept out of the user's
+	 * `roles`, where only a `Users`-scoped grant belongs.
+	 */
+	withRoleScoped(role: string, scope: IRoom['_id']): this {
+		const innerFn = this.authorization.queryRole;
+
+		const outerFn = (
+			innerRole: string | ObjectId,
+			innerScope?: string | undefined,
+		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
+			if (innerRole === role && innerScope === scope) {
+				return [() => () => undefined, () => true];
+			}
+
+			return innerFn(innerRole, innerScope);
+		};
+
+		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
 	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
 			...settingStructure,
