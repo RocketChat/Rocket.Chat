@@ -133,7 +133,21 @@ export const getMatrixInviteRoutes = () => {
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
+			// TODO: add schema from room package. `event` is a PDU whose format varies by room
+			// version, so it stays unconstrained here; room_version and event are required per spec.
+			body: ajv.compile({
+				type: 'object',
+				properties: {
+					room_version: { type: 'string' },
+					event: { type: 'object' },
+					invite_room_state: {
+						type: 'array',
+						items: { type: 'object' },
+						nullable: true,
+					},
+				},
+				required: ['room_version', 'event'],
+			}),
 			params: isProcessInviteParamsProps,
 			response: {
 				200: isProcessInviteResponseProps,
@@ -152,10 +166,11 @@ export const getMatrixInviteRoutes = () => {
 				throw new Error('join event has missing state key, unable to determine user to join');
 			}
 
+			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
 			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
 				return {
 					body: {
-						errcode: 'M_MISSING_PARAM',
+						errcode: 'M_INVALID_PARAM',
 						error: 'Missing invite_room_state: m.room.create event is required',
 					},
 					statusCode: 400,
