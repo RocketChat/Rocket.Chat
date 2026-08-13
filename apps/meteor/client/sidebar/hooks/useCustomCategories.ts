@@ -78,9 +78,10 @@ export const useCustomCategories = () => {
 				rooms,
 			};
 			await persist([category, ...stripped]);
+			await Promise.allSettled(rooms.map((rid) => setFavorite(rid, false)));
 			return category;
 		},
-		[categories, persist],
+		[categories, persist, setFavorite],
 	);
 
 	const deleteCategory = useCallback(
@@ -178,6 +179,7 @@ export const useCustomCategories = () => {
 					throw e;
 				}
 			}
+			await Promise.allSettled(extraRooms.map((rid) => setFavorite(rid, false)));
 			dispatchToastMessage({
 				type: 'success',
 				message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
@@ -189,10 +191,17 @@ export const useCustomCategories = () => {
 	/** Update a category's name and room list in a single persist. Strips added rooms from any prior category. */
 	const updateCategory = useCallback(
 		async (categoryId: string, name: string, rooms: string[]) => {
+			const previous = categories.find((cat) => cat._id === categoryId);
+			const previousRooms = new Set(previous?.rooms ?? []);
+			const newlyAdded = rooms.filter((rid) => !previousRooms.has(rid));
+
 			const stripped = rooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
 			await persist(stripped.map((category) => (category._id === categoryId ? { ...category, name: name.trim(), rooms } : category)));
+
+			// Unfavorite newly added rooms — mirrors moveRoom semantics.
+			await Promise.allSettled(newlyAdded.map((rid) => setFavorite(rid, false)));
 		},
-		[categories, persist],
+		[categories, persist, setFavorite],
 	);
 
 	const getRoomCategory = useCallback(

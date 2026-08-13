@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
 import RoomMenu from './RoomMenu';
-import { createFakeLicenseInfo } from '../../tests/mocks/data';
+import { createFakeLicenseInfo, createFakeSubscription } from '../../tests/mocks/data';
 
 jest.mock('../../client/lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -88,6 +88,41 @@ it('should reveal Favorites and New category inside the "Move to" submenu for en
 
 	expect(await screen.findByRole('menuitem', { name: 'Favorites' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'New category' })).toBeInTheDocument();
+});
+
+const enterpriseFavoriteRenderOptions = {
+	wrapper: buildBase()
+		.withJohnDoe()
+		.withEndpoint('GET', '/v1/licenses.info', async () => ({ license: createFakeLicenseInfo({ hasValidLicense: true }) }))
+		.withSubscription(createFakeSubscription({ rid: 'roomId', f: true, t: 'c' }))
+		.build(),
+};
+
+const enterpriseCategoryRenderOptions = {
+	wrapper: buildBase()
+		.withJohnDoe()
+		.withEndpoint('GET', '/v1/licenses.info', async () => ({ license: createFakeLicenseInfo({ hasValidLicense: true }) }))
+		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c' }))
+		.withUserPreference('sidebarCustomCategories', [{ _id: 'cat-design', name: 'Design', rooms: ['roomId'], showUnreads: true }])
+		.build(),
+};
+
+it('shows Favorites in the Move to submenu when the room is favorited', async () => {
+	render(<RoomMenu {...defaultProps} />, enterpriseFavoriteRenderOptions);
+
+	await userEvent.click(screen.queryByRole('button') as HTMLElement);
+	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
+
+	expect(await screen.findByRole('menuitem', { name: 'Favorites' })).toBeInTheDocument();
+});
+
+it('shows the matching category in the Move to submenu when the room is in a custom category', async () => {
+	render(<RoomMenu {...defaultProps} />, enterpriseCategoryRenderOptions);
+
+	await userEvent.click(screen.queryByRole('button') as HTMLElement);
+	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
+
+	expect(await screen.findByRole('menuitem', { name: 'Design' })).toBeInTheDocument();
 });
 
 it('should display only mark unread and favorite for omnichannel rooms', async () => {
