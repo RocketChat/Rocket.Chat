@@ -58,7 +58,7 @@
 		"@babel/preset-typescript": "~7.28.5",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
-		"@rocket.chat/fuselage-hooks": "~0.43.0",
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"@rocket.chat/logo": "~0.33.1",
 		"@rocket.chat/ui-contexts": "workspace:^",
