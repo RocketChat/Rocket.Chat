@@ -289,13 +289,18 @@ const GetMissingEventsBodySchema = {
 			description: 'Latest events',
 		},
 		limit: {
+			// optional per spec (defaults to 10) and unbounded; the handler applies the default and a cap
 			type: 'number',
-			minimum: 1,
-			maximum: 100,
 			description: 'Maximum number of events to return',
+			nullable: true,
+		},
+		min_depth: {
+			type: 'number',
+			description: 'Minimum depth of events to retrieve (ignored)',
+			nullable: true,
 		},
 	},
-	required: ['earliest_events', 'latest_events', 'limit'],
+	required: ['earliest_events', 'latest_events'],
 };
 
 const isGetMissingEventsBodyProps = ajv.compile(GetMissingEventsBodySchema);
@@ -482,12 +487,9 @@ export const getMatrixProfilesRoutes = () => {
 				const { roomId } = c.req.param();
 				const body = await c.req.json();
 
-				const response = await federationSDK.getMissingEvents(
-					roomIdSchema.parse(roomId),
-					body.earliest_events,
-					body.latest_events,
-					body.limit,
-				);
+				const limit = Math.min(body.limit ?? 10, 100);
+
+				const response = await federationSDK.getMissingEvents(roomIdSchema.parse(roomId), body.earliest_events, body.latest_events, limit);
 
 				return {
 					body: response,
