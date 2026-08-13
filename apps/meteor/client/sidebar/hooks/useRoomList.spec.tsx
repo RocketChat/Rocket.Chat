@@ -1,12 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { useShowUnreadsGroups } from './useShowUnreadsGroups';
-import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
+import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 
 const mockedUseShowUnreadsGroups = jest.mocked(useShowUnreadsGroups);
 
@@ -14,9 +14,6 @@ jest.mock('../../lib/RoomManager', () => ({
 	useOpenedRoom: () => undefined,
 }));
 
-// System groups read their "Show unreads" flag from this hook (localStorage-backed in the app). Mock it so
-// tests control it deterministically; it defaults ON (matching the real default), and the off-path tests
-// override it for a specific group.
 jest.mock('./useShowUnreadsGroups');
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
@@ -84,6 +81,7 @@ const getWrapperSettings = ({
 	sidebarShowFavorites = true,
 	sidebarShowUnread = false,
 	isDiscussionEnabled = false,
+	isEnterprise = false,
 	fakeRoom = undefined,
 	rooms = fakeRooms as unknown as SubscriptionWithRoom[],
 }: {
@@ -91,10 +89,11 @@ const getWrapperSettings = ({
 	sidebarShowFavorites?: boolean;
 	sidebarShowUnread?: boolean;
 	isDiscussionEnabled?: boolean;
+	isEnterprise?: boolean;
 	fakeRoom?: SubscriptionWithRoom;
 	rooms?: SubscriptionWithRoom[];
-}) =>
-	mockAppRoot()
+}) => {
+	const root = mockAppRoot()
 		.wrap((children) => (
 			<VideoConfContext.Provider
 				value={
@@ -113,7 +112,15 @@ const getWrapperSettings = ({
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
 
-// System groups default to "Show unreads" ON; off-path tests override this per test.
+	if (isEnterprise) {
+		root.withEndpoint('GET', '/v1/licenses.info', () => ({
+			license: createFakeLicenseInfo({ hasValidLicense: true }),
+		}));
+	}
+
+	return root;
+};
+
 beforeEach(() => {
 	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => true, toggleShowUnreads: jest.fn() });
 });
@@ -265,28 +272,30 @@ it('should always return groupsCount and groupsList with the same length', async
 
 it('should keep empty system categories visible (dimmed)', async () => {
 	// Only a single DM exists, so with group-by-type on "Channels"/"Teams" have no rooms — but must still render.
+	// Empty system groups are an EE-only feature.
 	const onlyDirect = [
 		{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
 	] as unknown as SubscriptionWithRoom[];
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true }).build(),
+		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
+	await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Channels'));
 	const groupsList = groupsListOf(result.current.groups);
-	expect(groupsList).toContain('Channels');
 	expect(groupsList).toContain('Direct_Messages');
 	expect(result.current.groups[groupsList.indexOf('Channels')].empty).toBe(true);
 	expect(result.current.groups[groupsList.indexOf('Direct_Messages')].empty).toBe(false);
 });
 
 it('should keep the Favorites category visible when it is empty', async () => {
+	// Empty Favorites group is an EE-only feature.
 	const onlyDirect = [
 		{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
 	] as unknown as SubscriptionWithRoom[];
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowFavorites: true }).build(),
+		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowFavorites: true, isEnterprise: true }).build(),
 	});
+	await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Favorites'));
 	const groupsList = groupsListOf(result.current.groups);
-	expect(groupsList).toContain('Favorites');
 	expect(result.current.groups[groupsList.indexOf('Favorites')].empty).toBe(true);
 });
 
