@@ -273,9 +273,8 @@ const BackfillQuerySchema = {
 	type: 'object',
 	properties: {
 		limit: {
+			// unbounded per spec; the handler caps it
 			type: 'number',
-			minimum: 1,
-			maximum: 100,
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
@@ -287,7 +286,6 @@ const BackfillQuerySchema = {
 		},
 	},
 	required: ['limit', 'v'],
-	additionalProperties: false,
 };
 
 const isBackfillQueryProps = ajvQuery.compile<{
@@ -478,7 +476,7 @@ export const getMatrixTransactionsRoutes = () => {
 				canAccessResourceMiddleware('room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
-					const limit = Number(c.req.query('limit') || 100);
+					const limit = Math.min(Number(c.req.query('limit') || 100), 100);
 					const eventIds = c.req.queries('v');
 					if (!eventIds?.length) {
 						return {
