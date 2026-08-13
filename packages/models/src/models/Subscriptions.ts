@@ -1172,9 +1172,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null> {
-		// TODO: this projection is narrower than the declared return type — narrow the signature
-		return this.findOne<ISubscription>(
+	getMinimumLastSeenByRoomId(rid: string): Promise<Pick<ISubscription, '_id' | 'ls'> | null> {
+		return this.findOne(
 			{
 				rid,
 				archived: { $ne: true },

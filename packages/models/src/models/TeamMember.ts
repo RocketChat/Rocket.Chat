@@ -109,9 +109,8 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		limit: number,
 		skip: number,
 		query?: Filter<ITeamMember>,
-	): FindPaginated<FindCursor<ITeamMember>> {
-		// TODO: this projection is narrower than the declared return type — narrow the signature
-		return this.findPaginated<ITeamMember>(
+	): FindPaginated<FindCursor<Pick<ITeamMember, '_id' | 'userId' | 'roles' | 'createdBy' | 'createdAt'>>> {
+		return this.findPaginated(
 			{ ...query, teamId },
 			{
 				limit,

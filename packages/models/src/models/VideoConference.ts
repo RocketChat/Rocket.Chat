@@ -39,7 +39,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
 	): FindPaginated<FindCursor<VideoConference>> {
-		// TODO: this projection is narrower than the declared return type — narrow the signature
+		// No data is lost — `providerData` is optional — but `Omit` over the `VideoConference` union collapses it into a single
+		// object type, so the explicit type argument opts out of projection inference to preserve the discriminated union.
 		return this.findPaginated<VideoConference>(
 			{ rid },
 			{

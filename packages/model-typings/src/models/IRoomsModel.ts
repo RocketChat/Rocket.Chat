@@ -447,7 +447,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	unsetAbacAttributesById(rid: IRoom['_id']): Promise<UpdateResult>;
 	unsetAllAbacAttributes(): Promise<Document | UpdateResult>;
 	updateSingleAbacAttributeValuesById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
-	insertAbacAttributeIfNotExistsById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
+	insertAbacAttributeIfNotExistsById(
+		rid: IRoom['_id'],
+		key: string,
+		values: string[],
+	): Promise<Pick<IRoom, '_id' | 'abacAttributes'> | null>;
 	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
 	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;

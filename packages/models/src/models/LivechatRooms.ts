@@ -2765,8 +2765,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find<T, O>({ open: true, contactId }, options);
 	}
 
-	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
-		// TODO: this projection is narrower than the declared return type — narrow the signature
-		return this.findOne<IOmnichannelRoom>({ contactId, open: true }, { projection: { _id: 1 } });
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<Pick<IOmnichannelRoom, '_id'> | null> {
+		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
 	}
 }
