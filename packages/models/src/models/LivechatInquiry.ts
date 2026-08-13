@@ -117,11 +117,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne<T, O>(query, options);
 	}
 
-	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord> {
-		// TODO: this projection is narrower than the declared return type — narrow the signature
-		return this.find<ILivechatInquiryRecord>({ 'v._id': _id }, { projection: { _id: 1 } });
-	}
-
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
 		return this.col
 			.aggregate<{ _id: string | null }>(

@@ -19,7 +19,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
-	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<Pick<ILivechatInquiryRecord, '_id'>>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
 		department?: string;
