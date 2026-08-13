@@ -1,0 +1,18 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"lib": ["esnext"],
+		"types": ["node"],
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+
+		/* The ported Meteor code predates these checks (same relaxations as packages/meteor-client) */
+		"strictPropertyInitialization": false,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false
+	},
+	"include": ["src"]
+}

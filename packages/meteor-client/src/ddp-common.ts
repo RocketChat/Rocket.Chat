@@ -1,5 +1,4 @@
 import { EJSON } from './ejson.ts';
-import { Meteor } from './meteor.ts';
 import { Random } from './random.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmpty } from './utils/isEmpty.ts';
@@ -53,14 +52,14 @@ class Heartbeat {
 
 	_clearHeartbeatIntervalTimer() {
 		if (this._heartbeatIntervalHandle) {
-			Meteor.clearInterval(this._heartbeatIntervalHandle);
+			clearInterval(this._heartbeatIntervalHandle);
 			this._heartbeatIntervalHandle = null;
 		}
 	}
 
 	_clearHeartbeatTimeoutTimer() {
 		if (this._heartbeatTimeoutHandle) {
-			Meteor.clearTimeout(this._heartbeatTimeoutHandle);
+			clearTimeout(this._heartbeatTimeoutHandle);
 			this._heartbeatTimeoutHandle = null;
 		}
 	}

@@ -1,3 +1,3 @@
-export const noop: VoidFunction = () => {
+export const noop: () => void = () => {
 	// do nothing
 };

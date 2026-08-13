@@ -1,0 +1,29 @@
+{
+	"name": "@rocket.chat/meteor-server",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Node TypeScript port of the Meteor server runtime (dynamics, methods, check, webapp, mongo driver access) consumed by the vite server build in place of the meteor/* packages",
+	"exports": {
+		"./*": "./src/*.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/meteor-client": "workspace:^",
+		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^",
+		"bcrypt": "^6.0.0",
+		"express": "^4.21.2",
+		"mongodb": "6.16.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/express": "^4.17.21",
+		"@types/node": "~22.16.5",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
