@@ -82,7 +82,7 @@ export const MessageList = function MessageList({
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const lastScrollSizeRef = useRef(0);
-	const prevMessagesLengthRef = useRef(0);
+	const prevLastMessageIdRef = useRef<IMessage['_id'] | undefined>(undefined);
 	const ownUserId = user?._id;
 
 	const messages = useMessages({ rid });
@@ -143,6 +143,12 @@ export const MessageList = function MessageList({
 
 	// Scroll to bottom
 	useEffect(() => {
+		// Tracked by id, not by length, so loading older messages does not look like a new
+		// send. Updated before the early returns below, otherwise it stays unset on mount.
+		const lastMessage = messages.at(-1);
+		const prevLastMessageId = prevLastMessageIdRef.current;
+		prevLastMessageIdRef.current = lastMessage?._id;
+
 		if (isJumpingToMessage || messageJumpParam) {
 			if (!isRoomInitialized.current) {
 				// Jump to message will have to load messages, thus removing the need to initialize the room here
@@ -183,13 +189,8 @@ export const MessageList = function MessageList({
 
 		// Scroll to bottom when the user's own temp message is appended, so the list does not
 		// depend on streamNewMessage, which may not run for a message the client already added.
-		const prevMessagesLength = prevMessagesLengthRef.current;
-		prevMessagesLengthRef.current = messages.length;
-		if (messages.length > prevMessagesLength && ownUserId) {
-			const lastMessage = messages.at(-1);
-			if (lastMessage?.temp && lastMessage.u._id === ownUserId) {
-				setShouldJumpToBottom(true);
-			}
+		if (lastMessage?._id !== prevLastMessageId && lastMessage?.temp && lastMessage.u._id === ownUserId) {
+			setShouldJumpToBottom(true);
 		}
 
 		if (shouldJumpToBottom === true && handle) {

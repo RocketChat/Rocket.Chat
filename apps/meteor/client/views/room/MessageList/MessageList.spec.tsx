@@ -210,9 +210,35 @@ describe('MessageList scroll position', () => {
 
 		const otherUserMessage = {
 			...createMessage('message-3'),
+			temp: true,
 			u: { _id: 'other-user-id', username: 'other' },
 		} as IMessage;
 		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), otherUserMessage]);
+		rerender(<MessageList {...defaultProps} />);
+
+		expect(defaultProps.setShouldJumpToBottom).not.toHaveBeenCalledWith(true);
+	});
+
+	it('should not jump to bottom when older messages are prepended', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		const ownOptimisticMessage = { ...createMessage('message-3'), temp: true } as IMessage;
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), ownOptimisticMessage]);
+
+		const { rerender } = render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+		defaultProps.setShouldJumpToBottom.mockClear();
+
+		(useMessages as jest.Mock).mockReturnValue([
+			createMessage('message-0'),
+			createMessage('message-1'),
+			createMessage('message-2'),
+			ownOptimisticMessage,
+		]);
 		rerender(<MessageList {...defaultProps} />);
 
 		expect(defaultProps.setShouldJumpToBottom).not.toHaveBeenCalledWith(true);
