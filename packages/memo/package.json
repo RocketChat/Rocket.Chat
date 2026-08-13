@@ -1,0 +1,51 @@
+{
+	"name": "@rocket.chat/memo",
+	"version": "0.31.25",
+	"description": "Memoization utilities",
+	"keywords": [
+		"memoize"
+	],
+	"homepage": "https://github.com/RocketChat/fuselage#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/fuselage/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/fuselage.git",
+		"directory": "packages/memo"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/esm/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build:cjs": "tsc -p tsconfig.cjs.json",
+		".:build:esm": "tsc -p tsconfig.esm.json",
+		"build": "run .:build:esm && run .:build:cjs",
+		"clean": "rm -rf dist",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"prettier": "~3.3.3",
+		"ts-jest": "~29.4.11",
+		"typescript": "~5.9.3"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
