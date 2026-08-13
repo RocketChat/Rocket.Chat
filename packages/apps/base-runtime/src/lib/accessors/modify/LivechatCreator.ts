@@ -10,28 +10,29 @@ import type {
 } from '@rocket.chat/apps-engine/definition/livechat/IVisitor';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class LivechatCreator implements ILivechatCreator {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public resolveVisitor(externalId: IVisitorExternalIdentifier, contactData?: ResolveVisitorContactData): Promise<IVisitor | undefined> {
-		return this.bridges.getLivechatBridge().doResolveVisitor(externalId, contactData, 'APP_ID') as Promise<IVisitor | undefined>;
+		return bridgeCall<IVisitor | undefined>(this.senderFn, 'getLivechatBridge', 'doResolveVisitor', externalId, contactData, 'APP_ID');
 	}
 
 	public createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
-		return this.bridges.getLivechatBridge().doCreateRoom(visitor, agent, 'APP_ID', extraParams) as Promise<ILivechatRoom>;
+		return bridgeCall<ILivechatRoom>(this.senderFn, 'getLivechatBridge', 'doCreateRoom', visitor, agent, 'APP_ID', extraParams);
 	}
 
 	/**
 	 * @deprecated Use `createAndReturnVisitor` instead.
 	 */
 	public createVisitor(visitor: IVisitor): Promise<string> {
-		return this.bridges.getLivechatBridge().doCreateVisitor(visitor, 'APP_ID') as Promise<string>;
+		return bridgeCall<string>(this.senderFn, 'getLivechatBridge', 'doCreateVisitor', visitor, 'APP_ID');
 	}
 
 	public createAndReturnVisitor(visitor: IVisitor): Promise<IVisitor | undefined> {
-		return this.bridges.getLivechatBridge().doCreateAndReturnVisitor(visitor, 'APP_ID') as Promise<IVisitor | undefined>;
+		return bridgeCall<IVisitor | undefined>(this.senderFn, 'getLivechatBridge', 'doCreateAndReturnVisitor', visitor, 'APP_ID');
 	}
 
 	public createToken(): string {

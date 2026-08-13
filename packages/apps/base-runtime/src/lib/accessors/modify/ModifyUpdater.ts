@@ -15,7 +15,7 @@ import { MessageUpdater } from './MessageUpdater';
 import { UserUpdater } from './UserUpdater';
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
 import { UIHelper } from '../../UIHelper';
-import { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
 import type * as Messenger from '../../messenger';
 import { MessageBuilder } from '../builders/MessageBuilder';
 import { RoomBuilder } from '../builders/RoomBuilder';
@@ -27,15 +27,12 @@ export class ModifyUpdater implements IModifyUpdater {
 
 	private readonly messageUpdater: IMessageUpdater;
 
-	private readonly bridges: RemoteBridges;
-
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
-		// The facade reads `this.senderFn` at call time (rather than capturing it) so
-		// that tests which swap out `senderFn` after construction remain intercepted.
-		this.bridges = new RemoteBridges((request) => this.senderFn(request));
-		this.livechatUpdater = new LivechatUpdater(this.bridges);
-		this.userUpdater = new UserUpdater(this.bridges);
-		this.messageUpdater = new MessageUpdater(this.bridges);
+		// Thunks, not `this.senderFn` directly: these sub-accessors are built eagerly, so capturing
+		// the function here would pin them to it before a test could swap it out.
+		this.livechatUpdater = new LivechatUpdater((request) => this.senderFn(request));
+		this.userUpdater = new UserUpdater((request) => this.senderFn(request));
+		this.messageUpdater = new MessageUpdater((request) => this.senderFn(request));
 	}
 
 	public getLivechatUpdater(): ILivechatUpdater {
@@ -51,7 +48,7 @@ export class ModifyUpdater implements IModifyUpdater {
 	}
 
 	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
-		const message = (await this.bridges.getMessageBridge().doGetById(messageId, 'APP_ID')) as IMessage;
+		const message = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID')) as IMessage;
 
 		const builder = new MessageBuilder(message);
 
@@ -61,7 +58,7 @@ export class ModifyUpdater implements IModifyUpdater {
 	}
 
 	public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
-		const room = (await this.bridges.getRoomBridge().doGetById(roomId, 'APP_ID')) as IRoom;
+		const room = (await bridgeCall(this.senderFn, 'getRoomBridge', 'doGetById', roomId, 'APP_ID')) as IRoom;
 
 		return new RoomBuilder(room);
 	}
@@ -94,7 +91,7 @@ export class ModifyUpdater implements IModifyUpdater {
 
 		const changes = { id: result.id, ...builder.getChanges() };
 
-		await this.bridges.getMessageBridge().doUpdate(changes, 'APP_ID');
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doUpdate', changes, 'APP_ID');
 	}
 
 	private async _finishRoom(builder: RoomBuilder): Promise<void> {
@@ -124,6 +121,6 @@ export class ModifyUpdater implements IModifyUpdater {
 
 		const changes = { id: room.id, ...builder.getChanges() };
 
-		await this.bridges.getRoomBridge().doUpdate(changes, builder.getMembersToBeAddedUsernames(), 'APP_ID');
+		await bridgeCall(this.senderFn, 'getRoomBridge', 'doUpdate', changes, builder.getMembersToBeAddedUsernames(), 'APP_ID');
 	}
 }

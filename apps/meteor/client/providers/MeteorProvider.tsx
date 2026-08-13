@@ -10,7 +10,6 @@ import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import MediaCallProvider from './MediaCallProvider';
-import MediaPlayerProvider from './MediaPlayerProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -49,9 +48,7 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																			<ActionManagerProvider>
 																				<VideoConfProvider>
 																					<MediaCallProvider>
-																						<OmnichannelProvider>
-																							<MediaPlayerProvider>{children}</MediaPlayerProvider>
-																						</OmnichannelProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
 																					</MediaCallProvider>
 																				</VideoConfProvider>
 																			</ActionManagerProvider>

@@ -1,5 +1,20 @@
 # @rocket.chat/ui-voip
 
+## 23.0.0
+
+### Patch Changes
+
+- ([#41200](https://github.com/RocketChat/Rocket.Chat/pull/41200)) Fixes an issue where the whole app remounts when VoIP availability changes
+
+- <details><summary>Updated dependencies [13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 0433f003d2bbe74fbbf4970d756df86ca44ac055, 4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
+
+  - @rocket.chat/desktop-api@1.3.0
+  - @rocket.chat/ui-client@33.0.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0
+  - @rocket.chat/ui-avatar@29.0.0
+  - @rocket.chat/ui-contexts@33.0.0
+  </details>
+
 ## 23.0.0-rc.0
 
 ### Patch Changes

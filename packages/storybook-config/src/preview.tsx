@@ -31,10 +31,10 @@ export const parameters: Parameters = {
 	darkMode: {
 		dark: {
 			...themes.dark,
-			appBg: surface.surface.dark.sidebar,
-			appContentBg: surface.surface.dark.light,
+			appBg: surface.dark.sidebar,
+			appContentBg: surface.dark.light,
 			appPreviewBg: 'transparent',
-			barBg: surface.surface.dark.light,
+			barBg: surface.dark.light,
 			brandTitle: manifest.name,
 			brandImage: logo,
 		},

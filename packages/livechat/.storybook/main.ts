@@ -1,7 +1,7 @@
 import { dirname, join } from 'path';
 
 import type { StorybookConfig } from '@storybook/preact-webpack5';
-import type { RuleSetRule } from 'webpack';
+import webpack, { type RuleSetRule } from 'webpack';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/{*.story,story,*.stories,stories}.tsx'],
@@ -13,7 +13,27 @@ const config: StorybookConfig = {
 			options: {
 				rules: [
 					{
-						test: /\.s?css$/,
+						test: /\.css$/,
+						sideEffects: true,
+						use: [
+							'style-loader',
+							{
+								loader: 'css-loader',
+								options: {
+									importLoaders: 1,
+									sourceMap: true,
+								},
+							},
+							{
+								loader: 'postcss-loader',
+								options: {
+									implementation: 'postcss',
+								},
+							},
+						],
+					},
+					{
+						test: /\.scss$/,
 						sideEffects: true,
 						use: [
 							'style-loader',
@@ -90,6 +110,15 @@ const config: StorybookConfig = {
 			type: 'asset/resource',
 			generator: { filename: 'static/media/[path][name][ext]' },
 		});
+
+		// webpack 5 doesn't handle the `node:` scheme, so `node:stream` (pulled in by the
+		// preact `react-dom/server` shim) bypasses the `stream: false` resolve fallback and
+		// throws. Strip the prefix so those specifiers hit the existing node-core fallbacks.
+		config.plugins?.push(
+			new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+				resource.request = resource.request.replace(/^node:/, '');
+			}),
+		);
 
 		return config;
 	},

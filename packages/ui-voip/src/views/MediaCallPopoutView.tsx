@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
 import MediaCallCardList from './MediaCallCardList';
+import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 
 export type MediaCallPopoutViewProps = {
@@ -13,12 +14,12 @@ export type MediaCallPopoutViewProps = {
 		avatarUrl: string;
 	};
 	onClickClosePopout: () => void;
-	onClickFullscreen: () => void;
-	fullscreen: boolean;
 };
 
-const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, fullscreen }: MediaCallPopoutViewProps) => {
+const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewProps) => {
 	const { t } = useTranslation();
+
+	const { fullscreen, enabled: fullscreenEnabled, toggleFullscreen: onClickFullscreen } = useFullscreenToggle();
 
 	const {
 		sessionState,
@@ -66,14 +67,16 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 				rightSlot={
 					<ButtonGroup>
 						<ActionButton label={t('Return_to_main_window')} icon='arrow-from-cross-box' onClick={onClickClosePopout} />
-						<ToggleButton
-							label={t('Fullscreen')}
-							titles={[t('Fullscreen'), t('Exit_fullscreen')]}
-							icons={['arrow-expand', 'arrow-collapse']}
-							pressed={fullscreen}
-							onToggle={onClickFullscreen}
-							danger={false}
-						/>
+						{fullscreenEnabled && (
+							<ToggleButton
+								label={t('Fullscreen')}
+								titles={[t('Fullscreen'), t('Exit_fullscreen')]}
+								icons={['arrow-expand', 'arrow-collapse']}
+								pressed={fullscreen}
+								onToggle={onClickFullscreen}
+								danger={false}
+							/>
+						)}
 						<DevicePicker secondary />
 					</ButtonGroup>
 				}

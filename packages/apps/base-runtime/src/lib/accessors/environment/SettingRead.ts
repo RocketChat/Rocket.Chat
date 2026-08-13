@@ -1,15 +1,16 @@
 import type { ISettingRead } from '@rocket.chat/apps-engine/definition/accessors';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 // App settings are host-persisted metadata (ProxiedApp storage item), fronted by the internal
 // AppResourceBridge. The value fallback that used to run host-side now runs locally.
 export class SettingRead implements ISettingRead {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public getById(id: string): Promise<ISetting> {
-		return this.bridges.getAppResourceBridge().doGetSettingById(id, 'APP_ID') as Promise<ISetting>;
+		return bridgeCall<ISetting>(this.senderFn, 'getAppResourceBridge', 'doGetSettingById', id, 'APP_ID');
 	}
 
 	public async getValueById(id: string): Promise<any> {

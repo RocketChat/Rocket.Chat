@@ -1,26 +1,21 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps } from 'preact';
-import { action } from 'storybook/actions';
 
-import ChatFinished from './component';
-import { loremIpsum, screenDecorator } from '../../../.storybook/helpers';
+import ChatFinished, { type ChatFinishedProps } from './index';
+import { loremIpsum, screenDecorator, storeDecorator } from '../../../.storybook/helpers';
+import store, { type StoreState } from '../../store';
+
+type StoryArgs = ChatFinishedProps & Partial<StoreState>;
 
 export default {
 	title: 'Routes/ChatFinished',
 	component: ChatFinished,
-	args: {
-		title: 'Chat Finished',
-		greeting: '',
-		message: '',
-		onRedirectChat: action('redirectChat'),
-	},
-	decorators: [screenDecorator],
+	decorators: [storeDecorator, screenDecorator],
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof ChatFinished>>;
+} satisfies Meta<StoryArgs>;
 
-const Template: StoryFn<ComponentProps<typeof ChatFinished>> = (args) => <ChatFinished {...args} />;
+const Template: StoryFn<StoryArgs> = (args) => <ChatFinished {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';
@@ -28,6 +23,11 @@ Normal.storyName = 'normal';
 export const WithCustomMessages = Template.bind({});
 WithCustomMessages.storyName = 'with custom messages';
 WithCustomMessages.args = {
-	greeting: loremIpsum({ count: 3, units: 'words' }),
-	message: loremIpsum({ count: 2, units: 'sentences' }),
+	config: {
+		...store.state.config,
+		messages: {
+			conversationFinishedMessage: loremIpsum({ count: 3, units: 'words' }),
+			conversationFinishedText: loremIpsum({ count: 2, units: 'sentences' }),
+		},
+	},
 };

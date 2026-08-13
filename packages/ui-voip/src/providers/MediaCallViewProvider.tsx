@@ -16,7 +16,6 @@ import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
-import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
@@ -35,9 +34,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView, setTargetPeer, targetPeer } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const sessionState = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -61,7 +60,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'closed' : sessionState.state,
+		sessionState.hidden ? 'none' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
@@ -82,25 +81,23 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (sessionState.state !== 'new') {
+		if (sessionState.state !== 'none') {
 			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}
 
-		const { peerInfo } = sessionState;
-
-		if (!peerInfo) {
+		if (!targetPeer) {
 			return;
 		}
 
 		const startCall = (micless: boolean) => {
-			if ('userId' in peerInfo) {
-				void controls.startCall(peerInfo.userId, 'user', micless);
+			if ('userId' in targetPeer) {
+				void controls.startCall(targetPeer.userId, 'user', micless);
 				return;
 			}
 
-			if ('number' in peerInfo) {
-				void controls.startCall(peerInfo.number, 'sip', micless);
+			if ('number' in targetPeer) {
+				void controls.startCall(targetPeer.number, 'sip', micless);
 				return;
 			}
 
@@ -201,7 +198,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	};
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
-		selectPeer(peerInfo);
+		setTargetPeer(peerInfo);
 	};
 
 	const onToggleScreenSharing = () => {
@@ -218,17 +215,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const streams = useScreenShareStreams(instance);
 
-	useWidgetExternalControlSignalListener(
-		'toggleWidget',
-		useCallback(
-			({ peerInfo }) => {
-				toggleWidget(peerInfo);
-			},
-			[toggleWidget],
-		),
-	);
-
-	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
+	const { onChangePosition, lastKnownPosition } = useWidgetPositionTracker();
 
 	useEffect(() => {
 		return instance?.on('endedCall', () => {
@@ -238,6 +225,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const contextValue = {
 		sessionState,
+		targetPeer,
 		onClickDirectMessage,
 		onMute,
 		onHold,
@@ -254,7 +242,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		streams,
 		widgetPositionTracker: {
 			onChangePosition,
-			getRestorePosition,
+			lastKnownPosition,
 		},
 	};
 

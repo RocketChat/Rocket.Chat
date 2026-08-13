@@ -13,8 +13,8 @@ describe('[Assets]', () => {
 	after(() => updatePermission('manage-assets', ['admin']));
 
 	describe('[/assets.setAsset]', () => {
-		it('should set the "logo" asset', (done) => {
-			void request
+		it('should set the "logo" asset', async () => {
+			const res = await request
 				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('asset', imgURL)
@@ -22,54 +22,48 @@ describe('[Assets]', () => {
 					assetName: 'logo',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should throw an error when we try set an invalid asset', (done) => {
-			void request
+
+		it('should throw an error when we try set an invalid asset', async () => {
+			const res = await request
 				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('invalidAsset', imgURL)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 
 	describe('[/assets.unsetAsset]', () => {
-		it('should unset the "logo" asset', (done) => {
-			void request
+		it('should unset the "logo" asset', async () => {
+			const res = await request
 				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
 					assetName: 'logo',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should throw an error when we try set an invalid asset', (done) => {
-			void request
+
+		it('should throw an error when we try set an invalid asset', async () => {
+			const res = await request
 				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
 					assetName: 'invalidAsset',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 });

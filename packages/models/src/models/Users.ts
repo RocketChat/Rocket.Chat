@@ -13,7 +13,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
 import type { DefaultFields, InsertionModel, IUsersModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	Collection,
 	Db,
@@ -2912,13 +2912,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	setBannerReadById(_id: IUser['_id'], bannerId: string) {
+		const query = {
+			_id,
+			[`banners.${bannerId}`]: {
+				$exists: true,
+			},
+		};
 		const update = {
 			$set: {
 				[`banners.${bannerId}.read`]: true,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne(query, update);
 	}
 
 	removeBannerById(_id: IUser['_id'], bannerId: string) {

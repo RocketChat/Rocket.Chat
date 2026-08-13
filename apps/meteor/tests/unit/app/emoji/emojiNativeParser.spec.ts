@@ -2,14 +2,15 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
 import { getEmojiData } from '../../../../app/emoji-native/lib/generateEmojiData';
+import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
 import { shortnameToUnicode } from '../../../../app/emoji-native/lib/shortnameToUnicode';
 
 describe('emoji-native shortcode resolution', () => {
 	describe('shortnameToUnicode', () => {
 		it('resolves skin-tone variants stored under emojione alternate names', () => {
 			expect(shortnameToUnicode(':thumbsup_tone3:')).to.equal('👍🏽');
-			expect(shortnameToUnicode(':yes_tone3:')).to.equal('👍🏽');
-			expect(shortnameToUnicode(':clapping_hands_tone2:')).to.equal('👏🏼');
+			expect(shortnameToUnicode(':thumbup_tone3:')).to.equal('👍🏽');
+			expect(shortnameToUnicode(':clap_tone2:')).to.equal('👏🏼');
 			expect(shortnameToUnicode(':pray_tone4:')).to.equal('🙏🏾');
 		});
 
@@ -39,6 +40,19 @@ describe('emoji-native shortcode resolution', () => {
 		});
 	});
 
+	describe('render', () => {
+		const { render } = getEmojiConfig({ list: {}, packages: {} });
+
+		it('renders a known shortcode as an emoji span', () => {
+			expect(render(':smile:')).to.contain('class="emoji"');
+		});
+
+		it('leaves prototype property names untouched', () => {
+			expect(render(':toString:')).to.equal(':toString:');
+			expect(render('topic :toString: end')).to.equal('topic :toString: end');
+		});
+	});
+
 	describe('getEmojiData', () => {
 		it('registers regional indicators in emojiList but keeps them out of the picker', () => {
 			const { emojiList, emojisByCategory } = getEmojiData();
@@ -49,7 +63,7 @@ describe('emoji-native shortcode resolution', () => {
 		it('registers alternate skin-tone shortnames alongside the primary', () => {
 			const { emojiList } = getEmojiData();
 			expect(emojiList[':thumbsup_tone3:']?.unicode).to.equal('👍🏽');
-			expect(emojiList[':yes_tone3:']?.unicode).to.equal('👍🏽');
+			expect(emojiList[':thumbup_tone3:']?.unicode).to.equal('👍🏽');
 			expect(emojiList[':+1_tone3:']?.unicode).to.equal('👍🏽');
 		});
 	});

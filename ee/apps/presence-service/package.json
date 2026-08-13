@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence-service",
-	"version": "0.6.0-rc.0",
+	"version": "0.6.0",
 	"private": true,
 	"description": "Rocket.Chat Presence service",
 	"keywords": [
@@ -28,7 +28,6 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "~22.19.21",
 		"ejson": "^2.2.3",

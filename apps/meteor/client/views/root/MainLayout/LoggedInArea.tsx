@@ -1,6 +1,7 @@
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
+import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
 import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
@@ -43,7 +44,7 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useLogoutCleanup();
 	useE2EEncryption();
 
-	return children;
+	return <MediaPlayerProvider>{children}</MediaPlayerProvider>;
 };
 
 export default LoggedInArea;

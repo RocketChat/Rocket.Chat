@@ -1,6 +1,6 @@
 import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { slashCommands } from '../../../../app/utils/client';

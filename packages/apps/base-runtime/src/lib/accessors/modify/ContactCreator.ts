@@ -1,10 +1,11 @@
 import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class ContactCreator implements IContactCreator {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public verifyContact(verifyContactChannelParams: {
 		contactId: string;
@@ -13,10 +14,10 @@ export class ContactCreator implements IContactCreator {
 		visitorId: string;
 		roomId: string;
 	}): Promise<void> {
-		return this.bridges.getContactBridge().doVerifyContact(verifyContactChannelParams, 'APP_ID') as Promise<void>;
+		return bridgeCall<void>(this.senderFn, 'getContactBridge', 'doVerifyContact', verifyContactChannelParams, 'APP_ID');
 	}
 
 	public addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
-		return this.bridges.getContactBridge().doAddContactEmail(contactId, email, 'APP_ID') as Promise<ILivechatContact>;
+		return bridgeCall<ILivechatContact>(this.senderFn, 'getContactBridge', 'doAddContactEmail', contactId, email, 'APP_ID');
 	}
 }

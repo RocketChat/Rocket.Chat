@@ -126,7 +126,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
-		this.appResourceBridge = new AppResourceBridge(manager);
+		// Shared, engine-owned instance (stateless, keyed by appId per call) - one AppResourceBridge
+		// serves every subprocess controller rather than each controller owning its own.
+		this.appResourceBridge = manager.getAppResourceBridge();
 	}
 
 	/**

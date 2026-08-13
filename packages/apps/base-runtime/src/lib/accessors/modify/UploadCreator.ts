@@ -4,14 +4,15 @@ import type { IUploadDescriptor } from '@rocket.chat/apps-engine/definition/uplo
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class UploadCreator implements IUploadCreator {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public async uploadBuffer(buffer: Buffer, descriptor: IUploadDescriptor): Promise<IUpload> {
 		if (!Object.hasOwn(descriptor, 'user') && !descriptor.visitorToken) {
-			descriptor.user = (await this.bridges.getUserBridge().doGetAppUser('APP_ID')) as IUser;
+			descriptor.user = (await bridgeCall(this.senderFn, 'getUserBridge', 'doGetAppUser', 'APP_ID')) as IUser;
 		}
 
 		const details = {
@@ -22,6 +23,6 @@ export class UploadCreator implements IUploadCreator {
 			visitorToken: descriptor.visitorToken,
 		} as IUploadDetails;
 
-		return this.bridges.getUploadBridge().doCreateUpload(details, buffer, 'APP_ID') as Promise<IUpload>;
+		return bridgeCall<IUpload>(this.senderFn, 'getUploadBridge', 'doCreateUpload', details, buffer, 'APP_ID');
 	}
 }

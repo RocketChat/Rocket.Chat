@@ -1,4 +1,4 @@
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { expect } from 'chai';
 
 import { Markdown, original, filtered } from './client.mocks';

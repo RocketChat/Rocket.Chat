@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "33.0.0-rc.0",
+	"version": "33.0.0",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -17,18 +17,19 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.4.12"
+		"dompurify": "~3.4.13"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "^0.33.1",
 		"@rocket.chat/emitter": "^0.33.0",
-		"@rocket.chat/fuselage": "^0.84.0",
-		"@rocket.chat/fuselage-hooks": "~0.43.0",
-		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/fuselage": "^0.86.0",
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/icons": "^0.48.0",
-		"@rocket.chat/layout": "~0.36.1",
+		"@rocket.chat/layout": "^0.36.2",
+		"@rocket.chat/logo": "^0.33.2",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
@@ -39,12 +40,12 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
-		"@types/react": "~19.2.17",
-		"@types/react-dom": "~19.2.3",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.4",
 		"eslint": "~9.39.5",
 		"i18next": "~23.4.9",
-		"react": "~19.2.7",
-		"react-dom": "~19.2.7",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "~4.18.11",
@@ -54,7 +55,7 @@
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
 		"@rocket.chat/tools": "0.3.0",
-		"@rocket.chat/ui-contexts": "33.0.0-rc.0",
+		"@rocket.chat/ui-contexts": "33.0.0",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",

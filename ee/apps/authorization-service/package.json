@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/authorization-service",
-	"version": "0.7.0-rc.0",
+	"version": "0.7.0",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"keywords": [
@@ -28,7 +28,6 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "~22.19.21",
 		"ejson": "^2.2.3",

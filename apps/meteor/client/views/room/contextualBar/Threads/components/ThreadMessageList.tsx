@@ -170,12 +170,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 					userInteractedRef.current = true;
 				}
 			};
+			const parent = element.parentElement;
+
+			parent?.addEventListener('pointerdown', markInteracted);
 			element.addEventListener('wheel', markInteracted, { passive: true });
-			element.addEventListener('touchmove', markInteracted, { passive: true });
 			element.addEventListener('keydown', handleKeydown);
 			return () => {
+				parent?.removeEventListener('pointerdown', markInteracted);
 				element.removeEventListener('wheel', markInteracted);
-				element.removeEventListener('touchmove', markInteracted);
 				element.removeEventListener('keydown', handleKeydown);
 			};
 		}, []),

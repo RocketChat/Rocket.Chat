@@ -11,6 +11,7 @@ import type { IGetAppsFilter } from './IGetAppsFilter';
 import { ProxiedApp } from './ProxiedApp';
 import { AppBridges } from './bridges';
 import type { PersistenceBridge, UserBridge } from './bridges';
+import { AppResourceBridge } from './bridges/AppResourceBridge';
 import type { IInternalPersistenceBridge } from './bridges/IInternalPersistenceBridge';
 import type { IInternalUserBridge } from './bridges/IInternalUserBridge';
 import { AppCompiler, AppFabricationFulfillment, AppPackageParser } from './compiler';
@@ -106,6 +107,8 @@ export class AppManager {
 
 	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
 
+	private readonly resourceBridge: AppResourceBridge;
+
 	private readonly signatureManager: AppSignatureManager;
 
 	private readonly runtime: AppRuntimeManager;
@@ -160,6 +163,9 @@ export class AppManager {
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
 		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
+		// A single, stateless resource bridge shared by every subprocess controller: it only ever
+		// delegates to the managers above (keyed by appId per call), so one instance serves all apps.
+		this.resourceBridge = new AppResourceBridge(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -217,6 +223,15 @@ export class AppManager {
 
 	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
 		return this.outboundCommunicationProviderManager;
+	}
+
+	/**
+	 * Gets the shared, engine-owned resource bridge that fronts the manager registries and app
+	 * settings for the subprocess. It is stateless (every method takes an appId), so a single
+	 * instance is consumed by every subprocess controller.
+	 */
+	public getAppResourceBridge(): AppResourceBridge {
+		return this.resourceBridge;
 	}
 
 	public getLicenseManager(): AppLicenseManager {

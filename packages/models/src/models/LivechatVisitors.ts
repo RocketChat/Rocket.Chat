@@ -1,6 +1,6 @@
 import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
 	Collection,
@@ -304,8 +304,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
-		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
+		};
 
 		return this.updateOne(query, update);
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.4.0-rc.0",
+	"version": "0.4.0",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [
@@ -29,7 +29,6 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
@@ -43,10 +42,10 @@
 		"polka": "^0.5.2",
 		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^1.1.0",
-		"sharp": "^0.33.5",
+		"sharp": "^0.35.3",
 		"underscore": "^1.13.8",
 		"uuid": "^11.1.1",
-		"ws": "~8.21.1"
+		"ws": "~8.21.3"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

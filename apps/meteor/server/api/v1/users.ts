@@ -28,8 +28,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -268,7 +267,7 @@ API.v1
 							language: user.language,
 						},
 					},
-				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
+				},
 			});
 		},
 	)
