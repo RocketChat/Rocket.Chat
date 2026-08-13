@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -57,8 +58,10 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('move focus to the room title', async () => {
+				const roomHeaderFavoriteBtn = channelPage.getRoomHeaderFavoriteBtn(IS_EE);
 				await page.keyboard.press('Shift+Tab');
-				await expect(page.getByRole('button', { name: `Favorite ${targetChannel}` })).toBeFocused();
+
+				await expect(roomHeaderFavoriteBtn).toBeFocused();
 			});
 
 			await test.step('move focus to the channel list', async () => {

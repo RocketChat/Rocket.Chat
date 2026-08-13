@@ -28,12 +28,12 @@ test.describe.serial('channel-management', () => {
 
 	// TODO: this should be replaced by a unit test
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
-		test.skip(IS_EE);
+		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
 
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		await roomHeaderFavoriteBtn.focus();
+		await expect(roomHeaderFavoriteBtn).toBeFocused();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
@@ -46,11 +46,11 @@ test.describe.serial('channel-management', () => {
 
 	// TODO: this should be replaced by a unit test
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
-		test.skip(IS_EE);
+		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
 
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		await roomHeaderFavoriteBtn.focus();
+		await expect(roomHeaderFavoriteBtn).toBeFocused();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');

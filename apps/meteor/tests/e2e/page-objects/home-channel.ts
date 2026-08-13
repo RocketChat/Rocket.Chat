@@ -114,8 +114,22 @@ export class HomeChannel {
 		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
 	}
 
-	get roomHeaderFavoriteBtn(): Locator {
+	getRoomHeaderFavoriteBtn(isEnterprise: boolean): Locator {
+		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
+	}
+
+	/** Prefer using getRoomHeaderFavoriteBtn instead */
+	private get roomHeaderFavoriteBtn(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
+	}
+
+	private get btnCategorySelector(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Move to ' });
+	}
+
+	getBtnOpenRoomInfo(roomName: string): Locator {
+		// TODO: this button should name open room info or something instead of the room name
+		return this.page.getByRole('main').getByRole('button', { name: roomName, exact: true });
 	}
 
 	get roomHeaderToolbar(): Locator {

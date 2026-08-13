@@ -233,7 +233,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).not.toBeVisible();
 
-			await poHomeChannel.roomHeaderFavoriteBtn.click();
+			await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
 		});
@@ -345,7 +345,7 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
 
-				await poHomeChannel.roomHeaderFavoriteBtn.click();
+				await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			});
