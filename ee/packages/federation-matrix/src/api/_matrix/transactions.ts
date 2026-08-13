@@ -144,13 +144,22 @@ const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
 const GetStateIdsResponseSchema = {
 	type: 'object',
 	properties: {
-		stateIds: {
+		auth_chain_ids: {
 			type: 'array',
 			items: {
 				type: 'string',
 			},
+			description: 'Auth chain event IDs, recursively',
+		},
+		pdu_ids: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			description: 'Event IDs of the fully resolved room state at the given event',
 		},
 	},
+	required: ['auth_chain_ids', 'pdu_ids'],
 };
 
 const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
@@ -169,10 +178,22 @@ const isGetStateParamsProps = ajv.compile<{
 const GetStateResponseSchema = {
 	type: 'object',
 	properties: {
-		state: {
-			type: 'object',
+		auth_chain: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'Auth chain events, recursively',
+		},
+		pdus: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'The fully resolved room state at the given event',
 		},
 	},
+	required: ['auth_chain', 'pdus'],
 };
 
 const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
