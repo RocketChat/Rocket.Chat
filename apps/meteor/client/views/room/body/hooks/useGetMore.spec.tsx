@@ -66,6 +66,40 @@ describe('useGetMore', () => {
 		});
 	});
 
+	it('should not call getMore while the list is hidden, even though it reports being at the top', async () => {
+		const root = mockAppRoot();
+		(RoomHistoryManager.isLoading as jest.Mock).mockReturnValue(false);
+		(RoomHistoryManager.hasMore as jest.Mock).mockReturnValue(true);
+		(RoomHistoryManager.hasMoreNext as jest.Mock).mockReturnValue(false);
+		(RoomHistoryManager.getMore as jest.Mock).mockClear();
+
+		const Test = () => {
+			const [atBottom] = useState(false);
+			const { innerRef } = useGetMore('room-id', atBottom);
+			return <div ref={innerRef as any} style={{ display: 'none' }} data-testid='scrollable-element' />;
+		};
+
+		// What a display: none element reports. Without a guard `scrollTop <= clientHeight / 3` is
+		// 0 <= 0, so every observer callback would load another page of history.
+		(getBoundingClientRect as jest.Mock).mockReturnValue({
+			scrollTop: 0,
+			clientHeight: 0,
+			scrollHeight: 0,
+		});
+
+		render(<Test />, {
+			wrapper: root.build(),
+		});
+
+		const scrollableElement = screen.getByTestId('scrollable-element');
+		scrollableElement.dispatchEvent(new Event('wheel'));
+		scrollableElement.dispatchEvent(new Event('scroll'));
+
+		await waitFor(() => {
+			expect(RoomHistoryManager.getMore).not.toHaveBeenCalled();
+		});
+	});
+
 	it('should call getMoreNext when scrolling near bottom and hasMoreNext is true', () => {
 		const root = mockAppRoot();
 		(RoomHistoryManager.isLoading as jest.Mock).mockReturnValue(false);

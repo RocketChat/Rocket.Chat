@@ -41,6 +41,13 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
+					// RoomLayout hides the message body while a contextual bar takes the full room width,
+					// and a hidden element reports clientHeight 0. Without this guard the position check
+					// below is always true and pulls in the entire room history, one observer call at a time.
+					if (clientHeight === 0) {
+						return;
+					}
+
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
 					const hasMore = RoomHistoryManager.hasMore(rid);
