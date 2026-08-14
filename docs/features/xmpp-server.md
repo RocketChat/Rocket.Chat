@@ -26,6 +26,43 @@ A Rocket.Chat service (`xmpp-server`) bridges the protocol core to the product:
 - **Presence**: local status changes (online/away/busy/offline) are pushed to remote contacts the user shares an XMPP DM with; presence received from remote users updates their local status.
 - **Lifecycle**: the listener starts when `XMPP_Server_Enabled` is turned on (and a valid license is present) and stops cleanly when it is turned off; TLS/domain/port changes restart it automatically.
 
+## Standards implemented
+
+### Core specifications
+
+| Spec | Coverage |
+| --- | --- |
+| [RFC 6120](https://datatracker.ietf.org/doc/html/rfc6120) — XMPP Core | S2S stream negotiation, STARTTLS, SASL EXTERNAL, stream and stanza errors, restricted-XML parsing (DOCTYPE/entity rejection), `service-unavailable` for unhandled IQ get/set |
+| [RFC 6121](https://datatracker.ietf.org/doc/html/rfc6121) — XMPP IM & Presence | `<message type='chat'/>` delivery both directions, availability presence (`show`/`status`), presence probes, subscription stanzas (`subscribe`/`subscribed`/`unsubscribe`/`unsubscribed`). No server-side roster storage — subscription state is derived from shared DM rooms |
+| [RFC 6122](https://datatracker.ietf.org/doc/html/rfc6122) — XMPP Address Format | JID parsing/normalization, IDNA domain normalization, 1023-byte localpart limit |
+| [RFC 2782](https://datatracker.ietf.org/doc/html/rfc2782) — DNS SRV | `_xmpp-server._tcp` resolution with weighted priority-group ordering, A/AAAA fallback on port 5269, and the "service not provided" (`.` target) convention |
+
+### XEPs
+
+| XEP | Name | Coverage |
+| --- | --- | --- |
+| [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | disco#info and disco#items on the server domain (advertises identity `server/im`, ping, dialback, and the MUC service as a child item), on the MUC service domain (identity `conference/text`, public room list), and on individual hosted rooms (`muc_persistent`, `muc_public`/`muc_hidden`, `muc_open`/`muc_membersonly`, …). Unknown room JIDs answer `item-not-found`; occupant lists are not disclosed |
+| [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-User Chat | Subset — hosted rooms: join/leave, roster delivery on join, occupant presence broadcast with affiliations/roles, self-presence status `110`, subject on join close (§7.2.1), groupchat message reflection, kick with status `307`, nick conflict → `conflict`, unauthorized join → `registration-required`, ban → `forbidden`, mediated invitations (§7.8.2). Remote rooms: joining, occupant tracking, message receipt. **Not implemented**: room configuration forms (§10), owner/admin IQ, moderation beyond kick, discussion history on join, room passwords, nick changes, room destruction stanzas |
+| [XEP-0106](https://xmpp.org/extensions/xep-0106.html) | JID Escaping | Rocket.Chat usernames containing characters illegal in a localpart (spaces, `@`, `/`, …) are escaped into valid JIDs and unescaped on the way back |
+| [XEP-0185](https://xmpp.org/extensions/xep-0185.html) | Dialback Key Generation and Validation | HMAC-SHA256 key derivation over `{receiving domain} {originating domain} {stream id}`, keyed with the hex-encoded SHA256 of the server secret; constant-time comparison on verification |
+| [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | Answers `urn:xmpp:ping` IQ gets and advertises the feature in disco#info |
+| [XEP-0220](https://xmpp.org/extensions/xep-0220.html) | Server Dialback | All three roles — originating (sends `db:result`), receiving (verifies a presented key with the claimed authoritative server over a separate stream), and authoritative (answers `db:verify`). Advertises `urn:xmpp:features:dialback` in stream features |
+| [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | Inbound only — direct invites (`jabber:x:conference`) to a Rocket.Chat user are parsed and surfaced as room invitations. Rocket.Chat-hosted rooms always send *mediated* invites instead |
+| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | Inbound only — `<stanza-id/>` on messages from remote MUCs is preferred over the stanza `id` for deduplication. Rocket.Chat does not stamp its own outbound stanzas |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Parsed only — `<replace/>` is decoded off inbound messages, but corrections are not yet applied to the stored message |
+
+### Explicitly not supported
+
+| XEP | Name | Why |
+| --- | --- | --- |
+| [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV records for XMPP over TLS | Direct TLS (`_xmpps-server._tcp`, port 5270) is not resolved or offered; STARTTLS on 5269 only |
+| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | No stanza acknowledgements or stream resumption; a dropped S2S stream is re-established with exponential backoff and in-flight stanzas may be lost |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | Rooms serve no history over XMPP; remote occupants see only messages sent while they are joined |
+| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) / [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Chat State Notifications / Message Receipts | No typing indicators or delivery/read receipts |
+| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) / [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | HTTP File Upload / Jingle File Transfer | Text messages only |
+| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | Deletions are local-only |
+| [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | The native server is in-process, not a component; XEP-0114 is what the separate Matrix-bridge XMPP integration uses |
+
 ## Configuration on the Rocket.Chat side
 
 ### Admin settings
