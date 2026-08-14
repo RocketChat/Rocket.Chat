@@ -99,6 +99,27 @@ describe('executeDownloadPublicImportFile', () => {
 		expect(stubs.updateProgress.calledWith(progressStep.FILE_LOADED)).to.be.false;
 	});
 
+	it('handles a rejected error progress update when the writable fails', async () => {
+		const responseBody = new PassThrough();
+		const unhandledRejection = sinon.spy();
+		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });
+		stubs.updateProgress.withArgs(progressStep.ERROR).rejects(new Error('progress update failed'));
+		process.on('unhandledRejection', unhandledRejection);
+
+		try {
+			await executeDownloadPublicImportFile('user-id', 'https://example.com/import.zip', 'csv');
+			const responseBodyClosed = new Promise<void>((resolve) => responseBody.once('close', resolve));
+			writeStream.destroy(new Error('stream failed'));
+			await responseBodyClosed;
+			await new Promise<void>((resolve) => setImmediate(resolve));
+
+			expect(unhandledRejection.called).to.be.false;
+			expect(stubs.updateProgress.withArgs(progressStep.ERROR).calledOnce).to.be.true;
+		} finally {
+			process.off('unhandledRejection', unhandledRejection);
+		}
+	});
+
 	it('marks the file as loaded when the writable finishes', async () => {
 		const responseBody = new PassThrough();
 		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });

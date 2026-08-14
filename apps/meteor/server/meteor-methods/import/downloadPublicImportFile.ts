@@ -69,7 +69,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const writeStream = (RocketChatImportFileInstance as ImportFileStore).createWriteStream(newFileName);
 	let errorProgressUpdate: Promise<unknown> | undefined;
 	const markImportAsFailed = (): Promise<unknown> => {
-		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR);
+		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR).catch(() => undefined);
 		return errorProgressUpdate;
 	};
 
