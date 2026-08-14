@@ -8,6 +8,10 @@ import NavBarPagesSection from './NavBarPagesSection';
 const NavBar = () => {
 	const { navbar } = useLayout();
 
+	if (typeof window !== 'undefined' && window.RocketChatDesktop) {
+		return null;
+	}
+
 	return (
 		<NavBarComponent aria-label='header'>
 			{!navbar.searchExpanded && <NavBarPagesSection />}
