@@ -16,7 +16,7 @@ const catB = { _id: 'cat-b', name: 'Engineering', rooms: [] as string[], showUnr
 
 const makeCategories = (categorizedRid?: string) =>
 	({
-		isEnterprise: true,
+		hasLicenseModule: true,
 		categories: [catA, catB],
 		moveRoom: jest.fn(),
 		removeRoom: jest.fn(),

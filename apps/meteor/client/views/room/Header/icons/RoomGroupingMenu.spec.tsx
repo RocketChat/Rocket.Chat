@@ -37,7 +37,7 @@ beforeEach(() => {
 
 it('shows Favorites in the grouping menu when the room is favorited', async () => {
 	mockedUseCustomCategories.mockReturnValue({
-		isEnterprise: true,
+		hasLicenseModule: true,
 		categories: [catDesign, catOther],
 		getRoomCategory: jest.fn(() => undefined),
 	} as any);
@@ -51,7 +51,7 @@ it('shows Favorites in the grouping menu when the room is favorited', async () =
 
 it('shows the matching category in the grouping menu when the room is categorized', async () => {
 	mockedUseCustomCategories.mockReturnValue({
-		isEnterprise: true,
+		hasLicenseModule: true,
 		categories: [catDesign, catOther],
 		getRoomCategory: jest.fn(() => catDesign),
 	} as any);

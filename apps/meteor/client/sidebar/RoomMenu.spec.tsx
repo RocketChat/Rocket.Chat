@@ -21,6 +21,10 @@ jest.mock('../../app/ui-utils/client', () => ({
 	},
 }));
 
+jest.mock('./categories/useCategoryModals', () => ({
+	useCategoryModals: () => ({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() }),
+}));
+
 const defaultProps = {
 	rid: 'roomId',
 	type: 'c' as RoomType,
@@ -51,7 +55,7 @@ const enterpriseRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
 		.withEndpoint('GET', '/v1/licenses.info', async () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true }),
+			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
 		}))
 		.build(),
 };
@@ -93,7 +97,9 @@ it('should reveal Favorites and New category inside the "Move to" submenu for en
 const enterpriseFavoriteRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
-		.withEndpoint('GET', '/v1/licenses.info', async () => ({ license: createFakeLicenseInfo({ hasValidLicense: true }) }))
+		.withEndpoint('GET', '/v1/licenses.info', async () => ({
+			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+		}))
 		.withSubscription(createFakeSubscription({ rid: 'roomId', f: true, t: 'c' }))
 		.build(),
 };
@@ -101,7 +107,9 @@ const enterpriseFavoriteRenderOptions = {
 const enterpriseCategoryRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
-		.withEndpoint('GET', '/v1/licenses.info', async () => ({ license: createFakeLicenseInfo({ hasValidLicense: true }) }))
+		.withEndpoint('GET', '/v1/licenses.info', async () => ({
+			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+		}))
 		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c' }))
 		.withUserPreference('sidebarCustomCategories', [{ _id: 'cat-design', name: 'Design', rooms: ['roomId'], showUnreads: true }])
 		.build(),

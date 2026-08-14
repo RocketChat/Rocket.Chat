@@ -114,7 +114,7 @@ const getWrapperSettings = ({
 
 	if (isEnterprise) {
 		root.withEndpoint('GET', '/v1/licenses.info', () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true }),
+			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
 		}));
 	}
 
