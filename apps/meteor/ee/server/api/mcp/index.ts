@@ -133,7 +133,7 @@ export const handleMcpPost = async (context: McpActionContext): Promise<McpHttpR
 			return invalidRequestResponse;
 		}
 
-		if (message.length === 0 || message.length > MAX_BATCH_SIZE || !message.every(isJsonRpcRequest)) {
+		if (message.length === 0 || message.length > MAX_BATCH_SIZE) {
 			return invalidRequestResponse;
 		}
 

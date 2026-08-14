@@ -240,18 +240,28 @@ describe('MCP HTTP route', () => {
 		expect(handleRpcMessage).not.toHaveBeenCalled();
 	});
 
-	it('rejects JSON-RPC responses because this server does not issue client requests', async () => {
+	it('rejects a JSON-RPC response because this server does not issue client requests', async () => {
 		const response = { jsonrpc: '2.0', id: 1, result: {} };
 
 		await expect(handleMcpPost({ ...context, bodyParams: response })).resolves.toMatchObject({
 			statusCode: 400,
 			body: { error: { code: -32600 } },
 		});
-		await expect(handleMcpPost({ ...context, bodyParams: [response] })).resolves.toMatchObject({
-			statusCode: 400,
-			body: { error: { code: -32600 } },
-		});
 		expect(handleRpcMessage).not.toHaveBeenCalled();
+	});
+
+	it('processes valid and malformed entries independently in legacy JSON-RPC batches', async () => {
+		const validResponse = { jsonrpc: '2.0' as const, id: 1, result: {} };
+		const invalidResponse = { jsonrpc: '2.0' as const, id: null, error: { code: -32600, message: 'Invalid Request' } };
+		const malformedEntry = { jsonrpc: '2.0', id: 2, result: {} };
+		jest.mocked(handleRpcMessage).mockResolvedValueOnce(validResponse).mockResolvedValueOnce(invalidResponse);
+
+		await expect(handleMcpPost({ ...context, bodyParams: [context.bodyParams, malformedEntry] })).resolves.toEqual({
+			statusCode: 200,
+			body: [validResponse, invalidResponse],
+		});
+		expect(handleRpcMessage).toHaveBeenNthCalledWith(1, context.bodyParams, expect.anything(), context.requestIp, expect.anything());
+		expect(handleRpcMessage).toHaveBeenNthCalledWith(2, malformedEntry, expect.anything(), context.requestIp, expect.anything());
 	});
 
 	it('acknowledges notifications without a response body', async () => {
