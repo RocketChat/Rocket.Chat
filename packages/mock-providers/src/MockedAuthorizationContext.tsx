@@ -24,6 +24,7 @@ export const MockedAuthorizationContext = ({
 				queryRole: (id: string) => [() => (): void => undefined, (): boolean => roles.includes(id)],
 				getRoles: () => dummyRolesMap,
 				subscribeToRoles: (): (() => void) => (): void => undefined,
+				getPermission: () => undefined,
 			}}
 		>
 			{children}

@@ -114,3 +114,4 @@ export { useMediaDeviceMicrophonePermission } from './hooks/useMediaDevicePermis
 export { useWriteStream } from './hooks/useWriteStream';
 export { useUserCard } from './hooks/useUserCard';
 export type { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
+export { useGetPermission } from './hooks/useGetPermission';

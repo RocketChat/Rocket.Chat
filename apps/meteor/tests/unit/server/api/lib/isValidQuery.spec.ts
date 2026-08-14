@@ -223,4 +223,16 @@ describe('isValidQuery', () => {
 			expect(isValidQuery.errors.length).to.be.equals(1);
 		});
 	});
+
+	describe('primitive values in query array', () => {
+		it('should return true if the query contains primitive array', () => {
+			const props = ['roles'];
+			const allowedOps = ['$in'];
+			const query = {
+				roles: { $in: ['admin', 'user'] },
+			};
+			expect(isValidQuery(query, props, allowedOps)).to.be.true;
+			expect(isValidQuery.errors.length).to.be.equals(0);
+		});
+	});
 });

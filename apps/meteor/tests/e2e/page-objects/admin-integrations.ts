@@ -1,10 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
+import { Listbox } from './fragments/listbox';
 
 export class AdminIntegrations extends Admin {
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
 		super(page);
+		this.listbox = new Listbox(page);
 	}
 
 	get btnInstructions(): Locator {
@@ -25,6 +29,12 @@ export class AdminIntegrations extends Admin {
 
 	get inputPostAs(): Locator {
 		return this.page.getByRole('textbox', { name: 'Post as' });
+	}
+
+	async selectPostAs(name: string) {
+		await this.inputPostAs.click();
+		await this.inputPostAs.fill(name);
+		await this.listbox.selectOption(name);
 	}
 
 	getIntegrationByName(name: string): Locator {

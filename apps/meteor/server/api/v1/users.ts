@@ -1699,7 +1699,7 @@ API.v1.get(
 				const canViewFullInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
 
-				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists', '$in'])) {
 					throw new Error('error-invalid-query');
 				}
 			}
