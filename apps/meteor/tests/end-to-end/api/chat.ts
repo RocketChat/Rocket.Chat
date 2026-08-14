@@ -4606,32 +4606,56 @@ describe('Threads', () => {
 
 		describe('Message_KeepHistory', () => {
 			describe('when enabled', () => {
-				before(() => updateSetting('Message_KeepHistory', true));
-				after(() => updateSetting('Message_KeepHistory', false));
+				let secondThreadMessage: IThreadMessage;
 
-				it('should exclude hidden message edit history from pagination results', async () => {
+				before(async () => {
+					await updateSetting('Message_KeepHistory', true);
 					await updateMessage({
 						msgId: threadMessage._id,
 						updatedMessage: 'Edited thread message',
 						roomId: testChannel._id,
 					});
+					secondThreadMessage = (
+						await sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Second thread message',
+							tmid: createdThreadMessage._id,
+						})
+					).body.message;
+				});
+				after(() => updateSetting('Message_KeepHistory', false));
 
+				it('should exclude hidden message edit history from offset pagination', async () => {
 					const res = await request
 						.get(api('chat.getThreadMessages'))
 						.set(credentials)
 						.query({
 							tmid: threadMessage.tmid,
+							count: 1,
+							offset: 1,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200);
 
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('total', 1);
-					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.include({ success: true, total: 2, count: 1, offset: 1 });
 					expect(res.body.messages).to.have.lengthOf(1);
-					expect(res.body.messages[0]).to.have.property('_id', threadMessage._id);
-					expect(res.body.messages[0]).to.have.property('msg', 'Edited thread message');
-					expect(res.body.messages[0]).to.not.have.property('_hidden');
+					expect(res.body.messages[0]).to.have.property('_id', secondThreadMessage._id);
+				});
+
+				it('should exclude hidden message edit history when resolving an aroundId offset', async () => {
+					const res = await request
+						.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							aroundId: secondThreadMessage._id,
+							count: 2,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+
+					expect(res.body).to.include({ success: true, total: 2, count: 2, offset: 0 });
+					expect(res.body.messages.map(({ _id }: IMessage) => _id)).to.deep.equal([threadMessage._id, secondThreadMessage._id]);
 				});
 			});
 		});
