@@ -130,51 +130,64 @@ export class RoomSidebar extends Sidebar {
 		await this.getCategoryKebab(name).click();
 	}
 
+	get moveToOption(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Move to', exact: true });
+	}
+
 	async openRoomMenu(name: string): Promise<void> {
 		const item = this.getSidebarItemByName(name);
 		await item.hover();
 		await item.focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
+		await expect(this.moveToOption).toBeVisible();
+	}
+
+	/** The open submenu keeps the first Escape, so the kebab menu itself needs a second one. */
+	async closeRoomMenu(): Promise<void> {
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.press('Escape');
+		await expect(this.moveToOption).toBeHidden();
 	}
 
 	/** Move a room into a custom category (or to "Favorites") through the kebab "Move to ▸" submenu. */
 	async moveRoomToCategory(roomName: string, categoryName: string): Promise<void> {
-		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
-		await this.page.getByRole('menuitem', { name: categoryName, exact: true }).click();
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.roomMenuMoveToItem(categoryName).click();
+		await expect(this.moveToOption).toBeHidden();
 	}
 
 	async removeRoomFromCategory(roomName: string, categoryName: string): Promise<void> {
-		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
-		await this.page.getByRole('menuitem', { name: `Remove from ${categoryName}` }).click();
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.roomMenuMoveToItem(`Remove from ${categoryName}`).click();
+		await expect(this.moveToOption).toBeHidden();
 	}
 
 	async createCategoryFromRoom(roomName: string): Promise<void> {
-		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
-		await this.page.getByRole('menuitem', { name: 'New category', exact: true }).click();
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.roomMenuMoveToItem('New category').click();
+		await expect(this.moveToOption).toBeHidden();
 	}
 
 	async moveRoomToFavorites(roomName: string): Promise<void> {
-		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
-		await this.page.getByRole('menuitem', { name: 'Favorites', exact: true }).click();
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.roomMenuMoveToItem('Favorites').click();
+		await expect(this.moveToOption).toBeHidden();
 	}
 
 	async removeRoomFromFavorites(roomName: string): Promise<void> {
-		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
-		await this.page.getByRole('menuitem', { name: 'Remove from Favorites' }).click();
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.roomMenuMoveToItem('Remove from Favorites').click();
+		await expect(this.moveToOption).toBeHidden();
 	}
 
-	roomMenuMoveToItem(name: string | RegExp): Locator {
-		return this.page.getByRole('menuitem', { name });
+	roomMenuMoveToItem(name: string): Locator {
+		return this.page.getByRole('menu', { name: 'Move to', exact: true }).getByRole('menuitem', { name, exact: true });
 	}
 
 	async openRoomMoveToSubmenu(roomName: string): Promise<void> {
 		await this.openRoomMenu(roomName);
-		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.moveToOption.hover();
+		await expect(this.roomMenuMoveToItem('New category')).toBeVisible();
 	}
 }
 

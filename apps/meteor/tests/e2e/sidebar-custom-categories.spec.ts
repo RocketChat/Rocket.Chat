@@ -32,8 +32,8 @@ test.describe.serial('sidebar custom categories', () => {
 	/** True when the target room currently belongs to the named grouping (its submenu offers "Remove from …"). */
 	const isRoomInGrouping = async (groupingName: string) => {
 		await poHomeChannel.sidebar.openRoomMoveToSubmenu(targetChannel);
-		const present = (await poHomeChannel.sidebar.roomMenuMoveToItem(`Remove from ${groupingName}`).count()) > 0;
-		await poHomeChannel.page.keyboard.press('Escape');
+		const present = await poHomeChannel.sidebar.roomMenuMoveToItem(`Remove from ${groupingName}`).isVisible();
+		await poHomeChannel.sidebar.closeRoomMenu();
 		return present;
 	};
 
