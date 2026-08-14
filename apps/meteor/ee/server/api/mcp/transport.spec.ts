@@ -1,4 +1,4 @@
-import { isMcpOriginAllowed, isMcpProtocolVersionSupported } from './transport';
+import { isMcpOriginAllowed, isMcpProtocolVersionSupported, supportsMcpBatching } from './transport';
 import { settings } from '../../../../server/settings/cached';
 
 jest.mock('../../../../server/settings/cached', () => ({
@@ -52,5 +52,12 @@ describe('MCP HTTP transport validation', () => {
 		expect(isMcpProtocolVersionSupported(null)).toBe(true);
 		expect(isMcpProtocolVersionSupported('2025-11-25')).toBe(true);
 		expect(isMcpProtocolVersionSupported('2099-01-01')).toBe(false);
+	});
+
+	it('only accepts JSON-RPC batches for the 2025-03-26 transport revision', () => {
+		expect(supportsMcpBatching(null)).toBe(true);
+		expect(supportsMcpBatching('2025-03-26')).toBe(true);
+		expect(supportsMcpBatching('2025-06-18')).toBe(false);
+		expect(supportsMcpBatching('2025-11-25')).toBe(false);
 	});
 });

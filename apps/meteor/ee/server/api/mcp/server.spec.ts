@@ -57,6 +57,7 @@ describe('MCP JSON-RPC server', () => {
 	it('rejects malformed JSON-RPC messages without throwing', async () => {
 		expect(isJsonRpcRequest({ jsonrpc: '2.0', method: 'ping' })).toBe(true);
 		expect(isJsonRpcRequest({ jsonrpc: '1.0', method: 'ping' })).toBe(false);
+		expect(isJsonRpcRequest({ jsonrpc: '2.0', id: null, method: 'ping' })).toBe(false);
 
 		await expect(handleRpcMessage(null, auth)).resolves.toEqual({
 			jsonrpc: '2.0',

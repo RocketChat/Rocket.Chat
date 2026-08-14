@@ -20,6 +20,9 @@ jest.mock('@rocket.chat/models', () => ({
 
 jest.mock('./server', () => ({
 	handleRpcMessage: jest.fn(),
+	isJsonRpcRequest: jest.fn(
+		(value: unknown) => typeof value === 'object' && value !== null && 'jsonrpc' in value && value.jsonrpc === '2.0' && 'method' in value,
+	),
 }));
 
 jest.mock('../../../../server/api', () => ({
@@ -181,6 +184,30 @@ describe('MCP HTTP route', () => {
 		});
 	});
 
+	it('returns a JSON-RPC parse error for malformed JSON after validating the personal access token', async () => {
+		const handler = mockRouter.post.mock.calls[0]?.[1];
+		expect(handler).toBeDefined();
+		if (!handler) {
+			throw new Error('MCP POST handler was not registered');
+		}
+
+		const result = await handler({
+			req: {
+				raw: new Request('http://localhost/api/v1/mcp', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'x-auth-token': 'auth-token', 'x-user-id': 'user-id' },
+					body: '{',
+				}),
+			},
+			get: (key: string) => (key === 'user' ? { _id: 'user-id' } : '192.0.2.1'),
+		});
+
+		expect(result.status).toBe(400);
+		await expect(result.json()).resolves.toMatchObject({ id: null, error: { code: -32700, message: 'Parse error' } });
+		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).toHaveBeenCalled();
+		expect(handleRpcMessage).not.toHaveBeenCalled();
+	});
+
 	it('returns not found while MCP is disabled', async () => {
 		jest.mocked(settings.get).mockReturnValue(false);
 
@@ -194,6 +221,33 @@ describe('MCP HTTP route', () => {
 			body: { error: { code: -32600 } },
 		});
 		await expect(handleMcpPost({ ...context, bodyParams: Array.from({ length: 21 }, () => context.bodyParams) })).resolves.toMatchObject({
+			statusCode: 400,
+			body: { error: { code: -32600 } },
+		});
+		expect(handleRpcMessage).not.toHaveBeenCalled();
+	});
+
+	it('rejects JSON-RPC batches for protocol revisions that require one message per POST', async () => {
+		await expect(
+			handleMcpPost({
+				...context,
+				bodyParams: [context.bodyParams],
+				request: new Request('http://localhost/api/v1/mcp', {
+					headers: { 'mcp-protocol-version': '2025-11-25', 'x-auth-token': 'auth-token' },
+				}),
+			}),
+		).resolves.toMatchObject({ statusCode: 400, body: { error: { code: -32600 } } });
+		expect(handleRpcMessage).not.toHaveBeenCalled();
+	});
+
+	it('rejects JSON-RPC responses because this server does not issue client requests', async () => {
+		const response = { jsonrpc: '2.0', id: 1, result: {} };
+
+		await expect(handleMcpPost({ ...context, bodyParams: response })).resolves.toMatchObject({
+			statusCode: 400,
+			body: { error: { code: -32600 } },
+		});
+		await expect(handleMcpPost({ ...context, bodyParams: [response] })).resolves.toMatchObject({
 			statusCode: 400,
 			body: { error: { code: -32600 } },
 		});

@@ -1,6 +1,7 @@
 import { settings } from '../../../../server/settings/cached';
 
 export const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-11-25', '2025-06-18', '2025-03-26']);
+export const DEFAULT_PROTOCOL_VERSION = '2025-03-26';
 
 const normalizeOrigin = (value: unknown): string | undefined => {
 	if (typeof value !== 'string' || value.length === 0) {
@@ -47,3 +48,5 @@ export const isMcpOriginAllowed = (origin: string | null): boolean => {
 
 export const isMcpProtocolVersionSupported = (version: string | null): boolean =>
 	version === null || SUPPORTED_PROTOCOL_VERSIONS.has(version);
+
+export const supportsMcpBatching = (version: string | null): boolean => (version ?? DEFAULT_PROTOCOL_VERSION) === '2025-03-26';

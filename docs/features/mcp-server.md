@@ -10,10 +10,10 @@ It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal i
 
 ## Endpoint
 
-| Method | Endpoint      | Behavior                                                                                |
-| ------ | ------------- | --------------------------------------------------------------------------------------- |
-| POST   | `/api/v1/mcp` | JSON-RPC 2.0 request (single message or batch array). Response is `application/json`.   |
-| GET    | `/api/v1/mcp` | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream. |
+| Method | Endpoint      | Behavior                                                                                                      |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| POST   | `/api/v1/mcp` | JSON-RPC 2.0 message. The `2025-03-26` revision also accepts batch arrays. Response is `application/json`.    |
+| GET    | `/api/v1/mcp` | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream.                       |
 
 The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the action returns `404`.
 
@@ -27,7 +27,7 @@ The MCP handshake is the standard JSON-RPC flow:
 
 Also handled: `ping`, and the `notifications/initialized` / `notifications/cancelled` notifications (acknowledged with `202`, no body).
 
-After initialization, clients should send the negotiated version in the `MCP-Protocol-Version` header. Requests with an unsupported version are rejected with `400`; the header may be omitted for compatibility with the `2025-03-26` transport revision.
+After initialization, clients should send the negotiated version in the `MCP-Protocol-Version` header. Requests with an unsupported version are rejected with `400`; when the header is omitted, the transport follows the specification's `2025-03-26` compatibility default. JSON-RPC batching is accepted only for that revision because later Streamable HTTP revisions require one message per POST.
 The shared CORS middleware advertises this request header only while MCP is enabled.
 
 ## Authentication
@@ -131,7 +131,7 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 - **Alpha**, off by default.
 - Implements the handshake-based Streamable HTTP lifecycle through protocol version `2025-11-25`; newer lifecycle methods are not yet supported.
 - Requires the **Rocket.Chat AI add-on** — both the route and the settings are gated by it.
-- One HTTP response per POST; the implementation accepts one JSON-RPC message or a bounded batch of up to 20 messages. There is no server-initiated SSE stream (`GET` → `405`).
+- One HTTP response per POST. The `2025-03-26` compatibility revision accepts a bounded batch of up to 20 messages; later revisions accept one message per POST. There is no server-initiated SSE stream (`GET` → `405`).
 - The official `@modelcontextprotocol/sdk` is intentionally not used; the files are structured so it can be dropped into the transport/server layer later for SSE and richer session handling.
 
 ## Key Files

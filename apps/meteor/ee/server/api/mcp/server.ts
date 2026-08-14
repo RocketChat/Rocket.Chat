@@ -17,7 +17,7 @@ const negotiateProtocolVersion = (requestedVersion: unknown): string =>
 
 export type JsonRpcRequest = {
 	jsonrpc: '2.0';
-	id?: string | number | null;
+	id?: string | number;
 	method: string;
 	params?: Record<string, unknown>;
 };
@@ -31,7 +31,7 @@ export type JsonRpcResponse = {
 
 const result = (id: JsonRpcRequest['id'], value: unknown): JsonRpcResponse => ({ jsonrpc: '2.0', id: id ?? null, result: value });
 
-const error = (id: JsonRpcRequest['id'], code: number, message: string, data?: unknown): JsonRpcResponse => ({
+const error = (id: JsonRpcResponse['id'] | undefined, code: number, message: string, data?: unknown): JsonRpcResponse => ({
 	jsonrpc: '2.0',
 	id: id ?? null,
 	error: { code, message, ...(data !== undefined && { data }) },
@@ -52,7 +52,7 @@ export const isJsonRpcRequest = (value: unknown): value is JsonRpcRequest => {
 		return false;
 	}
 
-	if (value.id !== undefined && value.id !== null && typeof value.id !== 'string' && typeof value.id !== 'number') {
+	if (value.id !== undefined && typeof value.id !== 'string' && typeof value.id !== 'number') {
 		return false;
 	}
 

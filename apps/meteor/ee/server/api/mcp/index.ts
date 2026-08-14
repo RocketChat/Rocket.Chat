@@ -7,8 +7,8 @@ import type { StatusCode } from 'hono/utils/http-status';
 import { Accounts } from 'meteor/accounts-base';
 
 import { createMcpResponseBudget } from './dispatch';
-import { handleRpcMessage, type JsonRpcResponse, type McpAuth } from './server';
-import { isMcpOriginAllowed, isMcpProtocolVersionSupported } from './transport';
+import { handleRpcMessage, isJsonRpcRequest, type JsonRpcResponse, type McpAuth } from './server';
+import { isMcpOriginAllowed, isMcpProtocolVersionSupported, supportsMcpBatching } from './transport';
 import { API } from '../../../../server/api';
 import type { TypedOptions } from '../../../../server/api/definition';
 import { authenticationMiddlewareForHono } from '../../../../server/api/v1/middlewares/authenticationHono';
@@ -31,6 +31,7 @@ const disabledResponse: McpHttpResponse = {
 
 type McpActionContext = {
 	bodyParams: unknown;
+	bodyParseError?: boolean;
 	userId: string;
 	token: string;
 	requestIp: string;
@@ -46,6 +47,16 @@ const MCP_RATE_LIMIT_OPTIONS = { numRequestsAllowed: 60, intervalTimeInMS: 60_00
 const personalAccessTokenRequiredResponse: McpHttpResponse = {
 	statusCode: 401,
 	body: { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Personal Access Token required' } },
+};
+
+const invalidRequestResponse: McpHttpResponse = {
+	statusCode: 400,
+	body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } },
+};
+
+const parseErrorResponse: McpHttpResponse = {
+	statusCode: 400,
+	body: { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } },
 };
 
 const hasPersonalAccessToken = async ({ userId, token }: Pick<McpActionContext, 'userId' | 'token'>): Promise<boolean> =>
@@ -106,6 +117,9 @@ export const handleMcpPost = async (context: McpActionContext): Promise<McpHttpR
 	if (!(await hasPersonalAccessToken(context))) {
 		return personalAccessTokenRequiredResponse;
 	}
+	if (context.bodyParseError) {
+		return parseErrorResponse;
+	}
 
 	const message = context.bodyParams;
 	const auth: McpAuth = {
@@ -115,15 +129,20 @@ export const handleMcpPost = async (context: McpActionContext): Promise<McpHttpR
 	const clientIp = context.requestIp;
 
 	if (Array.isArray(message)) {
-		if (message.length === 0 || message.length > MAX_BATCH_SIZE) {
-			return {
-				statusCode: 400,
-				body: { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } },
-			};
+		if (!supportsMcpBatching(context.request.headers.get('mcp-protocol-version'))) {
+			return invalidRequestResponse;
+		}
+
+		if (message.length === 0 || message.length > MAX_BATCH_SIZE || !message.every(isJsonRpcRequest)) {
+			return invalidRequestResponse;
 		}
 
 		const responses = (await handleBatch(message, auth, clientIp)).filter((response): response is JsonRpcResponse => response !== null);
 		return responses.length ? jsonResponse(responses) : { statusCode: 202, body: undefined };
+	}
+
+	if (!isJsonRpcRequest(message)) {
+		return invalidRequestResponse;
 	}
 
 	const response = await handleRpcMessage(message, auth, clientIp);
@@ -213,16 +232,18 @@ router.post('/mcp', async (c) => {
 	}
 
 	let bodyParams: unknown;
+	let bodyParseError = false;
 
 	try {
 		bodyParams = await request.clone().json();
 	} catch {
-		bodyParams = undefined;
+		bodyParseError = true;
 	}
 
 	return sendResponse(
 		await handleMcpPost({
 			bodyParams,
+			bodyParseError,
 			userId,
 			token: Accounts._hashLoginToken(rawToken) ?? '',
 			requestIp: c.get('remoteAddress'),
