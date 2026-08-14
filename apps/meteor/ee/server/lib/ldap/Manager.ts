@@ -2,6 +2,7 @@ import { Abac, Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import ldapEscape from 'ldap-escape';
 import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
@@ -297,9 +298,9 @@ export class LDAPEEManager extends LDAPManager {
 		}
 		const searchOptions: ldapjs.SearchOptions = {
 			filter: filter
-				.replace(/#{username}/g, username)
-				.replace(/#{groupName}/g, groupName)
-				.replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
+				.replace(/#{username}/g, ldapEscape.filter`${username}`)
+				.replace(/#{groupName}/g, ldapEscape.filter`${groupName}`)
+				.replace(/#{userdn}/g, ldapEscape.filter`${dn}`),
 			scope: 'sub',
 		};
 
