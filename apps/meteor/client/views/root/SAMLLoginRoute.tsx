@@ -1,16 +1,24 @@
-import { useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
+import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [inviteToken] = useSamlInviteToken();
+	const loginClient = useSearchParameter('loginClient');
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
+
+		//SAML token handoff to the native client (mobile/desktop)
+		if (loginClient === 'desktop' || loginClient === 'mobile') {
+			window.location.href = buildSamlDeepLinkURL(token);
+			return;
+		}
 
 		Meteor.loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
@@ -33,7 +41,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, inviteToken, router]);
+	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
 };
