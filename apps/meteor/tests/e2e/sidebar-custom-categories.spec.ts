@@ -12,7 +12,6 @@ test.describe.serial('sidebar custom categories', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let targetChannelId: string;
-	let originalGroupByType: boolean | undefined;
 
 	test.skip(!IS_EE, 'Enterprise Only');
 
@@ -43,14 +42,11 @@ test.describe.serial('sidebar custom categories', () => {
 		targetChannel = name;
 		targetChannelId = created.channel._id;
 
-		const prefs = await (await api.get('/users.getPreferences')).json();
-		originalGroupByType = prefs.preferences?.sidebarGroupByType;
-		// Group-by-type guarantees a "Channels" system group exists for the reduced-menu tests.
-		await setUserPreferences(api, { sidebarGroupByType: true, sidebarCustomCategories: [] });
+		await setUserPreferences(api, { sidebarCustomCategories: [] });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setUserPreferences(api, { sidebarCustomCategories: [], sidebarGroupByType: originalGroupByType ?? false });
+		await setUserPreferences(api, { sidebarCustomCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		await deleteChannel(api, targetChannel);
 	});
@@ -142,9 +138,9 @@ test.describe.serial('sidebar custom categories', () => {
 			await poHomeChannel.sidebar.openCategoryMenu(name);
 			const toggle = poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Always display' });
 			await expect(toggle).toBeVisible();
-			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: true });
-			await toggle.click();
 			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: false });
+			await toggle.click();
+			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: true });
 			await poHomeChannel.page.keyboard.press('Escape');
 		});
 

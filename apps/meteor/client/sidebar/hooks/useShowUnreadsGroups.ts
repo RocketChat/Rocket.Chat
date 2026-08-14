@@ -5,23 +5,22 @@ import { useCallback } from 'react';
  * Controls the "Show unreads" behavior of the system/standard sidebar groups (Teams, Channels, …).
  * Custom categories keep this flag on their own preference object instead.
  *
- * Defaults to ON for every group (matching custom categories, whose `showUnreads` defaults to true).
- * localStorage stores only the group keys whose toggle has been turned OFF.
+ * Defaults to OFF for every group: localStorage stores only the group keys whose toggle has been turned ON.
  */
 export const useShowUnreadsGroups = () => {
-	const [hiddenUnreadGroups, setHiddenUnreadGroups] = useLocalStorage<string[]>('sidebarHiddenUnreadGroups', []);
+	const [shownUnreadGroups, setShownUnreadGroups] = useLocalStorage<string[]>('sidebarShownUnreadGroups', []);
 
-	const isShowUnreads = useCallback((group: string) => !hiddenUnreadGroups.includes(group), [hiddenUnreadGroups]);
+	const isShowUnreads = useCallback((group: string) => shownUnreadGroups.includes(group), [shownUnreadGroups]);
 
 	const toggleShowUnreads = useCallback(
 		(group: string) => {
-			if (hiddenUnreadGroups.includes(group)) {
-				setHiddenUnreadGroups(hiddenUnreadGroups.filter((item) => item !== group));
+			if (shownUnreadGroups.includes(group)) {
+				setShownUnreadGroups(shownUnreadGroups.filter((item) => item !== group));
 			} else {
-				setHiddenUnreadGroups([...hiddenUnreadGroups, group]);
+				setShownUnreadGroups([...shownUnreadGroups, group]);
 			}
 		},
-		[hiddenUnreadGroups, setHiddenUnreadGroups],
+		[shownUnreadGroups, setShownUnreadGroups],
 	);
 
 	return { isShowUnreads, toggleShowUnreads };

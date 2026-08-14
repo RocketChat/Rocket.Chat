@@ -122,7 +122,7 @@ const getWrapperSettings = ({
 };
 
 beforeEach(() => {
-	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => true, toggleShowUnreads: jest.fn() });
+	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => false, toggleShowUnreads: jest.fn() });
 });
 
 it('should return roomList, groupsCount and groupsList', async () => {
@@ -266,7 +266,7 @@ it('should hide all rooms and show a badge when a group is collapsed in CE ("Sho
 });
 
 it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on in EE', async () => {
-	// beforeEach sets isShowUnreads: () => true for all groups (the default "on" state).
+	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => true, toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});

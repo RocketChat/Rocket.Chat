@@ -73,7 +73,7 @@ export const useCustomCategories = () => {
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
-				showUnreads: true,
+				showUnreads: false,
 				rooms,
 			};
 			await persist([category, ...stripped]);
@@ -166,7 +166,7 @@ export const useCustomCategories = () => {
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
-				showUnreads: true,
+				showUnreads: false,
 				rooms: allRooms,
 			};
 			await persist([category, ...stripped]);
