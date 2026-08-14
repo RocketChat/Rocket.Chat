@@ -478,3 +478,88 @@ describe('regular business hours', () => {
 		expect(bh.length).toEqual(0);
 	});
 });
+
+describe('finish time boundary', () => {
+	afterEach(() => jest.useRealTimers());
+
+	// 00:00-23:59 in Asia/Kolkata, which on a UTC server runs from Saturday 18:30 to Sunday 18:29
+	const alwaysOpenSunday = [
+		{
+			_id: '68516f256ebb4bdceda2757e',
+			name: '',
+			active: true,
+			type: LivechatBusinessHourTypes.DEFAULT,
+			ts: new Date(),
+			workHours: [
+				{
+					day: 'Sunday',
+					start: {
+						time: '00:00',
+						utc: { dayOfWeek: 'Saturday', time: '18:30' },
+						cron: { dayOfWeek: 'Saturday', time: '18:30' },
+					},
+					finish: {
+						time: '23:59',
+						utc: { dayOfWeek: 'Sunday', time: '18:29' },
+						cron: { dayOfWeek: 'Sunday', time: '18:29' },
+					},
+					open: true,
+					code: '',
+				},
+			],
+			timezone: {
+				name: 'Asia/Kolkata',
+				utc: '+05:30',
+			},
+		},
+	];
+
+	it('should keep the business hour open during its finish minute', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2025-07-27T18:29:30Z'));
+
+		expect(await filterBusinessHoursThatMustBeOpened(alwaysOpenSunday)).toHaveLength(1);
+	});
+
+	it('should close the business hour once the finish minute has elapsed', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2025-07-27T18:30:30Z'));
+
+		expect(await filterBusinessHoursThatMustBeOpened(alwaysOpenSunday)).toHaveLength(0);
+	});
+
+	it('should keep a same-day business hour open during its finish minute', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2025-07-28T20:00:30Z'));
+
+		const bh = await filterBusinessHoursThatMustBeOpened([
+			{
+				_id: '68516f256ebb4bdceda2757f',
+				name: '',
+				active: true,
+				type: LivechatBusinessHourTypes.DEFAULT,
+				ts: new Date(),
+				workHours: [
+					{
+						day: 'Monday',
+						start: {
+							time: '08:00',
+							utc: { dayOfWeek: 'Monday', time: '08:00' },
+							cron: { dayOfWeek: 'Monday', time: '08:00' },
+						},
+						finish: {
+							time: '20:00',
+							utc: { dayOfWeek: 'Monday', time: '20:00' },
+							cron: { dayOfWeek: 'Monday', time: '20:00' },
+						},
+						open: true,
+						code: '',
+					},
+				],
+				timezone: {
+					name: 'UTC',
+					utc: '+00:00',
+				},
+			},
+		]);
+
+		expect(bh).toHaveLength(1);
+	});
+});
