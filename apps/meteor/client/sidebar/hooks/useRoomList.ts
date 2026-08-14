@@ -218,8 +218,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				category?: ISidebarCustomCategory,
 			): SidebarRoomListGroup => {
 				const collapsed = isCollapsed(key);
-				const showUnreads = category ? category.showUnreads !== false : isShowUnreads(key);
-				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : isKeepUnreadsOnTop(key);
+				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
+				const showUnreads = category ? category.showUnreads !== false : showUnreadsForGroup;
+				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
+				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
 				// When collapsed, keep unread rooms visible if "Show unreads" is enabled.
 				const collapsedRooms = allRooms.filter((room) => showUnreads && isUnreadRoom(room));
@@ -274,6 +276,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			collapsedGroups,
 			incomingCalls,
 			customCategories,
+			hasLicenseModule,
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 		]),

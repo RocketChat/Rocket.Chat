@@ -238,29 +238,48 @@ it('should return groupsList without "Discussions" if isDiscussionEnabled is dis
 });
 
 it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed and "Show unreads" is off', async () => {
-	// "Show unreads" defaults ON, which keeps unread rooms visible while collapsed; turn it off for Channels.
+	// "Show unreads" defaults ON; mocking the hook to simulate EE per-group toggle being off for Channels.
 	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
-		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
-	const groupsList = groupsListOf(result.current.groups);
-	const roomList = roomListOf(result.current.groups);
-	const channelsIndex = groupsList.indexOf('Channels');
-	expect(result.current.groupsCount[channelsIndex]).toEqual(0);
-	expect(roomList.length).toEqual(result.current.groupsCount.reduce((a, b) => a + b, 0));
+	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	await waitFor(() => {
+		const groupsList = groupsListOf(result.current.groups);
+		const roomList = roomListOf(result.current.groups);
+		const channelsIndex = groupsList.indexOf('Channels');
+		expect(result.current.groupsCount[channelsIndex]).toEqual(0);
+		expect(roomList.length).toEqual(result.current.groupsCount.reduce((a, b) => a + b, 0));
+	});
 });
 
-it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on by default', async () => {
+it('should hide all rooms and show a badge when a group is collapsed in CE ("Show unreads" is always off)', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 	const groupsList = groupsListOf(result.current.groups);
 	const channelsIndex = groupsList.indexOf('Channels');
-	// All 4 seeded channels are unread, so they stay visible despite the group being collapsed.
-	expect(result.current.groupsCount[channelsIndex]).toEqual(unreadChannels.length);
-	// With unreads visible, the header total badge is suppressed.
-	expect(result.current.groups[channelsIndex].unreadInfo.unread).toEqual(0);
-	expect(result.current.groups[channelsIndex].unreadInfo.tunread).toEqual([]);
+	// In CE showUnreads is always off — collapsing hides everything.
+	expect(result.current.groupsCount[channelsIndex]).toEqual(0);
+	// The header badge accumulates unread data from the hidden rooms.
+	expect(result.current.groups[channelsIndex].unreadInfo.tunread.length).toBeGreaterThan(0);
+});
+
+it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on in EE', async () => {
+	// beforeEach sets isShowUnreads: () => true for all groups (the default "on" state).
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
+	});
+	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	await waitFor(() => {
+		const groupsList = groupsListOf(result.current.groups);
+		const channelsIndex = groupsList.indexOf('Channels');
+		// All 4 seeded channels are unread, so they stay visible despite the group being collapsed.
+		expect(result.current.groupsCount[channelsIndex]).toEqual(unreadChannels.length);
+		// With unreads visible, the header total badge is suppressed.
+		expect(result.current.groups[channelsIndex].unreadInfo.unread).toEqual(0);
+		expect(result.current.groups[channelsIndex].unreadInfo.tunread).toEqual([]);
+	});
 });
 
 it('should always return groupsCount and groupsList with the same length', async () => {
@@ -303,16 +322,19 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 	// The header total badge only accumulates when unreads are hidden, i.e. "Show unreads" off for the group.
 	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
-		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
 
-	const groupsList = groupsListOf(result.current.groups);
-	const channelsIndex = groupsList.indexOf('Channels');
-	const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groups[channelsIndex].unreadInfo;
+	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	await waitFor(() => {
+		const groupsList = groupsListOf(result.current.groups);
+		const channelsIndex = groupsList.indexOf('Channels');
+		const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groups[channelsIndex].unreadInfo;
 
-	expect(groupMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.groupMentions, 0));
-	expect(unread).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.unread, 0));
-	expect(userMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.userMentions, 0));
-	expect(tunread).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
-	expect(tunreadUser).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+		expect(groupMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.groupMentions, 0));
+		expect(unread).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.unread, 0));
+		expect(userMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.userMentions, 0));
+		expect(tunread).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
+		expect(tunreadUser).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+	});
 });
