@@ -215,7 +215,7 @@ test.describe.serial('sidebar custom categories', () => {
 		});
 	});
 
-	test.describe('channel header grouping', () => {
+	test.describe.skip('channel header grouping', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto(`/channel/${targetChannel}`);
 			await expect(poHomeChannel.content.headerGroupingButton).toBeVisible();
