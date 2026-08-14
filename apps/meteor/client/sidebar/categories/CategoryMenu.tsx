@@ -54,7 +54,6 @@ const CategoryMenu = ({
 
 	const { openManage, openDelete } = useCategoryModals();
 	const {
-		hasLicenseModule,
 		toggleShowUnreads: toggleCustomShowUnreads,
 		toggleKeepUnreadsOnTop: toggleCustomKeepUnreadsOnTop,
 		moveRoom,
@@ -74,10 +73,6 @@ const CategoryMenu = ({
 
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
-
-	if (!hasLicenseModule) {
-		return null;
-	}
 
 	const handleToggleShowUnreads = () => (category ? toggleCustomShowUnreads(category._id) : toggleSystemShowUnreads(groupKey));
 	const handleToggleKeepUnreadsOnTop = () =>

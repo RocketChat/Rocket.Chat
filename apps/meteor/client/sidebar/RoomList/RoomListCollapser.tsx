@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
+import { useCustomCategories } from '../hooks/useCustomCategories';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -21,6 +22,7 @@ type RoomListCollapserProps = {
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
+	const { hasLicenseModule } = useCustomCategories();
 	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
@@ -41,22 +43,24 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
 			menu={
-				<SidebarV2CollapseGroupMenu onClick={preventPropagation}>
-					{menuVisibility ? (
-						<CategoryMenu
-							category={group.category}
-							groupKey={group.key}
-							showUnreads={group.showUnreads}
-							keepUnreadsOnTop={group.keepUnreadsOnTop}
-							canMoveUp={canMoveUp}
-							canMoveDown={canMoveDown}
-							onMoveUp={onMoveUp}
-							onMoveDown={onMoveDown}
-						/>
-					) : (
-						<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
-					)}
-				</SidebarV2CollapseGroupMenu>
+				hasLicenseModule ? (
+					<SidebarV2CollapseGroupMenu onClick={preventPropagation}>
+						{menuVisibility ? (
+							<CategoryMenu
+								category={group.category}
+								groupKey={group.key}
+								showUnreads={group.showUnreads}
+								keepUnreadsOnTop={group.keepUnreadsOnTop}
+								canMoveUp={canMoveUp}
+								canMoveDown={canMoveDown}
+								onMoveUp={onMoveUp}
+								onMoveDown={onMoveDown}
+							/>
+						) : (
+							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
+						)}
+					</SidebarV2CollapseGroupMenu>
+				) : undefined
 			}
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			{...props}
