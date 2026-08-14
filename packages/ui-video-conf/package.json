@@ -18,7 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/emitter": "^0.33.0"
+		"@rocket.chat/emitter": "workspace:~"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",

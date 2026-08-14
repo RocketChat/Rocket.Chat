@@ -16,7 +16,7 @@
 		"testunit": "jest"
 	},
 	"dependencies": {
-		"@rocket.chat/emitter": "^0.33.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"i18next": "~23.4.9",

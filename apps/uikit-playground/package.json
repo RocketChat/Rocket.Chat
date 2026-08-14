@@ -40,7 +40,7 @@
 		"reactflow": "^11.11.4"
 	},
 	"devDependencies": {
-		"@rocket.chat/emitter": "^0.33.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/lodash": "~4.17.25",
 		"@types/react": "~19.2.18",
