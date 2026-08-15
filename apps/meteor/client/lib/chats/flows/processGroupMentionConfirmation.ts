@@ -5,7 +5,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { settings } from '../../settings';
 import type { ChatAPI } from '../ChatAPI';
 
-const GROUP_MENTION_REGEX = /@(all|here)\b/;
+const GROUP_MENTION_REGEX = /(?:^|\s|>)@(all|here)\b/;
 
 /**
  * Checks whether the message contains a @all or @here mention and, if the
@@ -34,6 +34,13 @@ export const processGroupMentionConfirmation = async (chat: ChatAPI, { msg }: Pi
 	}
 
 	const memberCount: number = room.usersCount ?? 0;
+	const maxAll: number = settings.peek<number>('Message_MaxAll') ?? 0;
+
+	// If channel size exceeds Message_MaxAll, the server will reject the mention anyway.
+	if (maxAll > 0 && memberCount > maxAll) {
+		return false;
+	}
+
 	const minMembers: number = settings.peek<number>('Message_ConfirmGroupMentions_MinMembers') ?? 0;
 
 	if (minMembers > 0 && memberCount < minMembers) {

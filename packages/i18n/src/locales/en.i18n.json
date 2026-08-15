@@ -3678,7 +3678,6 @@
   "Message_ConfirmGroupMentions_MinMembers_Description": "Only show the confirmation dialog if the room has at least this many members. Set to 0 to always confirm.",
   "Group_mention_confirm_title": "Notify all members?",
   "Group_mention_confirm_description": "This message will notify all {{count}} members of this channel. Are you sure you want to proceed?",
-  "Send_anyway": "Send anyway",
   "Message_not_sent_try_again": "Message not sent. \nPlease try again",
   "Message_QuoteChainLimit": "Maximum Number of Chained Quotes",
   "Message_Read_Receipt_Enabled": "Show Read Receipts",
