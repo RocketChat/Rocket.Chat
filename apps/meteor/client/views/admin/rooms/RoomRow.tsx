@@ -84,8 +84,14 @@ const RoomRow = ({ room }: RoomRowProps) => {
 					{t(getRoomType(room))}
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{usersCount}</GenericTableCell>
-			{mediaQuery && <GenericTableCell withTruncatedText>{msgs}</GenericTableCell>}
+			<GenericTableCell aria-label={`${t('Users')}: ${usersCount}`} withTruncatedText>
+				{usersCount}
+			</GenericTableCell>
+			{mediaQuery && (
+				<GenericTableCell aria-label={`${t('Msgs')}: ${msgs}`} withTruncatedText>
+					{msgs}
+				</GenericTableCell>
+			)}
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}

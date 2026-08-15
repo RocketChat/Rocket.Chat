@@ -7,7 +7,7 @@ import { Users } from './fixtures/userStates';
 import { AdminImports, AdminRooms, AdminUsers } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: Users.admin.state });
+test.use({ storageState: Users.admin.state, viewport: { width: 1280, height: 720 } });
 
 type csvRoomSpec = {
 	name: string;
@@ -154,7 +154,7 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username && username !== room.ownerUsername).length + 1;
-			await expect(poAdmin.getRoomUsersCountCell(room.name)).toHaveText(String(expectedMembersCount));
+			await expect(poAdmin.getRoomUsersCountCell(room.name, expectedMembersCount)).toHaveText(String(expectedMembersCount));
 		}
 	});
 
@@ -185,10 +185,10 @@ test.describe.serial('imports', () => {
 			await expect(roomRow).toBeVisible();
 
 			const expectedMembersCount = 2;
-			await expect(poAdmin.getRoomUsersCountCell(user)).toHaveText(String(expectedMembersCount));
+			await expect(poAdmin.getRoomUsersCountCell(user, expectedMembersCount)).toHaveText(String(expectedMembersCount));
 
 			const expectedMessagesCount = dmMessages.length;
-			await expect(poAdmin.getRoomMessagesCountCell(user)).toHaveText(String(expectedMessagesCount));
+			await expect(poAdmin.getRoomMessagesCountCell(user, expectedMessagesCount)).toHaveText(String(expectedMessagesCount));
 		}
 	});
 });

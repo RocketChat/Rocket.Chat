@@ -23,12 +23,12 @@ export class AdminRooms extends Admin {
 		return this.adminPageContent.getByRole('link', { name });
 	}
 
-	getRoomUsersCountCell(name: string): Locator {
-		return this.getRoomRow(name).getByRole('cell').nth(2);
+	getRoomUsersCountCell(name: string, count: number): Locator {
+		return this.getRoomRow(name).getByRole('cell', { name: `Users: ${count}`, exact: true });
 	}
 
-	getRoomMessagesCountCell(name: string): Locator {
-		return this.getRoomRow(name).getByRole('cell').nth(3);
+	getRoomMessagesCountCell(name: string, count: number): Locator {
+		return this.getRoomRow(name).getByRole('cell', { name: `Msgs: ${count}`, exact: true });
 	}
 
 	get btnEdit(): Locator {
