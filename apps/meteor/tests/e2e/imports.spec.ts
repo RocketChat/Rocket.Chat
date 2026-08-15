@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parse } from 'csv-parse';
 
 import { Users } from './fixtures/userStates';
-import { AdminImports, AdminRooms } from './page-objects';
+import { AdminImports, AdminRooms, AdminUsers } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -46,7 +46,9 @@ const usersCsvsToJson = async (): Promise<void> => {
 			.pipe(parse({ delimiter: ',' }))
 			.on('data', (rows) => {
 				rowUserName.push(rows[0]);
-				csvImportedUsernames.push(rows[0]);
+				if (rows[0] !== 'billy.billy') {
+					csvImportedUsernames.push(rows[0]);
+				}
 			})
 			.on('end', resolve),
 	);
@@ -125,13 +127,21 @@ test.describe.serial('imports', () => {
 	});
 
 	test('expect all imported users to be actually listed as users', async ({ page }) => {
+		const poAdmin = new AdminUsers(page);
 		await page.goto('/admin/users');
 
 		for await (const user of rowUserName) {
+			const searchResponse = page.waitForResponse((response) => {
+				const url = new URL(response.url());
+				return url.pathname.endsWith('/api/v1/users.listByStatus') && url.searchParams.get('searchTerm') === user && response.ok();
+			});
+			await page.getByRole('textbox', { name: 'Search Users' }).fill(user);
+			await searchResponse;
 			if (user === 'billy.billy') {
-				await expect(page.locator(`tbody tr td:first-child >> text="${user}"`)).not.toBeVisible();
+				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
+				await expect(poAdmin.getUserRowByUsername(user)).not.toBeVisible();
 			} else {
-				expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
+				await expect(poAdmin.getUserRowByUsername(user)).toBeVisible();
 			}
 		}
 	});
@@ -143,8 +153,8 @@ test.describe.serial('imports', () => {
 		for await (const room of importedRooms) {
 			await poAdmin.inputSearchRooms.fill(room.name);
 
-			const expectedMembersCount = room.members.split(';').filter((username) => username !== room.ownerUsername).length + 1;
-			expect(page.locator(`tbody tr td:nth-child(2) >> text="${expectedMembersCount}"`));
+			const expectedMembersCount = room.members.split(';').filter((username) => username && username !== room.ownerUsername).length + 1;
+			await expect(poAdmin.getRoomRow(room.name).getByRole('cell').nth(2)).toHaveText(String(expectedMembersCount));
 		}
 	});
 
@@ -156,9 +166,11 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 			await poAdmin.getRoomRow(room.name).click();
 
-			room.visibility === 'private'
-				? await expect(poAdmin.editRoom.privateInput).toBeChecked()
-				: await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
+			if (room.visibility === 'private') {
+				await expect(poAdmin.editRoom.privateInput).toBeChecked();
+			} else {
+				await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
+			}
 			await expect(poAdmin.editRoom.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});
@@ -169,13 +181,14 @@ test.describe.serial('imports', () => {
 
 		for await (const user of csvImportedUsernames) {
 			await poAdmin.inputSearchRooms.fill(user);
-			expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
+			const roomRow = poAdmin.getRoomRow(user);
+			await expect(roomRow).toBeVisible();
 
 			const expectedMembersCount = 2;
-			expect(page.locator(`tbody tr td:nth-child(2) >> text="${expectedMembersCount}"`));
+			await expect(roomRow.getByRole('cell').nth(2)).toHaveText(String(expectedMembersCount));
 
 			const expectedMessagesCount = dmMessages.length;
-			expect(page.locator(`tbody tr td:nth-child(3) >> text="${expectedMessagesCount}"`));
+			await expect(roomRow.getByRole('cell').nth(3)).toHaveText(String(expectedMessagesCount));
 		}
 	});
 });
