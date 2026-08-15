@@ -64,8 +64,12 @@ export class AdminUsers extends Admin {
 		await this.userInfo.menuItemDeleteUser.click();
 	}
 
-	async searchUser(username: string): Promise<void> {
+	async fillUserSearch(username: string): Promise<void> {
 		await this.inputSearchUsers.fill(username);
+	}
+
+	async searchUser(username: string): Promise<void> {
+		await this.fillUserSearch(username);
 		await expect(this.getUserRowByUsername(username)).toHaveCount(1);
 	}
 }

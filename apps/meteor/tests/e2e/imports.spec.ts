@@ -135,7 +135,7 @@ test.describe.serial('imports', () => {
 				const url = new URL(response.url());
 				return url.pathname.endsWith('/api/v1/users.listByStatus') && url.searchParams.get('searchTerm') === user && response.ok();
 			});
-			await page.getByRole('textbox', { name: 'Search Users' }).fill(user);
+			await poAdmin.fillUserSearch(user);
 			await searchResponse;
 			if (user === 'billy.billy') {
 				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
@@ -154,7 +154,7 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username && username !== room.ownerUsername).length + 1;
-			await expect(poAdmin.getRoomRow(room.name).getByRole('cell').nth(2)).toHaveText(String(expectedMembersCount));
+			await expect(poAdmin.getRoomUsersCountCell(room.name)).toHaveText(String(expectedMembersCount));
 		}
 	});
 
@@ -185,10 +185,10 @@ test.describe.serial('imports', () => {
 			await expect(roomRow).toBeVisible();
 
 			const expectedMembersCount = 2;
-			await expect(roomRow.getByRole('cell').nth(2)).toHaveText(String(expectedMembersCount));
+			await expect(poAdmin.getRoomUsersCountCell(user)).toHaveText(String(expectedMembersCount));
 
 			const expectedMessagesCount = dmMessages.length;
-			await expect(roomRow.getByRole('cell').nth(3)).toHaveText(String(expectedMessagesCount));
+			await expect(poAdmin.getRoomMessagesCountCell(user)).toHaveText(String(expectedMessagesCount));
 		}
 	});
 });
