@@ -96,6 +96,7 @@ export const sendMessage = async (
 
 	const uploadsStore = chat.composer?.uploads;
 
+	const rawText = text;
 	text = text.trim();
 	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
@@ -131,7 +132,7 @@ export const sendMessage = async (
 			// resolved request leaves the quote stuck in the composer when the REST call
 			// rejects even though the message was already broadcast over the stream.
 			chat.composer?.dismissAllQuotedMessages();
-			const isHandled = await process(chat, message, text, previewUrls, isSlashCommandAllowed);
+			const isHandled = await process(chat, message, rawText, previewUrls, isSlashCommandAllowed);
 			if (!isHandled) {
 				await afterSendMessageCallback(message, message.rid);
 			}
