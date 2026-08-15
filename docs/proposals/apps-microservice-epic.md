@@ -5,6 +5,9 @@
 - **Revised:** 2026-08-14 — deployment-mode review (§3, B11 narrowed, B16–B20, subtasks 41–44)
 - **Revised:** 2026-08-14 — reverse channel restated as a relay (§5 rewritten, §6 rows 2/13/17+19
   and the ordering constraint corrected, subtask 20 dropped, 22 rescoped, 45 added)
+- **Revised:** 2026-08-14 — back-reference to the alternative boundary added (§5)
+- **Alternative:** [`docs/proposals/apps-runtime-orchestrator-boundary.md`](./apps-runtime-orchestrator-boundary.md)
+  — a competing boundary below the AppManager. See the note in §5.
 - **Related:** [`docs/apps-engine-migration.md`](../apps-engine-migration.md) (phase overview),
   [`docs/adr/0001-app-accessor-logic-in-base-runtime.md`](../adr/0001-app-accessor-logic-in-base-runtime.md),
   ADR 0002 (`docs/adr/0002-apps-subprocess-protocol.md`, on branch
@@ -183,6 +186,15 @@ is msgpack over a pipe in every topology (`packages/apps/src/server/runtime/base
 
 Put the process boundary **between the bridges and the AppManager**, not between the
 monolith and the whole apps stack.
+
+> **A competing boundary is on the table.**
+> [`apps-runtime-orchestrator-boundary.md`](./apps-runtime-orchestrator-boundary.md) puts the line
+> one level lower — below the AppManager, around the app subprocesses — so the service becomes a
+> runtime orchestrator that only spawns apps and relays their messages. It reaches §1's scaling goal
+> without Phase 1 or Phase 3, and both new legs land where msgpack already runs. It gives up the
+> ownership goal and subtask 45's read promotion, and it adds a routing problem this boundary does
+> not have. The two compose: the orchestrator split is a strict prefix of this one. Read that
+> document before Phase 1 starts, because Phase 1 exists only if the AppManager moves.
 
 - The apps service owns: `AppManager`, all managers, compiler, runtime controllers +
   subprocesses, metadata/log/source storage (direct Mongo), scheduler.
