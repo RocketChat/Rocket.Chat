@@ -142,7 +142,11 @@ describe('MCP HTTP route', () => {
 			rateLimiterOptions: { numRequestsAllowed: 60, intervalTimeInMS: 60_000 },
 			methods: ['post'],
 		});
-		expect(permissionsMiddleware).toHaveBeenCalledWith(expect.objectContaining({ permissionsRequired: ['access-mcp'] }));
+		expect(permissionsMiddleware).toHaveBeenCalledWith(
+			expect.objectContaining({
+				permissionsRequired: { '*': { permissions: ['access-mcp'], operation: 'hasAll' } },
+			}),
+		);
 		expect(license).toHaveBeenCalledWith(expect.objectContaining({ license: [AI_LICENSE_MODULE] }), expect.anything());
 		expect(mockRouter.use).toHaveBeenCalledWith(
 			'/mcp',

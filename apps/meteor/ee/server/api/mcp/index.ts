@@ -172,7 +172,9 @@ export const handleMcpGet = (context: Pick<McpActionContext, 'request'>): McpHtt
 const routeOptions = {
 	response: {},
 	authRequired: true,
-	permissionsRequired: ['access-mcp'],
+	permissionsRequired: {
+		'*': { permissions: ['access-mcp'], operation: 'hasAll' },
+	},
 	license: [AI_LICENSE_MODULE],
 } satisfies TypedOptions;
 
