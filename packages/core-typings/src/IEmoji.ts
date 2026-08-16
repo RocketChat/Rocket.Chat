@@ -10,4 +10,5 @@ export interface IEmoji {
 	etag?: string;
 	previousName?: string;
 	previousExtension?: string;
+	newFile?: boolean;
 }
