@@ -172,6 +172,12 @@ let skipReferences = false;
 // ───  Entry point ──────────────────────────────────────────────────────────
 
 export function parse(input: string, options: Options = {}) {
+	// Clear the skip flags in case an earlier parse crashed before resetting them.
+	skipBold = false;
+	skipItalic = false;
+	skipStrike = false;
+	skipReferences = false;
+
 	const bigEmojiRoot = tryBigEmoji(input, options);
 	if (bigEmojiRoot !== null) {
 		return bigEmojiRoot;
@@ -515,9 +521,13 @@ function tryBold(scanner: Scanner, options: Options): Inlines | null {
 		return null;
 	}
 
+	let content: Inlines[];
 	skipBold = true;
-	const content = parseInline(scanner, options, delimiter);
-	skipBold = false;
+	try {
+		content = parseInline(scanner, options, delimiter);
+	} finally {
+		skipBold = false;
+	}
 
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
@@ -564,9 +574,13 @@ function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inline
 		return null;
 	}
 
+	let content: Inlines[];
 	skipItalic = true;
-	const content = parseInline(scanner, options, delimiter);
-	skipItalic = false;
+	try {
+		content = parseInline(scanner, options, delimiter);
+	} finally {
+		skipItalic = false;
+	}
 
 	if (!scanner.matches(delimiter) || content.length === 0 || isWhitespaceOnly(content)) {
 		scanner.backtrack(start);
@@ -605,9 +619,13 @@ function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 		return null;
 	}
 
+	let content: Inlines[];
 	skipStrike = true;
-	const content = parseInline(scanner, options, delimiter);
-	skipStrike = false;
+	try {
+		content = parseInline(scanner, options, delimiter);
+	} finally {
+		skipStrike = false;
+	}
 
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
@@ -1686,6 +1704,13 @@ function tryHorizontalRule(scanner: Scanner): HorizontalRule | null {
 
 // ------------- Table -----------------------------------------------------------------------
 
+function cellAlignment(hasLeftColon: boolean, hasRightColon: boolean): TableCellAlignment {
+	if (hasLeftColon && hasRightColon) return 'center';
+	if (hasRightColon) return 'right';
+	if (hasLeftColon) return 'left';
+	return undefined;
+}
+
 // One table row "| a | b |" → its cells, or null if not a valid row.
 function parseTableRow(scanner: Scanner, options: Options): Inlines[][] | null {
 	const start = scanner.position();
@@ -1759,11 +1784,7 @@ function parseTableDelimiter(scanner: Scanner): TableCellAlignment[] | null {
 		}
 		scanner.consume(); // consume '|'
 
-		let align: TableCellAlignment;
-		if (left && right) align = 'center';
-		else if (right) align = 'right';
-		else if (left) align = 'left';
-		aligns.push(align);
+		aligns.push(cellAlignment(left, right));
 
 		if (scanner.isEnd() || isNewline(scanner.char())) break;
 	}
