@@ -51,6 +51,7 @@ export default {
 				'<rootDir>/server/api/v1/middlewares/*.spec.ts',
 				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
+				'<rootDir>/server/lib/isEmailDomainBlocked.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
