@@ -1,4 +1,5 @@
 import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -246,7 +247,9 @@ API.v1
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await saveUserPreferences(this.bodyParams.data, userId);
+			const { statusVisibilityDenied: _ownBlockList, ...preferences } = this.bodyParams.data;
+
+			await saveUserPreferences(userId === this.userId ? this.bodyParams.data : preferences, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -763,7 +766,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users,
+				users: users.map((user: IUser) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
 				count: users.length,
 				offset,
 				total,
@@ -1553,8 +1556,11 @@ API.v1.get(
 		};
 
 		if (ids) {
+			const requested = Array.isArray(ids) ? ids : ids.split(',');
+			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
+
 			return API.v1.success({
-				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
 				full: false,
 			});
 		}
@@ -1564,15 +1570,19 @@ API.v1.get(
 			const diff = (Date.now() - Number(ts)) / 1000 / 60;
 
 			if (diff < 10) {
+				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
+
 				return API.v1.success({
-					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
+					users: users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
 					full: false,
 				});
 			}
 		}
 
+		const users = await Users.findUsersNotOffline(options).toArray();
+
 		return API.v1.success({
-			users: await Users.findUsersNotOffline(options).toArray(),
+			users: users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
 			full: true,
 		});
 	},

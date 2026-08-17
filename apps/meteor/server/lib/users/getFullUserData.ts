@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
+import { canSeeStatus, convertUserIdsToUsernames, redactStatus } from '../statusVisibility/canSeeStatus';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 
 const logger = new Logger('getFullUserData');
@@ -120,7 +121,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
-			...(myself && { services: 1 }),
+			...(myself && { 'services': 1, 'settings.preferences.statusVisibilityDenied': 1 }),
 		},
 	};
 
@@ -140,5 +141,11 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.resume;
 	delete user?.services?.email;
 
-	return user;
+	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
+
+	if (ownBlockList?.length && user.settings?.preferences) {
+		user.settings.preferences.statusVisibilityDenied = await convertUserIdsToUsernames(ownBlockList);
+	}
+
+	return canSeeStatus(userId, user._id) ? user : redactStatus(user);
 }

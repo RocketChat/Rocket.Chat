@@ -1,9 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { Streamer } from '../../../../modules/streamer/streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../modules/streamer/types';
+import { canSeeStatus } from '../../../statusVisibility/canSeeStatus';
+import { STATUS_MAP } from '../../../statusVisibility/commonTypes';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -48,7 +51,10 @@ class UserPresence {
 	};
 
 	run = (args: UserPresenceStreamArgs): void => {
-		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
+		const visiblePresence: UserPresenceStreamArgs = canSeeStatus(this.publication._session?.userId, args.uid)
+			? args
+			: { uid: args.uid, args: [[args.args[0][0], STATUS_MAP[UserStatus.OFFLINE]]] };
+		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...visiblePresence, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
 		if (!payload) {
 			return;
 		}

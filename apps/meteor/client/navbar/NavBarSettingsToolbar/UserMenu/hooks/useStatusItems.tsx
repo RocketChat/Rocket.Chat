@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
+import { useStatusVisibilityModalHandler } from '../EditStatusVisibilityModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
@@ -76,6 +77,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
+	const handleStatusVisibility = useStatusVisibilityModalHandler();
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
@@ -120,16 +123,6 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// "Custom..." action opens the edit modal
-		if (allowUserStatusMessageChange) {
-			items.push({
-				id: 'custom-status-edit',
-				icon: 'edit',
-				content: t('Custom_Status'),
-				onClick: handleCustomStatus,
-			});
-		}
-
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
@@ -159,7 +152,27 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					)
 			: [];
 
-		return [...items, ...presetItems, ...customItems];
+		const actionItems: GenericMenuItemProps[] = [];
+
+		if (allowUserStatusMessageChange) {
+			actionItems.push({
+				id: 'custom-status-edit',
+				icon: 'edit',
+				content: t('Custom_Status'),
+				onClick: handleCustomStatus,
+			});
+		}
+
+		if (statusVisibilityEnabled) {
+			actionItems.push({
+				id: 'status-visibility-edit',
+				icon: 'eye-off',
+				content: t('Accounts_StatusVisibility_HideFrom'),
+				onClick: handleStatusVisibility,
+			});
+		}
+
+		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
 		allowUserStatusMessageChange,
@@ -170,6 +183,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		customStatusExpiration,
 		statuses,
 		handleCustomStatus,
+		handleStatusVisibility,
+		statusVisibilityEnabled,
 		setStatusMutation,
 	]);
 };

@@ -2,6 +2,7 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -592,7 +593,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...member,
+				...(canSeeStatus(this.userId, member._id) ? member : redactStatus(member)),
 				subscription,
 			};
 		});

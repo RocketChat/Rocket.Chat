@@ -1,5 +1,6 @@
 import { Presence } from '@rocket.chat/core-services';
 
+import { broadcastStatusVisibility } from '../lib/statusVisibility/canSeeStatus';
 import { settings } from '../settings';
 
 // maybe this setting should disable the listener to 'presence.status' event on listerners.module.ts
@@ -10,3 +11,5 @@ settings.watch('Troubleshoot_Disable_Presence_Broadcast', async (value) => {
 		// do nothing
 	}
 });
+
+settings.watch('Accounts_StatusVisibility_Enabled', () => broadcastStatusVisibility(), { debounce: 1000 });

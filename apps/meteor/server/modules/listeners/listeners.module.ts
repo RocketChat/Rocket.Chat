@@ -8,6 +8,7 @@ import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
+import { hasStatusRestrictions, refreshStatusVisibility } from '../../lib/statusVisibility/canSeeStatus';
 import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
@@ -156,6 +157,16 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
+		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
+			void refreshStatusVisibility(targets).then((users) => {
+				for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
+					if (username) {
+						notifications.sendPresence(_id, username, STATUS_MAP[status ?? UserStatus.OFFLINE], statusText, statusSource, statusExpiresAt);
+					}
+				}
+			});
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
@@ -182,16 +193,18 @@ export class ListenersModule {
 				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [
-				_id,
-				username,
-				STATUS_MAP[status],
-				statusText,
-				name,
-				roles,
-				statusSource,
-				statusExpiresAt,
-			]);
+			if (!hasStatusRestrictions(_id)) {
+				notifications.notifyLoggedInThisInstance('user-status', [
+					_id,
+					username,
+					STATUS_MAP[status],
+					statusText,
+					name,
+					roles,
+					statusSource,
+					statusExpiresAt,
+				]);
+			}
 
 			if (_id) {
 				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);

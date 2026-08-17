@@ -12,6 +12,7 @@ import {
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
+import { broadcastStatusVisibility, convertUsernamesToUserIds } from '../../lib/statusVisibility/canSeeStatus';
 import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
@@ -54,6 +55,7 @@ type UserPreferences = {
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
 	utcOffset?: number;
+	statusVisibilityDenied?: string[];
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -130,6 +132,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
 		utcOffset: Match.Optional(Number),
+		statusVisibilityDenied: Match.Optional([String]),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
@@ -170,6 +173,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
+	if (settings.statusVisibilityDenied) {
+		settings.statusVisibilityDenied = await convertUsernamesToUserIds(settings.statusVisibilityDenied);
+	}
+
 	await Users.setPreferences(user._id, settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
@@ -186,6 +193,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 			...(settings.language != null && { language: settings.language }),
 		},
 	});
+
+	if (settings.statusVisibilityDenied != null) {
+		broadcastStatusVisibility([user._id]);
+	}
 
 	// propagate changed notification preferences
 	setImmediate(async () => {

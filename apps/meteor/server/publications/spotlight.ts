@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { canSeeStatus, redactStatus } from '../lib/statusVisibility/canSeeStatus';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
@@ -66,7 +67,7 @@ export const spotlightMethod = async ({
 		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
 	]);
 
-	return { users, rooms };
+	return { users: users.map((user) => (canSeeStatus(userId, user._id) ? user : redactStatus(user))), rooms };
 };
 
 Meteor.methods<ServerMethods>({

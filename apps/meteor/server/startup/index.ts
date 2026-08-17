@@ -5,7 +5,7 @@ import './initialData';
 import './serverRunning';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';
-import './presenceTroubleshoot';
+import './presence';
 import './httpSocketTimeout';
 import '../hooks';
 import '../lib/rooms/roomTypes';
