@@ -13,11 +13,8 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
-
-type ImportFileStore = {
-	createWriteStream(fileName: string): fs.WriteStream;
-};
 
 async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 	const response = await fetch(fileUrl, {
@@ -27,7 +24,7 @@ async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 
 	const body = response.body as Readable;
 	if (!response.ok) {
-		body.destroy();
+		body.resume();
 		throw new Error(`Unexpected response status ${response.status}`);
 	}
 
@@ -66,11 +63,11 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	await instance.startFileUpload(newFileName);
 	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
-	const writeStream = (RocketChatImportFileInstance as ImportFileStore).createWriteStream(newFileName);
+	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 	let errorProgressUpdate: Promise<unknown> | undefined;
 	const markImportAsFailed = (): Promise<unknown> => {
 		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR).catch((error) => {
-			console.error('Failed to update import progress to ERROR', error);
+			SystemLogger.error({ msg: 'Failed to update import progress to ERROR', err: error });
 		});
 		return errorProgressUpdate;
 	};

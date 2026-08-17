@@ -19,6 +19,7 @@ const stubs = {
 	startFileUpload: sinon.stub(),
 	updateProgress: sinon.stub(),
 	updateRecord: sinon.stub(),
+	systemLoggerError: sinon.stub(),
 };
 
 class MockImporter {
@@ -39,6 +40,7 @@ const { executeDownloadPublicImportFile } = proxyquire
 		'../../lib/deprecationWarningLogger': { methodDeprecationLogger: { method: sinon.stub() } },
 		'../../lib/import': { Importers: { get: stubs.importersGet } },
 		'../../lib/import/startup/store': { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
+		'../../lib/logger/system': { SystemLogger: { error: stubs.systemLoggerError } },
 		'../../settings': { settings: { get: sinon.stub().returns('') } },
 		'../../../app/importer/lib/ImporterProgressStep': { ProgressStep: progressStep },
 	});
@@ -58,15 +60,16 @@ describe('executeDownloadPublicImportFile', () => {
 		stubs.updateRecord.resolves();
 	});
 
-	it('rejects an unsuccessful HTTP response and destroys its body', async () => {
+	it('rejects an unsuccessful HTTP response and drains its body', async () => {
 		const responseBody = new PassThrough();
+		const resume = sinon.spy(responseBody, 'resume');
 		stubs.serverFetch.resolves({ ok: false, status: 404, body: responseBody });
 
 		await expect(executeDownloadPublicImportFile('user-id', 'https://example.com/import.zip', 'csv')).to.be.rejectedWith(
 			'Unexpected response status 404',
 		);
 
-		expect(responseBody.destroyed).to.be.true;
+		expect(resume.calledOnce).to.be.true;
 		expect(writeStream.destroyed).to.be.true;
 		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
 	});
@@ -102,8 +105,9 @@ describe('executeDownloadPublicImportFile', () => {
 	it('handles a rejected error progress update when the writable fails', async () => {
 		const responseBody = new PassThrough();
 		const unhandledRejection = sinon.spy();
+		const progressUpdateError = new Error('progress update failed');
 		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });
-		stubs.updateProgress.withArgs(progressStep.ERROR).rejects(new Error('progress update failed'));
+		stubs.updateProgress.withArgs(progressStep.ERROR).rejects(progressUpdateError);
 		process.on('unhandledRejection', unhandledRejection);
 
 		try {
@@ -115,6 +119,10 @@ describe('executeDownloadPublicImportFile', () => {
 
 			expect(unhandledRejection.called).to.be.false;
 			expect(stubs.updateProgress.withArgs(progressStep.ERROR).calledOnce).to.be.true;
+			sinon.assert.calledOnceWithExactly(stubs.systemLoggerError, {
+				msg: 'Failed to update import progress to ERROR',
+				err: progressUpdateError,
+			});
 		} finally {
 			process.off('unhandledRejection', unhandledRejection);
 		}
