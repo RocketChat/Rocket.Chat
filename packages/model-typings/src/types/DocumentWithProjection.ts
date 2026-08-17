@@ -1,4 +1,4 @@
-import type { Document, FindOneAndDeleteOptions, FindOneAndUpdateOptions, FindOptions } from 'mongodb';
+import type { Document, FindOneAndUpdateOptions, FindOptions } from 'mongodb';
 
 type Prettify<T> = {
 	[K in keyof T]: T[K];
@@ -28,8 +28,6 @@ export type WithProjectionSpec<O> = Omit<O, 'projection'> & {
 export type FindOptionsWithProjection<T extends Document = Document> = WithProjectionSpec<FindOptions<T>>;
 
 export type FindOneAndUpdateOptionsWithProjection = WithProjectionSpec<FindOneAndUpdateOptions>;
-
-export type FindOneAndDeleteOptionsWithProjection = WithProjectionSpec<FindOneAndDeleteOptions>;
 
 /**
  * `Extract<keyof T, '_id'>` would miss documents with a string index signature (`keyof T` collapses

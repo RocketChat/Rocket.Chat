@@ -11,6 +11,7 @@ import type {
 	EnhancedOmit,
 	Filter,
 	FindCursor,
+	FindOneAndDeleteOptions,
 	FindOptions,
 	InsertManyResult,
 	InsertOneOptions,
@@ -26,7 +27,6 @@ import type {
 	ApplyProjection,
 	DocumentWithDriverProjection,
 	DocumentWithProjection,
-	FindOneAndDeleteOptionsWithProjection,
 	FindOneAndUpdateOptionsWithProjection,
 	FindOptionsWithProjection,
 	ProjectionSpec,
@@ -62,14 +62,14 @@ export interface IBaseModel<
 	getUpdater(): Updater<T>;
 	updateFromUpdater(query: Filter<T>, updater: Updater<T>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findOneAndDelete<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
-		filter: Filter<T>,
-		options?: O,
-	): Promise<DocumentWithDriverProjection<P, O> | null>;
-	findOneAndDeleteById<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
-		_id: T['_id'],
-		options?: O,
-	): Promise<DocumentWithDriverProjection<P, O> | null>;
+	/**
+	 * No projection narrowing: whether the model archives to a trash collection is a runtime detail
+	 * (a constructor argument), and the trash path has to read the whole document to archive it, so
+	 * it returns every field regardless of the projection. Narrowing here would claim a filtering
+	 * that only happens for models without a trash collection.
+	 */
+	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null>;
+	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null>;
 	findOneAndUpdate<P extends Document = T, O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection>(
 		query: Filter<T>,
 		update: UpdateFilter<T> | T,

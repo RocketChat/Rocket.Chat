@@ -8,7 +8,6 @@ import type {
 	InsertionModel,
 	DocumentWithDriverProjection,
 	FindOneAndUpdateOptionsWithProjection,
-	FindOneAndDeleteOptionsWithProjection,
 } from '@rocket.chat/model-typings';
 import type {
 	BulkWriteOptions,
@@ -63,17 +62,11 @@ export class BaseDummy<
 		return this.collectionName;
 	}
 
-	async findOneAndDelete<
-		P extends Document = T,
-		O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection,
-	>(): Promise<DocumentWithDriverProjection<P, O> | null> {
+	async findOneAndDelete(): Promise<WithId<T> | null> {
 		return null;
 	}
 
-	async findOneAndDeleteById<
-		P extends Document = T,
-		O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection,
-	>(_id: T['_id']): Promise<DocumentWithDriverProjection<P, O> | null> {
+	async findOneAndDeleteById(_id: T['_id']): Promise<WithId<T> | null> {
 		return null;
 	}
 
