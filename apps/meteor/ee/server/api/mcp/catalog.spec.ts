@@ -85,6 +85,29 @@ jest.mock('../../../../server/api', () => ({
 						],
 					},
 				},
+				'/api/v1/teams.listRoomsOfUser': {
+					get: {
+						tags: ['Teams'],
+						parameters: [
+							{
+								schema: {
+									type: 'object',
+									properties: {
+										teamId: { type: 'string' },
+										teamName: { type: 'string' },
+										userId: { type: 'string' },
+									},
+									oneOf: [
+										{ type: 'object', required: ['teamId'] },
+										{ type: 'object', required: ['teamName'] },
+									],
+									required: ['userId'],
+									additionalProperties: false,
+								},
+							},
+						],
+					},
+				},
 				'/api/v1/dm.files': {
 					get: {
 						tags: ['DM'],
@@ -193,6 +216,15 @@ describe('MCP tool catalog', () => {
 			for (const requiredProperty of inputSchema.required as string[]) {
 				expect(properties).toHaveProperty(requiredProperty);
 			}
+		}
+	});
+
+	it('preserves shared required fields without changing variant discriminators', () => {
+		const tools = getExtendedTools().filter(({ name }) => name.startsWith('get_teams_listRoomsOfUser'));
+
+		expect(tools.map(({ name }) => name)).toEqual(['get_teams_listRoomsOfUser_by_teamId', 'get_teams_listRoomsOfUser_by_teamName']);
+		for (const { inputSchema } of tools) {
+			expect(inputSchema.required).toEqual(expect.arrayContaining(['userId']));
 		}
 	});
 

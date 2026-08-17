@@ -247,11 +247,15 @@ const mergeSchemaVariant = (
 		branch.properties && typeof branch.properties === 'object' && !Array.isArray(branch.properties)
 			? (branch.properties as Record<string, unknown>)
 			: undefined;
+	const baseRequired = Array.isArray(baseSchema.required) ? baseSchema.required : [];
+	const branchRequired = Array.isArray(branch.required) ? branch.required : [];
+	const required = [...new Set([...baseRequired, ...branchRequired])];
 
 	return ensureObjectSchema({
 		...baseSchema,
 		...branch,
 		...((baseProperties || branchProperties) && { properties: { ...baseProperties, ...branchProperties } }),
+		...(required.length > 0 && { required }),
 	});
 };
 
@@ -280,8 +284,9 @@ const variantsForRoute = (path: string, method: McpMethod): SchemaVariant[] => {
 		const key = VARIANT_KEYS.find((k) => Array.isArray(root[k]) && (root[k] as unknown[]).length > 1);
 		if (key) {
 			const mainDescription = typeof root.description === 'string' ? root.description : undefined;
-			const branches = (root[key] as unknown[]).map((branch) => mergeSchemaVariant(root, key, branch));
-			const discriminators = branches.map(discriminatorOf);
+			const rawBranches = root[key] as unknown[];
+			const branches = rawBranches.map((branch) => mergeSchemaVariant(root, key, branch));
+			const discriminators = rawBranches.map((branch) => discriminatorOf(ensureObjectSchema(branch)));
 			const allDistinct = discriminators.every(Boolean) && new Set(discriminators).size === discriminators.length;
 			if (allDistinct) {
 				return branches.map((schema, i) => ({
