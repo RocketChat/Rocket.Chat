@@ -11052,10 +11052,12 @@ __metadata:
     prettier: "npm:~3.3.3"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
+    storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
     react: "*"
     react-dom: "*"
+    storybook: ^9.0.0
   languageName: unknown
   linkType: soft
 
