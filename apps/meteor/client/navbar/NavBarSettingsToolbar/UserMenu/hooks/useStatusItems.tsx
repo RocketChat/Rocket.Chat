@@ -123,6 +123,16 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
+		// "Custom..." action opens the edit modal
+		if (allowUserStatusMessageChange) {
+			items.push({
+				id: 'custom-status-edit',
+				icon: 'edit',
+				content: t('Custom_Status'),
+				onClick: handleCustomStatus,
+			});
+		}
+
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
@@ -153,15 +163,6 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			: [];
 
 		const actionItems: GenericMenuItemProps[] = [];
-
-		if (allowUserStatusMessageChange) {
-			actionItems.push({
-				id: 'custom-status-edit',
-				icon: 'edit',
-				content: t('Custom_Status'),
-				onClick: handleCustomStatus,
-			});
-		}
 
 		if (statusVisibilityEnabled) {
 			actionItems.push({
