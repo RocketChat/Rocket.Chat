@@ -1664,6 +1664,7 @@
   "Prune_Modal": "Ma hûn bawer dikin ku hûn dixwazin ev peyamên dakêşin? Mesajên pêşniyaz nayê avêtin.",
   "Prune_Warning_after": "Ev ê {{items}} ji {{roomName}} piştî {{fromDate}} jê bibe.",
   "Prune_Warning_all": "Ev ê {{items}} di {{roomName}} veşêre!",
+  "Prune_Warning_before": "Ev ê %s di %s de %s ji %s ve jêbirin.",
   "Prune_Warning_between": "Ev ê {{items}} û {{roomName}} di {{fromDate}} di {{toDate}} jêbirin.",
   "Prune_finished": "Prune qedandin",
   "Pruning_files": "Pelên dagirkirinê ...",

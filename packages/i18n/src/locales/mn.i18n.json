@@ -1671,6 +1671,7 @@
   "Prune_Warning_after": "Энэ нь {{items}} -ын дараа бүх {{roomName}}-д {{fromDate}}-г устгах болно.",
   "Prune_Warning_all": "Энэ нь {{items}}-д бүх {{roomName}}-г устгах болно!",
   "Prune_Warning_before": "Энэ нь {{items}}-с өмнөх {{roomName}} -ын бүх {{toDate}}-г устгах болно.",
+  "Prune_Warning_between": "Энэ нь %s ба %s хооронд %s бүх бүх% устгах болно.",
   "Prune_finished": "Пресс дууслаа",
   "Pruning_files": "Файлуудыг тайлах ...",
   "Pruning_messages": "Зурвасуудыг тайлах ...",
