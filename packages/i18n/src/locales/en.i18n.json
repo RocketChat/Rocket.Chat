@@ -4369,6 +4369,7 @@
   "Premium_capability": "Premium capability",
   "Premium_omnichannel_capabilities": "Premium omnichannel capabilities",
   "Premium_only": "Premium only",
+  "Premium_required_from_9_0_0_alert": "From version 9.0.0 on, this authentication method requires a Premium plan. Workspaces without a license covering it will not be able to authenticate users through it after the upgrade.",
   "Please_provide_a_name_for_your_token": "Please provide a name for your token",
   "Preparing_data_for_import_process": "Preparing data for import process",
   "Preparing_list_of_channels": "Preparing list of channels",
