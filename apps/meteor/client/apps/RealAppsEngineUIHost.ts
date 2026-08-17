@@ -41,13 +41,11 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(
-				({ _id, username }): IExternalComponentUserInfo => ({
-					id: _id,
-					username: username!,
-					avatarUrl: this.getUserAvatarUrl(username!),
-				}),
-			);
+			cachedMembers = members.map(({ _id, username }): IExternalComponentUserInfo => ({
+				id: _id,
+				username: username!,
+				avatarUrl: this.getUserAvatarUrl(username!),
+			}));
 		} catch (error) {
 			console.warn(error);
 		}

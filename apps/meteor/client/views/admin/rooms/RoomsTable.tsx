@@ -50,12 +50,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
-					| 'c'
-					| 'd'
-					| 'p'
-					| 'l'
-					| 'discussions'
-					| 'teams'
+					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
 			};
 		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
@@ -151,7 +146,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data.rooms?.map((room) => <RoomRow key={room._id} room={room} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data.rooms?.map((room) => (
+								<RoomRow key={room._id} room={room} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

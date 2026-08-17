@@ -10,7 +10,9 @@ const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;
 async function runVideoConferences(): Promise<void> {
 	const minimum = new Date(new Date().valueOf() - VIDEO_CONFERENCE_TTL);
 
-	const calls = await (await VideoConferenceModel.findAllLongRunning(minimum))
+	const calls = await (
+		await VideoConferenceModel.findAllLongRunning(minimum)
+	)
 		.map(({ _id: callId }: Pick<VideoConference, '_id'>) => callId)
 		.toArray();
 

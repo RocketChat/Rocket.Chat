@@ -19,13 +19,13 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		() =>
 			Boolean(
 				!isPermissionDenied &&
-					navigator.mediaDevices &&
-					window.MediaRecorder &&
-					isFileUploadEnabled &&
-					isVideoRecorderEnabled &&
-					!fileUploadMediaTypeBlackList?.match(/video\/webm|video\/\*/i) &&
-					(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/video\/webm|video\/\*/i)) &&
-					Boolean(VideoRecorder.getSupportedMimeTypes()),
+				navigator.mediaDevices &&
+				window.MediaRecorder &&
+				isFileUploadEnabled &&
+				isVideoRecorderEnabled &&
+				!fileUploadMediaTypeBlackList?.match(/video\/webm|video\/\*/i) &&
+				(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/video\/webm|video\/\*/i)) &&
+				Boolean(VideoRecorder.getSupportedMimeTypes()),
 			),
 		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isFileUploadEnabled, isPermissionDenied, isVideoRecorderEnabled],
 	);
