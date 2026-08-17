@@ -247,7 +247,6 @@ export class SAML {
 		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
 			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
-		console.log('saml token - ', stampedToken);
 		// sending token along with the userId
 		return {
 			userId: user._id,
