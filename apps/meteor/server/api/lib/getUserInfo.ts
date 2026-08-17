@@ -92,7 +92,9 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 		? {
 				...(await getPreferencesWithDefaults(me)),
 				...me.settings?.preferences,
-				...(me.settings?.preferences?.statusVisibilityDenied && { statusVisibilityDenied: await convertUserIdsToUsernames(me.settings?.preferences?.statusVisibilityDenied) }),
+				...(me.settings?.preferences?.statusVisibilityDenied && {
+					statusVisibilityDenied: await convertUserIdsToUsernames(me.settings?.preferences?.statusVisibilityDenied),
+				}),
 			}
 		: undefined;
 

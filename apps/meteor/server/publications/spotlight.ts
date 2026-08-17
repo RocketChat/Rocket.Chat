@@ -1,10 +1,10 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { canSeeStatus, redactStatus } from '../lib/statusVisibility/canSeeStatus';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
+import { canSeeStatus, redactStatus } from '../lib/statusVisibility/canSeeStatus';
 
 type SpotlightType = {
 	users?: boolean;

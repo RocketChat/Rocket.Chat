@@ -3,8 +3,8 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
-import { canSeeStatus, convertUserIdsToUsernames, redactStatus } from '../statusVisibility/canSeeStatus';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { canSeeStatus, convertUserIdsToUsernames, redactStatus } from '../statusVisibility/canSeeStatus';
 
 const logger = new Logger('getFullUserData');
 

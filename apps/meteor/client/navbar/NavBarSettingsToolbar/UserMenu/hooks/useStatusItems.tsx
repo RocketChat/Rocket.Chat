@@ -8,7 +8,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
-import { useStatusVisibilityModalHandler } from '../EditStatusVisibilityModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
@@ -17,6 +16,7 @@ import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
 import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
+import { useStatusVisibilityModalHandler } from '../EditStatusVisibilityModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	// We should lift this up to somewhere else if we want to use it in other places

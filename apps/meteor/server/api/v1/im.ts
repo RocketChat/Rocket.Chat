@@ -2,7 +2,6 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -27,6 +26,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
+import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
