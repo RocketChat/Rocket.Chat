@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -41,7 +41,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const icon = (
-		<SidebarV2ItemIcon
+		<SidebarItemIcon
 			highlighted={highlighted}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
 		/>
@@ -50,10 +50,10 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarV2Actions>
-					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarV2Actions>
+				<SidebarActions>
+					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarActions>
 			),
 		[videoConfActions],
 	);
