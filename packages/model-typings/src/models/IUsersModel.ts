@@ -47,7 +47,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		username: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
-	findOneAgentById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+	findOneAgentById<T extends Document = ILivechatAgent, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		_id: IUser['_id'],
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
