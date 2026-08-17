@@ -30,7 +30,7 @@ export class VoiceCallControls {
 	}
 
 	get hangup(): Locator {
-		return this._controls.getByRole('button', { name: 'End call', exact: true });
+		return this._controls.getByRole('button', { name: 'End call with', exact: false });
 	}
 
 	get cancel(): Locator {
