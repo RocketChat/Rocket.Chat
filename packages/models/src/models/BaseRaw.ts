@@ -147,7 +147,7 @@ export abstract class BaseRaw<
 
 		const projection: Record<string, any> = optionsDef?.projection;
 		const keys = Object.keys(projection);
-		const removeKeys = keys.filter((key) => projection[key] === 0);
+		const removeKeys = keys.filter((key) => projection[key] === 0 || projection[key] === false);
 		if (keys.length > removeKeys.length) {
 			removeKeys.forEach((key) => delete projection[key]);
 		}

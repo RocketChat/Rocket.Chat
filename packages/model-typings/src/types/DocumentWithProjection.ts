@@ -43,8 +43,9 @@ type ExclusionKeys<P> = { [K in keyof P]-?: P[K] extends 0 | false ? K : never }
 
 /**
  * Applies a projection `P` to a document type `T`, mirroring what `BaseRaw` actually sends to the
- * server — see `doNotMixInclusionAndExclusionFields`, which strips every `0` key as soon as one key
- * is not `0`, so a mixed projection behaves as inclusion-only and still returns `_id`.
+ * server — see `doNotMixInclusionAndExclusionFields`, which strips every exclusion key (`0` or
+ * `false`) as soon as one key is an inclusion, so a mixed projection behaves as inclusion-only and
+ * still returns `_id`.
  *
  * Bails out to `T` whenever the projection cannot be read statically: dotted paths, `$`-operators,
  * computed keys, or values that are not `0`/`1`/`false`/`true` literals.

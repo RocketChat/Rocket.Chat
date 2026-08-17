@@ -46,10 +46,20 @@ export type BooleanExclusion = Expect<Equivalent<Project<{ password: false; name
 
 export type ExclusionCanDropId = Expect<Equivalent<Project<{ _id: 0 }>, Omit<Doc, '_id'>>>;
 
-/** `doNotMixInclusionAndExclusionFields` drops the `0` keys at runtime, so `_id` survives a mix. */
+/** `doNotMixInclusionAndExclusionFields` drops the exclusion keys at runtime, so `_id` survives a mix. */
 export type MixedBehavesAsInclusion = Expect<Equivalent<Project<{ name: 1; password: 0 }>, Pick<Doc, '_id' | 'name'>>>;
 
+export type MixedBooleanBehavesAsInclusion = Expect<Equivalent<Project<{ name: true; password: false }>, Pick<Doc, '_id' | 'name'>>>;
+
+export type MixedNotationBehavesAsInclusion = Expect<Equivalent<Project<{ name: 1; password: false }>, Pick<Doc, '_id' | 'name'>>>;
+
+export type MixedNotationExclusionStaysExclusion = Expect<
+	Equivalent<Project<{ password: 0; name: false }>, Omit<Doc, 'password' | 'name'>>
+>;
+
 export type MixedKeepsIdEvenWhenExcluded = Expect<Equivalent<Project<{ _id: 0; name: 1 }>, Pick<Doc, '_id' | 'name'>>>;
+
+export type MixedKeepsIdEvenWhenExcludedWithBoolean = Expect<Equivalent<Project<{ _id: false; name: 1 }>, Pick<Doc, '_id' | 'name'>>>;
 
 // Everything below must bail out to the full document rather than guess.
 
