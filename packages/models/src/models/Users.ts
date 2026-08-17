@@ -550,10 +550,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 		const query = { username };
 
-		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
 		return this.findOne<T, O>(query, {
-			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
 		} as unknown as O);
 	}
 
@@ -2338,10 +2339,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			[`services.${serviceName}.id`]: userId,
 		};
 
-		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
 		return this.findOne<T, O>(query, {
-			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
 		} as unknown as O);
 	}
 
@@ -2351,10 +2353,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = { 'emails.address': String(emailAddress).trim() };
 
-		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
 		return this.findOne<T, O>(query, {
-			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
 		} as unknown as O);
 	}
 
