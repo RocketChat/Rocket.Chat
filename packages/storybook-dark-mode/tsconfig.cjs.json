@@ -4,7 +4,9 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"outDir": "./dist/cjs",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"declaration": false,
+		"declarationMap": false
 	},
 	"exclude": ["node_modules", "dist", "**/*.spec.*", "**/*.stories*"]
 }
