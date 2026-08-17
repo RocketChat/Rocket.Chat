@@ -1,0 +1,28 @@
+packages/model-typings/src/models/IBaseModel.ts
+  s_d81a2915077aab::t_de106de0a2e43a 27,31,33-35
+  s_d81a2915077aab::t_a4a3b3fe306052 63-67,69-73,76,78-79,81-85
+packages/model-typings/src/models/ICannedResponseModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5,8-9
+  s_d81a2915077aab::t_6be05ad01315cb 2
+packages/model-typings/src/models/ILivechatUnitModel.ts
+  s_d81a2915077aab::t_afec9cfd2a3bcb 4
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_40cffc31c838a6 10-13,15,17-21,23,25
+  s_d81a2915077aab::t_e0b9c3ad38693d 9,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "9e5641750ae4e1f175ac5d9832d267be0f66d907",
+  "prompts": {},
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
