@@ -9,7 +9,6 @@ import type {
 	FindOptionsWithProjection,
 	DocumentWithDriverProjection,
 	FindOneAndUpdateOptionsWithProjection,
-	FindOneAndDeleteOptionsWithProjection,
 } from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
@@ -355,18 +354,17 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async findOneAndDelete<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
-		filter: Filter<T>,
-		options?: O,
-	): Promise<DocumentWithDriverProjection<P, O> | null> {
+	/**
+	 * No projection narrowing: whether the model archives to a trash collection is a runtime detail
+	 * (a constructor argument), and the trash path has to read the whole document to archive it, so
+	 * it returns every field regardless of the projection. Narrowing here would claim a filtering
+	 * that only happens for models without a trash collection.
+	 */
+	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
 		if (!this.trash) {
-			const result = this.col.findOneAndDelete(filter, (options || {}) as FindOneAndDeleteOptions);
-
-			return result as Promise<DocumentWithDriverProjection<P, O> | null>;
+			return this.col.findOneAndDelete(filter, options || {});
 		}
 
-		// the trash path needs the whole document to archive it, so the projection is not applied here;
-		// returning more fields than the caller asked for is harmless
 		const doc = await this.col.findOne(filter);
 		if (!doc) {
 			return null;
@@ -394,15 +392,11 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		// unprojected, per the note above: more fields than the type claims, which is the safe direction
-		return doc as unknown as DocumentWithDriverProjection<P, O>;
+		return doc as WithId<T>;
 	}
 
-	findOneAndDeleteById<P extends Document = T, O extends FindOneAndDeleteOptionsWithProjection = FindOneAndDeleteOptionsWithProjection>(
-		_id: T['_id'],
-		options?: O,
-	): Promise<DocumentWithDriverProjection<P, O> | null> {
-		return this.findOneAndDelete<P, O>({ _id } as Filter<T>, options);
+	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
+		return this.findOneAndDelete({ _id } as Filter<T>, options);
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
