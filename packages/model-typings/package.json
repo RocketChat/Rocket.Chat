@@ -9,6 +9,7 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix ."
 	},
