@@ -82,8 +82,7 @@ export class PasswordPolicy {
 		const safeForbidRepeatingCharactersCount =
 			typeof forbidRepeatingCharactersCount === 'number' &&
 				Number.isSafeInteger(forbidRepeatingCharactersCount) &&
-				forbidRepeatingCharactersCount >= 1 ? forbidRepeatingCharactersCount : 3;
-
+				forbidRepeatingCharactersCount >= 0 ? forbidRepeatingCharactersCount : 3;
 
 		this.enabled = enabled;
 		this.minLength = minLength;
@@ -268,8 +267,6 @@ export class PasswordPolicy {
 			}
 			if (this.forbidRepeatingCharacters) {
 				data.policy.push(['get-password-policy-forbidRepeatingCharacters']);
-			}
-			if (this.forbidRepeatingCharactersCount) {
 				data.policy.push([
 					'get-password-policy-forbidRepeatingCharactersCount',
 					{ forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount },
