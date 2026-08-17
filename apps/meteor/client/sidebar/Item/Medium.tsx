@@ -34,7 +34,7 @@ const Medium = ({ icon, title, titleIcon, avatar, actions, badges, unread, menu,
 					{menuVisibility ? (
 						menu()
 					) : (
-						<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' onPointerDown={mountNow} />
+						<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' onPointerDown={mountNow} />
 					)}
 				</SidebarItemMenu>
 			)}
