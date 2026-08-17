@@ -590,7 +590,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		role: string,
-		options: O,
+		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
