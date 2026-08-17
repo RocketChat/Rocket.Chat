@@ -13,15 +13,14 @@ const SAMLLoginRoute = () => {
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
-		let timeout: NodeJS.Timeout;
 
 		//SAML token handoff to the native client (mobile/desktop)
 		if (loginClient === 'desktop' || loginClient === 'mobile') {
 			window.location.href = buildSamlDeepLinkURL(token);
-			timeout = setTimeout(() => {
+			const timeout = setTimeout(() => {
 				router.navigate('/home', { replace: true });
 			}, 0);
-			return;
+			return () => clearTimeout(timeout);
 		}
 
 		Meteor.loginWithSamlToken(token, (error?: unknown) => {
@@ -45,8 +44,6 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-
-		return () => clearTimeout(timeout);
 	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
