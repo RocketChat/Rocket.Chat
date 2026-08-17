@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "./dist/cjs",
+		"rootDir": "./src"
+	},
+	"exclude": ["node_modules", "dist", "**/*.spec.*", "**/*.stories*"]
+}

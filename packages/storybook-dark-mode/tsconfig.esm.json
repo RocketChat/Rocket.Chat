@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"outDir": "./dist/esm",
+		"rootDir": "./src"
+	},
+	"exclude": ["node_modules", "dist", "**/*.spec.*", "**/*.stories*"]
+}
