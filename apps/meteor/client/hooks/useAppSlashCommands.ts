@@ -62,8 +62,8 @@ export const useAppSlashCommands = () => {
 
 				const newAccumulator = [...accumulator, ...commands];
 
-				if (newAccumulator.length < total) {
-					return fetchBatch(currentOffset + count, newAccumulator);
+				if (commands.length > 0 && newAccumulator.length < total) {
+					return fetchBatch(currentOffset + commands.length, newAccumulator);
 				}
 
 				return newAccumulator;
