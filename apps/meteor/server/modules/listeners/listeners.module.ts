@@ -158,13 +158,22 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
-			void refreshStatusVisibility(targets).then((users) => {
-				for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
-					if (username) {
-						notifications.sendPresence(_id, username, STATUS_MAP[status ?? UserStatus.OFFLINE], statusText, statusSource, statusExpiresAt);
+			void refreshStatusVisibility(targets)
+				.then((users) => {
+					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
+						if (username) {
+							notifications.sendPresence(
+								_id,
+								username,
+								STATUS_MAP[status ?? UserStatus.OFFLINE],
+								statusText,
+								statusSource,
+								statusExpiresAt,
+							);
+						}
 					}
-				}
-			});
+				})
+				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
