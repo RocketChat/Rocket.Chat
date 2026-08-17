@@ -36,7 +36,7 @@
 		"react-dom": "~19.2.8",
 		"react-router-dom": "^6.30.4",
 		"react-split-pane": "^3.2.0",
-		"react-virtuoso": "~4.18.11",
+		"react-virtuoso": "~4.18.12",
 		"reactflow": "^11.11.4"
 	},
 	"devDependencies": {
