@@ -67,6 +67,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { statusText: 1 } },
 			{ key: { statusConnection: 1 }, sparse: true },
 			{ key: { statusExpiresAt: 1 }, partialFilterExpression: { statusExpiresAt: { $exists: true } } },
+			{
+				key: { 'settings.preferences.statusVisibilityDenied': 1 },
+				partialFilterExpression: { 'settings.preferences.statusVisibilityDenied': { $exists: true } },
+			},
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
