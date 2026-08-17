@@ -1,48 +1,7 @@
 {
+	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
-		"strict": true,
-		"allowUnreachableCode": false,
-		"allowUnusedLabels": false,
-		"exactOptionalPropertyTypes": false,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitOverride": true,
-		"noImplicitReturns": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"noUncheckedIndexedAccess": false,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-
-		"allowArbitraryExtensions": true,
-		"allowImportingTsExtensions": false,
-		"allowUmdGlobalAccess": false,
-		"noUncheckedSideEffectImports": true,
-		"resolveJsonModule": true,
-
-		"declaration": true,
-		"declarationMap": true,
-		"downlevelIteration": false,
-		"inlineSourceMap": false,
-		"inlineSources": false,
-		"removeComments": false,
-		"sourceMap": true,
-		"stripInternal": true,
-
-		"allowJs": false,
-
-		"erasableSyntaxOnly": true,
-		"forceConsistentCasingInFileNames": true,
-		"isolatedDeclarations": false,
-		"preserveSymlinks": false,
-		"verbatimModuleSyntax": false,
-
-		"target": "ES2020",
-		"jsx": "react",
-		"lib": ["ES2020", "DOM"],
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"esModuleInterop": true,
-		"isolatedModules": false,
-		"types": ["node"]
+		"jsx": "react"
 	},
 	"include": ["src/**/*"]
 }

@@ -21,7 +21,7 @@
     "preset.js"
   ],
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -31,13 +31,13 @@
     "fast-deep-equal": "~3.1.3"
   },
   "devDependencies": {
+    "@rocket.chat/tsconfig": "workspace:~",
     "@types/react": "~19.2.18",
     "@types/react-dom": "~19.2.4",
     "eslint": "~9.39.5",
     "prettier": "~3.3.3",
     "react": "~19.2.8",
     "react-dom": "~19.2.8",
-    "rimraf": "^6.0.1",
     "typescript": "~5.9.3"
   },
   "peerDependencies": {
