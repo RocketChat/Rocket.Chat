@@ -212,35 +212,55 @@ describe('Password Policy', () => {
 		const policy = passwordPolicy.getPasswordPolicy();
 
 		expect(policy.enabled).toBe(true);
-		// even when no policy is specified, forbidRepeatingCharactersCount is still configured
-		// since its default value is 3
-		expect(policy.policy.length).toBe(1);
+		// forbidRepeatingCharacters is disabled by default, so the count entry
+		// (and its default of 3) is not reported as an active policy
+		expect(policy.policy.length).toBe(0);
 	});
-	
-	it.each([-1, 0, 1.5, Number.NaN, 1e21, '3'])(
-	'should use the default repeating character count when configured with %p',
-	(count) => {
+
+	it.each([-1, 1.5, Number.NaN, 1e21, '3'])(
+		'should use the default repeating character count when configured with %p',
+		(count) => {
+			const passwordPolicy = new PasswordPolicy({
+				enabled: true,
+				forbidRepeatingCharacters: true,
+				forbidRepeatingCharactersCount: count as number,
+				throwError: false,
+			});
+
+			// Default count is 3 → "111" is allowed, "1111" is not
+			expect(passwordPolicy.validate('111')).toBe(true);
+			expect(passwordPolicy.validate('1111')).toBe(false);
+
+			expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
+				name: 'get-password-policy-forbidRepeatingCharactersCount',
+				isValid: false,
+				limit: 3,
+			});
+
+			expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
+				'get-password-policy-forbidRepeatingCharactersCount',
+				{ forbidRepeatingCharactersCount: 3 },
+			]);
+		},
+	);
+
+	it('should preserve a configured count of 0 instead of falling back to the default', () => {
 		const passwordPolicy = new PasswordPolicy({
 			enabled: true,
 			forbidRepeatingCharacters: true,
-			forbidRepeatingCharactersCount: count as number,
+			forbidRepeatingCharactersCount: 0,
 			throwError: false,
-		});
-
-		// Default count is 3 → "111" is allowed, "1111" is not
-		expect(passwordPolicy.validate('111')).toBe(true);
-		expect(passwordPolicy.validate('1111')).toBe(false);
-
-		expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
-			name: 'get-password-policy-forbidRepeatingCharactersCount',
-			isValid: false,
-			limit: 3,
 		});
 
 		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
 			'get-password-policy-forbidRepeatingCharactersCount',
-			{ forbidRepeatingCharactersCount: 3 },
+			{ forbidRepeatingCharactersCount: 0 },
 		]);
-	},
-);
+
+		expect(passwordPolicy.sendValidationMessage('1')).toContainEqual({
+			name: 'get-password-policy-forbidRepeatingCharactersCount',
+			isValid: false,
+			limit: 0,
+		});
+	});
 });
