@@ -37,6 +37,7 @@ import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
+import type { ScheduledMessagesEndpoints } from './v1/scheduledMessages';
 import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
@@ -69,6 +70,7 @@ export interface Endpoints
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
+		ScheduledMessagesEndpoints,
 		UsersEndpoints,
 		AppsEndpoints,
 		OmnichannelEndpoints,
@@ -209,6 +211,7 @@ export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends an
 export * from './apps';
 export type * from './v1/presence';
 export * from './v1/roles';
+export * from './v1/scheduledMessages';
 export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/videoConference';
