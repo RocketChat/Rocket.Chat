@@ -150,7 +150,6 @@ export class SAMLUtils {
 	}
 
 	public static decodeAuthorizeRelayState(relayState?: string | null): { provider?: string; loginClient?: 'desktop' | 'mobile' } {
-		console.log('SAMLUtils.decodeAuthorizeRelayState', { relayState });
 		if (!relayState) {
 			return {};
 		}
