@@ -197,7 +197,7 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+				if (service.service && ['cas', 'ldap'].includes(service.service)) {
 					return { ...service, hideButtonOnMobile: false };
 				}
 
