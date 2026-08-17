@@ -48,7 +48,6 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/peggy-loader": "workspace:~",
-		"@rocket.chat/prettier-config": "~0.31.25",
 		"@types/jest": "~30.0.0",
 		"@types/node": "~22.19.21",
 		"eslint": "~9.39.5",

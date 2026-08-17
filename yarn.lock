@@ -10022,7 +10022,6 @@ __metadata:
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/peggy-loader": "workspace:~"
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.19.21"
     eslint: "npm:~9.39.5"
@@ -10801,7 +10800,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/peggy-loader@workspace:packages/peggy-loader"
   dependencies:
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/node": "npm:~22.19.21"
     eslint: "npm:~9.39.5"
     npm-run-all: "npm:^4.1.5"
@@ -10876,15 +10874,6 @@ __metadata:
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/prettier-config@npm:~0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/prettier-config@npm:0.31.25"
-  peerDependencies:
-    prettier: ~2.7.1
-  checksum: 10/4c0be678e7c161bf132014aa3f986b84f4ec06808b5149f967d52515fb929ee07d073b00a60e197256c8244e02b7e521be20707d6f841de4949d8f516fb8ec09
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker":
   version: 0.0.0-use.local
