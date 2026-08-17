@@ -16,7 +16,12 @@ const Sidebar = () => {
 	return (
 		<FuselageSidebar
 			aria-label={t('Sidebar')}
-			className={['rcx-sidebar--main', `rcx-sidebar rcx-sidebar--${sidebarViewMode}`, sidebarHideAvatar && 'rcx-sidebar--hide-avatar']
+			className={[
+				'rcx-sidebar--main',
+				'sidebar-region-item',
+				`rcx-sidebar--${sidebarViewMode}`,
+				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+			]
 				.filter(Boolean)
 				.join(' ')}
 		>
