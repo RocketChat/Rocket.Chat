@@ -514,10 +514,8 @@ describe('finish time boundary', () => {
 		const bh = await filterBusinessHoursThatMustBeOpened([
 			{
 				_id: '68516f256ebb4bdceda2757f',
-				name: '',
 				active: true,
 				type: LivechatBusinessHourTypes.DEFAULT,
-				ts: new Date(),
 				workHours: [
 					{
 						day: 'Monday',
@@ -535,10 +533,6 @@ describe('finish time boundary', () => {
 						code: '',
 					},
 				],
-				timezone: {
-					name: 'UTC',
-					utc: '+00:00',
-				},
 			},
 		]);
 
