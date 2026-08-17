@@ -26,12 +26,19 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	// @ts-expect-error - Overriding base types :)
-	async findOne<P extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(originalQuery: Filter<IOmnichannelBusinessUnit>, options?: O, extra?: Record<string, any>): Promise<DocumentWithProjection<P, O> | null> {
+	async findOne<P extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		originalQuery: Filter<IOmnichannelBusinessUnit>,
+		options?: O,
+		extra?: Record<string, any>,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
-		return this.col.findOne<P>(query, options);
+		return super.findOne<P, O>(query, options);
 	}
 
-	override async findOneById<P extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(_id: IOmnichannelBusinessUnit['_id'], options?: O, extra?: Record<string, any>): Promise<DocumentWithProjection<P, O> | null> {
+	override async findOneById<
+		P extends Document = IOmnichannelBusinessUnit,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(_id: IOmnichannelBusinessUnit['_id'], options?: O, extra?: Record<string, any>): Promise<DocumentWithProjection<P, O> | null> {
 		if (options) {
 			return this.findOne<P, O>({ _id }, options, extra);
 		}
