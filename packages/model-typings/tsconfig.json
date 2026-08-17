@@ -7,6 +7,6 @@
 	},
 	"include": ["./src/**/*"],
 	// restates the inherited exclusions: a child `exclude` replaces the parent's rather than adding to it.
-	// `*.typetest.ts` holds compile-time assertions only — `yarn typecheck` covers them, the build must not emit them.
-	"exclude": ["node_modules", "${configDir}/**/*.spec.ts", "${configDir}/**/*.typetest.ts"]
+	// keeping only `node_modules` lets ESLint and `yarn typecheck` cover the type tests; the build config drops them.
+	"exclude": ["node_modules"]
 }
