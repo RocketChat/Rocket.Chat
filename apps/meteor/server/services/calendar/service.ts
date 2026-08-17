@@ -234,7 +234,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const processTime = new Date();
 
 		try {
-			// the query already excludes `busy: false` events
 			const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 			for await (const event of eventsStartingNow) {
 				await this.processEventStart(event);
