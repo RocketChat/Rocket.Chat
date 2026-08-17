@@ -1,0 +1,14 @@
+apps/meteor/ee/server/models/raw/LivechatUnit.ts
+  h_4c386397e672f4 26,163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8cb43a5c7c5ccd5719464a9cdc54f93aa4083c74",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
