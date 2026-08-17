@@ -13,10 +13,14 @@ const SAMLLoginRoute = () => {
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
+		let timeout: NodeJS.Timeout;
 
 		//SAML token handoff to the native client (mobile/desktop)
 		if (loginClient === 'desktop' || loginClient === 'mobile') {
 			window.location.href = buildSamlDeepLinkURL(token);
+			timeout = setTimeout(() => {
+				router.navigate('/home', { replace: true });
+			}, 0);
 			return;
 		}
 
@@ -41,6 +45,8 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
+
+		return () => clearTimeout(timeout);
 	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
