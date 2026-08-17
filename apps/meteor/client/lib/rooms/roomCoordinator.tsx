@@ -1,5 +1,5 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
-import type { RouteName } from '@rocket.chat/ui-contexts';
+import type { RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../app/authorization/client';
 import type {
@@ -14,10 +14,13 @@ import type {
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
 import { Subscriptions } from '../../stores';
-import RoomRoute from '../../views/room/RoomRoute';
-import MainLayout from '../../views/root/MainLayout';
 import { absoluteUrl } from '../absoluteUrl';
-import { appLayout } from '../appLayout';
+
+export type RoomTypeRoute = {
+	name: RouteName;
+	path: RouterPathPattern;
+	extractOpenRoomParams: NonNullable<IRoomTypeClientDirectives['extractOpenRoomParams']>;
+};
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
@@ -61,6 +64,27 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	public getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
 		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
+	}
+
+	/**
+	 * Returns the routes that should be registered for the room types that declare one.
+	 *
+	 * Route registration itself lives in the view layer (see registerRoomTypeRoutes) so this
+	 * coordinator stays free of view/router imports — importing the room view tree here created a
+	 * dependency cycle that made Vite re-execute this module (and wipe its `roomTypes`) on every
+	 * HMR edit of a room component.
+	 */
+	public getRoomTypeRoutes(): RoomTypeRoute[] {
+		return Object.values(this.roomTypes).flatMap(({ config, directives }) => {
+			const { route } = config;
+			const { extractOpenRoomParams } = directives as IRoomTypeClientDirectives;
+
+			if (!route?.path || !route.name || !extractOpenRoomParams) {
+				return [];
+			}
+
+			return [{ name: route.name, path: route.path, extractOpenRoomParams }];
+		});
 	}
 
 	public openRouteLink(
@@ -167,28 +191,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
 			throw new Error('The label must be a string.');
-		}
-	}
-
-	protected override addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
-		super.addRoomType(roomConfig, directives);
-
-		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {
-			const {
-				route: { name, path },
-			} = roomConfig;
-			const { extractOpenRoomParams } = directives;
-			router.defineRoutes([
-				{
-					path,
-					id: name,
-					element: appLayout.wrap(
-						<MainLayout>
-							<RoomRoute key={name} extractOpenRoomParams={extractOpenRoomParams} />
-						</MainLayout>,
-					),
-				},
-			]);
 		}
 	}
 
