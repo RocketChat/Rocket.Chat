@@ -35,8 +35,8 @@ export const parseTranscriptRequest = async (
 		return options;
 	}
 
-	// `as const` keeps the projection statically readable so the return type narrows; `utcOffset` is
-	// part of the `requestedBy` contract and was silently missing from the fetched fields.
+	// `as const` keeps the projection statically readable so the return type narrows;
+	// `utcOffset` is part of the `requestedBy` contract.
 	const defOptions = { projection: { _id: 1, username: 1, name: 1, utcOffset: 1 } } as const;
 	const requestedBy =
 		user ||
