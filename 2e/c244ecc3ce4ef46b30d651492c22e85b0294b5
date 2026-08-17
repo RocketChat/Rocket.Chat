@@ -1,0 +1,26 @@
+packages/model-typings/src/types/DocumentWithProjection.typetest.ts
+  s_1bf708eb28ecbb::t_5a25994332aeae 49,52-59,62
+  s_1bf708eb28ecbb::t_8e24fecd8ac320 63
+packages/model-typings/src/types/DocumentWithProjection.ts
+  s_1bf708eb28ecbb::t_b13f50920a2b9e 46-48
+packages/models/src/models/BaseRaw.ts
+  s_1bf708eb28ecbb::t_c20b76ad383435 150
+packages/models/src/models/BaseRaw.spec.ts
+  s_1bf708eb28ecbb::t_fcb103e1c9ccf5 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2ec244ecc3ce4ef46b30d651492c22e85b0294b5",
+  "prompts": {},
+  "sessions": {
+    "s_1bf708eb28ecbb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "16bd35fd-357f-43ba-a35d-ea9c89e20884",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
