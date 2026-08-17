@@ -72,6 +72,11 @@ rc_registration_token_validity:
   per_second: 10000
   burst_count: 10000
 
+# Room creation
+rc_room_creation:
+  per_second: 10000
+  burst_count: 10000
+
 # Login (IP, account, and failed-attempt buckets)
 rc_login:
   address:

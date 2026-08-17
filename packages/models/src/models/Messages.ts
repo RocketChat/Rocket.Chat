@@ -7,10 +7,11 @@ import type {
 	RocketChatRecordDeleted,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	DeepWritable,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
 	Collection,
@@ -32,12 +33,6 @@ import type {
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
-
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -52,7 +47,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			{ key: { msg: 'text' } },
+			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
+			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
+			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
@@ -130,13 +127,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.findPaginated(query, options);
-	}
-
-	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
-
-		return this.find(query, options);
 	}
 
 	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
@@ -351,16 +341,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		return this.find(
-			{
-				rid,
-				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
-			},
-			options,
-		);
-	}
-
 	findVisibleByRoomIdNotContainingTypesBeforeTs(
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
@@ -398,38 +378,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypesAndUsers(
-		roomId: IRoom['_id'],
-		types: IMessage['t'][],
-		users?: string[],
-		options?: FindOptions<IMessage>,
-		showThreadMessages = true,
-	): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			_hidden: {
-				$ne: true,
-			},
-			...(Array.isArray(users) && users.length > 0 && { 'u._id': { $nin: users } }),
-			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
 	findLivechatMessagesWithoutTypes(
 		rid: IRoom['_id'],
 		ignoredTypes: IMessage['t'][],
@@ -460,10 +408,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 		);
-	}
-
-	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
-		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
 	}
 
 	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
@@ -530,16 +474,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			t: { $ne: 'rm' as MessageTypesValues },
-			_hidden: { $ne: true },
-			pinned: true,
-		};
-
-		return this.find(query, options);
-	}
-
 	countPinned(options?: CountDocumentsOptions): Promise<number> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
@@ -559,15 +493,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.findPaginated(query, options);
-	}
-
-	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			'_hidden': { $ne: true },
-			'starred._id': { $exists: true },
-		};
-
-		return this.find(query, options);
 	}
 
 	countStarred(options?: CountDocumentsOptions): Promise<number> {
@@ -629,65 +554,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
-		return (
-			await this.col
-				.aggregate(
-					[
-						{
-							$match: {
-								t: { $ne: 'rm' },
-							},
-						},
-						{
-							$project: {
-								document: '$$ROOT',
-								reactions: { $objectToArray: '$reactions' },
-							},
-						},
-						{
-							$unwind: {
-								path: '$reactions',
-							},
-						},
-						{
-							$match: {
-								$and: [
-									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
-								],
-							},
-						},
-						{ $replaceRoot: { newRoot: '$document' } },
-					],
-					{ readPreference: readSecondaryPreferred() },
-				)
-				.toArray()
-		)[0] as IMessage;
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
-	}
-
-	keepHistoryForToken(token: string): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{
-				'navigation.token': token,
-				'expireAt': {
-					$exists: true,
-				},
-			},
-			{
-				$unset: {
-					expireAt: 1,
-				},
-			},
-		);
 	}
 
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document> {
@@ -738,6 +610,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.updateMany(query, {
 			$set: {
+				'_hidden': false,
 				'_importFile.rocketChatUrl': rocketChatUrl,
 				'_importFile.downloaded': true,
 			},
@@ -918,11 +791,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findForUpdates(
+		roomId: IMessage['rid'],
+		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage> {
 		const query = {
 			rid: roomId,
 			_hidden: { $ne: true },
-			_updatedAt: timestamp,
+			_updatedAt: updatedAt,
+			...(minTs && { ts: { $gte: minTs } }),
 		};
 
 		return this.find(query, options);
@@ -1381,6 +1259,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateMany(query, update);
 	}
 
+	setReceiptsArchivedById(ids: string[], archived: boolean): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				_id: { $in: ids },
+			},
+			{
+				$set: {
+					receiptsArchived: archived,
+				},
+			},
+		);
+	}
+
 	// INSERT
 
 	async createWithTypeRoomIdMessageUserAndUnread(
@@ -1512,20 +1403,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const notCountedMessages = (
-			await this.find(
-				{
-					...query,
-					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
-				},
-				{
-					projection: {
-						_id: 1,
-					},
-					limit,
-				},
-			).toArray()
-		).length;
+		const notCountedMessages = await this.countDocuments(
+			{
+				...query,
+				$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+			},
+			{ ...(limit ? { limit } : {}) },
+		);
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;

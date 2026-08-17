@@ -33,7 +33,7 @@ export const useFileUpload = () => {
 		[chat],
 	);
 
-	const isUploading = uploads.length > 0 && uploads.some((upload) => upload.percentage < 100 && !upload.error);
+	const isUploading = uploads.length > 0 && uploads.some((upload) => !upload.url && !upload.error);
 
 	return useMemo(
 		() => ({

@@ -1,6 +1,6 @@
 import { Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -18,7 +18,9 @@ import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const IntegrationsTable = ({ type }: { type?: string }) => {
+export type IntegrationsTableProps = { type?: string };
+
+const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -65,7 +67,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 				active={sortBy === 'name'}
 				onClick={setSort}
 				sort='name'
-				{...(!isMobile && { w: 'x280' })}
+				{...(!isMobile && { width: 'x280' })}
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>

@@ -12,7 +12,7 @@ export interface IRoleRead {
 	 * @returns null if no role is found.
 	 * @throws If there is an error while retrieving the role.
 	 */
-	getOneByIdOrName(idOrName: IRole['id'] | IRole['name'], appId: string): Promise<IRole | null>;
+	getOneByIdOrName(idOrName: string, appId: string): Promise<IRole | null>;
 
 	/**
 	 * Retrieves all custom roles.

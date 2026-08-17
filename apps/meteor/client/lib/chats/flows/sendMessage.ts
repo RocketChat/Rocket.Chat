@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
+import { runOptimisticSendMessage } from '../../../../app/lib/client/methods/sendMessage';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
@@ -7,6 +8,7 @@ import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
+import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
@@ -44,9 +46,14 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	chat.composer?.clear();
-	await sdk.call('sendMessage', message, previewUrls);
+	await runOptimisticSendMessage(message);
 
-	// after the request is complete we can go ahead and mark as sent
+	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
+
+	// Clear the optimistic `temp` flag only if the messages stream hasn't already
+	// replaced the record. Overwriting with the server response can clobber stream
+	// updates that arrive first — e.g. read-receipt-driven `unread: false`, async
+	// URL/quote attachments, or E2EE decrypt — leading to stale UI state.
 	Messages.state.update(
 		(record) => record._id === message._id && record.temp === true,
 		({ temp: _, ...record }) => record,
@@ -104,8 +111,14 @@ export const sendMessage = async (
 		}
 
 		try {
-			await process(chat, message, previewUrls, isSlashCommandAllowed);
+			// Dismiss quoted messages optimistically — they are already baked into
+			// `message` by composeMessage above, so the composer preview must unmount
+			// regardless of whether the send request resolves. Keeping it coupled to a
+			// resolved request leaves the quote stuck in the composer when the REST call
+			// rejects even though the message was already broadcast over the stream.
 			chat.composer?.dismissAllQuotedMessages();
+			await process(chat, message, previewUrls, isSlashCommandAllowed);
+			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

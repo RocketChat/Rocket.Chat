@@ -1,6 +1,6 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -43,7 +43,7 @@ const ImportProgressPage = function ImportProgressPage() {
 		refetchInterval: 1000,
 	});
 
-	const handleProgressUpdated = useEffectEvent(
+	const handleProgressUpdated = useStableCallback(
 		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
 			if (!currentOperation.isSuccess) {
 				return;
@@ -172,7 +172,7 @@ const ImportProgressPage = function ImportProgressPage() {
 								</Box>
 								<Box display='flex' justifyContent='center'>
 									<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
-									<Box is='span' fontScale='p2' mis={24}>
+									<Box is='span' fontScale='p2' marginInlineStart={24}>
 										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
 									</Box>
 								</Box>

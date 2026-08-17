@@ -5,14 +5,20 @@ import type { MediaCallStreams } from '../context/MediaCallViewContext';
 
 const getStreamWrappers = (instance?: MediaSignalingSession) => {
 	try {
-		const mainCall = instance?.getMainCall();
-		if (!mainCall) {
+		const instanceState = instance?.getState();
+		if (!instanceState) {
 			return null;
 		}
 
-		const localStream = mainCall.getLocalMediaStream('screen-share');
+		if (!instanceState.confirmed) {
+			return null;
+		}
 
-		const remoteStream = mainCall.getRemoteMediaStream('screen-share');
+		const { localParticipant, remoteParticipant } = instanceState;
+
+		const localStream = localParticipant.getMediaStream('screen-share');
+
+		const remoteStream = remoteParticipant.getMediaStream('screen-share');
 
 		return {
 			localScreen: localStream ?? undefined,

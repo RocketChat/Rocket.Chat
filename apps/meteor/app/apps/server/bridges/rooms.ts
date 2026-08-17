@@ -1,21 +1,21 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
+import { RoomBridge } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
-import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
+import { deleteRoom } from '../../../../server/lib/rooms/deleteRoom';
+import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
+import { createDirectMessage } from '../../../../server/meteor-methods/messages/createDirectMessage';
+import { createDiscussion } from '../../../../server/meteor-methods/messages/createDiscussion';
+import { createChannelMethod } from '../../../../server/meteor-methods/rooms/createChannel';
+import { createPrivateGroupMethod } from '../../../../server/meteor-methods/rooms/createPrivateGroup';
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
@@ -37,6 +37,8 @@ const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	prid: 1,
 	teamId: 1,
 	teamMain: 1,
+	federated: 1,
+	federation: 1,
 	livechatData: 1,
 	waitingResponse: 1,
 	open: 1,

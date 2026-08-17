@@ -2,10 +2,11 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { AppEvents } from './events';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import type { IStreamer } from '../../../../server/modules/streamer/types';
 import type { AppServerOrchestrator } from '../orchestrator';
 
@@ -167,7 +168,7 @@ export class AppServerNotifier {
 			return;
 		}
 
-		void api.broadcast('apps.updated', appId);
+		void api.broadcast('apps.updated', appId, InstanceStatus.id());
 	}
 
 	async appStatusUpdated(appId: string, status: AppStatus): Promise<void> {

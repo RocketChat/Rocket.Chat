@@ -1,5 +1,5 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
+import { AppSourceStorage } from '@rocket.chat/apps/dist/server/storage/AppSourceStorage';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { streamToBuffer } from '@rocket.chat/tools';
 import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';

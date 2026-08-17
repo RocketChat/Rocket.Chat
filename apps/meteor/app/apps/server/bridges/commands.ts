@@ -1,12 +1,12 @@
 import type { IAppServerOrchestrator, IAppsRoom, IAppsUser } from '@rocket.chat/apps';
+import { CommandBridge } from '@rocket.chat/apps/dist/server/bridges/CommandBridge';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
-import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
-import { slashCommands } from '../../../utils/server/slashCommand';
+import { slashCommands } from '../../../../server/lib/utils/slashCommand';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;

@@ -1,6 +1,6 @@
 import { Permissions } from '@rocket.chat/models';
 
-import { settingsRegistry } from '../../../../app/settings/server/index';
+import { settingsRegistry } from '../../../../server/settings';
 
 export const createPermissions = async (): Promise<void> => {
 	await Promise.all([

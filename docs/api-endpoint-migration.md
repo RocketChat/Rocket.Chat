@@ -558,6 +558,29 @@ API.v1.post('endpoint', {
 }, async function action() { ... });
 ```
 
+## Error Handling (thrown errors)
+
+Every route registered through `API.v1.get/post/put/delete` is wrapped by `ApiClass`'s internal handler (`_internalRouteActionHandler`), which runs the action inside a `try/catch`. A thrown `Meteor.Error` (or any core-services error carrying `error`/`message` by shape) is mapped to the matching HTTP failure:
+
+- `error-too-many-requests` → `429`
+- `unauthorized` / `error-unauthorized` → `401` (or `403` pre-breaking-changes)
+- `forbidden` / `error-forbidden` → `403`
+- anything else → `API.v1.failure(message, errorType, stack, details)` → `400`
+
+So a migrated handler should **just throw** to signal a client error — exactly as the legacy DDP methods and `addRoute` handlers did. Do **not** wrap every handler in a `try/catch` that returns `API.v1.failure(...)`: it is redundant with the global wrapper and, worse, flattens `401`/`403`/`429` into `400`.
+
+```typescript
+async function action() {
+	const room = await findChannelByIdOrName({ params: this.bodyParams }); // throws error-room-not-found
+	// ...
+	return API.v1.success({ channel: room });
+}
+```
+
+Declare in the `response` block every error status the handler (or the wrapper) can produce, so response validation under `TEST_MODE` accepts them — `400: validateBadRequestErrorResponse` for thrown/failure errors, plus `401`/`403` when `authRequired`/`permissionsRequired` are set.
+
+Add an explicit `catch` only when you need behaviour the global wrapper does not provide (e.g. returning a specific `API.v1.failure(...)` payload for a known condition, or mapping a status differently); otherwise let the error propagate.
+
 ## Test Changes
 
 Migrating an endpoint changes how validation errors are returned. Tests must be updated accordingly.
@@ -596,18 +619,6 @@ When migrating an endpoint, search for its tests and update:
 2. Remove `' [invalid-params]'` suffix from `error` message assertions
 3. Verify that status codes remain the same (400 for validation errors)
 
-## Tracking Migration Progress
-
-```bash
-# Summary by file
-node scripts/list-unmigrated-api-endpoints.mjs
-
-# Full list with line numbers (JSON)
-node scripts/list-unmigrated-api-endpoints.mjs --json
-```
-
-The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps/meteor/app/api/`.
-
 ## Reference Files
 
 | Pattern                          | File                                             |
@@ -624,4 +635,3 @@ The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps
 | Error response validators        | `packages/rest-typings/src/v1/Ajv.ts`            |
 | Request validators (examples)    | `packages/rest-typings/src/v1/moderation/`       |
 | Router implementation            | `packages/http-router/src/Router.ts`             |
-| Unmigrated endpoints script      | `scripts/list-unmigrated-api-endpoints.mjs`      |

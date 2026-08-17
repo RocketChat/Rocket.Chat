@@ -10,5 +10,5 @@ test.each([
 		[paragraph([strike([italic([bold([inlineCode(plain('Striking Inline Code with Bold'))])])])])],
 	],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

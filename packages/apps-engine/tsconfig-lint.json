@@ -3,5 +3,5 @@
     "compilerOptions": {
         "allowJs": true
     },
-    "include": ["./scripts/*", "./src/**/*", "./tests/**/*", "./gulpfile.js"]
+    "include": ["./scripts/*", "./src/**/*", "./tests/**/*"]
 }

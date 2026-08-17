@@ -1,17 +1,16 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import moment from 'moment';
-import type { ReactElement } from 'react';
+import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useChannelsList } from './useChannelsList';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import Growth from '../../../../components/dataView/Growth';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import { useChannelsList } from './useChannelsList';
 
-const ChannelsOverview = (): ReactElement => {
+const ChannelsOverview = () => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const { t } = useTranslation();
@@ -86,8 +85,8 @@ const ChannelsOverview = (): ReactElement => {
 										</Margins>
 										{name}
 									</TableCell>
-									<TableCell>{moment(createdAt).format('L')}</TableCell>
-									<TableCell>{moment(updatedAt).format('L')}</TableCell>
+									<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
+									<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
 									<TableCell>
 										{messagesCount} <Growth>{messagesVariation}</Growth>
 									</TableCell>
@@ -121,7 +120,7 @@ const ChannelsOverview = (): ReactElement => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

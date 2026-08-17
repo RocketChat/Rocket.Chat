@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
@@ -13,7 +13,7 @@ const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) =
 
 	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/:slaId`, { slaId: _id });
 
-	const handleDelete = useEffectEvent((e: MouseEvent) => {
+	const handleDelete = useStableCallback((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteAgent = async (): Promise<void> => {
 			try {

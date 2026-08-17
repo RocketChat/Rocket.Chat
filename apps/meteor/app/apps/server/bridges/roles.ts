@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator, IAppsRole } from '@rocket.chat/apps';
-import { RoleBridge } from '@rocket.chat/apps-engine/server/bridges';
+import { RoleBridge } from '@rocket.chat/apps/dist/server/bridges/RoleBridge';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 

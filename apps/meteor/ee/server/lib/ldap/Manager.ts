@@ -5,23 +5,23 @@ import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.
 import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
+import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type {
 	ImporterAfterImportCallback,
 	ImporterBeforeImportCallback,
-} from '../../../../app/importer/server/definitions/IConversionCallbacks';
-import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
-import { createRoom } from '../../../../app/lib/server/functions/createRoom';
-import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
-import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
-import { settings } from '../../../../app/settings/server';
-import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
+} from '../../../../server/lib/import/definitions/IConversionCallbacks';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
+import { createRoom } from '../../../../server/lib/rooms/createRoom';
+import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
+import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
+import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
+import { settings } from '../../../../server/settings';
 import { syncUserRoles } from '../syncUserRoles';
-import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -109,7 +109,8 @@ export class LDAPEEManager extends LDAPManager {
 			!settings.get('LDAP_Enable') ||
 			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
 			!License.hasModule('abac') ||
-			!settings.get('ABAC_Enabled')
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
 		) {
 			return;
 		}
@@ -129,7 +130,12 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static async syncUsersAbacAttributes(users: FindCursor<IUser>): Promise<void> {
-		if (!settings.get('LDAP_Enable') || !License.hasModule('abac') || !settings.get('ABAC_Enabled')) {
+		if (
+			!settings.get('LDAP_Enable') ||
+			!License.hasModule('abac') ||
+			!settings.get('ABAC_Enabled') ||
+			settings.get('ABAC_PDP_Type') === 'virtru'
+		) {
 			return;
 		}
 
@@ -194,6 +200,43 @@ export class LDAPEEManager extends LDAPManager {
 			throw new Error(
 				'Please verify your mapping for LDAP X RocketChat ABAC Attributes. The structure is invalid, the structure should be an object like: {key: LdapAttribute, value: RocketChatAbacAttribute}',
 			);
+		}
+	}
+
+	public static async syncAvatarAndAbacAttributes(): Promise<void> {
+		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
+		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
+		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+
+		if (!syncAvatars && !syncAbac) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				const users = Users.findLDAPUsers();
+				for await (const user of users) {
+					const ldapUser = await this.findLDAPUser(ldap, user);
+					if (!ldapUser) {
+						continue;
+					}
+
+					if (syncAvatars) {
+						await LDAPManager.syncUserAvatar(user, ldapUser);
+					}
+
+					if (syncAbac && abacMapping) {
+						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
+					}
+				}
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -299,7 +342,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = (await Roles.find(
+		const roles = await Roles.find(
 			{},
 			{
 				projection: {
@@ -307,7 +350,7 @@ export class LDAPEEManager extends LDAPManager {
 					name: 1,
 				},
 			},
-		).toArray()) as Array<IRole>;
+		).toArray();
 
 		if (!roles) {
 			return;
@@ -428,7 +471,8 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
 				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
 				if (!room) {
-					return;
+					logger.debug({ msg: 'Unable to resolve mapped channel for sync', userChannelName, username });
+					continue;
 				}
 
 				if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
@@ -458,7 +502,8 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
 				const room = await Rooms.findOneByNonValidatedName(name);
 				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
-					return;
+					logger.debug({ msg: 'Skipping channel on removal sync', roomName, username });
+					continue;
 				}
 
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
@@ -592,12 +637,6 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
-		// Account locked by "Draft-behera-ldap-password-policy"
-		if (ldapUser.pwdAccountLockedTime) {
-			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
-			return true;
-		}
-
 		// EDirectory: Account manually disabled by an admin
 		if (ldapUser.loginDisabled) {
 			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');
@@ -608,26 +647,6 @@ export class LDAPEEManager extends LDAPManager {
 		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
 			mapLogger.debug('User must not be allowed to authenticate (attribute orclIsEnabled)');
 			return true;
-		}
-
-		// Active Directory - Account locked automatically by security policies
-		if (ldapUser.lockoutTime && ldapUser.lockoutTime !== '0') {
-			const lockoutTimeValue = Number(ldapUser.lockoutTime);
-			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
-				// Automatic unlock is disabled
-				if (!ldapUser.lockoutDuration) {
-					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
-					return true;
-				}
-
-				const lockoutTime = new Date(lockoutTimeValue);
-				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
-				// Account has not unlocked itself yet
-				if (lockoutTime.valueOf() > Date.now()) {
-					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
-					return true;
-				}
-			}
 		}
 
 		// Active Directory - Account disabled by an Admin
@@ -683,26 +702,28 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-					const data = ldap.extractLdapEntryData(entry);
-					count++;
+			ldap
+				.searchAllUsers<IImportUser>({
+					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
+						const data = ldap.extractLdapEntryData(entry);
+						count++;
 
-					const userData = this.mapUserData(data);
-					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-					return userData;
-				},
-				endCallback: (err: any): void => {
-					if (err) {
-						logger.error({ err });
-						reject(err);
-						return;
-					}
+						const userData = this.mapUserData(data);
+						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
+						return userData;
+					},
+					endCallback: (err: any): void => {
+						if (err) {
+							logger.error({ err });
+							reject(err);
+							return;
+						}
 
-					logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
-					resolve();
-				},
-			});
+						logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
+						resolve();
+					},
+				})
+				.catch(reject);
 		});
 	}
 

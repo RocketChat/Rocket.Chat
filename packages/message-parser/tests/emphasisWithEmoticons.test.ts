@@ -54,5 +54,5 @@ test.each([
 	],
 	['-_-italic content-_-', [paragraph([plain('-'), italic([plain('-italic content-')]), plain('-')])]],
 ])('parses emphasisWithEmoticons %p', (input, output) => {
-	expect(parse(input, { emoticons: true })).toMatchObject(output);
+	expect(parse(input, { emoticons: true })).toEqual(output);
 });

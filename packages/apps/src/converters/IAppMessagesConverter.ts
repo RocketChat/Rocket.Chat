@@ -5,8 +5,8 @@ import type { IAppsMessage, IAppsMesssageRaw } from '../AppsEngine';
 export interface IAppMessagesConverter {
 	convertById(messageId: IMessage['_id']): Promise<IAppsMessage | undefined>;
 	convertMessage(message: undefined | null): Promise<undefined>;
-	convertMessage(message: IMessage): Promise<IAppsMessage>;
-	convertMessage(message: IMessage | undefined | null): Promise<IAppsMessage | undefined>;
+	convertMessage(message: IMessage, cacheKey?: object): Promise<IAppsMessage>;
+	convertMessage(message: IMessage | undefined | null, cacheKey?: object): Promise<IAppsMessage | undefined>;
 	convertAppMessage(message: undefined | null): Promise<undefined>;
 	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
 	convertAppMessage(message: IAppsMessage, isPartial: boolean): Promise<Partial<IMessage>>;

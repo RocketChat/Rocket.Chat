@@ -9,7 +9,7 @@ export const useReconnectCountdown = (
 	retryTime: number | undefined,
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline',
 ): number => {
-	const reconnectionTimerRef = useRef<ReturnType<typeof setInterval>>();
+	const reconnectionTimerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 	const [reconnectCountdown, setReconnectCountdown] = useState(() => (retryTime ? getReconnectCountdown(retryTime) : 0));
 
 	useEffect(() => {

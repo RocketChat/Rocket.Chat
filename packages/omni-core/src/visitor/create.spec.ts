@@ -69,7 +69,9 @@ describe('registerGuest', () => {
 		it('should throw error when token is not provided', async () => {
 			const guestData = {};
 
-			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-token');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false })).rejects.toThrow(
+				'error-invalid-token',
+			);
 		});
 
 		it('should throw error when token is empty string', async () => {
@@ -77,7 +79,9 @@ describe('registerGuest', () => {
 				token: '',
 			};
 
-			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-token');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false })).rejects.toThrow(
+				'error-invalid-token',
+			);
 		});
 	});
 
@@ -106,11 +110,13 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(mockValidateEmail).toHaveBeenCalledWith('test@example.com');
 			expect(findContactByEmailAndContactManagerSpy).toHaveBeenCalledWith('test@example.com');
-			expect(findOneOnlineAgentByIdSpy).toHaveBeenCalledWith(agentId, false, { projection: { _id: 1, username: 1, name: 1, emails: 1 } });
+			expect(findOneOnlineAgentByIdSpy).toHaveBeenCalledWith(agentId, false, false, {
+				projection: { _id: 1, username: 1, name: 1, emails: 1 },
+			});
 
 			// Verify the data passed to updateOneByIdOrToken
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -147,7 +153,7 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			// Verify contact manager is not included in the data
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -175,7 +181,7 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(mockValidateEmail).toHaveBeenCalledWith('test@example.com');
 			expect(findContactByEmailAndContactManagerSpy).toHaveBeenCalledWith('test@example.com');
@@ -207,7 +213,7 @@ describe('registerGuest', () => {
 				department,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(findOneByIdOrNameSpy).toHaveBeenCalledWith(department, { projection: { _id: 1 } });
 
@@ -236,7 +242,9 @@ describe('registerGuest', () => {
 				department,
 			};
 
-			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-department');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false })).rejects.toThrow(
+				'error-invalid-department',
+			);
 
 			// Verify updateOneByIdOrToken is not called when department validation fails
 			expect(updateOneByIdOrTokenSpy).not.toHaveBeenCalled();
@@ -257,7 +265,7 @@ describe('registerGuest', () => {
 				department,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			// Department validation should be skipped
 			expect(findOneByIdOrNameSpy).not.toHaveBeenCalled();
@@ -289,7 +297,7 @@ describe('registerGuest', () => {
 				name: 'Updated Name',
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(getVisitorByTokenSpy).toHaveBeenCalledWith(token, { projection: { _id: 1 } });
 
@@ -322,7 +330,7 @@ describe('registerGuest', () => {
 				phone: { number: phoneNumber },
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(findOneVisitorByPhoneSpy).toHaveBeenCalledWith(phoneNumber);
 
@@ -355,7 +363,7 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(findOneGuestByEmailAddressSpy).toHaveBeenCalledWith(email);
 
@@ -387,7 +395,7 @@ describe('registerGuest', () => {
 				username,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			// Verify new visitor data is created with provided values
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -415,7 +423,7 @@ describe('registerGuest', () => {
 				token,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(getNextVisitorUsernameSpy).toHaveBeenCalled();
 
@@ -445,7 +453,7 @@ describe('registerGuest', () => {
 				username: providedUsername,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(getNextVisitorUsernameSpy).not.toHaveBeenCalled();
 
@@ -476,7 +484,7 @@ describe('registerGuest', () => {
 				phone: { number: phoneNumber },
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -504,7 +512,7 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -529,7 +537,7 @@ describe('registerGuest', () => {
 				token,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -555,7 +563,7 @@ describe('registerGuest', () => {
 				status,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -590,7 +598,7 @@ describe('registerGuest', () => {
 				connectionData,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -624,7 +632,7 @@ describe('registerGuest', () => {
 				connectionData,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -654,7 +662,7 @@ describe('registerGuest', () => {
 				connectionData,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -684,7 +692,7 @@ describe('registerGuest', () => {
 				token,
 			};
 
-			const result = await registerGuest(guestData, { shouldConsiderIdleAgent: false });
+			const result = await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
 			expect(result).toBeNull();
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -710,12 +718,14 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('Invalid email');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false })).rejects.toThrow(
+				'Invalid email',
+			);
 		});
 	});
 
 	describe('shouldConsiderIdleAgent parameter', () => {
-		it('should pass shouldConsiderIdleAgent to findOneOnlineAgentById', async () => {
+		it('should pass shouldConsiderIdleAgent and shouldConsiderOfflineAgent to findOneOnlineAgentById', async () => {
 			const token = 'test-token';
 			const email = 'test@example.com';
 			const agentId = 'agent-123';
@@ -743,11 +753,12 @@ describe('registerGuest', () => {
 				email,
 			};
 
-			await registerGuest(guestData, { shouldConsiderIdleAgent: true });
+			await registerGuest(guestData, { shouldConsiderIdleAgent: true, shouldConsiderOfflineAgent: true });
 
 			expect(findOneOnlineAgentByIdSpy).toHaveBeenCalledWith(
 				agentId,
 				true, // shouldConsiderIdleAgent should be true
+				true, // shouldConsiderOfflineAgent should be true
 				{ projection: { _id: 1, username: 1, name: 1, emails: 1 } },
 			);
 

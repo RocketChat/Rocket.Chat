@@ -6,7 +6,7 @@ import ImageBox from './image/ImageBox';
 import Load from './image/Load';
 import Retry from './image/Retry';
 
-type AttachmentImageProps = {
+export type AttachmentImageProps = {
 	previewUrl?: string;
 	dataSrc?: string;
 	src: string;
@@ -15,6 +15,7 @@ type AttachmentImageProps = {
 	id: string | undefined;
 	width: number;
 	height: number;
+	alt?: string;
 } & ({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
 const getDimensions = (
@@ -36,7 +37,7 @@ const getDimensions = (
 	return { width, height, ratio: (height / width) * 100 };
 };
 
-const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }: AttachmentImageProps) => {
+const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, alt = '', ...size }: AttachmentImageProps) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
@@ -64,7 +65,7 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 
 	return (
 		<Box width={dimensions.width} maxWidth='full' position='relative'>
-			<Box pbs={`${dimensions.ratio}%`} position='relative'>
+			<Box paddingBlockStart={`${dimensions.ratio}%`} position='relative'>
 				<ImageBox
 					is='picture'
 					position='absolute'
@@ -82,7 +83,7 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 						className='gallery-item'
 						data-src={dataSrc || src}
 						src={src}
-						alt=''
+						alt={alt}
 						width={dimensions.width}
 						height={dimensions.height}
 						loading='lazy'

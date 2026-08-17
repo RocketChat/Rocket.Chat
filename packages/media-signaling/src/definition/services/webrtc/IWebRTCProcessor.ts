@@ -13,6 +13,7 @@ export type WebRTCInternalStateMap = {
 	iceGathering: RTCIceGatheringState;
 	iceUntrickler: 'waiting' | 'not-waiting' | 'timeout';
 	remoteMute: boolean;
+	remoteHeld: boolean;
 };
 
 export type WebRTCUniqueEvents = {

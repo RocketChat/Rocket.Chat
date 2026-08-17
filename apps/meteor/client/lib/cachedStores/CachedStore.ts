@@ -2,9 +2,7 @@ import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
@@ -13,6 +11,8 @@ import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { getDdpSdk } from '../sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem } from '../sdk/storage';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
@@ -50,7 +50,11 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	protected eventType: StreamNames;
 
-	private readonly version = 18;
+	// Bumped from 18 → 19 to invalidate caches populated before the DDPSDK
+	// wire encoding was switched from JSON to EJSON. Entries written by the
+	// JSON window stored dates as ISO strings instead of Date instances, so
+	// fields like subscription.ls would fail `.getTime()` when read back.
+	private readonly version = 19;
 
 	private updatedAt = new Date(0);
 
@@ -310,16 +314,16 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			await this.loadFromServerAndPopulate();
 		}
 
-		this.reconnectionComputation?.stop();
-		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
-		this.reconnectionComputation = Tracker.autorun(() => {
-			const { status } = Meteor.status();
-
-			if (status === 'offline') {
+		this.reconnectionUnsubscribe?.();
+		const sdk = getDdpSdk();
+		let wentOffline = sdk.connection.status !== 'connected';
+		this.reconnectionUnsubscribe = sdk.connection.on('connection', () => {
+			if (sdk.connection.status !== 'connected') {
 				wentOffline = true;
+				return;
 			}
-
-			if (status === 'connected' && wentOffline) {
+			if (wentOffline) {
+				wentOffline = false;
 				this.trySync();
 			}
 		});
@@ -357,7 +361,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		this.setReady(false);
 	}
 
-	private reconnectionComputation: Tracker.Computation | undefined;
+	private reconnectionUnsubscribe: (() => void) | undefined;
 
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);
@@ -376,7 +380,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return Accounts._storedLoginToken();
+		return getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 	}
 
 	override clearCacheOnLogout() {
@@ -392,7 +396,7 @@ export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends Cach
 			void this.init();
 		});
 
-		Accounts.onLogout(() => {
+		getDdpSdk().account.onLogout(() => {
 			this.release();
 		});
 	}

@@ -8,9 +8,8 @@ import {
 	GenericTableHeaderCell,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, RefObject } from 'react';
 import { useMemo, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -20,14 +19,14 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 
-const AccountTokensTable = (): ReactElement => {
+const AccountTokensTable = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const userId = useUserId();
 
-	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
-	const removeToken = useMethod('personalAccessTokens:removeToken');
+	const regenerateToken = useEndpoint('POST', '/v1/users.regeneratePersonalAccessToken');
+	const removeToken = useEndpoint('POST', '/v1/users.removePersonalAccessToken');
 
 	const getPersonalAccessTokens = useEndpoint('GET', '/v1/users.getPersonalAccessTokens');
 	const { isPending, isSuccess, data, isError, error } = useQuery({
@@ -37,7 +36,7 @@ const AccountTokensTable = (): ReactElement => {
 
 	const queryClient = useQueryClient();
 
-	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200) as [RefObject<HTMLElement>, boolean];
+	const [ref, isMedium] = useResizeInlineBreakpoint<HTMLElement>([600], 200);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
@@ -69,7 +68,7 @@ const AccountTokensTable = (): ReactElement => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
-					const token = await regenerateToken({ tokenName: name });
+					const { token } = await regenerateToken({ tokenName: name });
 
 					setModal(
 						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={closeModal}>

@@ -1,8 +1,7 @@
 import { Banner, Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LoggedOutBanner = (): ReactElement => {
+const LoggedOutBanner = () => {
 	const { t } = useTranslation();
 
 	return (

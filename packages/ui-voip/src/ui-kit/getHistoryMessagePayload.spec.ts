@@ -177,9 +177,9 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "not-answered" state', () => {
-		const result = getHistoryMessagePayload('not-answered', undefined, 'callid');
+		const result = getHistoryMessagePayload('not-answered', undefined, 'callid', 'call was not answered');
 		expect(result).toEqual({
-			msg: '',
+			msg: 'call was not answered',
 			groupable: false,
 			blocks: [
 				{

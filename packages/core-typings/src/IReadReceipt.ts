@@ -1,18 +1,14 @@
 import type { IMessage } from './IMessage/IMessage';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
-export interface IReadReceipt {
+export interface IReadReceipt extends IRocketChatRecord {
 	token?: string;
 	messageId: IMessage['_id'];
 	roomId: IRoom['_id'];
-	ts: Date;
-	t?: IMessage['t'];
-	pinned?: IMessage['pinned'];
-	drid?: IMessage['drid'];
-	tmid?: IMessage['tmid'];
 	userId: IUser['_id'];
-	_id: string;
+	ts: Date;
 }
 
 export interface IReadReceiptWithUser extends IReadReceipt {

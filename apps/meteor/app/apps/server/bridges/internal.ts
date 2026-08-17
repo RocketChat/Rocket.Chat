@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator, IAppsSetting } from '@rocket.chat/apps';
-import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
+import { InternalBridge } from '@rocket.chat/apps/dist/server/bridges/InternalBridge';
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';

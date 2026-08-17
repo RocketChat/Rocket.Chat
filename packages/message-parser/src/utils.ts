@@ -17,6 +17,11 @@ import type {
 	InlineKaTeX,
 	Link,
 	Timestamp,
+	SourceRange,
+	HorizontalRule,
+	Table,
+	TableRow,
+	TableCell,
 } from './definitions';
 
 const generate =
@@ -67,43 +72,45 @@ export const strike = generate('STRIKE');
 
 export const codeLine = generate('CODE_LINE');
 
-const isValidLink = (link: string) => {
-	try {
-		return Boolean(new URL(link));
-	} catch (error) {
-		return false;
-	}
-};
+const isValidLink = (link: string) => URL.canParse(link);
+
+const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z][A-Za-z0-9+.-]{0,31}:\/\//.test(src);
 
 export const link = (src: string, label?: Markup[]): Link => ({
 	type: 'LINK',
 	value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+let cachedAutoLinkDomains: string[] | undefined | null = null;
+let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
+
 export const autoLink = (src: string, customDomains?: string[]) => {
-	const validHosts = ['localhost', ...(customDomains ?? [])];
-	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: true,
-		allowPrivateDomains: true,
-		validHosts,
-	});
+	if (cachedAutoLinkDomains !== customDomains) {
+		cachedAutoLinkDomains = customDomains;
+		cachedAutoLinkOptions = {
+			detectIp: true,
+			allowPrivateDomains: true,
+			validHosts: ['localhost', ...(customDomains ?? [])],
+		};
+	}
+	const { validHosts } = cachedAutoLinkOptions;
+	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {
 		return plain(src);
 	}
 
-	const href = isValidLink(src) || src.startsWith('//') ? src : `//${src}`;
+	const href = isValidLink(src) || src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
 
 	return link(href, [plain(src)]);
 };
 
+const autoEmailTldOptions = { detectIp: false, allowPrivateDomains: true } as const;
+
 export const autoEmail = (src: string) => {
 	const href = `mailto:${src}`;
 
-	const { isIcann, isIp, isPrivate } = tldParse(href, {
-		detectIp: false,
-		allowPrivateDomains: true,
-	});
+	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
 
 	if (!(isIcann || isIp || isPrivate)) {
 		return plain(src);
@@ -133,6 +140,55 @@ export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+});
+
+// GFM trims leading/trailing whitespace of each table cell's content
+const trimCellContent = (value: Inlines[]): Inlines[] => {
+	const result = value.slice();
+
+	const first = result[0];
+	if (first?.type === 'PLAIN_TEXT') {
+		const trimmed = first.value.replace(/^\s+/, '');
+		if (trimmed === '') {
+			result.shift();
+		} else {
+			result[0] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	const last = result[result.length - 1];
+	if (last?.type === 'PLAIN_TEXT') {
+		const trimmed = last.value.replace(/\s+$/, '');
+		if (trimmed === '') {
+			result.pop();
+		} else {
+			result[result.length - 1] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	return result;
+};
+
+const tableCell = (value: Inlines[], align: TableCell['align']): TableCell => ({
+	type: 'TABLE_CELL',
+	align,
+	value: trimCellContent(value),
+});
+
+export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][], fallback?: SourceRange): Table => ({
+	type: 'TABLE',
+	value: {
+		header: header.map((cell, index) => tableCell(cell, aligns[index])),
+		rows: rows.map(
+			(cells): TableRow => ({
+				type: 'TABLE_ROW',
+				// Normalize each row to the header's column count: pad missing cells and
+				// drop extras, so ragged GFM rows stay aligned with the header/delimiter.
+				value: header.map((_, index) => tableCell(cells[index] ?? [], aligns[index])),
+			}),
+		),
+	},
+	...(fallback !== undefined && { fallback }),
 });
 
 export const mentionUser = (() => {
@@ -183,8 +239,34 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 };
 
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
-	const result: Paragraph['value'] = [];
 	const flattenableValues = values as Array<Inlines | Inlines[]>;
+
+	// Fast path: no nested arrays and no emojis (the common case)
+	let needsSlowPath = false;
+	for (let i = 0; i < flattenableValues.length; i++) {
+		const v = flattenableValues[i];
+		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+			needsSlowPath = true;
+			break;
+		}
+	}
+
+	if (!needsSlowPath) {
+		const result: Paragraph['value'] = [];
+		for (let i = 0; i < flattenableValues.length; i++) {
+			const current = flattenableValues[i] as Inlines;
+			const previous = result[result.length - 1];
+			if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+				previous.value += current.value;
+			} else {
+				result.push(current);
+			}
+		}
+		return result;
+	}
+
+	// Slow path: handles nested arrays and emoji joining
+	const result: Paragraph['value'] = [];
 
 	let previousInline = undefined as Inlines | undefined;
 	let pendingInline = undefined as Inlines | undefined;
@@ -241,6 +323,12 @@ export const lineBreak = (): LineBreak => ({
 	value: undefined,
 });
 
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
+	type: 'HORIZONTAL_RULE',
+	value: undefined,
+	...(fallback !== undefined && { fallback }),
+});
+
 export const katex = (content: string): KaTeX => ({
 	type: 'KATEX',
 	value: content,
@@ -259,14 +347,14 @@ export const phoneChecker = (text: string, number: string) => {
 	return link(`tel:${number}`, [plain(text)]);
 };
 
-export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): Timestamp => {
+export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R', fallback?: SourceRange): Timestamp => {
 	return {
 		type: 'TIMESTAMP',
 		value: {
 			timestamp: value,
 			format: type || 't',
 		},
-		fallback: plain(`<t:${value}:${type || 't'}>`),
+		...(fallback !== undefined && { fallback }),
 	};
 };
 
@@ -290,13 +378,13 @@ export const timestampFromIsoTime = ({
 	milliseconds,
 	timezone,
 }: {
-	year: string[];
-	month: string[];
-	day: string[];
-	hours: string[];
-	minutes: string[];
-	seconds: string[];
-	milliseconds?: string[];
+	year: string;
+	month: string;
+	day: string;
+	hours: string;
+	minutes: string;
+	seconds: string;
+	milliseconds?: string;
 	timezone?: string;
 }) => {
 	const date =
@@ -304,12 +392,4 @@ export const timestampFromIsoTime = ({
 			1000) |
 		0;
 	return date.toString();
-};
-
-export const extractFirstResult = (value: Types[keyof Types]['value']): Types[keyof Types]['value'] => {
-	if (typeof value !== 'object' || !Array.isArray(value)) {
-		return value;
-	}
-
-	return value.find(Boolean) as Types[keyof Types]['value'];
 };

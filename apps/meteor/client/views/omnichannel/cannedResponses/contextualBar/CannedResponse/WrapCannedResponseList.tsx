@@ -1,5 +1,5 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
-import { useDebouncedValue, useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useLocalStorage, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { memo, useCallback, useState } from 'react';
@@ -34,7 +34,7 @@ export const WrapCannedResponseList = () => {
 	// TODO: handle pending and error states
 	const { data, fetchNextPage, refetch } = useCannedResponseList({ filter: debouncedText, type });
 
-	const onClickItem = useEffectEvent(
+	const onClickItem = useStableCallback(
 		(
 			data: IOmnichannelCannedResponse & {
 				departmentName: ILivechatDepartment['name'];

@@ -64,5 +64,5 @@ test.each([
 	['*bold with a kissing emoji :* *', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])]],
 	['*bold with a kissing emoji :* ', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

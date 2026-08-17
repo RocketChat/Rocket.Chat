@@ -1,7 +1,7 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { Header } from './components/Header';
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type ChatTranscriptPDFProps = Omit<ChatTranscriptData, 'i18n'>;
+export type ChatTranscriptPDFProps = Omit<ChatTranscriptData, 'i18n'>;
 
 export const ChatTranscriptPDF = ({ header, messages }: ChatTranscriptPDFProps) => {
 	const { t } = useTranslation();

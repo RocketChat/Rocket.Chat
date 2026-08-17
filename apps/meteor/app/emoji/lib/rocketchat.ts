@@ -7,8 +7,8 @@ export type EmojiPackage = {
 	toneList: Record<string, unknown>;
 	render: (message: string) => string;
 	renderPicker: (emojiToRender: string) => string | undefined;
-	ascii?: boolean;
 	sprites?: unknown;
+	ascii?: boolean;
 	list?: string[];
 	_regexpSignature?: string | null;
 	_regexp?: RegExp | null;
@@ -21,6 +21,7 @@ export type EmojiPackages = {
 	list: {
 		[key: keyof NonNullable<EmojiPackages['packages']>]:
 			| {
+					name?: string;
 					category: string;
 					emojiPackage: string;
 					shortnames: string[];
@@ -32,8 +33,10 @@ export type EmojiPackages = {
 					aliasOf?: undefined;
 					extension?: string;
 					etag?: string;
+					unicode?: string;
 			  }
 			| {
+					name?: undefined;
 					emojiPackage: string;
 					aliasOf: string;
 					extension?: undefined;

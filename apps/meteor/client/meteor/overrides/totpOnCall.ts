@@ -8,7 +8,7 @@ import { isTotpInvalidError } from '../../lib/2fa/utils';
 const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	const callWithTotp =
 		(methodName: string, args: unknown[], callback: LoginCallback) =>
-		(twoFactorCode: string, twoFactorMethod: string): unknown =>
+		(twoFactorCode: string, twoFactorMethod: string): void =>
 			call(
 				methodName,
 				...args,
@@ -52,7 +52,7 @@ const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>
 		} catch (error: unknown) {
 			return process2faAsyncReturn({
 				error,
-				onCode: (twoFactorCode, twoFactorMethod) => Meteor.callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
+				onCode: (twoFactorCode, twoFactorMethod) => callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
 				emailOrUsername: undefined,
 			});
 		}

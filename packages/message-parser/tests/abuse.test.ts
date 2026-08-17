@@ -254,5 +254,5 @@ test.each([
 		],
 	],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

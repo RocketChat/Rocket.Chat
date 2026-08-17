@@ -56,17 +56,16 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelUnits = new OmnichannelUnits(page);
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidebar.linkUnits.click();
+		await poOmnichannelUnits.goTo();
 	});
 
-	test('OC - Manage Units - Create Unit', async ({ page }) => {
+	test('OC - Manage Units - Create Unit', async () => {
 		const unitName = faker.string.uuid();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.createNew();
 			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeDisabled();
+			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeEnabled();
 			await expect(poOmnichannelUnits.manageUnit.btnCancel).toBeEnabled();
 			await poOmnichannelUnits.manageUnit.btnCancel.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
@@ -78,6 +77,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.manageUnit.selectVisibility('public');
 			await poOmnichannelUnits.manageUnit.selectDepartment(department.data.name);
 			await poOmnichannelUnits.manageUnit.selectMonitor('user2');
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user2')).toBeVisible();
 			await poOmnichannelUnits.manageUnit.btnSave.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
@@ -87,11 +87,11 @@ test.describe('OC - Manage Units', () => {
 
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.deleteUnit(unitName);
-			await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
+			await expect(poOmnichannelUnits.table.findRowByName(unitName)).toHaveCount(0);
 		});
 	});
 
-	test('OC - Manage Units - Edit unit name', async ({ api, page }) => {
+	test('OC - Manage Units - Edit unit name', async ({ api }) => {
 		const unitName = faker.string.uuid();
 		const editedUnitName = faker.string.uuid();
 
@@ -106,8 +106,7 @@ test.describe('OC - Manage Units', () => {
 			return newUnit;
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidebar.linkUnits.click();
+		await poOmnichannelUnits.goTo();
 
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);

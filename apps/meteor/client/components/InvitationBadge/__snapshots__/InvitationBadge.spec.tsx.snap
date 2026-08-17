@@ -5,9 +5,9 @@ exports[`renders WithDateObject without crashing 1`] = `
   <div>
     <i
       aria-hidden="false"
-      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-oq4j9d"
       role="status"
-      title="Invited January 1, 2025"
+      title="Invited January 1st, 2025"
     >
       
     </i>
@@ -20,9 +20,9 @@ exports[`renders WithISOStringDate without crashing 1`] = `
   <div>
     <i
       aria-hidden="false"
-      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-oq4j9d"
       role="status"
-      title="Invited January 1, 2025"
+      title="Invited January 1st, 2025"
     >
       
     </i>

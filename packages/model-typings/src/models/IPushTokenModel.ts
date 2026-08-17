@@ -1,5 +1,5 @@
 import type { AtLeast, IPushToken, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindOptions, InsertOneResult, UpdateResult } from 'mongodb';
+import type { DeleteResult, FindOptions, InsertOneResult, UpdateResult, FindCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -9,6 +9,12 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	countApnTokens(): Promise<number>;
 	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null>;
 	findFirstByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): Promise<T | null>;
+	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T>;
+	findTokensByUserIdExceptId<T extends IPushToken>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: FindOptions<IPushToken>,
+	): FindCursor<T>;
 
 	insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>>;
 	refreshTokenById(
@@ -21,4 +27,5 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 
 	removeAllByUserId(userId: string): Promise<DeleteResult>;
 	removeAllByTokenStringAndUserId(token: string, userId: string): Promise<DeleteResult>;
+	removeOrUnsetByTokenString(token: string): Promise<void>;
 }

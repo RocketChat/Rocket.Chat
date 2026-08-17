@@ -1,17 +1,7 @@
-import type {
-	AtLeast,
-	IRole,
-	IRoom,
-	ISubscription,
-	IUser,
-	RocketChatRecordDeleted,
-	RoomType,
-	SpotlightUser,
-} from '@rocket.chat/core-typings';
+import type { AtLeast, IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { compact } from 'lodash';
-import mem from 'mem';
 import type {
 	Collection,
 	FindCursor,
@@ -56,9 +46,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { alert: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { ls: 1 } },
-			{ key: { desktopNotifications: 1 }, sparse: true },
-			{ key: { mobilePushNotifications: 1 }, sparse: true },
-			{ key: { emailNotifications: 1 }, sparse: true },
+			// TODO: remove these indexes in the next major release (8.0.0) - their only consumers (the per-room notification-preference finders) were removed
+			// { key: { desktopNotifications: 1 }, sparse: true },
+			// { key: { mobilePushNotifications: 1 }, sparse: true },
+			// { key: { emailNotifications: 1 }, sparse: true },
 			{ key: { autoTranslate: 1 }, sparse: true },
 			{ key: { autoTranslateLanguage: 1 }, sparse: true },
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
@@ -135,28 +126,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number> {
-		const query = {
-			rid,
-			'u._id': {
-				$ne: uid,
-			},
-		};
-
-		return this.countDocuments(query);
-	}
-
-	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
-		const query = {
-			'rid': roomId,
-			'servedBy._id': {
-				$ne: userId,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
 		const query = {
 			rid,
@@ -172,6 +141,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			rid,
 			'archived': { $ne: true },
 			'u._id': { $exists: true },
+		};
+		return this.countDocuments(query);
+	}
+
+	countUnarchivedByRoomIdAndNotUserId(rid: string, uid: string): Promise<number> {
+		const query = {
+			rid,
+			'archived': { $ne: true },
+			'u._id': {
+				$ne: uid,
+			},
 		};
 		return this.countDocuments(query);
 	}
@@ -314,14 +294,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return !!found;
 	}
 
-	async updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void> {
-		await this.updateMany({ rid: roomId }, { $set: { t: roomType } });
-	}
-
-	async updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void> {
-		await this.updateMany({ rid: roomId }, { $set: { name, fname } });
-	}
-
 	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		return this.find(
 			{
@@ -398,21 +370,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return deleteResult;
 	}
 
-	findByRoomIdExcludingUserIds(
-		roomId: ISubscription['rid'],
-		userIds: ISubscription['u']['_id'][],
-		options: FindOptions<ISubscription> = {},
-	): FindCursor<ISubscription> {
-		const query = {
-			'rid': roomId,
-			'u._id': {
-				$nin: userIds,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	async findConnectedUsersExcept(
 		userId: string,
 		searchTerm: string,
@@ -457,7 +414,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 							let: {
 								rid: '$_id',
 							},
-							pipeline: [{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } }],
+							// Only `u._id` is read downstream (next $group); projecting it away keeps the
+							// $unwind/$group volume tiny instead of carrying full subscription documents.
+							pipeline: [
+								{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } },
+								{ $project: { '_id': 0, 'u._id': 1 } },
+							],
 						},
 					},
 					// Unwind the subscription so we have a separate document for each
@@ -494,6 +456,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
 									},
 								},
+								// Only these fields are read by the final $group; avoid hauling full user documents.
+								{ $project: { name: 1, username: 1, nickname: 1, status: 1, statusText: 1, avatarETag: 1 } },
 							],
 						},
 					},
@@ -592,19 +556,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
-		const query = { rid: roomId };
-
-		const update = {
-			$set: {
-				name,
-				fname,
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
 		const query = { 'v._id': { $in: visitorIds } };
 
@@ -667,32 +618,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne({ rid }, { $unset: { onHold: 1 } });
 	}
 
-	findByRoomIds(roomIds: ISubscription['u']['_id'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		const query = {
-			rid: {
-				$in: roomIds,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	removeByVisitorToken(token: string): Promise<DeleteResult> {
-		const query = {
-			'v.token': token,
-		};
-
-		return this.deleteMany(query);
-	}
-
-	findByToken(token: string, options?: FindOptions): FindCursor<ISubscription> {
-		const query = {
-			'v.token': token,
-		};
-
-		return this.find<ISubscription>(query, options);
-	}
-
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -707,8 +632,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			};
 		} else {
 			update = {
-				$unset: {
-					autoTranslate: 1,
+				$set: {
+					autoTranslate: false,
 				},
 			};
 		}
@@ -716,19 +641,30 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
-		const query = {
-			'u._id': userId,
-			'autoTranslate': true,
-		};
+	updateDraftByRoomIdAndUserId(rid: string, uid: string, draft: string | undefined, tmid?: string): Promise<null | WithId<ISubscription>> {
+		const query = { rid, 'u._id': uid };
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				autoTranslateLanguage: language,
-			},
-		};
+		const field = tmid ? `threadDrafts.${tmid}` : 'draft';
+		const update = draft ? { $set: { [field]: draft } } : { $unset: { [field]: 1 as const } };
 
-		return this.updateMany(query, update);
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document> {
+		if (language) {
+			return Promise.all([
+				this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $set: { autoTranslateLanguage: language } }),
+				this.updateMany(
+					{ 'u._id': userId, 'autoTranslate': { $exists: false } },
+					{ $set: { autoTranslate: true, autoTranslateLanguage: language } },
+				),
+			]).then(([updateResult, enableResult]) => ({
+				...updateResult,
+				modifiedCount: updateResult.modifiedCount + enableResult.modifiedCount,
+			}));
+		}
+
+		return this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(
@@ -773,19 +709,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'autoTranslate': true,
 		};
 		return this.col.distinct('autoTranslateLanguage', query);
-	}
-
-	/**
-	 * @param {string} userId
-	 * @param {string} scope the value for the role scope (room id)
-	 */
-	roleBaseQuery(userId: string, scope?: string): Filter<ISubscription> | void {
-		if (scope == null) {
-			return;
-		}
-
-		const query = { 'u._id': userId, ...(scope !== undefined && { rid: scope }) };
-		return query;
 	}
 
 	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription> {
@@ -998,53 +921,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription> {
-		const query: Filter<ISubscription> = {
-			rid: roomId,
-			desktopNotifications: 'all',
-		};
-
-		return this.find(query);
-	}
-
-	findDontNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription> {
-		const query: Filter<ISubscription> = {
-			rid: roomId,
-			desktopNotifications: 'nothing',
-		};
-
-		return this.find(query);
-	}
-
-	findAlwaysNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription> {
-		const query: Filter<ISubscription> = {
-			rid: roomId,
-			mobilePushNotifications: 'all',
-		};
-
-		return this.find(query);
-	}
-
-	findDontNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription> {
-		const query: Filter<ISubscription> = {
-			rid: roomId,
-			mobilePushNotifications: 'nothing',
-		};
-
-		return this.find(query);
-	}
-
-	findWithSendEmailByRoomId(roomId: string): FindCursor<ISubscription> {
-		const query = {
-			rid: roomId,
-			emailNotifications: {
-				$exists: true,
-			},
-		};
-
-		return this.find(query, { projection: { emailNotifications: 1, u: 1 } });
-	}
-
 	resetUserE2EKey(userId: string): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{ 'u._id': userId },
@@ -1078,23 +954,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOne(query, options);
 	}
 
-	findOneByRoomNameAndUserId(roomName: string, userId: string): Promise<ISubscription | null> {
-		const query = {
-			'name': roomName,
-			'u._id': userId,
-		};
-
-		return this.findOne(query);
-	}
-
 	// FIND
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		const query: Filter<ISubscription> = { 'u._id': userId, 'status': { $ne: 'BANNED' as const } };
 
 		return this.find(query, options);
 	}
-
-	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
 
 	findByUserIdExceptType(
 		userId: string,
@@ -1127,17 +992,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			'u._id': userId,
 			'roles': { $in: roles },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdUpdatedAfter(userId: string, updatedAt: Date, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		const query = {
-			'u._id': userId,
-			'_updatedAt': {
-				$gt: updatedAt,
-			},
 		};
 
 		return this.find(query, options);
@@ -1243,13 +1097,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndUserIdsOrAllMessages(roomId: string, userIds: string[]): FindCursor<ISubscription> {
-		return this.find({
-			rid: roomId,
-			$or: [{ 'u._id': { $in: userIds } }, { emailNotifications: 'all' }],
-		});
-	}
-
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		const query = { rid, 'u._id': { $exists: true } };
 
@@ -1268,21 +1115,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	findUnreadByUserId(userId: string): FindCursor<ISubscription> {
-		const query = {
-			'u._id': userId,
-			'unread': {
-				$gt: 0,
-			},
-		};
-
-		return this.find(query, { projection: { unread: 1 } });
-	}
-
 	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null> {
 		return this.findOne(
 			{
 				rid,
+				archived: { $ne: true },
 			},
 			{
 				sort: {
@@ -1310,18 +1147,25 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document> {
-		const query = { rid: roomId };
+	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		return this.find({ rid: roomId, archived: true }, options);
+	}
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				alert: false,
-				open: true,
-				archived: false,
+	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		return this.find({ 'u._id': userId, 'archived': true }, options);
+	}
+
+	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{ _id: { $in: ids } },
+			{
+				$set: {
+					archived: false,
+					open: true,
+					alert: false,
+				},
 			},
-		};
-
-		return this.updateMany(query, update);
+		);
 	}
 
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
@@ -1477,21 +1321,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const update: UpdateFilter<ISubscription> = {
 			$set: {
 				'u.username': username,
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
-	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document> {
-		const query: Filter<ISubscription> = {
-			name: oldName,
-			t: 'd',
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				name,
 			},
 		};
 
@@ -1734,10 +1563,24 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
+	setArchivedForDMsWithUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
-			t: 'd',
 			name: username,
+			t: 'd',
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				archived,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
 		};
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1818,30 +1661,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				userHighlights,
 			},
 		};
-
-		return this.updateMany(query, update);
-	}
-
-	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document> {
-		const query: Filter<ISubscription> = {
-			t: 'd' as const,
-			name,
-		};
-
-		let update: UpdateFilter<ISubscription>;
-		if (fname) {
-			update = {
-				$set: {
-					fname,
-				},
-			};
-		} else {
-			update = {
-				$unset: {
-					fname: true,
-				},
-			};
-		}
 
 		return this.updateMany(query, update);
 	}
@@ -1946,22 +1765,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return doc;
 	}
 
+	removeInvitedByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED' as const,
+		};
+
+		return this.findOneAndDelete(query);
+	}
+
 	async removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
 		const result = await this.deleteMany({ rid: { $in: rids } }, options);
 
 		await Users.removeRoomByRoomIds(rids);
-
-		return result;
-	}
-
-	async removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number> {
-		const result = (await this.deleteMany({ 'rid': { $in: rids }, 'u._id': userId })).deletedCount;
-
-		if (typeof result === 'number' && result > 0) {
-			await Rooms.incUsersCountByIds(rids, -1);
-		}
-
-		await Users.removeRoomsByRoomIdsAndUserId(rids, userId);
 
 		return result;
 	}
@@ -2122,13 +1939,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		});
 	}
 
-	findBannedByRoomId(roomId: ISubscription['rid']) {
-		return this.find({
-			rid: roomId,
-			status: 'BANNED',
-		});
-	}
-
 	async banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ 'rid': roomId, 'u._id': userId },
@@ -2142,13 +1952,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
-	async unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult> {
 		return this.updateOne(
-			{ 'rid': roomId, 'u._id': userId, 'status': 'BANNED' },
-			{
-				$unset: { status: 1 },
-				$set: { open: true, alert: false },
-			},
+			{ _id: subId, status: 'BANNED' },
+			{ $set: { status: 'INVITED', open: true, unread: 1, userMentions: 1, groupMentions: 0, alert: true, inviter } },
 		);
 	}
 

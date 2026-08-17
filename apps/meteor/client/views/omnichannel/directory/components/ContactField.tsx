@@ -12,7 +12,7 @@ import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
 
-type ContactFieldProps = {
+export type ContactFieldProps = {
 	contact: IVisitor;
 	room: IOmnichannelGenericRoom;
 };
@@ -26,7 +26,6 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['/v1/livechat/visitors.info', contact._id],
-
 		queryFn: () => getVisitorInfo({ visitorId: contact._id }),
 	});
 
@@ -35,21 +34,23 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	}
 
 	if (isError || !data?.visitor) {
-		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	const {
-		visitor: { username, name },
+		visitor: { username, name, phone },
 	} = data;
 
 	const displayName = name || username;
+	const phoneNumber = phone?.[0]?.phoneNumber;
+	const contactIdentifier = [...new Set([username, phoneNumber])].filter(Boolean).join(' · ');
 
 	return (
 		<Field>
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentInfoDetails mis={10} name={displayName} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails marginInlineStart={10} name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

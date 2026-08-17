@@ -29,7 +29,7 @@ export const useReplyInDMAction = (
 		[message.u._id, user],
 	);
 
-	const shouldFindRoom = useMemo(() => !!user && canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
+	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
 	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
@@ -52,7 +52,7 @@ export const useReplyInDMAction = (
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}
-		if (!!user && user._id !== message.u._id && canCreateDM) {
+		if (!!user && user._id !== message.u._id && !canCreateDM) {
 			if (!dmRoom || !dmSubs) {
 				return false;
 			}
@@ -71,11 +71,12 @@ export const useReplyInDMAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
+			const { msg: _, ...searchParameters } = router.getSearchParameters();
 			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
 				{
-					...router.getSearchParameters(),
+					...searchParameters,
 					reply: message._id,
 				},
 			);

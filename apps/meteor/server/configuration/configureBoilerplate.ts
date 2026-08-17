@@ -1,9 +1,9 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 const webAppHashes: Record<string, string> = {};
 

@@ -1,7 +1,8 @@
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
-import importPlugin from 'eslint-plugin-import';
+import importXPlugin, { createNodeResolver } from 'eslint-plugin-import-x';
 import jestPlugin from 'eslint-plugin-jest';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
@@ -32,8 +33,8 @@ export default defineConfig(
 			},
 		},
 	},
-	importPlugin.flatConfigs.recommended,
-	importPlugin.flatConfigs.typescript,
+	importXPlugin.flatConfigs.recommended,
+	importXPlugin.flatConfigs.typescript,
 	jsxA11yPlugin.flatConfigs.recommended,
 	{
 		name: 'rocket.chat/jsx-a11y',
@@ -337,28 +338,29 @@ export default defineConfig(
 	{
 		name: 'rocket.chat/import',
 		settings: {
-			'import/resolver': {
-				node: true,
-				typescript: true,
-			},
+			// The node resolver must run first (the TypeScript resolver would otherwise resolve
+			// packages like node-fetch to their `@types/*` declarations), and `exportsFields: []`
+			// keeps the old eslint-import-resolver-node behavior of ignoring package `exports`
+			// maps (required for deep imports like `csv-parse/lib/sync` and `swiper/modules/*.css`).
+			'import-x/resolver-next': [createNodeResolver({ exportsFields: [] }), createTypeScriptImportResolver()],
 		},
 		rules: {
-			'import/no-unresolved': [
+			'import-x/no-unresolved': [
 				'error',
 				{
 					commonjs: true,
 					caseSensitive: true,
 				},
 			],
-			'import/named': 'off',
-			'import/default': 'off',
-			'import/namespace': 'off',
-			'import/export': 'error',
-			'import/no-named-as-default': 'off',
-			'import/no-named-as-default-member': 'off',
-			'import/first': 'error',
-			'import/no-duplicates': 'error',
-			'import/order': [
+			'import-x/named': 'off',
+			'import-x/default': 'off',
+			'import-x/namespace': 'off',
+			'import-x/export': 'error',
+			'import-x/no-named-as-default': 'off',
+			'import-x/no-named-as-default-member': 'off',
+			'import-x/first': 'error',
+			'import-x/no-duplicates': 'error',
+			'import-x/order': [
 				'error',
 				{
 					'newlines-between': 'always',
@@ -368,12 +370,12 @@ export default defineConfig(
 					},
 				},
 			],
-			'import/newline-after-import': 'error',
-			'import/no-absolute-path': 'error',
-			'import/no-dynamic-require': 'error',
-			'import/no-self-import': 'error',
-			'import/no-cycle': 'off',
-			'import/no-useless-path-segments': 'error',
+			'import-x/newline-after-import': 'error',
+			'import-x/no-absolute-path': 'error',
+			'import-x/no-dynamic-require': 'error',
+			'import-x/no-self-import': 'error',
+			'import-x/no-cycle': 'off',
+			'import-x/no-useless-path-segments': 'error',
 		},
 	},
 	{

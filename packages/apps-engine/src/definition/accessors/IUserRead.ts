@@ -9,6 +9,8 @@ export interface IUserRead {
 
 	getByUsername(username: string): Promise<IUser>;
 
+	getBySipExtension(extension: string): Promise<IUser | undefined>;
+
 	/**
 	 * Gets the app user of this app.
 	 */

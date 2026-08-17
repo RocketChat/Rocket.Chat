@@ -1,14 +1,15 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useMemo } from 'react';
 
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
 export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
-	acceptCall: () => void;
+	startCall: (id: string, kind: 'user' | 'sip', micless: boolean) => Promise<void>;
+	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
@@ -16,75 +17,106 @@ export type MediaSessionControls = {
 };
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
+	const requestDevice = useDevicePermissionPrompt2();
 	return useMemo(() => {
 		const toggleMute = () => {
-			const mainCall = instance?.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance?.getState();
+			if (!instanceState || !instance) {
 				return;
 			}
-			mainCall.setMuted(!mainCall.muted);
+			if (instance.micless) {
+				void requestDevice({ actionType: 'device-change' })
+					.then(async (stream: MediaStream) => {
+						stopTracks(stream);
+						const inputTrack = stream.getAudioTracks()[0];
+						if (!inputTrack) {
+							return;
+						}
+						const { deviceId } = inputTrack.getSettings();
+						if (!deviceId) {
+							return;
+						}
+
+						instance.micless = false;
+						await changeDevice(deviceId, true);
+					})
+					.then(() => {
+						if (!instance.micless) {
+							instance.getState()?.localParticipant.setMuted(false);
+						}
+					})
+					.catch((e) => {
+						console.error('useMediaSessionControls - failed to enable microphone:', e);
+						instance.micless = true;
+					});
+				return;
+			}
+			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);
 		};
 
 		const toggleHold = () => {
-			const mainCall = instance?.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance?.getState();
+			if (!instanceState) {
 				return;
 			}
-			mainCall.setHeld(!mainCall.held);
+			instanceState.localParticipant.setHeld(!instanceState.localParticipant.held);
 		};
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = () => {
+		const acceptCall = (micless: boolean) => {
 			if (!instance) {
 				return;
 			}
-			const call = instance.getMainCall();
-			if (call?.state !== 'ringing') {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed || instanceState.state !== 'ringing') {
 				return;
 			}
-			call.accept();
+			instance.micless = micless;
+			instanceState.call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip') => {
+		const startCall = async (id: string, kind: 'user' | 'sip', micless: boolean) => {
 			if (!instance) {
 				return;
 			}
 			try {
+				instance.micless = micless;
 				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
 		};
 
-		const changeDevice = async (deviceId: string) => {
+		const changeDevice = async (deviceId: string, force?: boolean) => {
 			if (!instance) {
 				return;
 			}
-			void instance.setDeviceId({ exact: deviceId });
+			await instance.setDeviceId({ exact: deviceId }, force || false);
 		};
 
 		const forwardCall = (type: 'user' | 'sip', id: string) => {
 			if (!instance) {
 				return;
 			}
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
-			mainCall.transfer({ type, id });
+			instanceState.call.transfer({ type, id });
 		};
 
 		const sendTone = (tone: string) => {
 			if (!instance) {
 				return;
 			}
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
+
 			try {
-				mainCall.sendDTMF(tone);
+				instanceState.call.sendDTMF(tone);
 			} catch (error) {
 				console.error('Error sending tone', error);
 			}
@@ -95,13 +127,13 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
 
 			try {
-				mainCall.requestScreenShare(!mainCall.hasScreenVideoTrack());
+				instanceState.call.requestScreenShare(!instanceState.call.hasScreenVideoTrack());
 			} catch (error) {
 				console.error('Error toggling screen share', error);
 			}
@@ -118,5 +150,5 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			forwardCall,
 			sendTone,
 		};
-	}, [instance]);
+	}, [instance, requestDevice]);
 };

@@ -61,6 +61,8 @@ const categories: BenchCategory[] = [
 			{ name: 'strike', input: '~~Hello world~~' },
 			{ name: 'nested', input: '**bold _italic_ and ~~strike~~**' },
 			{ name: 'deep nesting', input: '**bold _italic ~~strike _deep italic_~~_**' },
+			{ name: 'bold + italic mixed', input: '*Bold text* and _italic text_ in a message' },
+			{ name: 'deeply nested', input: '*bold _italic ~~strike~~ italic_ bold*' },
 			{ name: 'multiple', input: '**bold** normal _italic_ normal ~~strike~~ **more bold** _more italic_' },
 		],
 	},
@@ -83,6 +85,7 @@ const categories: BenchCategory[] = [
 			{ name: 'triple unicode (BigEmoji)', input: '😀🚀🌈', options: fullOptions },
 			{ name: 'in text', input: 'Hello :smile: world :heart: test :rocket: done', options: fullOptions },
 			{ name: 'mixed', input: 'Great job :thumbsup: 🎉 keep going :rocket:', options: fullOptions },
+			{ name: 'emoji heavy', input: ':smile: :wave: :rocket: :fire: :heart: :100:', options: fullOptions },
 		],
 	},
 	{
@@ -92,6 +95,7 @@ const categories: BenchCategory[] = [
 			{ name: 'multiple users', input: '@admin @user1 @moderator' },
 			{ name: 'channel', input: '#general' },
 			{ name: 'mixed', input: 'Hey @admin check #general and @user1' },
+			{ name: 'mentions (suggested)', input: 'Hey @john and @jane, check #general' },
 		],
 	},
 	{
@@ -141,6 +145,10 @@ const categories: BenchCategory[] = [
 				name: 'long with formatting',
 				input: '**bold** _italic_ ~~strike~~ `code` @user #channel :smile: https://example.com '.repeat(10).trim(),
 			},
+			{
+				name: 'unmatched markers (pathological)',
+				input: '*_~*_~*_~*_~*_~ hello world absolutely no closing markers anywhere at all',
+			},
 		],
 	},
 	{
@@ -156,6 +164,11 @@ const categories: BenchCategory[] = [
 				name: 'complex',
 				input:
 					'**Release Notes v7.0**\n- [x] Fix #12345\n- [ ] Update docs\n\n> Important: check https://docs.rocket.chat\n\ncc @admin @devlead #releases :rocket:',
+				options: fullOptions,
+			},
+			{
+				name: 'realistic chat message',
+				input: 'Hello @team, please review the *important* update:\n\n1. Run `yarn build`\n2. Check #deployments\n\n*Thanks!* :rocket:',
 				options: fullOptions,
 			},
 		],

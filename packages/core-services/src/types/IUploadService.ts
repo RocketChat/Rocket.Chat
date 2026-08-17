@@ -1,12 +1,13 @@
-import type Stream from 'stream';
+import type Stream from 'node:stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import type { IMessage, IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import type { IMessage, IUpload, IUser, FilesAndAttachments, AtLeast } from '@rocket.chat/core-typings';
 
 export interface IUploadFileParams {
 	userId: string;
 	buffer: Buffer;
 	details: IUploadDetails;
+	federation?: Required<IUpload>['federation'];
 }
 export interface ISendFileMessageParams {
 	roomId: string;
@@ -39,4 +40,6 @@ export interface IUploadService {
 		imageResizeOpts?: { width: number; height: number };
 	}): Promise<Stream.Readable>;
 	uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: Omit<IUploadDetails, 'size'> }): Promise<IUpload>;
+	setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void>;
+	resetUserAvatar(user: AtLeast<IUser, '_id' | 'username'>): Promise<void>;
 }

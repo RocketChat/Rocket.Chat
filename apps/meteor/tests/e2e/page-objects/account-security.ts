@@ -15,6 +15,10 @@ export class AccountSecurity extends Account {
 		return this.page.goto('/account/security');
 	}
 
+	async waitForSecurityPage() {
+		await this.securityHeader.waitFor({ state: 'visible' });
+	}
+
 	get inputNewPassword() {
 		return this.page.getByRole('textbox', { name: 'New password' });
 	}

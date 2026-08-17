@@ -2,10 +2,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Roles } from '@rocket.chat/models';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../server/lib/callbacks';
+import { settings } from '../../../server/settings';
 import { OAuthEEManager } from '../lib/oauth/Manager';
 import { syncUserRoles } from '../lib/syncUserRoles';
 

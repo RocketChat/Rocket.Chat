@@ -11,14 +11,13 @@ import {
 } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.e2eeGuide;
 
-type RoomE2EENotAllowedProps = {
+export type RoomE2EENotAllowedProps = {
 	title: string;
 	subTitle: string;
 	action?: () => void;
@@ -26,7 +25,7 @@ type RoomE2EENotAllowedProps = {
 	icon: IconName;
 };
 
-const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EENotAllowedProps): ReactElement => {
+const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EENotAllowedProps) => {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const handleGoHomeClick = () => {

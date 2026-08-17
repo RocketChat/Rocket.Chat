@@ -1,1 +1,1 @@
-export * from './IPersistenceItem';
+export type * from './IPersistenceItem';

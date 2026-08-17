@@ -14,12 +14,12 @@ declare module 'meteor/meteor' {
 	}
 }
 
-const loginWithPasswordAndTOTP = (
+export const loginWithPasswordAndTOTP = (
 	userDescriptor: { username: string } | { email: string } | { id: string } | string,
 	password: string,
 	code: string,
 	callback?: LoginCallback,
-) => {
+): Promise<void> => {
 	if (typeof userDescriptor === 'string') {
 		if (userDescriptor.indexOf('@') === -1) {
 			userDescriptor = { username: userDescriptor };
@@ -28,31 +28,30 @@ const loginWithPasswordAndTOTP = (
 		}
 	}
 
-	Accounts.callLoginMethod({
-		methodArguments: [
-			{
-				totp: {
-					login: {
-						user: userDescriptor,
-						password: Accounts._hashPassword(password),
+	return new Promise<void>((resolve, reject) => {
+		Accounts.callLoginMethod({
+			methodArguments: [
+				{
+					totp: {
+						login: {
+							user: userDescriptor,
+							password: Accounts._hashPassword(password),
+						},
+						code,
 					},
-					code,
 				},
+			],
+			userCallback(error) {
+				if (!error) {
+					callback?.(undefined);
+					resolve();
+					return;
+				}
+
+				callback?.(error);
+				reject(error as Error);
 			},
-		],
-		userCallback(error) {
-			if (!error) {
-				callback?.(undefined);
-				return;
-			}
-
-			if (callback) {
-				callback(error);
-				return;
-			}
-
-			throw error;
-		},
+		});
 	});
 };
 

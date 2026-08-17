@@ -27,11 +27,11 @@ slashCommands.add({
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 		}
 
-		if (type && type.indexOf('d') === -1) {
+		if (type?.indexOf('d') === -1) {
 			return;
 		}
 		try {
-			await sdk.call('createDirectMessage', room);
+			await sdk.rest.post('/v1/im.create', { username: room });
 			const subscription = Subscriptions.state.find(predicate);
 			if (!subscription) {
 				return;

@@ -1,5 +1,5 @@
 import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ export const useRemoveUserFromRole = ({
 
 	const removeUserFromRoleEndpoint = useEndpoint('POST', '/v1/roles.removeUserFromRole');
 
-	const handleRemove = useEffectEvent((username: IUserInRole['username']) => {
+	const handleRemove = useStableCallback((username: IUserInRole['username']) => {
 		const remove = async () => {
 			try {
 				if (!username) throw new Error('Username is required');
@@ -43,7 +43,7 @@ export const useRemoveUserFromRole = ({
 
 		setModal(
 			<GenericModal variant='danger' onConfirm={remove} onCancel={() => setModal(null)} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', { postProcess: 'sprintf', sprintf: [username, roleDescription || roleName] })}
+				{t('The_user_s_will_be_removed_from_role_s', { username, role: roleDescription || roleName })}
 			</GenericModal>,
 		);
 	});

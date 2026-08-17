@@ -568,6 +568,17 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('invalid-params');
 		});
+		it('should not fail to edit a priority with a PUT if using a boolean as name (it becomes a string)', async () => {
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
 		it('should fail to update a non-existing priority', async () => {
 			const response = await request
 				.put(api('livechat/priorities/123'))

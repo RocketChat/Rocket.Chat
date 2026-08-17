@@ -1,26 +1,12 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession, CallState, CallContact } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
-import { useEffect, useReducer, useCallback } from 'react';
+import { useEffect, useReducer } from 'react';
 
-import type { ConnectionState, PeerInfo, SessionState } from '../context/definitions';
+import { defaultSessionState } from '../context/MediaCallViewContext';
+import type { ConnectionState, SessionState } from '../context/definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
-
-const defaultSessionInfo: SessionState = {
-	state: 'closed' as const,
-	callId: undefined,
-	connectionState: 'CONNECTING' as const,
-	peerInfo: undefined,
-	transferredBy: undefined,
-	muted: false,
-	held: false,
-	remoteMuted: false,
-	remoteHeld: false,
-	startedAt: undefined,
-	hidden: false,
-	supportedFeatures: ['audio', 'transfer', 'hold'],
-};
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
 	if (contact.type === 'sip') {
@@ -51,14 +37,6 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
-				type: 'selectPeer';
-				payload: { peerInfo?: PeerInfo };
-		  }
-		| {
-				type: 'toggleWidget';
-				payload: { peerInfo?: PeerInfo };
-		  }
-		| {
 				type: 'instance_updated';
 				payload: SessionState;
 		  }
@@ -67,30 +45,12 @@ const reducer = (
 				payload?: { status?: UserStatus };
 		  },
 ): SessionState => {
-	if (action.type === 'toggleWidget') {
-		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
-		}
-
-		if (reducerState.state === 'new') {
-			return { ...reducerState, state: 'closed' };
-		}
-	}
-
 	if (action.type === 'instance_updated') {
 		return { ...reducerState, ...action.payload };
 	}
 
-	if (action.type === 'selectPeer') {
-		if (reducerState.state !== 'new') {
-			return reducerState;
-		}
-
-		return { ...reducerState, peerInfo: action.payload?.peerInfo };
-	}
-
 	if (action.type === 'reset') {
-		return defaultSessionInfo;
+		return defaultSessionState;
 	}
 
 	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
@@ -100,14 +60,8 @@ const reducer = (
 	return reducerState;
 };
 
-export type MediaSessionStateWithWidgetControls = {
-	sessionState: SessionState;
-	toggleWidget: (peerInfo?: PeerInfo) => void;
-	selectPeer: (peerInfo: PeerInfo) => void;
-};
-
-export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionStateWithWidgetControls => {
-	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
+export const useMediaSession = (instance?: MediaSignalingSession): SessionState => {
+	const [mediaSession, dispatch] = useReducer(reducer, defaultSessionState);
 
 	const getAvatarUrl = useUserAvatarPath();
 
@@ -118,26 +72,16 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		}
 
 		const updateSessionState = () => {
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState) {
 				dispatch({ type: 'reset' });
 				return;
 			}
 
 			const {
-				contact,
-				transferredBy: callTransferredBy,
 				state: callState,
-				role,
-				muted,
-				held,
-				hidden,
-				remoteHeld,
-				remoteMute,
-				callId,
-				activeTimestamp: startedAt,
-				features: supportedFeatures,
-			} = mainCall;
+				localParticipant: { role, muted, held },
+			} = instanceState;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
@@ -146,6 +90,41 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			}
 
 			const connectionState = deriveConnectionStateFromCallState(callState);
+
+			if (!instanceState.confirmed) {
+				dispatch({
+					type: 'instance_updated',
+					payload: {
+						peerInfo: {
+							displayName: instanceState.title,
+							userId: 'unknown',
+							username: undefined,
+							callerId: undefined,
+						},
+						transferredBy: undefined,
+						state,
+						muted,
+						held,
+						connectionState,
+						hidden: false,
+						remoteHeld: false,
+						remoteMuted: false,
+						callId: instanceState.tempCallId,
+						startedAt: undefined,
+						supportedFeatures: [],
+					},
+				});
+				return;
+			}
+
+			const {
+				hidden,
+				callId,
+				activeTimestamp: startedAt,
+				features: supportedFeatures,
+				transferredBy: callTransferredBy,
+				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
@@ -161,7 +140,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						connectionState,
 						hidden,
 						remoteHeld,
-						remoteMuted: remoteMute,
+						remoteMuted,
 						callId,
 						startedAt,
 						supportedFeatures,
@@ -195,7 +174,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					connectionState,
 					hidden,
 					remoteHeld,
-					remoteMuted: remoteMute,
+					remoteMuted,
 					callId,
 					startedAt,
 					supportedFeatures,
@@ -205,18 +184,12 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
 
+		updateSessionState();
+
 		return () => {
 			offCbs.forEach((offCb) => offCb());
 		};
 	}, [getAvatarUrl, instance]);
-
-	const toggleWidget = useCallback((peerInfo?: PeerInfo) => {
-		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
-	}, []);
-
-	const selectPeer = useCallback((peerInfo: PeerInfo) => {
-		dispatch({ type: 'selectPeer', payload: { peerInfo } });
-	}, []);
 
 	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
 
@@ -226,9 +199,5 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		}
 	}, [status?.status]);
 
-	return {
-		sessionState: mediaSession,
-		toggleWidget,
-		selectPeer,
-	};
+	return mediaSession;
 };

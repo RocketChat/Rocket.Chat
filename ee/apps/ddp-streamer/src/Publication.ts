@@ -30,6 +30,10 @@ export class Publication extends EventEmitter implements IPublication {
 		this.connection = client.connection;
 	}
 
+	_isDeactivated(): this is IPublication & { _session: null } {
+		return this._session === null;
+	}
+
 	error(_error: Error): void {
 		throw new Error('Method not implemented.');
 	}

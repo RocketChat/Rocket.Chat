@@ -5,10 +5,10 @@ import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
-import { isRowDivider, isLoadMore } from '../../../../app/emoji/client';
+import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../../../../app/emoji/client';
 import type { EmojiPickerItem } from '../../../../app/emoji/client';
 
-type EmojiCategoryRowProps = {
+export type EmojiCategoryRowProps = {
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (e: MouseEvent<HTMLElement>) => void;
@@ -31,7 +31,7 @@ const EmojiCategoryRow = ({ item, handleLoadMore, handleSelectEmoji }: EmojiCate
 	if (isRowDivider(item)) {
 		return (
 			<>
-				<Box is='h4' fontScale='c1' pb={8} id={`emoji-list-category-${item.category}`}>
+				<Box is='h4' fontScale='c1' paddingBlock={8} id={`emoji-list-category-${item.category}`}>
 					{t(item.i18n)}
 				</Box>
 			</>
@@ -43,10 +43,16 @@ const EmojiCategoryRow = ({ item, handleLoadMore, handleSelectEmoji }: EmojiCate
 	}
 
 	return (
-		<EmojiPickerCategoryWrapper className={[categoryRowStyle /* `emoji-category-${categoryKey}` */].filter(Boolean)}>
+		<EmojiPickerCategoryWrapper className={categoryRowStyle}>
 			{item.length === 0 && <EmojiPickerNotFound>{t('No_emojis_found')}</EmojiPickerNotFound>}
 			{item.map(({ emoji, image, category }) => (
-				<EmojiElement key={emoji + category} emoji={emoji} image={image} onClick={handleSelectEmoji} />
+				<EmojiElement
+					key={emoji + category}
+					emoji={emoji}
+					image={image}
+					className={category === CUSTOM_CATEGORY ? CUSTOM_CATEGORY_CLASSNAME : undefined}
+					onClick={handleSelectEmoji}
+				/>
 			))}
 		</EmojiPickerCategoryWrapper>
 	);

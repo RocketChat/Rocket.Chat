@@ -23,12 +23,15 @@ export const usePeekMediaSessionState = (): PeekMediaSessionStateReturn => {
 			return 'unavailable';
 		}
 
-		const mainCall = instance.getMainCall();
-		if (!mainCall) {
+		const instanceState = instance.getState();
+		if (!instanceState) {
 			return 'available';
 		}
 
-		const { state: callState, role } = mainCall;
+		const {
+			state: callState,
+			localParticipant: { role },
+		} = instanceState;
 		const state = deriveWidgetStateFromCallState(callState, role);
 		if (!state) {
 			return 'available';

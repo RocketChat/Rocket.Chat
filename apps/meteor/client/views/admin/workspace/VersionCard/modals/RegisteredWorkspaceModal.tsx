@@ -11,13 +11,13 @@ import {
 	ModalTitle,
 } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
-type RegisteredWorkspaceModalProps = {
+export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };
@@ -29,22 +29,23 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 	const bulletFeatures = useFeatureBullets();
 	const [isSyncing, setSyncing] = useSafely(useState(false));
 
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
+	const syncWorkspace = useEndpoint('POST', '/v1/cloud.syncWorkspace');
 
 	const handleSyncAction = async () => {
 		setSyncing(true);
 
 		try {
-			const isSynced = await syncWorkspace();
+			const { success } = await syncWorkspace();
 
-			if (!isSynced) {
+			if (!success) {
 				throw Error(t('RegisterWorkspace_Syncing_Error'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('RegisterWorkspace_Syncing_Complete') });
 			setModal(null);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			const message = error instanceof Error ? error.message : t('RegisterWorkspace_Syncing_Error');
+			dispatchToastMessage({ type: 'error', message });
 		} finally {
 			onStatusChange?.();
 			setSyncing(false);
@@ -66,7 +67,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 						{bulletFeatures.map((item, index) => (
 							<li key={index}>
 								<strong>{item.title}</strong>
-								<Box is='p' mbs={4}>
+								<Box is='p' marginBlockStart={4}>
 									{item.description}
 								</Box>
 							</li>

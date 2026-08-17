@@ -1,12 +1,10 @@
 import '../app/authorization/client';
 import '../app/autotranslate/client';
 import '../app/emoji/client';
-import '../app/emoji-emojione/client';
 import '../app/gitlab/client';
 import '../app/license/client';
 import '../app/lib/client';
 import '../app/livechat-enterprise/client';
-import '../app/notifications/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';
@@ -23,4 +21,3 @@ import '../app/slashcommands-unarchiveroom/client';
 import '../app/wordpress/client';
 import '../app/utils/client';
 import '../app/ui-utils/client';
-import '../app/reactions/client';

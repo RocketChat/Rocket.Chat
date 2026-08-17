@@ -1,7 +1,6 @@
-import { createFocusManager } from '@react-aria/focus';
+import { createFocusManager, useFocusManager } from '@react-aria/focus';
 import type { RefCallback } from 'react';
 import { useCallback } from 'react';
-import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) =>
 	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';

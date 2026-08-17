@@ -1,6 +1,6 @@
-import fs from 'fs';
-import type * as http from 'http';
-import type stream from 'stream';
+import fs from 'node:fs';
+import type * as http from 'node:http';
+import type stream from 'node:stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
@@ -42,7 +42,7 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<string>;
+	public create: (file: Omit<OptionalId<IUpload>, '_updatedAt'>, options?: { session?: ClientSession }) => Promise<string>;
 
 	public write: (
 		rs: stream.Readable,
@@ -240,7 +240,6 @@ export class Store {
 
 	generateToken(pattern?: string) {
 		return (pattern || 'xyxyxyxyxy').replace(/[xy]/g, (c) => {
-			// eslint-disable-next-line no-mixed-operators
 			const r = (Math.random() * 16) | 0;
 			const v = c === 'x' ? r : (r & 0x3) | 0x8;
 			const s = v.toString(16);

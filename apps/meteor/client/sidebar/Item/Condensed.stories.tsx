@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import Condensed from './Condensed';
 import * as Status from '../../components/UserStatus';
@@ -14,7 +14,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x300' bg='dark' borderRadius='x4'>
+			<Box maxWidth='x300' backgroundColor='dark' borderRadius='x4'>
 				{fn()}
 			</Box>
 		),
@@ -25,7 +25,7 @@ const Template: StoryFn<typeof Condensed> = (args) => (
 	<Condensed
 		{...args}
 		titleIcon={
-			<Box mi={4}>
+			<Box marginInline={4}>
 				<Status.Online />
 			</Box>
 		}
@@ -33,39 +33,50 @@ const Template: StoryFn<typeof Condensed> = (args) => (
 	/>
 );
 
-export const Normal = Template.bind({});
-
-export const Selected = Template.bind({});
-Selected.args = {
-	selected: true,
+export const Normal = {
+	render: Template,
 };
 
-export const Menu = Template.bind({});
-Menu.args = {
-	menuOptions: {
-		hide: {
-			label: { label: 'Hide', icon: 'eye-off' },
-			action: action('action'),
-		},
-		read: {
-			label: { label: 'Mark_read', icon: 'flag' },
-			action: action('action'),
-		},
-		favorite: {
-			label: { label: 'Favorite', icon: 'star' },
-			action: action('action'),
+export const Selected = {
+	render: Template,
+
+	args: {
+		selected: true,
+	},
+};
+
+export const Menu = {
+	render: Template,
+
+	args: {
+		menuOptions: {
+			hide: {
+				label: { label: 'Hide', icon: 'eye-off' },
+				action: action('action'),
+			},
+			read: {
+				label: { label: 'Mark_read', icon: 'flag' },
+				action: action('action'),
+			},
+			favorite: {
+				label: { label: 'Favorite', icon: 'star' },
+				action: action('action'),
+			},
 		},
 	},
 };
 
-export const Actions = Template.bind({});
-Actions.args = {
-	actions: (
-		<>
-			<IconButton secondary success icon='phone' />
-			<IconButton secondary danger icon='circle-cross' />
-			<IconButton secondary info icon='trash' />
-			<IconButton secondary icon='phone' />
-		</>
-	),
+export const Actions = {
+	render: Template,
+
+	args: {
+		actions: (
+			<>
+				<IconButton secondary success icon='phone' />
+				<IconButton secondary danger icon='circle-cross' />
+				<IconButton secondary info icon='trash' />
+				<IconButton secondary icon='phone' />
+			</>
+		),
+	},
 };

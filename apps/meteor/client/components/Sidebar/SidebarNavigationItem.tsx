@@ -1,11 +1,11 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
-type SidebarNavigationItemProps = {
+export type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
 	icon?: IconName;
@@ -13,7 +13,7 @@ type SidebarNavigationItemProps = {
 	tag?: string;
 	currentPath?: string;
 	externalUrl?: boolean;
-	badge?: () => ReactElement;
+	badge?: () => ReactNode;
 };
 
 const SidebarNavigationItem = ({
@@ -28,19 +28,19 @@ const SidebarNavigationItem = ({
 	badge: Badge,
 }: SidebarNavigationItemProps) => {
 	const path = pathSection;
-	const isActive = !!path && currentPath?.includes(path as string);
+	const isActive = !!path && currentPath?.includes(path);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
 
 	return (
-		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
-			{icon && <Icon name={icon} size='x20' mi={4} />}
+		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} aria-current={isActive ? 'page' : undefined}>
+			{icon && <Icon name={icon} size='x20' marginInline={4} />}
 			<Box
 				withTruncatedText
 				fontScale='p2'
-				mi={4}
+				marginInline={4}
 				flexGrow={1}
 				display='flex'
 				alignItems='center'

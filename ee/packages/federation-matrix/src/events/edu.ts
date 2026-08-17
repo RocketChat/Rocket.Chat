@@ -86,7 +86,7 @@ export const edus = async () => {
 				return;
 			}
 
-			if (data.thread_id) {
+			if (data.thread_id && data.thread_id !== 'main') {
 				const msg = await Messages.findOneByFederationId(data.thread_id);
 				if (!msg) {
 					logger.debug({ msg: 'No message found for Matrix thread_id', threadId: data.thread_id });

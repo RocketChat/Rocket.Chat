@@ -4,10 +4,10 @@ import { Users } from '@rocket.chat/models';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
-import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { i18n } from '../../../lib/i18n';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fileUploadIsValidContentType } from '../../../lib/utils/restrictions';
+import { settings } from '../../../settings';
 
 type TwilioData = {
 	From: string;
@@ -272,7 +272,7 @@ export class Twilio implements ISMSProvider {
 
 	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
-		if (process.env.TEST_MODE === 'true') {
+		if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 			return true;
 		}
 		const twilioHeader = request.headers.get('x-twilio-signature') || '';

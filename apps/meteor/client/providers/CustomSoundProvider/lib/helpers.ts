@@ -4,7 +4,7 @@ import { getURL } from '../../../../app/utils/client';
 
 export const getAssetUrl = (asset: string, params?: Record<string, any>) => getURL(asset, params, undefined, true);
 
-export const getCustomSoundURL = (sound: ICustomSound) => {
+export const getCustomSoundURL = (sound: Pick<ICustomSound, '_id' | 'extension'> & Pick<Partial<ICustomSound>, 'random'>) => {
 	return getAssetUrl(`/custom-sounds/${sound._id}.${sound.extension}`, { _dc: sound.random || 0 });
 };
 
@@ -25,7 +25,7 @@ export const soundTranslationKeys: Record<string, string> = {
 	'ringtone': 'Sound_Ringtone',
 };
 
-export const defaultSounds: ICustomSound[] = [
+export const defaultSounds: Omit<ICustomSound, '_updatedAt'>[] = [
 	{ _id: 'chime', name: 'Sound_Chime', extension: 'mp3', src: getAssetUrl('sounds/chime.mp3') },
 	{ _id: 'door', name: 'Sound_Door', extension: 'mp3', src: getAssetUrl('sounds/door.mp3') },
 	{ _id: 'beep', name: 'Sound_Beep', extension: 'mp3', src: getAssetUrl('sounds/beep.mp3') },

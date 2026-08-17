@@ -1,18 +1,6 @@
 import { VideoRecorder } from './videoRecorder';
 import { createDeferredPromise } from '../../../../../tests/mocks/utils/createDeferredMockFn';
 
-jest.mock('meteor/reactive-var', () => ({
-	ReactiveVar: jest.fn().mockImplementation((initialValue) => {
-		let value = initialValue;
-		return {
-			get: jest.fn(() => value),
-			set: jest.fn((newValue) => {
-				value = newValue;
-			}),
-		};
-	}),
-}));
-
 describe('VideoRecorder', () => {
 	let mockStream: MediaStream;
 	let mockVideoTrack: MediaStreamTrack;
@@ -93,7 +81,7 @@ describe('VideoRecorder', () => {
 			streamDeferred.resolve(mockStream);
 			await jest.runAllTimersAsync();
 
-			expect(VideoRecorder.cameraStarted.get()).toBe(false);
+			expect(VideoRecorder.cameraStarted).toBe(false);
 		});
 
 		it('should handle multiple start/stop cycles', async () => {
@@ -115,7 +103,7 @@ describe('VideoRecorder', () => {
 			await jest.runAllTimersAsync();
 
 			expect(cb).toHaveBeenCalledWith(true);
-			expect(VideoRecorder.cameraStarted.get()).toBe(true);
+			expect(VideoRecorder.cameraStarted).toBe(true);
 		});
 
 		it('should invalidate pending callbacks from previous start when new start is called', async () => {
@@ -155,19 +143,19 @@ describe('VideoRecorder', () => {
 			await jest.runAllTimersAsync();
 
 			expect(cb).toHaveBeenCalledWith(true);
-			expect(VideoRecorder.cameraStarted.get()).toBe(true);
+			expect(VideoRecorder.cameraStarted).toBe(true);
 		});
 
 		it('should stop camera tracks', () => {
 			(VideoRecorder as any).stream = mockStream;
 			(VideoRecorder as any).started = true;
-			VideoRecorder.cameraStarted.set(true);
+			(VideoRecorder as any)._cameraStarted = true;
 
 			VideoRecorder.stop();
 
 			expect(mockVideoTrack.stop).toHaveBeenCalled();
 			expect(mockAudioTrack.stop).toHaveBeenCalled();
-			expect(VideoRecorder.cameraStarted.get()).toBe(false);
+			expect(VideoRecorder.cameraStarted).toBe(false);
 		});
 
 		it('should return supported mime types', () => {

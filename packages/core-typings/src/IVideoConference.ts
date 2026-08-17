@@ -52,11 +52,8 @@ export type LivechatInstructions = {
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'] | 'voip';
 
-type Nullable<T, K extends keyof T> = {
-	[P in K]: T[P] | null;
-} & Omit<T, K>;
-
-export interface IVideoConferenceUser extends Nullable<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>, 'avatarETag'> {
+export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
+	avatarETag: string | null;
 	ts: Date;
 }
 

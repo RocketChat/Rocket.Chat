@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { TimestampPickerModal } from '../../../../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker/TimestampPickerModal';
 import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 
-export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMenuItemProps | undefined => {
+export const useTimestampAction = (disabled: boolean, composer: ComposerAPI | undefined): GenericMenuItemProps | undefined => {
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 
@@ -22,5 +22,6 @@ export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMe
 		icon: 'clock',
 		content: t('Timestamp'),
 		onClick: handleClick,
+		disabled,
 	};
 };
