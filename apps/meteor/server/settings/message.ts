@@ -473,6 +473,18 @@ export const createMessageSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Message_AllowScheduling', true, {
+			type: 'boolean',
+			public: true,
+		});
+		await this.add('Message_MaxScheduledMessagesPerUser', 25, {
+			type: 'int',
+			public: true,
+			enableQuery: {
+				_id: 'Message_AllowScheduling',
+				value: true,
+			},
+		});
 
 		await this.add('Message_CustomFields_Enabled', false, {
 			type: 'boolean',
