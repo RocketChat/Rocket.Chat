@@ -40,8 +40,7 @@ describe('logMethodCallError', () => {
 
 		expect(meteorDebugMock.called).to.be.false;
 		expect(errorMock.called).to.be.false;
-		expect(debugMock.calledOnce).to.be.true;
-		expect(debugMock.calledWith({ msg: 'Expected error while invoking method', err, method: 'loadHistory' })).to.be.true;
+		expect(debugMock.calledOnceWithExactly({ msg: 'Expected error while invoking method', err, method: 'loadHistory' })).to.be.true;
 	});
 
 	it('should not report meteor errors as exceptions', () => {
@@ -51,8 +50,7 @@ describe('logMethodCallError', () => {
 
 		expect(meteorDebugMock.called).to.be.false;
 		expect(errorMock.called).to.be.false;
-		expect(debugMock.calledOnce).to.be.true;
-		expect(debugMock.calledWith({ msg: 'Expected error while invoking method', err, method: 'login' })).to.be.true;
+		expect(debugMock.calledOnceWithExactly({ msg: 'Expected error while invoking method', err, method: 'login' })).to.be.true;
 	});
 
 	it('should report unexpected errors as exceptions when Log_Level is 2', () => {
@@ -60,10 +58,9 @@ describe('logMethodCallError', () => {
 
 		logMethodCallError('loadHistory', err);
 
-		expect(errorMock.calledOnce).to.be.true;
-		expect(errorMock.calledWith({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
-		expect(meteorDebugMock.calledOnce).to.be.true;
-		expect(meteorDebugMock.calledWith('Exception while invoking method loadHistory', err)).to.be.true;
+		expect(debugMock.called).to.be.false;
+		expect(errorMock.calledOnceWithExactly({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
+		expect(meteorDebugMock.calledOnceWithExactly('Exception while invoking method loadHistory', err)).to.be.true;
 	});
 
 	it('should report unexpected errors without notifying the exceptions channel when Log_Level is not 2', () => {
@@ -73,8 +70,8 @@ describe('logMethodCallError', () => {
 
 		logMethodCallError('loadHistory', err);
 
-		expect(errorMock.calledOnce).to.be.true;
-		expect(errorMock.calledWith({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
+		expect(debugMock.called).to.be.false;
+		expect(errorMock.calledOnceWithExactly({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
 		expect(meteorDebugMock.called).to.be.false;
 	});
 });
