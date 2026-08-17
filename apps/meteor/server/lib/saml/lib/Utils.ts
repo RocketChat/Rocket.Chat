@@ -154,7 +154,7 @@ export class SAMLUtils {
 			return {};
 		}
 
-		if (relayState.includes('provider=')) {
+		if (relayState.startsWith('provider=') && relayState.includes('&loginClient=')) {
 			const params = new URLSearchParams(relayState);
 			const provider = params.get('provider') ?? undefined;
 			const loginClient = params.get('loginClient');
