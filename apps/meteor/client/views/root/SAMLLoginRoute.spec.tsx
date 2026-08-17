@@ -1,4 +1,4 @@
-import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
+import { MockedServerContext, MockedSettingsContext, MockedUserContext } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
 import { Meteor } from 'meteor/meteor';
 
@@ -130,6 +130,21 @@ describe('native client handoff', () => {
 				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
 					<SAMLLoginRoute />
 				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		expect(buildSamlDeepLinkURL).not.toHaveBeenCalled();
+		expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
+	});
+
+	it('should ignore loginClient and log in normally when the modern flow is disabled', async () => {
+		render(
+			<MockedServerContext>
+				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: false }}>
+					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'desktop' }} navigate={navigateStub}>
+						<SAMLLoginRoute />
+					</RouterContextMock>
+				</MockedSettingsContext>
 			</MockedServerContext>,
 		);
 

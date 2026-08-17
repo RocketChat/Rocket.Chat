@@ -463,7 +463,7 @@ export class SAML {
 	): Promise<void> {
 		const serviceProvider = new SAMLServiceProvider(service);
 		let url: string | undefined;
-		const requestedLoginClient = req.query.loginClient;
+		const requestedLoginClient = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow') ? req.query.loginClient : undefined;
 		const loginClient = requestedLoginClient === 'desktop' || requestedLoginClient === 'mobile' ? requestedLoginClient : undefined;
 
 		try {
