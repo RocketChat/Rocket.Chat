@@ -1,8 +1,11 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/cached';
+
+const logger = new Logger('StatusVisibility');
 
 const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1 } as const;
 
@@ -50,7 +53,9 @@ export const refreshStatusVisibility = async (targets?: IUser['_id'][]): Promise
 };
 
 export const broadcastStatusVisibility = (targets?: IUser['_id'][]): void => {
-	void api.broadcast('presence.invalidateVisibility', { targets }).catch(() => undefined);
+	void api
+		.broadcast('presence.invalidateVisibility', { targets })
+		.catch((err) => logger.error({ msg: 'Status visibility invalidation failed', err, targets }));
 };
 
 export const convertUsernamesToUserIds = async (usernames: string[]): Promise<IUser['_id'][]> => {
