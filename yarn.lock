@@ -10103,6 +10103,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/meteor-server@workspace:^, @rocket.chat/meteor-server@workspace:packages/meteor-server":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/meteor-server@workspace:packages/meteor-server"
+  dependencies:
+    "@rocket.chat/meteor-client": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
+    "@rocket.chat/sha256": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/express": "npm:^4.17.21"
+    "@types/node": "npm:~22.16.5"
+    bcrypt: "npm:^6.0.0"
+    express: "npm:^4.21.2"
+    mongodb: "npm:6.16.0"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/meteor@workspace:apps/meteor":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/meteor@workspace:apps/meteor"
@@ -10180,6 +10197,7 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/message-types": "workspace:~"
     "@rocket.chat/meteor-client": "workspace:^"
+    "@rocket.chat/meteor-server": "workspace:^"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -14631,7 +14649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4.17.25":
+"@types/express@npm:^4.17.21, @types/express@npm:^4.17.25":
   version: 4.17.25
   resolution: "@types/express@npm:4.17.25"
   dependencies:

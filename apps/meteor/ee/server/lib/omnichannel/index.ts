@@ -25,7 +25,7 @@ import { createDefaultPriorities } from './priorities';
 patchOmniCore();
 
 await License.onLicense('livechat-enterprise', async () => {
-	require('../../hooks/omnichannel');
+	await import('../../hooks/omnichannel');
 	await import('./startup');
 	const { createPermissions } = await import('./permissions');
 	const { createSettings } = await import('./settings');

@@ -21,13 +21,14 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"type": "commonjs",
+	"type": "module",
 	"scripts": {
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:server": "mocha --config ./.mocharc.js",
 		".testunit:server:cov": "nyc -r text -r lcov mocha --config ./.mocharc.js",
 		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:server": "vite build --app --config ./vite.config.server.mts",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
@@ -131,6 +132,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/message-types": "workspace:~",
 		"@rocket.chat/meteor-client": "workspace:^",
+		"@rocket.chat/meteor-server": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mongo-adapter": "workspace:^",
