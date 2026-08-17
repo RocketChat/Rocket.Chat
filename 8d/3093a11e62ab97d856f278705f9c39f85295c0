@@ -1,0 +1,21 @@
+apps/meteor/server/lib/omnichannel/hooks.ts
+  s_7c2f6e635ee06f::t_b510140897ca28 30
+apps/meteor/server/lib/omnichannel/omni-users.ts
+  s_7c2f6e635ee06f::t_746042a91fc938 46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8d3093a11e62ab97d856f278705f9c39f85295c0",
+  "prompts": {},
+  "sessions": {
+    "s_7c2f6e635ee06f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e0c69f0-e8c2-42c7-93b2-0f6f828d638a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
