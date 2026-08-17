@@ -15,9 +15,11 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
+	// `sort` and `limit` are branded away because the cursor below overwrites both; a caller passing
+	// them would have them silently dropped
 	findNotSentByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		npsId: string,
-		options?: O,
+		options?: O & { sort?: never; limit?: never },
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
