@@ -39,10 +39,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		P extends Document = IOmnichannelBusinessUnit,
 		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
 	>(_id: IOmnichannelBusinessUnit['_id'], options?: O, extra?: Record<string, any>): Promise<DocumentWithProjection<P, O> | null> {
-		if (options) {
-			return this.findOne<P, O>({ _id }, options, extra);
-		}
-		return this.findOne<P, O>({ _id }, {}, extra);
+		return this.findOne<P, O>({ _id }, options, extra);
 	}
 
 	async createOrUpdateUnit(
