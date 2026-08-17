@@ -823,7 +823,7 @@ test.describe('SAML', () => {
 			}
 		};
 
-		test.only('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
+		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
 			await page.goto('/home?loginClient=desktop');
 
 			await expect(page).toHaveURL(/loginClient=desktop/);
