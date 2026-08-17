@@ -24,30 +24,26 @@ export const refreshStatusVisibility = async (targets?: IUser['_id'][]): Promise
 
 	const previous = targets ?? [...denied.keys()];
 
+	const users: IUser[] = await Users.findWithStatusVisibilityConfig(targets).toArray();
+
 	if (targets) {
 		targets.forEach((uid) => denied.delete(uid));
 	} else {
 		denied.clear();
 	}
 
-	const users: UserPresence[] = [];
-
-	for await (const user of Users.findWithStatusVisibilityConfig(targets)) {
-		const viewers = user.settings?.preferences?.statusVisibilityDenied;
+	for (const { _id, settings: userSettings } of users) {
+		const viewers = userSettings?.preferences?.statusVisibilityDenied;
 
 		if (viewers?.length) {
-			denied.set(user._id, new Set(viewers));
+			denied.set(_id, new Set(viewers));
 		}
-
-		users.push(user);
 	}
 
 	const dropped = previous.filter((uid) => !denied.has(uid));
 
 	if (dropped.length) {
-		for await (const user of Users.findPresenceUsersByIds(dropped, { projection: PRESENCE_FIELDS })) {
-			users.push(user);
-		}
+		users.push(...(await Users.findPresenceUsersByIds(dropped, { projection: PRESENCE_FIELDS }).toArray()));
 	}
 
 	return users;

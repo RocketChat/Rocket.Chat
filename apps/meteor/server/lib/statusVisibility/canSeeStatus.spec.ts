@@ -14,12 +14,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-const cursor = (users: object[]) => ({
-	toArray: async () => users,
-	async *[Symbol.asyncIterator]() {
-		yield* users;
-	},
-});
+const cursor = (users: object[]) => ({ toArray: async () => users });
 const blocking = (id: string, blocked: string[]) => ({ _id: id, settings: { preferences: { statusVisibilityDenied: blocked } } });
 
 describe('status visibility mirror', () => {
@@ -59,6 +54,17 @@ describe('status visibility mirror', () => {
 
 		expect(canSeeStatus('bruno', 'ana')).toBe(true);
 		expect(affected.map(({ _id }) => _id)).toEqual(['ana']);
+	});
+
+	it('keeps hiding while a targeted refresh is still querying', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await refreshStatusVisibility(['ana']);
+
+		const refreshing = refreshStatusVisibility(['ana']);
+
+		expect(canSeeStatus('bruno', 'ana')).toBe(false);
+
+		await refreshing;
 	});
 
 	it('flags users with an active block list, only while the feature is on', async () => {
