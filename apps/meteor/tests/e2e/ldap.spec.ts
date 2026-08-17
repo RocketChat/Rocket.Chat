@@ -4,7 +4,7 @@ import * as constants from './config/constants';
 import { Login } from './page-objects';
 import { getSettingValueById } from './utils/getSettingValueById';
 import { getUserInfo } from './utils/getUserInfo';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { saveSettings } from './utils/saveSettings';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
@@ -12,7 +12,7 @@ const ldapUsername = 'ldap.e2e';
 
 type Setting = {
 	_id: ISetting['_id'];
-	value: unknown;
+	value: ISetting['value'];
 };
 
 const ldapSettings: Setting[] = [
@@ -33,15 +33,9 @@ const ldapSettings: Setting[] = [
 	{ _id: 'LDAP_Find_User_After_Login', value: false },
 ];
 
-const setSetting = async (api: BaseTest['api'], { _id, value }: Setting) => {
-	const response = await setSettingValueById(api, _id, value);
-	expect(response.status(), `Failed to update setting ${_id}`).toBe(200);
-};
-
 const applyLdapSettings = async (api: BaseTest['api'], settings: Setting[], enabled: boolean) => {
-	await setSetting(api, { _id: 'LDAP_Enable', value: false });
-	await Promise.all(settings.map((setting) => setSetting(api, setting)));
-	await setSetting(api, { _id: 'LDAP_Enable', value: enabled });
+	const response = await saveSettings(api, [...settings, { _id: 'LDAP_Enable', value: enabled }]);
+	expect(response.status(), 'Failed to update LDAP settings').toBe(200);
 };
 
 const waitForLdapConnection = async (api: BaseTest['api']) => {
@@ -84,7 +78,7 @@ test.describe('LDAP', () => {
 		originalSettings = await Promise.all(
 			[...ldapSettings.map(({ _id }) => _id), 'LDAP_Enable'].map(async (_id) => ({
 				_id,
-				value: await getSettingValueById(api, _id),
+				value: (await getSettingValueById(api, _id)) as ISetting['value'],
 			})),
 		);
 
