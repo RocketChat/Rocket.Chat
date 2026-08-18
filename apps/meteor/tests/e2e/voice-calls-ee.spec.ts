@@ -59,9 +59,13 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test('should handle call controls during active call', async () => {
 		const [user1, user2] = sessions;
 		await test.step('establish call connection', async () => {
+			// Go to the DM, open the widget with user 2 selected, then go back to home
 			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
+			await user1.poHomeChannel.navbar.btnHome.click();
+
+			// Initiate the call from the home screen so the DM doesn't affect how its rendered
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
 			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
@@ -109,6 +113,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
+			await user1.poHomeChannel.navbar.btnHome.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
 			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
