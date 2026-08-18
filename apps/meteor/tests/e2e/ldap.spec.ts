@@ -1,9 +1,8 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import * as constants from './config/constants';
-import { Login } from './page-objects';
+import { IS_EE } from './config/constants';
+import { AccountProfile, Login } from './page-objects';
 import { getSettingValueById } from './utils/getSettingValueById';
-import { getUserInfo } from './utils/getUserInfo';
 import { saveSettings } from './utils/saveSettings';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
@@ -52,26 +51,15 @@ const waitForLdapConnection = async (api: BaseTest['api']) => {
 			},
 			{
 				message: 'LDAP settings did not propagate to the running server',
-				timeout: 15_000,
 			},
 		)
 		.toBe(true);
 };
 
-const deleteLdapUser = async (api: BaseTest['api']) => {
-	const response = await api.post('/users.delete', { username: ldapUsername });
-
-	if (response.ok()) {
-		return;
-	}
-
-	expect(response.status()).toBe(400);
-	const result = await response.json();
-	expect(result.errorType).toBe('error-invalid-user');
-};
+const deleteLdapUser = (api: BaseTest['api']) => api.post('/users.delete', { username: ldapUsername });
 
 test.describe('LDAP', () => {
-	test.skip(!constants.IS_EE);
+	test.skip(!IS_EE);
 	let originalSettings: Setting[] | undefined;
 
 	test.beforeAll(async ({ api }) => {
@@ -104,47 +92,40 @@ test.describe('LDAP', () => {
 		]);
 	});
 
-	test('connection', async ({ api }) => {
-		await test.step('expect to successfully execute a connection test', async () => {
-			const response = await api.post('/ldap.testConnection', {});
-			expect(response.status()).toBe(200);
-			const result = await response.json();
-			expect(result.success).toBe(true);
-		});
+	test('should connect to LDAP successfully', async ({ api }) => {
+		const response = await api.post('/ldap.testConnection', {});
+		expect(response.status()).toBe(200);
+		const result = await response.json();
+		expect(result.success).toBe(true);
 	});
 
-	test('user search', async ({ api }) => {
-		await test.step('expect to successfully search for LDAP users', async () => {
-			const response = await api.post('/ldap.testSearch', {
-				username: ldapUsername,
-			});
-			expect(response.status()).toBe(200);
-			const result = await response.json();
-			expect(result.success).toBe(true);
-			expect(result.message).toBe('LDAP_User_Found');
+	test('should find the requested LDAP user', async ({ api }) => {
+		const response = await api.post('/ldap.testSearch', {
+			username: ldapUsername,
 		});
+		expect(response.status()).toBe(200);
+		const result = await response.json();
+		expect(result.success).toBe(true);
+		expect(result.message).toBe('LDAP_User_Found');
 	});
 
-	test('login using LDAP credentials', async ({ page, api }) => {
+	test('should log in with LDAP credentials and synchronize mapped profile data', async ({ page }) => {
 		const poLogin = new Login(page);
+		const poAccountProfile = new AccountProfile(page);
 		await page.goto('/home');
 
 		await test.step('expect to be able to login with LDAP credentials', async () => {
 			await poLogin.waitForDisplay();
 			await poLogin.login(ldapUsername, 'ldappassword');
 
-			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
 
 		await test.step('expect LDAP user data to have been mapped to the correct fields', async () => {
-			const user = await getUserInfo(api, ldapUsername);
-
-			expect(user).toBeDefined();
-			expect(user?.username).toBe(ldapUsername);
-			expect(user?.name).toBe('LDAP E2E');
-			expect(user?.emails).toBeDefined();
-			expect(user?.emails?.[0].address).toBe('ldap.e2e@space.air');
+			await page.goto('/account/profile');
+			await expect(poAccountProfile.inputUsername).toHaveValue(ldapUsername);
+			await expect(poAccountProfile.inputName).toHaveValue('LDAP E2E');
+			await expect(poAccountProfile.emailTextInput).toHaveValue('ldap.e2e@space.air');
 		});
 
 		await test.step('expect LDAP user avatar to have been synchronized', async () => {
