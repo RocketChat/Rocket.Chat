@@ -2442,7 +2442,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	findWithStatusVisibilityConfig(userIds?: IUser['_id'][]) {
-		return this.find(
+		return this.find<Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings'>>(
 			{
 				...(userIds && { _id: { $in: userIds } }),
 				'settings.preferences.statusVisibilityDenied': { $exists: true, $ne: [] },
