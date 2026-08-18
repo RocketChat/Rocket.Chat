@@ -249,6 +249,10 @@ export class NotificationsModule {
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
 			const [roomId, e] = eventName.split('/');
+			if (!['video-conference', 'webrtc', 'otr', 'userData'].includes(e)) {
+				return false;
+			}
+
 			if (!this.userId) {
 				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, {
 					projection: { 't': 1, 'servedBy._id': 1 },
