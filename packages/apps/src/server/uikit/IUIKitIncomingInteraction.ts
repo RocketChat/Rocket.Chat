@@ -1,11 +1,12 @@
-import type { IMessage } from '../messages';
-import type { IRoom } from '../rooms';
-import type { IUser } from '../users';
-import type { IUIKitIncomingInteractionActionButton } from './IUIKitIncomingInteractionActionButton';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type {
 	IUIKitIncomingInteractionMessageContainer,
 	IUIKitIncomingInteractionModalContainer,
-} from './UIKitIncomingInteractionContainer';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+import type { UIKitIncomingInteractionActionButton } from './UIKitIncomingInteractionActionButton';
 
 export enum UIKitIncomingInteractionType {
 	BLOCK = 'blockAction',
@@ -28,4 +29,4 @@ export interface IUIKitIncomingInteraction {
 	message?: IMessage;
 }
 
-export type UIKitIncomingInteraction = IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton;
+export type UIKitIncomingInteraction = IUIKitIncomingInteraction | UIKitIncomingInteractionActionButton;
