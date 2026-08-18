@@ -1,7 +1,6 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
@@ -27,6 +26,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
@@ -551,8 +551,8 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		);
 		const { status, filter } = this.queryParams;
 
-		const hidden = await StatusVisibility.getHiddenFrom(this.userId);
-		const roomUids = status && hidden.length ? room.uids?.filter((uid) => !hidden.includes(uid)) : room.uids;
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const roomUids = status && hidden ? room.uids?.filter((uid) => !hidden.has(uid)) : room.uids;
 		const extraQuery: Record<string, unknown> = {
 			_id: { $in: roomUids },
 			...(status && { status: { $in: status } }),
@@ -596,7 +596,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...(hidden.includes(member._id) ? redactStatus(member) : member),
+				...(hidden?.has(member._id) ? redactStatus(member) : member),
 				subscription,
 			};
 		});

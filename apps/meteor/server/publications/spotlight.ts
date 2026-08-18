@@ -1,11 +1,10 @@
-import { StatusVisibility } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
-import { redactStatus } from '../lib/statusVisibility/redactStatus';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../lib/statusVisibility/hiddenUsers';
 
 type SpotlightType = {
 	users?: boolean;
@@ -68,9 +67,9 @@ export const spotlightMethod = async ({
 		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
 	]);
 
-	const hidden = new Set(await StatusVisibility.getHiddenFrom(userId));
+	const hidden = await getUsersHiddenFrom(userId);
 
-	return { users: users.map((user) => (hidden.has(user._id) ? redactStatus(user) : user)), rooms };
+	return { users: redactHiddenUsers(users, hidden), rooms };
 };
 
 Meteor.methods<ServerMethods>({

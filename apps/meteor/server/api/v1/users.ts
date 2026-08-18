@@ -1,4 +1,4 @@
-import { MeteorError, Presence, StatusVisibility, Team } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -48,7 +48,7 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -718,10 +718,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
-			const hidden = await StatusVisibility.getHiddenFrom(this.userId);
+			const hidden = await getUsersHiddenFrom(this.userId);
 
-			if (hidden.length && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: hidden } }];
+			if (hidden && queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
 			}
 
 			const actualSort = sort || { username: 1 };
@@ -781,7 +781,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users: users.map((user: IUser) => (hidden.includes(user._id) ? redactStatus(user) : user)),
+				users: redactHiddenUsers(users, hidden),
 				count: users.length,
 				offset,
 				total,
@@ -840,11 +840,11 @@ API.v1.get(
 			inactiveReason,
 		});
 
-		const hidden = new Set(await StatusVisibility.getHiddenFrom(this.userId));
+		const hidden = await getUsersHiddenFrom(this.userId);
 
 		return API.v1.success({
 			...result,
-			users: result.users.map((user) => (hidden.has(user._id) ? redactStatus(user) : user)),
+			users: redactHiddenUsers(result.users, hidden),
 		});
 	},
 );
@@ -1575,14 +1575,14 @@ API.v1.get(
 			},
 		};
 
-		const hidden = new Set(await StatusVisibility.getHiddenFrom(this.userId));
+		const hidden = await getUsersHiddenFrom(this.userId);
 
 		if (ids) {
 			const requested = Array.isArray(ids) ? ids : ids.split(',');
 			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
 
 			return API.v1.success({
-				users: users.filter((user) => !hidden.has(user._id)),
+				users: filterHiddenUsers(users, hidden),
 				full: false,
 			});
 		}
@@ -1595,7 +1595,7 @@ API.v1.get(
 				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
 
 				return API.v1.success({
-					users: users.map((user) => (hidden.has(user._id) ? redactStatus(user) : user)),
+					users: filterHiddenUsers(users, hidden),
 					full: false,
 				});
 			}
@@ -1604,7 +1604,7 @@ API.v1.get(
 		const users = await Users.findUsersNotOffline(options).toArray();
 
 		return API.v1.success({
-			users: users.filter((user) => !hidden.has(user._id)),
+			users: filterHiddenUsers(users, hidden),
 			full: true,
 		});
 	},

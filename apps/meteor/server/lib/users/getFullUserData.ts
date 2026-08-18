@@ -1,10 +1,10 @@
-import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { getUsersHiddenFrom } from '../statusVisibility/hiddenUsers';
 import { redactStatus } from '../statusVisibility/redactStatus';
 import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
 
@@ -152,7 +152,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
-	const hidden = await StatusVisibility.getHiddenFrom(userId);
+	const hidden = await getUsersHiddenFrom(userId);
 
-	return hidden.includes(user._id) ? redactStatus(user) : user;
+	return hidden?.has(user._id) ? redactStatus(user) : user;
 }
