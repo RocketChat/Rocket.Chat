@@ -95,7 +95,7 @@ const handleInteraction: AppButtonInteractionHandler = async ({ button, sessionS
 };
 
 type StoryArgs = {
-	state: 'new' | 'ringing' | 'calling' | 'ongoing';
+	state: 'none' | 'ringing' | 'calling' | 'ongoing';
 	transferredBy?: string;
 };
 
@@ -110,15 +110,15 @@ const StateControls = () => {
 	const { state } = sessionState;
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbe={16} gap={8}>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockEnd={16} gap={8}>
 			<Box color='hint' fontScale='c1'>
 				Current state: <Tag>{state}</Tag>
 			</Box>
 			<ButtonGroup vertical>
-				<Button small onClick={() => void onCall()}>
+				<Button size='small' onClick={() => void onCall()}>
 					Receive call (→ ringing)
 				</Button>
-				<Button small onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'}>
+				<Button size='small' onClick={() => toggleWidget()} disabled={state !== 'none'}>
 					Toggle widget
 				</Button>
 			</ButtonGroup>
@@ -130,13 +130,13 @@ const meta = {
 	title: 'Experimental/AppActionButtons/WidgetStates',
 	component: MediaCallWidget,
 	args: {
-		state: 'new',
+		state: 'none',
 	},
 	argTypes: {
 		state: {
 			description: 'Initial widget state. Changing this remounts the widget from scratch.',
 			control: { type: 'select' },
-			options: ['new', 'ringing', 'calling', 'ongoing'] satisfies StoryArgs['state'][],
+			options: ['none', 'ringing', 'calling', 'ongoing'] satisfies StoryArgs['state'][],
 		},
 		transferredBy: {
 			description: 'When set, ringing becomes an IncomingCallTransfer and calling becomes an OutgoingCallTransfer.',
