@@ -10,7 +10,7 @@ export function useDirectoryQuery(
 	return useDebouncedValue(
 		useMemo(
 			() => ({
-				text,
+				text: text.trim(),
 				type,
 				workspace,
 				sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
