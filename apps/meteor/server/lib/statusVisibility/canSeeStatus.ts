@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
+import type { FindCursor } from 'mongodb';
 
 import { settings } from '../../settings/cached';
 
@@ -66,38 +67,35 @@ export const broadcastStatusVisibility = (targets?: IUser['_id'][]): void => {
 		.catch((err) => logger.error({ msg: 'Status visibility invalidation failed', err, targets }));
 };
 
-export const convertUsernamesToUserIds = async (usernames: string[]): Promise<IUser['_id'][]> => {
-	if (!usernames.length) {
-		return [];
-	}
+type ResolvedUsers = { ids: IUser['_id'][]; usernames: NonNullable<IUser['username']>[] };
 
-	const idByUsername = new Map<NonNullable<IUser['username']>, IUser['_id']>();
+const collectUsers = async (users: FindCursor<Pick<IUser, '_id' | 'username'>>): Promise<ResolvedUsers> => {
+	const resolved: ResolvedUsers = { ids: [], usernames: [] };
 
-	const users = Users.findByUsernames(usernames, { projection: { username: 1 } });
 	for await (const { _id, username } of users) {
 		if (username) {
-			idByUsername.set(username, _id);
+			resolved.ids.push(_id);
+			resolved.usernames.push(username);
 		}
 	}
 
-	return [...idByUsername.values()];
+	return resolved;
 };
 
-export const convertUserIdsToUsernames = async (ids: IUser['_id'][]): Promise<NonNullable<IUser['username']>[]> => {
+export const resolveUsersByIds = async (ids: IUser['_id'][]): Promise<ResolvedUsers> => {
 	if (!ids.length) {
-		return [];
+		return { ids: [], usernames: [] };
 	}
 
-	const usernameById = new Map<IUser['_id'], NonNullable<IUser['username']>>();
+	return collectUsers(Users.findByIds<Pick<IUser, '_id' | 'username'>>(ids, { projection: { username: 1 } }));
+};
 
-	const users = Users.findByIds<Pick<IUser, '_id' | 'username'>>(ids, { projection: { username: 1 } });
-	for await (const { _id, username } of users) {
-		if (username) {
-			usernameById.set(_id, username);
-		}
+export const resolveUsersByUsernames = async (usernames: string[]): Promise<ResolvedUsers> => {
+	if (!usernames.length) {
+		return { ids: [], usernames: [] };
 	}
 
-	return [...usernameById.values()];
+	return collectUsers(Users.findByUsernames(usernames, { projection: { username: 1 } }));
 };
 
 export const redactStatus = <T extends Partial<IUser>>(user: T): T => {

@@ -12,7 +12,7 @@ import {
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
-import { broadcastStatusVisibility, convertUsernamesToUserIds } from '../../lib/statusVisibility/canSeeStatus';
+import { broadcastStatusVisibility, resolveUsersByUsernames } from '../../lib/statusVisibility/canSeeStatus';
 import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
@@ -173,11 +173,13 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
-	if (settings.statusVisibilityDenied) {
-		settings.statusVisibilityDenied = await convertUsernamesToUserIds(settings.statusVisibilityDenied);
-	}
-
 	await Users.setPreferences(user._id, settings);
+
+	// clients use usernames for statusVisibilityDenied;
+	// server stores and handles user IDs.
+	if (settings.statusVisibilityDenied) {
+		settings.statusVisibilityDenied = (await resolveUsersByUsernames(settings.statusVisibilityDenied)).usernames;
+	}
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
 		data[`settings.preferences.${key}`] = settings[key];

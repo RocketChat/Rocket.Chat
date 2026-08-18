@@ -4,7 +4,7 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
-import { canSeeStatus, convertUserIdsToUsernames, redactStatus } from '../statusVisibility/canSeeStatus';
+import { canSeeStatus, redactStatus, resolveUsersByIds } from '../statusVisibility/canSeeStatus';
 
 const logger = new Logger('getFullUserData');
 
@@ -144,7 +144,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
 
 	if (ownBlockList?.length && user.settings?.preferences) {
-		user.settings.preferences.statusVisibilityDenied = await convertUserIdsToUsernames(ownBlockList);
+		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
 	return canSeeStatus(userId, user._id) ? user : redactStatus(user);

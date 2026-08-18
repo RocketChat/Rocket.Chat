@@ -1,8 +1,17 @@
-import { canSeeStatus, getHiddenFrom, hasStatusRestrictions, refreshStatusVisibility } from './canSeeStatus';
+import {
+	canSeeStatus,
+	getHiddenFrom,
+	hasStatusRestrictions,
+	refreshStatusVisibility,
+	resolveUsersByIds,
+	resolveUsersByUsernames,
+} from './canSeeStatus';
 
 const getSetting = jest.fn();
 const findPresenceUsersByIds = jest.fn();
 const findWithStatusVisibilityConfig = jest.fn();
+const usersByUsernames = jest.fn();
+const usersByIds = jest.fn();
 
 jest.mock('../../settings/cached', () => ({
 	settings: { get: (key: string) => getSetting(key) },
@@ -11,6 +20,8 @@ jest.mock('@rocket.chat/models', () => ({
 	Users: {
 		findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
 		findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
+		findByUsernames: (...args: unknown[]) => usersByUsernames(...args),
+		findByIds: (...args: unknown[]) => usersByIds(...args),
 	},
 }));
 
@@ -131,5 +142,34 @@ describe('status visibility mirror', () => {
 		await refreshStatusVisibility();
 
 		expect(getHiddenFrom('ana')).toEqual([]);
+	});
+
+	it('pairs every resolved id with its username in either direction', async () => {
+		usersByUsernames.mockReturnValue([
+			{ _id: 'bbb222', username: 'bruno' },
+			{ _id: 'ccc333', username: 'carla' },
+		]);
+
+		const byUsername = await resolveUsersByUsernames(['bruno', 'ghost', 'carla']);
+
+		expect(byUsername.usernames).toEqual(['bruno', 'carla']);
+		expect(byUsername.ids).toEqual(['bbb222', 'ccc333']);
+
+		usersByIds.mockReturnValue([{ _id: 'bbb222', username: 'bruno' }]);
+
+		const byId = await resolveUsersByIds(['bbb222', 'missing']);
+
+		expect(byId.usernames).toEqual(['bruno']);
+		expect(byId.ids).toEqual(['bbb222']);
+	});
+
+	it('resolves to empty arrays without touching the database', async () => {
+		const { ids, usernames } = await resolveUsersByUsernames([]);
+
+		expect(ids).toEqual([]);
+		expect(usernames).toEqual([]);
+		expect(usersByUsernames).not.toHaveBeenCalled();
+		expect((await resolveUsersByIds([])).ids).toEqual([]);
+		expect(usersByIds).not.toHaveBeenCalled();
 	});
 });
