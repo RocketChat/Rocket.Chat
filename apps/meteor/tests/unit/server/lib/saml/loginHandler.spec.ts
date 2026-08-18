@@ -4,11 +4,17 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const retrieveCredential = sinon.stub().resolves(null);
+const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'some-user-id', token: 'some-token' });
 const removeById = sinon.stub().resolves();
+const warnUnlicensedAuthService = sinon.stub();
+const mapProfileToUserObject = sinon.stub().returns({
+	identifier: { type: 'username', attribute: 'username', value: 'some-username' },
+	attributeList: new Map(),
+} as any);
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
 	log: sinon.stub(),
-	mapProfileToUserObject: sinon.stub(),
+	mapProfileToUserObject,
 	events: { emit: sinon.stub() },
 };
 
@@ -29,19 +35,22 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 		Meteor: { Error },
 	},
 	'./lib/SAML': {
-		SAML: { retrieveCredential },
+		SAML: { retrieveCredential, insertOrUpdateSAMLUser },
 	},
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
 	},
 	'../i18n': { i18n: { t: sinon.stub().returns('') } },
 	'../logger/system': { SystemLogger: { error: sinon.stub() } },
+	'../premiumAuthDeprecation': { warnUnlicensedAuthService },
 });
 
 describe('SAML loginHandler', () => {
 	beforeEach(() => {
 		retrieveCredential.reset();
 		retrieveCredential.resolves(null);
+		insertOrUpdateSAMLUser.reset();
+		insertOrUpdateSAMLUser.resolves({ userId: 'some-user-id', token: 'some-token' });
 		removeById.reset();
 		removeById.resolves();
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
@@ -65,10 +74,25 @@ describe('SAML loginHandler', () => {
 		expect(retrieveCredential.called).to.be.false;
 	});
 
-	it('should delete the credential token after retrieval', async () => {
-		await handler({ saml: true, credentialToken: 'token-to-delete' });
+	it('should not delete the credential token after retrieval so the mobile webview and the native app can both redeem it', async () => {
+		await handler({ saml: true, credentialToken: 'token-to-keep' });
 
-		expect(removeById.calledOnce).to.be.true;
-		expect(removeById.calledWith('token-to-delete')).to.be.true;
+		expect(removeById.called).to.be.false;
+	});
+
+	it('should let the same credential token be redeemed more than once (mobile login flow)', async () => {
+		const tokenStore = new Map<string, { profile: Record<string, any> }>();
+		retrieveCredential.callsFake(async (token: string) => tokenStore.get(token));
+		removeById.callsFake(async (token: string) => {
+			tokenStore.delete(token);
+		});
+		tokenStore.set('shared-token', { profile: { username: 'mobile-user', email: 'mobile@example.com' } });
+
+		const first = await handler({ saml: true, credentialToken: 'shared-token' });
+		const second = await handler({ saml: true, credentialToken: 'shared-token' });
+
+		expect(first).to.have.property('userId');
+		expect(second).to.have.property('userId');
+		expect(removeById.called).to.be.false;
 	});
 });
