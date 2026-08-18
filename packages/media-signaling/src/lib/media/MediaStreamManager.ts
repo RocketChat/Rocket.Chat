@@ -101,9 +101,9 @@ export class MediaStreamManager implements IMediaStreamManager {
 			return [this.mainRemote];
 		}
 
-		// A video track for an unidentified stream, let's ignore it
-		this.logger?.debug('unidentified stream, ignoring video track');
-		return [];
+		// A video track for an unidentified stream - since the only video we support now is screen share, assume that's what this is
+		this.logger?.debug('unidentified stream, assuming screen-share');
+		return [this.screenShareRemote];
 	}
 
 	private createStream(remote: boolean, tag: string): MediaStreamWrapper {

@@ -1051,18 +1051,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		return false;
 	}
 
-	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
-		if (this.hidden || this.shouldIgnoreWebRTC()) {
-			return;
-		}
-
-		this.config.logger?.debug('ClientMediaCall.processAnswerRequest', signal);
-
-		this.requireWebRTC();
-
-		void this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
-	}
-
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
 		this.config.logger?.debug('ClientMediaCall.sendError', error);
 
@@ -1080,30 +1068,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.isSignalTargetingThisSession(signal)) {
-			this.config.logger?.error('Received an offer request that is unsigned, or signed to a different session.');
+			this.config.logger?.error('Received a remote sdp that is not signed to this session.');
 			return;
 		}
 
 		if (this.shouldIgnoreWebRTC()) {
 			return;
 		}
+		if (!['offer', 'answer'].includes(signal.sdp.type)) {
+			this.config.logger?.error('Unsupported remote sdp type.', signal.sdp.type);
+			return;
+		}
 
 		this.requireWebRTC();
 
-		if (signal.streams) {
-			this.webrtcProcessor.setRemoteIds(signal.streams);
-		}
-		switch (signal.sdp.type) {
-			case 'offer':
-				await this.processAnswerRequest(signal);
-				break;
-			case 'answer':
-				await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
-				break;
-			default:
-				this.config.logger?.error('Unsupported sdp type.');
-				return;
-		}
+		this.webrtcProcessor.setRemoteIds(signal);
+		await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
 
 		this.receivedRemoteSdp = true;
 		this.updateClientState();
