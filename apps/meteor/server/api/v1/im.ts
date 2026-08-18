@@ -26,7 +26,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
-import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
+import { canSeeStatus, getHiddenFrom, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
@@ -550,8 +550,10 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		);
 		const { status, filter } = this.queryParams;
 
+		const hidden = status ? getHiddenFrom(this.userId) : [];
+		const roomUids = hidden.length ? room.uids?.filter((uid) => !hidden.includes(uid)) : room.uids;
 		const extraQuery: Record<string, unknown> = {
-			_id: { $in: room.uids },
+			_id: { $in: roomUids },
 			...(status && { status: { $in: status } }),
 		};
 
