@@ -2,7 +2,7 @@ import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCa
 import semver from 'semver';
 
 import { Info } from '../../../app/utils/rocketchat.info';
-import { resolveUsersByIds } from '../../lib/statusVisibility/canSeeStatus';
+import { isStatusVisibilityEnabled, resolveUsersByIds } from '../../lib/statusVisibility/canSeeStatus';
 import { getURL } from '../../lib/utils/getURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { settings } from '../../settings';
@@ -92,9 +92,10 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 		? {
 				...(await getPreferencesWithDefaults(me)),
 				...me.settings?.preferences,
-				...(me.settings?.preferences?.statusVisibilityDenied && {
-					statusVisibilityDenied: (await resolveUsersByIds(me.settings?.preferences?.statusVisibilityDenied)).usernames,
-				}),
+				...(isStatusVisibilityEnabled() &&
+					me.settings?.preferences?.statusVisibilityDenied && {
+						statusVisibilityDenied: (await resolveUsersByIds(me.settings?.preferences?.statusVisibilityDenied)).usernames,
+					}),
 			}
 		: undefined;
 

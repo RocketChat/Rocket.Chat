@@ -12,7 +12,7 @@ const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1
 
 const denied = new Map<IUser['_id'], Set<IUser['_id']>>();
 
-const isStatusVisibilityEnabled = (): boolean => settings.get<boolean>('Accounts_StatusVisibility_Enabled') === true;
+export const isStatusVisibilityEnabled = (): boolean => settings.get<boolean>('Accounts_StatusVisibility_Enabled') === true;
 
 export const canSeeStatus = (viewerId: IUser['_id'] | null | undefined, targetId: IUser['_id']): boolean =>
 	!isStatusVisibilityEnabled() || !viewerId || viewerId === targetId || !denied.get(targetId)?.has(viewerId);
