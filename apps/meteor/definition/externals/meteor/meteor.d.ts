@@ -179,6 +179,15 @@ declare module 'meteor/meteor' {
 
 			drain(): unknown;
 		}
+
+		interface UserServices {
+			totp?: {
+				enabled: boolean;
+				hashedBackup: string[];
+				secret: string;
+				tempSecret?: string;
+			};
+		}
 	}
 
 	// eslint-disable-next-line no-var
