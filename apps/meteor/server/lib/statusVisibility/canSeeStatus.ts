@@ -98,11 +98,7 @@ export const resolveUsersByUsernames = async (usernames: string[]): Promise<Reso
 };
 
 export const redactStatus = <T extends Partial<IUser>>(user: T): T => {
-	const redacted: Record<string, unknown> = { ...user, status: 'offline' };
+	const { statusText, statusSource, statusExpiresAt, statusDefault, statusConnection, ...rest } = user;
 
-	for (const field of ['statusText', 'statusSource', 'statusExpiresAt', 'statusDefault', 'statusConnection']) {
-		delete redacted[field];
-	}
-
-	return redacted as T;
+	return { ...rest, status: 'offline' } as T;
 };
