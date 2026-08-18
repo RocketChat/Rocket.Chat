@@ -143,7 +143,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 
 	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
 
-	if (ownBlockList?.length && user.settings?.preferences) {
+	if (isStatusVisibilityEnabled() && ownBlockList?.length && user.settings?.preferences) {
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
