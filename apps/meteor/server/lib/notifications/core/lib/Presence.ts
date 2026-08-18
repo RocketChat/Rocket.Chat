@@ -79,6 +79,10 @@ class UserPresence {
 		this.publication._session.socket.send(payload);
 	};
 
+	isActive(): boolean {
+		return Streamer.isPublicationActive(this.publication);
+	}
+
 	stop(): void {
 		this.listeners.forEach(this.off);
 		clients.delete(this.publication.connection);
@@ -114,6 +118,14 @@ export class StreamPresence {
 				const [client, main] = UserPresence.getClient(publication, this);
 
 				await client.refreshHiddenFrom();
+
+				if (!client.isActive()) {
+					if (main) {
+						client.stop();
+					}
+
+					return;
+				}
 
 				added?.forEach((uid) => client.listen(uid));
 				removed?.forEach((uid) => client.off(uid));
