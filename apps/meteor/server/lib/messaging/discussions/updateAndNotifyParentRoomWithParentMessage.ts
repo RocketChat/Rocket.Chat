@@ -9,21 +9,23 @@ type DiscussionRoom = Pick<IRoom, '_id' | 'msgs' | 'lm' | 'sysMes'>;
 /**
  * Both the system messages hidden globally and the ones hidden on the room itself are
  * filtered out from the room history, so the count has to consider both of them.
+ * Type `rm` is filtered out because it's already discounted when the message is deleted.
  */
-const getHiddenMessageTypes = (room: DiscussionRoom): MessageTypesValues[] => {
+const getHiddenTypesToDiscount = (room: DiscussionRoom): MessageTypesValues[] => {
 	const globalHiddenTypes = settings.get<MessageTypesValues[]>('Hide_System_Messages');
 	const globallyHiddenTypes = Array.isArray(globalHiddenTypes) ? globalHiddenTypes : [];
 	const roomHiddenTypes = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	return [...new Set([...globallyHiddenTypes, ...roomHiddenTypes])].flatMap<MessageTypesValues>((type) =>
-		// `mute_unmute` is a single option covering two different message types
-		type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type],
-	);
+	return [...new Set([...globallyHiddenTypes, ...roomHiddenTypes])]
+		.flatMap<MessageTypesValues>((type) =>
+			// `mute_unmute` is a single option covering two different message types
+			type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type],
+		)
+		.filter((type) => type !== 'rm');
 };
 
 const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number> => {
-	// `rm` messages are already discounted from the room messages count when they are removed
-	const hiddenMessageTypes = getHiddenMessageTypes(room).filter((type) => type !== 'rm');
+	const hiddenMessageTypes = getHiddenTypesToDiscount(room);
 
 	if (!hiddenMessageTypes.length) {
 		return room.msgs;
