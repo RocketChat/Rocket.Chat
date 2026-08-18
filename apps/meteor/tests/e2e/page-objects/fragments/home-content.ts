@@ -503,10 +503,6 @@ export class HomeContent {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
 
-	get btnAnonymousTalk(): Locator {
-		return this.page.locator('role=button[name="Or talk as anonymous"]');
-	}
-
 	get nextSlideButton(): Locator {
 		return this.page.getByLabel('Next slide');
 	}
