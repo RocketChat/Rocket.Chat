@@ -39,6 +39,7 @@ callbacks.add(
 			projection: {
 				msgs: 1,
 				lm: 1,
+				sysMes: 1,
 			},
 		});
 
@@ -62,6 +63,7 @@ callbacks.add(
 				projection: {
 					msgs: 1,
 					lm: 1,
+					sysMes: 1,
 				},
 			});
 
