@@ -429,13 +429,15 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 
 		if (this.statusVisibilityEnabled) {
-			void StatusVisibility.hasRestrictions(user._id).then((hasVisibilityRestrictions) =>
-				this.api?.broadcast('presence.status', {
-					user,
-					previousStatus,
-					hasVisibilityRestrictions,
-				}),
-			);
+			void StatusVisibility.hasRestrictions(user._id)
+				.catch(() => true)
+				.then((hasVisibilityRestrictions) =>
+					this.api?.broadcast('presence.status', {
+						user,
+						previousStatus,
+						hasVisibilityRestrictions,
+					}),
+				);
 
 			return;
 		}
