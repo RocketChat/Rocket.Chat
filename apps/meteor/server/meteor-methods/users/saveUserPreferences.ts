@@ -173,13 +173,13 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
-	await Users.setPreferences(user._id, settings);
+	const denied = settings.statusVisibilityDenied ? await resolveUsersByUsernames(settings.statusVisibilityDenied) : undefined;
 
-	// clients use usernames for statusVisibilityDenied;
-	// server stores and handles user IDs.
-	if (settings.statusVisibilityDenied) {
-		settings.statusVisibilityDenied = (await resolveUsersByUsernames(settings.statusVisibilityDenied)).usernames;
+	if (denied) {
+		settings.statusVisibilityDenied = denied.usernames;
 	}
+
+	await Users.setPreferences(user._id, denied ? { ...settings, statusVisibilityDenied: denied.ids } : settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
 		data[`settings.preferences.${key}`] = settings[key];
