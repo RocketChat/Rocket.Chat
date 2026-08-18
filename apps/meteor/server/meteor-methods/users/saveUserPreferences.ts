@@ -197,7 +197,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		},
 	});
 
-	if (settings.statusVisibilityDenied != null) {
+	if (settings.statusVisibilityDenied != null && rcSettings.get<boolean>('Accounts_StatusVisibility_Enabled')) {
 		void StatusVisibility.invalidate([user._id]);
 	}
 
