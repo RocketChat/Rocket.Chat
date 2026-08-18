@@ -10260,7 +10260,6 @@ __metadata:
     ajv: "npm:^8.20.0"
     ajv-formats: "npm:~3.0.1"
     archiver: "npm:^7.0.1"
-    asterisk-manager: "npm:^0.2.0"
     atlassian-crowd-patched: "npm:^0.5.1"
     autoprefixer: "npm:^10.5.4"
     babel-loader: "npm:~10.0.0"
@@ -17410,13 +17409,6 @@ __metadata:
   dependencies:
     tslib: "npm:^2.0.1"
   checksum: 10/f569b475eb1c8cb93888cb6e7b7e36dc43fa19a77e4eb132cbff6e3eb1598ca60f850db6e60b070e5a0ee8c1559fca921dac0916e576f2f104e198793b0bdd8d
-  languageName: node
-  linkType: hard
-
-"asterisk-manager@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "asterisk-manager@npm:0.2.0"
-  checksum: 10/79922b9066bb77b39ed452f0c21eb15aaae2b3cbe7fc79eb798f7ad5aeb8e0510b050bb743e463d0124391dfaf907dc9552405be62616b88bd0700887f76a6f6
   languageName: node
   linkType: hard
 
