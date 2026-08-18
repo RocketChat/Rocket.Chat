@@ -137,7 +137,7 @@ export class SAMLUtils {
 		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
 	}
 
-	private static isSupportedLoginClient(value: unknown): value is 'desktop' | 'mobile' {
+	public static isSupportedLoginClient(value: unknown): value is 'desktop' | 'mobile' {
 		return value === 'desktop' || value === 'mobile';
 	}
 

@@ -464,7 +464,7 @@ export class SAML {
 		const serviceProvider = new SAMLServiceProvider(service);
 		let url: string | undefined;
 		const requestedLoginClient = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow') ? req.query.loginClient : undefined;
-		const loginClient = requestedLoginClient === 'desktop' || requestedLoginClient === 'mobile' ? requestedLoginClient : undefined;
+		const loginClient = SAMLUtils.isSupportedLoginClient(requestedLoginClient) ? requestedLoginClient : undefined;
 
 		try {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken, loginClient);
