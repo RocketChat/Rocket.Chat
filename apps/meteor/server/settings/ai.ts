@@ -165,4 +165,31 @@ export const createAISettings = async (): Promise<void> => {
 			i18nDescription: 'AI_Intelligent_Search_Answer_System_Prompt_Description',
 		},
 	);
+
+	await settingsRegistry.add('MCP_Enabled', false, {
+		group: AI_SETTINGS_GROUP,
+		section: 'MCP',
+		type: 'boolean',
+		public: false,
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: false,
+		alert: 'MCP_Alpha_Alert',
+		i18nLabel: 'MCP_Enabled',
+		i18nDescription: 'MCP_Enabled_Description',
+	});
+
+	await settingsRegistry.add('MCP_Expose_Extended_API', false, {
+		group: AI_SETTINGS_GROUP,
+		section: 'MCP',
+		type: 'boolean',
+		public: false,
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: false,
+		enableQuery: { _id: 'MCP_Enabled', value: true },
+		alert: 'MCP_Extended_API_Alert',
+		i18nLabel: 'MCP_Expose_Extended_API',
+		i18nDescription: 'MCP_Expose_Extended_API_Description',
+	});
 };

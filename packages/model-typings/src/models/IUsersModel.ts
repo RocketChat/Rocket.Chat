@@ -291,6 +291,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }: { userId: IUser['_id']; tokenName: string }): Promise<IUser | null>;
+	findPersonalAccessTokenByHashedTokenAndUserId({
+		userId,
+		hashedToken,
+	}: {
+		userId: IUser['_id'];
+		hashedToken: string;
+	}): Promise<Pick<IUser, '_id'> | null>;
 	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean, acceptChatsWithNoAgents?: boolean): Promise<boolean>;
 	findOnlineAgents<T extends Document = ILivechatAgent>(
 		agentId?: IUser['_id'],
