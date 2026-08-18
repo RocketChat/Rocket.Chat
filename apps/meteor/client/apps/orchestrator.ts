@@ -4,9 +4,10 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 
-import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import type { IAppExternalURL } from '../definitions/IAppExternalURL';
+import type { ICategory } from '../definitions/ICategory';
 import { hasAtLeastOnePermission } from '../lib/authorization';
 import { dispatchToastMessage } from '../lib/toast';
 import type { App } from '../views/marketplace/types';
