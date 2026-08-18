@@ -88,13 +88,15 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IMeApiUser> {
 	const verifiedEmail = isVerifiedEmail(me);
 
+	const { statusVisibilityDenied, ...savedPreferences } = me.settings?.preferences ?? {};
+
 	const preferences = pullPreferences
 		? {
 				...(await getPreferencesWithDefaults(me)),
-				...me.settings?.preferences,
+				...savedPreferences,
 				...(isStatusVisibilityEnabled() &&
-					me.settings?.preferences?.statusVisibilityDenied && {
-						statusVisibilityDenied: (await resolveUsersByIds(me.settings?.preferences?.statusVisibilityDenied)).usernames,
+					statusVisibilityDenied?.length && {
+						statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
 					}),
 			}
 		: undefined;

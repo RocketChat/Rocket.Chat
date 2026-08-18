@@ -121,7 +121,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
-			...(myself && { 'services': 1, 'settings.preferences.statusVisibilityDenied': 1 }),
+			...(myself && { services: 1, ...(isStatusVisibilityEnabled() && { 'settings.preferences.statusVisibilityDenied': 1 }) }),
 		},
 	};
 
@@ -143,7 +143,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 
 	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
 
-	if (isStatusVisibilityEnabled() && ownBlockList?.length && user.settings?.preferences) {
+	if (ownBlockList?.length && user.settings?.preferences) {
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
