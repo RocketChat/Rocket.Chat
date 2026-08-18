@@ -48,7 +48,7 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { canSeeStatus, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
+import { canSeeStatus, getHiddenFrom, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -87,6 +87,7 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
+import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -709,6 +710,12 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
+			const hidden = getHiddenFrom(this.userId);
+
+			if (hidden.length && queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: hidden } }];
+			}
+
 			const actualSort = sort || { username: 1 };
 
 			if (sort?.status) {
@@ -812,20 +819,23 @@ API.v1.get(
 		const { sort } = await this.parseJsonQuery();
 		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
-		return API.v1.success(
-			await findPaginatedUsersByStatus({
-				uid: this.userId,
-				offset,
-				count,
-				sort,
-				status,
-				roles,
-				searchTerm,
-				hasLoggedIn,
-				type,
-				inactiveReason,
-			}),
-		);
+		const result = await findPaginatedUsersByStatus({
+			uid: this.userId,
+			offset,
+			count,
+			sort,
+			status,
+			roles,
+			searchTerm,
+			hasLoggedIn,
+			type,
+			inactiveReason,
+		});
+
+		return API.v1.success({
+			...result,
+			users: result.users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
+		});
 	},
 );
 

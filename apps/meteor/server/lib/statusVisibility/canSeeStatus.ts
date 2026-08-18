@@ -18,6 +18,14 @@ export const canSeeStatus = (viewerId: IUser['_id'] | null | undefined, targetId
 
 export const hasStatusRestrictions = (targetId: IUser['_id']): boolean => isStatusVisibilityEnabled() && denied.has(targetId);
 
+export const getHiddenFrom = (viewerId: IUser['_id'] | null | undefined): IUser['_id'][] => {
+	if (!isStatusVisibilityEnabled() || !viewerId) {
+		return [];
+	}
+
+	return [...denied].filter(([targetId, viewers]) => targetId !== viewerId && viewers.has(viewerId)).map(([targetId]) => targetId);
+};
+
 export const refreshStatusVisibility = async (targets?: IUser['_id'][]): Promise<UserPresence[]> => {
 	if (!isStatusVisibilityEnabled()) {
 		const previous = [...denied.keys()];

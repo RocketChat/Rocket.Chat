@@ -1,4 +1,4 @@
-import { canSeeStatus, hasStatusRestrictions, refreshStatusVisibility } from './canSeeStatus';
+import { canSeeStatus, getHiddenFrom, hasStatusRestrictions, refreshStatusVisibility } from './canSeeStatus';
 
 const getSetting = jest.fn();
 const findPresenceUsersByIds = jest.fn();
@@ -111,5 +111,25 @@ describe('status visibility mirror', () => {
 		const affected = await refreshStatusVisibility();
 
 		expect(affected.map(({ _id }) => _id).sort()).toEqual(['ana', 'carla']);
+	});
+
+	it('lists who hid their status from a given viewer, and only while the feature is on', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno']), blocking('carla', ['bruno', 'diego'])]));
+		await refreshStatusVisibility();
+
+		expect(getHiddenFrom('bruno').sort()).toEqual(['ana', 'carla']);
+		expect(getHiddenFrom('diego')).toEqual(['carla']);
+		expect(getHiddenFrom('elena')).toEqual([]);
+		expect(getHiddenFrom(null)).toEqual([]);
+
+		getSetting.mockReturnValue(false);
+		expect(getHiddenFrom('bruno')).toEqual([]);
+	});
+
+	it('never hides a target from themselves', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['ana', 'bruno'])]));
+		await refreshStatusVisibility();
+
+		expect(getHiddenFrom('ana')).toEqual([]);
 	});
 });
