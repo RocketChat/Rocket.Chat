@@ -41,4 +41,12 @@ describe('doNotMixInclusionAndExclusionFields', () => {
 		expect(projectionSentToDriver({ name: true, password: false })).toEqual({ name: true });
 		expect(projectionSentToDriver({ name: 1, _id: false })).toEqual({ name: 1 });
 	});
+
+	it('should not mutate the projection owned by the caller', () => {
+		const options = { projection: { name: 1, password: false } } as unknown as FindOptions<{ _id: string; name: string; password: string }>;
+
+		new TestModel().find({}, options);
+
+		expect(options.projection).toEqual({ name: 1, password: false });
+	});
 });
