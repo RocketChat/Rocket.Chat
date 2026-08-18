@@ -187,7 +187,6 @@ const UsersSetPreferencesParamsPostSchema = {
 				statusVisibilityDenied: {
 					type: 'array',
 					items: { type: 'string' },
-					nullable: true,
 				},
 				sidebarSortby: {
 					type: 'string',
