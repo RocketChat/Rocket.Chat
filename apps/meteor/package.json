@@ -127,7 +127,7 @@
 		"@rocket.chat/logo": "^0.33.2",
 		"@rocket.chat/media-calls": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/memo": "~0.31.25",
+		"@rocket.chat/memo": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/message-types": "workspace:~",
 		"@rocket.chat/model-typings": "workspace:^",

@@ -38,6 +38,7 @@ export default {
 				'<rootDir>/server/lib/omnichannel/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/ee/server/lib/authorization/validateUserRoles.spec.ts',
 				'<rootDir>/ee/server/lib/license/**/*.spec.ts',
+				'<rootDir>/ee/server/api/mcp/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/ee/server/cron/**/*.spec.ts',
 				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
