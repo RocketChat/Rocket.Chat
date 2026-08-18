@@ -145,15 +145,14 @@ export abstract class BaseRaw<
 		}
 
 		const projection: Record<string, any> = optionsDef?.projection;
-		const keys = Object.keys(projection);
-		const removeKeys = keys.filter((key) => projection[key] === 0 || projection[key] === false);
-		if (keys.length > removeKeys.length) {
-			removeKeys.forEach((key) => delete projection[key]);
-		}
+		const entries = Object.entries(projection);
+		const inclusionEntries = entries.filter(([, value]) => value !== 0 && value !== false);
+		const isMixed = inclusionEntries.length > 0 && inclusionEntries.length < entries.length;
 
 		return {
 			...optionsDef,
-			projection,
+			// a mixed projection gets its exclusions dropped into a new object; `projection` may be owned by the caller
+			projection: isMixed ? Object.fromEntries(inclusionEntries) : projection,
 		};
 	}
 
