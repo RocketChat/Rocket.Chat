@@ -79,10 +79,6 @@ class UserPresence {
 		this.publication._session.socket.send(payload);
 	};
 
-	isActive(): boolean {
-		return Streamer.isPublicationActive(this.publication);
-	}
-
 	stop(): void {
 		this.listeners.forEach(this.off);
 		clients.delete(this.publication.connection);
@@ -106,8 +102,8 @@ class UserPresence {
 
 export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
-		return new (class StreamPresence extends Streamer<'user-presence'> {
+	static getInstance(StreamerClass: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
+		return new (class StreamPresence extends StreamerClass<'user-presence'> {
 			override async _publish(
 				publication: IPublication,
 				_eventName: string,
@@ -119,7 +115,7 @@ export class StreamPresence {
 
 				await client.refreshHiddenFrom();
 
-				if (!client.isActive()) {
+				if (!Streamer.isPublicationActive(publication)) {
 					if (main) {
 						client.stop();
 					}
