@@ -53,6 +53,7 @@ export default {
 				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',
+				'<rootDir>/server/services/statusVisibility/*.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

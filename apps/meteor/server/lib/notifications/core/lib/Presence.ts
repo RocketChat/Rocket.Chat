@@ -1,3 +1,4 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typings';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
@@ -5,7 +6,6 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { Streamer } from '../../../../modules/streamer/streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../modules/streamer/types';
-import { canSeeStatus } from '../../../statusVisibility/canSeeStatus';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -23,12 +23,20 @@ const e = new Emitter<{
 
 const clients = new WeakMap<Connection, UserPresence>();
 
+// The per-connection lists above cannot be reached through a WeakMap, so live clients are tracked here
+// to be refreshed when block lists change.
+const liveClients = new Set<UserPresence>();
+
 class UserPresence {
 	private readonly streamer: IStreamer<'user-presence'>;
 
 	private readonly publication: IPublication;
 
 	private readonly listeners: Set<string>;
+
+	// Who this connection's viewer may not see. Fetched once per subscription so `run`, an emitter
+	// callback returning void, can stay synchronous.
+	private hiddenFrom = new Set<IUser['_id']>();
 
 	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
 		this.listeners = new Set();
@@ -49,10 +57,14 @@ class UserPresence {
 		this.listeners.delete(uid);
 	};
 
+	async refreshHiddenFrom(): Promise<void> {
+		this.hiddenFrom = new Set(await StatusVisibility.getHiddenFrom(this.publication._session?.userId));
+	}
+
 	run = (args: UserPresenceStreamArgs): void => {
-		const visiblePresence: UserPresenceStreamArgs = canSeeStatus(this.publication._session?.userId, args.uid)
-			? args
-			: { uid: args.uid, args: [[args.args[0][0], USER_STATUS_TO_PRESENCE_CODE[UserStatus.OFFLINE]]] };
+		const visiblePresence: UserPresenceStreamArgs = this.hiddenFrom.has(args.uid)
+			? { uid: args.uid, args: [[args.args[0][0], USER_STATUS_TO_PRESENCE_CODE[UserStatus.OFFLINE]]] }
+			: args;
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...visiblePresence, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
 		if (!payload) {
 			return;
@@ -70,6 +82,7 @@ class UserPresence {
 	stop(): void {
 		this.listeners.forEach(this.off);
 		clients.delete(this.publication.connection);
+		liveClients.delete(this);
 	}
 
 	static getClient(publication: IPublication, streamer: IStreamer<'user-presence'>): [UserPresence, boolean] {
@@ -81,6 +94,7 @@ class UserPresence {
 		const main = Boolean(!stored);
 
 		clients.set(connection, client);
+		liveClients.add(client);
 
 		return [client, main];
 	}
@@ -98,6 +112,8 @@ export class StreamPresence {
 				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
 				const [client, main] = UserPresence.getClient(publication, this);
+
+				await client.refreshHiddenFrom();
 
 				added?.forEach((uid) => client.listen(uid));
 				removed?.forEach((uid) => client.off(uid));
@@ -117,4 +133,8 @@ export class StreamPresence {
 
 export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void => {
 	e.emit(uid, { uid, args });
+};
+
+export const refreshVisibility = async (): Promise<void> => {
+	await Promise.all([...liveClients].map((client) => client.refreshHiddenFrom()));
 };

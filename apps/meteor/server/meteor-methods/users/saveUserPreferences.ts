@@ -1,3 +1,4 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -12,7 +13,6 @@ import {
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
-import { broadcastStatusVisibility } from '../../lib/statusVisibility/broadcastStatusVisibility';
 import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
 import { settings as rcSettings } from '../../settings';
 
@@ -198,7 +198,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	});
 
 	if (settings.statusVisibilityDenied != null) {
-		broadcastStatusVisibility([user._id]);
+		void StatusVisibility.invalidate([user._id]);
 	}
 
 	// propagate changed notification preferences

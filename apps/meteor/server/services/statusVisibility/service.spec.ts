@@ -1,0 +1,111 @@
+import { StatusVisibilityService } from './service';
+
+const getSetting = jest.fn();
+const findPresenceUsersByIds = jest.fn();
+const findWithStatusVisibilityConfig = jest.fn();
+
+jest.mock('@rocket.chat/core-services', () => ({
+	api: { broadcast: jest.fn() },
+	Settings: { get: (key: string) => getSetting(key) },
+	ServiceClassInternal: class {
+		onSettingChanged() {
+			// no-op
+		}
+	},
+}));
+jest.mock('@rocket.chat/models', () => ({
+	Users: {
+		findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
+		findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
+	},
+}));
+
+const cursor = (users: object[]) => ({ toArray: async () => users });
+const blocking = (id: string, blocked: string[]) => ({ _id: id, settings: { preferences: { statusVisibilityDenied: blocked } } });
+
+describe('status visibility service', () => {
+	let service: StatusVisibilityService;
+
+	beforeEach(async () => {
+		jest.resetAllMocks();
+		getSetting.mockReturnValue(true);
+		findPresenceUsersByIds.mockReturnValue(cursor([]));
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
+		service = new StatusVisibilityService();
+		await service.refresh();
+	});
+
+	it('hides a target from the viewers they blocked, and only from them', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh();
+
+		expect(await service.getHiddenFrom('bruno')).toEqual(['ana']);
+		expect(await service.getHiddenFrom('carla')).toEqual([]);
+	});
+
+	it('never hides a target from themselves nor from an anonymous viewer', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['ana', 'bruno'])]));
+		await service.refresh();
+
+		expect(await service.getHiddenFrom('ana')).toEqual([]);
+		expect(await service.getHiddenFrom(null)).toEqual([]);
+	});
+
+	it('drops an entry when a targeted refresh finds the block list gone', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh(['ana']);
+		expect(await service.getHiddenFrom('bruno')).toEqual(['ana']);
+
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
+		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		const affected = await service.refresh(['ana']);
+
+		expect(await service.getHiddenFrom('bruno')).toEqual([]);
+		expect(affected.map(({ _id }) => _id)).toEqual(['ana']);
+	});
+
+	it('flags users with an active block list, only while the feature is on', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh();
+
+		expect(await service.hasRestrictions('ana')).toBe(true);
+		expect(await service.hasRestrictions('carla')).toBe(false);
+
+		getSetting.mockReturnValue(false);
+		await service.refresh();
+
+		expect(await service.hasRestrictions('ana')).toBe(false);
+	});
+
+	it('clears everything when the setting is off and reports who became visible', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh();
+
+		getSetting.mockReturnValue(false);
+		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		const affected = await service.refresh();
+
+		expect(affected.map(({ _id }) => _id)).toEqual(['ana']);
+		expect(await service.getHiddenFrom('bruno')).toEqual([]);
+	});
+
+	it('reports every user whose visibility may have changed, configured before or after', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh();
+
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('carla', ['bruno'])]));
+		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		const affected = await service.refresh();
+
+		expect(affected.map(({ _id }) => _id).sort()).toEqual(['ana', 'carla']);
+	});
+
+	it('lists who hid their status from a given viewer', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno']), blocking('carla', ['bruno', 'diego'])]));
+		await service.refresh();
+
+		expect((await service.getHiddenFrom('bruno')).sort()).toEqual(['ana', 'carla']);
+		expect(await service.getHiddenFrom('diego')).toEqual(['carla']);
+		expect(await service.getHiddenFrom('elena')).toEqual([]);
+	});
+});

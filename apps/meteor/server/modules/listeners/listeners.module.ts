@@ -1,14 +1,14 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { hasStatusRestrictions, refreshStatusVisibility } from '../../lib/statusVisibility/canSeeStatus';
+import { refreshVisibility } from '../../lib/notifications/core/lib/Presence';
 import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
@@ -158,8 +158,11 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
-			void refreshStatusVisibility(targets)
-				.then((users) => {
+			void StatusVisibility.refresh(targets)
+				.then(async (users) => {
+					// before re-emitting, so the stream filters the new presence with the updated lists
+					await refreshVisibility();
+
 					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
 						if (username) {
 							notifications.sendPresence(
@@ -176,7 +179,7 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
-		service.onEvent('presence.status', ({ user }) => {
+		service.onEvent('presence.status', async ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
 				return;
@@ -202,7 +205,7 @@ export class ListenersModule {
 				},
 			});
 
-			if (!hasStatusRestrictions(_id)) {
+			if (!(await StatusVisibility.hasRestrictions(_id))) {
 				notifications.notifyLoggedInThisInstance('user-status', [
 					_id,
 					username,
