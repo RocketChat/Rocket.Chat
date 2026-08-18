@@ -15,7 +15,7 @@ class OmnichannelReportsSection {
 	}
 
 	get inputPeriodSelector() {
-		return this.section.locator('button', { has: this.page.locator('select[name="periodSelector"]') });
+		return this.section.locator('button[aria-label="Select period"]');
 	}
 
 	get txtStateTitle() {

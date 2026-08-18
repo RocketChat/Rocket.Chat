@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: ['release-patch']
 
+permissions:
+  contents: read
+
 jobs:
   release:
     uses: ./.github/workflows/release-manual.yml

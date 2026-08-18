@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -37,9 +38,9 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.content.linkUserCard.click();
+			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
@@ -58,12 +59,25 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should display a skeleton if the image url is not valid', async () => {
+			test('should show inline error if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await poAccountProfile.btnSubmit.click();
-				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
+
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
+
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
+
+			test('should not allow avatar URL change when avatar changes are disabled', async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', false);
+				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
+				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
+				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
 			});
 		});
 	});

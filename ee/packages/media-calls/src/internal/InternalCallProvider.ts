@@ -13,6 +13,10 @@ export class InternalCallProvider extends BaseCallProvider {
 			throw new CallRejectedError('unsupported');
 		}
 
+		if (params.caller.id === params.callee.id) {
+			throw new CallRejectedError('unsupported');
+		}
+
 		if (await MediaCalls.hasUnfinishedCallsByUid(params.caller.id, params.parentCallId)) {
 			throw new CallRejectedError('busy');
 		}

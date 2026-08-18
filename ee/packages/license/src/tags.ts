@@ -1,6 +1,6 @@
 import type { ILicenseTag } from '@rocket.chat/core-typings';
 
-import { type LicenseManager } from './license';
+import type { LicenseManager } from './license';
 
 export function addTag(this: LicenseManager, tag: ILicenseTag) {
 	// make sure to not add duplicated tag names

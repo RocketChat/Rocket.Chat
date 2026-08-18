@@ -17,7 +17,7 @@ import {
 	Skeleton,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -30,9 +30,9 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
@@ -45,12 +45,12 @@ import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
-type AdminUserFormProps = {
+export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
 	context: string;
 	refetchUserFormData?: () => void;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	roleError: Error | null;
 };
 
@@ -120,7 +120,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
-		mode: 'onBlur',
 	});
 
 	const showVoipExtension = useShowVoipExtension();
@@ -171,7 +170,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		},
 	});
 
-	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
+	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
@@ -251,15 +250,21 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow mbs={12}>
+								<FieldRow marginBlockStart={12}>
 									<Box display='flex' alignItems='center'>
-										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded} m={0}>
+										<FieldLabel htmlFor={verifiedId} padding={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon name='info-circled' size='x20' mis={4} title={t('Enable_to_bypass_email_verification')} color='default' />
+										<Icon
+											name='info-circled'
+											size='x20'
+											marginInlineStart={4}
+											title={t('Enable_to_bypass_email_verification')}
+											color='default'
+										/>
 									</Box>
 									<Controller
 										control={control}
@@ -275,18 +280,26 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									/>
 								</FieldRow>
 								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 								{!isVerificationNeeded && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{
-											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
-										}}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Email_verification_isnt_required'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Accounts' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -358,7 +371,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} mbe={8}>
+								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
 									{t('Password')}
 								</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
@@ -423,10 +436,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
 									<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
 										{t('Send_welcome_email')}
 									</FieldLabel>
@@ -448,11 +461,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint
-										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-										mbs={0}
-									/>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -463,7 +480,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='statusText'
-								rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+								rules={{
+									maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }) },
+								}}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -488,7 +507,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='bio'
-								rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
+								rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) } }}
 								render={({ field }) => (
 									<TextAreaInput
 										{...field}
@@ -498,7 +517,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
 										flexGrow={1}
-										addon={<Icon name='edit' size='x20' alignSelf='center' />}
+										endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
 									/>
 								)}
 							/>
@@ -519,8 +538,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<>
 							<Button
 								fontScale='c2'
-								w='x140'
-								h='x28'
+								width='x140'
+								height='x28'
 								display='flex'
 								alignItems='center'
 								justifyContent='center'
@@ -534,7 +553,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 				</FieldGroup>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} w='100%'>
+				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>
 					{isNewUserPage ? t('Add_user') : t('Save_user')}
 				</Button>
 			</ContextualbarFooter>

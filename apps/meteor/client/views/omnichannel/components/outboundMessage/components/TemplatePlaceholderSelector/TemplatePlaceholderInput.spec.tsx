@@ -4,8 +4,7 @@ import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 
 import TemplatePlaceholderInput from './TemplatePlaceholderInput';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import TemplatePlaceholderSelector from './TemplatePlaceholderSelector';
+import type TemplatePlaceholderSelector from './TemplatePlaceholderSelector';
 
 const appRoot = mockAppRoot().build();
 

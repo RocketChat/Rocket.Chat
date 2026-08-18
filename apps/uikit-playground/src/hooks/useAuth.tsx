@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type userType } from '../Context/initialState';
+import type { userType } from '../Context/initialState';
 
 const AuthContext = createContext<{
 	user?: userType;
@@ -11,7 +11,9 @@ const AuthContext = createContext<{
 	logout?: () => void;
 }>({});
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export type AuthProviderProps = { children: ReactNode };
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [user, setUser] = useLocalStorage<userType>('user', null);
 	const navigate = useNavigate();
 

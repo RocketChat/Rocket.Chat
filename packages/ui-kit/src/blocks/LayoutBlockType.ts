@@ -1,4 +1,4 @@
-import { type LayoutBlock } from './LayoutBlock';
+import type { LayoutBlock } from './LayoutBlock';
 
 export const LayoutBlockType = {
 	SECTION: 'section',

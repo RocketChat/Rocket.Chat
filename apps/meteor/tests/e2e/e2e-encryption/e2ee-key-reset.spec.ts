@@ -42,8 +42,9 @@ test.describe('E2EE Key Reset', () => {
 	test('expect force logout on e2e keys reset', async ({ page }) => {
 		const poAccountSecurity = new AccountSecurity(page);
 
-		await page.goto('/account/security');
+		await poAccountSecurity.goto();
 
+		await poAccountSecurity.waitForSecurityPage();
 		await poAccountSecurity.securityE2EEncryptionSection.click();
 		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 

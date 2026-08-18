@@ -5,9 +5,7 @@ import userEvent from '@testing-library/user-event';
 import CreateChannelModal from './CreateChannelModal';
 import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
-jest.mock('../../../lib/utils/goToRoomById', () => ({
-	goToRoomById: jest.fn(),
-}));
+jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
 
 describe('CreateChannelModal', () => {
 	describe('Encryption', () => {

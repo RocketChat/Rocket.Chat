@@ -1,4 +1,4 @@
-import { type Edge } from 'reactflow';
+import type { Edge } from 'reactflow';
 
 import { ActionTypes } from '../reducer';
 

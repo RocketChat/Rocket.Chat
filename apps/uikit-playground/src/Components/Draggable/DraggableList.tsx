@@ -3,7 +3,7 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { memo } from 'react';
 
 import DraggableListItem from './DraggableListItem';
-import { type ILayoutBlock } from '../../Context/initialState';
+import type { ILayoutBlock } from '../../Context/initialState';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 
 export type Block = {

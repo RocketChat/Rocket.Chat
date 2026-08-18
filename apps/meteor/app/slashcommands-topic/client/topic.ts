@@ -12,7 +12,7 @@ slashCommands.add({
 	callback: async function Topic({ params, message }: SlashCommandCallbackParams<'topic'>): Promise<void> {
 		if (hasPermission('edit-room', message.rid)) {
 			try {
-				await sdk.call('saveRoomSettings', message.rid, 'roomTopic', params);
+				await sdk.rest.post('/v1/rooms.saveRoomSettings', { rid: message.rid, roomTopic: params });
 				await clientCallbacks.run('roomTopicChanged', Rooms.state.get(message.rid));
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });

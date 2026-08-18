@@ -11,7 +11,11 @@ export interface IMediaStreamManager {
 
 	readonly mainLocal: IMediaStreamWrapper;
 
+	readonly screenShareLocal: IMediaStreamWrapper;
+
 	readonly mainRemote: IMediaStreamWrapper;
+
+	readonly screenShareRemote: IMediaStreamWrapper;
 
 	getStreams(): IMediaStreamWrapper[];
 	getLocalStreams(): IMediaStreamWrapper[];
@@ -19,4 +23,6 @@ export interface IMediaStreamManager {
 
 	getLocalStreamByTag(tag: string): IMediaStreamWrapper | null;
 	getRemoteStreamByTag(tag: string): IMediaStreamWrapper | null;
+
+	hasAllRequiredTracks(): boolean;
 }

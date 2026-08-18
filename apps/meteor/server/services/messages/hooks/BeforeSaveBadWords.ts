@@ -1,4 +1,4 @@
-import { type IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type BadWordsFilter from 'bad-words';
 

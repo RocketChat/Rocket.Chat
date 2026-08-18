@@ -1,4 +1,4 @@
-import type { IInternalFederationBridge } from '@rocket.chat/apps-engine/server/bridges/IInternalFederationBridge';
+import type { IInternalFederationBridge } from '@rocket.chat/apps/dist/server/bridges/IInternalFederationBridge';
 import { FederationKeys } from '@rocket.chat/models';
 
 export class AppInternalFederationBridge implements IInternalFederationBridge {

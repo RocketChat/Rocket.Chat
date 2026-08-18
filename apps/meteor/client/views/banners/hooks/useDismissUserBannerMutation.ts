@@ -1,13 +1,13 @@
-import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 export const useDismissUserBannerMutation = () => {
-	const dismissBanner = useMethod('banner/dismiss');
+	const dismissBanner = useEndpoint('POST', '/v1/banners.dismiss');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
-		mutationFn: dismissBanner,
+		mutationFn: ({ id }: { id: string }) => dismissBanner({ bannerId: id }),
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},

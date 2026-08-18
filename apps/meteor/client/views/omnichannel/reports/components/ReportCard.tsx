@@ -1,15 +1,15 @@
 import { Box, Card, CardTitle, CardBody, CardCol, CardRow } from '@rocket.chat/fuselage';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
 import { ReportCardContent } from './ReportCardContent';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 
-type ReportCardProps = {
+export type ReportCardProps = {
 	id: string;
 	title: string;
-	children: ReactElement;
+	children: ReactNode;
 	periodSelectorProps: ComponentProps<typeof PeriodSelector>;
 	downloadProps: ComponentProps<typeof DownloadDataButton>;
 	isPending?: boolean;
@@ -27,7 +27,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 	ref,
 ) {
 	return (
-		<Box h='full' ref={ref}>
+		<Box height='full' ref={ref}>
 			<Card height='full' aria-busy={isPending} data-qa={id}>
 				<Box rcx-card__header justifyContent='space-between'>
 					<CardCol>
@@ -44,7 +44,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 					</CardCol>
 				</Box>
 				<CardBody flexDirection='column' height='full'>
-					<Box h='full' display='flex' flexDirection='column' justifyContent='center'>
+					<Box height='full' display='flex' flexDirection='column' justifyContent='center'>
 						<ReportCardContent
 							isPending={isPending}
 							isDataFound={isDataFound}

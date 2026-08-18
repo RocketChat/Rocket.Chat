@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type IntegrationsHistoryProps = PaginatedRequest<{ id: string }>;
 
@@ -16,4 +16,4 @@ const integrationsHistorySchema = {
 	additionalProperties: false,
 };
 
-export const isIntegrationsHistoryProps = ajv.compile<IntegrationsHistoryProps>(integrationsHistorySchema);
+export const isIntegrationsHistoryProps = ajvQuery.compile<IntegrationsHistoryProps>(integrationsHistorySchema);

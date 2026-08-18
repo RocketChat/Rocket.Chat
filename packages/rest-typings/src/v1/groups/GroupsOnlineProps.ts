@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type GroupsOnlineProps = { _id?: string; query?: Record<string, any> };
 
@@ -18,4 +18,4 @@ const groupsOnlinePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsOnlineProps = ajv.compile<GroupsOnlineProps>(groupsOnlinePropsSchema);
+export const isGroupsOnlineProps = ajvQuery.compile<GroupsOnlineProps>(groupsOnlinePropsSchema);

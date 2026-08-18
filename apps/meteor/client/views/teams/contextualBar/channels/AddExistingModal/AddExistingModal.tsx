@@ -23,12 +23,13 @@ type AddExistingModalFormData = {
 	rooms: IRoom['_id'][];
 };
 
-type AddExistingModalProps = {
+export type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
 	reload?: () => void;
 };
 
+// TODO: Use GenericModal instead of Modal
 const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -61,13 +62,16 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 	);
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}>
+		<Modal
+			aria-label={t('Team_Add_existing_channels')}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}
+		>
 			<ModalHeader>
 				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Field mbe={24}>
+				<Field marginBlockEnd={24}>
 					<FieldLabel>{t('Channels')}</FieldLabel>
 					<Controller
 						control={control}

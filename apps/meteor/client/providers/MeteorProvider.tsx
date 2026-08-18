@@ -1,4 +1,4 @@
-import { ModalProvider } from '@rocket.chat/ui-client';
+import { ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
@@ -16,32 +16,31 @@ import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
-import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
-type MeteorProviderProps = {
+export type MeteorProviderProps = {
 	children?: ReactNode;
 };
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ServerProvider>
 		<RouterProvider>
-			<SettingsProvider>
-				<TranslationProvider>
-					<SessionProvider>
-						<TooltipProvider>
-							<ToastMessagesProvider>
-								<AvatarUrlProvider>
-									<UserProvider>
-										<LayoutProvider>
-											<AuthenticationProvider>
-												<CustomSoundProvider>
-													<DeviceProvider>
-														<ModalProvider>
+			<ModalProvider>
+				<SettingsProvider>
+					<TranslationProvider>
+						<SessionProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
+									<AvatarUrlProvider>
+										<UserProvider>
+											<LayoutProvider>
+												<AuthenticationProvider>
+													<CustomSoundProvider>
+														<DeviceProvider>
 															<AuthorizationProvider>
 																<EmojiPickerProvider>
 																	<OmnichannelRoomIconProvider>
@@ -57,18 +56,18 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																	</OmnichannelRoomIconProvider>
 																</EmojiPickerProvider>
 															</AuthorizationProvider>
-														</ModalProvider>
-													</DeviceProvider>
-												</CustomSoundProvider>
-											</AuthenticationProvider>
-										</LayoutProvider>
-									</UserProvider>
-								</AvatarUrlProvider>
-							</ToastMessagesProvider>
-						</TooltipProvider>
-					</SessionProvider>
-				</TranslationProvider>
-			</SettingsProvider>
+														</DeviceProvider>
+													</CustomSoundProvider>
+												</AuthenticationProvider>
+											</LayoutProvider>
+										</UserProvider>
+									</AvatarUrlProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
+						</SessionProvider>
+					</TranslationProvider>
+				</SettingsProvider>
+			</ModalProvider>
 		</RouterProvider>
 	</ServerProvider>
 );

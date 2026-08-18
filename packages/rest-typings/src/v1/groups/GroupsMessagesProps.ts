@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 import { withGroupBaseProperties } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
@@ -47,4 +47,4 @@ const GroupsMessagesPropsSchema = withGroupBaseProperties({
 	},
 });
 
-export const isGroupsMessagesProps = ajv.compile<GroupsMessagesProps>(GroupsMessagesPropsSchema);
+export const isGroupsMessagesProps = ajvQuery.compile<GroupsMessagesProps>(GroupsMessagesPropsSchema);

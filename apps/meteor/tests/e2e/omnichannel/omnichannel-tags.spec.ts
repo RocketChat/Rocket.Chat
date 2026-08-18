@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelTags } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createTag } from '../utils/omnichannel/tags';
@@ -29,26 +30,30 @@ test.describe('OC - Manage Tags', () => {
 		agent = await createAgent(api, 'user2');
 	});
 
-	test.afterAll(async () => {
+	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
+	});
+
+	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelTags = new OmnichannelTags(page);
 	});
 
-	test('OC - Manage Tags - Create Tag', async ({ page }) => {
+	test('OC - Manage Tags - Create Tag', async () => {
 		const tagName = faker.string.uuid();
 
-		await page.goto('/omnichannel');
-		await poOmnichannelTags.sidebar.linkTags.click();
+		await poOmnichannelTags.goTo();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.createNew();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
-			await expect(poOmnichannelTags.editTag.btnSave).toBeDisabled();
+			await expect(poOmnichannelTags.editTag.btnSave).toBeEnabled();
 			await expect(poOmnichannelTags.editTag.btnCancel).toBeEnabled();
 			await poOmnichannelTags.editTag.btnCancel.click();
 			await expect(poOmnichannelTags.editTag.root).not.toBeVisible();
@@ -83,15 +88,15 @@ test.describe('OC - Manage Tags', () => {
 			return tag;
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelTags.sidebar.linkTags.click();
+		await poOmnichannelTags.goTo();
 
 		await test.step('expect to add tag departments', async () => {
 			await poOmnichannelTags.search(tag.name);
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
-			await poOmnichannelTags.editTag.btnSave.click();
+			await expect(poOmnichannelTags.editTag.findSelectedDepartment(department2.data.name)).toBeVisible();
+			await poOmnichannelTags.editTag.save();
 		});
 
 		await test.step('expect department to be in the chosen departments list', async () => {
@@ -107,7 +112,8 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
-			await poOmnichannelTags.editTag.btnSave.click();
+			await expect(poOmnichannelTags.editTag.findSelectedDepartment(department2.data.name)).not.toBeVisible();
+			await poOmnichannelTags.editTag.save();
 		});
 
 		await test.step('expect department to not be in the chosen departments list', async () => {

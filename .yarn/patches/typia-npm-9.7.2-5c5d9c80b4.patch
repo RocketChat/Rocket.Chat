@@ -1,0 +1,17 @@
+diff --git a/lib/index.mjs b/lib/index.mjs
+index 35c18fc129e349205d3db64bfb7b9c589c726d35..7fe10a375d6e6d4d46bb1c4a776fdc75f062c3d3 100644
+--- a/lib/index.mjs
++++ b/lib/index.mjs
+@@ -1,4 +1,4 @@
+-import * as module from './module.mjs';
++import * as _module from './module.mjs';
+ export { assert, assertEquals, assertGuard, assertGuardEquals, createAssert, createAssertEquals, createAssertGuard, createAssertGuardEquals, createEquals, createIs, createRandom, createValidate, createValidateEquals, equals, is, random, validate, validateEquals } from './module.mjs';
+ import * as functional from './functional.mjs';
+ export { functional };
+@@ -22,5 +22,5 @@ export { TypeGuardError } from './TypeGuardError.mjs';
+ 
+ 
+ 
+-export { module as default };
++export { _module as default };
+ //# sourceMappingURL=index.mjs.map

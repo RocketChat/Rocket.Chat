@@ -1,4 +1,3 @@
-import { afterEach } from 'mocha';
 import type { Response } from 'supertest';
 
 import { request } from '../data/api-data';
@@ -7,25 +6,35 @@ const methods = ['get', 'post', 'put', 'del', 'delete'] as const;
 
 let lastUrl: string;
 let lastMethod: string;
-let lastResponse: Response;
+let lastBody: unknown;
+let lastQuery: unknown;
+let lastResponse: Response | undefined;
 
 methods.forEach((method) => {
 	const original = request[method];
 	request[method] = function (url) {
 		lastUrl = url;
 		lastMethod = method;
-		return original(url).expect((res) => {
+		lastBody = undefined;
+		lastQuery = undefined;
+		lastResponse = undefined;
+
+		const test = original(url);
+		const originalSend = test.send.bind(test);
+		const originalQuery = test.query.bind(test);
+		test.send = (data) => {
+			lastBody = data;
+			return originalSend(data);
+		};
+		test.query = (data) => {
+			lastQuery = data;
+			return originalQuery(data);
+		};
+
+		return test.expect((res) => {
 			lastResponse = res;
 		});
 	};
 });
 
-afterEach(async function () {
-	if (this.currentTest?.state === 'failed') {
-		console.log({
-			lastUrl,
-			lastMethod,
-			lastResponse: lastResponse.text,
-		});
-	}
-});
+export const getLastRequest = () => ({ lastUrl, lastMethod, lastBody, lastQuery, lastResponse });

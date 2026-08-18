@@ -30,6 +30,7 @@ export type ViewBlockActionUserInteraction = {
 		type: 'view';
 		id: string;
 	};
+	rid?: string;
 	triggerId: string;
 };
 
@@ -43,6 +44,7 @@ export type ViewClosedUserInteraction = {
 		};
 		isCleared?: boolean;
 	};
+	rid?: string;
 	triggerId: string;
 };
 
@@ -55,6 +57,7 @@ export type ViewSubmitUserInteraction = {
 			state: { [blockId: string]: { [key: string]: unknown } };
 		};
 	};
+	rid?: string;
 	triggerId: string;
 	viewId: string;
 };

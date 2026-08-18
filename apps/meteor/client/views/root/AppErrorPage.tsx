@@ -1,15 +1,8 @@
 import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-theming';
-import type { ErrorInfo, ReactElement } from 'react';
+import { useThemeMode } from '@rocket.chat/ui-client';
 
-type AppErrorPageProps = {
-	error: Error;
-	info?: ErrorInfo;
-	clearError: () => void;
-};
-
-const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
-	const [, , theme] = useThemeMode();
+const AppErrorPage = () => {
+	const theme = useThemeMode();
 
 	return (
 		<>
@@ -24,12 +17,12 @@ const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
 						<StatesAction
 							onClick={() => {
 								const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
-								result.onsuccess = () => {
+								const reload = () => {
 									window.location.reload();
 								};
-								result.onerror = () => {
-									window.location.reload();
-								};
+								result.onsuccess = reload;
+								result.onerror = reload;
+								result.onblocked = reload;
 							}}
 						>
 							Reload Application

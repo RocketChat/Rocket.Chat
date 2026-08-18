@@ -18,7 +18,9 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 				port: 5080,
 			},
 		},
+		mobileRinging: false,
 
 		permissionCheck: async () => false,
+		isFeatureAvailableForUser: () => false,
 	};
 }

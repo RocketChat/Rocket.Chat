@@ -1,7 +1,7 @@
 export * from './Files';
-export * from './MessageAttachment';
+export type * from './MessageAttachment';
 export * from './MessageAttachmentAction';
 export * from './MessageAttachmentBase';
-export * from './MessageAttachmentDefault';
+export type * from './MessageAttachmentDefault';
 export * from './MessageQuoteAttachment';
 export * from './TranslatedMessageAttachment';

@@ -1,5 +1,5 @@
 name: Rocket.Chat Issue Dedupe
-description: Automatically dedupe GitHub issues using AI
+
 on:
   issues:
     types: [opened]
@@ -9,6 +9,8 @@ on:
         description: 'Issue number to process for duplicate detection'
         required: true
         type: string
+
+permissions: {}
 
 jobs:
   dedupe-issues:
@@ -20,14 +22,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Claude Code slash command
-        uses: anthropics/claude-code-base-action@beta
+        uses: anthropics/claude-code-base-action@e8132bc5e637a42c27763fc757faa37e1ee43b34 # v0.0.63beta
         with:
           prompt: '/dedupe ${{ github.repository }}/issues/${{ github.event.issue.number || inputs.issue_number }}'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--model claude-sonnet-4-5-20250929'
+          model: 'claude-sonnet-4-5-20250929'
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

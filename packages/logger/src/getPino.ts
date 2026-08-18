@@ -1,4 +1,4 @@
-import { pino } from 'pino';
+import { pino, type ChildLoggerOptions } from 'pino';
 
 const infoLevel = process.env.LESS_INFO_LOGS ? 20 : 35;
 
@@ -25,6 +25,12 @@ const mainPino = pino({
 
 export type MainLogger = typeof mainPino;
 
-export function getPino(name: string, level = 'warn'): MainLogger {
-	return mainPino.child({ name }, { level }) as MainLogger;
+export type LoggerOptions = Pick<ChildLoggerOptions<keyof MainLogger['customLevels']>, 'level' | 'redact'>;
+
+const defaultOptions: LoggerOptions = {
+	level: 'warn',
+};
+
+export function getPino(name: string, options: LoggerOptions = {}): MainLogger {
+	return mainPino.child({ name }, { ...defaultOptions, ...options });
 }

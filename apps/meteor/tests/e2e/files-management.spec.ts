@@ -18,8 +18,7 @@ test.describe.serial('files-management', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -28,7 +27,7 @@ test.describe.serial('files-management', () => {
 
 	test('should send a file and manage it in the list', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.getLastMessageByFileName(TEST_FILE_TXT)).toBeVisible();
 
 		await poHomeChannel.roomToolbar.openMoreOptions();

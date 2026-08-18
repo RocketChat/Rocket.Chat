@@ -10,6 +10,7 @@ type getRoomDirectiesType = {
 	roomCanIgnore: boolean;
 	roomCanBlock: boolean;
 	roomCanMute: boolean;
+	roomCanBan: boolean;
 	roomCanRemove: boolean;
 	roomCanInvite: boolean;
 };
@@ -25,7 +26,17 @@ export const getRoomDirectives = ({
 }): getRoomDirectiesType => {
 	const roomDirectives = room?.t && roomCoordinator.getRoomDirectives(room.t);
 
-	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove, roomCanInvite] = [
+	const [
+		roomCanSetOwner,
+		roomCanSetLeader,
+		roomCanSetModerator,
+		roomCanIgnore,
+		roomCanBlock,
+		roomCanMute,
+		roomCanBan,
+		roomCanRemove,
+		roomCanInvite,
+	] = [
 		...((roomDirectives && [
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER, showingUserId, userSubscription),
@@ -33,11 +44,22 @@ export const getRoomDirectives = ({
 			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.BAN, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.REMOVE_USER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, showingUserId, userSubscription),
 		]) ??
 			[]),
 	];
 
-	return { roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove, roomCanInvite };
+	return {
+		roomCanSetOwner,
+		roomCanSetLeader,
+		roomCanSetModerator,
+		roomCanIgnore,
+		roomCanBlock,
+		roomCanMute,
+		roomCanBan,
+		roomCanRemove,
+		roomCanInvite,
+	};
 };

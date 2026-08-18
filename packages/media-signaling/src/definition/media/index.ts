@@ -1,3 +1,3 @@
-export * from './IMediaStreamManager';
-export * from './IMediaStreamWrapper';
-export * from './MediaStreamIdentification';
+export type * from './IMediaStreamManager';
+export type * from './IMediaStreamWrapper';
+export type * from './MediaStreamIdentification';

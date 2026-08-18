@@ -34,7 +34,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 	test.beforeAll('Set up agent, manager and custom fields', async ({ api }) => {
 		[agent, manager] = await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
 
-		[roomCustomField, visitorCustomField, conversation] = await Promise.all([
+		[roomCustomField, visitorCustomField] = await Promise.all([
 			createCustomField(api, {
 				field: roomCustomFieldLabel,
 				label: roomCustomFieldName,
@@ -45,24 +45,25 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 				label: visitorCustomFieldName,
 				scope: 'visitor',
 			}),
-			createConversation(api, {
-				visitorName: visitor.name,
-				agentId: 'user1',
-				visitorToken,
-			}),
 		]);
+	});
+
+	test.beforeEach(async ({ page, api }) => {
+		poHomeChannel = new HomeOmnichannel(page);
+		await page.goto('/');
+		await poHomeChannel.waitForHome();
+
+		conversation = await createConversation(api, {
+			visitorName: visitor.name,
+			agentId: 'user1',
+			visitorToken,
+		});
 
 		await setVisitorCustomFieldValue(api, {
 			token: visitorToken,
 			customFieldId: visitorCustomField.customField._id,
 			value: visitorCustomFieldValue,
 		});
-	});
-
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeOmnichannel(page);
-		await page.goto('/');
-		await poHomeChannel.waitForHome();
 	});
 
 	test.afterAll('Remove agent, manager, custom fields and conversation', async () => {

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import RoomsContextualBar from './RoomsContextualBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type RoomsContextualBarWithDataProps = {
+export type RoomsContextualBarWithDataProps = {
 	id: string;
 	onClose: () => void;
 };
@@ -22,10 +22,13 @@ const RoomsContextualBarWithData = ({ id, onClose }: RoomsContextualBarWithDataP
 		return <ContextualbarSkeletonBody />;
 	}
 
+	const redacted = data?.abacAttributesRedacted === true;
+
 	return (
 		<RoomsContextualBar
 			roomInfo={{ rid: id, name: data?.fname || data?.name || id }}
 			attributesData={data?.abacAttributes}
+			redacted={redacted}
 			onClose={onClose}
 		/>
 	);

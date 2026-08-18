@@ -526,11 +526,17 @@ class DraggableDomElement extends Emitter<DraggableDomElementEvents> implements 
 	}
 }
 
-export const useDraggable = () => {
+type useDraggableOptions = {
+	restorePosition?: IGenericRect | null;
+	onChangePosition?: (position: IGenericRect) => void;
+};
+
+export const useDraggable = (options?: useDraggableOptions) => {
+	const { restorePosition, onChangePosition } = options || {};
 	const [draggableElement] = useState<Draggable>(() => new Draggable(new DraggableDomElement()));
 	const [boundingElement] = useState<BoundingElement>(() => new BoundingElement(new BoundingDomElement(), draggableElement));
 	const [handleElement] = useState<HandleElement>(() => new HandleElement(new HandleDomElement(), draggableElement));
-	const restorePositionRef = useRef<IGenericRect | null>(null);
+	const restorePositionRef = useRef<IGenericRect | null>(restorePosition || null);
 
 	const handleElementCallbackRef = useSafeRefCallback(
 		useCallback(
@@ -545,7 +551,11 @@ export const useDraggable = () => {
 		useCallback(
 			(node: HTMLElement) => {
 				const offMove = draggableElement.onMove(() => {
-					restorePositionRef.current = node.getBoundingClientRect();
+					const position = node.getBoundingClientRect();
+					restorePositionRef.current = position;
+					if (onChangePosition) {
+						onChangePosition(position);
+					}
 				});
 
 				const offDomEvents = draggableElement.element.setElement(node);
@@ -559,7 +569,7 @@ export const useDraggable = () => {
 					offMove();
 				};
 			},
-			[draggableElement],
+			[draggableElement, onChangePosition],
 		),
 	);
 

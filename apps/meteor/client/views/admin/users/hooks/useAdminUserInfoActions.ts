@@ -19,6 +19,7 @@ export type AdminUserAction = {
 	title?: string;
 	variant?: 'danger';
 	onClick: () => void;
+	disabled?: boolean;
 };
 
 type AdminUserMenuAction = {

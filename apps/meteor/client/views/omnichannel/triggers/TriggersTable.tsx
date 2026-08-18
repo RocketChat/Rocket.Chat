@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -21,7 +21,7 @@ const TriggersTable = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const handleAddNew = useEffectEvent(() => {
+	const handleAddNew = useStableCallback(() => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 

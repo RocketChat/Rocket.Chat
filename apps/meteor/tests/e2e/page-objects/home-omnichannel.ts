@@ -1,8 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent, OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar, OmnichannelSidebar } from './fragments';
-import { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
-import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
+import { OmnichannelEditRoomFlexTab } from './fragments/flextabs';
+import { OmnichannelRoomInfoFlexTab } from './fragments/flextabs/room-info-flextab';
 import { HomeChannel } from './home-channel';
 import {
 	OmnichannelCannedResponses,

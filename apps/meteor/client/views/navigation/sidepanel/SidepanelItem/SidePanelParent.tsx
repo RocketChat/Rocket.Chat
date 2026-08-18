@@ -1,10 +1,12 @@
-import { type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import SidePanelParentRoom from './SidePanelParentRoom';
 import SidePanelParentTeam from './SidePanelParentTeam';
 
-const SidePanelParent = ({ room }: { room: SubscriptionWithRoom }) => {
+export type SidePanelParentProps = { room: SubscriptionWithRoom };
+
+const SidePanelParent = ({ room }: SidePanelParentProps) => {
 	if (room.prid) {
 		return <SidePanelParentRoom prid={room.prid} />;
 	}

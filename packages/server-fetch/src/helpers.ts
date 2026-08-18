@@ -1,5 +1,5 @@
-import { lookup } from 'dns';
-import net from 'net';
+import { lookup } from 'node:dns';
+import net from 'node:net';
 
 import { domainPattern, ipv4Ranges, ipv4WithPortPattern, ipv6Ranges } from './constants';
 

@@ -3,14 +3,14 @@ import type { LocationPathname } from '@rocket.chat/ui-contexts';
 
 import { router } from '../../providers/RouterProvider';
 
-export const setMessageJumpQueryStringParameter = async (msg: IMessage['_id'] | null) => {
-	const { msg: _, ...search } = router.getSearchParameters();
+export const setMessageJumpQueryStringParameter = async (msg: IMessage['_id'] | null, context?: 'jumpToUnread') => {
+	const { msg: _msg, jumpContext: _jumpContext, ...search } = router.getSearchParameters();
 	const locationPathname = new URL(window.location.href).pathname as LocationPathname;
 
 	router.navigate(
 		{
 			pathname: locationPathname,
-			search: msg ? { ...search, msg } : search,
+			search: msg ? { ...search, msg, ...(context && { jumpContext: context }) } : search,
 		},
 		{ replace: true },
 	);

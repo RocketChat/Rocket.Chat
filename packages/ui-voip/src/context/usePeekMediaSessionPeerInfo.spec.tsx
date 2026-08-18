@@ -3,12 +3,11 @@ import type { CallContact } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
+import { MediaCallInstanceContext, defaultContextValue } from './MediaCallInstanceContext';
 import { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo';
 
 type MockInstance = {
-	getMainCall: () => { contact: CallContact } | null;
+	getState: () => { confirmed: true; remoteParticipant: { contact: CallContact } } | null;
 	on: (event: 'sessionStateChange', onStoreChange: () => void) => () => void;
 };
 
@@ -16,12 +15,8 @@ const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
 		<MediaCallInstanceContext.Provider
 			value={{
+				...defaultContextValue,
 				instance: instance as any,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: () => undefined,
-				getAutocompleteOptions: () => Promise.resolve([]),
 			}}
 		>
 			{children}
@@ -41,7 +36,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 
 	it('returns undefined when instance has no main call', () => {
 		const instance: MockInstance = {
-			getMainCall: () => null,
+			getState: () => null,
 			on: () => () => undefined,
 		};
 
@@ -55,10 +50,13 @@ describe('usePeekMediaSessionPeerInfo', () => {
 	describe('when main call has a contact', () => {
 		it('returns external peer info for SIP contact', () => {
 			const instance: MockInstance = {
-				getMainCall: () => ({
-					contact: {
-						type: 'sip',
-						id: '+5511999999999',
+				getState: () => ({
+					confirmed: true,
+					remoteParticipant: {
+						contact: {
+							type: 'sip',
+							id: '+5511999999999',
+						},
 					},
 				}),
 				on: () => () => undefined,
@@ -73,13 +71,16 @@ describe('usePeekMediaSessionPeerInfo', () => {
 
 		it('returns internal peer info for user contact', () => {
 			const instance: MockInstance = {
-				getMainCall: () => ({
-					contact: {
-						type: 'user',
-						id: 'userId123',
-						displayName: 'John Doe',
-						username: 'johndoe',
-						sipExtension: '1001',
+				getState: () => ({
+					confirmed: true,
+					remoteParticipant: {
+						contact: {
+							type: 'user',
+							id: 'userId123',
+							displayName: 'John Doe',
+							username: 'johndoe',
+							sipExtension: '1001',
+						},
 					},
 				}),
 				on: () => () => undefined,
@@ -102,15 +103,20 @@ describe('usePeekMediaSessionPeerInfo', () => {
 		it('updates peer info when sessionStateChange is emitted', () => {
 			const emitter = new Emitter<{ sessionStateChange: void }>();
 
-			let mainCall: { contact: CallContact } | null = {
-				contact: {
-					type: 'sip',
-					id: '+5511999999999',
+			const defaultInstanceState = {
+				confirmed: true as const,
+				remoteParticipant: {
+					contact: {
+						type: 'sip' as const,
+						id: '+5511999999999',
+					} as CallContact,
 				},
 			};
 
+			let instanceState: typeof defaultInstanceState | null = defaultInstanceState;
+
 			const instance: MockInstance = {
-				getMainCall: () => mainCall,
+				getState: () => instanceState,
 				on: (event, onStoreChange) => emitter.on(event, onStoreChange),
 			};
 
@@ -121,18 +127,21 @@ describe('usePeekMediaSessionPeerInfo', () => {
 			expect(result.current).toEqual({ number: '+5511999999999' });
 
 			act(() => {
-				mainCall = null;
+				instanceState = null;
 				emitter.emit('sessionStateChange');
 			});
 
 			expect(result.current).toBeUndefined();
 
 			act(() => {
-				mainCall = {
-					contact: {
-						type: 'user',
-						id: 'userId456',
-						displayName: 'Jane Smith',
+				instanceState = {
+					confirmed: true,
+					remoteParticipant: {
+						contact: {
+							type: 'user',
+							id: 'userId456',
+							displayName: 'Jane Smith',
+						},
 					},
 				};
 				emitter.emit('sessionStateChange');

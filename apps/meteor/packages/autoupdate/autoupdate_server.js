@@ -25,6 +25,7 @@
 // The ID of each document is the client architecture, and the fields of
 // the document are the versions described above.
 
+import { Meteor } from 'meteor/meteor';
 import { ClientVersions } from './client_versions.js';
 
 export const Autoupdate = (__meteor_runtime_config__.autoupdate = {

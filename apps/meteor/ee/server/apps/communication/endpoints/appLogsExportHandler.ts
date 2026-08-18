@@ -6,8 +6,8 @@ import { json2csv } from 'json-2-csv';
 
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
-import { APIClass } from '../../../../../app/api/server/ApiClass';
-import type { GenericRouteExecutionContext } from '../../../../../app/api/server/definition';
+import { APIClass } from '../../../../../server/api/ApiClass';
+import type { APIActionContext } from '../../../../../server/api/router';
 
 const isErrorResponse = ajv.compile<{
 	success: false;
@@ -26,7 +26,7 @@ const isErrorResponse = ajv.compile<{
 });
 
 class ExportHandlerAPI extends APIClass {
-	protected override async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
+	public override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
 		const { rc_uid, rc_token } = parse(routeContext.request.headers.get('cookie') || '');
 
 		if (rc_uid) {

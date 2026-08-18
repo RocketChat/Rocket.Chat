@@ -2,6 +2,7 @@ import { createFakeDepartment } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -16,20 +17,23 @@ test.describe.serial('OC - Manage Agents', () => {
 		department = await createDepartment(api);
 	});
 
-	// Create page object and redirect to home
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
+		await poOmnichannelAgents.goTo();
+	});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelAgents.sidebar.linkAgents.click();
+	test.beforeAll(async ({ api }) => {
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
+	});
+
+	test.afterAll(async ({ api }) => {
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200);
 	});
 
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
 		await department.delete();
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {
@@ -74,7 +78,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		await test.step('expect update "user1" information', async () => {
 			await poOmnichannelAgents.editAgent.selectStatus('Not Available');
 			await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
-			await poOmnichannelAgents.editAgent.btnSave.click();
+			await poOmnichannelAgents.editAgent.save();
 		});
 
 		await test.step('expect removing "user1" via sidebar', async () => {

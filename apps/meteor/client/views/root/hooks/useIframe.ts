@@ -1,6 +1,8 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
+
+type CallbackError = Error & { error?: string | number; reason?: string; details?: unknown };
 
 export const useIframe = () => {
 	const [iframeLoginUrl, setIframeLoginUrl] = useState<string | undefined>(undefined);
@@ -32,7 +34,7 @@ export const useIframe = () => {
 		[iframeLogin, tokenLogin],
 	);
 
-	const tryLogin = useEffectEvent(async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
+	const tryLogin = useStableCallback(async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
 		if (!enabled) {
 			return;
 		}
@@ -61,7 +63,7 @@ export const useIframe = () => {
 			}
 
 			const body = await result.json();
-			loginWithToken(body, async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+			loginWithToken(body, async (error: CallbackError | Error | null | undefined) => {
 				if (error) {
 					setIframeLoginUrl(url);
 				} else {

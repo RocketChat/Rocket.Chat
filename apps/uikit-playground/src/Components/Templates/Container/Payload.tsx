@@ -4,13 +4,15 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { useContext, useMemo } from 'react';
 
 import { context, templatesToggleAction, updatePayloadAction } from '../../../Context';
-import { type ILayoutBlock } from '../../../Context/initialState';
+import type { ILayoutBlock } from '../../../Context/initialState';
 import getUniqueId from '../../../utils/getUniqueId';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
-import { type SurfaceOptions } from '../../Preview/Display/Surface/constant';
+import type { SurfaceOptions } from '../../Preview/Display/Surface/constant';
 import RenderPayload from '../../RenderPayload/RenderPayload';
 
-const Payload = ({ blocks, surface }: { surface: SurfaceOptions; blocks: LayoutBlock[] }) => {
+export type PayloadProps = { surface: SurfaceOptions; blocks: LayoutBlock[] };
+
+const Payload = ({ blocks, surface }: PayloadProps) => {
 	const { dispatch } = useContext(context);
 	const blocksWithUniqueIds: ILayoutBlock[] = useMemo(
 		() =>
@@ -52,7 +54,7 @@ const Payload = ({ blocks, surface }: { surface: SurfaceOptions; blocks: LayoutB
 					</SurfaceRender>
 				</Box>
 			</Box>
-			<Button onClick={clickHandler} primary mbs='15px' mbe='25px'>
+			<Button onClick={clickHandler} primary marginBlockStart='15px' marginBlockEnd='25px'>
 				Use This Template
 			</Button>
 		</>

@@ -1,6 +1,6 @@
 import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { slashCommands } from '../../../../app/utils/client';
@@ -91,7 +91,14 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 			chat.ActionManager.notifyBusy();
 		}
 
-		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+		chat.composer?.clear();
+		const { result } = await sdk.rest.post('/v1/commands.run', {
+			command: commandName,
+			params,
+			roomId: message.rid,
+			...(message.tmid && { tmid: message.tmid }),
+			...(triggerId && { triggerId }),
+		});
 
 		handleResult?.(undefined, result, data);
 	} catch (error: unknown) {

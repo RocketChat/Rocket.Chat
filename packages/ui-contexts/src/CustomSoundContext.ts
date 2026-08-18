@@ -4,12 +4,10 @@ import { createContext } from 'react';
 export type CustomSoundContextValue = {
 	play: (
 		soundId: string,
-		options?:
-			| {
-					volume?: number | undefined;
-					loop?: boolean | undefined;
-			  }
-			| undefined,
+		options?: {
+			volume?: number | undefined;
+			loop?: boolean | undefined;
+		},
 	) => void;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
@@ -36,11 +34,11 @@ export type CustomSoundContextValue = {
 		stopNewMessage: () => void;
 		playNewMessageCustom: (soundId: ICustomSound['_id']) => void;
 	};
-	list: ICustomSound[];
+	list: Omit<ICustomSound, '_updatedAt'>[];
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
-	play: () => new Promise(() => undefined),
+	play: () => undefined,
 	pause: () => undefined,
 	stop: () => undefined,
 	callSounds: {

@@ -28,6 +28,9 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 	}
 
 	findOneActiveByClientId(clientId: string, options?: FindOptions<IOAuthApps>): Promise<IOAuthApps | null> {
+		if (typeof clientId !== 'string' || !clientId) {
+			return Promise.resolve(null);
+		}
 		return this.findOne(
 			{
 				active: true,
@@ -37,11 +40,21 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		);
 	}
 
+	updateById(
+		_id: IOAuthApps['_id'],
+		data: Partial<Pick<IOAuthApps, 'name' | 'active' | 'redirectUri' | '_updatedBy'>>,
+	): Promise<IOAuthApps | null> {
+		return this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after' });
+	}
+
 	findOneActiveByClientIdAndClientSecret(
 		clientId: string,
 		clientSecret: string,
 		options?: FindOptions<IOAuthApps>,
 	): Promise<IOAuthApps | null> {
+		if (typeof clientId !== 'string' || !clientId || typeof clientSecret !== 'string' || !clientSecret) {
+			return Promise.resolve(null);
+		}
 		return this.findOne(
 			{
 				active: true,

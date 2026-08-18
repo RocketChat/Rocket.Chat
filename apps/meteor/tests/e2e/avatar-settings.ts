@@ -86,12 +86,12 @@ test.describe('avatar-settings', () => {
 			testAvatars(poHomeChannel, channelName, avatarUrl);
 
 			test('expect message avatar to have provider prefix', async () => {
-				expect(poHomeChannel.content.lastUserMessage.locator('img').getAttribute('src')).toBe(avatarUrl);
+				await expect(poHomeChannel.content.lastUserMessage.locator('img')).toHaveAttribute('src', avatarUrl);
 			});
 
 			test('expect user card avatar to have provider prefix', async () => {
 				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').click();
-				expect(poHomeChannel.content.userCard.locator('img').getAttribute('src')).toBe(avatarUrl);
+				await expect(poHomeChannel.userCard.imgUserCard).toHaveAttribute('src', avatarUrl);
 			});
 		});
 	});

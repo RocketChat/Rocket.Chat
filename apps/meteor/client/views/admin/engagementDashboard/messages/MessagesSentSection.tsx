@@ -1,8 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import moment from 'moment';
-import type { ReactElement } from 'react';
+import { Box, FlexContainer, FlexItem, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { differenceInDays, addDays, format } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,11 +14,11 @@ import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useMessagesSent } from './useMessagesSent';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-type MessagesSentSectionProps = {
+export type MessagesSentSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactElement => {
+const MessagesSentSection = ({ timezone }: MessagesSentSectionProps) => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
@@ -34,13 +33,16 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 			return [];
 		}
 
-		const values = Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => ({
-			date: moment(data.start).add(i, 'days').toISOString(),
+		const startDate = new Date(data.start);
+		const endDate = new Date(data.end);
+		const daysCount = differenceInDays(endDate, startDate) + 1;
+		const values = Array.from({ length: daysCount }, (_, i) => ({
+			date: addDays(startDate, i).toISOString(),
 			newMessages: 0,
 		}));
 
 		for (const { day, messages } of data.days ?? []) {
-			const i = moment(day).diff(data.start, 'days');
+			const i = differenceInDays(new Date(day), startDate);
 			if (i >= 0) {
 				values[i].newMessages += messages;
 			}
@@ -75,10 +77,10 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 					},
 				]}
 			/>
-			<Flex.Container>
+			<FlexContainer>
 				{values ? (
 					<Box style={{ height: 300 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
 									style={{
@@ -114,7 +116,7 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 											tickPadding: 8,
 											tickRotation: values.length > 31 ? 90 : 0,
 											truncateTickAt: 0,
-											format: (date): string => moment(date).format('DD/MM'),
+											format: (date): string => format(new Date(date), 'dd/MM'),
 										}}
 										axisLeft={{
 											tickSize: 0,
@@ -149,14 +151,14 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Box>
 						<Skeleton variant='rect' height={240} />
 					</Box>
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

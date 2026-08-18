@@ -1,20 +1,20 @@
 import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
 import { logger } from './logger';
-import { setRealName } from '../../../app/lib/server/functions/setRealName';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
+import { setRealName } from '../users/setRealName';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
-	if (!options.cas) {
+	if (!settings.get('CAS_enabled') || !options.cas || typeof options.cas.credentialToken !== 'string') {
 		return undefined;
 	}
 
-	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = await CredentialTokens.findOneNotExpiredById(options.cas.credentialToken);
+	const credentials = await CredentialTokens.removeNotExpiredById(options.cas.credentialToken);
 	if (credentials === undefined || credentials === null) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}

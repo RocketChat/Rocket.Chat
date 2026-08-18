@@ -1,27 +1,25 @@
 import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
-import { useMemo, useContext, memo } from 'react';
+import { useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import { useEmojiDescriptors } from './useEmojiDescriptors';
+import PlainSpan from '../elements/PlainSpan';
 
 type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;
 	preview?: boolean;
 };
 
-const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
-	const { detectEmoji } = useContext(MarkupInteractionContext);
+const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps) => {
+	const { useEmoji } = useContext(MarkupInteractionContext);
 
-	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode ?? emoji.value.value}:`), [emoji]);
+	const { descriptors, sanitizedFallback } = useEmojiDescriptors(emoji);
 
-	const sanitizedFallback = DOMPurify.sanitize(fallback);
-
-	const descriptors = useMemo(() => {
-		const detected = detectEmoji?.(sanitizedFallback);
-		return detected?.length !== 0 ? detected : undefined;
-	}, [detectEmoji, sanitizedFallback]);
+	//handles unicode emojis
+	if (!useEmoji) {
+		return <PlainSpan text={descriptors?.map(({ name, content }) => name || content).join('') ?? sanitizedFallback} />;
+	}
 
 	return (
 		<>

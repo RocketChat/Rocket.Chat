@@ -18,12 +18,13 @@ export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionCo
 		id: 'receipt-detail',
 		icon: 'check-double',
 		label: 'Read_Receipts',
-		context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads', 'federated'],
 		type: 'duplication',
 		action() {
 			setModal(
 				<ReadReceiptsModal
 					messageId={message._id}
+					rid={message.rid}
 					onClose={() => {
 						setModal(null);
 					}}

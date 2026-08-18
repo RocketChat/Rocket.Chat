@@ -1,14 +1,13 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
+import { formatDate } from '../../../../lib/utils/dateFormat';
 import { useRoom } from '../../contexts/RoomContext';
 
 const getTimeZoneOffset = (): string => {
@@ -36,7 +35,7 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = (): ReactElement => {
+const PruneMessagesWithData = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
@@ -68,7 +67,7 @@ const PruneMessagesWithData = (): ReactElement => {
 		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
 	}, [olderDate, olderTime]);
 
-	const handlePrune = useEffectEvent((): void => {
+	const handlePrune = useStableCallback((): void => {
 		const handlePruneAction = async () => {
 			const limit = DEFAULT_PRUNE_LIMIT;
 
@@ -124,19 +123,16 @@ const PruneMessagesWithData = (): ReactElement => {
 	const callOutText = useMemo(() => {
 		const name = room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name);
 		const exceptPinned = pinned ? ` ${t('except_pinned')}` : '';
-		const ifFrom = users.length
-			? ` ${t('if_they_are_from', {
-					postProcess: 'sprintf',
-					sprintf: [users.map((element) => element).join(', ')],
-				})}`
-			: '';
+		const ifFrom = users.length ? ` ${t('if_they_are_from', { users: users.map((element) => element).join(', ') })}` : '';
 		const filesOrMessages = attached ? t('files') : t('messages');
 
 		if (newerDate && olderDate) {
 			return (
 				t('Prune_Warning_between', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
+					items: filesOrMessages,
+					roomName: name,
+					fromDate: formatDate(fromDate, 'L LT'),
+					toDate: formatDate(toDate, 'L LT'),
 				}) +
 				exceptPinned +
 				ifFrom
@@ -145,34 +141,17 @@ const PruneMessagesWithData = (): ReactElement => {
 
 		if (newerDate) {
 			return (
-				t('Prune_Warning_after', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT')],
-				}) +
-				exceptPinned +
-				ifFrom
+				t('Prune_Warning_after', { items: filesOrMessages, roomName: name, fromDate: formatDate(fromDate, 'L LT') }) + exceptPinned + ifFrom
 			);
 		}
 
 		if (olderDate) {
 			return (
-				t('Prune_Warning_before', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, moment(toDate).format('L LT')],
-				}) +
-				exceptPinned +
-				ifFrom
+				t('Prune_Warning_before', { items: filesOrMessages, roomName: name, toDate: formatDate(toDate, 'L LT') }) + exceptPinned + ifFrom
 			);
 		}
 
-		return (
-			t('Prune_Warning_all', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name],
-			}) +
-			exceptPinned +
-			ifFrom
-		);
+		return t('Prune_Warning_all', { items: filesOrMessages, roomName: name }) + exceptPinned + ifFrom;
 	}, [attached, fromDate, newerDate, olderDate, pinned, room, t, toDate, users]);
 
 	const validateText = useMemo(() => {

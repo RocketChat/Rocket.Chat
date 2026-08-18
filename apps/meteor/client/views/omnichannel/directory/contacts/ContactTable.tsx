@@ -1,5 +1,5 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -42,7 +42,7 @@ function ContactTable() {
 		500,
 	);
 
-	const onButtonNewClick = useEffectEvent(() =>
+	const onButtonNewClick = useStableCallback(() =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'new',
@@ -86,7 +86,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 
@@ -137,7 +137,7 @@ function ContactTable() {
 				</>
 			)}
 			{isError && (
-				<Box mbs={20}>
+				<Box marginBlockStart={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>

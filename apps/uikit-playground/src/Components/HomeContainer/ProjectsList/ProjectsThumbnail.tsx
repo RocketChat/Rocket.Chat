@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { activeProjectAction, context, renameProjectAction } from '../../../Context';
 import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
-import { type ILayoutBlock } from '../../../Context/initialState';
+import type { ILayoutBlock } from '../../../Context/initialState';
 import routes from '../../../Routes/Routes';
 import { formatDate } from '../../../utils/formatDate';
 import RenderPayload from '../../RenderPayload/RenderPayload';
@@ -15,7 +15,9 @@ import EditableLabel from '../../ScreenThumbnail/EditableLabel/EditableLabel';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
 
-const ProjectsThumbnail = ({ id, name: _name, date, blocks }: { id: string; name: string; date: string; blocks: ILayoutBlock[] }) => {
+export type ProjectsThumbnailProps = { id: string; name: string; date: string; blocks: ILayoutBlock[] };
+
+const ProjectsThumbnail = ({ id, name: _name, date, blocks }: ProjectsThumbnailProps) => {
 	const [name, setName] = useState<string>(_name);
 	const navigate = useNavigate();
 	const { dispatch } = useContext(context);

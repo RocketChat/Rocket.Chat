@@ -1,13 +1,12 @@
 import { Box, CodeSnippet } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
-import DOMPurify from 'dompurify';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { links } from '../../lib/links';
 
-type SaveE2EPasswordModalProps = {
+export type SaveE2EPasswordModalProps = {
 	randomPassword: string;
 	onClose: () => void;
 	onCancel: () => void;
@@ -16,7 +15,7 @@ type SaveE2EPasswordModalProps = {
 
 const DOCS_URL = links.go.e2eeGuide;
 
-const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
+const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps) => {
 	const { t } = useTranslation();
 	const { copy, hasCopied } = useClipboard(randomPassword);
 	const passwordId = useId();
@@ -33,12 +32,12 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			annotation={t('You_can_do_from_account_preferences')}
 		>
 			<p>
-				<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_password_reveal_text', { randomPassword })) }} />
-				<ExternalLink to={DOCS_URL} mis={4}>
+				{t('E2E_password_reveal_text')}
+				<ExternalLink to={DOCS_URL} marginInlineStart={4}>
 					{t('Learn_more_about_E2EE')}
 				</ExternalLink>
 			</p>
-			<Box is='p' fontWeight='bold' mb={20}>
+			<Box is='p' fontWeight='bold' marginBlock={20}>
 				{t('E2E_password_save_text')}
 			</Box>
 			<p id={passwordId}>{t('Your_E2EE_password_is')}</p>
@@ -47,7 +46,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 				buttonText={hasCopied ? t('Copied') : t('Copy')}
 				buttonDisabled={hasCopied}
 				onClick={() => copy()}
-				mbs={8}
+				marginBlockStart={8}
 			>
 				{randomPassword}
 			</CodeSnippet>

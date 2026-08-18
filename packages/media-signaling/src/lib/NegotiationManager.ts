@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { INegotiationCompatibleMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
+import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
 import { Negotiation } from './services/webrtc/Negotiation';
 
 export class NegotiationManager {
@@ -37,7 +37,7 @@ export class NegotiationManager {
 	protected highestFinishedNegotiationId: string | null;
 
 	constructor(
-		protected readonly call: INegotiationCompatibleMediaCall,
+		protected readonly call: IClientMediaCall,
 		protected readonly config: NegotiationManagerConfig,
 	) {
 		this.negotiations = new Map();
@@ -144,7 +144,7 @@ export class NegotiationManager {
 	}
 
 	protected isPoliteClient(): boolean {
-		return this.call.role === 'callee';
+		return this.call.localParticipant.role === 'callee';
 	}
 
 	protected addToQueue(negotiation: Negotiation): void {
@@ -233,9 +233,11 @@ export class NegotiationManager {
 			.process(this.webrtcProcessor)
 			// No need to handle errors here as they are already handled by the 'error' event
 			.catch(() => null);
+
+		this.emitter.emit('negotiation-started');
 	}
 
-	protected isConfigured(): this is WebRTCNegotiationManager {
+	public isConfigured(): this is WebRTCNegotiationManager {
 		if (this.call.state === 'hangup' || this.call.hidden) {
 			this.config.logger?.debug('Ignoring WebRTC negotiations due to call state.');
 			return false;
@@ -247,8 +249,8 @@ export class NegotiationManager {
 		}
 
 		// Wait for the input track before negotiating, to avoid potentially having to renegotiate immediately
-		if (!this.call.hasInputTrack()) {
-			this.config.logger?.debug('Delaying WebRTC negotiations due to missing input track.');
+		if (!this.webrtcProcessor.streams.hasAllRequiredTracks()) {
+			this.config.logger?.debug('Delaying WebRTC negotiations due to missing required track.');
 			return false;
 		}
 

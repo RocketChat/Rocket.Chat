@@ -1,6 +1,14 @@
 import type { IVisitorEmail } from './IVisitorEmail';
 import type { IVisitorPhone } from './IVisitorPhone';
 
+export interface IVisitorExternalIdentifier {
+	appId: string;
+	entityId: string;
+	metadata?: Record<string, unknown>;
+}
+
+export type ResolveVisitorContactData = { phone: string } | { email: string };
+
 export interface IVisitor {
 	id?: string;
 	token: string;
@@ -14,4 +22,5 @@ export interface IVisitor {
 	activity?: string[];
 	customFields?: { [key: string]: any };
 	livechatData?: { [key: string]: any };
+	externalIds?: IVisitorExternalIdentifier[];
 }

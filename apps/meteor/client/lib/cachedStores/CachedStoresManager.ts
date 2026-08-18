@@ -1,4 +1,5 @@
 import type { IWithManageableCache } from './CachedStore';
+import { getDdpSdk } from '../sdk/ddpSdk';
 
 class CachedStoresManager {
 	private items = new Set<IWithManageableCache>();
@@ -15,6 +16,8 @@ class CachedStoresManager {
 }
 
 const instance = new CachedStoresManager();
+
+getDdpSdk().account.onLogout(() => instance.clearAllCachesOnLogout());
 
 export {
 	/** @deprecated */

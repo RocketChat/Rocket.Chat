@@ -1,13 +1,14 @@
-import type { IncomingMessage, ServerResponse } from 'http';
-import url from 'url';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import url from 'node:url';
 
 import { validate } from '@rocket.chat/cas-validate';
 import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const closePopup = function (res: ServerResponse): void {
 	res.writeHead(200, { 'Content-Type': 'text/html' });

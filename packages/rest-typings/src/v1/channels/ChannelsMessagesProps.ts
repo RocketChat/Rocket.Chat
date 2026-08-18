@@ -1,14 +1,14 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type ChannelsMessagesProps = PaginatedRequest<
 	{
 		roomId: IRoom['_id'];
 		mentionIds?: string;
 		starredIds?: string;
-		pinned?: boolean;
+		pinned?: string;
 		query?: Record<string, any>;
 	},
 	'ts'
@@ -50,4 +50,4 @@ const channelsMessagesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isChannelsMessagesProps = ajv.compile<ChannelsMessagesProps>(channelsMessagesPropsSchema);
+export const isChannelsMessagesProps = ajvQuery.compile<ChannelsMessagesProps>(channelsMessagesPropsSchema);

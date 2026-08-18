@@ -1,6 +1,6 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 
 type SubscriptionsGet = { updatedSince?: string };
 
@@ -22,7 +22,7 @@ const SubscriptionsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetProps = ajv.compile<SubscriptionsGet>(SubscriptionsGetSchema);
+export const isSubscriptionsGetProps = ajvQuery.compile<SubscriptionsGet>(SubscriptionsGetSchema);
 
 const SubscriptionsGetOneSchema = {
 	type: 'object',
@@ -35,7 +35,7 @@ const SubscriptionsGetOneSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
+export const isSubscriptionsGetOneProps = ajvQuery.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
 	anyOf: [
@@ -104,7 +104,7 @@ const SubscriptionsUnreadSchema = {
 	],
 };
 
-export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
+export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {

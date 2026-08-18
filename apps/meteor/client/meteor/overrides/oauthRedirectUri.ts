@@ -1,3 +1,6 @@
+// TODO: remove this override together with the Meteor auth/DDP layer — it
+// monkey-patches meteor/oauth for backwards compatibility with pre-2.3
+// clients. Once Meteor's OAuth stack is gone, this file goes with it.
 import { OAuth } from 'meteor/oauth';
 
 declare module 'meteor/oauth' {

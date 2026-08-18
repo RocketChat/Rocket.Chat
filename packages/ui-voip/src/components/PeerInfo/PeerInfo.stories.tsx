@@ -1,16 +1,15 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { PeerInfo } from '.';
 
 export default {
-	title: 'V2/Components/PeerInfo',
 	component: PeerInfo,
 	decorators: [(Story) => <Story />],
 } satisfies Meta<typeof PeerInfo>;
 
-export const InternalUser: StoryFn<typeof PeerInfo> = () => {
-	return (
+export const InternalUser: StoryObj<typeof PeerInfo> = {
+	render: () => (
 		<PeerInfo
 			callerId='1234'
 			displayName='John Doe'
@@ -27,11 +26,11 @@ export const InternalUser: StoryFn<typeof PeerInfo> = () => {
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 		/>
-	);
+	),
 };
 
-export const InternalUserWithRemoteStatus: StoryFn<typeof PeerInfo> = () => {
-	return (
+export const InternalUserWithRemoteStatus: StoryObj<typeof PeerInfo> = {
+	render: () => (
 		<PeerInfo
 			callerId='1234'
 			displayName='John Doe'
@@ -58,9 +57,9 @@ export const InternalUserWithRemoteStatus: StoryFn<typeof PeerInfo> = () => {
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 		/>
-	);
+	),
 };
 
-export const ExternalUser: StoryFn<typeof PeerInfo> = () => {
-	return <PeerInfo number='1234567890' />;
+export const ExternalUser: StoryObj<typeof PeerInfo> = {
+	render: () => <PeerInfo number='1234567890' />,
 };

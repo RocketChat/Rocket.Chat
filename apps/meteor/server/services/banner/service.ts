@@ -1,8 +1,11 @@
+import { randomUUID } from 'node:crypto';
+
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IBannerService } from '@rocket.chat/core-services';
 import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
-import { v4 as uuidv4 } from 'uuid';
+
+import { notifyOnUserChange } from '../../lib/notifyListener';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
@@ -27,7 +30,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 	}
 
 	async create(doc: Optional<IBanner, '_id' | '_updatedAt'>): Promise<IBanner> {
-		const bannerId = doc._id || uuidv4();
+		const bannerId = doc._id || randomUUID();
 
 		doc.view.appId = doc.view.appId ?? 'banner-core';
 		doc.view.viewId = bannerId;
@@ -86,7 +89,21 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const banner = await Banners.findOneById(bannerId);
 		if (!banner) {
-			throw new Error('Banner not found');
+			const { matchedCount } = await Users.setBannerReadById(userId, bannerId);
+
+			if (!matchedCount) {
+				throw new Error('Banner not found');
+			}
+
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: {
+					[`banners.${bannerId}.read`]: true,
+				},
+			});
+
+			return true;
 		}
 
 		const user = await Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {

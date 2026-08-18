@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type CalendarEventListProps = { date: string };
 
@@ -16,4 +16,4 @@ const calendarEventListPropsSchema: JSONSchemaType<CalendarEventListProps> = {
 	additionalProperties: false,
 };
 
-export const isCalendarEventListProps = ajv.compile(calendarEventListPropsSchema);
+export const isCalendarEventListProps = ajvQuery.compile(calendarEventListPropsSchema);

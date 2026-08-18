@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type VideoConfListProps = {
 	roomId: string;
@@ -22,4 +22,4 @@ const videoConfListPropsSchema: JSONSchemaType<VideoConfListProps> = {
 	additionalProperties: false,
 };
 
-export const isVideoConfListProps = ajv.compile(videoConfListPropsSchema);
+export const isVideoConfListProps = ajvQuery.compile(videoConfListPropsSchema);

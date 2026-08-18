@@ -1,4 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
+import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
 	displayName: string;
@@ -17,7 +18,7 @@ export type ConnectionState = 'CONNECTED' | 'CONNECTING' | 'RECONNECTING';
 
 export type PeerInfo = InternalPeerInfo | ExternalPeerInfo;
 
-export type State = 'closed' | 'new' | 'calling' | 'ringing' | 'ongoing';
+export type State = 'none' | 'calling' | 'ringing' | 'ongoing';
 
 interface IBaseSession {
 	state: State;
@@ -28,12 +29,13 @@ interface IBaseSession {
 	held: boolean;
 	remoteMuted: boolean;
 	remoteHeld: boolean;
-	startedAt?: Date | null; // todo not sure if I need this
+	startedAt?: Date;
 	hidden: boolean;
+	supportedFeatures: readonly CallFeature[];
 }
 
 interface IEmptySession extends IBaseSession {
-	state: Extract<State, 'closed' | 'new'>;
+	state: Extract<State, 'none'>;
 	callId: undefined;
 }
 

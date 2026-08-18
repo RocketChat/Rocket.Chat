@@ -274,7 +274,7 @@ export abstract class BaseRaw<
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectId();
-				return { _id: oid.toHexString(), ...doc };
+				doc = { ...doc, _id: oid.toHexString() } as InsertionModel<T>;
 			}
 			this.setUpdatedAt(doc);
 			return doc;
@@ -364,6 +364,10 @@ export abstract class BaseRaw<
 		}
 
 		return doc as WithId<T>;
+	}
+
+	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
+		return this.findOneAndDelete({ _id } as Filter<T>, options);
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {

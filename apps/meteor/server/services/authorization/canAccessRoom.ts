@@ -6,13 +6,13 @@ import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/mode
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 
-async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
+async function canAccessPublicRoom(user?: IUser): Promise<boolean> {
 	if (!user?._id) {
 		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
-	return Authorization.hasPermission(user._id, 'view-c-room');
+	return Authorization.hasPermission(user, 'view-c-room');
 }
 
 type RoomAccessValidatorConverted = (
@@ -28,6 +28,11 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 		}
 		if (!room._id || !room.teamId || room.t !== 'c') {
 			// if the room doesn't belongs to a team || is not a public channel - skip
+			return false;
+		}
+
+		// if user is banned from this room, deny access
+		if (user?._id && (await Subscriptions.findOneBannedSubscription(room._id, user._id))) {
 			return false;
 		}
 
@@ -50,6 +55,11 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 
 	async function _validateAccessToPublicRooms(room, user): Promise<boolean> {
 		if (!room?._id || room.t !== 'c' || room?.teamId) {
+			return false;
+		}
+
+		// if user is banned from this room, deny access
+		if (user?._id && (await Subscriptions.findOneBannedSubscription(room._id, user._id))) {
 			return false;
 		}
 
@@ -95,8 +105,8 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 	canAccessRoomLivechat,
 ];
 
-const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
-	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
+export const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
+	return Boolean(user && Object.keys(user).length === 1 && user._id);
 };
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {

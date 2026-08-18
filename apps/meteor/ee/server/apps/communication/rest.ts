@@ -1,7 +1,7 @@
+import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
+import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
@@ -16,22 +16,23 @@ import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDisti
 import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import { API } from '../../../../app/api/server';
-import type { APIClass } from '../../../../app/api/server/ApiClass';
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
-import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
-import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { metrics } from '../../../../app/metrics/server';
-import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
+import { API } from '../../../../server/api';
+import type { APIClass } from '../../../../server/api/ApiClass';
+import { getUploadFormData } from '../../../../server/api/lib/getUploadFormData';
+import { loggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
+import { metricsMiddleware } from '../../../../server/api/v1/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../server/api/v1/middlewares/tracer';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../server/lib/cloud';
 import { i18n } from '../../../../server/lib/i18n';
+import { metrics } from '../../../../server/lib/metrics';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
-import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { settings } from '../../../../server/settings';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
+import { canEnableApp } from '../../lib/license/canEnableApp';
 import { notifyMarketplace } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
@@ -70,10 +71,21 @@ export class AppsRestApi {
 		});
 
 		const logger = new Logger('APPS');
+
 		this.api.router
-			.use(loggerMiddleware(logger))
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
-			.use(tracerSpanMiddleware);
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\/apps\//),
+					api: this.api,
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
+			.use(tracerSpanMiddleware)
+			.use(loggerMiddleware(logger));
 
 		this.addManagementRoutes();
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
@@ -85,6 +97,13 @@ export class AppsRestApi {
 		const manager = this._manager;
 
 		const handleError = (message: string, err: any) => {
+			// Offline (air-gapped) licenses suppress marketplace requests at the source;
+			// report the real reason instead of a generic connectivity failure.
+			if (err instanceof CloudOfflineLicenseError) {
+				orchestrator.getRocketChatLogger().info({ msg: err.message });
+				return API.v1.failure({ error: err.message });
+			}
+
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!err.hasOwnProperty('response')) {
@@ -138,7 +157,7 @@ export class AppsRestApi {
 						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
 						return API.v1.success(apps);
 					} catch (err) {
-						if (err instanceof MarketplaceConnectionError) {
+						if (err instanceof MarketplaceConnectionError || err instanceof CloudOfflineLicenseError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
@@ -167,7 +186,7 @@ export class AppsRestApi {
 						return API.v1.success(categories);
 					} catch (err) {
 						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching categories from Marketplace:', err });
-						if (err instanceof MarketplaceConnectionError) {
+						if (err instanceof MarketplaceConnectionError || err instanceof CloudOfflineLicenseError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 

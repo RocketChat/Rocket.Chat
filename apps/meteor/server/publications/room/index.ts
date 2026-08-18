@@ -4,11 +4,11 @@ import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../../lib/publishFields';
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { settings } from '../../settings';
 
 type PublicRoomField = keyof typeof roomFields;
 type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;
@@ -57,8 +57,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const userId = Meteor.userId();
-		const isAnonymous = !userId;
+		const user = await Meteor.userAsync();
+		const isAnonymous = !user?._id;
 
 		if (isAnonymous) {
 			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
@@ -80,21 +80,17 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (
-			userId &&
-			!(await canAccessRoomAsync(
-				room,
-				{ _id: userId },
-				{
-					includeInvitations: true,
-				},
-			))
+			user &&
+			!(await canAccessRoomAsync(room, user, {
+				includeInvitations: true,
+			}))
 		) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
+		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 

@@ -1,18 +1,29 @@
 import { proxify } from './lib/proxify';
+import type {
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+} from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
-import { IApiService } from './types/IApiService';
+import type { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
+import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
+import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
 import type { IMediaCallService } from './types/IMediaCallService';
@@ -54,28 +65,29 @@ import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFil
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
-export { AppStatusReport } from './types/IAppsEngineService';
-export { IAbacService, AbacActor } from './types/IAbacService';
+export type { AppStatusReport } from './types/IAppsEngineService';
+export type { IAbacService, AbacActor } from './types/IAbacService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export { EventSignatures } from './events/Events';
+export type { EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
 
-export { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
+export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 
-export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
+export type { IServiceContext, IServiceClass } from './types/ServiceClass';
+export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export {
+export type {
 	IFederationService,
 	IFederationServiceEE,
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from './types/IFederationService';
 
-export { IFederationMatrixService } from './types/IFederationMatrixService';
+export type { IFederationMatrixService } from './types/IFederationMatrixService';
 
-export {
+export type {
 	ConversationData,
 	AgentOverviewDataOptions,
 	ChartDataOptions,
@@ -87,9 +99,9 @@ export {
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
-export { ICreateRoomOptions } from './types/IRoomService';
+export type { ICreateRoomOptions } from './types/IRoomService';
 
-export {
+export type {
 	AutoUpdateRecord,
 	IAccount,
 	IAnalyticsService,
@@ -101,6 +113,7 @@ export {
 	ICreateRoomParams,
 	IDeviceManagementService,
 	IEnterpriseSettings,
+	ILDAPEEService,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -132,9 +145,9 @@ export {
 	IVideoConfService,
 	NPSCreatePayload,
 	NPSVotePayload,
-	proxify,
 	ResizeResult,
 	RoomAccessValidator,
+	UserWithRoles,
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
@@ -143,6 +156,14 @@ export {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
@@ -154,6 +175,7 @@ export {
 	IOmnichannelAnalyticsService,
 	IUserService,
 };
+export { proxify };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');
@@ -172,11 +194,13 @@ export const Media = proxify<IMediaService>('media');
 export const MediaCall = proxify<IMediaCallService>('media-call');
 export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxify<ILDAPService>('ldap');
+export const LDAPEnterprise = proxify<ILDAPEEService>('ldap-enterprise');
 export const SAUMonitor = proxify<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxify<IDeviceManagementService>('device-management');
 export const VideoConf = proxify<IVideoConfService>('video-conference');
 export const Upload = proxify<IUploadService>('upload');
 export const Calendar = proxify<ICalendarService>('calendar');
+export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
@@ -197,3 +221,4 @@ export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
 export const Abac = proxify<IAbacService>('abac');
+export const AISearch = proxify<IAISearchService>('ai-search');

@@ -1,4 +1,4 @@
-import type { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
+import type { AppClientManager } from '@rocket.chat/apps/dist/client/AppClientManager';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';

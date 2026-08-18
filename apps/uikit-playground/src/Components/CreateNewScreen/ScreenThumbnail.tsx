@@ -7,13 +7,15 @@ import { context, renameScreenAction } from '../../Context';
 import { activeScreenAction } from '../../Context/action/activeScreenAction';
 import { deleteScreenAction } from '../../Context/action/deleteScreenAction';
 import { duplicateScreenAction } from '../../Context/action/duplicateScreenAction';
-import { type ScreenType } from '../../Context/initialState';
+import type { ScreenType } from '../../Context/initialState';
 import renderPayload from '../RenderPayload/RenderPayload';
 import EditMenu from '../ScreenThumbnail/EditMenu/EditMenu';
 import ScreenThumbnailWrapper from '../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../ScreenThumbnail/Thumbnail';
 
-const ScreenThumbnail = ({ screen, disableDelete }: { screen: ScreenType; disableDelete: boolean }) => {
+export type ScreenThumbnailProps = { screen: ScreenType; disableDelete: boolean };
+
+const ScreenThumbnail = ({ screen, disableDelete }: ScreenThumbnailProps) => {
 	const { dispatch } = useContext(context);
 	const [name, setName] = useState<string>(screen?.name);
 	const toast = useToastBarDispatch();

@@ -25,6 +25,6 @@ after`,
 			[paragraph([plain('before')]), spoilerBlock([paragraph([plain('hidden')])]), lineBreak(), paragraph([plain('after')])],
 		],
 	])('parses block spoilers: %p', (input, output) => {
-		expect(parse(input)).toMatchObject(output);
+		expect(parse(input)).toEqual(output);
 	});
 });

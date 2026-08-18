@@ -1,5 +1,5 @@
 import { AccordionItem, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,12 +11,12 @@ const PreferencesMyDataSection = () => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const requestDataDownload = useMethod('requestDataDownload');
+	const requestDataDownload = useEndpoint('GET', '/v1/users.requestDataDownload');
 
 	const downloadData = useCallback(
 		async (fullExport: boolean) => {
 			try {
-				const result = await requestDataDownload({ fullExport });
+				const result = await requestDataDownload({ fullExport: fullExport ? 'true' : 'false' });
 				if (result.requested) {
 					const text = t('UserDataDownload_Requested_Text', {
 						pending_operations: result.pendingOperationsBeforeMyRequest,

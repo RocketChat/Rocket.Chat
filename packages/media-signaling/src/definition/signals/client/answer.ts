@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
 import type { CallAnswer, CallFeature } from '../../call';
-import { callFeatureList } from '../../call/IClientMediaCall';
+import { callAnswerList, callFeatureList } from '../../call/IClientMediaCall';
 
 /** Client is saying that the user accepted or rejected a call, or simply reporting that the user can or can't be reached */
 export type ClientMediaSignalAnswer = {
@@ -33,7 +33,7 @@ export const clientMediaSignalAnswerSchema: JSONSchemaType<ClientMediaSignalAnsw
 		},
 		answer: {
 			type: 'string',
-			enum: ['accept', 'reject', 'ack', 'unavailable'],
+			enum: callAnswerList,
 			nullable: false,
 		},
 		supportedFeatures: {

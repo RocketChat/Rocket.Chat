@@ -12,7 +12,7 @@ export type HistoryActionCallbacks = {
 	[K in HistoryActions]?: () => void;
 };
 
-type CallHistoryActionsProps = {
+export type CallHistoryActionsProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
 };

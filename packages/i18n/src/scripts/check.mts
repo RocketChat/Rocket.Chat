@@ -448,29 +448,103 @@ const extraPlaceholders = describeTask('extra-placeholders', async function* () 
 });
 
 const findPositionalParams = describeTask('find-sprintf-params', async function* () {
-	const sprintfRegex = /%s/g;
-
 	const resource = await readResource(baseLanguage);
 
 	for (const { key, plural, translation } of listTranslations(resource)) {
-		const match = sprintfRegex.exec(translation);
-		if (!match) continue;
+		if (!translation.includes('%s')) continue;
 
 		yield {
 			lint: async (reportError) => {
 				if (plural) {
-					reportError(
-						'key %o (plural %o) has positional parameter %o, should be named parameter like %o',
-						key,
-						plural,
-						match[0],
-						'{{param}}',
-					);
+					reportError('key %o (plural %o) has positional parameter %o, should be named parameter like %o', key, plural, '%s', '{{param}}');
 				} else {
-					reportError('key %o has positional parameter %o, should be named parameter like %o', key, match[0], '{{param}}');
+					reportError('key %o has positional parameter %o, should be named parameter like %o', key, '%s', '{{param}}');
 				}
 			},
 		};
+	}
+});
+
+function* detectDuplicateJsonKeys(text: string) {
+	let pos = 0;
+
+	const skip = () => {
+		while (pos < text.length && ' \t\r\n'.includes(text[pos])) pos++;
+	};
+
+	const readString = (): string => {
+		pos++;
+		let s = '';
+		while (pos < text.length && text[pos] !== '"') {
+			if (text[pos] === '\\') {
+				s += text[pos++];
+			}
+			s += text[pos++];
+		}
+		pos++;
+		return s;
+	};
+
+	function* skipValue(): Generator<{ key: string; parentKey?: string }> {
+		skip();
+		if (text[pos] === '"') readString();
+		else if (text[pos] === '{') yield* readObject();
+		else if (text[pos] === '[') yield* readArray();
+		else while (pos < text.length && !',}]'.includes(text[pos]) && !' \t\r\n'.includes(text[pos])) pos++;
+	}
+
+	function* readObject(parentKey?: string) {
+		pos++;
+		skip();
+		const seen = new Set<string>();
+		while (pos < text.length && text[pos] !== '}') {
+			skip();
+			const key = readString();
+			skip();
+			pos++;
+			if (seen.has(key)) {
+				yield { key, parentKey };
+			}
+			seen.add(key);
+			yield* skipValue();
+			skip();
+			if (text[pos] === ',') pos++;
+		}
+		pos++;
+	}
+
+	function* readArray() {
+		pos++;
+		skip();
+		while (pos < text.length && text[pos] !== ']') {
+			yield* skipValue();
+			skip();
+			if (text[pos] === ',') pos++;
+		}
+		pos++;
+	}
+
+	skip();
+	if (pos < text.length && text[pos] === '{') yield* readObject();
+}
+
+const findDuplicateKeys = describeTask('find-duplicate-keys', async function* () {
+	const languages = await getResourceLanguages();
+
+	for (const language of languages) {
+		const content = await readContent(language);
+
+		for (const { key, parentKey } of detectDuplicateJsonKeys(content)) {
+			yield {
+				lint: async (reportError) => {
+					if (parentKey) {
+						reportError('%s: duplicate key %o in %o', language, key, parentKey);
+					} else {
+						reportError('%s: duplicate key %o', language, key);
+					}
+				},
+			};
+		}
 	}
 });
 
@@ -488,6 +562,7 @@ const tasksByName = {
 	'find-sprintf-params': findPositionalParams,
 	'missing-placeholders': missingPlaceholders,
 	'extra-placeholders': extraPlaceholders,
+	'find-duplicate-keys': findDuplicateKeys,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
@@ -501,6 +576,7 @@ async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 		'trim-eof',
 		'missing-placeholders',
 		'extra-placeholders',
+		'find-duplicate-keys',
 	]);
 
 	if (task?.length) {

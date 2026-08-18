@@ -1,24 +1,25 @@
-import fs from 'fs';
-import type Stream from 'stream';
+import fs from 'node:fs';
+import type Stream from 'node:stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
-import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
+import type { IUpload, IUser, FilesAndAttachments, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads } from '@rocket.chat/models';
+import { Uploads, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
-import { FileUpload } from '../../../app/file-upload/server';
-import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
+import { updateMessage } from '../../lib/messages/updateMessage';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { parseFileIntoMessageAttachments, sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
+import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { UploadFS } from '../../ufs';
 
 const logger = new Logger('UploadService');
@@ -26,9 +27,9 @@ const logger = new Logger('UploadService');
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
+	async uploadFile({ buffer, details, federation }: IUploadFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {
@@ -206,5 +207,19 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		writeStream.on('error', cleanup);
 
 		return resolver.promise;
+	}
+
+	async setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void> {
+		return setUserAvatar(user, buffer, contentType, service);
+	}
+
+	async resetUserAvatar(user: AtLeast<IUser, '_id' | 'username'>): Promise<void> {
+		if (!user.username) {
+			throw new Error('Username is required to reset avatar');
+		}
+
+		await FileUpload.getStore('Avatars').deleteByName(user.username);
+		await Users.unsetAvatarData(user._id);
+		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
 	}
 }

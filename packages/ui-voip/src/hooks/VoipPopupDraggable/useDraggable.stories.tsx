@@ -1,8 +1,8 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
-import { within, fireEvent, waitFor, expect, userEvent } from '@storybook/test';
 import { useEffect, useLayoutEffect, useState, type Ref } from 'react';
+import { within, fireEvent, waitFor, expect, userEvent } from 'storybook/test';
 
 import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore';
 
@@ -188,7 +188,6 @@ export const DraggableBoxWithControls: Story = {
 };
 
 const meta = {
-	title: 'hooks/useDraggable',
 	component: DraggableBox,
 	parameters: {
 		layout: 'fullscreen',
@@ -328,7 +327,7 @@ export const BoundingBehavior: Story = {
 		await step('should adjust element position when screen is resized and element is cut off', async () => {
 			const handle = await canvas.findByTestId('drag-handle');
 			const draggable = await canvas.findByTestId('draggable-box');
-			const boundingBox = (await canvas.findByTestId('bounding-box')) as HTMLElement;
+			const boundingBox = await canvas.findByTestId('bounding-box');
 
 			const initialRect = boundingBox.getBoundingClientRect();
 
@@ -417,7 +416,7 @@ export const ElementUpdates: Story = {
 
 const getLorem = (size: number) => {
 	return Array.from({ length: size }, (_, i) => (
-		<Box display='block' pbe={12} key={i}>
+		<Box display='block' paddingBlockEnd={12} key={i}>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
 			minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
 			reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
@@ -445,7 +444,7 @@ const MockedPage = () => {
 
 	const overflowBoxProps = {
 		display: 'flex',
-		h: 'full',
+		height: 'full',
 		flexGrow: 1,
 		flexShrink: 0,
 		flexBasis: '33%',
@@ -457,17 +456,17 @@ const MockedPage = () => {
 		<>
 			<Box display='flex' flexDirection='row' height='100vh' width='100vw' overflow='hidden'>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-1'>
+					<Box width='full' height='full' data-testid='scrollable-1'>
 						{getLorem(100)}
 					</Box>
 				</Box>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-2'>
+					<Box width='full' height='full' data-testid='scrollable-2'>
 						{getLorem(100)}
 					</Box>
 				</Box>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-3'>
+					<Box width='full' height='full' data-testid='scrollable-3'>
 						{getLorem(100)}
 					</Box>
 				</Box>
