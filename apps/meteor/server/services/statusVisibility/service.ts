@@ -12,6 +12,8 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 
 	private hiddenFromByUser = new Map<IUser['_id'], Set<IUser['_id']>>();
 
+	private lock: Promise<unknown> = Promise.resolve();
+
 	constructor() {
 		super();
 
@@ -39,6 +41,12 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 	}
 
 	async refresh(targets?: IUser['_id'][]): Promise<UserPresence[]> {
+		const result = this.lock.then(() => this.rebuildHiddenUsers(targets));
+		this.lock = result.catch(() => undefined);
+		return result;
+	}
+
+	private async rebuildHiddenUsers(targets?: IUser['_id'][]): Promise<UserPresence[]> {
 		this.enabled = (await Settings.get<boolean>('Accounts_StatusVisibility_Enabled')) === true;
 
 		if (!this.enabled) {
@@ -74,7 +82,6 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		return users;
 	}
 
-	// The broadcast is what makes the stream drop its per-connection copies of what each viewer may see.
 	async invalidate(targets?: IUser['_id'][]): Promise<UserPresence[]> {
 		const affected = await this.refresh(targets);
 

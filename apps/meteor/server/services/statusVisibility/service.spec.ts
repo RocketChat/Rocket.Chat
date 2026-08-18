@@ -21,6 +21,7 @@ jest.mock('@rocket.chat/models', () => ({
 }));
 
 const cursor = (users: object[]) => ({ toArray: async () => users });
+const flush = () => new Promise((resolve) => setImmediate(resolve));
 const blocking = (id: string, blocked: string[]) => ({ _id: id, settings: { preferences: { statusVisibilityDenied: blocked } } });
 
 describe('status visibility service', () => {
@@ -98,6 +99,28 @@ describe('status visibility service', () => {
 		const affected = await service.refresh();
 
 		expect(affected.map(({ _id }) => _id).sort()).toEqual(['ana', 'carla']);
+	});
+
+	it('applies overlapping refreshes in order, so an older read never wins', async () => {
+		const reads: Array<(users: object[]) => void> = [];
+		findWithStatusVisibilityConfig.mockImplementation(() => ({
+			toArray: () => new Promise((resolve) => reads.push(resolve as (users: object[]) => void)),
+		}));
+
+		const stale = service.refresh();
+		const fresh = service.refresh(['ana']);
+
+		await flush();
+		expect(reads).toHaveLength(1);
+		reads[0]([]);
+		await stale;
+
+		await flush();
+		expect(reads).toHaveLength(2);
+		reads[1]([blocking('ana', ['bruno'])]);
+		await fresh;
+
+		expect(await service.getHiddenFrom('bruno')).toEqual(['ana']);
 	});
 
 	it('lists who hid their status from a given viewer', async () => {
