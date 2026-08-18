@@ -41,7 +41,7 @@ services:
 
   # HomeServer 1 (synapse)
   hs1:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:v1.157.2
     profiles:
       - test
       - element
