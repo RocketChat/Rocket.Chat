@@ -250,7 +250,11 @@ export class NotificationsModule {
 			...args: [{ action: string; params: { callId: string; uid: string; rid: string } }] | [IUserDataEvent]
 		) {
 			const [roomId, e] = eventName.split('/') as [string, 'video-conference' | 'userData'];
-			if (this.userId && (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
+			if (
+				this.userId &&
+				['video-conference', 'userData'].includes(e) &&
+				(await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0
+			) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
