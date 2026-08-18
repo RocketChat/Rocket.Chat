@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/core-services': patch
+'@rocket.chat/core-services': minor
 '@rocket.chat/model-typings': patch
 '@rocket.chat/rest-typings': patch
 '@rocket.chat/models': patch
