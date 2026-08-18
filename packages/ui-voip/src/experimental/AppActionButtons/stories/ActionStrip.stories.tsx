@@ -1,10 +1,10 @@
-import { ActionButton, ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionStrip, Timer, ActionToggleChat, ToggleButton } from '../../../components';
+import { ActionButton, ActionStrip, Timer, ActionToggleChat, ToggleButton } from '../../../components';
 import MockedMediaCallProvider from '../../../providers/MockedMediaCallProvider';
 import AppActions from '../components/AppActions';
 import { useVisibleAppActions } from '../hooks/useVisibleAppActions';
