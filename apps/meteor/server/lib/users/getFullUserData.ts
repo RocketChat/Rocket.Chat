@@ -4,7 +4,9 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
-import { canSeeStatus, redactStatus, resolveUsersByIds } from '../statusVisibility/canSeeStatus';
+import { canSeeStatus } from '../statusVisibility/canSeeStatus';
+import { redactStatus } from '../statusVisibility/redactStatus';
+import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
 
 const logger = new Logger('getFullUserData');
 

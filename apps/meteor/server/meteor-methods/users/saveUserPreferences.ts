@@ -12,7 +12,8 @@ import {
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
-import { broadcastStatusVisibility, resolveUsersByUsernames } from '../../lib/statusVisibility/canSeeStatus';
+import { broadcastStatusVisibility } from '../../lib/statusVisibility/broadcastStatusVisibility';
+import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
 import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {

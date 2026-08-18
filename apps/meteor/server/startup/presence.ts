@@ -1,6 +1,7 @@
 import { Presence } from '@rocket.chat/core-services';
 
-import { broadcastStatusVisibility, refreshStatusVisibility } from '../lib/statusVisibility/canSeeStatus';
+import { broadcastStatusVisibility } from '../lib/statusVisibility/broadcastStatusVisibility';
+import { refreshStatusVisibility } from '../lib/statusVisibility/canSeeStatus';
 import { settings } from '../settings';
 
 // maybe this setting should disable the listener to 'presence.status' event on listerners.module.ts

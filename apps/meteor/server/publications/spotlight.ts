@@ -4,7 +4,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
-import { canSeeStatus, redactStatus } from '../lib/statusVisibility/canSeeStatus';
+import { canSeeStatus } from '../lib/statusVisibility/canSeeStatus';
+import { redactStatus } from '../lib/statusVisibility/redactStatus';
 
 type SpotlightType = {
 	users?: boolean;

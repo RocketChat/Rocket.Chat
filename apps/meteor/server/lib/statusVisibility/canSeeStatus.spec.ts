@@ -1,11 +1,5 @@
-import {
-	canSeeStatus,
-	getHiddenFrom,
-	hasStatusRestrictions,
-	refreshStatusVisibility,
-	resolveUsersByIds,
-	resolveUsersByUsernames,
-} from './canSeeStatus';
+import { canSeeStatus, getHiddenFrom, hasStatusRestrictions, refreshStatusVisibility } from './canSeeStatus';
+import { resolveUsersByIds, resolveUsersByUsernames } from './resolveUsers';
 
 const getSetting = jest.fn();
 const findPresenceUsersByIds = jest.fn();
@@ -13,8 +7,9 @@ const findWithStatusVisibilityConfig = jest.fn();
 const usersByUsernames = jest.fn();
 const usersByIds = jest.fn();
 
-jest.mock('../../settings/cached', () => ({
-	settings: { get: (key: string) => getSetting(key) },
+jest.mock('@rocket.chat/core-services', () => ({
+	api: { broadcast: jest.fn() },
+	Settings: { get: (key: string) => getSetting(key) },
 }));
 jest.mock('@rocket.chat/models', () => ({
 	Users: {
@@ -86,15 +81,18 @@ describe('status visibility mirror', () => {
 		expect(hasStatusRestrictions('carla')).toBe(false);
 
 		getSetting.mockReturnValue(false);
+		await refreshStatusVisibility();
+
 		expect(hasStatusRestrictions('ana')).toBe(false);
 	});
 
-	it('stops hiding the moment the setting turns off, before any refresh runs', async () => {
+	it('stops hiding once the setting turns off and the mirror catches up', async () => {
 		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
 		await refreshStatusVisibility();
 		expect(canSeeStatus('bruno', 'ana')).toBe(false);
 
 		getSetting.mockReturnValue(false);
+		await refreshStatusVisibility();
 
 		expect(canSeeStatus('bruno', 'ana')).toBe(true);
 	});
@@ -134,6 +132,8 @@ describe('status visibility mirror', () => {
 		expect(getHiddenFrom(null)).toEqual([]);
 
 		getSetting.mockReturnValue(false);
+		await refreshStatusVisibility();
+
 		expect(getHiddenFrom('bruno')).toEqual([]);
 	});
 

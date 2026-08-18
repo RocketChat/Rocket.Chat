@@ -2,7 +2,7 @@ import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCa
 import semver from 'semver';
 
 import { Info } from '../../../app/utils/rocketchat.info';
-import { resolveUsersByIds } from '../../lib/statusVisibility/canSeeStatus';
+import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { getURL } from '../../lib/utils/getURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { settings } from '../../settings';
