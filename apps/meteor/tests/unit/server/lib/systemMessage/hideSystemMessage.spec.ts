@@ -26,6 +26,13 @@ describe('hideSystemMessage', () => {
 			expect(result).to.be.true;
 		});
 
+		it('should return true if grouped message type is in hidden system messages', async () => {
+			const hiddenMessages: MessageTypesValues[] = ['mute_unmute'];
+
+			const result = shouldHideSystemMessage('mute_unmute', hiddenMessages);
+			expect(result).to.be.true;
+		});
+
 		it('should return true if message type is user-muted and mute_unmute is in hidden system messages', async () => {
 			const hiddenMessages: MessageTypesValues[] = ['mute_unmute'];
 
