@@ -5,7 +5,7 @@ import {
 	validateSamlParseMetadataSuccessResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { FetchError, serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { parseIdpMetadata } from '../../lib/saml/lib/parsers/IdpMetadata';
 import { settings } from '../../settings';
@@ -58,7 +58,7 @@ const samlEndpoints = API.v1.post(
 		try {
 			xml = await response.text();
 		} catch (err) {
-			if (err instanceof Error && (err as { type?: string }).type === 'max-size') {
+			if (err instanceof FetchError && err.type === 'max-size') {
 				return API.v1.failure('SAML_Metadata_too_large');
 			}
 			return API.v1.failure('SAML_Metadata_fetch_failed');
