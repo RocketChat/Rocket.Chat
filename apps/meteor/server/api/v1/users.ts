@@ -1583,7 +1583,7 @@ API.v1.get(
 			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
 
 			return API.v1.success({
-				users: users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
+				users: users.filter((user) => canSeeStatus(this.userId, user._id)),
 				full: false,
 			});
 		}
@@ -1605,7 +1605,7 @@ API.v1.get(
 		const users = await Users.findUsersNotOffline(options).toArray();
 
 		return API.v1.success({
-			users: users.map((user) => (canSeeStatus(this.userId, user._id) ? user : redactStatus(user))),
+			users: users.filter((user) => canSeeStatus(this.userId, user._id)),
 			full: true,
 		});
 	},
