@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
@@ -34,10 +34,13 @@ export async function setStatusText(
 	if (emit) {
 		const { _id, username, status, name, roles } = user;
 		await onceTransactionCommitedSuccessfully(() => {
-			void api.broadcast('presence.status', {
-				user: { _id, username, status, statusText, name, roles },
-				previousStatus: status,
-			});
+			void StatusVisibility.hasRestrictions(_id).then((hasVisibilityRestrictions) =>
+				api.broadcast('presence.status', {
+					user: { _id, username, status, statusText, name, roles },
+					previousStatus: status,
+					hasVisibilityRestrictions,
+				}),
+			);
 		}, session);
 	}
 

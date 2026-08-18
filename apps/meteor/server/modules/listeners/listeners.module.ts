@@ -179,7 +179,7 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
-		service.onEvent('presence.status', async ({ user }) => {
+		service.onEvent('presence.status', ({ user, hasVisibilityRestrictions }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
 				return;
@@ -205,7 +205,7 @@ export class ListenersModule {
 				},
 			});
 
-			if (!(await StatusVisibility.hasRestrictions(_id))) {
+			if (!hasVisibilityRestrictions) {
 				notifications.notifyLoggedInThisInstance('user-status', [
 					_id,
 					username,

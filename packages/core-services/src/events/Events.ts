@@ -161,6 +161,7 @@ export type EventSignatures = {
 	'presence.status'(data: {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
+		hasVisibilityRestrictions?: boolean;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
