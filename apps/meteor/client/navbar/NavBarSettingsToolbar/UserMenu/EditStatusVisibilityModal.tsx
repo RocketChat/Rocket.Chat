@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 
@@ -15,8 +16,8 @@ type StatusVisibilityFormValues = {
 	statusVisibilityDenied: string[];
 };
 
-const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModalProps) => {
-	const t = useTranslation();
+export const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModalProps) => {
+	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
@@ -68,12 +69,6 @@ const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModalProps) 
 			</FieldGroup>
 		</GenericModal>
 	);
-};
-
-export const useStatusVisibilityModalHandler = () => {
-	const setModal = useSetModal();
-
-	return () => setModal(<EditStatusVisibilityModal onClose={() => setModal(null)} />);
 };
 
 export default EditStatusVisibilityModal;
