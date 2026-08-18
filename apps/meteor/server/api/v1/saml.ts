@@ -1,32 +1,16 @@
 import {
-	ajv,
 	isSamlParseMetadata,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateSamlParseMetadataSuccessResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { SamlParseMetadataResult } from '@rocket.chat/rest-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { SystemLogger } from '../../lib/logger/system';
 import { parseIdpMetadata } from '../../lib/saml/lib/parsers/IdpMetadata';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
-
-const parseMetadataResponse = ajv.compile<SamlParseMetadataResult & { success: true }>({
-	type: 'object',
-	properties: {
-		entryPoint: { type: 'string' },
-		idpSLORedirectURL: { type: 'string' },
-		cert: { type: 'string' },
-		identifierFormat: { type: 'string' },
-		warnings: { type: 'array', items: { type: 'string' } },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['warnings', 'success'],
-	additionalProperties: false,
-});
 
 const samlEndpoints = API.v1.post(
 	'saml.parseMetadata',
@@ -35,7 +19,7 @@ const samlEndpoints = API.v1.post(
 		permissionsRequired: ['test-admin-options'],
 		body: isSamlParseMetadata,
 		response: {
-			200: parseMetadataResponse,
+			200: validateSamlParseMetadataSuccessResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
@@ -58,7 +42,7 @@ const samlEndpoints = API.v1.post(
 				settings.get<boolean>('Allow_Invalid_SelfSigned_Certs'),
 			);
 		} catch (err) {
-			SystemLogger.error({ msg: 'Failed to fetch SAML IdP metadata', err });
+			this.logger.error({ msg: 'Failed to fetch SAML IdP metadata', err });
 			if (err instanceof Error && err.message === 'error-ssrf-validation-failed') {
 				return API.v1.failure('SAML_Metadata_url_blocked');
 			}
@@ -84,7 +68,7 @@ const samlEndpoints = API.v1.post(
 			const { warnings, ...values } = parseIdpMetadata(xml);
 			return API.v1.success({ ...values, warnings });
 		} catch (err) {
-			SystemLogger.warn({ msg: 'Failed to parse SAML IdP metadata', err });
+			this.logger.warn({ msg: 'Failed to parse SAML IdP metadata', err });
 			return API.v1.failure('SAML_Metadata_invalid');
 		}
 	},
