@@ -8,6 +8,7 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
+import { useUnhideRoomAction } from './useUnhideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
@@ -32,6 +33,7 @@ export const useRoomMenuActions = ({
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 
+	const isHidden = subscription?.open === false;
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
@@ -48,6 +50,7 @@ export const useRoomMenuActions = ({
 	})();
 
 	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+	const handleUnhide = useUnhideRoomAction({ rid, type });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -60,10 +63,10 @@ export const useRoomMenuActions = ({
 			!hideDefaultOptions
 				? ([
 						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
+							id: isHidden ? 'unhideRoom' : 'hideRoom',
+							icon: isHidden ? 'eye' : 'eye-off',
+							content: isHidden ? t('Unhide') : t('Hide'),
+							onClick: isHidden ? handleUnhide : handleHide,
 						},
 						{
 							id: 'toggleRead',
@@ -89,6 +92,8 @@ export const useRoomMenuActions = ({
 			hideDefaultOptions,
 			t,
 			handleHide,
+			handleUnhide,
+			isHidden,
 			isUnread,
 			handleToggleRead,
 			canFavorite,
