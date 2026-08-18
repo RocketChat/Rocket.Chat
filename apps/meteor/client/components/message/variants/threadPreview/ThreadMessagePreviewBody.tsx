@@ -20,8 +20,6 @@ function getMdTokens(message: IMessage): Root | undefined {
 	if (message.msg) {
 		return toPlainTextRoot(message.msg);
 	}
-
-	return undefined;
 }
 
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps) => {
