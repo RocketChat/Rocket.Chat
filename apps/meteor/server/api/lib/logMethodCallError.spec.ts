@@ -34,19 +34,25 @@ describe('logMethodCallError', () => {
 	});
 
 	it('should not report client-safe errors as exceptions', () => {
-		logMethodCallError('loadHistory', { isClientSafe: true, error: 'error-invalid-user' });
+		const err = { isClientSafe: true, error: 'error-invalid-user' };
+
+		logMethodCallError('loadHistory', err);
 
 		expect(meteorDebugMock.called).to.be.false;
 		expect(errorMock.called).to.be.false;
 		expect(debugMock.calledOnce).to.be.true;
+		expect(debugMock.calledWithExactly({ msg: 'Expected error while invoking method', err, method: 'loadHistory' })).to.be.true;
 	});
 
 	it('should not report meteor errors as exceptions', () => {
-		logMethodCallError('login', { meteorError: { error: 'totp-required' } });
+		const err = { meteorError: { error: 'totp-required' } };
+
+		logMethodCallError('login', err);
 
 		expect(meteorDebugMock.called).to.be.false;
 		expect(errorMock.called).to.be.false;
 		expect(debugMock.calledOnce).to.be.true;
+		expect(debugMock.calledWithExactly({ msg: 'Expected error while invoking method', err, method: 'login' })).to.be.true;
 	});
 
 	it('should report unexpected errors as exceptions when Log_Level is 2', () => {
@@ -54,17 +60,23 @@ describe('logMethodCallError', () => {
 
 		logMethodCallError('loadHistory', err);
 
+		expect(debugMock.called).to.be.false;
 		expect(errorMock.calledOnce).to.be.true;
+		expect(errorMock.calledWithExactly({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
 		expect(meteorDebugMock.calledOnce).to.be.true;
-		expect(meteorDebugMock.calledWith('Exception while invoking method loadHistory', err)).to.be.true;
+		expect(meteorDebugMock.calledWithExactly('Exception while invoking method loadHistory', err)).to.be.true;
 	});
 
 	it('should report unexpected errors without notifying the exceptions channel when Log_Level is not 2', () => {
 		settingsGetMock.withArgs('Log_Level').returns('0');
 
-		logMethodCallError('loadHistory', new Error('Match error: Expected string, got number'));
+		const err = new Error('Match error: Expected string, got number');
 
+		logMethodCallError('loadHistory', err);
+
+		expect(debugMock.called).to.be.false;
 		expect(errorMock.calledOnce).to.be.true;
+		expect(errorMock.calledWithExactly({ msg: 'Exception while invoking method', err, method: 'loadHistory' })).to.be.true;
 		expect(meteorDebugMock.called).to.be.false;
 	});
 });
