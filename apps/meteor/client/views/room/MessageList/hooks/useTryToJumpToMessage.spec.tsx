@@ -21,6 +21,7 @@ jest.mock('../../hooks/useGoToRoom', () => ({
 jest.mock('../../../../providers/RouterProvider', () => ({
 	router: {
 		getSearchParameters: jest.fn().mockReturnValue({}),
+		navigate: jest.fn(),
 	},
 }));
 
@@ -30,6 +31,7 @@ const mockedSetIsJumpingToMessage = jest.fn();
 
 beforeEach(() => {
 	jest.mocked(useGoToRoom).mockReturnValue(mockedGoToRoom);
+	mockedRoomHistoryManager.getSurroundingChannelMessages.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -48,7 +50,12 @@ const renderJumpHook = (rid: string, message: unknown) =>
 		{
 			wrapper: mockAppRoot()
 				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }) })
-				.withEndpoint('GET', '/v1/chat.getMessage', (() => ({ message })) as any)
+				.withEndpoint('GET', '/v1/chat.getMessage', (() => {
+					if (message instanceof Error) {
+						throw message;
+					}
+					return { message };
+				}) as any)
 				.wrap((children) => (
 					<RoomContext.Provider
 						value={
@@ -92,6 +99,15 @@ it('should load surrounding messages in place when the message belongs to the cu
 	expect(mockedGoToRoom).not.toHaveBeenCalled();
 });
 
+it('should discard the jump when the target message cannot be fetched', async () => {
+	renderJumpHook('room-1', new Error('error-invalid-message'));
+
+	await waitFor(() => expect(mockedSetIsJumpingToMessage).toHaveBeenCalledWith(false));
+
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+	expect(mockedGoToRoom).not.toHaveBeenCalled();
+});
+
 it('should not navigate for a cross-room thread message, as it is handled by useTryToJumpToThreadMessage', async () => {
 	renderJumpHook('room-1', { ...message, rid: 'room-2', tmid: 'parent-msg-1', tshow: true });
 
@@ -99,4 +115,27 @@ it('should not navigate for a cross-room thread message, as it is handled by use
 
 	expect(mockedGoToRoom).not.toHaveBeenCalled();
 	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
+});
+
+it('should request surrounding messages only once while the target stays out of the list', async () => {
+	const { rerender } = renderJumpHook('room-1', { ...message, rid: 'room-1' });
+
+	await waitFor(() => expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1));
+
+	rerender();
+	rerender();
+
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1);
+});
+
+it('should stop jumping when the surrounding messages request fails', async () => {
+	mockedRoomHistoryManager.getSurroundingChannelMessages.mockRejectedValue(new Error('too-many-requests'));
+
+	const { rerender } = renderJumpHook('room-1', { ...message, rid: 'room-1' });
+
+	await waitFor(() => expect(mockedSetIsJumpingToMessage).toHaveBeenLastCalledWith(false));
+
+	rerender();
+
+	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1);
 });

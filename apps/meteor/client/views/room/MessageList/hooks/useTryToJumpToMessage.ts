@@ -29,7 +29,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 
 	const goToRoom = useGoToRoom();
 
-	const { data: message } = useQuery({
+	const { data: message, isError } = useQuery({
 		queryKey: messageJumpParam ? messagesQueryKeys.message(messageJumpParam) : [],
 		queryFn: async () => {
 			if (!messageJumpParam) return null;
@@ -39,18 +39,36 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		enabled: !!messageJumpParam,
 	});
 
+	const isThreadReply = !!message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true;
+	const targetId = isThreadReply ? message.tmid : messageJumpParam;
+
+	useEffect(() => {
+		if (!targetId || !message) {
+			return;
+		}
+
+		setIsJumpingToMessage(true);
+
+		if (message.rid !== rid) {
+			return;
+		}
+
+		void RoomHistoryManager.getSurroundingChannelMessages({ _id: targetId, rid })
+			.catch(() => undefined)
+			.finally(() => setIsJumpingToMessage(false));
+	}, [targetId, rid, message, setIsJumpingToMessage]);
+
 	useEffect(() => {
 		if (!messageJumpParam) {
 			setIsJumpingToMessage(false);
 			return;
 		}
-		if (!message) {
+		if (isError) {
+			setIsJumpingToMessage(false);
+			setMessageJumpQueryStringParameter(null);
 			return;
 		}
-		// Thread deep links are handled by useTryToJumpToThreadMessage; do not use the main list virtualizer
-		// If tshow is true, there is a preview on the main list, in this case we scroll to it
-		if (message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true) {
-			setIsJumpingToMessage(false);
+		if (!message) {
 			return;
 		}
 		if (!isThreadMessage(message) && !isThreadMainMessage(message) && message.rid !== rid) {
@@ -61,28 +79,23 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		if (!virtualizerRef.current) {
 			return;
 		}
-		setIsJumpingToMessage(true);
 
 		if (isLoadingMoreMessages || messages.length === 0) {
 			return;
 		}
-		const loadedMessage = messages.find((message) => message._id === messageJumpParam);
-		if (!loadedMessage) {
-			// Do not load surrounding messages for thread messages that have a tshow: true
-			// as these are previews on the main list and will be handled by useTryToJumpToThreadMessage
-			if (message && (!isThreadMessage(message) || isThreadMainMessage(message))) {
-				RoomHistoryManager.getSurroundingChannelMessages(message);
-			}
+
+		const targetIndex = targetId ? messages.findIndex((current) => current._id === targetId) : -1;
+
+		if (!targetId || targetIndex < 0) {
 			return;
 		}
-		const messageIndex = messages.indexOf(loadedMessage);
 
 		// TODO: Calculate the offset of the page, for the message to be in the center of the page
-		virtualizerRef.current?.scrollToIndex(messageIndex, {
+		virtualizerRef.current?.scrollToIndex(targetIndex, {
 			align: 'center',
 		});
 
-		setHighlightMessage(loadedMessage._id);
+		setHighlightMessage(targetId);
 
 		setTimeout(() => {
 			clearHighlightMessage();
@@ -90,9 +103,11 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 
 		setTimeout(() => {
 			setIsJumpingToMessage(false);
-			setMessageJumpQueryStringParameter(null);
+			if (targetId === messageJumpParam) {
+				setMessageJumpQueryStringParameter(null);
+			}
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isLoadingMoreMessages, goToRoom]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isError, isLoadingMoreMessages, targetId, goToRoom]);
 };
 
 export default useTryToJumpToMessage;
