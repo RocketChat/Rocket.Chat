@@ -37,7 +37,8 @@ declare module 'meteor/meteor' {
 		}
 
 		interface Device {
-			isDesktop: () => boolean;
+			isDesktop(): boolean;
+			isPhone(): boolean;
 		}
 
 		const server: {
