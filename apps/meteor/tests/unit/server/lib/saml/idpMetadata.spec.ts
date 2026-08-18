@@ -158,6 +158,30 @@ describe('parseIdpMetadata', () => {
 		expect(result.warnings).to.include('SAML_Metadata_warning_multiple_nameid_formats');
 	});
 
+	it('picks the SAML 2.0 role when another protocol comes first', () => {
+		const mixedRoles = `<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://mixed.test">
+	<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">
+		<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://mixed.test/saml1/sso"/>
+	</IDPSSODescriptor>
+	<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+		<SingleSignOnService Binding="${REDIRECT}" Location="https://mixed.test/saml2/sso"/>
+	</IDPSSODescriptor>
+</EntityDescriptor>`;
+		const result = parseIdpMetadata(mixedRoles);
+		expect(result.entryPoint).to.equal('https://mixed.test/saml2/sso');
+	});
+
+	it('rejects metadata whose only IDPSSODescriptor does not support SAML 2.0', () => {
+		const saml1Only = `<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://saml1.test">
+	<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">
+		<SingleSignOnService Binding="${REDIRECT}" Location="https://saml1.test/sso"/>
+	</IDPSSODescriptor>
+</EntityDescriptor>`;
+		expect(() => parseIdpMetadata(saml1Only)).to.throw(InvalidIdpMetadataError);
+	});
+
 	it('rejects SP-only metadata (no IDPSSODescriptor)', () => {
 		const spOnly = `<?xml version="1.0"?>
 <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://sp.test">

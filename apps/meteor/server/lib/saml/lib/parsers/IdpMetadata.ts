@@ -5,6 +5,7 @@ import { SAMLUtils } from '../Utils';
 const MD_NS = 'urn:oasis:names:tc:SAML:2.0:metadata';
 const DS_NS = 'http://www.w3.org/2000/09/xmldsig#';
 const REDIRECT_BINDING = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect';
+const SAML2_PROTOCOL = 'urn:oasis:names:tc:SAML:2.0:protocol';
 
 type IdpMetadataResult = {
 	entryPoint?: string;
@@ -49,10 +50,18 @@ const parseIdpDescriptor = (xml: string): Element => {
 		throw new InvalidIdpMetadataError('root-is-not-entity-descriptor');
 	}
 
-	const idpDescriptor = childrenOf(entityDescriptor, 'IDPSSODescriptor')[0];
-	if (!idpDescriptor) {
+	const idpDescriptors = childrenOf(entityDescriptor, 'IDPSSODescriptor');
+	if (!idpDescriptors.length) {
 		throw new InvalidIdpMetadataError('no-idp-sso-descriptor');
 	}
+
+	const idpDescriptor = idpDescriptors.find((descriptor) =>
+		(descriptor.getAttribute('protocolSupportEnumeration') ?? '').split(/\s+/).includes(SAML2_PROTOCOL),
+	);
+	if (!idpDescriptor) {
+		throw new InvalidIdpMetadataError('no-saml2-idp-sso-descriptor');
+	}
+
 	return idpDescriptor;
 };
 
