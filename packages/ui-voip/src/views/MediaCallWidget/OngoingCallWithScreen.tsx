@@ -121,7 +121,7 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				<ButtonGroup large>
+				<ButtonGroup large align='center'>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 
 					{holdAvailable && (

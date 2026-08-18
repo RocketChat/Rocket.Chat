@@ -72,7 +72,7 @@ const OngoingCall = () => {
 						<Divider width='100%' />
 					</Box>
 				) : null}
-				<ButtonGroup large>
+				<ButtonGroup large align='center'>
 					<ActionButton
 						disabled={connecting || reconnecting}
 						icon='dialpad'
