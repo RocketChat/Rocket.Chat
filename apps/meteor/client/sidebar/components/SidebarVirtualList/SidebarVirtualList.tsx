@@ -41,7 +41,6 @@ type SidebarVirtualListRow<TGroup, TItem> =
 	  }
 	| {
 			type: 'item';
-			groupKey: string;
 			group: TGroup;
 			groupIndex: number;
 			item: TItem;
@@ -67,7 +66,6 @@ function SidebarVirtualList<TGroup, TItem>({
 			},
 			...items.map((item, itemIndex) => ({
 				type: 'item' as const,
-				groupKey: key,
 				group,
 				groupIndex,
 				item,
@@ -133,7 +131,7 @@ function SidebarVirtualList<TGroup, TItem>({
 			const itemKey = getItemKey(row.item, row.itemIndex, row.group, row.groupIndex);
 
 			return (
-				<div key={`item:${row.groupKey}:${String(itemKey)}`}>
+				<div key={`item:${String(itemKey)}`}>
 					{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}
 				</div>
 			);
