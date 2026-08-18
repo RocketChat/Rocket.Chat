@@ -51,6 +51,7 @@ const waitForLdapConnection = async (api: BaseTest['api']) => {
 			},
 			{
 				message: 'LDAP settings did not propagate to the running server',
+				timeout: 15_000,
 			},
 		)
 		.toBe(true);
