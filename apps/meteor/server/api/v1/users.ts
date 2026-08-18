@@ -48,7 +48,13 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { canSeeStatus, getHiddenFrom, redactStatus } from '../../lib/statusVisibility/canSeeStatus';
+import {
+	canSeeStatus,
+	getHiddenFrom,
+	isStatusVisibilityEnabled,
+	redactStatus,
+	resolveUsersByIds,
+} from '../../lib/statusVisibility/canSeeStatus';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -262,12 +268,19 @@ API.v1
 				return API.v1.failure('User not found');
 			}
 
+			const { statusVisibilityDenied, ...savedPreferences } = user.settings?.preferences ?? {};
+
 			return API.v1.success({
 				user: {
 					_id: user._id,
 					settings: {
 						preferences: {
-							...user.settings?.preferences,
+							...savedPreferences,
+							...(userId === this.userId &&
+								isStatusVisibilityEnabled() &&
+								statusVisibilityDenied?.length && {
+									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
+								}),
 							language: user.language,
 						},
 					},
