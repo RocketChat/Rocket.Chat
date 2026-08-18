@@ -137,6 +137,37 @@ export class SAMLUtils {
 		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
 	}
 
+	public static isSupportedLoginClient(value: unknown): value is 'desktop' | 'mobile' {
+		return value === 'desktop' || value === 'mobile';
+	}
+
+	public static encodeAuthorizeRelayState(provider: string, loginClient?: string): string {
+		if (!this.isSupportedLoginClient(loginClient)) {
+			return provider;
+		}
+
+		return new URLSearchParams({ provider, loginClient }).toString();
+	}
+
+	public static decodeAuthorizeRelayState(relayState?: string | null): { provider?: string; loginClient?: 'desktop' | 'mobile' } {
+		if (!relayState) {
+			return {};
+		}
+
+		if (relayState.startsWith('provider=') && relayState.includes('&loginClient=')) {
+			const params = new URLSearchParams(relayState);
+			const provider = params.get('provider') ?? undefined;
+			const loginClient = params.get('loginClient');
+
+			return {
+				provider,
+				loginClient: this.isSupportedLoginClient(loginClient) ? loginClient : undefined,
+			};
+		}
+
+		return { provider: relayState };
+	}
+
 	public static log(obj: object | string): void {
 		if (debug && logger) {
 			logger.debug(obj);

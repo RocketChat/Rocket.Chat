@@ -91,7 +91,15 @@ Meteor.loginWithSaml = (options) => {
 	const credentialToken = `id-${Random.id()}`;
 	options.credentialToken = credentialToken;
 
-	window.location.href = `_saml/authorize/${options.provider}/${options.credentialToken}`;
+	let url = `_saml/authorize/${options.provider}/${options.credentialToken}`;
+
+	// Forward the loginClient so the session can be deep-linked back to the native client.
+	const loginClient = new URLSearchParams(window.location.search).get('loginClient');
+	if (settings.peek('Accounts_OAuth_Use_Modern_Flow') && (loginClient === 'desktop' || loginClient === 'mobile')) {
+		url += `?loginClient=${loginClient}`;
+	}
+
+	window.location.href = url;
 };
 
 const loginWithSamlToken = (credentialToken: string) =>
