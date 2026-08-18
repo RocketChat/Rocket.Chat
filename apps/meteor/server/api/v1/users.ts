@@ -48,13 +48,7 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import {
-	canSeeStatus,
-	getHiddenFrom,
-	isStatusVisibilityEnabled,
-	redactStatus,
-	resolveUsersByIds,
-} from '../../lib/statusVisibility/canSeeStatus';
+import { canSeeStatus, getHiddenFrom, redactStatus, resolveUsersByIds } from '../../lib/statusVisibility/canSeeStatus';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -277,7 +271,7 @@ API.v1
 						preferences: {
 							...savedPreferences,
 							...(userId === this.userId &&
-								isStatusVisibilityEnabled() &&
+								settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
 								statusVisibilityDenied?.length && {
 									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
 								}),

@@ -12,15 +12,14 @@ const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1
 
 const denied = new Map<IUser['_id'], Set<IUser['_id']>>();
 
-export const isStatusVisibilityEnabled = (): boolean => settings.get<boolean>('Accounts_StatusVisibility_Enabled') === true;
-
 export const canSeeStatus = (viewerId: IUser['_id'] | null | undefined, targetId: IUser['_id']): boolean =>
-	!isStatusVisibilityEnabled() || !viewerId || viewerId === targetId || !denied.get(targetId)?.has(viewerId);
+	!settings.get<boolean>('Accounts_StatusVisibility_Enabled') || !viewerId || viewerId === targetId || !denied.get(targetId)?.has(viewerId);
 
-export const hasStatusRestrictions = (targetId: IUser['_id']): boolean => isStatusVisibilityEnabled() && denied.has(targetId);
+export const hasStatusRestrictions = (targetId: IUser['_id']): boolean =>
+	settings.get<boolean>('Accounts_StatusVisibility_Enabled') && denied.has(targetId);
 
 export const getHiddenFrom = (viewerId: IUser['_id'] | null | undefined): IUser['_id'][] => {
-	if (!isStatusVisibilityEnabled() || !viewerId) {
+	if (!settings.get<boolean>('Accounts_StatusVisibility_Enabled') || !viewerId) {
 		return [];
 	}
 
@@ -28,7 +27,7 @@ export const getHiddenFrom = (viewerId: IUser['_id'] | null | undefined): IUser[
 };
 
 export const refreshStatusVisibility = async (targets?: IUser['_id'][]): Promise<UserPresence[]> => {
-	if (!isStatusVisibilityEnabled()) {
+	if (!settings.get<boolean>('Accounts_StatusVisibility_Enabled')) {
 		const previous = [...denied.keys()];
 		denied.clear();
 		return previous.length ? Users.findPresenceUsersByIds(previous, { projection: PRESENCE_FIELDS }).toArray() : [];
