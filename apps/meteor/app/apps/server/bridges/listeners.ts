@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
+import type { UIKitIncomingInteraction } from '@rocket.chat/apps/dist/server/uikit/IUIKitIncomingInteraction';
+import type { IUIKitLivechatIncomingInteraction } from '@rocket.chat/apps/dist/server/uikit/livechat/IUIKitLivechatIncomingInteraction';
 import type { IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
-import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import type { IUIKitLivechatIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat';
 import type { IUserContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage, IRoom, IUser, ILivechatDepartment, IUpload } from '@rocket.chat/core-typings';
 
