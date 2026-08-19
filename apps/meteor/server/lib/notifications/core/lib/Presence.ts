@@ -34,9 +34,9 @@ class UserPresence {
 
 	private readonly listeners: Set<string>;
 
-	// Who this connection's viewer may not see. Fetched once per subscription so `run`, an emitter
-	// callback returning void, can stay synchronous.
 	private hiddenFrom = new Set<IUser['_id']>();
+
+	private pendingCorrection = new Set<IUser['_id']>();
 
 	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
 		this.listeners = new Set();
@@ -55,14 +55,29 @@ class UserPresence {
 	off = (uid: string): void => {
 		e.off(uid, this.run);
 		this.listeners.delete(uid);
+		this.pendingCorrection.delete(uid);
 	};
 
 	async refreshHiddenFrom(): Promise<void> {
+		const previous = this.hiddenFrom;
+
 		this.hiddenFrom = new Set(await StatusVisibility.getHiddenFrom(this.publication._session?.userId));
+
+		for (const uid of this.hiddenFrom) {
+			if (!previous.has(uid) && this.listeners.has(uid)) {
+				this.pendingCorrection.add(uid);
+			}
+		}
 	}
 
 	run = (args: UserPresenceStreamArgs): void => {
-		const visiblePresence: UserPresenceStreamArgs = this.hiddenFrom.has(args.uid)
+		const hidden = this.hiddenFrom.has(args.uid);
+
+		if (hidden && !this.pendingCorrection.delete(args.uid)) {
+			return;
+		}
+
+		const visiblePresence: UserPresenceStreamArgs = hidden
 			? { uid: args.uid, args: [[args.args[0][0], USER_STATUS_TO_PRESENCE_CODE[UserStatus.OFFLINE]]] }
 			: args;
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...visiblePresence, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
