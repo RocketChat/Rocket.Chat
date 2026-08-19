@@ -36,6 +36,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarShowFavorites?: boolean;
 		sidebarShowUnread?: boolean;
 		sidebarSortby?: string;
+		statusVisibilityDenied?: string[];
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
@@ -182,6 +183,10 @@ const UsersSetPreferencesParamsPostSchema = {
 				sidebarShowUnread: {
 					type: 'boolean',
 					nullable: true,
+				},
+				statusVisibilityDenied: {
+					type: 'array',
+					items: { type: 'string' },
 				},
 				sidebarSortby: {
 					type: 'string',

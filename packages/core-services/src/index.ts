@@ -43,6 +43,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -169,6 +170,7 @@ export type {
 	HealthAggResult,
 	IMessageService,
 	ISettingsService,
+	IStatusVisibilityService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
@@ -205,6 +207,7 @@ export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
+export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');
 export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');

@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../lib/statusVisibility/hiddenUsers';
 
 type SpotlightType = {
 	users?: boolean;
@@ -66,7 +67,9 @@ export const spotlightMethod = async ({
 		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
 	]);
 
-	return { users, rooms };
+	const hidden = await getUsersHiddenFrom(userId);
+
+	return { users: redactHiddenUsers(users, hidden), rooms };
 };
 
 Meteor.methods<ServerMethods>({

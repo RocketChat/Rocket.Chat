@@ -1,3 +1,4 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -12,6 +13,7 @@ import {
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
+import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
 import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
@@ -54,6 +56,7 @@ type UserPreferences = {
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
 	utcOffset?: number;
+	statusVisibilityDenied?: string[];
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -130,6 +133,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
 		utcOffset: Match.Optional(Number),
+		statusVisibilityDenied: Match.Optional([String]),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
@@ -170,7 +174,14 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
-	await Users.setPreferences(user._id, settings);
+	const requested = settings.statusVisibilityDenied?.filter((username) => username !== user.username);
+	const denied = requested ? await resolveUsersByUsernames(requested) : undefined;
+
+	if (denied) {
+		settings.statusVisibilityDenied = denied.usernames;
+	}
+
+	await Users.setPreferences(user._id, denied ? { ...settings, statusVisibilityDenied: denied.ids } : settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
 		data[`settings.preferences.${key}`] = settings[key];
@@ -186,6 +197,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 			...(settings.language != null && { language: settings.language }),
 		},
 	});
+
+	if (settings.statusVisibilityDenied != null && rcSettings.get<boolean>('Accounts_StatusVisibility_Enabled')) {
+		void StatusVisibility.invalidate([user._id]);
+	}
 
 	// propagate changed notification preferences
 	setImmediate(async () => {
