@@ -9327,14 +9327,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/css-supports@npm:0.31.25"
+"@rocket.chat/css-supports@npm:^0.31.25, @rocket.chat/css-supports@workspace:packages/css-supports":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/css-supports@workspace:packages/css-supports"
   dependencies:
-    "@rocket.chat/memo": "npm:^0.31.25"
-  checksum: 10/fb7fde175475af41a77c105bacbc10b56d883b75046eb1c15c65d977a2388166d927afa4953296a133037a78eae41c628c376ca4a155a0254930b64a9b3bc12b
-  languageName: node
-  linkType: hard
+    "@rocket.chat/memo": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    eslint: "npm:~9.39.5"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client, @rocket.chat/ddp-client@workspace:~":
   version: 0.0.0-use.local
