@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 8.1.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41857](https://github.com/RocketChat/Rocket.Chat/pull/41857) by [@dionisio-bot](https://github.com/dionisio-bot)) Adds per-client rate limiting to the unauthenticated sendForgotPasswordEmail method, matching the REST users.forgotPassword endpoint
+
+- ([#41850](https://github.com/RocketChat/Rocket.Chat/pull/41850) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41841](https://github.com/RocketChat/Rocket.Chat/pull/41841) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes special characters not being escaped in the visitor name shown in the Omnichannel queue side panel's message preview
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.8
+  - @rocket.chat/rest-typings@8.1.8
+  - @rocket.chat/abac@0.1.10
+  - @rocket.chat/federation-matrix@0.0.19
+  - @rocket.chat/license@1.1.17
+  - @rocket.chat/media-calls@0.2.10
+  - @rocket.chat/omnichannel-services@0.3.54
+  - @rocket.chat/pdf-worker@0.3.36
+  - @rocket.chat/presence@0.2.57
+  - @rocket.chat/api-client@0.2.57
+  - @rocket.chat/apps@0.6.10
+  - @rocket.chat/core-services@0.12.10
+  - @rocket.chat/cron@0.1.57
+  - @rocket.chat/fuselage-ui-kit@27.0.8
+  - @rocket.chat/gazzodown@27.0.8
+  - @rocket.chat/http-router@7.9.24
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.10
+  - @rocket.chat/ui-avatar@23.0.8
+  - @rocket.chat/ui-client@27.0.8
+  - @rocket.chat/ui-contexts@27.0.8
+  - @rocket.chat/ui-voip@17.0.8
+  - @rocket.chat/web-ui-registration@27.0.8
+  - @rocket.chat/models@2.0.10
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.36
+  - @rocket.chat/omni-core-ee@0.0.22
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@27.0.8
+  - @rocket.chat/instance-status@0.1.57
+  - @rocket.chat/omni-core@0.0.22
+  </details>
+
 ## 8.1.7
 
 ### Patch Changes
