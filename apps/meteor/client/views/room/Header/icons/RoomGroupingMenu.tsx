@@ -1,4 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
@@ -44,7 +45,7 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 		return null;
 	}
 
-	if (!hasLicenseModule) {
+	if (!hasLicenseModule || isOmnichannelRoom(room)) {
 		if (!isFavoritesEnabled) {
 			return null;
 		}
