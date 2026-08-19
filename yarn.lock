@@ -11077,9 +11077,11 @@ __metadata:
   resolution: "@rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware"
   dependencies:
     "@rocket.chat/css-supports": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@types/stylis": "npm:^4.2.7"
     eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
     stylis: "npm:~4.4.0"
     typescript: "npm:~5.9.3"
   peerDependencies:
