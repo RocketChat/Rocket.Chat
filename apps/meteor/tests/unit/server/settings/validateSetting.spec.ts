@@ -9,19 +9,41 @@ import { positiveOrDisabled, notGreaterThanSetting, notLowerThanSetting } from '
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
 
+class MeteorError extends Error {
+	constructor(
+		public error: string,
+		public reason?: string,
+		public details?: any,
+	) {
+		super(reason || error);
+		this.name = 'MeteorError';
+	}
+}
+
 const { validateSetting, validateSettings } = p.noCallThru().load('../../../../server/settings/validateSetting.ts', {
 	'meteor/meteor': {
 		Meteor: {
-			Error: class MeteorError extends Error {
-				constructor(
-					public error: string,
-					public reason?: string,
-					public details?: any,
-				) {
-					super(reason || error);
-					this.name = 'MeteorError';
+			Error: MeteorError,
+		},
+	},
+	'./checkSettingValueBonds': {
+		checkSettingValueBounds: (setting: ISetting, value?: ISetting['value']) => {
+			if ((setting.type === 'int' || setting.type === 'range') && value !== undefined) {
+				if (setting.minValue !== undefined && Number(value) < setting.minValue) {
+					throw new MeteorError(
+						'error-invalid-setting-value',
+						`Value for setting ${setting._id} must be greater than or equal to ${setting.minValue}`,
+						{ method: 'saveSettings' },
+					);
 				}
-			},
+				if (setting.maxValue !== undefined && Number(value) > setting.maxValue) {
+					throw new MeteorError(
+						'error-invalid-setting-value',
+						`Value for setting ${setting._id} must be less than or equal to ${setting.maxValue}`,
+						{ method: 'saveSettings' },
+					);
+				}
+			}
 		},
 	},
 	'.': {
