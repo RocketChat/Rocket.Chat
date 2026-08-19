@@ -534,18 +534,38 @@ describe('miscellaneous', () => {
 			expect(res.body).to.have.property('users').and.to.be.an('array');
 			expect(res.body.users.map((u: { username: string }) => u.username)).to.not.include(adminUsername);
 		});
-		it('should allow anonymous (unauthenticated) requests', async () => {
-			const res = await request
-				.get(api('spotlight'))
-				.query({
-					query: `#${testChannel.name}`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('anonymous (unauthenticated) requests', () => {
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
 
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('rooms').and.to.be.an('array');
-			expect(res.body).to.have.property('users').and.to.be.an('array');
+			it('should return no rooms when anonymous read is disabled', async () => {
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			it('should return public rooms but no users when anonymous read is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.rooms.map((r: { _id: string }) => r._id)).to.include(testChannel._id);
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
 		});
 	});
 
