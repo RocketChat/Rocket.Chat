@@ -9,7 +9,9 @@ const PublicRoomsQuerySchema = {
 	type: 'object',
 	properties: {
 		limit: {
-			type: 'number',
+			// spec default is 0, meaning no limit; negatives are meaningless and Synapse rejects them
+			type: 'integer',
+			minimum: 0,
 			description: 'Maximum number of rooms to return',
 		},
 		since: {
@@ -99,7 +101,7 @@ const PublicRoomsPostBodySchema = {
 	type: 'object',
 	properties: {
 		limit: {
-			type: 'number',
+			type: 'integer',
 			description: 'Maximum number of rooms to return',
 			nullable: true,
 		},
