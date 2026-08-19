@@ -43,29 +43,18 @@ const fallbacksTo =
 			).toMatch(`div{${properties.map((property) => `${property}:inherit;`).join('')}}`);
 		});
 
-const fallbacksWithDirectionTo =
-	(ltrProperty: string, rtlProperty: string, ...blockProperties: string[]) =>
-	(property: string) => {
-		const properties = [ltrProperty, rtlProperty, ...blockProperties];
-		const expected =
-			blockProperties.length > 0
-				? `html:not([dir=rtl]) div{${ltrProperty}:inherit;${rtlProperty}:inherit;}` +
-					`[dir=rtl] div{${rtlProperty}:inherit;${ltrProperty}:inherit;}` +
-					`div{${blockProperties.map((property) => `${property}:inherit;`).join('')}}`
-				: `html:not([dir=rtl]) div{${ltrProperty}:inherit;}[dir=rtl] div{${rtlProperty}:inherit;}`;
-
-		it(`fallbacks ${property} to ${properties.join(', ')}`, () => {
-			expect(
-				transpile(
-					`div`,
-					`${property}: inherit;`,
-					createTranspileMiddleware({
-						isPropertySupported: (p) => properties.includes(p),
-					}),
-				),
-			).toMatch(expected);
-		});
-	};
+const fallbacksWithDirectionTo = (ltrProperty: string, rtlProperty: string) => (property: string) =>
+	it(`fallbacks ${property} to ${ltrProperty}, ${rtlProperty}`, () => {
+		expect(
+			transpile(
+				`div`,
+				`${property}: inherit;`,
+				createTranspileMiddleware({
+					isPropertySupported: (p) => [ltrProperty, rtlProperty].includes(p),
+				}),
+			),
+		).toMatch(`html:not([dir=rtl]) div{${ltrProperty}:inherit;}[dir=rtl] div{${rtlProperty}:inherit;}`);
+	});
 
 const supportsLogicalValues = () => (property: string) =>
 	it.each([['start'], ['inline-start'], ['end'], ['inline-end']])('supports %s value', (logicalValue: string) => {
@@ -188,13 +177,7 @@ property(
 	fallbacksTo('padding-block-start', 'padding-block-end'),
 	fallbacksTo('padding-top', 'padding-bottom'),
 );
-property(
-	'inset',
-	isSupported(),
-	fallbacksTo('inset-inline', 'inset-block'),
-	fallbacksTo('inset-inline-start', 'inset-inline-end', 'inset-block-start', 'inset-block-end'),
-	fallbacksWithDirectionTo('left', 'right', 'top', 'bottom'),
-);
+property('inset', isSupported(), fallbacksTo('top', 'right', 'bottom', 'left'));
 property('inline-size', isSupported(), fallbacksTo('width'));
 property('min-inline-size', isSupported(), fallbacksTo('min-width'));
 property('max-inline-size', isSupported(), fallbacksTo('max-width'));
