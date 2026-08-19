@@ -100,14 +100,19 @@ settings.watch<string>('Accounts_CustomFields', (value) => {
 	}
 });
 
+const reloadRoutesToRefreshRateLimiter = () => {
+	API.v1.reloadRoutesToRefreshRateLimiter();
+	API.experimental.reloadRoutesToRefreshRateLimiter();
+};
+
 settings.watch<number>('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
-	API.v1.reloadRoutesToRefreshRateLimiter();
+	reloadRoutesToRefreshRateLimiter();
 });
 
 settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
-	API.v1.reloadRoutesToRefreshRateLimiter();
+	reloadRoutesToRefreshRateLimiter();
 });
 
 export const startRestAPI = () => {
