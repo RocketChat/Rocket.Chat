@@ -166,10 +166,6 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
-/**
- * A per-user, custom grouping of rooms shown in the sidebar.
- * Order is given by the position in the `sidebarCustomCategories` preference array.
- */
 export interface ISidebarCustomCategory {
 	_id: string;
 	name: string;
