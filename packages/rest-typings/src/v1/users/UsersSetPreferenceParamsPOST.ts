@@ -219,7 +219,6 @@ const UsersSetPreferencesParamsPostSchema = {
 				sidebarCategoriesOrder: {
 					type: 'array',
 					items: { type: 'string' },
-					nullable: true,
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
