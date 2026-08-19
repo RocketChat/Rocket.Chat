@@ -88,10 +88,13 @@ review 1:1 onto the plan.
 
 1. Insert `.use(API.experimental.router)` into the chain, **before**
    `.use(API.default.router)` (line 121). Order matters: `default` is the catch-all.
-2. Extend the metrics middleware `basePathRegex` (line 107) so experimental traffic is
-   measured. Either broaden the regex to `^\/api\/(v1|experimental)\//` or add a second
-   `metricsMiddleware` block pointed at `API.experimental`. Metrics are the canary used
-   later to decide whether an endpoint is ready for promotion to `/v1`.
+2. Add a second `metricsMiddleware` block pointed at `API.experimental` so experimental
+   traffic is measured. Metrics are the canary used later to decide whether an endpoint is
+   ready for promotion to `/v1`. Because every block shares the same `/api` mount, each one
+   needs a guard or a request is sampled more than once: the versioned blocks opt in via
+   `basePathRegex`, and a catch-all block for `API.default` (`/api/info`, `/api/docs/json`,
+   unmatched `/api/*`) opts out via `excludePathRegex`. Without that catch-all block the
+   guards silently drop default-router traffic that used to be sampled.
 
 **Acceptance:** experimental requests appear in the REST API Prometheus metrics with a
 distinguishable path/label.

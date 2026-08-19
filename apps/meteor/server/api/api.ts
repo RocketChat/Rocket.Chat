@@ -141,6 +141,21 @@ export const startRestAPI = () => {
 					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
 				}),
 			)
+			.use(
+				// Catch-all sampler for the default router (`/api/info`, `/api/docs/json`) and for
+				// unmatched `/api/*` paths, which belong to none of the versioned prefixes above.
+				// Add any new versioned namespace to `excludePathRegex` as well, or it gets counted twice.
+				metricsMiddleware({
+					excludePathRegex: new RegExp(/^\/api\/(v1|experimental|apps)\//),
+					// `API.default` has no `version`; label it explicitly so the series is not blank.
+					api: { version: 'default' },
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
 			.use(tracerSpanMiddleware)
 			.use(remoteAddressMiddleware)
 			.use(experimentalWarningMiddleware({ basePathRegex: new RegExp(/^\/api\/experimental(\/|$)/) }))
