@@ -23,8 +23,6 @@ const e = new Emitter<{
 
 const clients = new WeakMap<Connection, UserPresence>();
 
-// The per-connection lists above cannot be reached through a WeakMap, so live clients are tracked here
-// to be refreshed when block lists change.
 const liveClients = new Set<UserPresence>();
 
 class UserPresence {

@@ -160,7 +160,6 @@ export class ListenersModule {
 		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
 			void StatusVisibility.refresh(targets)
 				.then(async (users) => {
-					// before re-emitting, so the stream filters the new presence with the updated lists
 					await refreshVisibility();
 
 					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
