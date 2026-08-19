@@ -60,7 +60,7 @@ const CategoryMenu = ({
 	} = useCustomCategories();
 	const { toggleShowUnreads: toggleSystemShowUnreads } = useShowUnreadsGroups();
 	const { toggleKeepUnreadsOnTop: toggleSystemKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
-	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread');
+	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
 	const onCreateSuccess = async (rid: string, name: string) => {
