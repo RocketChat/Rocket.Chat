@@ -125,6 +125,7 @@ export const useCustomCategories = () => {
 						await setFavorite(room.rid, true);
 					} catch (e) {
 						await persist(categories);
+						dispatchToastMessage({ type: 'error', message: e });
 						throw e;
 					}
 				}
@@ -150,6 +151,7 @@ export const useCustomCategories = () => {
 					await setFavorite(room.rid, false);
 				} catch (e) {
 					await persist(categories);
+					dispatchToastMessage({ type: 'error', message: e });
 					throw e;
 				}
 			}
@@ -235,6 +237,7 @@ export const useCustomCategories = () => {
 					await setFavorite(room.rid, false);
 				} catch (e) {
 					await persist(categories);
+					dispatchToastMessage({ type: 'error', message: e });
 					throw e;
 				}
 			}
