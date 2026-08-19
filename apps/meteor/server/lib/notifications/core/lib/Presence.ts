@@ -113,7 +113,14 @@ export class StreamPresence {
 
 				const [client, main] = UserPresence.getClient(publication, this);
 
-				await client.refreshHiddenFrom();
+				try {
+					await client.refreshHiddenFrom();
+				} catch (error) {
+					if (main) {
+						client.stop();
+					}
+					throw error;
+				}
 
 				if (!Streamer.isPublicationActive(publication)) {
 					if (main) {
