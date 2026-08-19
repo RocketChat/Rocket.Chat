@@ -1,0 +1,25 @@
+ee/packages/federation-matrix/src/api/_matrix/client/media.ts
+  s_3f2d3242d079eb::t_9560fab8d35db8 190
+  s_3f2d3242d079eb::t_6188ead7684bf9 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e0e2350d7fc90cb8a9f03ca953d4cb9e6c8cad3a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3f2d3242d079eb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e1cf116-df52-4899-b6aa-f4ddb45c1b73",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

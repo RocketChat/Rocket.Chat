@@ -1,0 +1,23 @@
+packages/model-typings/package.json
+  s_dafac466d48e3a::t_c0996c4ef98cb3 11-12
+packages/model-typings/tsconfig.json
+  s_dafac466d48e3a::t_75b266a770d53b 10-11
+packages/model-typings/tsconfig.build.json
+  s_dafac466d48e3a::t_130f17127c716e 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d3501a7e7c99ba68cea8e0167b8eca5ffb137a43",
+  "prompts": {},
+  "sessions": {
+    "s_dafac466d48e3a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ede6c828-2da2-43e2-981e-283638ded2d1",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

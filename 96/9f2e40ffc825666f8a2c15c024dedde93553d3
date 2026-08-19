@@ -1,0 +1,28 @@
+packages/core-services/src/types/IAbacService.ts
+  s_757bbbab112d52::t_54ccf9ffe05e54 25
+ee/packages/abac/src/store/VirtruAttributeStore.ts
+  s_757bbbab112d52::t_6718f2a7e02e03 2
+  s_757bbbab112d52::t_2e6e1674aa33b2 99
+ee/packages/abac/src/store/types.ts
+  s_757bbbab112d52::t_ba8e0529bceab1 8-13
+ee/packages/abac/src/index.ts
+  s_757bbbab112d52::t_f8e4ab64a263e0 354
+apps/meteor/ee/server/api/abac/schemas.ts
+  s_757bbbab112d52::t_00df3cbf389baa 111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "969f2e40ffc825666f8a2c15c024dedde93553d3",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

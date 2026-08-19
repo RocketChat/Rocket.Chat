@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  h_4c386397e672f4 188,211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "d59941686ed66cd850f4a5d2d91b9b0374e3eacf",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

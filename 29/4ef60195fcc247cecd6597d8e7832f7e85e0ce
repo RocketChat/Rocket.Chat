@@ -1,0 +1,124 @@
+ee/packages/xmpp-server/src/s2s/dialback.spec.ts
+  s_bad883804e82a0::t_5049f6ac44ffd5 1-27,29-39
+  s_bad883804e82a0::t_23f3ef10b7231b 28
+ee/packages/xmpp-server/src/stream/XmppStream.ts
+  s_bad883804e82a0::t_37080f2d6a67f7 1-4,6-80,85-184,186-214
+  s_bad883804e82a0::t_9cc61516d5125e 81-84
+  s_bad883804e82a0::t_fbd483191ae3f6 5
+  s_bad883804e82a0::t_0480ea8a824fd1 185
+ee/packages/xmpp-server/src/xml/build.ts
+  s_bad883804e82a0::t_3916f08390868a 1
+  s_bad883804e82a0::t_bbbebaa27cd65e 2-29
+ee/packages/xmpp-server/src/stream/InboundSession.ts
+  s_bad883804e82a0::t_23f3ef10b7231b 9,154,215,270,301-302
+  s_bad883804e82a0::t_e557433d8843d8 1-8,10-153,155-214,216-269,271-300,303-339
+ee/packages/xmpp-server/src/stream/OutboundSession.ts
+  s_bad883804e82a0::t_dbe8e89cf8e48a 331-338
+  s_bad883804e82a0::t_0a8c87c689df5e 21-22
+  s_bad883804e82a0::t_b1dc06940df99f 299-305
+  s_bad883804e82a0::t_0ed2dd387b5ac3 188,251
+  s_bad883804e82a0::t_7885c56a41e8b4 1-7,9-20,23-26,33-57,61-129,131-164,166-187,190-237,239-250,253-263,266-298,306-330,339-374
+  s_bad883804e82a0::t_23f3ef10b7231b 8,27-32,130
+  s_bad883804e82a0::t_6eb7a3ac355756 165,189,238,252,264-265
+  s_bad883804e82a0::t_a8b60e23078f1a 58-60
+ee/packages/xmpp-server/src/xml/StanzaParser.ts
+  s_bad883804e82a0::t_1d05d50bb3c147 2-3
+  s_bad883804e82a0::t_dcfacbac322c5f 173
+  s_bad883804e82a0::t_2af595e2c4b651 42-43
+  s_bad883804e82a0::t_13fef85f2ca98b 100
+  s_bad883804e82a0::t_b24376a2f7ceb2 1,4-41,44-99,101-134,137-144,146-147,149-172,174-184
+  s_bad883804e82a0::t_fc0c1a2cbf339c 135-136,145,148
+ee/packages/xmpp-server/src/s2s/dnsResolver.spec.ts
+  s_bad883804e82a0::t_7c682f12317ef8 1-40
+ee/packages/xmpp-server/src/jid/escaping.spec.ts
+  s_bad883804e82a0::t_23f3ef10b7231b 7
+  s_bad883804e82a0::t_7666253bacd9b5 1-6,8-14
+ee/packages/xmpp-server/src/logger.ts
+  s_bad883804e82a0::t_309dfbff315413 1-8
+ee/packages/xmpp-server/package.json
+  s_bad883804e82a0::t_0e572d30486da5 1-35
+ee/packages/xmpp-server/jest.config.ts
+  s_bad883804e82a0::t_71745ca235359f 1-7
+ee/packages/xmpp-server/src/XMPPServer.spec.ts
+  s_bad883804e82a0::t_6f69945648de54 1-66
+ee/packages/xmpp-server/src/s2s/dnsResolver.ts
+  s_bad883804e82a0::t_23f3ef10b7231b 62
+  s_bad883804e82a0::t_beb5ccfbcc52cc 1-61,63-69
+ee/packages/xmpp-server/src/jid/normalize.spec.ts
+  s_bad883804e82a0::t_23cf1fb466b1d8 1-36
+ee/packages/xmpp-server/src/xml/namespaces.ts
+  s_bad883804e82a0::t_7818d2bc1bd2a6 1-14
+ee/packages/xmpp-server/src/config.ts
+  s_bad883804e82a0::t_d72bc1bdcb2b1a 6,8-15,19-58,62-68
+  s_bad883804e82a0::t_74ebaa37cb1a95 69-96,98-99
+  s_bad883804e82a0::t_23f3ef10b7231b 16-18,59-61,97
+  s_bad883804e82a0::t_8eaffa83c0f0fd 1-5,7
+ee/packages/xmpp-server/src/types/ltx.d.ts
+  s_bad883804e82a0::t_f58695c5c1ef20 1-55,57-75,77-79,81-117
+  s_bad883804e82a0::t_51de9204f10a55 56,76,80
+ee/packages/xmpp-server/.gitignore
+  s_bad883804e82a0::t_907966cfac311b 1-2
+ee/packages/xmpp-server/src/xml/StanzaParser.spec.ts
+  s_bad883804e82a0::t_9c298cae443b8f 1-4,7-38,40-127
+  s_bad883804e82a0::t_23f3ef10b7231b 5-6,39
+ee/packages/xmpp-server/src/jid/escaping.ts
+  s_bad883804e82a0::t_12f432433b610f 1-20
+ee/packages/xmpp-server/src/s2s/backoff.ts
+  s_bad883804e82a0::t_5d3b46a2834b36 1-21
+ee/packages/xmpp-server/src/xml/resolve.ts
+  s_bad883804e82a0::t_bec3413668aadb 1-30
+ee/packages/xmpp-server/src/jid/normalize.ts
+  s_bad883804e82a0::t_1259cb68921179 1-35
+ee/packages/xmpp-server/src/events.ts
+  s_bad883804e82a0::t_0b591c04eb8316 1-62
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_bad883804e82a0::t_fa570435e734f1 2
+  s_bad883804e82a0::t_c87c327b4b7143 82,86,90
+  s_bad883804e82a0::t_87d231b41cb83a 1,3-75,77-81,83-85,87-89,91-110
+  s_bad883804e82a0::t_469434aded9711 76
+ee/packages/xmpp-server/src/index.ts
+  s_bad883804e82a0::t_8ca036effa5994 1-3,5-8
+  s_bad883804e82a0::t_469434aded9711 4
+ee/packages/xmpp-server/src/s2s/saslExternal.ts
+  s_bad883804e82a0::t_08991b700de0d1 1-28
+ee/packages/xmpp-server/tsconfig.build.json
+  s_bad883804e82a0::t_5985b6e775f4e1 1-10
+ee/packages/xmpp-server/tests/integration/s2s.spec.ts
+  s_bad883804e82a0::t_9631534285ce73 1-103,105-117,119-128,130-149
+  s_bad883804e82a0::t_23f3ef10b7231b 104,118,129
+ee/packages/xmpp-server/src/errors.ts
+  s_bad883804e82a0::t_1e725a116c3713 1-44
+ee/packages/xmpp-server/src/s2s/dialback.ts
+  s_bad883804e82a0::t_9b2935d45eb86c 4-5,9
+  s_bad883804e82a0::t_b07bf9a890196f 1-3,6-8,10-34
+ee/packages/xmpp-server/tsconfig.json
+  s_bad883804e82a0::t_59216bf2487ef8 1-7
+ee/packages/xmpp-server/src/s2s/S2SManager.ts
+  s_bad883804e82a0::t_18bc646c76762c 1-12,17-23,27-86,93-127,140-146,150-152,154-157,162-167,169-185,187-189,193,204-207,209-212,214-219,221-224,226-227,231-232,235-251,253-257,259-261,263-266,268-284,286-292,295-298,300-305,307-342,344-351,358-360,364-365,367-375,377-383,386-388
+  s_bad883804e82a0::t_c0a803f748d603 87-92
+  s_bad883804e82a0::t_c3ad616a12a214 376,384-385
+  s_bad883804e82a0::t_23f3ef10b7231b 13-16,294,299,352-357
+  s_bad883804e82a0::t_88883e56b24cee 128-139,147-149,153,158-161,168,186,190-192,194-203,208
+  s_bad883804e82a0::t_95d2ee5d24f92a 213,220,225,228-230,233-234,252,258,262,267,285,293
+  s_bad883804e82a0::t_6f847972822b31 343,361-363,366
+  s_bad883804e82a0::t_5e51e23a272cf5 306
+  s_bad883804e82a0::t_d7c22dfe6d8e0e 24-26
+yarn.lock
+  s_bad883804e82a0::t_6b4cdbfa56b424 11220-11235,16114-16120,27889-27897
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "294ef60195fcc247cecd6597d8e7832f7e85e0ce",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 2326
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  h_4c386397e672f4 188,211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "dbc9843ddfda5cad51fcbbf2fef39e909aee31d6",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

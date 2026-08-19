@@ -1,0 +1,54 @@
+ee/packages/federation-matrix/src/api/_matrix/client/account.ts
+  s_e7444c88948ae9::t_a50f1d758133b4 79
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  s_dcc0817b32ca46::t_f9d2f999d915ed 233
+  s_dcc0817b32ca46::t_2d4a3a907ace60 235
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  s_dcc0817b32ca46::t_37f0304ecb11cd 282
+  s_dcc0817b32ca46::t_cc8494fcc55d4a 106-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f5f06a2caeb781ba93d77b7178a6363adfb177af",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_494555d31a553d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e14bfdf0-4c38-4389-9e14-35661dd6f3a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_dcc0817b32ca46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05c78016-bdb5-4958-b774-6c9bf91976ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_e7444c88948ae9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "14017c91-a029-4378-aabc-349405f54abd",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_ee6f031e25a4e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0766c162-e9e7-425e-b93b-9b3dd2cd9fde",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

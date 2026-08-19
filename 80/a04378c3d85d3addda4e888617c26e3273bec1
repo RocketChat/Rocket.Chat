@@ -1,0 +1,20 @@
+apps/meteor/app/authorization/server/functions/upsertPermissions.ts
+  s_bbdf9be95c3431::t_b9bcc10d45f347 2-4,18-29,54,58-95,115,117-118,140,145-168,172,181-182
+  s_bbdf9be95c3431::t_09db7cb28bfb7a 55-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "80a04378c3d85d3addda4e888617c26e3273bec1",
+  "prompts": {},
+  "sessions": {
+    "s_bbdf9be95c3431": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "844b7fd0-37ef-4de3-befc-c977985db93e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

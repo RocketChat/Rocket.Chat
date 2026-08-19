@@ -1,0 +1,23 @@
+ee/packages/federation-matrix/tests/end-to-end/dms.spec.ts
+  s_020fb63a50b2e6::t_6a1ee10f393818 697,1188,1759,1810
+  s_020fb63a50b2e6::t_a5ffb28fa72a90 6-11
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  s_020fb63a50b2e6::t_a5ffb28fa72a90 5-10
+  s_020fb63a50b2e6::t_09ac84d5742cde 188,200,273,428,523,605,669,878
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "f280581b1bce123dd7cec4585e3b4759c11220a9",
+  "prompts": {},
+  "sessions": {
+    "s_020fb63a50b2e6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8d9c30d0-6103-48d0-afc4-9e9990bb636a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

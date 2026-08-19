@@ -1,0 +1,33 @@
+apps/meteor/server/lib/messaging/getHiddenSystemMessages.ts
+  s_757bbbab112d52::t_f60061acdfdd88 3
+apps/meteor/server/services/team/service.ts
+  s_757bbbab112d52::t_3337d665c5a67d 578
+apps/meteor/server/hooks/messages/propagateDiscussionMetadata.ts
+  s_757bbbab112d52::t_62658f362733c3 8
+apps/meteor/ee/server/lib/message-read-receipt/ReadReceipt.ts
+  s_757bbbab112d52::t_97cf0fcde210e9 11-12
+  s_757bbbab112d52::t_622c8a12be97e4 21
+apps/meteor/server/lib/users/getUserSingleOwnedRooms.ts
+  s_757bbbab112d52::t_841b68d7a4f575 19
+apps/meteor/ee/server/lib/audit/functions.ts
+  s_757bbbab112d52::t_8a305935164b80 180
+  s_757bbbab112d52::t_30ee4dbc5671ec 46
+apps/meteor/server/lib/rooms/createDirectRoom.ts
+  s_757bbbab112d52::t_369fd7526eb494 81-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1b63b00afea623fad66550f4fdcd63f8eaac690a",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+apps/meteor/app/api/server/v1/channels.ts
+  s_020fb63a50b2e6::t_88d50e1d11b957 66
+  s_020fb63a50b2e6::t_c68671d5a461eb 956-967
+  s_020fb63a50b2e6::t_e1d474c92f5da5 2-10
+apps/meteor/tests/data/rooms.helper.ts
+  s_020fb63a50b2e6::t_128f8e0de84275 136-154
+  s_020fb63a50b2e6::t_d8d85e6b53079c 120,122-124,128,131,155-170
+apps/meteor/app/api/server/v1/groups.ts
+  s_020fb63a50b2e6::t_e1d474c92f5da5 2-9
+  s_020fb63a50b2e6::t_75b8b39bcb3b86 45
+  s_020fb63a50b2e6::t_619b935da3d886 593-594,600-603,605-611,613-614
+apps/meteor/tests/data/uploads.helper.ts
+  s_020fb63a50b2e6::t_77bc9392865575 328
+apps/meteor/app/api/server/helpers/getUserFromParams.ts
+  s_020fb63a50b2e6::t_fac1f3f0f1d872 67-98
+  s_020fb63a50b2e6::t_891a43310f861f 4
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_020fb63a50b2e6::t_ecdefbddaf3d34 1261
+  s_020fb63a50b2e6::t_c2c118fae5db1e 1499
+  s_020fb63a50b2e6::t_378f340712d4ec 951,955,959
+  s_020fb63a50b2e6::t_6e8752024b6cd7 231,235,239-242
+  s_020fb63a50b2e6::t_cbcc45dd062355 1364
+  s_020fb63a50b2e6::t_7634d05faa4e71 1639-1726
+  s_020fb63a50b2e6::t_5eba9e3f9857b0 12
+  s_020fb63a50b2e6::t_e59b42a4921428 1088,1092,1096
+  s_020fb63a50b2e6::t_4d33986717b9e5 847,851,855
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "5bbad22e7c5f37972452975aef9d1d3e001edd52",
+  "prompts": {},
+  "sessions": {
+    "s_020fb63a50b2e6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8d9c30d0-6103-48d0-afc4-9e9990bb636a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

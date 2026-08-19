@@ -1,0 +1,29 @@
+apps/meteor/ee/server/lib/authorization/resetEnterprisePermissions.ts
+  s_171d92f682d971::t_247935f0136950 1-13
+apps/meteor/ee/app/authorization/server/callback.ts
+  s_171d92f682d971::t_247935f0136950 6
+apps/meteor/ee/server/lib/authorization/validateUserRoles.spec.ts
+  s_171d92f682d971::t_247935f0136950 1-262
+apps/meteor/jest.config.ts
+  s_171d92f682d971::t_6101cc0b08542e 39
+apps/meteor/scripts/migration/phase4-ee-authorization.tsv
+  s_171d92f682d971::t_7a665e199e6560 1-6
+apps/meteor/ee/app/license/server/license.internalService.ts
+  s_171d92f682d971::t_247935f0136950 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "ef77b9afaee0fcbeaaaa980c3af4e880c1c18e05",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+apps/meteor/server/commands/create/server.ts
+  c524e275121e13e4 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "970604fe3abef2c51d9407cb32854f6533ca1ef4",
+  "prompts": {
+    "c524e275121e13e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5cf8d888-30f8-452f-80b2-e2cce62509bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Diego Sampaio",
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}

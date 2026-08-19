@@ -1,0 +1,22 @@
+packages/ddp-client/__tests__/Connection.spec.ts
+  s_4db48497d88e4f::t_23192f3d1a4aa9 305-313
+  s_4db48497d88e4f::t_1c08013a7909e9 114-122
+  s_4db48497d88e4f::t_13e434068f4e11 343-351
+  s_4db48497d88e4f::t_079674e3b5c1b4 279-287
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "61fc9e060cae93326507578f2480cc6930ab84fb",
+  "prompts": {},
+  "sessions": {
+    "s_4db48497d88e4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f0410250-cd3a-49f1-bb9d-5f26535f45e4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

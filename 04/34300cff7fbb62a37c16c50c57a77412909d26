@@ -1,0 +1,49 @@
+packages/model-typings/src/models/ITeamMemberModel.ts
+  s_2371aedee85fc8::t_7dd9fe26b282ec 62
+packages/model-typings/src/models/IRoomsModel.ts
+  s_2371aedee85fc8::t_e3ec192f6803d3 450-452,454
+  s_2371aedee85fc8::t_59a262b547edf9 453
+packages/models/src/models/VideoConference.ts
+  s_2371aedee85fc8::t_d6c9baa9f1929c 42-43
+packages/model-typings/src/models/ICalendarEventModel.ts
+  s_2371aedee85fc8::t_fb7ffd6a22671b 17-19,21-22,24
+  s_2371aedee85fc8::t_7e97a1126607c1 20
+  s_2371aedee85fc8::t_caae7e7e4d3506 23
+packages/models/src/models/TeamMember.ts
+  s_2371aedee85fc8::t_14df29a094a654 112-113
+packages/models/src/models/Rooms.ts
+  s_2371aedee85fc8::t_c0d5ed366f2772 1917
+  s_2371aedee85fc8::t_0908d0dd4e1eb5 1912-1916
+packages/models/src/models/Subscriptions.ts
+  s_2371aedee85fc8::t_5962d8caf0ff1a 1175-1176
+apps/meteor/server/services/calendar/service.ts
+  s_2371aedee85fc8::t_4fbb73a6fe4cb6 249
+  s_2371aedee85fc8::t_9b59e395ef20a6 237
+packages/model-typings/src/models/ILivechatInquiryModel.ts
+  s_2371aedee85fc8::t_5a387c443c99ec 22
+packages/model-typings/src/models/ISubscriptionsModel.ts
+  s_2371aedee85fc8::t_b6e54c3333b466 264
+packages/model-typings/src/models/ILivechatRoomsModel.ts
+  s_2371aedee85fc8::t_61de6f156bb792 311
+packages/models/src/models/LivechatRooms.ts
+  s_2371aedee85fc8::t_9f3193c6423452 2768-2769
+packages/models/src/models/CalendarEvent.ts
+  s_2371aedee85fc8::t_43de0b921cd0db 164-171
+  s_2371aedee85fc8::t_c25d74feaca3ae 148-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0434300cff7fbb62a37c16c50c57a77412909d26",
+  "prompts": {},
+  "sessions": {
+    "s_2371aedee85fc8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6e1ccfe-9bc7-47f5-981e-347fd27ed43d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

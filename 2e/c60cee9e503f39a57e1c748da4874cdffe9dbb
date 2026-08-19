@@ -1,0 +1,26 @@
+apps/meteor/server/modules/streamer/publication-user-cache.ts
+  s_415b5f7afbd472::t_4cee38874ee709 7,9,15,23-26,28,30-32,34-36,38-40,43-45,48-49
+  s_415b5f7afbd472::t_a028abac2dc49a 37
+  h_4c386397e672f4 6,17,19-20,41-42,50-51,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "2ec60cee9e503f39a57e1c748da4874cdffe9dbb",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_415b5f7afbd472": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37910301-851d-4c9f-a3cc-394b86cafac8",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

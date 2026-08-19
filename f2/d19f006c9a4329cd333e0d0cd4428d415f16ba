@@ -1,0 +1,21 @@
+apps/meteor/tests/unit/app/meteor-accounts-saml/server.tests.ts
+  s_dc8749d8fc83b2::t_a8fdd3177ae0aa 3
+  s_dc8749d8fc83b2::t_74274762bc6ade 44-45
+  s_dc8749d8fc83b2::t_28e2f95695f0df 1072-1073,1096-1116,1118-1125,1127-1142,1148-1150,1156-1157,1162-1163,1168-1169,1174-1175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "f2d19f006c9a4329cd333e0d0cd4428d415f16ba",
+  "prompts": {},
+  "sessions": {
+    "s_dc8749d8fc83b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "40634c6b-c8bd-415b-aa21-4a495004be16",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+apps/meteor/imports/personal-access-tokens/server/api/methods/removeToken.ts
+  s_171d92f682d971::t_2bc92b13546da3 5
+apps/meteor/scripts/migration/verify-no-old-imports.mjs
+  s_171d92f682d971::t_787880e8479ca0 46
+apps/meteor/imports/personal-access-tokens/server/api/methods/generateToken.ts
+  s_171d92f682d971::t_2bc92b13546da3 7
+apps/meteor/imports/personal-access-tokens/server/api/methods/regenerateToken.ts
+  s_171d92f682d971::t_2bc92b13546da3 6
+apps/meteor/scripts/migration/move-module.mjs
+  s_171d92f682d971::t_1c98fdf14b7647 290-292
+apps/meteor/MIGRATION_PLAN.md
+  s_171d92f682d971::t_2da20ab568368f 193-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c809ea4852ea194daed1dd83443c4766327645cd",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

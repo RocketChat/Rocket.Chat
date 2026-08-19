@@ -1,0 +1,46 @@
+apps/meteor/startRocketChat.ts
+  s_bad883804e82a0::t_fcb5b6c8486b76 5,13
+packages/i18n/src/locales/en.i18n.json
+  s_bad883804e82a0::t_8418e660d223bc 2297-2314
+apps/meteor/ee/server/startup/xmppServer.ts
+  s_bad883804e82a0::t_4352490bb9efa9 1-62
+ee/packages/xmpp-server/package.json
+  s_bad883804e82a0::t_699a3b266c8bed 23
+  s_bad883804e82a0::t_635e3187fe592f 20-21,24
+apps/meteor/server/settings/federation-service.ts
+  s_bad883804e82a0::t_b23132bf8f0e4e 154-227
+apps/meteor/package.json
+  s_bad883804e82a0::t_61b0c9479c9bb7 165
+packages/core-services/src/index.ts
+  s_bad883804e82a0::t_3b7b2102567489 90
+  s_bad883804e82a0::t_4b2d80a0e6bbf7 225
+  s_bad883804e82a0::t_ecd139fa7358a7 24
+ee/packages/xmpp-server/src/index.ts
+  s_bad883804e82a0::t_3920788190c616 9-11
+packages/core-typings/src/IUser.ts
+  s_bad883804e82a0::t_88699ea6eb20c4 278-289
+  s_bad883804e82a0::t_095a30c15bea04 226-231
+packages/core-typings/src/IRoom.ts
+  s_bad883804e82a0::t_31622978d1e124 76-83
+  s_bad883804e82a0::t_2eb3e7774f4850 145-164
+packages/core-services/src/types/IXMPPServerService.ts
+  s_bad883804e82a0::t_dbfc846539c8d1 1-27
+yarn.lock
+  s_bad883804e82a0::t_f55ba1b01e9549 9897,11221,11225-11226,11229-11230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2a5cb70b934e471eb5078b483bcc3558357cfd68",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

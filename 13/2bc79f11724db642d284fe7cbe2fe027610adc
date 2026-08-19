@@ -1,0 +1,29 @@
+apps/meteor/server/settings/federation-service.ts
+  h_4c386397e672f4 119-153
+ee/packages/federation-matrix/src/setup.ts
+  h_4c386397e672f4 35,46-49,62-65,72,109-112,114-115
+apps/meteor/ee/server/startup/federation.ts
+  h_4c386397e672f4 26,37-40,87-90
+  s_927a8b25b62aeb::t_74688b82dc4588 65-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "132bc79f11724db642d284fe7cbe2fe027610adc",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_927a8b25b62aeb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "95bb7747-5e66-48e8-8d43-2637a9d78d83",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

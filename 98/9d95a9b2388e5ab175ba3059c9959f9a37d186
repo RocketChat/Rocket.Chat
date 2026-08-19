@@ -1,0 +1,21 @@
+apps/meteor/server/services/room/service.ts
+  s_def3e99ace96c5::t_d6cef5d7e0f85e 329-330
+ee/packages/federation-matrix/src/helpers/getOrCreateFederatedUser.ts
+  s_def3e99ace96c5::t_4dd19af5fde1f2 14-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "989d95a9b2388e5ab175ba3059c9959f9a37d186",
+  "prompts": {},
+  "sessions": {
+    "s_def3e99ace96c5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "33c430aa-e69d-4e7a-b818-9fe21a26ea72",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

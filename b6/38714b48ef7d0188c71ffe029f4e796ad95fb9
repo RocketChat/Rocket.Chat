@@ -1,0 +1,25 @@
+apps/meteor/app/settings/server/startup.ts
+  s_bbdf9be95c3431::t_207f54ba738984 23-25,27,31-36,45,48-53
+  s_bbdf9be95c3431::t_ba51ecdd06a9f1 6,15-22,37-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "b638714b48ef7d0188c71ffe029f4e796ad95fb9",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_bbdf9be95c3431": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "844b7fd0-37ef-4de3-befc-c977985db93e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

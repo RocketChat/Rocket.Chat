@@ -1,0 +1,25 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  s_dcc0817b32ca46::t_37f0304ecb11cd 277-279,281,299,303-305,307-332
+  s_dcc0817b32ca46::t_cc8494fcc55d4a 117-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c4574d6318fc90f40685871d898a2c446a80aa98",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_dcc0817b32ca46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05c78016-bdb5-4958-b774-6c9bf91976ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

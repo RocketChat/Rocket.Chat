@@ -1,0 +1,34 @@
+packages/release-action/action.yml
+  s_bb35dcca5cfe76::t_b0d98b808e0f02 6
+docs/release-process.md
+  s_bb35dcca5cfe76::t_e0d02afc5888e2 1-101
+.github/workflows/ci.yml
+  s_bb35dcca5cfe76::t_6c7d5400344d09 1068
+  s_bb35dcca5cfe76::t_dc4656b8498a46 1240
+  s_bb35dcca5cfe76::t_297d54389376fa 192,202,379,389,405,422,439,453,462,470,478,654,745,816,855,1042,1123,1305
+  s_bb35dcca5cfe76::t_4f4a94bfe8f0c5 208-211,213-217
+  s_bb35dcca5cfe76::t_af2fab3bcad572 1284-1287
+  s_bb35dcca5cfe76::t_e8d99510b92fdc 11-12,20
+  s_bb35dcca5cfe76::t_4118f70abe6899 1266-1283,1288-1301
+  s_bb35dcca5cfe76::t_f18c8c72415c60 323,355,870,878
+packages/release-action/src/bumpNextVersion.ts
+  s_bb35dcca5cfe76::t_73830aabe4326b 92,98
+packages/release-action/src/publishRelease.ts
+  s_bb35dcca5cfe76::t_06254693faeff8 119-120,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c709893bbbabe22d44bde0793dbd327be6f451a6",
+  "prompts": {},
+  "sessions": {
+    "s_bb35dcca5cfe76": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3f5214cd-37f4-4a33-88b1-fed9e033d522",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

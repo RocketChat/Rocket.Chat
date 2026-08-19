@@ -1,0 +1,26 @@
+apps/meteor/ee/server/hooks/federation/index.ts
+  h_4c386397e672f4 81,86-87
+.changeset/nice-baboons-flash.md
+  s_fd4965b3325454::t_9d34a0398dd985 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "25244a5b504cfa7eb64d42a9d4f6050ffd72bdbd",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_fd4965b3325454": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d6db71-68d2-4fff-8c32-38e5b464d664",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

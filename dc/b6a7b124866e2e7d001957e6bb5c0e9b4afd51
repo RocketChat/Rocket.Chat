@@ -1,0 +1,23 @@
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_5a6e5d7a34569d::t_703a7d7a532f6f 4002-4013,4015
+  s_5a6e5d7a34569d::t_dff1a3cb776941 4055
+apps/meteor/client/views/root/hooks/useLoadMissedMessages.spec.ts
+  s_5a6e5d7a34569d::t_a2863d5cd3b187 5,95
+  s_5a6e5d7a34569d::t_454e28c0e8e8b9 1-4,6-94,96-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dcb6a7b124866e2e7d001957e6bb5c0e9b4afd51",
+  "prompts": {},
+  "sessions": {
+    "s_5a6e5d7a34569d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e55b5b24-6dbb-43fd-830e-08b04b050e17",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+apps/meteor/METEOR_REMOVAL_PLAN.md
+  s_4e63b2559695fb::t_bf00e97470f57c 107-126
+  s_4e63b2559695fb::t_0da4f12d8182e6 208
+  s_4e63b2559695fb::t_becb0f54ea3b04 214-222
+  s_4e63b2559695fb::t_105407994bf24a 246
+  s_4e63b2559695fb::t_c68c935d3786f8 144-146
+  s_4e63b2559695fb::t_d8085b0998dbdf 1-73,79,89,91-106,127-143,147-153,156,159-160,162-164,166-176,178,181-182,184-207,209-213,223-227,229-245,247-276
+  s_4e63b2559695fb::t_859749a4a5606f 165
+  s_4e63b2559695fb::t_6009fb969f2e97 177,179-180,183
+  s_4e63b2559695fb::t_30621cffe8b189 154-155,157-158,161
+  s_4e63b2559695fb::t_733f5d48a4b542 228
+  s_4e63b2559695fb::t_37c396dbf4bcec 74-78,80-88,90
+packages/server-core/tsconfig.json
+  s_4e63b2559695fb::t_0350add9d43f79 1-9
+packages/server-core/package.json
+  s_4e63b2559695fb::t_5133ce543ca7fd 1-24
+packages/server-core/README.md
+  s_4e63b2559695fb::t_1ce9e56184945b 1-2,4-7,16-18,20
+  s_4e63b2559695fb::t_76b28102c8f731 3,8-15,19,21
+apps/meteor/package.json
+  s_4e63b2559695fb::t_e63787f8231de5 150
+packages/server-core/src/index.ts
+  s_4e63b2559695fb::t_a0cbf4edf4fafc 1-26
+yarn.lock
+  s_4e63b2559695fb::t_bfb1cfb5bc4ead 9783,10590-10599
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6f810c9a9e41614ebf2be6913043acda2d604382",
+  "prompts": {},
+  "sessions": {
+    "s_4e63b2559695fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef7f2cea-b4c8-4fa4-962f-4c17efe5425e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

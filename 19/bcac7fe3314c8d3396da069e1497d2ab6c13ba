@@ -1,0 +1,46 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_bad883804e82a0::t_b21b69cbd890e9 3,8,19,23,29
+  s_bad883804e82a0::t_c703efe0c2675e 43-44
+  s_bad883804e82a0::t_7fd5628f602830 1-2,4-7,9-18,20-22,24-28,30-42,45-55,58-69
+  s_bad883804e82a0::t_269ca901f86ad8 56-57
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateDirectMessage.tsx
+  s_bad883804e82a0::t_4e2043ecb419aa 89
+  s_bad883804e82a0::t_9eee5182d46405 27
+ee/packages/xmpp-server/src/service/helpers/xmppUser.ts
+  s_bad883804e82a0::t_b98168572df560 1-4,6-49
+  s_bad883804e82a0::t_7d75bec98e7b97 5
+apps/meteor/client/components/UserAutoCompleteMultiple/UserAutoCompleteMultiple.tsx
+  s_bad883804e82a0::t_ea8a0401f7aa38 33-34,37
+  s_bad883804e82a0::t_72faf88c0b79b9 45,57-58
+  s_bad883804e82a0::t_544d52e9fb9a7b 17-18
+  s_bad883804e82a0::t_f594232e8888af 59-61
+ee/packages/xmpp-server/package.json
+  s_bad883804e82a0::t_fdf6b98560c07e 25
+apps/meteor/ee/server/index.ts
+  s_bad883804e82a0::t_dcf1dc5775e58e 16
+packages/models/src/models/Rooms.ts
+  s_bad883804e82a0::t_62d9f7b0909309 101-108
+ee/packages/xmpp-server/src/service/helpers/xmppUser.spec.ts
+  s_bad883804e82a0::t_a6bb010bfec936 2-21
+  s_bad883804e82a0::t_db06d8432aa9eb 1
+ee/packages/xmpp-server/src/service/helpers/jid.ts
+  s_bad883804e82a0::t_080758291082f4 1-8
+yarn.lock
+  s_bad883804e82a0::t_2bcf30fa19bf58 11231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "19bcac7fe3314c8d3396da069e1497d2ab6c13ba",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

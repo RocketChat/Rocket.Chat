@@ -1,0 +1,23 @@
+ee/packages/network-broker/src/NatsBroker.ts
+  5119d759d76c77d1 106-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "1bb607f759c36dfe1f2e78a613d5f3abb51276fc",
+  "prompts": {
+    "5119d759d76c77d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe5c5d80-d416-477a-84de-9991aea41a34",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 1,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}

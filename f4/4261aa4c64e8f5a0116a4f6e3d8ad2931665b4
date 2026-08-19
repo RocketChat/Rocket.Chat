@@ -1,0 +1,24 @@
+packages/release-action/src/utils.ts
+  s_8d7683cb588a85::t_f97536f6290782 69
+packages/release-action/src/gitUtils.ts
+  s_8d7683cb588a85::t_d83f93b98c879d 40-101
+packages/release-action/src/syncDevelop.ts
+  s_8d7683cb588a85::t_3d2951495458eb 1-178,180,185-187,189-191,193-240
+  s_8d7683cb588a85::t_372145cc50e1bb 179,181-184,188,192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f44261aa4c64e8f5a0116a4f6e3d8ad2931665b4",
+  "prompts": {},
+  "sessions": {
+    "s_8d7683cb588a85": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "35c079eb-9a01-4974-a758-25a48559f952",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

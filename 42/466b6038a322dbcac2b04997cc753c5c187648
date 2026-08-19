@@ -1,0 +1,16 @@
+apps/meteor/server/lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage.ts
+  h_4c386397e672f4 6
+apps/meteor/server/hooks/messages/propagateDiscussionMetadata.ts
+  h_4c386397e672f4 16-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "42466b6038a322dbcac2b04997cc753c5c187648",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

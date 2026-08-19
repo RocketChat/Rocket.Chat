@@ -1,0 +1,25 @@
+apps/meteor/client/navbar/NavBarSearch/NavBarSearchListbox.tsx
+  s_a9bfd5c9e41531::t_258e4ba9b65d06 4,11
+  s_a9bfd5c9e41531::t_3dbd589bea38a5 67
+apps/meteor/client/navbar/NavBarSearch/NavBarSearchItemSkeleton.tsx
+  s_a9bfd5c9e41531::t_da9ad6567255a0 1-3,7-8,10,12-13,15-20
+  s_a9bfd5c9e41531::t_9a86764e7aa1fe 4-6,9
+  s_a9bfd5c9e41531::t_8aa07e10401f0c 11
+  s_a9bfd5c9e41531::t_d526c2a61ba787 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "53e37da21fa32a8495297b74e38838fd17d23c82",
+  "prompts": {},
+  "sessions": {
+    "s_a9bfd5c9e41531": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b81757e6-2fb7-4325-bdcc-0a064faf80b1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

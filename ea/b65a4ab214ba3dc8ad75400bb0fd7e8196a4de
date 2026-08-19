@@ -1,0 +1,19 @@
+apps/meteor/scripts/migration/check-broken-imports.mjs
+  s_0fce651a0b3be0::t_4aafd47d2f1995 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "eab65a4ab214ba3dc8ad75400bb0fd7e8196a4de",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

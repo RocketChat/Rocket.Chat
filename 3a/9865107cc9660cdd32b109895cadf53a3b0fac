@@ -1,0 +1,30 @@
+ee/packages/federation-matrix/src/api/_matrix/transactions.ts
+  s_28616f38fdf587::t_6f17f76fdf3fb1 282-285,295
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_28616f38fdf587::t_3e86f71651bd23 60-62
+ee/packages/federation-matrix/src/api/_matrix/client/media.ts
+  s_28616f38fdf587::t_4a8f32532c5126 25-28,30
+.changeset/real-zoos-cover.md
+  h_4c386397e672f4 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3a9865107cc9660cdd32b109895cadf53a3b0fac",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_28616f38fdf587": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "51d3ae73-5cd8-47e6-b8e6-2d326b264c9c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

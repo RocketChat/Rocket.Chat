@@ -1,0 +1,20 @@
+apps/meteor/ee/tests/unit/server/lib/apps/disableAppsWithAddonsCallback.spec.ts
+  s_171d92f682d971::t_b33fd2ad1a98a0 6-12
+  s_171d92f682d971::t_6f38a47ac7ed2e 1-5,13-231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "18bc92c07317fcf930a3973140ceed454aa3af41",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+apps/meteor/ee/server/hooks/federation/index.ts
+  h_4c386397e672f4 258-261,263,265-270
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  h_4c386397e672f4 726-730
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "a1aaef9d7505f28e79d0e2cb36c9f7991f9e48a7",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

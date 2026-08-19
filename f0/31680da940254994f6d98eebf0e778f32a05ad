@@ -1,0 +1,389 @@
+packages/model-typings/src/types/DocumentWithProjection.typetest.ts
+  s_d81a2915077aab::t_5da87c646789b3 1-4,6-64
+packages/model-typings/src/index.ts
+  s_d81a2915077aab::t_f3100f21ed79f3 79
+packages/model-typings/src/types/DocumentWithProjection.ts
+  s_d81a2915077aab::t_6833c06d1e22ea 7-23,25-27,34-58
+packages/model-typings/src/models/IBaseModel.ts
+  s_d81a2915077aab::t_de106de0a2e43a 37,39-41
+  s_d81a2915077aab::t_a4a3b3fe306052 79-83,85-89,92,94-95,97-101
+packages/model-typings/src/models/ICannedResponseModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-18
+packages/model-typings/src/models/ILivechatUnitModel.ts
+  s_d81a2915077aab::t_40cffc31c838a6 11
+  s_d81a2915077aab::t_02955c8138eb01 13-17,19
+  s_d81a2915077aab::t_3c1da7da9b63b4 20,22,24
+  s_d81a2915077aab::t_fd01e36e1664e1 5,9-10,12,37-40
+  s_d81a2915077aab::t_996d5816852c03 2
+packages/models/src/dummy/BaseDummy.ts
+  s_d81a2915077aab::t_9e59f08aec7fcf 3-8,12
+  s_d81a2915077aab::t_a5357d606796aa 87-90,94-97,101-104,108-111
+  s_d81a2915077aab::t_a70cee8686386d 2
+  s_d81a2915077aab::t_8b4284549454da 185
+packages/models/src/models/BaseRaw.ts
+  s_d81a2915077aab::t_a34385ec4d0b10 212-216,219-222,231,233-234,239-242
+  s_d81a2915077aab::t_2843460b603992 2-9,13
+  s_d81a2915077aab::t_8b4284549454da 2-9,13,212-215,219-222,224,231-235,239-243,343-349,382-388,428,431-438
+packages/model-typings/src/models/INpsVoteModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-20
+packages/model-typings/src/models/ITeamModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 16,19-23,25-29,44,55,71,82,93
+  s_d81a2915077aab::t_7e9a633d2701f1 2
+  s_d81a2915077aab::t_b46a6a66860a58 8,10,12,14-15,17,31,33-43,45-54,56-70,72-81,83-92,94
+packages/model-typings/src/models/IOAuthAppsModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-9,14-16,18-21,28-35
+packages/model-typings/src/models/ILivechatInquiryModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11,29-31,46-49
+packages/model-typings/src/models/ILivechatDepartmentModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 9-21,23-26,29-35,37-42,63-70,72-78,88-91
+packages/model-typings/src/models/IRolesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 2,5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11,13-16,20,23-26,45,47-49
+packages/model-typings/src/models/IUploadsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 2,6
+  s_d81a2915077aab::t_fd01e36e1664e1 23-26
+packages/model-typings/src/models/ITwoFactorChallengesModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-14
+packages/model-typings/src/models/IPushTokenModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 12-24
+packages/model-typings/src/models/IMediaCallNegotiationsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11
+packages/model-typings/src/models/ILivechatCustomFieldModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-29
+packages/model-typings/src/models/ILivechatContactsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 12
+  s_d81a2915077aab::t_fd01e36e1664e1 2-8,28-31,39-42,49-53,72-75
+packages/model-typings/src/models/IOAuthAccessTokensModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-15
+packages/model-typings/src/models/IOAuthRefreshTokensModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11
+packages/model-typings/src/models/IWebdavAccountsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-17,25-27,29-32
+packages/model-typings/src/models/ICallHistoryModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-12,14-18,20-25,30-32
+packages/model-typings/src/models/IAbacAttributesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11
+packages/model-typings/src/models/IUsersModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 29
+  s_d81a2915077aab::t_bb49b0104c5f1a 33
+  s_d81a2915077aab::t_fd01e36e1664e1 38-108,110-113,115-118,120-123,125-128,130-136,140-147,149-151,153-156,158-160,203-211,229-232,304-307,335-340,394-397,402-405,407-461,463-483,485-487,489-499,501-509,525-529,561-564,577-580,583-587,591-594
+packages/model-typings/src/models/IMediaCallsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 12
+  s_d81a2915077aab::t_a86c3fcad88a93 9
+  s_d81a2915077aab::t_fd01e36e1664e1 1-8,15-24,31-37
+packages/model-typings/src/models/ISubscriptionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 20
+  s_d81a2915077aab::t_e43e64006551c5 253
+  s_d81a2915077aab::t_fd01e36e1664e1 25-29,31-35,37-40,42-45,47-51,71-75,81-84,86-90,92-95,97-101,106-108,175-178,184-187,191-195,197-205,209-212,215-219,221-225,227-230,232-236,238-251,258-262,269-276,279-282,286-289,332-337,363-367,383-386
+packages/model-typings/src/models/ILivechatBusinessHoursModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 18-36
+packages/model-typings/src/models/IMessagesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 25
+  h_4c386397e672f4 35-38,41-42,44,47-48,50,53-54,56,59-60,62,65-66,86,89-91,95-96,107,109-110,124-127,132,134,136,138-139,161,163-165,167-168,171,173-178,181,183-187,194-196,198-203,208-210,214-219,223,226,228-231,236,239,248,252-253,256,259-261,264-265,287,290-291,307-310,312-313
+  s_d81a2915077aab::t_fd01e36e1664e1 35-66,86-96,107-110,124-134,136-139,161-168,171-239,248-253,256-262,264-265,287-291,307-313
+packages/model-typings/src/models/IOAuthAuthCodesModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11
+packages/model-typings/src/models/IEmojiCustomModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-21,28-31
+packages/model-typings/src/models/IBaseUploadsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 14-17,23-25,31-36
+packages/model-typings/src/models/ISessionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 10
+  s_d81a2915077aab::t_e0b9c3ad38693d 13
+  s_d81a2915077aab::t_fd01e36e1664e1 1-9,147-151
+packages/model-typings/src/models/IRoomsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 26
+  s_d81a2915077aab::t_b46a6a66860a58 153
+  s_d81a2915077aab::t_434c4e9c411fcc 170
+  s_d81a2915077aab::t_fd01e36e1664e1 43-44,48-50,54-58,60-63,65-68,77-83,85-88,90-93,97-141,159-162,164-168,180-183,187-190,194-222,237-240,256-259,272-275,277-373,454-457
+packages/model-typings/src/models/IIntegrationsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 24-28
+packages/model-typings/src/models/ILivechatVisitorsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 15
+  s_d81a2915077aab::t_fd01e36e1664e1 18-29,41-49,89-92,96-99
+packages/model-typings/src/models/ILivechatRoomsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 16
+  s_d81a2915077aab::t_fd01e36e1664e1 143-146,162-170,172-178,180-233,269-273,307-310
+packages/model-typings/src/models/ILivechatDepartmentAgentsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11,13-19,24-35,55-66
+packages/model-typings/src/models/IUserDataFilesModel.ts
+  s_d81a2915077aab::t_6be05ad01315cb 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-11
+packages/model-typings/src/models/ICustomUserStatusModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 8-25
+packages/model-typings/src/models/ICustomSoundsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 8-17
+packages/model-typings/src/models/ISettingsModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 2,14-17
+packages/model-typings/src/models/ILoginServiceConfigurationModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 13-16
+packages/model-typings/src/models/IUsersSessionsModel.ts
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_fd01e36e1664e1 16-19
+packages/model-typings/src/models/IBannersModel.ts
+  s_d81a2915077aab::t_e0b9c3ad38693d 5
+  s_d81a2915077aab::t_a86c3fcad88a93 2
+  s_d81a2915077aab::t_fd01e36e1664e1 10-15
+packages/models/src/models/CallHistory.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,22,30,90
+  h_4c386397e672f4 17,20-21,25,28-29,51-54,62-63
+  s_d81a2915077aab::t_8b4284549454da 17-21,25-29,51-56,61-63
+packages/models/src/models/LivechatCustomField.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,21,33,51
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 16-20,24-27,36-44
+packages/models/src/models/LivechatDepartment.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,73,99,107,120,131,139,298,312,331
+  h_4c386397e672f4 68,70-71,76-79,83-84,102,104-105,115-118,123-126,134,136-137,283,285-286,301,303-304,319,321-322,326-328
+  s_d81a2915077aab::t_8b4284549454da 68-71,76-84,102-105,115-118,123-126,134-137,283-286,301-304,319-322,326-328
+packages/models/src/models/NpsVote.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,26,41,43,54,56
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_8b4284549454da 18-21,31-35,46-49
+packages/models/src/models/Team.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,38,41,50,53
+  s_d81a2915077aab::t_b46a6a66860a58 16-23,25,56-68,70,77-84,86,93-105,107,141-148,150,157-164,166
+  s_d81a2915077aab::t_8b4284549454da 24,32-36,44-48,69,85,106,149,165
+  s_d81a2915077aab::t_7e9a633d2701f1 3
+packages/models/src/models/TwoFactorChallenges.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 5
+  s_d81a2915077aab::t_ef5f1d265a3edb 4,22
+  s_d81a2915077aab::t_8b4284549454da 18-21
+packages/models/src/models/OAuthAccessTokens.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,29,39
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 22-25,32-35
+packages/models/src/models/Uploads.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2-3,71
+  s_d81a2915077aab::t_8b4284549454da 67-70
+packages/models/src/models/LivechatContacts.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 227,293,318
+  h_4c386397e672f4 13-15,152,154-155,223,225-226,285-288,291-292,314,316-317
+  s_d81a2915077aab::t_8b4284549454da 9-16,18-31,152-155,169-172,223-226,285-292,314-317
+packages/models/src/models/WebdavAccounts.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,21,39,47
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 16-20,24-28,36-38,42-45
+packages/models/src/models/LivechatInquiry.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 9,117,295,469
+  s_d81a2915077aab::t_8b4284549454da 110-113,292-294,465-468
+  s_d81a2915077aab::t_4283677690a4d2 121-122
+packages/models/src/models/MediaCallNegotiations.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 7,25
+  s_d81a2915077aab::t_5b34a0b8f491ff 8
+  s_d81a2915077aab::t_ef6a1bdc76a5d8 37
+  s_d81a2915077aab::t_8b4284549454da 21-24
+packages/models/src/models/CustomUserStatus.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,20,33,45,58
+  s_d81a2915077aab::t_8b4284549454da 16-19,23-27,37-40,48-52
+packages/models/src/models/Messages.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 12,92,105,119,132,146,335,349,395,416,515,665,705,726,741,755,770,798,827,842,871,909,949,1007,1035,1389
+  s_d81a2915077aab::t_8b4284549454da 81-85,95-98,108-112,122-126,135-139,330-334,345-348,358-368,398-403,504-507,659-662,676-687,708-717,729-732,744-747,758-761,773-776,801-806,830-831,833-834,845-850,874-884,912-923,995-999,1025-1029,1360-1364,1370-1372
+packages/models/src/models/Settings.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,68
+  s_d81a2915077aab::t_2d2adb39b35e54 18-21
+  s_d81a2915077aab::t_c8e15117eebf11 183,193-194
+  s_d81a2915077aab::t_8b4284549454da 3-14,54-57
+  s_d81a2915077aab::t_7c857af2958e7b 205
+packages/models/src/models/Users.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 143,158,229,238,250,267,284,351,364,412,460,498,510,522,533,540,554,573,591,599,614,628,1011,1642,1685,2203,2295,2319,2332,2345,2362,2371,2384,2396,2414,2424,2439,2454,2483,2493,2507,2516,2529,2536,2573,2592,2604,2628,2648,2660,2672,2891,3289
+  s_d81a2915077aab::t_8b4284549454da 15-22,114-117,154-157,219-222,232-235,241-244,258-262,275-279,337-341,354-358,367-374,381,415-422,429,463-469,475-487,489,492-495,501-504,513-516,525-528,536-539,543-546,560-563,585-588,594-596,602-605,617-619,954-962,972,1638-1641,1672-1677,2190-2193,2284-2287,2309-2312,2322-2325,2338-2341,2351-2354,2365-2368,2374-2378,2387-2390,2399-2402,2417-2421,2427-2430,2442-2444,2470-2474,2486-2490,2496-2499,2510-2513,2519-2522,2532-2535,2568-2570,2582-2585,2595-2598,2610-2612,2643-2647,2656-2659,2668-2671,2877-2881,3281-3284
+  s_d81a2915077aab::t_1282baae60a9a3 197-201,203,206-207
+  s_d81a2915077aab::t_905c2fe07c8130 2621,2626
+  s_d81a2915077aab::t_ef6a1bdc76a5d8 557,2335,2348
+packages/models/src/models/LivechatBusinessHours.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,27,34,52
+  s_d81a2915077aab::t_8b4284549454da 23-26,30-33,48-51
+apps/meteor/ee/server/models/raw/LivechatDepartment.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,36,46
+packages/models/src/models/LivechatDepartmentAgents.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 58,65,75,78,97,104,283
+  s_d81a2915077aab::t_8b4284549454da 2-19,54-57,61-64,68-71,93-96,100-103,275-282
+packages/models/src/models/Subscriptions.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,90,105,116,129,144,310,702,747,973,986,996,1009,1022,1040,1101,1114,1126,1148,1157,1166,1212,1219,1290,1304,1715,1927,2045
+  s_d81a2915077aab::t_529ff4727608df 1047,1050-1051,1054,1057-1058
+  s_d81a2915077aab::t_87ee55571dbeac 315,331,343,373
+  s_d81a2915077aab::t_8b4284549454da 80-84,93-97,108-111,119-122,132-136,239-243,306-309,319-323,334-337,346-350,360-362,692-696,736-739,962-965,976-980,990-993,999-1003,1012-1016,1030-1034,1091-1094,1104-1108,1117-1120,1136-1140,1151-1154,1160-1163,1208-1211,1215-1218,1280-1284,1293-1296,1702-1707,1917-1921,2041-2044
+  s_d81a2915077aab::t_6696950ab528e2 249-250,255
+  s_d81a2915077aab::t_4283677690a4d2 1176-1177
+packages/models/src/models/OAuthRefreshTokens.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,23
+  s_d81a2915077aab::t_8b4284549454da 16-19
+packages/models/src/models/OAuthAuthCodes.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,23
+  s_d81a2915077aab::t_8b4284549454da 16-19
+packages/models/src/models/MediaCalls.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 10,36,55,183,198
+  s_d81a2915077aab::t_5b34a0b8f491ff 11
+  s_d81a2915077aab::t_8b4284549454da 31-35,47-54,180-182,194-197
+packages/models/src/models/Sessions.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 14,1578
+  s_d81a2915077aab::t_8b4284549454da 16-28,1574-1577
+packages/models/src/models/UsersSessions.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,109
+  s_d81a2915077aab::t_8b4284549454da 105-108
+packages/models/src/models/CustomSounds.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,27,40
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 17-21,30-34
+packages/models/src/models/Roles.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,21,67
+  s_d81a2915077aab::t_87ee55571dbeac 118,136
+  s_d81a2915077aab::t_e78a5c592dda41 75
+  s_d81a2915077aab::t_8b4284549454da 13-16,52-55,110-113,129-131
+packages/models/src/models/LivechatRooms.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 16,1679,1834,1890,1905,1920,1935,1955,1971,2002,2018,2311,2765
+  h_4c386397e672f4 1663,1665-1666,1820-1823,1847-1850,1878,1880-1882,1893-1896,1908,1910-1912,1923-1926,1938-1941,1944,1946,1958,1961,1963,1991-1994,2005,2007-2009,2299,2302-2303,2761,2763-2764
+  s_d81a2915077aab::t_4283677690a4d2 2769-2770
+  s_d81a2915077aab::t_ef6a1bdc76a5d8 1860
+  s_d81a2915077aab::t_8b4284549454da 97,1663-1666,1820-1823,1847-1850,1878-1882,1893-1896,1908-1912,1923-1926,1938-1946,1958-1963,1991-1994,2005-2009,2299-2303,2761-2764
+packages/models/src/models/UserDataFiles.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef6a1bdc76a5d8 26
+  s_d81a2915077aab::t_8b4284549454da 16-19
+packages/models/src/models/OAuthApps.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,20,37,60
+  s_d81a2915077aab::t_8b4284549454da 16-19,30-33,53-56
+packages/models/src/models/Banners.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,54
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_8b4284549454da 37-42
+packages/models/src/models/PushToken.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,49,56,70
+  s_d81a2915077aab::t_8b4284549454da 45-48,52-55,65-69
+apps/meteor/ee/server/models/raw/LivechatUnit.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,24-25,29,34,36,38,154,166
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+packages/models/src/models/LoginServiceConfiguration.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,55
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 51-54
+apps/meteor/ee/server/models/raw/CannedResponse.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,4,73,78,81,87
+packages/models/src/models/EmojiCustom.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,31,44,57,119
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_8b4284549454da 17-20,34-38,47-51,115-118
+packages/models/src/models/Integrations.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 9
+  s_d81a2915077aab::t_ef5f1d265a3edb 79
+  s_d81a2915077aab::t_8b4284549454da 2-8,74-78
+packages/models/src/models/BaseUploadModel.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,104,118,148
+  s_d81a2915077aab::t_8b4284549454da 3-13,94-97,115-117,142-147
+packages/models/src/models/LivechatVisitors.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,122,129,147,158,241,271,523
+  h_4c386397e672f4 114,116-117,125,127-128,138,140-141,150,152-153,231-234,238-239,516,518-519
+  s_d81a2915077aab::t_8b4284549454da 114-117,125-128,138-141,150-153,231-239,516-519
+packages/models/src/models/Rooms.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 12,150,163,177,263,286,300,334,349,372,408,444,466,517,530,629,701,740,755,769,787,799,884,892,1026,1109,1127,1146,1154,1161,1170,1185,1198,1209,1239,1272,1308,1365,1380,1393,1406,1421,1440,1447,1467,2226
+  s_d81a2915077aab::t_ef6a1bdc76a5d8 775
+  s_d81a2915077aab::t_8b4284549454da 140-144,153-156,166-169,222-228,266-269,289-292,314-323,337-341,352-355,375-379,411-414,447-450,502-505,520-524,625-628,650-658,704-707,743-747,758-761,778-781,790-793,869-872,887-891,1022-1025,1103-1106,1121-1124,1130-1135,1150-1153,1157-1160,1164-1167,1173-1177,1188-1191,1201-1203,1212-1215,1242-1245,1275-1280,1312-1318,1368-1372,1383-1386,1396-1400,1409-1413,1424-1429,1443-1446,1463-1466,1918,2202-2203,2207-2209
+  s_d81a2915077aab::t_434c4e9c411fcc 533
+  s_d81a2915077aab::t_b46a6a66860a58 542
+packages/models/src/models/ServerEvents.ts
+  s_d81a2915077aab::t_8b4284549454da 92
+packages/models/src/updater.ts
+  s_d81a2915077aab::t_8b4284549454da 21
+packages/models/src/models/BannersDismiss.ts
+  s_d81a2915077aab::t_b46a6a66860a58 16-28,30
+  s_d81a2915077aab::t_8b4284549454da 29
+  s_d81a2915077aab::t_7e9a633d2701f1 2-3
+packages/models/src/models/EmailInbox.ts
+  s_d81a2915077aab::t_8b4284549454da 29
+packages/model-typings/src/models/IBannersDismissModel.ts
+  s_d81a2915077aab::t_7e9a633d2701f1 2
+  s_d81a2915077aab::t_fd01e36e1664e1 20
+  s_d81a2915077aab::t_b46a6a66860a58 7-19,21
+packages/models/src/models/TeamMember.ts
+  s_d81a2915077aab::t_4283677690a4d2 113-114
+  s_d81a2915077aab::t_8b4284549454da 43,57,70,87
+  s_d81a2915077aab::t_7e9a633d2701f1 2
+  s_d81a2915077aab::t_b46a6a66860a58 35-42,44,62-69,71,79-86,88,96
+packages/model-typings/src/models/ITeamMemberModel.ts
+  s_d81a2915077aab::t_b46a6a66860a58 7-14,16,30-37,39,42-49,51,55
+  s_d81a2915077aab::t_fd01e36e1664e1 15,27,38,50
+packages/models/src/models/VideoConference.ts
+  s_d81a2915077aab::t_4283677690a4d2 42-43
+  s_d81a2915077aab::t_8b4284549454da 233
+packages/models/src/models/CalendarEvent.ts
+  s_d81a2915077aab::t_4283677690a4d2 149-150,166-167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "f031680da940254994f6d98eebf0e778f32a05ad",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

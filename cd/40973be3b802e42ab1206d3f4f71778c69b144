@@ -1,0 +1,46 @@
+ee/packages/federation-matrix/src/index.ts
+  s_e0a79b28e13a96::t_d0240ed200448d 5
+ee/packages/federation-matrix/src/helpers/isReservedByExclusiveBridge.spec.ts
+  s_e0a79b28e13a96::t_8a5b99b74dbeaa 3
+  s_e0a79b28e13a96::t_b2d983b75978c4 15,24-25,29-31,33-34,36-37,39,41-50,52-55,57-58,61-98,100-101
+ee/packages/federation-matrix/src/helpers/isReservedByExclusiveBridge.ts
+  h_4c386397e672f4 3-11,13-26,28-29,31,37-42,44-48
+apps/meteor/server/lib/callbacks/checkUsernameAvailabilityCallback.ts
+  s_e0a79b28e13a96::t_1f6bbbe4d504ec 4,8-12,15
+  s_e0a79b28e13a96::t_fa6ea925262193 16-17
+  h_4c386397e672f4 5-6,13-14
+apps/meteor/app/channel-settings/server/functions/saveRoomName.ts
+  s_e0a79b28e13a96::t_84a51a17c4d15c 26
+  h_4c386397e672f4 25
+apps/meteor/app/lib/server/functions/checkUsernameAvailability.ts
+  s_e0a79b28e13a96::t_56a261e8aa29a2 44
+  s_e0a79b28e13a96::t_1d58275e85813d 67
+  s_e0a79b28e13a96::t_823e3e645182d0 8
+apps/meteor/server/services/team/service.ts
+  s_e0a79b28e13a96::t_7dc93cb6442553 43
+apps/meteor/ee/server/hooks/federation/index.ts
+  s_e0a79b28e13a96::t_fa6ea925262193 16
+  s_e0a79b28e13a96::t_bbd043e4248139 4
+  s_e0a79b28e13a96::t_40e45151f65317 383-389,391-393
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cd40973be3b802e42ab1206d3f4f71778c69b144",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e0a79b28e13a96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "86055e6f-674a-4315-b13f-9541f19ac2bf",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

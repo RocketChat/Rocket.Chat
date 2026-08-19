@@ -1,0 +1,114 @@
+apps/meteor/server/lib/messages/updateMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-108
+apps/meteor/app/apps/server/bridges/messages.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 10-11
+apps/meteor/app/threads/server/hooks/aftersavemessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 7
+apps/meteor/server/lib/messages/loadMessageHistory.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-94
+apps/meteor/server/lib/messages/extractUrlsFromMessageAST.spec.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-34,38-64,66-117
+  s_171d92f682d971::t_1c414e92fac6c7 35-37,65
+apps/meteor/tests/unit/app/lib/server/functions/extractMentionsFromMessageAST.spec.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 4
+apps/meteor/app/discussion/server/methods/createDiscussion.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 10-11
+apps/meteor/app/message-star/server/starMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 7
+apps/meteor/server/lib/callbacks.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 26
+apps/meteor/server/features/EmailInbox/EmailInbox_Outgoing.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 17
+apps/meteor/server/methods/deleteFileMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 10
+apps/meteor/server/lib/messages/parseUrlsInMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-37
+apps/meteor/app/lib/server/lib/afterSaveMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 7
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 18
+apps/meteor/app/mentions/server/Mentions.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 7
+apps/meteor/app/importer/server/classes/converters/MessageConverter.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 8
+apps/meteor/app/livechat/server/lib/messages.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 11-13
+apps/meteor/app/reactions/server/setReaction.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 9
+apps/meteor/server/lib/messages/insertMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-48
+apps/meteor/app/authentication/server/lib/restrictLoginAttempts.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 8
+apps/meteor/tests/unit/server/methods/deleteFileMessage.spec.ts
+  s_171d92f682d971::t_e04ab5221dbaea 45
+apps/meteor/server/services/video-conference/service.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 58
+apps/meteor/app/message-pin/server/pinMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 11
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/sentMessage.js
+  s_171d92f682d971::t_aa8e5ef52febc8 3
+apps/meteor/server/services/media-call/service.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 27
+apps/meteor/server/api/v1/chat.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 47-48
+apps/meteor/app/error-handler/server/lib/RocketChat.ErrorHandler.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 5
+apps/meteor/app/livechat/server/hooks/offlineMessageToChannel.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 7
+apps/meteor/server/bridges/slack/SlackAdapter.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 24-26
+apps/meteor/server/lib/messages/attachMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-35
+apps/meteor/server/lib/messages/processWebhookMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-204
+apps/meteor/server/services/upload/service.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 21
+apps/meteor/.mocharc.js
+  s_171d92f682d971::t_843b8efdaedc2a 18
+apps/meteor/server/modules/core-apps/mention.module.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 9
+apps/meteor/server/lib/messages/deleteMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-133
+apps/meteor/app/lib/server/methods/sendMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 14
+apps/meteor/app/integrations/server/lib/triggerHandler.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 18
+apps/meteor/app/integrations/server/api/api.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 20-21
+apps/meteor/server/lib/messages/sendMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-298
+apps/meteor/server/services/messages/service.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 26-29
+apps/meteor/server/methods/loadHistory.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 10
+apps/meteor/scripts/migration/phase4c-messages.tsv
+  s_171d92f682d971::t_cd9f706abe022b 1-14
+apps/meteor/app/lib/server/methods/updateMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 8
+apps/meteor/tests/unit/app/importer/server/messageConverter.spec.ts
+  s_171d92f682d971::t_e04ab5221dbaea 17
+apps/meteor/tests/unit/app/reactions/server/setReaction.spec.ts
+  s_171d92f682d971::t_e04ab5221dbaea 47
+apps/meteor/server/api/v1/omnichannel/message.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 20
+apps/meteor/app/lib/server/lib/processDirectEmail.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 6
+apps/meteor/server/lib/messages/isTheLastMessage.ts
+  s_171d92f682d971::t_aa8e5ef52febc8 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "412cd3e8409cb4d181bafd831846b515777c9199",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

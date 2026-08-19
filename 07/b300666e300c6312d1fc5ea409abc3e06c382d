@@ -1,0 +1,35 @@
+apps/meteor/ee/server/api/v1/canned-responses.ts
+  s_7c6a76c13a919e::t_e7471a65582839 7-8
+apps/meteor/ee/app/canned-responses/server/index.ts
+  s_7c6a76c13a919e::t_e7471a65582839 9-10
+apps/meteor/ee/server/api/chat.ts
+  s_7c6a76c13a919e::t_e7471a65582839 6
+apps/meteor/ee/app/license/server/index.ts
+  s_7c6a76c13a919e::t_e7471a65582839 2
+apps/meteor/ee/server/meteor-methods/license.ts
+  s_7c6a76c13a919e::t_e7471a65582839 1-38
+apps/meteor/ee/server/index.ts
+  s_7c6a76c13a919e::t_e7471a65582839 13
+apps/meteor/ee/server/meteor-methods/saveCannedResponse.ts
+  s_7c6a76c13a919e::t_e7471a65582839 1-115
+apps/meteor/scripts/migration/phase5-ee-methods.tsv
+  s_7c6a76c13a919e::t_1e17d7045977b5 1-7
+apps/meteor/ee/server/meteor-methods/removeCannedResponse.ts
+  s_7c6a76c13a919e::t_e7471a65582839 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "07b300666e300c6312d1fc5ea409abc3e06c382d",
+  "prompts": {},
+  "sessions": {
+    "s_7c6a76c13a919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd67a1bc-8181-41af-8371-afbdb75eacb5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

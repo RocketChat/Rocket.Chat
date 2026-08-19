@@ -1,0 +1,21 @@
+apps/meteor/server/api/v1/import.ts
+  s_7c6a76c13a919e::t_acdf4353e57947 26-31
+apps/meteor/server/meteor-methods/index.ts
+  s_7c6a76c13a919e::t_7498663bd81644 19-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a488e4c7ad43f49039b98f6d2fac1da4dc5e0a92",
+  "prompts": {},
+  "sessions": {
+    "s_7c6a76c13a919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd67a1bc-8181-41af-8371-afbdb75eacb5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

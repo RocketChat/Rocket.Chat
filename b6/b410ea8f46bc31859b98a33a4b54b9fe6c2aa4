@@ -1,0 +1,132 @@
+packages/models/src/models/CallHistory.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,22,30,90
+packages/models/src/models/LivechatCustomField.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,26,29,36
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/LivechatDepartment.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,73,99,107,120,131,139,298,312,331
+packages/models/src/models/NpsVote.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,18,23,28,34,36,39,44,46
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+packages/models/src/models/Team.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16,23,25,28,31,33,36,39,46,53,87,94
+packages/models/src/models/TwoFactorChallenges.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 5
+  s_d81a2915077aab::t_ef5f1d265a3edb 4,18-19
+packages/models/src/models/OAuthAccessTokens.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,22,26,29,33
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/Uploads.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2-3,67-68
+packages/models/src/models/LivechatContacts.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 168,229,295,320
+packages/models/src/models/WebdavAccounts.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,28-29,32,34
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/LivechatInquiry.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 9,110,114,288-289,459-460
+packages/models/src/models/MediaCallNegotiations.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 7,21-22
+  s_d81a2915077aab::t_5b34a0b8f491ff 8
+packages/models/src/models/CustomUserStatus.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,20,26,30,35,38,44
+packages/models/src/models/Messages.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 12,81,88,91,98,101,108,111,117,120,127,311-312,322-323,332,359,362,375,463,471,615,618,629,647,650,659,662,671,674,682,685,694,697,719,722,743,754,757,778,781,806,809,835,881,889,907,913,1238,1244,1261
+packages/models/src/models/Settings.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,39,50
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/Users.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 15
+  s_d81a2915077aab::t_ef5f1d265a3edb 107,133,144-145,205,212,215,218,221,227,235,240,248,253,306,316,319,325,328,364,367,403,406,415,420,423,426,432,435,441,444,449,452-453,456,463,469,479,491,494,497,500,503,512,515,524,850,897,1524-1525,1555,1563,2068,2078,2159,2167,2181,2188,2191,2197,2203,2206,2212,2220,2223,2226,2229,2235,2244,2250,2253,2265,2268,2271,2274,2283,2286,2296,2312,2321,2324,2327,2330,2338,2341,2344,2347,2354,2357-2358,2390,2393,2402,2409,2412,2418,2424,2438,2453-2454,2462-2463,2471-2472,2677,2687,3077,3082
+packages/models/src/models/LivechatBusinessHours.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,23-24,27-28,42-43
+apps/meteor/ee/server/models/raw/LivechatDepartment.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,36,46
+packages/models/src/models/LivechatDepartmentAgents.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,38-39,42-43,46,50,53,68-69,72-73,244-245
+packages/models/src/models/Subscriptions.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,80,86,89,97,100,105,108,115,118,126,221,227,283-284,293,301,304,310,313,323,334,653,659,693,701,916,924,927,933,937,940,943,949,952,958,966,972,1025,1032,1035,1041,1044,1050,1060,1068,1071,1074,1077,1080,1121-1122,1125-1126,1187,1193,1196,1204,1602,1610,1812,1818,1932-1933
+packages/models/src/models/OAuthRefreshTokens.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16,20
+packages/models/src/models/OAuthAuthCodes.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16,20
+packages/models/src/models/MediaCalls.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 10,31-32,43-44,169-170,181-182
+  s_d81a2915077aab::t_5b34a0b8f491ff 11
+packages/models/src/models/Sessions.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 16
+  s_d81a2915077aab::t_ef5f1d265a3edb 14,1562-1563
+packages/models/src/models/UsersSessions.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,105-106
+packages/models/src/models/CustomSounds.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,17,23,26,32
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/Roles.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,13,18,49,61,104,109,120,125
+packages/models/src/models/LivechatRooms.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 16,1679,1834,1859,1889,1904,1919,1934,1954,1970,2001,2017,2310,2764
+packages/models/src/models/BaseRaw.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,187,191,200,205
+packages/models/src/models/UserDataFiles.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16,22
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/BannersDismiss.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/OAuthApps.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,16-17,27,31,47,51
+packages/models/src/models/Banners.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 3,37,49
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+packages/models/src/models/PushToken.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,45-46,49-50,59-60
+apps/meteor/ee/server/models/raw/LivechatUnit.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,24-25,29,34,36,38,154,166
+  s_d81a2915077aab::t_5b34a0b8f491ff 4
+packages/models/src/models/LoginServiceConfiguration.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,51-52
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+apps/meteor/ee/server/models/raw/CannedResponse.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,4,73,78,81,87
+packages/models/src/models/EmojiCustom.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,17,28,31,37,40,46,104-105
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/Integrations.ts
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,68-69
+packages/models/src/models/BaseUploadModel.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,84,91,102-103,127-128
+  s_d81a2915077aab::t_5b34a0b8f491ff 3
+packages/models/src/models/LivechatVisitors.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,122,129,147,158,241,271,523
+packages/models/src/models/Rooms.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 12,140,146,149,156,159,167,212,247,250,267,270,278,292,303,306,314,317,334,337,366,369,399,402,418,454,466,469,475,478,487,570-571,592,635,638,671,674,682,685,691,700,706,709,715,785,797,800-801,931-932,1009,1012,1024,1027,1030,1041,1045-1046,1049-1050,1053,1056,1059,1067,1070,1077,1080,1086,1089,1113,1116,1143,1146,1174,1178,1225,1228,1236,1239,1246,1249,1255,1258,1266,1269,1280,1283-1284,1300-1301,2035,2039,2056
+packages/models/src/models/TeamMember.ts
+  s_d81a2915077aab::t_ef5f1d265a3edb 2,35,53,61,69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "b6b410ea8f46bc31859b98a33a4b54b9fe6c2aa4",
+  "prompts": {},
+  "sessions": {
+    "s_d81a2915077aab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3dbf1ed-896c-4d6d-a84d-6751a2ae2882",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

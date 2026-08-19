@@ -1,0 +1,16 @@
+apps/meteor/server/services/meteor/userReactivity.ts
+  h_4c386397e672f4 1-3,6-44,128
+packages/core-services/src/events/Events.ts
+  h_4c386397e672f4 257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "54b768c012fefc7401c00bff9dd3f9f97e689c6a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

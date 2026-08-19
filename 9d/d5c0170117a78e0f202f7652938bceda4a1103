@@ -1,0 +1,57 @@
+ee/packages/federation-matrix/src/api/middlewares/isAppServiceAuthenticated.ts
+  s_bca4e21f3a33dd::t_6c0161ce7dc322 5
+  h_4c386397e672f4 66
+  s_bca4e21f3a33dd::t_efb557c333cdcb 65,67-84
+packages/models/src/models/Uploads.ts
+  s_bca4e21f3a33dd::t_8a7381d6b4c03c 63-66
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  s_bca4e21f3a33dd::t_e6d47467bfb9e7 1158-1176
+  s_bca4e21f3a33dd::t_612e99fd3d3820 1066
+  s_bca4e21f3a33dd::t_d160384a699767 1115
+  s_bca4e21f3a33dd::t_ed89ea617fc584 1067
+packages/model-typings/src/models/IUploadsModel.ts
+  s_bca4e21f3a33dd::t_31b70469e21dd6 22-23
+ee/packages/federation-matrix/src/api/_matrix/client/profile.ts
+  s_bca4e21f3a33dd::t_80f3b3b52e0e24 103
+  s_bca4e21f3a33dd::t_0b7a2381043a0e 165,168-177
+  s_bca4e21f3a33dd::t_ca2d9e955f5673 50-51
+  s_bca4e21f3a33dd::t_c88e6fa811cbed 116-120
+  s_bca4e21f3a33dd::t_61acf9c89114f0 178
+ee/packages/federation-matrix/src/services/MatrixMediaService.ts
+  s_bca4e21f3a33dd::t_b47dbdb2d652eb 128-132
+ee/packages/federation-matrix/src/api/_matrix/client/media.ts
+  s_bca4e21f3a33dd::t_ce73a9ef38ef69 170-176
+  s_bca4e21f3a33dd::t_7d564819579b51 57-60
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  s_bca4e21f3a33dd::t_e58f13694cedf1 22
+  s_bca4e21f3a33dd::t_2ab61d0458435f 210-216
+ee/packages/federation-matrix/src/api/_matrix/media-bridge.ts
+  s_bca4e21f3a33dd::t_c1a555438b35eb 97-109,121-129
+  s_bca4e21f3a33dd::t_a7c5bedff22b13 57-59
+  s_bca4e21f3a33dd::t_a2269987a55c69 172
+  s_bca4e21f3a33dd::t_383cf4ee890abd 130
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_bca4e21f3a33dd::t_c13251cc5a43ae 4
+  s_bca4e21f3a33dd::t_43ae8f4a0b86ad 269
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9dd5c0170117a78e0f202f7652938bceda4a1103",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_bca4e21f3a33dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c9c63d24-5d58-41a6-8b5f-fcfee81b85ae",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

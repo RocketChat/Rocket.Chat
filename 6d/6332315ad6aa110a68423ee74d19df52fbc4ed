@@ -1,0 +1,498 @@
+apps/meteor/tests/unit/app/cloud/server/functions/syncWorkspace/syncCloudData.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 12,15-18
+apps/meteor/app/integrations/server/api/api.ts
+  s_171d92f682d971::t_9d7e763bd41f07 20
+apps/meteor/app/lib/server/functions/saveSettingsBulk.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7-8
+apps/meteor/app/lib/server/methods/createChannel.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/api/v1/omnichannel/lib/visitors.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/file-upload/server/methods/sendFileMessage.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 39
+apps/meteor/app/statistics/server/functions/getStatistics.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/api/v1/chat.ts
+  s_171d92f682d971::t_9d7e763bd41f07 45-46
+apps/meteor/app/integrations/server/methods/incoming/deleteIncomingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/api/lib/getServerInfo.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7-8
+apps/meteor/server/lib/cloud/syncWorkspace/handleCommsSync.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-56
+apps/meteor/server/lib/cloud/getConfirmationPoll.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-34
+apps/meteor/app/invites/server/functions/sendInvitationEmail.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/ee/server/lib/audit/methods.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/ee/app/livechat-enterprise/server/hooks/manageDepartmentUnit.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/lib/server/lib/debug.js
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/discussion/server/methods/createDiscussion.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9-10
+apps/meteor/jest.config.ts
+  s_171d92f682d971::t_55a9c2a1d48105 43
+apps/meteor/tests/unit/server/users/saveUserIdentity.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 58
+apps/meteor/app/oauth2-server-config/server/admin/functions/addOAuthApp.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/api/v1/videoConference.ts
+  s_171d92f682d971::t_9d7e763bd41f07 16-18
+apps/meteor/app/2fa/server/code/checkCodeForUser.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 80
+apps/meteor/app/custom-sounds/server/methods/insertOrUpdateSound.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/cloud/getWorkspaceAccessTokenWithScope.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-93
+apps/meteor/server/api/v1/groups.ts
+  s_171d92f682d971::t_9d7e763bd41f07 28
+apps/meteor/tests/unit/app/reactions/server/setReaction.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 45
+apps/meteor/ee/server/methods/getReadReceipts.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/emoji-custom/server/lib/insertOrUpdateEmoji.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/methods/loadHistory.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/tests/unit/app/lib/server/functions/getModifiedHttpHeaders.tests.ts
+  s_171d92f682d971::t_9d7e763bd41f07 3
+apps/meteor/ee/server/requestSeatsRoute.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/api/lib/integrations.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/app/file-upload/server/methods/sendFileMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 18
+apps/meteor/server/methods/loadSurroundingMessages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/crowd/server/methods.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/api/v1/commands.ts
+  s_171d92f682d971::t_9d7e763bd41f07 17
+apps/meteor/app/importer/server/methods/getImportFileData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/app/integrations/server/methods/outgoing/addOutgoingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/message-pin/server/pinMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 11
+apps/meteor/server/methods/addRoomLeader.ts
+  s_171d92f682d971::t_9d7e763bd41f07 11
+apps/meteor/server/lib/users/getFullUserData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/ee/server/api/v1/omnichannel/rooms.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/api/lib/messages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/cloud/connectWorkspace.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-81
+apps/meteor/server/api/api.helpers.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/api/v1/omnichannel/agent.ts
+  s_171d92f682d971::t_9d7e763bd41f07 20-21
+apps/meteor/server/lib/cloud/getWorkspaceLicense.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-78
+apps/meteor/server/api/v1/users.ts
+  s_171d92f682d971::t_9d7e763bd41f07 50,54
+apps/meteor/server/lib/cloud/syncWorkspace/legacySyncWorkspace.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-108
+apps/meteor/server/api/v1/im.ts
+  s_171d92f682d971::t_9d7e763bd41f07 27-28
+apps/meteor/app/e2e/server/methods/setRoomKeyID.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/lib/cloud/startRegisterWorkspaceSetupWizard.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-43
+apps/meteor/ee/server/api/v1/omnichannel/lib/tags.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/lib/server/methods/restartServer.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/lib/cloud/syncWorkspace/fetchWorkspaceSyncPayload.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-42
+apps/meteor/app/oauth2-server-config/server/admin/methods/updateOAuthApp.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/lib/messages/sendMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 14
+apps/meteor/server/slashcommands/unarchiveroom/server.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/server/lib/cloud/supportedVersionsToken/supportedVersionsToken.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-199
+apps/meteor/app/threads/server/methods/followMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/methods/removeRoomModerator.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/tests/unit/app/lib/server/lib/validateNameChars.tests.ts
+  s_171d92f682d971::t_9d7e763bd41f07 3
+apps/meteor/app/integrations/server/methods/incoming/updateIncomingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/lib/server/methods/createPrivateGroup.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/methods/loadNextMessages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/lib/server/methods/sendMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12-13
+apps/meteor/app/authorization/server/methods/addPermissionToRole.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/api/v1/oauthapps.ts
+  s_171d92f682d971::t_9d7e763bd41f07 14
+apps/meteor/tests/unit/app/lib/server/functions/disableCustomScripts.tests.ts
+  s_171d92f682d971::t_d5ec23767346f1 16
+apps/meteor/app/importer/server/methods/uploadImportFile.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/user-status/server/methods/deleteCustomUserStatus.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/lib/authorization/canSendMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-66
+apps/meteor/server/api/lib/rooms.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/lib/server/lib/sendNotificationsOnMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 16
+apps/meteor/app/lib/server/methods/unarchiveRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/publications/settings/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/integrations/server/methods/outgoing/deleteOutgoingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/moderation/reportMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/cloud/getRedirectUri.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-5
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_171d92f682d971::t_9d7e763bd41f07 18
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/hooks/manageDepartmentUnit.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 27
+apps/meteor/app/livechat/server/lib/Helper.ts
+  s_171d92f682d971::t_9d7e763bd41f07 47
+apps/meteor/server/lib/authorization/canDeleteMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-77
+apps/meteor/app/custom-sounds/server/methods/deleteCustomSound.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/lib/bot-helpers/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 13
+apps/meteor/server/methods/addRoomModerator.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/server/methods/unmuteUserInRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/tests/unit/app/api/server/v1/lib/checkPermissionsForInvocation.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 16
+apps/meteor/server/lib/cloud/removeWorkspaceRegistrationInfo.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-43
+apps/meteor/app/integrations/server/lib/mountQueriesBasedOnPermission.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/cloud/getWorkspaceKey.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-18
+apps/meteor/app/lib/server/methods/cleanRoomHistory.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/lib/users/saveUserIdentity.ts
+  s_171d92f682d971::t_9d7e763bd41f07 17
+apps/meteor/server/startup/migrations/xrun.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/shared/validateName.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-14
+apps/meteor/app/e2e/server/methods/getUsersOfRoomWithoutKey.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/lib/server/methods/getSingleMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/lib/server/methods/addUsersToRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/autotranslate/server/functions/saveSettings.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/ee/server/api/lib/canned-responses.js
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/app/authorization/server/methods/removeUserFromRole.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/ee/server/api/ldap.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/methods/getUsersOfRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/integrations/server/methods/incoming/addIncomingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/tests/unit/app/lib/server/functions/closeLivechatRoom.tests.ts
+  s_171d92f682d971::t_d5ec23767346f1 24-26
+apps/meteor/ee/server/api/roles.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/e2e/server/functions/provideUsersSuggestedGroupKeys.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/methods/removeRoomOwner.ts
+  s_171d92f682d971::t_9d7e763bd41f07 11
+apps/meteor/server/api/v1/omnichannel/departments.ts
+  s_171d92f682d971::t_9d7e763bd41f07 28
+apps/meteor/server/lib/cloud/getCheckoutUrl.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-3,5-56
+  s_171d92f682d971::t_f19e5be241fb9e 4
+apps/meteor/server/lib/pushConfig.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/api/v1/settings.ts
+  s_171d92f682d971::t_9d7e763bd41f07 33-34
+apps/meteor/server/api/lib/parseJsonQuery.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/authorization/server/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-4
+apps/meteor/server/lib/eraseRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/lib/server/methods/leaveRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8-9
+apps/meteor/app/importer/server/methods/startImport.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/methods/loadMissedMessages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/cloud/server/methods.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5-14
+apps/meteor/server/lib/cloud/finishOAuthAuthorization.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-81
+apps/meteor/server/services/video-conference/service.ts
+  s_171d92f682d971::t_9d7e763bd41f07 54
+apps/meteor/server/api/v1/rooms.ts
+  s_171d92f682d971::t_9d7e763bd41f07 65-66,73
+apps/meteor/app/authorization/server/methods/removeRoleFromPermission.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/integrations/server/lib/validateOutgoingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/lib/server/methods/getRoomJoinCode.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/oauth2-server-config/server/admin/methods/deleteOAuthApp.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/autotranslate/server/functions/getSupportedLanguages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/methods/messageSearch.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/server/startup/migrations/v315.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/app/lib/server/methods/refreshOAuthService.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/api/v1/omnichannel/users.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/lib/server/methods/archiveRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/invites/server/functions/findOrCreateInvite.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/lib/omnichannel/closeOmnichannelConversations.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-34
+apps/meteor/server/lib/cloud/buildRegistrationData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-110
+apps/meteor/app/2fa/server/code/index.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 53
+apps/meteor/app/file-upload/server/lib/FileUpload.ts
+  s_171d92f682d971::t_9d7e763bd41f07 29
+apps/meteor/app/emoji-custom/server/lib/uploadEmojiCustom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/server/lib/users/setUserAvatar.ts
+  s_171d92f682d971::t_9d7e763bd41f07 14
+apps/meteor/app/integrations/server/methods/outgoing/replayOutgoingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/lib/server/lib/processDirectEmail.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/importer/server/methods/downloadPublicImportFile.ts
+  s_171d92f682d971::t_9d7e763bd41f07 11
+apps/meteor/server/api/v1/cloud.ts
+  s_171d92f682d971::t_9d7e763bd41f07 13-21
+apps/meteor/server/methods/removeUserFromRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 14-15
+apps/meteor/app/statistics/server/functions/getLastStatistics.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/methods/muteUserInRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/livechat/server/startup.ts
+  s_171d92f682d971::t_9d7e763bd41f07 15
+apps/meteor/app/assets/server/assets.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/app/invites/server/functions/listInvites.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4
+apps/meteor/server/lib/users/saveUser/validateUserData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10-11
+apps/meteor/app/integrations/server/methods/outgoing/updateOutgoingIntegration.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/services/upload/service.ts
+  s_171d92f682d971::t_9d7e763bd41f07 18-19
+apps/meteor/scripts/migration/phase4d-other.tsv
+  s_171d92f682d971::t_a3ea9753eeca75 1-11
+apps/meteor/app/lib/server/methods/getMessages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/ee/app/canned-responses/server/methods/removeCannedResponse.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/lib/server/methods/updateMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8-9
+apps/meteor/ee/server/api/v1/omnichannel/units.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/utils/server/lib/getValidRoomName.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/bridges/slack/removeChannelLinks.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/lib/cloud/getWorkspaceAccessToken.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-117
+apps/meteor/server/lib/cloud/userLogout.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-56
+apps/meteor/tests/unit/app/livechat/server/lib/conditionalLockAgent.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 18
+apps/meteor/app/lib/server/startup/mentionUserNotInChannel.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/app/reactions/server/setReaction.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/lib/cloud/saveRegistrationData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-124
+apps/meteor/server/lib/messages/deleteMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 14
+apps/meteor/server/methods/addAllUserToRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 13
+apps/meteor/app/livechat/server/lib/conditionalLockAgent.ts
+  s_171d92f682d971::t_9d7e763bd41f07 3
+apps/meteor/app/custom-sounds/server/methods/uploadCustomSound.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/importer/server/methods/getImportProgress.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/methods/channelsList.ts
+  s_171d92f682d971::t_9d7e763bd41f07 13
+apps/meteor/server/methods/deleteUser.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/lib/server/methods/saveSetting.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7-8
+apps/meteor/server/startup/migrations/v293.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1
+apps/meteor/app/lib/server/methods/removeOAuthService.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/app/livechat/server/roomAccessValidator.compatibility.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5-6
+apps/meteor/server/api/v1/channels.ts
+  s_171d92f682d971::t_9d7e763bd41f07 49
+apps/meteor/server/methods/resetAvatar.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/app/livechat/server/lib/guests.ts
+  s_171d92f682d971::t_9d7e763bd41f07 21
+apps/meteor/server/api/v1/roles.ts
+  s_171d92f682d971::t_9d7e763bd41f07 20-22
+apps/meteor/server/lib/messages/processWebhookMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/server/lib/unbanUserFromRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 3
+apps/meteor/server/methods/setUserActiveStatus.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/ee/server/api/v1/omnichannel/transcript.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/lib/server/methods/addOAuthService.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/publications/room/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/server/methods/browseChannels.ts
+  s_171d92f682d971::t_9d7e763bd41f07 15
+apps/meteor/server/lib/spotlight.js
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/livechat/server/lib/rooms.ts
+  s_171d92f682d971::t_9d7e763bd41f07 36
+apps/meteor/server/methods/addRoomOwner.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/server/lib/users/saveUser/validateUserEditing.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/lib/cloud/getOAuthAuthorizationUrl.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-26
+apps/meteor/server/methods/createDirectMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/app/threads/server/methods/unfollowMessage.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/api/v1/push.ts
+  s_171d92f682d971::t_9d7e763bd41f07 19
+apps/meteor/server/slashcommands/topic/topic.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/ee/server/api/licenses.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_171d92f682d971::t_9d7e763bd41f07 21
+apps/meteor/server/api/v1/omnichannel/lib/departments.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/ee/app/livechat-enterprise/server/business-hour/lib/business-hour.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/modules/core-apps/cloudAnnouncements.module.ts
+  s_171d92f682d971::t_9d7e763bd41f07 19
+apps/meteor/app/integrations/server/methods/clearIntegrationHistory.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/app/importer/server/methods/getLatestImportOperations.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/server/bridges/irc/methods/resetIrcConnection.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/api/v1/teams.ts
+  s_171d92f682d971::t_9d7e763bd41f07 33
+apps/meteor/server/api/v1/omnichannel/rooms.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/emoji-custom/server/methods/deleteEmojiCustom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/lib/cloud/removeLicense.ts
+  s_171d92f682d971::t_f19e5be241fb9e 5
+  s_171d92f682d971::t_9d7e763bd41f07 1-4,6-54
+apps/meteor/server/api/lib/getServerInfo.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 20,23
+apps/meteor/server/api/v1/omnichannel/room.ts
+  s_171d92f682d971::t_9d7e763bd41f07 44,47
+apps/meteor/server/lib/cloud/syncWorkspace/syncCloudData.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-78
+apps/meteor/server/lib/cloud/registerPreIntentWorkspaceWizard.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-42
+apps/meteor/server/api/ApiClass.ts
+  s_171d92f682d971::t_9d7e763bd41f07 46-48,55
+apps/meteor/server/methods/getRoomNameById.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/lib/cloud/syncWorkspace/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-56
+apps/meteor/app/channel-settings/server/methods/saveRoomSettings.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/server/lib/cloud/retrieveRegistrationStatus.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-26
+apps/meteor/server/methods/OEmbedCacheCleanup.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+apps/meteor/app/user-status/server/methods/insertOrUpdateUserStatus.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/ee/app/canned-responses/server/methods/saveCannedResponse.ts
+  s_171d92f682d971::t_9d7e763bd41f07 7
+apps/meteor/server/methods/removeRoomLeader.ts
+  s_171d92f682d971::t_9d7e763bd41f07 11
+apps/meteor/server/startup/migrations/v297.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1
+apps/meteor/server/lib/cloud/startRegisterWorkspace.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-5,7-58
+  s_171d92f682d971::t_f19e5be241fb9e 6
+apps/meteor/server/api/lib/users.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/server/lib/authorization/upsertPermissions.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-123
+apps/meteor/server/slashcommands/archiveroom/server.ts
+  s_171d92f682d971::t_9d7e763bd41f07 10
+apps/meteor/server/lib/omnichannel/closeLivechatRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-87
+apps/meteor/tests/unit/server/methods/banUserFromRoom.spec.ts
+  s_171d92f682d971::t_d5ec23767346f1 41-42
+apps/meteor/server/lib/cloud/syncWorkspace/announcementSync.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-104
+apps/meteor/server/lib/rooms/syncRolePrioritiesForRoomIfRequired.ts
+  s_171d92f682d971::t_9d7e763bd41f07 1-70
+apps/meteor/app/2fa/server/code/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/app/cloud/server/index.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4-8
+apps/meteor/app/invites/server/functions/removeInvite.ts
+  s_171d92f682d971::t_9d7e763bd41f07 5
+apps/meteor/server/lib/banUserFromRoom.ts
+  s_171d92f682d971::t_9d7e763bd41f07 4-5
+apps/meteor/server/publications/messages.ts
+  s_171d92f682d971::t_9d7e763bd41f07 9
+apps/meteor/server/api/v1/e2e.ts
+  s_171d92f682d971::t_9d7e763bd41f07 22-23
+apps/meteor/ee/app/license/server/startup.ts
+  s_171d92f682d971::t_9d7e763bd41f07 12
+apps/meteor/server/lib/users/checkUsernameAvailability.ts
+  s_171d92f682d971::t_9d7e763bd41f07 8
+apps/meteor/app/authorization/server/methods/addUserToRole.ts
+  s_171d92f682d971::t_9d7e763bd41f07 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "6d6332315ad6aa110a68423ee74d19df52fbc4ed",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

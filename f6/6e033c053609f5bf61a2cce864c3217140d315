@@ -1,0 +1,220 @@
+apps/meteor/server/hooks/messages/propagateDiscussionMetadata.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-3,5-121
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 4
+apps/meteor/ee/server/hooks/omnichannel/beforeJoinRoom.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-34
+apps/meteor/server/meteor-methods/rooms/addAllUserToRoom.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 12
+apps/meteor/app/discussion/server/index.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 3
+apps/meteor/ee/server/hooks/omnichannel/beforeRoutingChat.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-73
+apps/meteor/ee/server/hooks/omnichannel/onLoadConfigApi.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-34
+apps/meteor/ee/server/hooks/omnichannel/afterOnHold.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-36
+apps/meteor/tests/unit/server/hooks/omnichannel/beforeNewRoom.spec.ts
+  s_0fce651a0b3be0::t_982e32df5740ea 19
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-18,20-53
+apps/meteor/server/services/messages/service.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 24
+apps/meteor/server/hooks/omnichannel/saveLastVisitorMessageTs.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-19
+apps/meteor/server/hooks/omnichannel/afterUserActions.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-4,6-52
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 5
+apps/meteor/ee/server/hooks/omnichannel/afterReturnRoomAsInquiry.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-24
+apps/meteor/tests/unit/server/hooks/omnichannel/markRoomResponded.spec.ts
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-24,27,30-170
+  s_0fce651a0b3be0::t_982e32df5740ea 25-26,28-29
+apps/meteor/ee/server/hooks/omnichannel/onCheckRoomParamsApi.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-5
+apps/meteor/ee/app/livechat-enterprise/server/index.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 5-17,28
+apps/meteor/ee/server/hooks/omnichannel/applySimultaneousChatsRestrictions.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-44
+apps/meteor/server/importPackages.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 89
+apps/meteor/ee/server/hooks/messages/afterSaveMessage.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-21
+apps/meteor/ee/server/hooks/omnichannel/afterInquiryQueued.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-22
+apps/meteor/server/hooks/messages/sendNotificationsOnMessage.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 21-25
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-20,26-432
+apps/meteor/server/hooks/messages/processThreads.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 8,11-12
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-7,9-10,13-90
+apps/meteor/ee/server/hooks/omnichannel/addDepartmentAncestors.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-22
+apps/meteor/server/hooks/omnichannel/leadCapture.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-6,8-69
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 7
+apps/meteor/ee/server/hooks/omnichannel/afterOnHoldChatResumed.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-27
+apps/meteor/ee/server/hooks/omnichannel/afterRemoveDepartment.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-35
+apps/meteor/ee/app/canned-responses/server/index.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 6-8
+apps/meteor/ee/server/hooks/omnichannel/afterTagRemoved.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-14
+apps/meteor/server/lib/messages/updateMessage.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 10
+apps/meteor/ee/server/hooks/omnichannel/afterTakeInquiry.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-54
+apps/meteor/ee/server/hooks/omnichannel/beforeNewRoom.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-35
+apps/meteor/server/hooks/omnichannel/processRoomAbandonment.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 8-9
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-7,10-137
+apps/meteor/ee/server/hooks/omnichannel/onSaveVisitorInfo.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-53
+apps/meteor/server/hooks/omnichannel/markRoomResponded.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 9-10
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-8,11-79
+apps/meteor/ee/server/hooks/omnichannel/scheduleAutoTransfer.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-79
+apps/meteor/scripts/migration/check-mock-keys.mjs
+  s_0fce651a0b3be0::t_d8f0cae9cf04e7 35-36
+  s_0fce651a0b3be0::t_2865508c0e308d 1-34,37-67,71-96
+  s_0fce651a0b3be0::t_77ea31739c0c87 68-70
+apps/meteor/ee/app/livechat-enterprise/server/lib/routing/LoadRotation.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 7
+apps/meteor/server/hooks/omnichannel/offlineMessage.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 2-3
+  s_0fce651a0b3be0::t_830acfaa0fd898 1,4-26
+apps/meteor/ee/server/hooks/omnichannel/afterForwardChatToDepartment.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-44
+apps/meteor/server/hooks/messages/afterSaveMessage.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-61
+apps/meteor/server/hooks/omnichannel/offlineMessageToChannel.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-4,6-70
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 5
+apps/meteor/server/hooks/omnichannel/sendToCRM.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 8-10
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-7,11-263
+apps/meteor/ee/server/hooks/canned-responses/onRemoveAgentDepartment.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-19
+apps/meteor/app/threads/server/functions.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 5
+apps/meteor/ee/server/hooks/omnichannel/applyRoomRestrictions.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-23
+apps/meteor/ee/server/hooks/omnichannel/beforeNewInquiry.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-52
+apps/meteor/ee/server/hooks/omnichannel/manageDepartmentUnit.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-59
+apps/meteor/server/hooks/auth/login.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-2,4-30
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 3
+apps/meteor/server/meteor-methods/messages/createDiscussion.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 11
+apps/meteor/ee/server/hooks/omnichannel/onTransferFailure.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-85
+apps/meteor/ee/server/hooks/omnichannel/onCloseLivechat.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-39
+apps/meteor/ee/server/hooks/omnichannel/resumeOnHold.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-71
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/afterInquiryQueued.spec.ts
+  s_0fce651a0b3be0::t_982e32df5740ea 19,22,25
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-18,20-21,23-24,26-86
+apps/meteor/server/hooks/omnichannel/sendEmailTranscriptOnClose.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-6,8-63
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 7
+apps/meteor/server/lib/rooms/addUserToRoom.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 13
+apps/meteor/server/hooks/omnichannel/saveLastMessageToInquiry.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 6-7
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-5,8-34
+apps/meteor/ee/server/hooks/omnichannel/onBusinessHourStart.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-21
+apps/meteor/app/livechat/server/lib/hooks.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 18
+apps/meteor/ee/server/hooks/omnichannel/afterForwardChatToAgent.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-19
+apps/meteor/server/hooks/omnichannel/markRoomNotResponded.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-30
+apps/meteor/ee/server/hooks/omnichannel/onLoadForwardDepartmentRestrictions.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-27
+apps/meteor/ee/server/hooks/messages/afterDeleteRoom.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-14
+apps/meteor/app/livechat/server/index.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 3-16
+apps/meteor/server/hooks/messages/notifyUsersOnMessage.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-6,8-13,15-231
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 7,14
+apps/meteor/server/hooks/omnichannel/saveAnalyticsData.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 5,8
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-4,6-7,9-90
+apps/meteor/ee/server/hooks/omnichannel/beforeListTags.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-10
+apps/meteor/ee/server/hooks/omnichannel/sendPdfTranscriptOnClose.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-32
+apps/meteor/ee/server/hooks/omnichannel/checkAgentBeforeTakeInquiry.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-65
+apps/meteor/ee/server/hooks/auth/callback.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-66
+apps/meteor/server/lib/messages/sendMessage.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 13
+apps/meteor/ee/server/hooks/omnichannel/onAgentAssignmentFailed.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-46
+apps/meteor/app/threads/server/index.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1
+apps/meteor/ee/server/hooks/canned-responses/cannedResponses.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-20
+apps/meteor/ee/server/hooks/omnichannel/setPredictedVisitorAbandonmentTime.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 5-8
+apps/meteor/scripts/migration/phase6b-hooks.tsv
+  s_0fce651a0b3be0::t_8037b1fe10d995 1-13
+apps/meteor/server/hooks/omnichannel/afterSaveOmnichannelMessage.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-24
+apps/meteor/ee/app/livechat-enterprise/server/lib/routing/LoadBalancing.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 6
+apps/meteor/ee/server/hooks/canned-responses/onSaveAgentDepartment.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-18
+apps/meteor/scripts/migration/phase6b-ee-hooks.tsv
+  s_0fce651a0b3be0::t_91ecb21cacd161 1-8
+apps/meteor/ee/app/message-read-receipt/server/index.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 4-6
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/manageDepartmentUnit.spec.ts
+  s_0fce651a0b3be0::t_982e32df5740ea 27
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-26,28-183
+apps/meteor/app/lib/server/lib/index.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 9,11
+apps/meteor/server/hooks/omnichannel/afterAgentRemoved.ts
+  s_0fce651a0b3be0::t_830acfaa0fd898 1-3,5-41
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 4
+apps/meteor/ee/server/startup/index.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 2
+  s_0fce651a0b3be0::t_2538fedd8ced4a 1
+apps/meteor/ee/server/hooks/omnichannel/handleNextAgentPreferredEvents.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-144
+apps/meteor/tests/unit/server/hooks/omnichannel/processRoomAbandonment.spec.ts
+  s_0fce651a0b3be0::t_982e32df5740ea 30,33,36
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-29,31-32,34-35,37-623
+apps/meteor/ee/server/hooks/omnichannel/beforeForwardRoomToDepartment.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-36
+apps/meteor/ee/server/hooks/abac/beforeAddUserToRoom.ts
+  s_0fce651a0b3be0::t_cd5f9faac1cc02 5
+apps/meteor/ee/server/hooks/messages/afterReadMessages.ts
+  s_0fce651a0b3be0::t_96ddb39901d474 1-25
+apps/meteor/tests/unit/server/hooks/omnichannel/sendToCRM.tests.ts
+  s_0fce651a0b3be0::t_69ee708bfaf090 1-11,13-18,20-21,24-123
+  s_0fce651a0b3be0::t_982e32df5740ea 12,19,22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f66e033c053609f5bf61a2cce864c3217140d315",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

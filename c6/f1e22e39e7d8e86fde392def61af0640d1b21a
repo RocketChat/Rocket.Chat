@@ -1,0 +1,26 @@
+apps/meteor/server/lib/integrations/functions/clearIntegrationHistory.ts
+  s_0fce651a0b3be0::t_e2c318c8c3dde7 1-5,8-62
+  s_0fce651a0b3be0::t_cf196634f3b042 6-7
+apps/meteor/server/api/v1/integrations.ts
+  s_0fce651a0b3be0::t_9a757091361232 21
+apps/meteor/server/meteor-methods/integrations/clearIntegrationHistory.ts
+  s_0fce651a0b3be0::t_cee71fbc61b64d 5
+apps/meteor/server/meteor-methods/integrations/outgoing/replayOutgoingIntegration.ts
+  s_0fce651a0b3be0::t_e31e61e0335bf3 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c6f1e22e39e7d8e86fde392def61af0640d1b21a",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+apps/meteor/ee/server/api/v1/omnichannel/agents.ts
+  s_ea480bab61bf55::t_77bc57d3dcfa1b 12-13
+apps/meteor/ee/server/api/v1/omnichannel/priorities.ts
+  s_ea480bab61bf55::t_ec78c17915e65c 6-7
+apps/meteor/ee/server/api/v1/omnichannel/sla.ts
+  s_ea480bab61bf55::t_d417c8b005a742 5-7
+apps/meteor/ee/server/api/v1/omnichannel/outbound.ts
+  s_ea480bab61bf55::t_d417c8b005a742 9-18
+  s_ea480bab61bf55::t_678eef25dd183d 8
+apps/meteor/ee/server/api/v1/omnichannel/reports.ts
+  s_ea480bab61bf55::t_d417c8b005a742 12-13
+apps/meteor/ee/server/api/v1/omnichannel/contacts.ts
+  s_ea480bab61bf55::t_d417c8b005a742 5-6
+apps/meteor/ee/server/api/v1/omnichannel/lib/sla.ts
+  s_ea480bab61bf55::t_d417c8b005a742 1-58
+apps/meteor/ee/server/api/v1/middlewares/license.ts
+  s_ea480bab61bf55::t_0985d810ecd252 4
+apps/meteor/ee/server/api/v1/omnichannel/monitors.ts
+  s_ea480bab61bf55::t_d417c8b005a742 14-17
+apps/meteor/ee/server/api/v1/omnichannel/departments.ts
+  s_ea480bab61bf55::t_048e9860c68532 22-23
+apps/meteor/ee/server/api/v1/omnichannel/triggers.ts
+  s_ea480bab61bf55::t_b335c0b4185eba 8
+apps/meteor/ee/server/api/v1/omnichannel/units.ts
+  s_ea480bab61bf55::t_d417c8b005a742 6-9
+apps/meteor/ee/server/api/v1/canned-responses.ts
+  s_ea480bab61bf55::t_1107db26fd6f6e 9
+  s_ea480bab61bf55::t_d417c8b005a742 5-8
+apps/meteor/ee/server/index.ts
+  s_ea480bab61bf55::t_bbccb207367033 3
+apps/meteor/ee/app/livechat-enterprise/server/index.ts
+  s_ea480bab61bf55::t_d417c8b005a742 22
+apps/meteor/ee/server/api/v1/omnichannel/tags.ts
+  s_ea480bab61bf55::t_d417c8b005a742 12-15
+apps/meteor/ee/server/api/v1/omnichannel/business-hours.ts
+  s_ea480bab61bf55::t_d417c8b005a742 4-6
+apps/meteor/ee/server/api/lib/canned-responses.js
+  s_ea480bab61bf55::t_d417c8b005a742 1-168
+apps/meteor/ee/server/api/v1/omnichannel/lib/departments.ts
+  s_ea480bab61bf55::t_d417c8b005a742 1-45
+apps/meteor/ee/server/api/v1/omnichannel/inquiries.ts
+  s_ea480bab61bf55::t_7dcf80c6f1607b 2
+apps/meteor/ee/server/api/v1/omnichannel/transcript.ts
+  s_ea480bab61bf55::t_d417c8b005a742 1-37
+apps/meteor/ee/server/api/v1/omnichannel/lib/priorities.ts
+  s_ea480bab61bf55::t_d417c8b005a742 1-120
+apps/meteor/ee/server/api/v1/omnichannel/lib/tags.ts
+  s_ea480bab61bf55::t_d417c8b005a742 1-127
+apps/meteor/ee/server/api/v1/omnichannel/rooms.ts
+  s_ea480bab61bf55::t_1c04fb0d41bb0f 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "5ead36e8db84d559e16ccef47e086f2d64dc10c6",
+  "prompts": {},
+  "sessions": {
+    "s_ea480bab61bf55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3252e73d-d46c-4377-be3c-143c655360b5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

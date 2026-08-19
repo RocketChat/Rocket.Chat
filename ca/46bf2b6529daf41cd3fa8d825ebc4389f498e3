@@ -1,0 +1,14 @@
+apps/meteor/server/lib/omnichannel/guests.ts
+  h_4c386397e672f4 126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ca46bf2b6529daf41cd3fa8d825ebc4389f498e3",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

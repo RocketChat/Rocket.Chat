@@ -1,0 +1,147 @@
+apps/meteor/server/api/v1/channels.ts
+  s_0e20b63098ec29::t_52b66754ddc104 5
+  s_0e20b63098ec29::t_0e89a602b866a2 1405-1406
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_0e20b63098ec29::t_1a87a6477b4cbb 6,12
+  s_0e20b63098ec29::t_352b56e9ba6c89 80-84,90,96-101,104
+  s_0e20b63098ec29::t_b4331be2b81967 155,159-162
+  s_0e20b63098ec29::t_418aa4b048c7ae 1
+  s_0e20b63098ec29::t_dd4537e473d5aa 168,172,177-186,193,200-201,205-211,213
+  s_0e20b63098ec29::t_d9f3c368799bd6 2
+  s_0e20b63098ec29::t_3bf22d5499d39e 107-108,111-122,128-154,156-158,163-167,169-171,173-176,187-192,194-199,202-204,212,214-216,218,220-222
+  s_0e20b63098ec29::t_c6ad8184034e05 3,5,9-11
+  s_0e20b63098ec29::t_9ff34b244bbbd4 217,219
+packages/core-typings/src/IRoom.ts
+  s_0e20b63098ec29::t_69a95de3da1899 165,171-172
+  s_0e20b63098ec29::t_0f00cc8633ab54 173-180
+  s_0e20b63098ec29::t_ec56f2ee18ee0c 166-170
+ee/packages/xmpp-server/src/muc/stanzas.ts
+  s_0e20b63098ec29::t_935f83d44bffc4 48-55
+  s_0e20b63098ec29::t_5ccb4e62b6c9f7 82-94
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_0e20b63098ec29::t_e18769c6119649 3,5-12
+  s_0e20b63098ec29::t_535e1e97e03e7c 91-98
+ee/packages/xmpp-server/src/errors.ts
+  s_0e20b63098ec29::t_ee6a0d71d860ea 39-45
+packages/core-services/src/index.ts
+  s_0e20b63098ec29::t_ec6fc0d000a9d0 67
+apps/meteor/server/settings/federation-service.ts
+  h_4c386397e672f4 196,198
+ee/packages/xmpp-server/tests/integration/muc.spec.ts
+  s_0e20b63098ec29::t_a1d83b1ea01080 75-93,95-96
+  s_0e20b63098ec29::t_87d4d5607d33fe 94
+  s_0e20b63098ec29::t_d0f95c55903d00 97-126
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_0e20b63098ec29::t_14043045785593 6
+  s_0e20b63098ec29::t_281c2da2ce221b 110-113
+ee/packages/xmpp-server/src/index.ts
+  s_0e20b63098ec29::t_158deab1cfbc87 7
+apps/meteor/server/api/v1/groups.ts
+  s_0e20b63098ec29::t_12e5d2b6c12b52 4
+  s_0e20b63098ec29::t_e7ba19731368ee 864-865
+ee/packages/xmpp-server/src/iq/disco.ts
+  s_0e20b63098ec29::t_ebb9fa2ec26eac 5,10-14,16-21,31-48
+  s_0e20b63098ec29::t_7494fc8e7c4270 79-99
+ee/packages/xmpp-server/src/stream/XmppStream.ts
+  h_4c386397e672f4 106
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_0e20b63098ec29::t_e5ce54e1210e33 190-194
+  s_0e20b63098ec29::t_acf26bc7d9d747 75
+  s_0e20b63098ec29::t_37fbf3a8324a52 7
+  s_0e20b63098ec29::t_cdba2692770ad1 174
+  s_0e20b63098ec29::t_ddbb0a1f8e02e8 219,256-260,263-264,266
+  s_0e20b63098ec29::t_dd366548eeabd5 10
+  s_0e20b63098ec29::t_9c67fa5e047273 199-207,212-218
+  s_0e20b63098ec29::t_9708d42010b888 220
+ee/packages/xmpp-server/src/muc/MucRoom.spec.ts
+  s_0e20b63098ec29::t_ccb9c55e5691e1 5
+  s_0e20b63098ec29::t_5aa6074fa53db1 14,21
+  s_0e20b63098ec29::t_2a5bd395e29b65 27,37-38,43-52
+  s_0e20b63098ec29::t_ffdd39d88dff18 53,110-143
+  s_5a6e5d7a34569d::t_0d6b3c70ba19af 54
+ee/packages/xmpp-server/src/router/StanzaRouter.ts
+  s_0e20b63098ec29::t_031fa0a5d3686e 8
+  s_0e20b63098ec29::t_2c1e650ac0db3b 112
+  s_0e20b63098ec29::t_94a888380b9c1f 20
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_0e20b63098ec29::t_54fc634441731e 59-62
+  s_0e20b63098ec29::t_215bffccfa5228 143-144,152,156
+  s_0e20b63098ec29::t_e4e12a6af3867f 49,51-53,63-64
+  s_0e20b63098ec29::t_abe87f6d0f8a00 121,128
+  s_0e20b63098ec29::t_dde9f88f28c6d6 33-34
+  s_0e20b63098ec29::t_8bec00bf215c75 75-79
+  s_0e20b63098ec29::t_efc4e23e1cd453 4-11
+  s_0e20b63098ec29::t_81b2a01ad919a9 65,87-98
+  s_0e20b63098ec29::t_c0b52289c23936 66
+  s_0e20b63098ec29::t_06ce1300a31ee1 157
+ee/packages/xmpp-server/src/muc/stanzas.spec.ts
+  s_0e20b63098ec29::t_d3f3d2a295763a 4-11
+  s_0e20b63098ec29::t_8b4bb465cfa398 62-88
+ee/packages/xmpp-server/src/muc/MucService.ts
+  s_0e20b63098ec29::t_709052aa1fb508 6
+  s_0e20b63098ec29::t_787d2670517a15 27-29,37-44
+  s_0e20b63098ec29::t_b6d330af119f40 36,47-49,56,65-71
+  s_0e20b63098ec29::t_de6a978c800605 76,84
+  s_0e20b63098ec29::t_a66283ee741b4a 72-73
+docs/features/xmpp-server.md
+  s_0e20b63098ec29::t_4ddc068cfedea0 88
+  s_0e20b63098ec29::t_c6ee9e9155148d 80-81
+apps/meteor/client/views/room/contextualBar/RoomMembers/AddUsers/AddUsers.tsx
+  s_0e20b63098ec29::t_544d6a90d5904c 135
+  s_0e20b63098ec29::t_11b027e201b974 2
+  s_0e20b63098ec29::t_bf7387d55d27b0 41-42
+docs/features/xmpp-server-architecture.md
+  s_0e20b63098ec29::t_5cfbeb6b9431aa 123-133
+  s_0e20b63098ec29::t_7380fdf1ed81f6 70
+  s_0e20b63098ec29::t_61ec6e7657690d 120-122
+  s_0e20b63098ec29::t_91c90cfc2a3d66 67
+  s_0e20b63098ec29::t_17fe517e3fcac9 78,82
+  s_0e20b63098ec29::t_57c7b32e864d94 80-81
+  s_0e20b63098ec29::t_7515a639cb688d 66
+  s_0e20b63098ec29::t_0d7573c6eb70dc 68
+  s_0e20b63098ec29::t_e6c6565c4b116a 109-119,134-135
+  s_0e20b63098ec29::t_8a84d34d53d890 164-166
+  s_0e20b63098ec29::t_4ca32ac35680ae 69
+ee/packages/xmpp-server/src/xml/namespaces.ts
+  s_0e20b63098ec29::t_14043045785593 15-16
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_0e20b63098ec29::t_22874ae6a71583 174-183
+  s_0e20b63098ec29::t_8c46ddca92c43e 272-274
+ee/packages/xmpp-server/src/iq/disco.spec.ts
+  s_0e20b63098ec29::t_2ae3d8b1e53683 18-19
+  s_0e20b63098ec29::t_1eda9820b6e2bf 1-17,20-76
+packages/core-services/src/types/IXMPPServerService.ts
+  s_0e20b63098ec29::t_20fed4f8d7e473 23-28
+  s_0e20b63098ec29::t_b48a6a61f92e81 29,31-32
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_0e20b63098ec29::t_e6c965c6db55d9 3,6,10,12,40-45,100-108,151-152,165-177,180-188,191-278,284,287,297-336,391-394,399-422,437-452,470-499,516-521
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6b34fe6b25964cca6bad0ab0d400953ed902a2f2",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0e20b63098ec29": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "175d91e0-ff45-4ee8-b139-ee8e22d2ed9e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_5a6e5d7a34569d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e55b5b24-6dbb-43fd-830e-08b04b050e17",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

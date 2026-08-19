@@ -1,0 +1,27 @@
+apps/meteor/server/lib/auth-providers/linkedin.ts
+  s_0fce651a0b3be0::t_bc32c9336aeea6 1-5,7-49
+  s_0fce651a0b3be0::t_836c6f6ace8cc6 6
+apps/meteor/server/importPackages.ts
+  s_0fce651a0b3be0::t_bc32c9336aeea6 45-46
+apps/meteor/startRocketChat.ts
+  s_0fce651a0b3be0::t_836c6f6ace8cc6 2
+apps/meteor/server/lib/auth-providers/meteor-developer.ts
+  s_0fce651a0b3be0::t_836c6f6ace8cc6 6
+  s_0fce651a0b3be0::t_bc32c9336aeea6 1-5,7-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "71afa71348610388618a7f6b999d500858f7c5c9",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

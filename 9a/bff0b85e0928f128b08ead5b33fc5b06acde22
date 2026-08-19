@@ -1,0 +1,19 @@
+packages/models/src/models/Messages.ts
+  s_fe86c8a04a80b5::t_a168866df3d529 832
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9abff0b85e0928f128b08ead5b33fc5b06acde22",
+  "prompts": {},
+  "sessions": {
+    "s_fe86c8a04a80b5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d376eed2-bf64-457f-84ca-a9fad075aee3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+apps/meteor/tests/unit/app/livechat/server/lib/webhooks.spec.ts
+  s_0fce651a0b3be0::t_652c906c9ae194 61
+apps/meteor/server/lib/media/file-upload/ufs/AmazonS3/server.ts
+  s_0fce651a0b3be0::t_eb7a596dc5d17f 20-21
+  s_0fce651a0b3be0::t_572341750b6af9 1-19,22-212
+apps/meteor/tests/unit/app/mailer/getEmailContent.spec.ts
+  s_0fce651a0b3be0::t_652c906c9ae194 33,44
+apps/meteor/server/lib/media/file-upload/config/AmazonS3.ts
+  s_0fce651a0b3be0::t_eb7a596dc5d17f 10
+  s_0fce651a0b3be0::t_572341750b6af9 11
+apps/meteor/server/lib/media/file-upload/config/Webdav.ts
+  s_0fce651a0b3be0::t_572341750b6af9 6
+apps/meteor/server/lib/media/file-upload/ufs/Webdav/server.ts
+  s_0fce651a0b3be0::t_eb7a596dc5d17f 10
+  s_0fce651a0b3be0::t_572341750b6af9 1-9,11-154
+apps/meteor/server/lib/media/file-upload/config/GoogleStorage.ts
+  s_0fce651a0b3be0::t_572341750b6af9 9
+apps/meteor/server/lib/media/file-upload/ufs/GoogleStorage/server.ts
+  s_0fce651a0b3be0::t_572341750b6af9 1-8,11-163
+  s_0fce651a0b3be0::t_eb7a596dc5d17f 9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8fa461561534a3a83ad59a0698c33149586acfef",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

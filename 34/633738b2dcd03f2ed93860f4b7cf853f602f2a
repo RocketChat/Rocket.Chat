@@ -1,0 +1,16 @@
+.changeset/real-zoos-cover.md
+  h_4c386397e672f4 11
+ee/packages/federation-matrix/src/api/_matrix/send-join.ts
+  h_4c386397e672f4 47,52,54-56,58-60,63-64,66-67,70,72,74-76,79,81-82,136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "34633738b2dcd03f2ed93860f4b7cf853f602f2a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

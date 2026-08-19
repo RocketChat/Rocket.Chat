@@ -1,0 +1,28 @@
+packages/core-typings/src/ISetting.ts
+  s_757bbbab112d52::t_1a627b6f8c677c 170-174
+apps/meteor/ee/server/settings/settings.ts
+  s_757bbbab112d52::t_8e2b2ca866e908 10
+  s_757bbbab112d52::t_e96316b794403b 43
+apps/meteor/server/settings/SettingsRegistry.ts
+  s_757bbbab112d52::t_d107eed2571ad8 37-39,42
+apps/meteor/server/api/v1/settings.ts
+  s_757bbbab112d52::t_45ee38f4a269bc 63,93
+  s_757bbbab112d52::t_421428853356fd 35
+  s_757bbbab112d52::t_c6e2f14dba02ab 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3f4232760e44cc66ef3e215b4a09e7b24a84cdb8",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

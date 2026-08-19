@@ -1,0 +1,19 @@
+apps/meteor/scripts/migration/move-module.mjs
+  s_4f0a491a9a83f0::t_59d419205525fe 45-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "66e2489a851b24108df8335c1960b39c31c9fb9e",
+  "prompts": {},
+  "sessions": {
+    "s_4f0a491a9a83f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "15fd2221-4a87-41c4-a8e9-6170d3c21df4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/src/helpers/createOrUpdateFederatedUser.ts
+  h_4c386397e672f4 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f05a06173507899eeafbbe78a5aa2921079e275a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

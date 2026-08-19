@@ -1,0 +1,26 @@
+ee/packages/xmpp-server/src/stream/InboundSession.ts
+  s_bad883804e82a0::t_6acac14d3250cd 276
+  s_bad883804e82a0::t_29caef7babbb64 21-26
+ee/packages/xmpp-server/src/s2s/S2SManager.ts
+  s_bad883804e82a0::t_db1174fd4b0297 339-344,348-349
+ee/packages/xmpp-server/README.md
+  s_bad883804e82a0::t_2388693e7eeb2c 1-47
+ee/packages/xmpp-server/tests/integration/muc.spec.ts
+  s_bad883804e82a0::t_9bd14e12b94619 1-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "74f7af8383b999fa9605365158517dcdb615aa82",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,179 @@
+apps/meteor/server/lib/rooms/setRoomAvatar.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-51
+apps/meteor/app/integrations/server/lib/triggerHandler.ts
+  s_171d92f682d971::t_4766c28b2c06eb 18
+apps/meteor/server/api/v1/im.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 31
+apps/meteor/server/lib/rooms/addUserToDefaultChannels.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 6,9-10
+  s_171d92f682d971::t_4766c28b2c06eb 1-5,7-8,11-47
+apps/meteor/scripts/migration/phase4b-rooms.tsv
+  s_171d92f682d971::t_bf3589c4afdbf6 1-21
+apps/meteor/tests/unit/server/users/saveUserIdentity.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 55
+apps/meteor/app/importer/server/classes/converters/UserConverter.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 11
+apps/meteor/app/lib/server/functions/processWebhookMessage.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 10
+apps/meteor/app/lib/server/methods/unarchiveRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 7
+apps/meteor/ee/server/lib/oauth/Manager.ts
+  s_171d92f682d971::t_4766c28b2c06eb 6-7
+apps/meteor/server/lib/rooms/unarchiveRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-44
+apps/meteor/server/services/room/service.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 30-35
+apps/meteor/ee/server/lib/ldap/Manager.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 20-22
+apps/meteor/server/lib/rooms/executeUnbanUserFromRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 6
+  s_171d92f682d971::t_4766c28b2c06eb 1-5,7-54
+apps/meteor/server/services/video-conference/service.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 59
+apps/meteor/server/lib/users/getUserSingleOwnedRooms.ts
+  s_171d92f682d971::t_4766c28b2c06eb 4
+apps/meteor/app/lib/server/methods/createPrivateGroup.ts
+  s_171d92f682d971::t_4766c28b2c06eb 7
+apps/meteor/server/lib/rooms/removeUserFromRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-7,10-120
+  s_171d92f682d971::t_9fa4d6d6e4b80c 8-9
+apps/meteor/server/slashcommands/unarchiveroom/server.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 13
+apps/meteor/server/lib/cas/createNewUser.ts
+  s_171d92f682d971::t_4766c28b2c06eb 7
+apps/meteor/app/lib/server/methods/joinDefaultChannels.ts
+  s_171d92f682d971::t_4766c28b2c06eb 6
+apps/meteor/app/meteor-accounts-saml/server/lib/SAML.ts
+  s_171d92f682d971::t_4766c28b2c06eb 15-16
+apps/meteor/server/lib/rooms/updateGroupDMsName.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-83
+apps/meteor/server/lib/rooms/joinDefaultChannels.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-13
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/leftChannel.js
+  s_171d92f682d971::t_4766c28b2c06eb 3
+apps/meteor/server/lib/rooms/archiveRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-5,7-25
+  s_171d92f682d971::t_9fa4d6d6e4b80c 6
+apps/meteor/app/apps/server/bridges/rooms.ts
+  s_171d92f682d971::t_4766c28b2c06eb 12-14
+apps/meteor/app/channel-settings/server/methods/saveRoomSettings.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 11
+apps/meteor/app/discussion/server/methods/createDiscussion.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 10-11
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/sentMessage.js
+  s_171d92f682d971::t_9fa4d6d6e4b80c 4
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 19
+apps/meteor/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-98
+apps/meteor/server/lib/users/deleteUser.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 30-32
+apps/meteor/server/startup/initialData.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 13
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 19-20
+apps/meteor/tests/unit/app/lib/server/functions/banUserFromRoom.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 35,39-41
+apps/meteor/app/authentication/server/startup/index.js
+  s_171d92f682d971::t_9fa4d6d6e4b80c 19
+apps/meteor/server/lib/eraseRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 7
+apps/meteor/server/lib/rooms/addUserToRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-12,15-145
+  s_171d92f682d971::t_9fa4d6d6e4b80c 13-14
+apps/meteor/server/lib/unbanUserFromRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 3
+apps/meteor/server/lib/rooms/deleteRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 5
+  s_171d92f682d971::t_4766c28b2c06eb 1-4,6-28
+apps/meteor/server/lib/users/saveUserIdentity.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 17
+apps/meteor/tests/unit/server/methods/banUserFromRoom.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 43
+apps/meteor/app/invites/server/functions/useInviteToken.ts
+  s_171d92f682d971::t_4766c28b2c06eb 7
+apps/meteor/server/api/v1/omnichannel/room.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 48
+apps/meteor/app/lib/server/methods/archiveRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 8
+apps/meteor/app/lib/server/methods/addUsersToRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 10
+apps/meteor/server/bridges/irc/irc-bridge/peerHandlers/joinedChannel.js
+  s_171d92f682d971::t_4766c28b2c06eb 3-4
+apps/meteor/server/api/lib/eraseTeam.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 8
+apps/meteor/server/services/team/service.ts
+  s_171d92f682d971::t_4766c28b2c06eb 34-36
+apps/meteor/server/api/lib/eraseTeam.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 79,148,169,206,229,259
+apps/meteor/tests/unit/app/importer/server/userConverter.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 30
+apps/meteor/tests/unit/app/lib/server/functions/setUsername.spec.ts
+  s_171d92f682d971::t_e596ba746dc91b 57,60
+apps/meteor/tests/unit/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.spec.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 70,79-80
+apps/meteor/tests/unit/app/meteor-accounts-saml/server.tests.ts
+  s_171d92f682d971::t_e596ba746dc91b 1105-1106
+apps/meteor/tests/unit/server/services/team/service.tests.ts
+  s_171d92f682d971::t_e596ba746dc91b 40,46,49
+apps/meteor/server/api/v1/teams.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 35
+apps/meteor/server/lib/rooms/createDirectRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-10,12-13,16-222
+  s_171d92f682d971::t_9fa4d6d6e4b80c 11,14-15
+apps/meteor/server/lib/banUserFromRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 4
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 10-12
+  s_171d92f682d971::t_4766c28b2c06eb 1-9,13-327
+apps/meteor/app/discussion/server/hooks/propagateDiscussionMetadata.ts
+  s_171d92f682d971::t_4766c28b2c06eb 5
+apps/meteor/app/lib/server/methods/createChannel.ts
+  s_171d92f682d971::t_4766c28b2c06eb 7
+apps/meteor/server/lib/rooms/cleanRoomHistory.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 8-9
+  s_171d92f682d971::t_4766c28b2c06eb 1-7,10-169
+apps/meteor/server/methods/createDirectMessage.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 12
+apps/meteor/app/lib/server/methods/cleanRoomHistory.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 6
+apps/meteor/app/retention-policy/server/cronPruneMessages.ts
+  s_171d92f682d971::t_4766c28b2c06eb 6
+apps/meteor/server/lib/rooms/banUserFromRoom.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-5,7-76
+  s_171d92f682d971::t_9fa4d6d6e4b80c 6
+apps/meteor/server/lib/rooms/relinquishRoomOwnerships.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-6,9-85
+  s_171d92f682d971::t_9fa4d6d6e4b80c 7-8
+apps/meteor/server/lib/rooms/acceptRoomInvite.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 9
+  s_171d92f682d971::t_4766c28b2c06eb 1-8,10-61
+apps/meteor/app/lib/server/methods/leaveRoom.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 8
+apps/meteor/tests/unit/server/startup/initialData.tests.ts
+  s_171d92f682d971::t_b1c4e1ef6c898a 36
+apps/meteor/server/lib/users/setUsername.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 21-22
+apps/meteor/server/slashcommands/archiveroom/server.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 12
+apps/meteor/server/bridges/slack/SlackAdapter.ts
+  s_171d92f682d971::t_9fa4d6d6e4b80c 27-30
+apps/meteor/server/lib/rooms/getRoomsWithSingleOwner.ts
+  s_171d92f682d971::t_4766c28b2c06eb 1-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "d1a58a6226553b35c0bfb08fa153f3e44eb0f830",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

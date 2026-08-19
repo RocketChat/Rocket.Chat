@@ -1,0 +1,26 @@
+apps/meteor/tests/e2e/sidebar.spec.ts
+  s_066c0379ac3c33::t_a9832c138a709d 66-82,84,86,88,90,92
+apps/meteor/tests/e2e/page-objects/fragments/navbar.ts
+  s_066c0379ac3c33::t_207fe4a028042b 69-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "5f904f7cae05cebdc7751e3e66af45545978b904",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_066c0379ac3c33": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36f5cb5c-c8a3-40d3-b15c-35ee29feebaf",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

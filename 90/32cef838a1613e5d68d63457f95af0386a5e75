@@ -1,0 +1,49 @@
+ee/packages/xmpp-server/tests/integration/routing.spec.ts
+  s_bad883804e82a0::t_54e636ffcdb33e 1-100
+ee/packages/xmpp-server/src/xml/errors.ts
+  s_bad883804e82a0::t_aca864d1a22058 4,12
+  s_bad883804e82a0::t_0c4148e577fe22 1-3,5-11,13-28
+ee/packages/xmpp-server/src/handlers/parse.spec.ts
+  s_bad883804e82a0::t_6c77a2bf77c895 1,3-59
+  s_bad883804e82a0::t_aca864d1a22058 2
+ee/packages/xmpp-server/src/iq/disco.ts
+  s_bad883804e82a0::t_d78e46530c4f42 1-10,12-50
+  s_bad883804e82a0::t_aca864d1a22058 11
+ee/packages/xmpp-server/src/iq/ping.ts
+  s_bad883804e82a0::t_fdd0bb7c17d708 1-13
+ee/packages/xmpp-server/src/router/StanzaRouter.spec.ts
+  s_bad883804e82a0::t_07fb1427b2e431 1-2,4-75,79-116,120-122
+  s_bad883804e82a0::t_aca864d1a22058 3,76-78,117-119
+ee/packages/xmpp-server/src/handlers/parse.ts
+  s_bad883804e82a0::t_4b19dcb13c309c 1-38,40-63,65-69
+  s_bad883804e82a0::t_aca864d1a22058 39,64
+ee/packages/xmpp-server/src/types/ltx.d.ts
+  s_bad883804e82a0::t_4a7f2d7bc3c508 83
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_bad883804e82a0::t_c279da17e3fb6b 138-168,177-194
+  s_bad883804e82a0::t_19d47f02eaee97 133-137
+  s_bad883804e82a0::t_a060cb0b64b5c9 10,14,21-32
+  s_bad883804e82a0::t_2c7d00c017e683 49-50,53-57,62-74
+  s_bad883804e82a0::t_c6b40c02fbc892 33
+ee/packages/xmpp-server/src/index.ts
+  s_bad883804e82a0::t_aca864d1a22058 2
+ee/packages/xmpp-server/src/router/StanzaRouter.ts
+  s_bad883804e82a0::t_aca864d1a22058 6,53,100
+  s_bad883804e82a0::t_c48527b5ab5f52 1-5,7-52,54-99,101-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9032cef838a1613e5d68d63457f95af0386a5e75",
+  "prompts": {},
+  "sessions": {
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

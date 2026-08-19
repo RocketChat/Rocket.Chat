@@ -1,0 +1,14 @@
+apps/meteor/ee/server/startup/federation.ts
+  h_4c386397e672f4 99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "36b0414dbdafeabc82deb7c70138082c42da11ef",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

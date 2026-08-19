@@ -1,0 +1,50 @@
+apps/meteor/client/views/root/hooks/useLoadMissedMessages.ts
+  s_f7477be2f30767::t_8c69336b98f1d1 1,5-10,13-20,26-29,34-45
+  s_f7477be2f30767::t_50a8fe4446855c 24
+apps/meteor/tests/unit/server/publications/messages.spec.ts
+  s_f7477be2f30767::t_aaf818ae4ae20f 270-271
+  s_f7477be2f30767::t_f0d7c89680ead2 216,225-239
+  s_f7477be2f30767::t_6a9c2e418c0aa6 240-242
+  s_f7477be2f30767::t_e755c9027556de 243
+apps/meteor/server/api/v1/chat.ts
+  s_f7477be2f30767::t_80f87004ddd25d 712,726-729,732
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_f7477be2f30767::t_beb05c31759e47 3984-4070
+  s_f7477be2f30767::t_1a946262f57b78 11
+apps/meteor/server/publications/messages.ts
+  s_f7477be2f30767::t_88d765b510b7dc 179
+  s_f7477be2f30767::t_99d49ab5e364e8 206,217
+  s_f7477be2f30767::t_cfd4959d78850d 270
+  s_f7477be2f30767::t_c524dd96ddfebb 143,147-152
+apps/meteor/server/meteor-methods/messages/loadMissedMessages.ts
+  s_f7477be2f30767::t_a40a12986ec7c4 19
+  s_f7477be2f30767::t_aa5faf510396c7 8
+packages/rest-typings/src/v1/chat.ts
+  s_f7477be2f30767::t_af173644aa9f3c 609,626
+  s_f7477be2f30767::t_a4e5f730c73748 627-629
+packages/model-typings/src/models/IMessagesModel.ts
+  s_f7477be2f30767::t_3497a92227a3ba 201-205
+packages/models/src/models/Messages.ts
+  s_f7477be2f30767::t_27fdf53ae28992 794-798,802-803
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "99717b5c31cb8f052fd548e544b05859f720c263",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_f7477be2f30767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d43ca3a1-1b25-4fcc-83d8-19ed0040954d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+ee/apps/Dockerfile
+  s_a657c3e342f692::t_d5f6478f60d2b3 30-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "e8ca90d65bb5f83fab9656baa6fdc23d9ab69302",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_a657c3e342f692": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0aebf4e9-57b9-4391-8961-8095e2ebfcaa",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

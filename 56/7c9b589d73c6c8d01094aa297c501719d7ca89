@@ -1,0 +1,29 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  s_dcc0817b32ca46::t_f9d2f999d915ed 238-240,242-243
+  s_dcc0817b32ca46::t_2d4a3a907ace60 241,244-245,249-251
+  s_dcc0817b32ca46::t_a86dec14de067e 81
+  s_dcc0817b32ca46::t_395bc3d9344d3c 18
+  s_dcc0817b32ca46::t_8f4e032482dd4d 236
+  s_dcc0817b32ca46::t_bb0444b7e14e99 237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "567c9b589d73c6c8d01094aa297c501719d7ca89",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_dcc0817b32ca46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05c78016-bdb5-4958-b774-6c9bf91976ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

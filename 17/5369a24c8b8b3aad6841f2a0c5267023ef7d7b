@@ -1,0 +1,26 @@
+apps/meteor/scripts/migration/move-module.mjs
+  c524e275121e13e4 127,129,133-134,169,187-189
+apps/meteor/scripts/migration/move-batch.mjs
+  c524e275121e13e4 16,48
+apps/meteor/MIGRATION_PLAN.md
+  c524e275121e13e4 148,150-153,155,157,161,163,547,600
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "175369a24c8b8b3aad6841f2a0c5267023ef7d7b",
+  "prompts": {
+    "c524e275121e13e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5cf8d888-30f8-452f-80b2-e2cce62509bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Diego Sampaio",
+      "total_additions": 21,
+      "total_deletions": 20,
+      "accepted_lines": 21,
+      "overriden_lines": 0
+    }
+  }
+}

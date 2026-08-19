@@ -1,0 +1,24 @@
+apps/meteor/client/components/ResultsLiveRegion.tsx
+  s_cc831a0fb20caa::t_2edd831a0d4230 4-12,15-23,25
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchItems.ts
+  s_cc831a0fb20caa::t_fb34853a16f58b 58-62
+  s_cc831a0fb20caa::t_ca5cd0f6dfadbf 144-147,152-157
+apps/meteor/client/navbar/NavBarSearch/NavBarSearchListbox.tsx
+  s_cc831a0fb20caa::t_cc988f9ee76173 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7375939532f55a311c4e6ab0677bf7d7d43d36d9",
+  "prompts": {},
+  "sessions": {
+    "s_cc831a0fb20caa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0764e0a9-1a77-4de7-bf9e-5aeb3e1fda1c",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

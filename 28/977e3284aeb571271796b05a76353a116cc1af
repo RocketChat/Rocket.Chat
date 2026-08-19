@@ -1,0 +1,36 @@
+apps/meteor/server/lib/2fa/code/EmailCheckForOAuth.ts
+  s_757bbbab112d52::t_71fcca764d55a0 5,12,18
+apps/meteor/server/lib/2fa/code/index.ts
+  s_757bbbab112d52::t_20cdd1a3329704 174-178
+  s_757bbbab112d52::t_c22bce52b0ae01 9,30,38,46,49,80,144,167,205
+apps/meteor/server/lib/2fa/code/ICodeCheck.ts
+  s_757bbbab112d52::t_6785274883134a 3-5,15,17,19,21
+apps/meteor/server/lib/2fa/code/EmailCheck.ts
+  s_757bbbab112d52::t_9cbda6120c77dc 7
+  s_757bbbab112d52::t_b92c8efc2c3b93 15,22,38,71,99,115,146
+  s_757bbbab112d52::t_a231bd2ee608f9 1
+apps/meteor/server/lib/2fa/code/PasswordCheckFallback.ts
+  s_757bbbab112d52::t_b92c8efc2c3b93 10,22,45
+  s_757bbbab112d52::t_9cbda6120c77dc 4
+apps/meteor/server/lib/2fa/code/TOTPCheckForOAuth.ts
+  s_757bbbab112d52::t_71fcca764d55a0 4,12,16
+apps/meteor/server/lib/2fa/code/TOTPCheck.ts
+  s_757bbbab112d52::t_9cbda6120c77dc 1
+  s_757bbbab112d52::t_b92c8efc2c3b93 8,16,40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "28977e3284aeb571271796b05a76353a116cc1af",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

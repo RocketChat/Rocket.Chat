@@ -1,0 +1,184 @@
+apps/meteor/server/lib/users/saveUser/handleBio.ts
+  s_171d92f682d971::t_bf305a75439da5 1-20
+apps/meteor/tests/unit/server/services/team/service.tests.ts
+  s_171d92f682d971::t_28849bbf6e8294 43
+apps/meteor/server/lib/users/saveUser/sendUserEmail.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-55
+apps/meteor/server/lib/users/getUserCreatedByApp.ts
+  s_171d92f682d971::t_bf305a75439da5 1-13
+apps/meteor/scripts/migration/phase4a-users.tsv
+  s_171d92f682d971::t_1fcc96b46de3b9 1-26
+apps/meteor/server/lib/users/checkUsernameAvailability.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-65
+apps/meteor/server/lib/users/saveUser/saveNewUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-12,15-90
+  s_171d92f682d971::t_ceb8d467bea669 13-14
+apps/meteor/app/importer-pending-avatars/server/PendingAvatarImporter.ts
+  s_171d92f682d971::t_ceb8d467bea669 4
+apps/meteor/app/lib/server/methods/getUsernameSuggestion.ts
+  s_171d92f682d971::t_4ae3bd75da0654 4
+apps/meteor/server/lib/users/saveUserIdentity.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-7,9-15,18-188
+  s_171d92f682d971::t_ceb8d467bea669 8,16-17
+apps/meteor/server/api/v1/im.ts
+  s_171d92f682d971::t_ceb8d467bea669 32-33
+apps/meteor/server/services/upload/service.ts
+  s_171d92f682d971::t_ceb8d467bea669 22
+apps/meteor/app/custom-oauth/server/custom_oauth_server.js
+  s_171d92f682d971::t_4ae3bd75da0654 16
+apps/meteor/app/lib/server/methods/blockUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 5
+apps/meteor/server/lib/users/getStatusText.ts
+  s_171d92f682d971::t_bf305a75439da5 1-19
+apps/meteor/server/lib/users/saveCustomFieldsWithoutValidation.ts
+  s_171d92f682d971::t_ceb8d467bea669 7-8
+  s_171d92f682d971::t_4ae3bd75da0654 1-6,9-72
+apps/meteor/server/lib/users/getUsernameSuggestion.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-79
+apps/meteor/server/lib/users/validateUsername.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-15
+apps/meteor/scripts/migration/move-module.mjs
+  s_4f0a491a9a83f0::t_7ee0d23debff79 213-215
+apps/meteor/server/startup/initialData.ts
+  s_171d92f682d971::t_ceb8d467bea669 14
+apps/meteor/server/lib/users/setStatusText.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-45
+apps/meteor/server/lib/users/unblockUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-23
+apps/meteor/tests/unit/app/lib/server/functions/sendUserEmail.spec.ts
+  s_171d92f682d971::t_28849bbf6e8294 57-59
+apps/meteor/server/lib/users/getUserSingleOwnedRooms.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-32
+apps/meteor/server/lib/users/saveUser/validateUserData.ts
+  s_171d92f682d971::t_ceb8d467bea669 6-7,11
+  s_171d92f682d971::t_4ae3bd75da0654 1-5,8-10,12-108
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_171d92f682d971::t_ceb8d467bea669 20
+apps/meteor/app/crowd/server/crowd.ts
+  s_171d92f682d971::t_4ae3bd75da0654 10-12
+apps/meteor/server/api/v1/users.ts
+  s_171d92f682d971::t_4ae3bd75da0654 55,57-69
+  s_171d92f682d971::t_d07fb97c5618f1 56
+apps/meteor/tests/unit/app/meteor-accounts-saml/server.tests.ts
+  s_171d92f682d971::t_28849bbf6e8294 1107-1108
+apps/meteor/app/lib/server/methods/deleteUserOwnAccount.ts
+  s_171d92f682d971::t_4ae3bd75da0654 10
+apps/meteor/app/meteor-accounts-saml/server/lib/SAML.ts
+  s_171d92f682d971::t_4ae3bd75da0654 15-16
+apps/meteor/ee/server/lib/ldap/Manager.ts
+  s_171d92f682d971::t_ceb8d467bea669 8,23
+apps/meteor/server/lib/users/blockUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-3,5-35
+  s_171d92f682d971::t_ceb8d467bea669 4
+apps/meteor/server/lib/users/setRealName.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-7,9-64
+  s_171d92f682d971::t_ceb8d467bea669 8
+apps/meteor/server/lib/users/checkEmailAvailability.ts
+  s_171d92f682d971::t_bf305a75439da5 1-5
+apps/meteor/app/lib/server/lib/afterUserActions.ts
+  s_171d92f682d971::t_4ae3bd75da0654 6
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-7,9-17,21-169
+  s_171d92f682d971::t_ceb8d467bea669 8,18-20
+apps/meteor/server/methods/deleteUser.ts
+  s_171d92f682d971::t_ceb8d467bea669 9
+apps/meteor/server/methods/setAvatarFromService.ts
+  s_171d92f682d971::t_4ae3bd75da0654 6
+apps/meteor/server/lib/users/saveCustomFields.ts
+  s_171d92f682d971::t_ceb8d467bea669 8
+  s_171d92f682d971::t_4ae3bd75da0654 1-7,9-21
+apps/meteor/server/lib/users/saveUser/handleNickname.ts
+  s_171d92f682d971::t_bf305a75439da5 1-20
+apps/meteor/server/services/team/service.ts
+  s_171d92f682d971::t_ceb8d467bea669 37
+apps/meteor/server/lib/users/setEmail.ts
+  s_171d92f682d971::t_ceb8d467bea669 8-9,12
+  s_171d92f682d971::t_4ae3bd75da0654 1-7,10-11,13-106
+apps/meteor/app/apps/server/bridges/users.ts
+  s_171d92f682d971::t_4ae3bd75da0654 9-14
+apps/meteor/server/methods/setUserActiveStatus.ts
+  s_171d92f682d971::t_4ae3bd75da0654 6
+apps/meteor/tests/unit/server/users/saveUserIdentity.spec.ts
+  s_171d92f682d971::t_28849bbf6e8294 20,44-45,48,52,55,58
+apps/meteor/server/lib/users/getFullUserData.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-144
+apps/meteor/app/authentication/server/startup/index.js
+  s_171d92f682d971::t_4ae3bd75da0654 19-20
+apps/meteor/app/lib/server/methods/setEmail.ts
+  s_171d92f682d971::t_4ae3bd75da0654 6
+apps/meteor/app/user-status/server/methods/getUserStatusText.ts
+  s_171d92f682d971::t_4ae3bd75da0654 4
+apps/meteor/app/channel-settings/server/functions/saveRoomName.ts
+  s_171d92f682d971::t_4ae3bd75da0654 10
+apps/meteor/server/lib/users/saveUser/validateUserEditing.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-123
+apps/meteor/tests/unit/app/lib/server/functions/setUsername.spec.ts
+  s_171d92f682d971::t_28849bbf6e8294 48-49,55-57,60,64-65
+apps/meteor/server/lib/ldap/Manager.ts
+  s_171d92f682d971::t_ceb8d467bea669 22
+apps/meteor/server/lib/cas/loginHandler.ts
+  s_171d92f682d971::t_ceb8d467bea669 10
+apps/meteor/server/lib/users/setUserAvatar.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-13,16-216
+  s_171d92f682d971::t_ceb8d467bea669 14-15
+apps/meteor/tests/unit/app/lib/server/functions/validateUsername.spec.ts
+  s_171d92f682d971::t_28849bbf6e8294 14-15
+apps/meteor/tests/unit/app/importer/server/userConverter.spec.ts
+  s_171d92f682d971::t_28849bbf6e8294 33,36,39
+apps/meteor/server/methods/saveUserProfile.ts
+  s_171d92f682d971::t_ceb8d467bea669 19-21
+apps/meteor/server/lib/users/getAvatarSuggestionForUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-181
+apps/meteor/app/importer/server/classes/converters/UserConverter.ts
+  s_171d92f682d971::t_4ae3bd75da0654 11-13
+apps/meteor/server/lib/users/saveUser/index.ts
+  s_171d92f682d971::t_bf305a75439da5 1-2
+apps/meteor/server/lib/users/setUsername.ts
+  s_171d92f682d971::t_ceb8d467bea669 16-19
+  s_171d92f682d971::t_4ae3bd75da0654 1-15,20-171
+apps/meteor/server/lib/users/unarchiveUserSubscriptions.ts
+  s_171d92f682d971::t_bf305a75439da5 1-40
+apps/meteor/server/lib/cas/loginHandler.spec.ts
+  s_171d92f682d971::t_ce9b479fa5c647 27
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 1-19,24-261
+  s_171d92f682d971::t_ceb8d467bea669 20-23
+apps/meteor/tests/unit/server/startup/initialData.tests.ts
+  s_171d92f682d971::t_28849bbf6e8294 37
+apps/meteor/server/lib/users/deleteUser.ts
+  s_171d92f682d971::t_ceb8d467bea669 20-21,30-32
+  s_171d92f682d971::t_4ae3bd75da0654 1-19,22-29,33-186
+apps/meteor/app/lib/server/methods/unblockUser.ts
+  s_171d92f682d971::t_4ae3bd75da0654 5
+apps/meteor/server/lib/users/validateCustomFields.js
+  s_171d92f682d971::t_4ae3bd75da0654 1-3,5-48
+  s_171d92f682d971::t_ceb8d467bea669 4
+apps/meteor/app/lib/server/methods/setRealName.ts
+  s_171d92f682d971::t_4ae3bd75da0654 5
+apps/meteor/server/lib/users/saveUser/setPasswordUpdater.ts
+  s_171d92f682d971::t_bf305a75439da5 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "b0e30e75238372fc99b1deb6dc93217055a544bf",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_4f0a491a9a83f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "15fd2221-4a87-41c4-a8e9-6170d3c21df4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}

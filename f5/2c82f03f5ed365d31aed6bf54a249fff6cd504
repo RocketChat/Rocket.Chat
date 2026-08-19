@@ -1,0 +1,24 @@
+apps/meteor/tests/e2e/feature-preview.spec.ts
+  s_891f38adf0a857::t_5f919e1c134e0f 154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "f52c82f03f5ed365d31aed6bf54a249fff6cd504",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_891f38adf0a857": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d8add0d2-652f-40cb-9be0-57255b9e45c4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

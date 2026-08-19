@@ -1,0 +1,153 @@
+apps/meteor/ee/server/lib/omnichannel/routing/LoadRotation.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 4-7
+apps/meteor/ee/server/lib/omnichannel/AutoTransferChatScheduler.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 9-12
+apps/meteor/ee/server/settings/settings.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 7-8
+apps/meteor/ee/tests/unit/server/lib/omnichannel/AutoCloseOnHold.tests.ts
+  s_e5403c65369c09::t_5a43db3e7b1e6e 67,77
+apps/meteor/ee/server/hooks/omnichannel/setPredictedVisitorAbandonmentTime.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 8
+apps/meteor/ee/server/api/v1/omnichannel/sla.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 7
+apps/meteor/ee/tests/unit/server/lib/omnichannel/business-hour/Custom.spec.ts
+  s_e5403c65369c09::t_5b985b52e7e59c 37
+  s_e5403c65369c09::t_50f410145b6e32 38
+  s_e5403c65369c09::t_8303d47ac22c5b 48
+apps/meteor/ee/server/lib/authorization/resetEnterprisePermissions.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 3
+apps/meteor/ee/server/api/v1/omnichannel/transcript.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/hooks/omnichannel/beforeRoutingChat.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 11
+apps/meteor/ee/server/hooks/omnichannel/onBusinessHourStart.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5
+apps/meteor/ee/server/hooks/omnichannel/onTransferFailure.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 8
+apps/meteor/ee/server/lib/omnichannel/business-hour/Custom.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 12
+apps/meteor/ee/server/lib/omnichannel/outboundcomms/rest.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 4
+apps/meteor/ee/server/hooks/omnichannel/afterTakeInquiry.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 7-10
+apps/meteor/ee/server/api/v1/omnichannel/business-hours.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/lib/omnichannel/Helper.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 24-27
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/mergeContacts.spec.ts
+  s_e5403c65369c09::t_b71fb056f751fa 27
+  s_e5403c65369c09::t_8303d47ac22c5b 25-26
+apps/meteor/ee/server/lib/omnichannel/LivechatEnterprise.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 10-12
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/afterInquiryQueued.spec.ts
+  s_e5403c65369c09::t_5a43db3e7b1e6e 22
+apps/meteor/ee/server/lib/omnichannel/AutoCloseOnHoldScheduler.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 10
+apps/meteor/ee/server/api/v1/omnichannel/outbound.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 18
+apps/meteor/ee/server/lib/omnichannel/business-hour/Multiple.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 19
+apps/meteor/ee/server/index.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6,9
+apps/meteor/ee/tests/unit/server/lib/omnichannel/AutoTransferChatsScheduler.tests.ts
+  s_e5403c65369c09::t_5a43db3e7b1e6e 73-76,86
+apps/meteor/ee/server/hooks/omnichannel/checkAgentBeforeTakeInquiry.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 7-8
+apps/meteor/ee/server/lib/omnichannel/unit.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5-6
+apps/meteor/ee/server/hooks/omnichannel/beforeJoinRoom.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 7
+apps/meteor/ee/tests/unit/server/lib/omnichannel/requestPdfTranscript.spec.ts
+  s_e5403c65369c09::t_0a04ac401a8cee 9-12,14-18
+apps/meteor/ee/server/startup/services.ts
+  s_e5403c65369c09::t_8e630920941885 9-10
+apps/meteor/ee/server/hooks/omnichannel/onCloseLivechat.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6-7
+apps/meteor/ee/server/lib/omnichannel/business-hour/lib/business-hour.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/server/lib/omnichannel/QueueManager.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 34
+apps/meteor/ee/server/hooks/omnichannel/afterInquiryQueued.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/lib/omnichannel/VisitorInactivityMonitor.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 8-12
+apps/meteor/ee/server/patches/verifyContactChannel.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 10
+apps/meteor/ee/server/hooks/omnichannel/scheduleAutoTransfer.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/lib/omnichannel/QueueInactivityMonitor.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 10-12
+apps/meteor/ee/server/api/v1/omnichannel/lib/priorities.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 9
+apps/meteor/ee/server/api/v1/omnichannel/lib/tags.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 8
+apps/meteor/ee/server/lib/omnichannel/routing/LoadBalancing.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 3-6
+apps/meteor/tests/data/permissions.helper.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5
+apps/meteor/ee/server/hooks/omnichannel/afterRemoveDepartment.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5
+apps/meteor/ee/server/lib/license/license.internalService.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/hooks/omnichannel/applyRoomRestrictions.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/verifyContactChannel.spec.ts
+  s_e5403c65369c09::t_b71fb056f751fa 44
+  s_e5403c65369c09::t_8303d47ac22c5b 40-42
+apps/meteor/ee/server/hooks/omnichannel/afterOnHold.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6-7
+apps/meteor/ee/server/api/v1/omnichannel/monitors.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 17
+apps/meteor/ee/tests/unit/server/lib/omnichannel/QueueInactivityMonitor.spec.ts
+  s_e5403c65369c09::t_5b985b52e7e59c 37,44-46
+apps/meteor/ee/server/api/v1/omnichannel/lib/sla.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 13
+apps/meteor/ee/server/hooks/omnichannel/afterOnHoldChatResumed.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 4-5
+apps/meteor/ee/server/hooks/omnichannel/onLoadConfigApi.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 4
+apps/meteor/ee/server/lib/omnichannel/SlaHelper.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 9-10
+apps/meteor/ee/server/api/v1/omnichannel/tags.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 15
+apps/meteor/ee/server/lib/omnichannel/startup.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 3-4,6
+apps/meteor/ee/server/patches/closeBusinessHour.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 2
+apps/meteor/ee/server/patches/mergeContacts.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 10
+apps/meteor/ee/server/api/v1/omnichannel/contacts.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/server/local-services/omnichannel.internalService.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 12-17
+apps/meteor/ee/server/lib/omnichannel/index.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5-20,22,28,32
+apps/meteor/ee/server/api/v1/omnichannel/reports.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 13
+apps/meteor/ee/server/api/v1/omnichannel/units.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 8-9
+apps/meteor/ee/server/hooks/omnichannel/afterForwardChatToDepartment.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 5
+apps/meteor/ee/server/api/v1/omnichannel/lib/departments.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 3
+apps/meteor/ee/server/hooks/omnichannel/sendPdfTranscriptOnClose.ts
+  s_e5403c65369c09::t_5de2890a1a7f49 6
+apps/meteor/ee/tests/unit/server/lib/omnichannel/Helper.tests.ts
+  s_e5403c65369c09::t_5a43db3e7b1e6e 16-18,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "917794120f48b2c30365ccece0e7dda118322f4f",
+  "prompts": {},
+  "sessions": {
+    "s_e5403c65369c09": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b768a80-3a9f-455c-bbb1-16411b638726",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}

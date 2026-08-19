@@ -1,0 +1,33 @@
+apps/meteor/tests/e2e/README.md
+  s_6c76f52b437f54::t_795f28de229e71 354
+  s_6c76f52b437f54::t_0412c6c5bcb85d 246-265
+  s_6c76f52b437f54::t_2c023546888fcf 319
+apps/meteor/tests/e2e/embedded-layout.spec.ts
+  s_6c76f52b437f54::t_3957ed89c4027d 34,62,71,80
+  s_6c76f52b437f54::t_36fcccc1eeab5f 52
+apps/meteor/tests/e2e/quote-attachment.spec.ts
+  s_6c76f52b437f54::t_b9c981592a34ec 21
+apps/meteor/tests/e2e/image-upload.spec.ts
+  s_6c76f52b437f54::t_305334cbc4bbf9 22
+apps/meteor/tests/e2e/file-upload.spec.ts
+  s_6c76f52b437f54::t_2db283502923f3 27,237
+  s_6c76f52b437f54::t_0450aece958caf 134
+apps/meteor/tests/e2e/quote-messages.spec.ts
+  s_6c76f52b437f54::t_e96ff9934e4097 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3cfb26e8c395f3fea06ad53ccb1d82231b69d578",
+  "prompts": {},
+  "sessions": {
+    "s_6c76f52b437f54": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c7fed3aa-f016-4414-b05b-c1c46e766cb2",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

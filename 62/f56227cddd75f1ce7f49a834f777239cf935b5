@@ -1,0 +1,19 @@
+apps/meteor/server/publications/spotlight.ts
+  s_a9bfd5c9e41531::t_9e342d0e035d30 51-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "62f56227cddd75f1ce7f49a834f777239cf935b5",
+  "prompts": {},
+  "sessions": {
+    "s_a9bfd5c9e41531": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b81757e6-2fb7-4325-bdcc-0a064faf80b1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

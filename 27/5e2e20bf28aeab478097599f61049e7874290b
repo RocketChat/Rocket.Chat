@@ -1,0 +1,176 @@
+apps/meteor/server/lib/bot-helpers/index.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 9-10
+apps/meteor/server/meteor-methods/auth/addPermissionToRole.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,9-61
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7-8
+apps/meteor/server/meteor-methods/integrations/outgoing/updateOutgoingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-8,12-132
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 9-11
+apps/meteor/server/meteor-methods/messages/unfollowMessage.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 13
+  s_7c6a76c13a919e::t_be769a3e082d79 1-12,14-70
+apps/meteor/server/services/upload/service.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 22
+apps/meteor/server/meteor-methods/platform/saveSettings.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-4,6-26
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 5
+apps/meteor/tests/unit/app/importer/server/roomConverter.spec.ts
+  s_7c6a76c13a919e::t_0fc809da582fd0 28
+apps/meteor/server/meteor-methods/platform/resetOwnE2EKey.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-34
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/server/meteor-methods/import/getImportFileData.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-9,11,14-88
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 10,12-13
+apps/meteor/server/api/v1/groups.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 39
+apps/meteor/server/meteor-methods/integrations/incoming/updateIncomingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-8,12-211
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 9-11
+apps/meteor/server/meteor-methods/platform/updateGroupKey.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-38
+apps/meteor/server/api/v1/channels.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 61
+apps/meteor/server/meteor-methods/auth/disable.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 6
+  s_7c6a76c13a919e::t_be769a3e082d79 1-5,7-55
+apps/meteor/server/meteor-methods/messages/getThreadsList.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-41
+apps/meteor/server/meteor-methods/auth/addUserToRole.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 6
+  s_7c6a76c13a919e::t_be769a3e082d79 1-5,7-73
+apps/meteor/server/meteor-methods/integrations/clearIntegrationHistory.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-5,7-51
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 6
+apps/meteor/server/meteor-methods/platform/getProviderUiMetadata.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-28
+apps/meteor/server/meteor-methods/integrations/outgoing/deleteOutgoingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-62
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/server/api/v1/chat.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 45,49
+apps/meteor/server/meteor-methods/import/uploadImportFile.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-7,9,12-81
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 8,10-11
+apps/meteor/server/api/v1/roles.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 23
+apps/meteor/server/meteor-methods/auth/enable.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-42
+apps/meteor/server/meteor-methods/auth/removeUserFromRole.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 6
+  s_7c6a76c13a919e::t_be769a3e082d79 1-5,7-77
+apps/meteor/server/meteor-methods/platform/getUsersOfRoomWithoutKey.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-56
+apps/meteor/server/meteor-methods/platform/translateMessage.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-37
+apps/meteor/server/api/v1/integrations.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 23-28
+apps/meteor/server/meteor-methods/auth/regenerateCodes.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-46
+apps/meteor/server/meteor-methods/integrations/incoming/addIncomingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-10,14-197
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 11-13
+apps/meteor/server/meteor-methods/integrations/incoming/deleteIncomingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-55
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/app/importer/server/classes/converters/RoomConverter.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 10
+apps/meteor/server/meteor-methods/auth/removeRoleFromPermission.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 6-7
+  s_7c6a76c13a919e::t_be769a3e082d79 1-5,8-48
+apps/meteor/server/meteor-methods/import/getImportProgress.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-7,9-48
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 8
+apps/meteor/server/meteor-methods/messages/createDiscussion.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-8,12-268
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 9-11
+apps/meteor/server/api/v1/e2e.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 19-23
+apps/meteor/server/meteor-methods/omnichannel/sendFileLivechatMessage.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-97
+apps/meteor/server/meteor-methods/integrations/outgoing/addOutgoingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-9,13-87
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 10-12
+apps/meteor/server/meteor-methods/platform/fetchMyKeys.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-23
+apps/meteor/server/slashcommands/topic/topic.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 5
+apps/meteor/server/api/v1/import.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 24-25
+  s_7c6a76c13a919e::t_be769a3e082d79 33
+apps/meteor/server/meteor-methods/platform/getSupportedLanguages.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-39
+apps/meteor/server/meteor-methods/platform/requestSubscriptionKeys.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-51
+apps/meteor/server/meteor-methods/platform/setRoomKeyID.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 8
+  s_7c6a76c13a919e::t_be769a3e082d79 1-7,9-55
+apps/meteor/server/api/v1/omnichannel/upload.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/app/integrations/server/api/api.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 23-24
+apps/meteor/tests/unit/server/meteor-methods/platform/updateGroupKey.spec.ts
+  s_7c6a76c13a919e::t_f3a641ad1e9ba9 17-18
+  s_7c6a76c13a919e::t_e318ec3d92c623 23
+apps/meteor/server/meteor-methods/integrations/outgoing/replayOutgoingIntegration.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-57
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/app/apps/server/bridges/rooms.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 16
+apps/meteor/app/apps/server/bridges/uploads.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/server/api/v1/im.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 35
+apps/meteor/server/meteor-methods/import/downloadPublicImportFile.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-10,12,15-101
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 11,13-14
+apps/meteor/server/meteor-methods/messages/getThreadMessages.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-8,10-61
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 9
+apps/meteor/server/meteor-methods/import/startImport.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-8,10-54
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 9
+apps/meteor/server/meteor-methods/platform/setUserPublicAndPrivateKeys.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-63
+apps/meteor/server/meteor-methods/rooms/saveRoomSettings.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 20-25
+  s_7c6a76c13a919e::t_be769a3e082d79 1-19,26-559
+apps/meteor/server/meteor-methods/auth/validateTempToken.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-77
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+apps/meteor/server/meteor-methods/messages/followMessage.ts
+  s_7c6a76c13a919e::t_be769a3e082d79 1-12,14-70
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 13
+apps/meteor/server/meteor-methods/omnichannel/sendMessageLivechat.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 10
+  s_7c6a76c13a919e::t_be769a3e082d79 1-9,11-88
+apps/meteor/server/meteor-methods/index.ts
+  s_7c6a76c13a919e::t_d0f15b6440b354 95
+  s_7c6a76c13a919e::t_9fc718c49bb0cd 4-5,7,9-10,13,15,18-27,29,32,37-38
+  s_7c6a76c13a919e::t_4b1a651225f750 47,49-50,53-56,59-60,62-66
+apps/meteor/server/api/v1/rooms.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 68,75
+apps/meteor/server/meteor-methods/import/getLatestImportOperations.ts
+  s_7c6a76c13a919e::t_f669f2ea1ff00a 7
+  s_7c6a76c13a919e::t_be769a3e082d79 1-6,8-43
+apps/meteor/tests/unit/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.spec.ts
+  s_7c6a76c13a919e::t_f0d11f4b732362 80
+apps/meteor/scripts/migration/phase5c-feature-methods.tsv
+  s_7c6a76c13a919e::t_3a15be0693df83 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "275e2e20bf28aeab478097599f61049e7874290b",
+  "prompts": {},
+  "sessions": {
+    "s_7c6a76c13a919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd67a1bc-8181-41af-8371-afbdb75eacb5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

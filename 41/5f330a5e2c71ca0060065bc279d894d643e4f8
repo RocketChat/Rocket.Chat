@@ -1,0 +1,39 @@
+apps/meteor/server/lib/omnichannel/omni-users.ts
+  s_757bbbab112d52::t_aa1e1a055bce84 46
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_757bbbab112d52::t_65e50008a36eb5 37
+  s_757bbbab112d52::t_79eb4cf758927c 1
+apps/meteor/server/lib/omnichannel/hooks.ts
+  s_757bbbab112d52::t_4032518fbd7281 30
+apps/meteor/server/services/team/service.ts
+  s_757bbbab112d52::t_3ac71d76c4a6bf 786
+packages/core-services/src/types/IUploadService.ts
+  s_757bbbab112d52::t_483f981704dbef 33-37
+apps/meteor/server/services/upload/service.ts
+  s_757bbbab112d52::t_d6959a4ba61131 60-64
+apps/meteor/server/lib/sendDirectMessageToUsers.ts
+  s_757bbbab112d52::t_96afb97bbffee1 11
+packages/core-typings/src/IUser.ts
+  s_757bbbab112d52::t_7916b806adfff1 255-257
+apps/meteor/server/lib/rooms/updateGroupDMsName.ts
+  s_757bbbab112d52::t_07dd9f3e491b87 8,10-13,20
+  s_757bbbab112d52::t_8f1fbc8b39d316 36,42
+apps/meteor/ee/server/apps/marketplace/appRequestNotifyUsers.ts
+  s_757bbbab112d52::t_dfc7e13fae0fde 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "415f330a5e2c71ca0060065bc279d894d643e4f8",
+  "prompts": {},
+  "sessions": {
+    "s_757bbbab112d52": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fb892899-c759-42bc-935f-b9e7d7d3001e",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

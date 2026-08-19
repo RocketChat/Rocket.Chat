@@ -1,0 +1,34 @@
+apps/meteor/MIGRATION_PLAN.md
+  54be63d00d931116 221,438,484,526
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "f4e10dbfb93ad51b408500310681838f72cfa791",
+  "prompts": {
+    "54be63d00d931116": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e71e548f-7273-4c16-b632-bebb9b0b8ced",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio",
+      "total_additions": 15,
+      "total_deletions": 11,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    },
+    "8d9496aef103a2cb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f159e41-2d6d-4d74-b9da-0b3097f8fe70",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Diego Sampaio",
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1494,
+      "overriden_lines": 0
+    }
+  }
+}

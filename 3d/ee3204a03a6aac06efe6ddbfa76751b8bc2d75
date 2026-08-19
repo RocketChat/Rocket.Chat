@@ -1,0 +1,73 @@
+ee/packages/federation-matrix/src/api/_matrix/client/profile.ts
+  s_62dcff3e9d6ce7::t_0fb4e5e0a7ab55 8
+  s_62dcff3e9d6ce7::t_e21cf934c9db07 89
+  s_62dcff3e9d6ce7::t_9b3d1993498cfb 136
+  s_62dcff3e9d6ce7::t_cb6dcf12c5a8e6 114
+  s_62dcff3e9d6ce7::t_82549fc5ffabe4 7
+  s_62dcff3e9d6ce7::t_e939e34f8f4b90 226
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  s_62dcff3e9d6ce7::t_e701a3d7dae4ff 278
+  s_62dcff3e9d6ce7::t_b5a06ac4abc95a 346
+  s_62dcff3e9d6ce7::t_a96d77335df9cd 204
+  s_62dcff3e9d6ce7::t_09cfc4817f255d 312
+  s_62dcff3e9d6ce7::t_9440d17b25c624 12
+ee/packages/federation-matrix/src/api/_matrix/client/user.ts
+  s_62dcff3e9d6ce7::t_176f2707048265 9
+  s_62dcff3e9d6ce7::t_6f826f81d4e493 81
+ee/packages/federation-matrix/src/api/_matrix/client/_shared.ts
+  s_62dcff3e9d6ce7::t_07247870188e1f 10,14-20
+  s_62dcff3e9d6ce7::t_4f3a2b81ac2287 6-7
+  s_62dcff3e9d6ce7::t_467887cc6ba6c6 21-30
+  h_4c386397e672f4 11-12
+  s_62dcff3e9d6ce7::t_5f438278522c4a 13
+ee/packages/federation-matrix/src/api/_matrix/client/media.ts
+  s_62dcff3e9d6ce7::t_973f2a7aded599 5
+  s_62dcff3e9d6ce7::t_7a3f873a5fa5bc 198
+  s_62dcff3e9d6ce7::t_6bf9501643c9aa 125
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_62dcff3e9d6ce7::t_ff7c831c95acc0 12
+  s_62dcff3e9d6ce7::t_3e97c49ea152a0 154
+  s_62dcff3e9d6ce7::t_73b72329d0fa84 262
+  s_62dcff3e9d6ce7::t_f240158e928df3 11
+  s_62dcff3e9d6ce7::t_e1caf9922443b0 380-381
+  s_62dcff3e9d6ce7::t_d65dad18d1ff4c 215
+  s_62dcff3e9d6ce7::t_d9bcf6a86c0117 324
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  s_62dcff3e9d6ce7::t_975dce75bef28b 277
+  s_62dcff3e9d6ce7::t_48c9caf7ab4786 275
+  s_62dcff3e9d6ce7::t_ff9a5dd7ef59c9 108
+  s_62dcff3e9d6ce7::t_0a56bc30b1ec97 9
+  s_62dcff3e9d6ce7::t_80f3a6fce84770 6-8,10-15
+  s_62dcff3e9d6ce7::t_0ea8cb53fe905c 150
+  s_62dcff3e9d6ce7::t_de70905e0d04a2 183
+ee/packages/federation-matrix/src/api/_matrix/client/account.ts
+  s_62dcff3e9d6ce7::t_4ce915c8db1177 8
+  s_62dcff3e9d6ce7::t_183ae6a3fdc073 97
+ee/packages/federation-matrix/src/api/_matrix/client/directory.ts
+  s_62dcff3e9d6ce7::t_15f0f2432f7901 7
+  s_62dcff3e9d6ce7::t_41c134b1f4d5d1 8
+  s_62dcff3e9d6ce7::t_943bd764d7eeb9 82
+  s_62dcff3e9d6ce7::t_01bacda0530866 139
+  s_62dcff3e9d6ce7::t_abd11e814c5e67 105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "3dee3204a03a6aac06efe6ddbfa76751b8bc2d75",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_62dcff3e9d6ce7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "45d422cd-ecce-43d8-838b-1960fdf5e924",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
