@@ -90,7 +90,18 @@ async function updateNotificationPreferences(
 	}
 }
 
+const MAX_CATEGORY_NAME_LENGTH = 30;
+
 export const validateSidebarCustomCategories = (categories: ISidebarCustomCategory[]): void => {
+	for (const category of categories) {
+		const trimmed = category.name.trim();
+		if (!trimmed) {
+			throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains a blank category name');
+		}
+		if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
+			throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories category name exceeds maximum length');
+		}
+	}
 	const ids = categories.map((category) => category._id);
 	if (new Set(ids).size !== ids.length) {
 		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate category _id values');
