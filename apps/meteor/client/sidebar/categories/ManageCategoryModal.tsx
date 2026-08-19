@@ -105,7 +105,9 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 						<Controller
 							control={control}
 							name='rooms'
-							render={({ field: { value, onChange } }) => <UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} />}
+							render={({ field: { value, onChange } }) => (
+								<UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} excludeTypes={['l']} allowReadOnly />
+							)}
 						/>
 					</FieldRow>
 				</Field>
