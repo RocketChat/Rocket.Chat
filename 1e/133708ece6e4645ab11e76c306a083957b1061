@@ -1,0 +1,25 @@
+apps/meteor/server/api/api.ts
+  s_b7bec927733c41::t_e34ac59d9f24e2 46
+docs/experimental-api-endpoints-plan.md
+  s_b7bec927733c41::t_57c193d21e85ef 21-24,78-83
+  s_b7bec927733c41::t_8cdd3dd8f1ebc5 180-184
+docs/experimental-api-endpoints.md
+  s_b7bec927733c41::t_8cdd3dd8f1ebc5 97-100
+  s_b7bec927733c41::t_57c193d21e85ef 66-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1e133708ece6e4645ab11e76c306a083957b1061",
+  "prompts": {},
+  "sessions": {
+    "s_b7bec927733c41": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d19cba80-ac9b-45e8-be4b-106a08e91f28",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
