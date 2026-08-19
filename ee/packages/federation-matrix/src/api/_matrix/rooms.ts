@@ -102,6 +102,7 @@ const PublicRoomsPostBodySchema = {
 	properties: {
 		limit: {
 			type: 'integer',
+			minimum: 0,
 			description: 'Maximum number of rooms to return',
 			nullable: true,
 		},
