@@ -26,20 +26,23 @@ the legacy registration path.
 
 - `createApi({ version })` turns the `version` string into the URL path segment, so a
   new instance with `version: 'experimental'` mounts at `/api/experimental/<name>`
-  with zero router changes. See `apps/meteor/app/api/server/api.ts:33-77` and
-  `ApiClass.ts:199`.
+  without changing any router internals — the new router still has to be mounted in
+  `startRestAPI` (see Step 2). See `apps/meteor/server/api/api.ts` (the `API` object and
+  `createApi`) and `apps/meteor/server/api/ApiClass.ts` (`apiPath` composition in the
+  `APIClass` constructor).
 - The typed route methods `.get()/.post()/.put()/.delete()` are generic over
-  `TSubPathPattern extends string` (`ApiClass.ts:669`) — they are **not** gated on
-  `keyof Endpoints`. Routes accumulate *outward* into the instance's `TOperations`,
-  read back by `ExtractApiClassEndpoints` (`ApiClass.ts:125-126`). So a separate
-  experimental instance works *with* the type system.
+  `TSubPathPattern extends string` (`ApiClass.ts`, `APIClass.method()` and its
+  per-verb wrappers) — they are **not** gated on `keyof Endpoints`. Routes accumulate
+  *outward* into the instance's `TOperations`, read back by `ExtractApiClassEndpoints`
+  (`apps/meteor/server/api/api.ts`). So a separate experimental instance works *with*
+  the type system.
 - `PathPattern`, `Method`, `Path`, and the typed client are all derived from the
-  `Endpoints` interface (`packages/rest-typings/src/index.ts:48-120`). Keeping
+  `Endpoints` interface (`packages/rest-typings/src/index.ts`). Keeping
   experimental paths **out** of that interface keeps the stable client surface clean
   and forces explicit opt-in for experimental ones.
 - The deprecation framework already writes `x-deprecation-*` response headers
-  (`apps/meteor/app/lib/server/lib/deprecationWarningLogger.ts:13-19`). We mirror that
-  pattern for an `x-experimental` / `Warning` signal.
+  (`writeDeprecationHeader` in `apps/meteor/server/lib/deprecationWarningLogger.ts`). We
+  mirror that pattern for an `x-experimental` / `Warning` signal.
 - Auth, permissions, rate limiting, CORS, AJV validation, and metrics all come from
   `createApi` + the middleware chain in `startRestAPI` — experimental endpoints get
   them for free.
@@ -64,18 +67,28 @@ review 1:1 onto the plan.
 
 ### Step 1 — Add the `experimental` API instance
 
-**File:** `apps/meteor/app/api/server/api.ts`
+**File:** `apps/meteor/server/api/api.ts`
 
-1. In the `API` object literal (around line 69-77), add:
+1. In the `API` object literal, add:
    ```ts
    experimental: createApi({ version: 'experimental', useDefaultAuth: true }),
    ```
    Place it between `v1` and `default`.
-2. Add `experimental: APIClass<'/experimental'>;` to the `API` type annotation
-   (around line 42-68) so it is typed.
-3. If any `settings.watch(...)` callbacks need to refresh experimental routes the way
-   they refresh `API.v1` (rate limiter reloads at lines 92-100, custom fields at
-   79-90), add the matching `API.experimental?.…` calls. Optional for v1 of this work.
+2. Add an `experimental` entry to the `API` type annotation so it is typed. Use
+   `Omit<APIClass<'/experimental'>, 'addRoute'>` rather than a plain `APIClass`, so the
+   typed-API-only rule above is enforced by the compiler and not just by convention.
+3. Refreshing experimental routes when settings change is a **required** parity
+   condition, not an optional extra — the contract above promises experimental
+   endpoints get rate limiting "for free", which only holds if the refresh callbacks
+   cover them. The `settings.watch(...)` callbacks in this file that must also update
+   `API.experimental`:
+   - `API_Enable_Rate_Limiter_Limit_Time_Default` → `reloadRoutesToRefreshRateLimiter()`
+   - `API_Enable_Rate_Limiter_Limit_Calls_Default` → `reloadRoutesToRefreshRateLimiter()`
+   - `Accounts_CustomFields` → `setLimitedCustomFields()`
+
+   **Known gap:** the rate-limiter watchers are at parity; the `Accounts_CustomFields`
+   watcher still updates `API.v1` only. That is currently harmless — no experimental
+   endpoint returns user objects — but it must be closed before one does.
 
 **Acceptance:** `API.experimental.get('ping', { ... }, handler)` compiles and serves at
 `GET /api/experimental/ping`.
@@ -84,10 +97,10 @@ review 1:1 onto the plan.
 
 ### Step 2 — Mount it in the request pipeline
 
-**File:** `apps/meteor/app/api/server/api.ts`, `startRestAPI` (lines 102-123)
+**File:** `apps/meteor/server/api/api.ts`, `startRestAPI`
 
 1. Insert `.use(API.experimental.router)` into the chain, **before**
-   `.use(API.default.router)` (line 121). Order matters: `default` is the catch-all.
+   `.use(API.default.router)`. Order matters: `default` is the catch-all.
 2. Add a second `metricsMiddleware` block pointed at `API.experimental` so experimental
    traffic is measured. Metrics are the canary used later to decide whether an endpoint is
    ready for promotion to `/v1`. Because every block shares the same `/api` mount, each one
@@ -96,24 +109,31 @@ review 1:1 onto the plan.
    unmatched `/api/*`) opts out via `excludePathRegex`. Without that catch-all block the
    guards silently drop default-router traffic that used to be sampled.
 
-**Acceptance:** experimental requests appear in the REST API Prometheus metrics with a
-distinguishable path/label.
+**Acceptance:** experimental requests appear in the REST API Prometheus metrics labelled
+`version=experimental` — specifically that label, not merely a distinguishable one. A
+change that only adjusted the path regex while leaving experimental traffic under the
+`v1` version label does not satisfy this. `/api/v1/*` and default-router traffic each
+still record exactly one sample under their own label.
 
 **Commit (2 of 5):** `feat(api): mount experimental router and metrics`
 
 ### Step 3 — Runtime "unstable" signal (mirror deprecation headers)
 
-**New file:** `apps/meteor/app/api/server/middlewares/experimental.ts` (or colocate with
-existing middlewares under `apps/meteor/app/api/server/middlewares/`).
+**New file:** `apps/meteor/server/api/v1/middlewares/experimental.ts`, colocated with the
+existing middlewares.
 
 1. Write a middleware that sets, on every response from the experimental instance:
    ```
    Warning: 299 - "experimental: endpoint is unstable and may change without notice"
    x-experimental: true
    ```
-   `Warning: 299` is the RFC 7234 "miscellaneous persistent warning" code; `x-experimental`
-   is the easy programmatic check. Model the header-writing on
-   `writeDeprecationHeader` in `deprecationWarningLogger.ts:13-19`.
+   `x-experimental: true` is the **supported programmatic signal** — clients should detect
+   experimental responses with it. `Warning: 299` is a legacy compatibility signal only:
+   warn code 299 came from RFC 7234, which RFC 9111 has since obsoleted along with the
+   `Warning` header itself, so modern clients are not expected to generate or interpret
+   it. It is emitted for the benefit of tooling that still surfaces it, and may be dropped
+   without it being a breaking change. Model the header-writing on `writeDeprecationHeader`
+   in `apps/meteor/server/lib/deprecationWarningLogger.ts`.
 2. Register the middleware on the shared `/api` mount in `startRestAPI`, **ahead of**
    `cors`, scoped to `/api/experimental` by a `basePathRegex` (same shape as the metrics
    middleware guard). It cannot live on `API.experimental.router`: `cors` answers rejected
@@ -141,7 +161,7 @@ and CORS preflight rejections; `/api/v1/*` responses do not.
    Follow the existing per-resource endpoint style (e.g.
    `packages/rest-typings/src/v1/channels/channels.ts`).
 2. Export `ExperimentalEndpoints` from the package root, but **do NOT** add it to the
-   `interface Endpoints extends ...` union (`index.ts:48-93`). This keeps `PathPattern`,
+   `interface Endpoints extends ...` union. This keeps `PathPattern`,
    `Method`, `Path`, and the stable typed client free of experimental paths.
 3. Consumers who want typed experimental calls import `ExperimentalEndpoints`
    explicitly.
@@ -153,9 +173,14 @@ include experimental paths; `import type { ExperimentalEndpoints }` does.
 
 ### Step 5 — Guardrails (because it is a general mechanism)
 
-1. **CI/lint guard:** add a check (script or eslint rule) asserting no path key present
-   in `ExperimentalEndpoints` is also present in `Endpoints`. This catches accidental
-   "promotion by copy-paste" that would silently create a semver obligation.
+1. **CI guard (type-level):** add
+   `packages/rest-typings/src/experimental/noOverlapWithStableEndpoints.ts`, a
+   types-only module asserting that no path key present in `ExperimentalEndpoints` is
+   also present in `Endpoints`. It resolves `Extract<keyof ExperimentalEndpoints, keyof
+   Endpoints>` against a `T extends never` constraint, so `tsc` — run by `yarn typecheck`
+   in CI — fails and names the offending key(s). No script or ESLint rule is involved.
+   This catches accidental "promotion by copy-paste" that would silently create a semver
+   obligation.
 2. **Promotion path:** document that stabilizing an endpoint means copying it to `/v1`
    (optionally keeping the experimental path forwarding for a transition window).
    Removal needs no deprecation cycle — but log removals for courtesy.
@@ -182,9 +207,10 @@ include experimental paths; `import type { ExperimentalEndpoints }` does.
 
 | File | Change |
 | ---- | ------ |
-| `apps/meteor/app/api/server/api.ts` | Add `experimental` instance, type entry, mount in `startRestAPI`, metrics regex |
-| `apps/meteor/app/api/server/middlewares/experimental.ts` (new) | `x-experimental` / `Warning` header middleware |
+| `apps/meteor/server/api/api.ts` | Add `experimental` instance, type entry, mount in `startRestAPI`, metrics blocks |
+| `apps/meteor/server/api/v1/middlewares/experimental.ts` (new) | `x-experimental` / `Warning` header middleware |
+| `apps/meteor/server/api/v1/middlewares/metrics.ts` | `basePathRegex` / `excludePathRegex` sampling guards |
 | `packages/rest-typings/src/experimental/index.ts` (new) | `ExperimentalEndpoints` type, NOT merged into `Endpoints` |
 | `packages/rest-typings/src/index.ts` | Export `ExperimentalEndpoints` |
-| CI/lint config | Guard: no path in both `Endpoints` and `ExperimentalEndpoints` |
+| `packages/rest-typings/src/experimental/noOverlapWithStableEndpoints.ts` (new) | Type-level guard: no path in both `Endpoints` and `ExperimentalEndpoints` |
 | docs / CONTRIBUTING | Document the contract + promotion path |

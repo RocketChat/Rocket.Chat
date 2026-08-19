@@ -55,8 +55,10 @@ endpoints give a third path — ship now, iterate freely, commit later.
   pan out. An endpoint that sits in `experimental` indefinitely is a smell — it means a
   decision is overdue.
 - **Callers are warned at runtime.** Every experimental response carries
-  `x-experimental: true` and a `Warning: 299 ...` header. Clients can detect and surface
-  this.
+  `x-experimental: true` — that is the supported signal to detect and surface in client
+  code. Responses also carry a `Warning: 299 ...` header, kept only for legacy tooling
+  that still reads it: RFC 9111 obsoletes the `Warning` header and its warn codes, so do
+  not build new client logic on it.
 - **Typed clients must opt in.** Experimental endpoints are declared in a separate
   `ExperimentalEndpoints` type, not in the main `Endpoints` union, so the stable SDK
   surface stays honest. Consumers import them deliberately.
@@ -66,7 +68,7 @@ endpoints give a third path — ship now, iterate freely, commit later.
 
 ## Lifecycle: experimental → official
 
-```
+```text
                  stabilizes
    experimental ───────────────▶  v1 (official, semver-stable)
    (/api/experimental/x)           (/api/v1/x)

@@ -1,8 +1,8 @@
 import type { MiddlewareHandler } from 'hono';
 
-// RFC 7234 "miscellaneous persistent warning" code. Paired with the
-// programmatic-friendly `x-experimental` header so clients can detect, in code,
-// that they hit an unstable endpoint.
+// `x-experimental` is the supported programmatic signal. `Warning: 299` is emitted for
+// legacy tooling only — warn code 299 came from RFC 7234, which RFC 9111 has obsoleted
+// along with the `Warning` header itself.
 const WARNING_HEADER = '299 - "experimental: endpoint is unstable and may change without notice"';
 
 /**
