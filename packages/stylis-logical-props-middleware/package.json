@@ -33,7 +33,6 @@
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@types/stylis": "^4.2.7",
 		"eslint": "~9.39.5",
-		"prettier": "~3.3.3",
 		"stylis": "~4.4.0",
 		"typescript": "~5.9.3"
 	},
