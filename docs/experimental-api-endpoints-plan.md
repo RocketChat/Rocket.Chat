@@ -111,10 +111,14 @@ existing middlewares under `apps/meteor/app/api/server/middlewares/`).
    `Warning: 299` is the RFC 7234 "miscellaneous persistent warning" code; `x-experimental`
    is the easy programmatic check. Model the header-writing on
    `writeDeprecationHeader` in `deprecationWarningLogger.ts:13-19`.
-2. Register the middleware on `API.experimental` only (not on `v1`/`default`).
+2. Register the middleware on the shared `/api` mount in `startRestAPI`, **ahead of**
+   `cors`, scoped to `/api/experimental` by a `basePathRegex` (same shape as the metrics
+   middleware guard). It cannot live on `API.experimental.router`: `cors` answers rejected
+   preflights with 403/405 without calling `next()`, so a router-scoped middleware would
+   never run for those responses.
 
-**Acceptance:** every `/api/experimental/*` response carries both headers; `/api/v1/*`
-responses do not.
+**Acceptance:** every `/api/experimental/*` response carries both headers — including 404s
+and CORS preflight rejections; `/api/v1/*` responses do not.
 
 **Commit (3 of 5):** `feat(api): add experimental unstable-signal middleware`
 

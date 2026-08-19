@@ -84,14 +84,9 @@ export const API: {
 	experimental: createApi({
 		version: 'experimental',
 		useDefaultAuth: true,
-	}) as ExperimentalAPI,
+	}),
 	default: createApi({}),
 };
-
-// Stamp the unstable-signal headers on every experimental response. Registered
-// here, at module load, so it precedes any endpoint route registered later on
-// API.experimental (Hono runs `.use` middleware in registration order).
-API.experimental.router.use(experimentalWarningMiddleware());
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
 	if (!value) {
@@ -148,6 +143,7 @@ export const startRestAPI = () => {
 			)
 			.use(tracerSpanMiddleware)
 			.use(remoteAddressMiddleware)
+			.use(experimentalWarningMiddleware({ basePathRegex: new RegExp(/^\/api\/experimental(\/|$)/) }))
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(API.v1.router)

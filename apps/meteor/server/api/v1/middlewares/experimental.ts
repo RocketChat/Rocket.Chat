@@ -6,17 +6,24 @@ import type { MiddlewareHandler } from 'hono';
 const WARNING_HEADER = '299 - "experimental: endpoint is unstable and may change without notice"';
 
 /**
- * Stamps every response from the experimental API instance with the unstable
- * signal headers. Registered on `API.experimental` only — `/api/v1/*` and the
- * default router never see these headers.
+ * Stamps every experimental response with the unstable signal headers.
  *
- * Mirrors the header-writing pattern of `writeDeprecationHeader` in
- * `deprecationWarningLogger.ts`: the headers are set on `c.res.headers` before
- * the route handler runs so they are picked up when the handler builds the
- * final response (see `Router.method` in `@rocket.chat/http-router`).
+ * Registered on the shared `/api` mount ahead of `cors`, and scoped by path rather than by
+ * router: `cors` answers rejected preflights with 403/405 without calling `next()`, so a
+ * middleware living on `API.experimental.router` would never run for those responses.
+ *
+ * The headers are set on `c.res.headers` before the downstream handlers run; Hono merges them
+ * into whatever response is produced later, so 404s and CORS rejections are covered too.
  */
-export const experimentalWarningMiddleware = (): MiddlewareHandler => async (c, next) => {
-	c.res.headers.set('x-experimental', 'true');
-	c.res.headers.set('Warning', WARNING_HEADER);
-	await next();
-};
+export const experimentalWarningMiddleware =
+	({ basePathRegex }: { basePathRegex: RegExp }): MiddlewareHandler =>
+	async (c, next) => {
+		if (!basePathRegex.test(c.req.path)) {
+			return next();
+		}
+
+		c.res.headers.set('x-experimental', 'true');
+		c.res.headers.set('Warning', WARNING_HEADER);
+
+		await next();
+	};
