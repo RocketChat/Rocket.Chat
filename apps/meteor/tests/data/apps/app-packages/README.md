@@ -672,8 +672,7 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 
 File name: `call-history-reader-test_0.0.1.zip`
 
-An app with the `call-history.read` permission that exposes three public API endpoints, one per
-method of the `ICallHistoryRead` accessor:
+An app that exposes three public API endpoints, one per method of the `ICallHistoryRead` accessor:
 
 - `GET /read-by-id?historyId=<id>` → `{ entry: <ICallHistoryEntry | null> }`
 - `GET /read-by-call-id?callId=<id>` → `{ entries: ICallHistoryEntry[] }`
@@ -689,8 +688,14 @@ at boot by `apps/meteor/server/startup/callHistoryTestData.ts`.
 **app.json** (relevant excerpt)
 
 ```json
-{ "permissions": [{ "name": "call-history.read" }] }
+{ "permissions": [{ "name": "call-history.read" }, { "name": "api" }] }
 ```
+
+> Declaring `api` alongside `call-history.read` is **required**, not redundant. Granted permissions
+> *replace* the defaults rather than adding to them — `AppManager.getPermissionsGranted` returns
+> `permissionsGranted || defaultPermissions` — so an app installed with an explicit permission list
+> holds only what that list names. Omit `api` and the app installs and enables cleanly, but its HTTP
+> endpoints never mount and every request to them answers 404.
 
 **CallHistoryReaderTestApp.ts**
 

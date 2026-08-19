@@ -63,6 +63,12 @@ async function getPermissionsFromAppManifest(pathToApp: string): Promise<AppPerm
  * Permissions declared in the manifest are granted by default, which is what a test asserting
  * an accessor works needs. Pass `withPermissions: false` to install the same package ungranted,
  * which is how the denial path gets covered.
+ *
+ * Beware that granting *replaces* the default permissions rather than adding to them
+ * (`AppManager.getPermissionsGranted` returns `permissionsGranted || defaultPermissions`). A manifest
+ * that names only the permission under test therefore drops everything else, `api` included, and the
+ * app's HTTP endpoints stop mounting — so a package used this way has to declare every permission it
+ * relies on, not just the interesting one.
  */
 export const installLocalTestPackage = async (path: string, { withPermissions = true }: { withPermissions?: boolean } = {}) => {
 	const req = request.post(apps()).set(credentials).attach('app', path);
