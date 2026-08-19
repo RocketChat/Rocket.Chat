@@ -355,7 +355,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								control={control}
 								name='statusVisibilityDenied'
 								render={({ field: { onChange, value } }) => (
-									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Select_users')} />
+									<UserAutoCompleteMultiple
+										value={value}
+										onChange={onChange}
+										exceptions={user?.username ? [user.username] : undefined}
+										placeholder={t('Select_users')}
+									/>
 								)}
 							/>
 						</FieldRow>
