@@ -34,7 +34,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test('should initiate voice call from direct message', async () => {
 		const [user1, user2] = sessions;
 
-		await test.step('initiate a voice call from room toolbar', async () => {
+		await test.step('establish call connection', async () => {
 			await user1.poHomeChannel.navbar.btnNewVoiceCall.click();
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
