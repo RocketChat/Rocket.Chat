@@ -2773,6 +2773,59 @@ describe('Meteor.methods', () => {
 		});
 	});
 
+	describe('[@spotlight]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `methods-spotlight-${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), updateSetting('Accounts_AllowAnonymousRead', false)]);
+		});
+
+		const callAnonymousSpotlight = async (text: string) => {
+			const res = await request
+				.post(methodCallAnon('spotlight'))
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: 'id',
+						method: 'spotlight',
+						params: [text],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse).to.not.have.property('error');
+
+			return parsedResponse.result as { rooms: IRoom[]; users: IUser[] };
+		};
+
+		it('should return no rooms or users for an anonymous user when anonymous read is disabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+
+			// The unprefixed query also runs the user search with no user id, which used to throw.
+			const result = await callAnonymousSpotlight(testChannel.name as string);
+
+			expect(result).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+			expect(result).to.have.property('users').and.to.be.an('array').that.is.empty;
+		});
+
+		it('should return public rooms but no users for an anonymous user when anonymous read is enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const result = await callAnonymousSpotlight(testChannel.name as string);
+
+			expect(result.rooms.map((room) => room._id)).to.include(testChannel._id);
+			expect(result).to.have.property('users').and.to.be.an('array').that.is.empty;
+		});
+	});
+
 	describe('[@setUserActiveStatus]', () => {
 		let testUser: TestUser<IUser>;
 		let testUser2: TestUser<IUser>;
