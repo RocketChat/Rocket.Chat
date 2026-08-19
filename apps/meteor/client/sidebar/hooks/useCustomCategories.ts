@@ -77,7 +77,12 @@ export const useCustomCategories = () => {
 				rooms,
 			};
 			await persist([category, ...stripped]);
-			await Promise.allSettled(rooms.map((rid) => setFavorite(rid, false)));
+			try {
+				await Promise.all(rooms.map((rid) => setFavorite(rid, false)));
+			} catch (e) {
+				await persist(categories);
+				throw e;
+			}
 			return category;
 		},
 		[categories, persist, setFavorite],
@@ -178,7 +183,12 @@ export const useCustomCategories = () => {
 					throw e;
 				}
 			}
-			await Promise.allSettled(extraRooms.map((rid) => setFavorite(rid, false)));
+			try {
+				await Promise.all(extraRooms.map((rid) => setFavorite(rid, false)));
+			} catch (e) {
+				await persist(categories);
+				throw e;
+			}
 			dispatchToastMessage({
 				type: 'success',
 				message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
@@ -198,7 +208,12 @@ export const useCustomCategories = () => {
 			await persist(stripped.map((category) => (category._id === categoryId ? { ...category, name: name.trim(), rooms } : category)));
 
 			// Unfavorite newly added rooms — mirrors moveRoom semantics.
-			await Promise.allSettled(newlyAdded.map((rid) => setFavorite(rid, false)));
+			try {
+				await Promise.all(newlyAdded.map((rid) => setFavorite(rid, false)));
+			} catch (e) {
+				await persist(categories);
+				throw e;
+			}
 		},
 		[categories, persist, setFavorite],
 	);
