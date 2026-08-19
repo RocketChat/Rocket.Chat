@@ -34,13 +34,15 @@ export async function setStatusText(
 	if (emit) {
 		const { _id, username, status, name, roles } = user;
 		await onceTransactionCommitedSuccessfully(() => {
-			void StatusVisibility.hasRestrictions(_id).then((hasVisibilityRestrictions) =>
-				api.broadcast('presence.status', {
-					user: { _id, username, status, statusText, name, roles },
-					previousStatus: status,
-					hasVisibilityRestrictions,
-				}),
-			);
+			void StatusVisibility.hasRestrictions(_id)
+				.catch(() => true)
+				.then((hasVisibilityRestrictions) =>
+					api.broadcast('presence.status', {
+						user: { _id, username, status, statusText, name, roles },
+						previousStatus: status,
+						hasVisibilityRestrictions,
+					}),
+				);
 		}, session);
 	}
 

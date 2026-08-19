@@ -23,6 +23,9 @@ const e = new Emitter<{
 
 const clients = new WeakMap<Connection, UserPresence>();
 
+// mirror of `clients`, which cannot be enumerated
+const liveClients = new Set<UserPresence>();
+
 class UserPresence {
 	private readonly streamer: IStreamer<'user-presence'>;
 
@@ -30,8 +33,10 @@ class UserPresence {
 
 	private readonly listeners: Set<string>;
 
-	// value marks a pending correction
+	// map value as true marks a pending correction
 	private hiddenFrom = new Map<IUser['_id'], true | undefined>();
+
+	private stale = true;
 
 	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
 		this.listeners = new Set();
@@ -52,11 +57,22 @@ class UserPresence {
 		this.listeners.delete(uid);
 	};
 
+	get isStale() {
+		return this.stale;
+	}
+
 	async refreshHiddenFrom(): Promise<void> {
 		const previous = this.hiddenFrom;
-		const hidden = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
 
-		this.hiddenFrom = new Map(hidden.map((uid) => [uid, !previous.has(uid) && this.listeners.has(uid) ? true : undefined]));
+		try {
+			const hidden = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
+
+			this.hiddenFrom = new Map(hidden.map((uid) => [uid, !previous.has(uid) && this.listeners.has(uid) ? true : undefined]));
+			this.stale = false;
+		} catch (error) {
+			this.stale = true;
+			throw error;
+		}
 	}
 
 	run = (args: UserPresenceStreamArgs): void => {
@@ -90,6 +106,7 @@ class UserPresence {
 	stop(): void {
 		this.listeners.forEach(this.off);
 		clients.delete(this.publication.connection);
+		liveClients.delete(this);
 	}
 
 	static getClient(publication: IPublication, streamer: IStreamer<'user-presence'>): [UserPresence, boolean] {
@@ -101,6 +118,7 @@ class UserPresence {
 		const main = Boolean(!stored);
 
 		clients.set(connection, client);
+		liveClients.add(client);
 
 		return [client, main];
 	}
@@ -112,16 +130,23 @@ export class StreamPresence {
 		return new (class StreamPresence extends StreamerClass<'user-presence'> {
 			override async _publish(
 				publication: IPublication,
-				eventName: string,
+				_eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,
 			): Promise<void> {
-				await super._publish(publication, eventName, options);
-
 				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
 				const [client, main] = UserPresence.getClient(publication, this);
 
-				await client.refreshHiddenFrom();
+				if (client.isStale) {
+					try {
+						await client.refreshHiddenFrom();
+					} catch (error) {
+						if (main) {
+							client.stop();
+							throw error;
+						}
+					}
+				}
 
 				if (!Streamer.isPublicationActive(publication)) {
 					if (main) {
@@ -139,6 +164,8 @@ export class StreamPresence {
 					return;
 				}
 
+				publication.ready();
+
 				publication.onStop(() => client.stop());
 			}
 		} as any)(name);
@@ -149,16 +176,6 @@ export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void =>
 	e.emit(uid, { uid, args });
 };
 
-export const refreshVisibility = async (streamer: IStreamer<'user-presence'>): Promise<void> => {
-	const clientsToRefresh = new Set<UserPresence>();
-
-	for (const { subscription } of streamer.subscriptions) {
-		const client = clients.get(subscription.connection);
-
-		if (client) {
-			clientsToRefresh.add(client);
-		}
-	}
-
-	await Promise.all([...clientsToRefresh].map((client) => client.refreshHiddenFrom()));
+export const refreshVisibility = async (): Promise<void> => {
+	await Promise.allSettled(Array.from(liveClients, (client) => client.refreshHiddenFrom()));
 };
