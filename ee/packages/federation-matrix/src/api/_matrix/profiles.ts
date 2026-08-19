@@ -303,13 +303,13 @@ const GetMissingEventsBodySchema = {
 		},
 		limit: {
 			// optional per spec (defaults to 10) and unbounded; the handler applies the default and a cap
-			type: 'number',
+			type: 'integer',
 			description: 'Maximum number of events to return',
 			nullable: true,
 		},
 		min_depth: {
-			type: 'number',
-			description: 'Minimum depth of events to retrieve (ignored)',
+			type: 'integer',
+			description: 'Minimum depth of events to retrieve',
 			nullable: true,
 		},
 	},
@@ -526,6 +526,7 @@ export const getMatrixProfilesRoutes = () => {
 					const body = await c.req.json();
 
 					const limit = Math.min(body.limit ?? 10, 100);
+					const minDepth = body.min_depth ?? 0;
 
 					// this will be handled by the federation-sdk on next versions so this can be removed
 					if (limit < 1) {
@@ -540,6 +541,7 @@ export const getMatrixProfilesRoutes = () => {
 						body.earliest_events,
 						body.latest_events,
 						limit,
+						minDepth,
 					);
 
 					return {
