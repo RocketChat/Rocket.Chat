@@ -275,6 +275,7 @@ export const getMatrixTransactionsRoutes = () => {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
 						429: isErrorResponseProps,
+						500: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -306,9 +307,19 @@ export const getMatrixTransactionsRoutes = () => {
 							};
 						}
 
-						// spec: the 200 response is used even when PDUs fail to be processed, so a
-						// failure here must not fail the whole transaction
+						// a 200 tells the origin the transaction was delivered and it will never resend
+						// these PDUs. Per-PDU failures are already handled by the SDK, so anything
+						// reaching here is a server-side failure and must be retryable - Synapse only
+						// backs off and redelivers on 5xx
 						logger.error({ msg: 'Error processing incoming transaction', err: error });
+
+						return {
+							statusCode: 500,
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to process transaction',
+							},
+						};
 					}
 
 					return {
