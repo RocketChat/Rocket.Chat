@@ -28,7 +28,7 @@ type SidebarVirtualListProps<TGroup, TItem> = {
 	renderGroup: (group: TGroup, groupIndex: number) => ReactNode;
 	renderItem: (item: TItem, itemIndex: number, group: TGroup, groupIndex: number, rowIndex: number) => ReactNode;
 	getItemKey: (item: TItem, itemIndex: number, group: TGroup, groupIndex: number) => Key;
-	overscan?: number;
+	bufferSize?: number;
 	as?: VirtualizerProps['as'];
 };
 
@@ -52,7 +52,7 @@ function SidebarVirtualList<TGroup, TItem>({
 	renderGroup,
 	renderItem,
 	getItemKey,
-	overscan,
+	bufferSize,
 	as,
 }: SidebarVirtualListProps<TGroup, TItem>) {
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
@@ -130,11 +130,7 @@ function SidebarVirtualList<TGroup, TItem>({
 
 			const itemKey = getItemKey(row.item, row.itemIndex, row.group, row.groupIndex);
 
-			return (
-				<div key={`item:${String(itemKey)}`}>
-					{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}
-				</div>
-			);
+			return <div key={`item:${String(itemKey)}`}>{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}</div>;
 		},
 		[activeStickyGroupIndex, getItemKey, renderGroup, renderItem],
 	);
@@ -142,7 +138,7 @@ function SidebarVirtualList<TGroup, TItem>({
 	return (
 		<CustomVirtuaScrollbars>
 			<div style={scrollViewportStyle}>
-				<Virtualizer ref={virtualizerRef} as={as} data={rows} bufferSize={overscan} keepMounted={keepMounted} onScroll={handleScroll}>
+				<Virtualizer ref={virtualizerRef} as={as} data={rows} bufferSize={bufferSize} keepMounted={keepMounted} onScroll={handleScroll}>
 					{renderRow}
 				</Virtualizer>
 			</div>

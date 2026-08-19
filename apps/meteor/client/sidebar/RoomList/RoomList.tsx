@@ -73,7 +73,7 @@ const RoomList = () => {
 			<SidebarVirtualList
 				groups={virtualGroups}
 				as={RoomListWrapper}
-				overscan={25}
+				bufferSize={25}
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser

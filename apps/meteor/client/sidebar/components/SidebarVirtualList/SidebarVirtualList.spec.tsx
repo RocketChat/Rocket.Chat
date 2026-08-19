@@ -117,7 +117,7 @@ const defaultProps = {
 const renderVirtualList = (
 	props: Partial<{
 		groups: SidebarVirtualListGroup<TestGroup, TestItem>[];
-		overscan: number;
+		bufferSize: number;
 		as: ElementType;
 		renderGroup: typeof defaultProps.renderGroup;
 		renderItem: typeof defaultProps.renderItem;
@@ -217,8 +217,8 @@ describe('SidebarVirtualList', () => {
 		expect(screen.getByTestId('virtual-row')).toHaveTextContent('Channels');
 	});
 
-	it('passes overscan to Virtua as buffer size', () => {
-		renderVirtualList({ overscan: 25 });
+	it('passes bufferSize to Virtua', () => {
+		renderVirtualList({ bufferSize: 25 });
 
 		expect(screen.getByTestId('virtual-list')).toHaveAttribute('data-buffer-size', '25');
 	});

@@ -54,7 +54,7 @@ type MockSidebarVirtualListProps = {
 		rowIndex: number,
 	) => ReactNode;
 	getItemKey: (item: (typeof rooms)[number]) => string;
-	overscan?: number;
+	bufferSize?: number;
 };
 
 const mockSidebarVirtualList = jest.fn(({ groups, renderGroup, renderItem, getItemKey }: MockSidebarVirtualListProps) => {
@@ -173,7 +173,7 @@ describe('RoomList', () => {
 					{ key: 'Direct_Messages', group: groups[1], items: [rooms[2]] },
 					{ key: 'Empty_Group', group: groups[2], items: [] },
 				],
-				overscan: 25,
+				bufferSize: 25,
 			}),
 		);
 		expect(screen.getAllByTestId('group-header').map((element) => element.textContent)).toEqual([
