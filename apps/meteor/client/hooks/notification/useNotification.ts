@@ -56,6 +56,7 @@ export const useNotification = () => {
 							_id: Random.id(),
 							rid,
 							msg: response,
+							...(notification.payload.tmid && { tmid: notification.payload.tmid }),
 						},
 					}),
 			);
