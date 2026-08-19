@@ -192,9 +192,7 @@ export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void =>
 // no viewers means the setting itself changed, so every client has to re-pull
 export const refreshVisibility = async (viewers?: IUser['_id'][]): Promise<void> => {
 	const affected = viewers && new Set(viewers);
-	const clients = affected
-		? Array.from(liveClients).filter(({ viewerId }) => viewerId && affected.has(viewerId))
-		: liveClients;
+	const clients = affected ? Array.from(liveClients).filter(({ viewerId }) => viewerId && affected.has(viewerId)) : liveClients;
 
 	await Promise.allSettled(Array.from(clients, (client) => client.refreshHiddenFrom()));
 };
