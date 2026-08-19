@@ -163,8 +163,16 @@ export const getMatrixInviteRoutes = () => {
 
 			const userToCheck = event.state_key as string;
 
-			if (!userToCheck) {
-				throw new Error('join event has missing state key, unable to determine user to join');
+			// matches Synapse: the PDU itself stays unvalidated, but an event that is not an invite
+			// membership event cannot be processed, so reject it instead of failing later
+			if (!userToCheck || event.type !== 'm.room.member' || event.content?.membership !== 'invite') {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The event was not an m.room.member invite event',
+					},
+					statusCode: 400,
+				};
 			}
 
 			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
