@@ -25,14 +25,18 @@
 		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/memo": "workspace:~"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
 		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

@@ -9331,9 +9331,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/css-supports@workspace:packages/css-supports"
   dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/memo": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
