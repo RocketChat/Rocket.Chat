@@ -20,30 +20,19 @@ class MeteorError extends Error {
 	}
 }
 
+const realSettingValidationRules = p.noCallThru().load('../../../../server/lib/settingValidationRules.ts', {
+	'@rocket.chat/logger': {
+		Logger: class {
+			error = (): undefined => undefined;
+		},
+	},
+	'../settings': { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } },
+});
+
 const { validateSetting, validateSettings } = p.noCallThru().load('../../../../server/settings/validateSetting.ts', {
 	'meteor/meteor': {
 		Meteor: {
 			Error: MeteorError,
-		},
-	},
-	'./checkSettingValueBonds': {
-		checkSettingValueBounds: (setting: ISetting, value?: ISetting['value']) => {
-			if ((setting.type === 'int' || setting.type === 'range') && value !== undefined) {
-				if (setting.minValue !== undefined && Number(value) < setting.minValue) {
-					throw new MeteorError(
-						'error-invalid-setting-value',
-						`Value for setting ${setting._id} must be greater than or equal to ${setting.minValue}`,
-						{ method: 'saveSettings' },
-					);
-				}
-				if (setting.maxValue !== undefined && Number(value) > setting.maxValue) {
-					throw new MeteorError(
-						'error-invalid-setting-value',
-						`Value for setting ${setting._id} must be less than or equal to ${setting.maxValue}`,
-						{ method: 'saveSettings' },
-					);
-				}
-			}
 		},
 	},
 	'.': {
@@ -52,32 +41,7 @@ const { validateSetting, validateSettings } = p.noCallThru().load('../../../../s
 			getSetting: settingsGetSettingMock,
 		},
 	},
-	'../lib/settingValidationRules': {
-		SettingValidationError,
-		validateSettingRules: (changes: { _id: ISetting['_id']; value: ISetting['value'] }[]) => {
-			const getValueOf = (id: ISetting['_id']): unknown => {
-				const beingSaved = changes.find(({ _id }) => _id === id);
-				return beingSaved ? beingSaved.value : settingsGetMock(id);
-			};
-
-			for (const { _id, value } of changes) {
-				const setting = settingsGetSettingMock(_id);
-				if (!setting) {
-					continue;
-				}
-
-				if (setting.validation) {
-					const rules = JSON.parse(setting.validation);
-					if (_id === 'Accounts_Password_Policy_MinLength' && typeof value === 'number') {
-						const max = getValueOf('Accounts_Password_Policy_MaxLength');
-						if (typeof max === 'number' && max !== -1 && value > max) {
-							throw new SettingValidationError(`${_id}_Invalid`, _id, 'rule');
-						}
-					}
-				}
-			}
-		},
-	},
+	'../lib/settingValidationRules': realSettingValidationRules,
 });
 
 const validationBySettingId: Record<string, unknown> = {
@@ -125,6 +89,32 @@ describe('validateSetting & validateSettings domain validator', () => {
 		let thrownError: any;
 		try {
 			validateSetting(setting, 2);
+		} catch (err) {
+			thrownError = err;
+		}
+
+		expect(thrownError).to.be.instanceOf(SettingValidationError);
+		expect(thrownError.settingId).to.equal('Bounded_Setting');
+		expect(thrownError.reason).to.equal('bounds');
+	});
+
+	it('should throw SettingValidationError with reason "bounds" when value is 0 and below positive minValue', () => {
+		const setting: ISetting = {
+			_id: 'Bounded_Setting',
+			type: 'int',
+			minValue: 5,
+			maxValue: 10,
+			value: 0,
+			packageValue: 5,
+			blocked: false,
+			hidden: false,
+			sorter: 1,
+			i18nLabel: 'Bounded_Setting',
+		};
+
+		let thrownError: any;
+		try {
+			validateSetting(setting, 0);
 		} catch (err) {
 			thrownError = err;
 		}
