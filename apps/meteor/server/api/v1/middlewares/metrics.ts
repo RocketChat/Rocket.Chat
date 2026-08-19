@@ -23,6 +23,12 @@ export const metricsMiddleware =
 		activeRequestsGauge: Gauge;
 	}): MiddlewareHandler =>
 	async (c, next) => {
+		// Several metrics middlewares share the same `/api` mount (v1, experimental, apps), so each
+		// one has to ignore the paths that belong to the others or a request gets sampled more than once.
+		if (basePathRegex && !basePathRegex.test(c.req.path)) {
+			return next();
+		}
+
 		const rocketchatRestApiEnd = endpointTimeSummary.startTimer();
 		const rocketchatRestApiHistEnd = endpointTimeHistogram.startTimer();
 
