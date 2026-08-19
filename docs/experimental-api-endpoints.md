@@ -63,8 +63,9 @@ endpoints give a third path — ship now, iterate freely, commit later.
   `ExperimentalEndpoints` type, not in the main `Endpoints` union, so the stable SDK
   surface stays honest. Consumers import them deliberately.
 - **Use the typed API only.** Register with `.get()` / `.post()` / `.put()` /
-  `.delete()` and AJV validators — `.addRoute()` is not exposed on `API.experimental`,
-  its type omits the method.
+  `.delete()` and AJV validators. Do not use `.addRoute()`: it is already deprecated
+  across the whole API, and a namespace created to iterate on new contracts is the last
+  place that should add to the legacy path.
 
 ## Lifecycle: experimental → official
 
@@ -93,13 +94,10 @@ consumers as a courtesy.
 
 ## Guardrails & tooling
 
-- **No path lives in both unions.** A type-level guard
-  (`packages/rest-typings/src/experimental/noOverlapWithStableEndpoints.ts`)
-  fails `yarn typecheck` in CI if any path key is declared in both
-  `ExperimentalEndpoints` and the stable `Endpoints` union. This catches
-  "promotion by copy-paste" — a duplicate key that would silently attach a
-  semver obligation to a path advertised as unstable. Promotion means *moving*
-  the declaration to a stable `*Endpoints` type, not leaving a copy behind.
+- **No path lives in both unions.** A duplicate key would silently attach a semver
+  obligation to a path advertised as unstable, so promotion means *moving* the declaration
+  to a stable `*Endpoints` type, not leaving a copy behind. Nothing enforces this — the
+  `/experimental/` path prefix keeps the two unions from overlapping in practice.
 - **Generated API docs intentionally skip experimental endpoints.** OpenAPI /
   doc generation scans the `Endpoints` union, which experimental paths are
   deliberately kept out of, so they do not appear in public API docs. This is

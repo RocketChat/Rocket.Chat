@@ -18,9 +18,10 @@ untouched.
 
 **Only the new typed API is allowed on experimental routes.** Endpoints must be
 registered with `.get()` / `.post()` / `.put()` / `.delete()` (with AJV `body` / `query`
-/ `response` validators). The deprecated `.addRoute()` is **not exposed** on
-`API.experimental` (its type omits the method) — new surface area should not be born on
-the legacy registration path.
+/ `response` validators). The deprecated `.addRoute()` must not be used — new surface
+area should not be born on the legacy registration path. This is a documented rule, not a
+compiler-enforced one: `API.experimental` is a plain `APIClass`, and `.addRoute()` already
+carries `@deprecated` everywhere it is reachable.
 
 ## Why this design (key findings from the current code)
 
@@ -74,9 +75,12 @@ review 1:1 onto the plan.
    experimental: createApi({ version: 'experimental', useDefaultAuth: true }),
    ```
    Place it between `v1` and `default`.
-2. Add an `experimental` entry to the `API` type annotation so it is typed. Use
-   `Omit<APIClass<'/experimental'>, 'addRoute'>` rather than a plain `APIClass`, so the
-   typed-API-only rule above is enforced by the compiler and not just by convention.
+2. Add an `experimental` entry to the `API` type annotation so it is typed:
+   `APIClass<'/experimental'>`. Hiding `addRoute()` from that type was considered and
+   dropped: the typed methods return `this`, so a restricted surface only holds until the
+   first chained registration, and closing that hole means duplicating every typed
+   signature and widening the route-extraction types that pattern-match `APIClass`. Not
+   worth it for a rule `@deprecated` already signals.
 3. Refreshing experimental routes when settings change is a **required** parity
    condition, not an optional extra — the contract above promises experimental
    endpoints get rate limiting "for free", which only holds if the refresh callbacks
@@ -173,14 +177,11 @@ include experimental paths; `import type { ExperimentalEndpoints }` does.
 
 ### Step 5 — Guardrails (because it is a general mechanism)
 
-1. **CI guard (type-level):** add
-   `packages/rest-typings/src/experimental/noOverlapWithStableEndpoints.ts`, a
-   types-only module asserting that no path key present in `ExperimentalEndpoints` is
-   also present in `Endpoints`. It resolves `Extract<keyof ExperimentalEndpoints, keyof
-   Endpoints>` against a `T extends never` constraint, so `tsc` — run by `yarn typecheck`
-   in CI — fails and names the offending key(s). No script or ESLint rule is involved.
-   This catches accidental "promotion by copy-paste" that would silently create a semver
-   obligation.
+1. **No path in both unions.** A type-level CI guard for this was considered and dropped:
+   union keys are full paths, so `/experimental/x` and `/v1/x` never collide, and the
+   transition window described below does not produce a collision either. Keep the rule in
+   the docs instead — promotion means *moving* the declaration to a stable `*Endpoints`
+   type, not leaving a copy behind.
 2. **Promotion path:** document that stabilizing an endpoint means copying it to `/v1`
    (optionally keeping the experimental path forwarding for a transition window).
    Removal needs no deprecation cycle — but log removals for courtesy.
@@ -200,7 +201,6 @@ include experimental paths; `import type { ExperimentalEndpoints }` does.
 - [ ] `/api/v1/*` responses are unchanged (no experimental headers).
 - [ ] Auth / permissions / rate limiting enforced on an experimental route exactly as on `/v1`.
 - [ ] `Endpoints` type does not include experimental paths; `ExperimentalEndpoints` does.
-- [ ] CI guard fails if a path appears in both unions.
 - [ ] Experimental requests show up in REST API metrics.
 
 ## Files touched (summary)
@@ -212,5 +212,4 @@ include experimental paths; `import type { ExperimentalEndpoints }` does.
 | `apps/meteor/server/api/v1/middlewares/metrics.ts` | `basePathRegex` / `excludePathRegex` sampling guards |
 | `packages/rest-typings/src/experimental/index.ts` (new) | `ExperimentalEndpoints` type, NOT merged into `Endpoints` |
 | `packages/rest-typings/src/index.ts` | Export `ExperimentalEndpoints` |
-| `packages/rest-typings/src/experimental/noOverlapWithStableEndpoints.ts` (new) | Type-level guard: no path in both `Endpoints` and `ExperimentalEndpoints` |
 | docs / CONTRIBUTING | Document the contract + promotion path |
