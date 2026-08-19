@@ -167,7 +167,11 @@ export const isSetting = (setting: any): setting is ISetting =>
 
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 
-export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
+export function isSettingColor(setting: ISettingBase): setting is ISettingColor;
+export function isSettingColor<T extends Pick<ISettingBase, 'type'>>(setting: T): setting is T & { type: 'color' };
+export function isSettingColor(setting: Pick<ISettingBase, 'type'>): boolean {
+	return setting.type === 'color';
+}
 
 export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
 

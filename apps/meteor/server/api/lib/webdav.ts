@@ -1,7 +1,7 @@
-import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import { WebdavAccounts } from '@rocket.chat/models';
 
-export async function findWebdavAccountsByUserId({ uid }: { uid: string }): Promise<IWebdavAccount[]> {
+export async function findWebdavAccountsByUserId({ uid }: { uid: string }): Promise<IWebdavAccountIntegration[]> {
 	return WebdavAccounts.findWithUserId(uid, {
 		projection: {
 			_id: 1,

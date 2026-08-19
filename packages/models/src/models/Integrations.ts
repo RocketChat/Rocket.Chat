@@ -1,6 +1,12 @@
 import type { IIntegration, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, IIntegrationsModel, IntegrationsStatistics } from '@rocket.chat/model-typings';
-import type { AggregateOptions, Collection, Db, FindCursor, FindOptions, IndexDescription } from 'mongodb';
+import type {
+	IBaseModel,
+	IIntegrationsModel,
+	IntegrationsStatistics,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
+import type { AggregateOptions, Collection, Db, FindCursor, IndexDescription, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -65,12 +71,12 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		return this.find({ channel: { $in: channels } });
 	}
 
-	findOneByIdAndToken<P extends IIntegration = IIntegration>(
+	findOneByIdAndToken<P extends Document = IIntegration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		id: IIntegration['_id'],
 		token: string,
-		options?: FindOptions<P>,
-	): Promise<P | null> {
-		return this.findOne<P>({ _id: id, token }, options);
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ _id: id, token }, options);
 	}
 
 	async getStatistics(options?: AggregateOptions): Promise<IntegrationsStatistics> {

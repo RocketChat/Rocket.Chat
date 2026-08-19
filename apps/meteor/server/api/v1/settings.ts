@@ -32,6 +32,9 @@ import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
+ refactor/shared-settings-validator
+import type { FetchedSetting } from '../../settings/SettingsRegistry';
+ develop
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 import { setValue } from '../../settings/raw';
@@ -45,7 +48,7 @@ async function fetchSettings(
 	offset: FindOptions<ISetting>['skip'],
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
-): Promise<{ settings: ISetting[]; totalCount: number }> {
+): Promise<{ settings: FetchedSetting[]; totalCount: number }> {
 	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
@@ -59,7 +62,7 @@ async function fetchSettings(
 	return { settings: settingsList, totalCount: total };
 }
 
-const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -89,7 +92,7 @@ const addCustomOAuthBodySchema = ajv.compile<{ name: string }>({
 	additionalProperties: false,
 });
 
-const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -197,11 +200,14 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+				if (service.service && ['cas', 'ldap'].includes(service.service)) {
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+				if (
+					(service as OAuthConfiguration).custom ||
+					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
+				) {
 					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 

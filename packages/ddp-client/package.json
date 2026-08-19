@@ -33,7 +33,7 @@
 		"ws": "~8.21.3"
 	},
 	"peerDependencies": {
-		"@rocket.chat/emitter": "*"
+		"@rocket.chat/emitter": "workspace:~"
 	},
 	"volta": {
 		"extends": "../../package.json"

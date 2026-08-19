@@ -76,6 +76,7 @@ export type * from './models/IMigrationsModel';
 export type * from './models/IModerationReportsModel';
 export type * from './models/IMediaCallsModel';
 export type * from './models/IMediaCallNegotiationsModel';
+export type * from './types/DocumentWithProjection';
 export type * from './updater';
 export type * from './models/IWorkspaceCredentialsModel';
 export type * from './models/ICallHistoryModel';

@@ -1,0 +1,53 @@
+{
+	"name": "@rocket.chat/emitter",
+	"version": "0.33.0",
+	"description": "Event Emitter by Rocket.Chat",
+	"keywords": [
+		"rocket.chat"
+	],
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"module": "dist/index.module.js",
+	"source": "src/index.ts",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rollup -c",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@rollup/plugin-terser": "~1.0.0",
+		"@rollup/plugin-typescript": "~12.3.0",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"prettier": "~3.3.3",
+		"rollup": "~4.62.3",
+		"ts-jest": "~29.4.11",
+		"typescript": "~5.9.3"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

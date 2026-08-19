@@ -63,6 +63,7 @@ export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useRole } from './hooks/useRole';
+export { useRoleIdResolver } from './hooks/useRoleIdResolver';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoomToolbox } from './hooks/useRoomToolbox';
