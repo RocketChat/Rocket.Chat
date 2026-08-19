@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { settings } from '../../settings';
 
 export async function setStatusText(
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>,
@@ -34,15 +35,17 @@ export async function setStatusText(
 	if (emit) {
 		const { _id, username, status, name, roles } = user;
 		await onceTransactionCommitedSuccessfully(() => {
-			void StatusVisibility.hasRestrictions(_id)
-				.catch(() => true)
-				.then((hasVisibilityRestrictions) =>
-					api.broadcast('presence.status', {
-						user: { _id, username, status, statusText, name, roles },
-						previousStatus: status,
-						hasVisibilityRestrictions,
-					}),
-				);
+			void (
+				settings.get<boolean>('Accounts_StatusVisibility_Enabled')
+					? StatusVisibility.hasRestrictions(_id).catch(() => true)
+					: Promise.resolve(false)
+			).then((hasVisibilityRestrictions) =>
+				api.broadcast('presence.status', {
+					user: { _id, username, status, statusText, name, roles },
+					previousStatus: status,
+					hasVisibilityRestrictions,
+				}),
+			);
 		}, session);
 	}
 

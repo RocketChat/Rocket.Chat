@@ -9,6 +9,7 @@ import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
 import { refreshVisibility } from '../../lib/notifications/core/lib/Presence';
+import { statusVisibilityGate } from '../../lib/statusVisibility/StatusVisibilityGate';
 import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
@@ -30,6 +31,8 @@ const minimongoChangeMap: Record<string, string> = {
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
+		statusVisibilityGate.watch(service);
+
 		const logger = new Logger('ListenersModule');
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));

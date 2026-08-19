@@ -6,6 +6,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { Streamer } from '../../../../modules/streamer/streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../modules/streamer/types';
+import { statusVisibilityGate } from '../../../statusVisibility/StatusVisibilityGate';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -62,6 +63,14 @@ class UserPresence {
 	}
 
 	async refreshHiddenFrom(): Promise<void> {
+		if (!(await statusVisibilityGate.ensureEnabled())) {
+			if (this.hiddenFrom.size) {
+				this.hiddenFrom = new Map();
+			}
+			this.stale = false;
+			return;
+		}
+
 		const previous = this.hiddenFrom;
 
 		try {
