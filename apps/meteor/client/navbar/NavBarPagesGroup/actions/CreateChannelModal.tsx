@@ -155,7 +155,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 	const goToRoom = useGoToRoom();
 
 	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
-		let roomData;
 		const params = {
 			name,
 			members,
@@ -169,23 +168,23 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			},
 		};
 
+		let rid: string;
 		try {
 			if (isPrivate) {
-				roomData = await createPrivateChannel(params);
-				await onSuccess?.(roomData.group._id);
-				if (!teamId) goToRoom(roomData.group._id);
+				rid = (await createPrivateChannel(params)).group._id;
 			} else {
-				roomData = await createChannel(params);
-				await onSuccess?.(roomData.channel._id);
-				if (!teamId) goToRoom(roomData.channel._id);
+				rid = (await createChannel(params)).channel._id;
 			}
-
-			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
-			reload?.();
-			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+			return;
 		}
+
+		await onSuccess?.(rid);
+		if (!teamId) goToRoom(rid);
+		dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+		reload?.();
+		onClose();
 	};
 
 	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
