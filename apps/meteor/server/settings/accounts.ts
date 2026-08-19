@@ -778,6 +778,7 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				enterprise: true,
+				modules: ['unlimited-presence'],
 				invalidValue: false,
 				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
 			});
