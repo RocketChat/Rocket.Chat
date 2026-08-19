@@ -1,5 +1,4 @@
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useCallback } from 'react';
+import { useGroupsToggle } from './useGroupsToggle';
 
 /**
  * Controls the "Show unreads" behavior of the system/standard sidebar groups (Teams, Channels, …).
@@ -8,20 +7,6 @@ import { useCallback } from 'react';
  * Defaults to OFF for every group: localStorage stores only the group keys whose toggle has been turned ON.
  */
 export const useShowUnreadsGroups = () => {
-	const [shownUnreadGroups, setShownUnreadGroups] = useLocalStorage<string[]>('sidebarShownUnreadGroups', []);
-
-	const isShowUnreads = useCallback((group: string) => shownUnreadGroups.includes(group), [shownUnreadGroups]);
-
-	const toggleShowUnreads = useCallback(
-		(group: string) => {
-			if (shownUnreadGroups.includes(group)) {
-				setShownUnreadGroups(shownUnreadGroups.filter((item) => item !== group));
-			} else {
-				setShownUnreadGroups([...shownUnreadGroups, group]);
-			}
-		},
-		[shownUnreadGroups, setShownUnreadGroups],
-	);
-
+	const { isEnabled: isShowUnreads, toggle: toggleShowUnreads } = useGroupsToggle('sidebarShownUnreadGroups');
 	return { isShowUnreads, toggleShowUnreads };
 };
