@@ -35,7 +35,6 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.4",
 		"eslint": "~9.39.5",
-		"prettier": "~3.9.6",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"storybook": "^9.1.20",
