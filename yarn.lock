@@ -9310,6 +9310,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/memo": "workspace:~"
     "@rocket.chat/stylis-logical-props-middleware": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
     "@rollup/plugin-commonjs": "npm:~29.0.3"
     "@rollup/plugin-json": "npm:~6.1.0"
     "@rollup/plugin-node-resolve": "npm:~16.0.3"
