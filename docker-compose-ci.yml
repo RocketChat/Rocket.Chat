@@ -200,6 +200,24 @@ services:
   httpbin:
     image: kong/httpbin
 
+  mock-server:
+    image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
+    profiles:
+      - api
+    ports:
+      - 4000:8080
+    networks:
+      default:
+        # single-label hostnames fail server-fetch SSRF domain validation and message-parser only links TLDs
+        # from its whitelist (.local/.test/.internal are not in it), so tests reach it through this alias
+        aliases:
+          - mock-server.dev
+    healthcheck:
+      test: ['CMD', '/mock-server', '-healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
   traefik:
     image: traefik:v3.6.6
     command:
