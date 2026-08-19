@@ -7,6 +7,7 @@ import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -31,13 +32,13 @@ Meteor.methods<ServerMethods>({
 		check(limit, Number);
 		check(showThreadMessages, Boolean);
 
-		if (!Meteor.userId()) {
+		const fromId = Meteor.userId() ?? undefined;
+
+		if (!fromId && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadSurroundingMessages',
 			});
 		}
-
-		const fromId = Meteor.userId() ?? undefined;
 
 		if (!message._id) {
 			return false;
