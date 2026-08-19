@@ -1,5 +1,27 @@
 # @rocket.chat/meteor
 
+## 8.4.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41854](https://github.com/RocketChat/Rocket.Chat/pull/41854) by [@dionisio-bot](https://github.com/dionisio-bot)) Adds per-client rate limiting to the unauthenticated sendForgotPasswordEmail method, matching the REST users.forgotPassword endpoint
+
+- ([#41842](https://github.com/RocketChat/Rocket.Chat/pull/41842) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41862](https://github.com/RocketChat/Rocket.Chat/pull/41862) by [@dionisio-bot](https://github.com/dionisio-bot)) Replace http with serverFetch in downloadPublicImportFile to add SSRF protection
+
+- ([#41825](https://github.com/RocketChat/Rocket.Chat/pull/41825) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes special characters not being escaped in the visitor name shown in the Omnichannel queue side panel's message preview
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.6
+  - @rocket.chat/rest-typings@8.4.6
+  </details>
+
 ## 8.4.5
 
 ### Patch Changes
