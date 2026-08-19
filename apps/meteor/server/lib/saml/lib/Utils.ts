@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import zlib from 'node:zlib';
 
@@ -115,6 +116,15 @@ export class SAMLUtils {
 		lines.push('-----END CERTIFICATE-----');
 
 		return lines.join('\n');
+	}
+
+	public static isParsableCertificate(cert: string): boolean {
+		try {
+			void new crypto.X509Certificate(this.certToPEM(cert));
+			return true;
+		} catch {
+			return false;
+		}
 	}
 
 	public static fillTemplateData(template: string, data: Record<string, string>): string {
