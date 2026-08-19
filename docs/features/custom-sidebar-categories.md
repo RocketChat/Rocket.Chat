@@ -21,7 +21,7 @@ A category is a small record stored in the user's preferences:
 export interface ISidebarCustomCategory {
 	_id: string;              // Random.id(), generated client-side on create
 	name: string;             // display name (trimmed; max 30 chars)
-	showUnreads?: boolean;    // when collapsed, keep listing unread rooms (default: true)
+	showUnreads?: boolean;    // when collapsed, keep listing unread rooms (default: false)
 	keepUnreadsOnTop?: boolean; // when opened, sort unread rooms to the top (default: false)
 	rooms?: string[];         // rids assigned to this category
 }
