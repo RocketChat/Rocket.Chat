@@ -24,8 +24,7 @@
 	"source": "src/index.ts",
 	"types": "dist/index.d.ts",
 	"files": [
-		"/dist",
-		"/logicalProperties"
+		"/dist"
 	],
 	"scripts": {
 		"build": "rm -rf dist && rollup -c",
