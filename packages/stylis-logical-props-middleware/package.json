@@ -1,0 +1,49 @@
+{
+	"name": "@rocket.chat/stylis-logical-props-middleware",
+	"version": "0.31.25",
+	"description": "Stylis middleware to handle CSS Logical Properties and their fallbacks",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/stylis-logical-props-middleware"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/esm/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
+	},
+	"dependencies": {
+		"@rocket.chat/css-supports": "workspace:~"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@types/stylis": "^4.2.7",
+		"eslint": "~9.39.5",
+		"prettier": "~3.3.3",
+		"stylis": "~4.4.0",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"stylis": "~4.4.0"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

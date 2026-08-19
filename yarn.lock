@@ -9327,7 +9327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.25, @rocket.chat/css-supports@workspace:packages/css-supports":
+"@rocket.chat/css-supports@npm:^0.31.25, @rocket.chat/css-supports@workspace:packages/css-supports, @rocket.chat/css-supports@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/css-supports@workspace:packages/css-supports"
   dependencies:
@@ -11072,16 +11072,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/stylis-logical-props-middleware@npm:^0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.25"
+"@rocket.chat/stylis-logical-props-middleware@npm:^0.31.25, @rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware"
   dependencies:
-    "@rocket.chat/css-supports": "npm:^0.31.25"
+    "@rocket.chat/css-supports": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@types/stylis": "npm:^4.2.7"
+    eslint: "npm:~9.39.5"
+    prettier: "npm:~3.3.3"
+    stylis: "npm:~4.4.0"
+    typescript: "npm:~5.9.3"
   peerDependencies:
-    stylis: 4.0.10
-  checksum: 10/74d59b73bf35ab14fabb89ee720b254c8f3c3421504c598ee84aa26b04a6bbe44ea0228785773d5e7cb25af0296235cc5079ef5ab8ebeee014a7761c66824a0f
-  languageName: node
-  linkType: hard
+    stylis: ~4.4.0
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/tools@workspace:*, @rocket.chat/tools@workspace:^, @rocket.chat/tools@workspace:packages/tools, @rocket.chat/tools@workspace:~":
   version: 0.0.0-use.local
@@ -15485,6 +15490,13 @@ __metadata:
   version: 2.0.2
   resolution: "@types/strict-uri-encode@npm:2.0.2"
   checksum: 10/e395868cc1cd49537be56d2f43b417ddc11559f807d5e1402d180870d0e2872fbe4d35765de1bbec76b939faf77cfdb13aec715d9946f6675e17073169a70dcd
+  languageName: node
+  linkType: hard
+
+"@types/stylis@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@types/stylis@npm:4.2.7"
+  checksum: 10/068c7fd64ee2e1649b06615da57c76dd9f5be1836e310ebf94aa08193c3544d48944079ce6e94ba89b72b716944f217234a86fecc28185246c1787f02ad0eae1
   languageName: node
   linkType: hard
 
