@@ -112,9 +112,11 @@ export class StreamPresence {
 		return new (class StreamPresence extends StreamerClass<'user-presence'> {
 			override async _publish(
 				publication: IPublication,
-				_eventName: string,
+				eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,
 			): Promise<void> {
+				await super._publish(publication, eventName, options);
+
 				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
 				const [client, main] = UserPresence.getClient(publication, this);
@@ -136,8 +138,6 @@ export class StreamPresence {
 					publication.stop();
 					return;
 				}
-
-				publication.ready();
 
 				publication.onStop(() => client.stop());
 			}
