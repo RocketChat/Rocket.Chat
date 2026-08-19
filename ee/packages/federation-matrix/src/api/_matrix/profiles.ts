@@ -527,6 +527,13 @@ export const getMatrixProfilesRoutes = () => {
 
 					const limit = Math.min(body.limit ?? 10, 100);
 
+					if (limit < 1) {
+						return {
+							body: { events: [] },
+							statusCode: 200,
+						};
+					}
+
 					const response = await federationSDK.getMissingEvents(
 						roomIdSchema.parse(roomId),
 						body.earliest_events,
