@@ -50,7 +50,7 @@ export interface ICallHistoryPage {
  * in a read-only-fashion.
  *
  * Reading any user's history is a privileged action, so every method here requires the
- * `call-history.read` permission. Without it the methods answer as though the history
+ * `media-call.history` permission. Without it the methods answer as though the history
  * were empty rather than throwing, matching how the other read accessors behave.
  *
  * Two things to know before building a report on this:
@@ -62,7 +62,7 @@ export interface ICallHistoryPage {
  *   history from an external PBX instead is not readable here, and these methods return
  *   nothing at all on such a workspace.
  *
- * @see AppPermissions.callHistory.read
+ * @see AppPermissions.mediaCall.history
  */
 export interface ICallHistoryRead {
 	/**

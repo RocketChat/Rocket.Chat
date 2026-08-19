@@ -18,7 +18,7 @@ const ADMIN_UID = 'rocketchat.internal.admin.test';
 const CONTACT_UID = 'rocket.cat';
 
 (IS_EE ? describe : describe.skip)('Apps - CallHistoryRead accessor', () => {
-	describe('[with call-history.read permission]', () => {
+	describe('[with media-call.history permission]', () => {
 		let app: App;
 
 		before((done) => getCredentials(done));
@@ -161,7 +161,7 @@ const CONTACT_UID = 'rocket.cat';
 		});
 	});
 
-	describe('[without call-history.read permission]', () => {
+	describe('[without media-call.history permission]', () => {
 		let app: App;
 
 		before((done) => getCredentials(done));

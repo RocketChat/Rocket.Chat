@@ -688,10 +688,10 @@ at boot by `apps/meteor/server/startup/callHistoryTestData.ts`.
 **app.json** (relevant excerpt)
 
 ```json
-{ "permissions": [{ "name": "call-history.read" }, { "name": "api" }] }
+{ "permissions": [{ "name": "media-call.history" }, { "name": "api" }] }
 ```
 
-> Declaring `api` alongside `call-history.read` is **required**, not redundant. Granted permissions
+> Declaring `api` alongside `media-call.history` is **required**, not redundant. Granted permissions
 > *replace* the defaults rather than adding to them — `AppManager.getPermissionsGranted` returns
 > `permissionsGranted || defaultPermissions` — so an app installed with an explicit permission list
 > holds only what that list names. Omit `api` and the app installs and enables cleanly, but its HTTP

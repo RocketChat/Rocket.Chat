@@ -34,14 +34,14 @@ export abstract class CallHistoryBridge extends BaseBridge {
 	protected abstract find(query: ICallHistoryQuery, appId: string): Promise<ICallHistoryPage>;
 
 	private hasReadPermission(appId: string): boolean {
-		if (AppPermissionManager.hasPermission(appId, AppPermissions.callHistory.read)) {
+		if (AppPermissionManager.hasPermission(appId, AppPermissions.mediaCall.history)) {
 			return true;
 		}
 
 		AppPermissionManager.notifyAboutError(
 			new PermissionDeniedError({
 				appId,
-				missingPermissions: [AppPermissions.callHistory.read],
+				missingPermissions: [AppPermissions.mediaCall.history],
 			}),
 		);
 

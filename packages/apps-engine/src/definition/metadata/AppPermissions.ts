@@ -129,8 +129,8 @@ export const AppPermissions = {
 	 * deliberately absent from `defaultPermissions` below: granting it implicitly would hand
 	 * every pre-permission app a workspace-wide read it never asked for.
 	 */
-	'callHistory': {
-		read: { name: 'call-history.read' },
+	'mediaCall': {
+		history: { name: 'media-call.history' },
 	},
 };
 
