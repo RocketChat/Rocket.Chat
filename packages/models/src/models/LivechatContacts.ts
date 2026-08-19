@@ -6,7 +6,14 @@ import type {
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatContactsModel, InsertionModel, Updater } from '@rocket.chat/model-typings';
+import type {
+	FindPaginated,
+	ILivechatContactsModel,
+	InsertionModel,
+	Updater,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	Document,
@@ -14,7 +21,6 @@ import type {
 	Db,
 	RootFilterOperators,
 	Filter,
-	FindOptions,
 	FindCursor,
 	IndexDescription,
 	UpdateResult,
@@ -143,10 +149,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.updateOne({ _id: contactId, enabled: { $ne: false } }, update, options);
 	}
 
-	findPaginatedContacts(
+	findPaginatedContacts<T extends Document = ILivechatContact, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		search: { searchText?: string; unknown?: boolean },
-		options?: FindOptions,
-	): FindPaginated<FindCursor<ILivechatContact>> {
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const { searchText, unknown = false } = search;
 		const searchRegex = escapeRegExp(searchText || '');
 		const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
@@ -159,13 +165,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			enabled: { $ne: false },
 		};
 
-		return this.findPaginated(
-			{ ...match },
-			{
-				allowDiskUse: true,
-				...options,
-			},
-		);
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread
+		return this.findPaginated<T, O>({ ...match }, {
+			allowDiskUse: true,
+			...options,
+		} as unknown as O);
 	}
 
 	async findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null> {
@@ -216,11 +220,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		};
 	}
 
-	async findOneByVisitor<T extends Document = ILivechatContact>(
+	async findOneByVisitor<T extends Document = ILivechatContact, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		visitor: ILivechatContactVisitorAssociation,
-		options: FindOptions<ILivechatContact> = {},
-	): Promise<T | null> {
-		return this.findOne<T>(this.makeQueryForVisitor(visitor), options);
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>(this.makeQueryForVisitor(visitor), options);
 	}
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
@@ -278,12 +282,15 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.updateFromUpdater(this.makeQueryForVisitor(visitor), contactUpdater, options);
 	}
 
-	async findSimilarVerifiedContacts(
+	async findSimilarVerifiedContacts<
+		T extends Document = ILivechatContact,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		{ field, value }: Pick<ILivechatContactChannel, 'field' | 'value'>,
 		originalContactId: string,
-		options?: FindOptions<ILivechatContact>,
-	): Promise<ILivechatContact[]> {
-		return this.find(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O>[]> {
+		return this.find<T, O>(
 			{
 				channels: {
 					$elemMatch: {
@@ -304,12 +311,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		});
 	}
 
-	async findOneEnabledById(_id: ILivechatContact['_id'], options?: FindOptions<ILivechatContact>): Promise<ILivechatContact | null>;
-
-	async findOneEnabledById<P extends Document = ILivechatContact>(_id: P['_id'], options?: FindOptions<P>): Promise<P | null>;
-
-	async findOneEnabledById(_id: ILivechatContact['_id'], options?: any): Promise<ILivechatContact | null> {
-		return this.findOne({ _id, enabled: { $ne: false } }, options);
+	async findOneEnabledById<P extends Document = ILivechatContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: ILivechatContact['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ _id, enabled: { $ne: false } }, options);
 	}
 
 	disableByVisitorId(visitorId: string): Promise<UpdateResult | Document> {

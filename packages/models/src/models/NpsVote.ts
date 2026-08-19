@@ -1,7 +1,7 @@
 import type { INpsVote, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { INpsVoteStatus } from '@rocket.chat/core-typings';
-import type { INpsVoteModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { INpsVoteModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -15,35 +15,47 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
-	findNotSentByNpsId(npsId: string, options?: Omit<FindOptions<INpsVote>, 'sort' | 'limit'>): FindCursor<INpsVote> {
+	// `sort` and `limit` are branded away because the cursor below overwrites both; a caller passing
+	// them would have them silently dropped
+	findNotSentByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		options?: O & { sort?: never; limit?: never },
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
 		};
-		const cursor = options ? this.find(query, options) : this.find(query);
+		const cursor = options ? this.find<T, O>(query, options) : this.find<T, O>(query);
 
 		return cursor.sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
+	findByNpsIdAndStatus<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		status: INpsVoteStatus,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 			status,
 		};
 		if (options) {
-			return this.find(query, options);
+			return this.find<T, O>(query, options);
 		}
-		return this.find(query);
+		return this.find<T, O>(query);
 	}
 
-	findByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
+	findByNpsId<T extends Document = INpsVote, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		npsId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			npsId,
 		};
 		if (options) {
-			return this.find(query, options);
+			return this.find<T, O>(query, options);
 		}
-		return this.find(query);
+		return this.find<T, O>(query);
 	}
 
 	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult> {

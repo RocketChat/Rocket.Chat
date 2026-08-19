@@ -1,5 +1,5 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -96,7 +96,7 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const count = opts?.count ?? total;
 		const slice = attributes.slice(offset, offset + count);
 		return {
-			attributes: slice.map((a) => ({ _id: a.key, ...a })) as IAbacAttribute[],
+			attributes: slice.map((a) => ({ _id: a.key, ...a })),
 			offset,
 			count: slice.length,
 			total,

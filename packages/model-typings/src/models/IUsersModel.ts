@@ -26,83 +26,138 @@ import type {
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection } from '../types/DocumentWithProjection';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-	findUsersInRoles<T extends Document = IUser, O extends FindOptions<T> = FindOptions<T>>(
+	findUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roles: IRole['_id'][] | IRole['_id'],
 		_scope?: null,
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
-	findPaginatedUsersInRoles(roles: IRole['_id'][] | IRole['_id'], options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
-	findOneByIdWithEmailAddress(uid: IUser['_id'], options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByUsername<T extends Document = IUser>(username: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findOneAgentById<T extends Document = ILivechatAgent>(_id: IUser['_id'], options?: FindOptions<IUser>): Promise<T | null>;
-	findUsersInRolesWithQuery(roles: IRole['_id'][] | IRole['_id'], query: Filter<IUser>, options?: FindOptions<IUser>): FindCursor<IUser>;
-	findPaginatedUsersInRolesWithQuery<T extends Document = IUser>(
+	findPaginatedUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findOneByIdWithEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneAgentById<T extends Document = ILivechatAgent, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roles: IRole['_id'][] | IRole['_id'],
 		query: Filter<IUser>,
-		options?: FindOptions<IUser>,
-	): FindPaginated<FindCursor<WithId<T>>>;
-	findOneByUsernameAndRoomIgnoringCase(username: string | RegExp, rid: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByIdAndLoginHashedToken(_id: IUser['_id'], token: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findByActiveUsersExcept(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findPaginatedUsersInRolesWithQuery<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		query: Filter<IUser>,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+	findOneByUsernameAndRoomIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string | RegExp,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByIdAndLoginHashedToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		searchTerm: string,
 		exceptions: string[],
-		options?: FindOptions<IUser>,
+		options?: O,
 		searchFields?: string[],
 		extraQuery?: Filter<IUser>[],
 		extra?: { startsWith: boolean; endsWith: boolean },
-	): FindCursor<IUser>;
-	findPaginatedByActiveUsersExcept<T extends Document = IUser>(
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findPaginatedByActiveUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		searchTerm: string,
 		exceptions?: string[],
-		options?: FindOptions<IUser>,
+		options?: O,
 		searchFields?: string[],
 		extraQuery?: Filter<IUser>[],
 		extra?: { startsWith?: boolean; endsWith?: boolean },
-	): FindPaginated<FindCursor<WithId<T>>>;
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPaginatedByActiveLocalUsersExcept<T extends Document = IUser>(
+	findPaginatedByActiveLocalUsersExcept<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		searchTerm: string,
 		exceptions?: string[],
-		options?: FindOptions<IUser>,
+		options?: O,
 		forcedSearchFields?: string[],
 		localDomain?: string,
-	): FindPaginated<FindCursor<WithId<T>>>;
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findPaginatedByActiveExternalUsersExcept<T extends Document = IUser>(
+	findPaginatedByActiveExternalUsersExcept<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		searchTerm: string,
 		exceptions?: string[],
-		options?: FindOptions<IUser>,
+		options?: O,
 		forcedSearchFields?: string[],
 		localDomain?: string,
-	): FindPaginated<FindCursor<WithId<T>>>;
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
-	findActive(query: Filter<IUser>, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActive<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<IUser>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findActiveByIds(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+	findByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findOneByUsernameIgnoringCase<T extends Document = IUser>(username: IUser['username'], options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByUsernameIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: IUser['username'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findOneWithoutLDAPByUsernameIgnoringCase<T extends Document = IUser>(username: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findOneWithoutLDAPByUsernameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		username: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string): Promise<T | null>;
 
-	findOneByAppId<T extends Document = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findUsersByIdentifiers(
+	findOneByAppId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		appId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findUsersByIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		params: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
-		options?: FindOptions<IUser>,
-	): FindCursor<IUser>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
+	findLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+	findActiveLDAPUsersExceptIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findConnectedLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
+	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<Pick<IUser, 'roles' | '_id'> | null>;
 
@@ -145,12 +200,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T extends Document = IUser>(
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		termRegex: { $regex: string; $options: string } | RegExp,
 		exceptions?: string[],
 		conditions?: Filter<IUser>,
-		options?: FindOptions<IUser>,
-	): FindCursor<T>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	countAllAgentsStatus({
 		departmentId,
@@ -168,7 +226,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
-	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveByRoomIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomIds: IRoom['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	setCasExternalIdByUsername(username: string): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
@@ -240,7 +301,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	countActiveUsersEmail2faEnable(options: any): Promise<number>;
 
-	findActiveByIdsOrUsernames(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveByIdsOrUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	setAsFederated(userId: string): any;
 
@@ -268,12 +332,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenIdle?: boolean,
 		acceptChatsWithNoAgents?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
-	findOneOnlineAgentByUserList(
+	findOneOnlineAgentByUserList<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userList: string[] | string,
-		options?: FindOptions<IUser>,
+		options?: O,
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		acceptChatsWithNoAgents?: boolean,
-	): Promise<IUser | null>;
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T>;
 	countBotAgents(usernameList?: string | string[]): Promise<number>;
@@ -334,49 +398,122 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	update2FABackupCodesByUserId(userId: string, codes: string[]): Promise<UpdateResult>;
 	enableEmail2FAByUserId(userId: string): Promise<UpdateResult>;
 	disableEmail2FAByUserId(userId: string): Promise<UpdateResult>;
-	findByIdsWithPublicE2EKey(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByIdsWithPublicE2EKey<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	resetE2EKey(userId: string): Promise<UpdateResult>;
 	removeExpiredEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	maxInvalidEmailCodeAttemptsReached(userId: string, maxAttemtps: number): Promise<boolean>;
 	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
-	findActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): Promise<number>;
-	findOneByUsernameAndServiceNameIgnoringCase(
+	findOneByUsernameAndServiceNameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		username: string,
 		userId: string,
 		serviceName: string,
-		options?: FindOptions<IUser>,
-	): Promise<IUser | null>;
-	findOneByEmailAddressAndServiceNameIgnoringCase(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByEmailAddressAndServiceNameIgnoringCase<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		emailAddress: string,
 		userId: string,
 		serviceName: string,
-		options?: FindOptions<IUser>,
-	): Promise<IUser | null>;
-	findOneByEmailAddress(emailAddress: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneWithoutLDAPByEmailAddress(emailAddress: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneAdmin(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByIdAndLoginToken(userId: string, loginToken: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findPresenceUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByIdAndLoginToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		loginToken: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneActiveById<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByIdOrUsername<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: IRole['_id'][],
+		type: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findUsersNotOffline<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
-	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
-	findByRoomId(roomId: string, options?: FindOptions<IUser>): Promise<FindCursor<IUser>>;
-	findByUsernames(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findByUsernamesIgnoringCase(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findActiveByUserIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findNotIdUpdatedFrom<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		updatedFrom: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByRoomId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<T, O>>>;
+	findByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByUsernamesIgnoringCase<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findActiveByUserIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countActiveLocalGuests(idsExceptions: string[]): Promise<number>;
-	findCrowdUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
+	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
-	findUsersByUsernames<T extends Document = IUser>(usernames: string[], options?: FindOptions<IUser>): FindCursor<T>;
-	findUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	getOldest(options?: FindOptions<IUser>): Promise<IUser | null>;
+	findUsersByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		usernames: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	getOldest<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
-	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string, options?: FindOptions<IUser>): FindCursor<IUser>;
-	findBySAMLInResponseTo(inResponseTo: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findBySAMLNameIdOrIdpSession<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		samlNameId: string,
+		idpSession: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findBySAMLInResponseTo<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		inResponseTo: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	addImportIds(userId: string, importIds: string | string[]): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
@@ -392,7 +529,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, active?: boolean): Promise<UpdateResult | Document>;
-	findActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveNotLoggedInAfterWithRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		latestLastLoginDate: Date,
+		role?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
@@ -424,7 +565,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
 	countRoomMembers(roomId: string): Promise<number>;
-	findOneByImportId<T extends Document = IUser>(_id: IUser['_id'], options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByImportId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
 	findAgentsWithDepartments<T extends Document = ILivechatAgent>(
 		role: IRole['_id'][] | IRole['_id'],
@@ -437,12 +581,22 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineButNotAvailableAgents<T extends Document = ILivechatAgent>(userIds?: IUser['_id'][]): FindCursor<T>;
 	findAgentsAvailableWithoutBusinessHours(userIds?: IUser['_id'][]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult | Document>;
-	findOneByFreeSwitchExtension<T extends Document = IUser>(freeSwitchExtension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		freeSwitchExtension: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
-	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		role: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string): Promise<UpdateResult>;
-	findOneByEmailVerificationToken<T extends Document = IUser>(token: string, options?: FindOptions<T>): Promise<T | null>;
+	findOneByEmailVerificationToken<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 }

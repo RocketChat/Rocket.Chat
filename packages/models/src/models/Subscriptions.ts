@@ -1,5 +1,5 @@
 import type { AtLeast, IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, SpotlightUser } from '@rocket.chat/core-typings';
-import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
+import type { ISubscriptionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { compact } from 'lodash';
 import type {
@@ -77,16 +77,24 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
-	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {
+	findOneByRoomIdAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		uid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			rid,
 			'u._id': uid,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+	findByUserIdAndRoomIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		roomIds: Array<string>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			'rid': {
@@ -94,28 +102,38 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomId(roomId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+	findByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid: roomId,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findUnarchivedByRoomId(roomId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+	findUnarchivedByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'rid': roomId,
 			'archived': { $ne: true },
 			'u._id': { $exists: true },
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+	findByRoomIdAndNotUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
@@ -123,7 +141,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
@@ -218,32 +236,23 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<FindCursor<IUser>>;
-
-	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
-
-	findUsersInRoles<P extends Document = IUser>(
-		roles: IRole['_id'][],
-		rid: string | undefined,
-		options: FindOptions<P extends IUser ? IUser : P>,
-	): Promise<FindCursor<P>>;
-
-	async findUsersInRoles<P extends Document = IUser>(
+	async findUsersInRoles<P extends Document = IUser, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		roles: IRole['_id'][],
 		rid: IRoom['_id'] | undefined,
-		options?: FindOptions<P extends IUser ? IUser : P>,
-	): Promise<FindCursor<P>> {
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<P, O>>> {
 		const query = {
 			roles: { $in: roles },
 			...(rid && { rid }),
 		};
 
+		// this projection is internal to the lookup below, so it must not be typed against the caller's `O`
 		const subscriptions = await this.find(query, { projection: { 'u._id': 1 } }).toArray();
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
 		// TODO remove dependency to other models - this logic should be inside a function/service
-		return Users.find<P>({ _id: { $in: users } }, options || {});
+		return Users.find<P, O>({ _id: { $in: users } }, options);
 	}
 
 	async countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number> {
@@ -294,17 +303,24 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return !!found;
 	}
 
-	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		return this.find(
+	findByRolesAndRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		{ roles, rid }: { roles: string; rid?: string },
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				roles,
 				...(rid && { rid }),
 			},
-			options || {},
+			options,
 		);
 	}
 
-	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByUserIdAndTypes<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		types: ISubscription['t'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			't': {
@@ -312,19 +328,25 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
-	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findOpenByVisitorIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'open': true,
 			'v._id': { $in: visitorIds },
 		};
 
-		return this.find(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
+	findByRoomIdAndNotAlertOrOpenExcludingUserIds<
+		T extends Document = ISubscription,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		{
 			roomId,
 			uidsExclude,
@@ -336,8 +358,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			uidsInclude?: ISubscription['u']['_id'][];
 			onlyRead: boolean;
 		},
-		options?: FindOptions<ISubscription>,
-	) {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid: roomId,
 			...(uidsExclude?.length && {
@@ -348,7 +370,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			}),
 		};
 
-		return this.find(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
 	async removeByRoomId(
@@ -667,17 +689,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
-	findByAutoTranslateAndUserId(
+	findByAutoTranslateAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		autoTranslate: ISubscription['autoTranslate'] = true,
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			autoTranslate,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
@@ -711,7 +733,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.distinct('autoTranslateLanguage', query);
 	}
 
-	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByRidWithoutE2EKey<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid,
 			E2EKey: {
@@ -719,7 +744,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	findUsersWithPublicE2EKeyByRids(
@@ -934,7 +959,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
-	findByUserIdWithoutE2E(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByUserIdWithoutE2E<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			'E2EKey': {
@@ -942,45 +970,56 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findOneByRoomIdAndUsername(roomId: string, username: string, options: FindOptions<ISubscription>): Promise<ISubscription | null> {
+	findOneByRoomIdAndUsername<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		username: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			'rid': roomId,
 			'u.username': username,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	// FIND
-	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<ISubscription> = { 'u._id': userId, 'status': { $ne: 'BANNED' as const } };
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByUserIdExceptType(
+	findByUserIdExceptType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		typeException: ISubscription['t'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			't': { $ne: typeException },
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByUserIdAndType(userId: string, type: ISubscription['t'], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByUserIdAndType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		type: ISubscription['t'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			't': type,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	/**
@@ -988,33 +1027,35 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	 * @param {IRole['_id'][]} roles
 	 * @param {any} options
 	 */
-	findByUserIdAndRoles(userId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByUserIdAndRoles<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			'roles': { $in: roles },
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	/**
 	 * @param {string} roomId
 	 * @param {IRole['_id'][]} roles the list of roles
-	 * @param {any} options
 	 */
-	findByRoomIdAndRoles: ISubscriptionsModel['findByRoomIdAndRoles'] = (
+	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		roomId: string,
 		roles: string[],
-		options?: FindOptions<ISubscription>,
-	) => {
-		const rolesArray = ([] as string[]).concat(roles);
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
 		const query = {
 			rid: roomId,
-			roles: { $in: rolesArray },
+			roles: { $in: ([] as string[]).concat(roles) },
 		};
 
-		return this.find(query, options);
-	};
+		return this.find<P, O>(query, options);
+	}
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);
@@ -1047,32 +1088,42 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		types: ISubscription['t'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<ISubscription> = {
 			t: {
 				$in: types,
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByTypeAndUserId(type: ISubscription['t'], userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByTypeAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: ISubscription['t'],
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<ISubscription> = {
 			't': type,
 			'u._id': userId,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomWithUserHighlights(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByRoomWithUserHighlights<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'rid': roomId,
 			'userHighlights.0': { $exists: true },
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	async getLastSeen(options: FindOptions<ISubscription> = { projection: { _id: 0, ls: 1 } }): Promise<Date | undefined> {
@@ -1082,11 +1133,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return subscription?.ls;
 	}
 
-	findByRoomIdAndUserIds(
+	findByRoomIdAndUserIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: ISubscription['rid'],
 		userIds: ISubscription['u']['_id'][],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
@@ -1094,19 +1145,25 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByRoomIdWhenUserIdExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { rid, 'u._id': { $exists: true } };
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByRoomIdWhenUsernameExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { rid, 'u.username': { $exists: true } };
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number> {
@@ -1115,7 +1172,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null> {
+	getMinimumLastSeenByRoomId(rid: string): Promise<Pick<ISubscription, '_id' | 'ls'> | null> {
 		return this.findOne(
 			{
 				rid,
@@ -1147,12 +1204,18 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		return this.find({ rid: roomId, archived: true }, options);
+	findArchivedByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ rid: roomId, archived: true }, options);
 	}
 
-	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		return this.find({ 'u._id': userId, 'archived': true }, options);
+	findArchivedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ 'u._id': userId, 'archived': true }, options);
 	}
 
 	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document> {
@@ -1213,23 +1276,23 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	findByUserIdAndRoomType(
+	findByUserIdAndRoomType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		type: ISubscription['t'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			'u._id': userId,
 			't': type,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByNameAndRoomType(
+	findByNameAndRoomType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		filter: Partial<Pick<ISubscription, 'name' | 't'>>,
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		if (!filter.name && !filter.t) {
 			throw new Error('invalid filter');
 		}
@@ -1237,7 +1300,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			...(filter.name && { name: filter.name }),
 			...(filter.t && { t: filter.t }),
 		};
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult> {
@@ -1635,12 +1698,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	findByUserPreferences(
+	findByUserPreferences<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		notificationOriginField: keyof ISubscription,
 		notificationOriginValue: 'user' | 'subscription',
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const value = notificationOriginValue === 'user' ? 'user' : { $ne: 'subscription' };
 
 		const query: Filter<ISubscription> = {
@@ -1648,7 +1711,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			[notificationOriginField]: value,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document> {
@@ -1850,17 +1913,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	findUnreadThreadsByRoomId(
+	findUnreadThreadsByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: ISubscription['rid'],
 		tunread: ISubscription['tunread'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid,
 			tunread: { $in: tunread },
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
@@ -1974,8 +2037,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T> {
-		return this.find(
+	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: ISubscription['u']['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				'u._id': userId,
 				'status': { $exists: false },

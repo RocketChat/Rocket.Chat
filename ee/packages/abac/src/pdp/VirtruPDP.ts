@@ -4,8 +4,6 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { logger } from '../logger';
 import type {
 	IPolicyDecisionPoint,
 	IGetDecisionBulkRequest,
@@ -17,6 +15,8 @@ import type {
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
+import { logger } from '../logger';
 
 const pdpLogger = logger.section('VirtruPDP');
 
@@ -266,9 +266,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const users = Users.findActiveByRoomIds([room._id], {
-			projection: { _id: 1, emails: 1, username: 1 },
-		});
+		const users = Users.findActiveByRoomIds([room._id]);
 
 		const config = this.client.getConfig();
 		const nonCompliantUsers: IUser[] = [];
@@ -374,7 +372,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			projection: { _id: 1, abacAttributes: 1 },
 		});
 
-		const abacRoomById = new Map<string, IRoom>();
+		const abacRoomById = new Map<string, Pick<IRoom, '_id' | 'abacAttributes'>>();
 		for await (const room of abacRoomCursor) {
 			abacRoomById.set(room._id, room);
 		}
@@ -389,7 +387,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return this.evaluateUserRooms(entries);
 	}
 
-	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
+	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id'>[]> {
 		const roomIds = user.__rooms;
 		if (!roomIds?.length) {
 			return [];
@@ -410,7 +408,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
 				userId: user._id,
 			});
-			return abacRooms;
+			return abacRooms.map(({ _id }) => ({ _id }));
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({
@@ -430,12 +428,12 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		const nonCompliantRooms: IRoom[] = [];
+		const nonCompliantRooms: Pick<IRoom, '_id'>[] = [];
 
 		responses.forEach((resp, index) => {
 			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && abacRooms[index]) {
-				nonCompliantRooms.push(abacRooms[index]);
+				nonCompliantRooms.push({ _id: abacRooms[index]._id });
 			}
 		});
 

@@ -1,6 +1,6 @@
 import type { IBannerDismiss, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBannersDismissModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -26,7 +26,7 @@ export class BannersDismissRaw extends BaseRaw<IBannerDismiss> implements IBanne
 	findByUserIdAndBannerId<P extends Document>(
 		userId: string,
 		bannerIds: string[],
-		options?: undefined | FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+		options?: FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
 	): FindCursor<P> | FindCursor<IBannerDismiss> {
 		const query = {
 			userId,

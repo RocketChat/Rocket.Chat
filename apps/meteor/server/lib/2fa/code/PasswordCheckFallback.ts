@@ -1,14 +1,13 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import type { Meteor } from 'meteor/meteor';
 
-import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult, TwoFactorUser } from './ICodeCheck';
 import { settings } from '../../../settings';
 
 export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';
 
-	public isEnabled(user: IUser, force: boolean): boolean {
+	public isEnabled(user: TwoFactorUser, force: boolean): boolean {
 		if (force) {
 			return true;
 		}
@@ -20,7 +19,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 		return false;
 	}
 
-	public async verify(user: IUser, code: string, force: boolean): Promise<boolean> {
+	public async verify(user: TwoFactorUser, code: string, force: boolean): Promise<boolean> {
 		if (!this.isEnabled(user, force)) {
 			return false;
 		}
@@ -43,7 +42,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 		};
 	}
 
-	public async maxFaildedAttemtpsReached(_user: IUser): Promise<boolean> {
+	public async maxFaildedAttemtpsReached(_user: TwoFactorUser): Promise<boolean> {
 		return false;
 	}
 }

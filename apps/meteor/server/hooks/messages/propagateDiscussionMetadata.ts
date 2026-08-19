@@ -12,7 +12,10 @@ import { deleteRoom } from '../../lib/rooms/deleteRoom';
  * have to be applied on top of the stored room, otherwise the discussion metadata would always
  * be left one message behind.
  */
-const withPendingRoomChanges = (room: IRoom, roomUpdater?: Updater<IRoom>): IRoom => {
+const withPendingRoomChanges = (
+	room: Pick<IRoom, '_id' | 'msgs' | 'lm'>,
+	roomUpdater?: Updater<IRoom>,
+): Pick<IRoom, '_id' | 'msgs' | 'lm'> => {
 	const { $inc, $set } = roomUpdater?.getRawUpdateFilter() ?? {};
 	const pendingMsgs = typeof $inc?.msgs === 'number' ? $inc.msgs : 0;
 	const pendingLm = $set?.lm instanceof Date ? $set.lm : undefined;
