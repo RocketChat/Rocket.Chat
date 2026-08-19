@@ -429,6 +429,19 @@ export const getMatrixTransactionsRoutes = () => {
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Math.min(Number(c.req.query('limit') || 100), 100);
+
+					// this will be handled by the federation-sdk on next versions so this can be removed
+					if (limit < 1) {
+						return {
+							body: {
+								origin: federationSDK.getConfig('serverName'),
+								origin_server_ts: Date.now(),
+								pdus: [],
+							},
+							statusCode: 200,
+						};
+					}
+
 					const eventIds = c.req.queries('v');
 					if (!eventIds?.length) {
 						return {

@@ -527,6 +527,7 @@ export const getMatrixProfilesRoutes = () => {
 
 					const limit = Math.min(body.limit ?? 10, 100);
 
+					// this will be handled by the federation-sdk on next versions so this can be removed
 					if (limit < 1) {
 						return {
 							body: { events: [] },
