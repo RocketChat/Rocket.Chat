@@ -77,7 +77,7 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 
 	return (
 		<GenericMenu
-			button={<IconButton small color={favorite ? 'status-font-on-warning' : undefined} icon='menu' marginInlineEnd={4} />}
+			button={<IconButton small color={favorite ? 'status-font-on-warning' : undefined} icon={groupingIcon} marginInlineEnd={4} />}
 			title={t('Move_to')}
 			icon={groupingIcon}
 			sections={sections}
