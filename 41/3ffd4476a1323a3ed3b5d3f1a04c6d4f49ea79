@@ -2,12 +2,18 @@ apps/meteor/server/api/v1/middlewares/experimental.ts
   s_1f4bd2e147b8f9::t_61d783465ff63e 1-22
 apps/meteor/server/api/api.ts
   s_1f4bd2e147b8f9::t_dba77e2c0a5d5a 85-89
+  h_4c386397e672f4 12
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.6.5",
   "base_commit_sha": "413ffd4476a1323a3ed3b5d3f1a04c6d4f49ea79",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_1f4bd2e147b8f9": {
       "agent_id": {
