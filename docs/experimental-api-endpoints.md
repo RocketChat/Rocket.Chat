@@ -61,8 +61,8 @@ endpoints give a third path — ship now, iterate freely, commit later.
   `ExperimentalEndpoints` type, not in the main `Endpoints` union, so the stable SDK
   surface stays honest. Consumers import them deliberately.
 - **Use the typed API only.** Register with `.get()` / `.post()` / `.put()` /
-  `.delete()` and AJV validators — `.addRoute()` is not available for experimental
-  routes.
+  `.delete()` and AJV validators — `.addRoute()` is not exposed on `API.experimental`,
+  its type omits the method.
 
 ## Lifecycle: experimental → official
 

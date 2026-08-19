@@ -2,7 +2,6 @@ import type { MiddlewareHandler } from 'hono';
 import type { Gauge, Histogram, Summary } from 'prom-client';
 
 import type { CachedSettings } from '../../../settings/CachedSettings';
-import type { APIClass } from '../../ApiClass';
 
 export const metricsMiddleware =
 	({
@@ -15,7 +14,7 @@ export const metricsMiddleware =
 		activeRequestsGauge,
 	}: {
 		basePathRegex?: RegExp;
-		api: APIClass;
+		api: { version?: string };
 		settings: CachedSettings;
 		endpointTimeSummary: Summary;
 		endpointTimeHistogram: Histogram;

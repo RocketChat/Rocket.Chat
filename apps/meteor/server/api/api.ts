@@ -40,10 +40,16 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 	});
 };
 
+/**
+ * The experimental namespace is typed-API only: the deprecated `addRoute()` is omitted from the
+ * surface so new endpoints cannot be born on the legacy registration path.
+ */
+export type ExperimentalAPI = Omit<APIClass<'/experimental'>, 'addRoute'>;
+
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
-	experimental: APIClass<'/experimental'>;
+	experimental: ExperimentalAPI;
 	default: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
@@ -78,7 +84,7 @@ export const API: {
 	experimental: createApi({
 		version: 'experimental',
 		useDefaultAuth: true,
-	}),
+	}) as ExperimentalAPI,
 	default: createApi({}),
 };
 

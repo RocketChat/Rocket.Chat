@@ -18,9 +18,9 @@ untouched.
 
 **Only the new typed API is allowed on experimental routes.** Endpoints must be
 registered with `.get()` / `.post()` / `.put()` / `.delete()` (with AJV `body` / `query`
-/ `response` validators). The deprecated `.addRoute()` is **not** available for
-experimental endpoints — new surface area should not be born on the legacy registration
-path.
+/ `response` validators). The deprecated `.addRoute()` is **not exposed** on
+`API.experimental` (its type omits the method) — new surface area should not be born on
+the legacy registration path.
 
 ## Why this design (key findings from the current code)
 
