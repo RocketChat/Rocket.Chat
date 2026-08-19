@@ -2,6 +2,7 @@ import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsActivationBridge } from './activationBridge';
 import { TestsApiBridge } from './apiBridge';
 import { TestsAppDetailChangesBridge } from './appDetailChanges';
+import { TestsCallHistoryBridge } from './callHistoryBridge';
 import { TestAppCloudWorkspaceBridge } from './cloudBridge';
 import { TestsCommandBridge } from './commandBridge';
 import { TestContactBridge } from './contactBridge';
@@ -31,6 +32,7 @@ import type {
 	AppDetailChangesBridge,
 	ContactBridge,
 	EnvironmentalVariableBridge,
+	CallHistoryBridge,
 	ExperimentalBridge,
 	HttpBridge,
 	IInternalBridge,
@@ -110,6 +112,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly experimentalBridge: TestExperimentalBridge;
 
+	private readonly callHistoryBridge: TestsCallHistoryBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -139,6 +143,7 @@ export class TestsAppBridges extends AppBridges {
 		this.contactBridge = new TestContactBridge();
 		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
 		this.experimentalBridge = new TestExperimentalBridge();
+		this.callHistoryBridge = new TestsCallHistoryBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -251,5 +256,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getExperimentalBridge(): ExperimentalBridge {
 		return this.experimentalBridge;
+	}
+
+	public getCallHistoryBridge(): CallHistoryBridge {
+		return this.callHistoryBridge;
 	}
 }

@@ -821,6 +821,7 @@
   "Apps_Permissions_Review_Modal_Subtitle": "This app would like access to the following permissions. Do you agree?",
   "Apps_Permissions_Review_Modal_Title": "Required Permissions",
   "Apps_Permissions_api": "Register new HTTP endpoints",
+  "Apps_Permissions_call-history_read": "Read the history of finished voice and video calls",
   "Apps_Permissions_cloud_workspace-token": "Interact with Cloud Services on behalf of this server",
   "Apps_Permissions_env_read": "Access minimal information about this server environment",
   "Apps_Permissions_livechat-custom-fields_write": "Modify Livechat custom field configuration",

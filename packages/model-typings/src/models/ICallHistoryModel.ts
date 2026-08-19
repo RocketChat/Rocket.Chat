@@ -31,5 +31,19 @@ export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
 		options: O,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
+	findByCallId(callId: CallHistoryItem['callId'], options?: FindOptions<CallHistoryItem>): FindCursor<CallHistoryItem>;
+
+	findPaginatedByFilters(
+		filters: {
+			type: CallHistoryItem['type'];
+			uid?: IUser['_id'];
+			direction?: CallHistoryItem['direction'];
+			inStates?: CallHistoryItem['state'][];
+			from?: Date;
+			to?: Date;
+		},
+		options?: FindOptions<CallHistoryItem>,
+	): FindPaginated<FindCursor<CallHistoryItem>>;
+
 	updateUserReferences(userId: IRegisterUser['_id'], username: IRegisterUser['username'], name?: IRegisterUser['name']): Promise<void>;
 }
