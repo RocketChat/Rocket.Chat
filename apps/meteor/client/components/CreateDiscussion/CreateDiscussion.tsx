@@ -89,7 +89,7 @@ const CreateDiscussion = ({
 		mutationFn: createDiscussion,
 		onSuccess: ({ discussion }) => {
 			goToRoom(discussion._id);
-			onSuccess?.(discussion._id);
+			void onSuccess?.(discussion._id);
 			onClose();
 		},
 	});

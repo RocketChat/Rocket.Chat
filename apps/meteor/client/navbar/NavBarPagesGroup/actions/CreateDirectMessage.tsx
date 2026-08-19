@@ -39,9 +39,9 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
-		onSuccess: async ({ room }) => {
+		onSuccess: ({ room }) => {
 			goToRoom(room.rid);
-			await onSuccess?.(room.rid);
+			void onSuccess?.(room.rid);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
