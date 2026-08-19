@@ -50,14 +50,23 @@ POST /v1/users.setPreferences  { data: { sidebarCustomCategories: ISidebarCustom
 Every write replaces the **whole** array (read-modify-write in the hook), which keeps ordering and exclusivity
 invariants in a single atomic preference update.
 
-### Client-side only — group ordering and unread toggles
+### Client-side group ordering — `sidebarCategoriesOrder`
 
-Three preferences are stored in `localStorage` (no server round-trip):
+`useAllGroupsOrder` uses `localStorage` as its working copy for instant re-ordering, with a debounced
+write-through to the server (`/v1/users.setPreferences`, 700 ms) so the order survives across devices.
+On first load in a new browser, the hook hydrates from the server preference when localStorage is empty.
 
 | localStorage key | Hook | Purpose |
 |---|---|---|
-| `sidebarCategoriesOrder` | `useAllGroupsOrder` | Unified order of all groups (custom + system), persisted server-side. When empty, custom categories appear first then system groups in `sidebarSectionsOrder` order. |
-| `sidebarHiddenUnreadGroups` | `useShowUnreadsGroups` | System groups with "Show unreads" turned OFF (default ON for all). |
+| `sidebarCategoriesOrder` | `useAllGroupsOrder` | Unified order of all groups (custom + system). When empty, custom categories appear first then system groups in `sidebarSectionsOrder` order. |
+
+### Client-side only — unread toggles (no server round-trip)
+
+Two preferences are stored in `localStorage` only:
+
+| localStorage key | Hook | Purpose |
+|---|---|---|
+| `sidebarShownUnreadGroups` | `useShowUnreadsGroups` | System groups with "Show unreads" turned ON (default OFF for all). |
 | `sidebarKeepUnreadsOnTopGroups` | `useKeepUnreadsOnTopGroups` | System groups with "Keep unreads on top" turned ON (default OFF). |
 
 Custom categories store `showUnreads` and `keepUnreadsOnTop` on their own preference object (server-side), so these system-group hooks apply only to system groups.
@@ -68,7 +77,7 @@ All flows live in `client/sidebar/hooks/useCustomCategories.ts`.
 
 | Flow | Function | Notes |
 |------|----------|-------|
-| Create | `createCategory(name)` | Prepends `{ _id, name, showUnreads: true, rooms: [] }` so the new category appears first. Validates name first. |
+| Create | `createCategory(name)` | Prepends `{ _id, name, showUnreads: false, rooms: [] }` so the new category appears first. Validates name first. |
 | Rename | `renameCategory(id, name)` | No-op + close when unchanged. |
 | Delete | `deleteCategory(id)` | Rooms fall back to their system group (the rooms themselves are untouched). |
 | Toggle unreads | `toggleShowUnreads(id)` | Flips `showUnreads` (default treated as `true`). |
