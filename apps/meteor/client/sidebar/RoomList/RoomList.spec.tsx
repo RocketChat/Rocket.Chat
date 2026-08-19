@@ -1,6 +1,6 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { forwardRef } from 'react';
 
 import RoomList from './RoomList';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
@@ -85,25 +85,6 @@ const mockSidebarVirtualList = jest.fn(({ groups, renderGroup, renderItem, getIt
 	);
 });
 
-jest.mock('@rocket.chat/fuselage', () => ({
-	Box: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function Box({ children, ...props }, ref) {
-		return (
-			<div ref={ref} {...props}>
-				{children}
-			</div>
-		);
-	}),
-}));
-
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useUserId: () => 'user-id',
-	useUserPreference: () => 'extended',
-}));
-
-jest.mock('react-i18next', () => ({
-	useTranslation: () => ({ t: (key: string) => key }),
-}));
-
 jest.mock('../components/SidebarVirtualList', () => ({
 	__esModule: true,
 	default: (props: MockSidebarVirtualListProps) => mockSidebarVirtualList(props),
@@ -174,13 +155,15 @@ jest.mock('./RoomListRowWrapper', () => ({
 	),
 }));
 
+const appRoot = mockAppRoot().withJohnDoe().withUserPreference('sidebarViewMode', 'extended').build();
+
 describe('RoomList', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	it('passes grouped room data to SidebarVirtualList', () => {
-		render(<RoomList />);
+		render(<RoomList />, { wrapper: appRoot });
 
 		expect(screen.getByTestId('sidebar-virtual-list')).toBeInTheDocument();
 		expect(mockSidebarVirtualList).toHaveBeenCalledWith(
