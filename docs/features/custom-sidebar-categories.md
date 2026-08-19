@@ -80,7 +80,7 @@ All flows live in `client/sidebar/hooks/useCustomCategories.ts`.
 | Create | `createCategory(name)` | Prepends `{ _id, name, showUnreads: false, rooms: [] }` so the new category appears first. Validates name first. |
 | Rename | `renameCategory(id, name)` | No-op + close when unchanged. |
 | Delete | `deleteCategory(id)` | Rooms fall back to their system group (the rooms themselves are untouched). |
-| Toggle unreads | `toggleShowUnreads(id)` | Flips `showUnreads` (default treated as `true`). |
+| Toggle unreads | `toggleShowUnreads(id)` | Flips `showUnreads` (default `false`). |
 | Keep unreads on top | `toggleKeepUnreadsOnTop(id)` | Flips `keepUnreadsOnTop` (default `false`). |
 | Move room | `moveRoom(room, target)` | `target` is a category id or the `FAVORITES_TARGET` sentinel. Strips from every other category first (exclusive). Dispatches a move toast. |
 | Create & move | `createCategoryAndMoveRoom(name, room)` | Creates the category and moves the room in a single persist call. Dispatches a move toast. |
@@ -106,9 +106,9 @@ Custom categories **persist even when empty**.
 
 ### Collapsed display
 
-When a group is collapsed, it shows only its unread rooms when "Show unreads" is on; otherwise the rooms are hidden and the collapser badge shows the total unread count. 
+When a group is collapsed, it shows only its unread rooms when "Show unreads" is on; otherwise the rooms are hidden and the collapser badge shows the total unread count. New custom categories start with Show unreads **off**.
 
-When "Keep unreads on top" is set, unread rooms are stable-partitioned to the top (preserving the configured sort within each partition). 
+When "Keep unreads on top" is set, unread rooms are stable-partitioned to the top (preserving the configured sort within each partition).
 This logic lives in `useRoomList.ts`'s `makeGroup` function.
 
 ## Sidebar

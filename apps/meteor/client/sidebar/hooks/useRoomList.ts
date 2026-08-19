@@ -219,7 +219,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			): SidebarRoomListGroup => {
 				const collapsed = isCollapsed(key);
 				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
-				const showUnreads = category ? category.showUnreads !== false : showUnreadsForGroup;
+				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
 				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
