@@ -4,3 +4,4 @@ export { default as WidgetFooter } from './WidgetFooter';
 export { default as WidgetHandle } from './WidgetHandle';
 export { default as WidgetInfo } from './WidgetInfo';
 export { default as WidgetContent } from './WidgetContent';
+export { DragContext, useDraggableWidget } from './WidgetDraggableContext';

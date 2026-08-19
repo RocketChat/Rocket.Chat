@@ -111,9 +111,12 @@ export class Widget {
 
 	private readonly transferModal: TransferModal;
 
-	constructor(page: Page) {
+	private readonly page: Page;
+
+	constructor(page: Page, root?: Locator) {
+		this.page = page;
 		this.transferModal = new TransferModal(page, page.getByRole('dialog', { name: 'Transfer call' }));
-		this.root = page.getByRole('dialog', { name: 'Voice call', exact: false });
+		this.root = root || page.getByRole('dialog', { name: 'Voice call', exact: false });
 		this.callControls = new VoiceCallControls(this.root.getByRole('group'));
 		this.headerControls = new VoiceCallControls(this.root.getByRole('banner'));
 	}
@@ -134,6 +137,10 @@ export class Widget {
 		return this.root.getByRole('button', { name: 'Show call here' });
 	}
 
+	get modalTransfer() {
+		return this.transferModal;
+	}
+
 	async showCallHere(): Promise<void> {
 		await this.btnShowCallHere.click();
 		await expect(this.btnShowCallHere).not.toBeVisible();
@@ -144,7 +151,11 @@ export class Widget {
 		return timerToSeconds(text);
 	}
 
-	async initiateCall(): Promise<void> {
+	async initiateCall(username?: string): Promise<void> {
+		if (username) {
+			await this.root.getByRole('textbox', { name: 'Enter username or number' }).fill(username);
+			await this.page.getByRole('listbox').getByRole('option', { name: username }).click();
+		}
 		await this.callControls.call.click();
 		await expect(this.callControls.cancel).toBeVisible();
 	}
@@ -227,6 +238,30 @@ export class Widget {
 
 	peerCard(username: string): Locator {
 		return this.root.getByText(username);
+	}
+}
+
+export class DockedWidget extends Widget {
+	constructor(page: Page) {
+		super(page, page.getByRole('complementary', { name: 'Calls' }).getByRole('dialog', { name: 'Voice Call', exact: false }));
+	}
+
+	public override async hangup(): Promise<void> {
+		await this.controls.hangup.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async reject(): Promise<void> {
+		await this.controls.hangup.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async transferCall(username: string): Promise<void> {
+		await this.controls.transfer.click();
+		await expect(this.modalTransfer.content).toBeVisible();
+		await this.modalTransfer.transferCall(username);
+		await expect(this.modalTransfer.content).not.toBeVisible();
+		await expect(this.content).toBeVisible();
 	}
 }
 
@@ -348,6 +383,8 @@ export class PopoutPage extends RoomSection {
 export class VoiceCalls {
 	public readonly widget: Widget;
 
+	public readonly dockedWidget: Widget;
+
 	public readonly roomSection: RoomSection;
 
 	public popoutPage: PopoutPage | undefined;
@@ -357,6 +394,7 @@ export class VoiceCalls {
 	constructor(page: Page) {
 		this.page = page;
 		this.widget = new Widget(page);
+		this.dockedWidget = new DockedWidget(page);
 		this.roomSection = new RoomSection(page.getByRole('region', { name: 'Voice call' }));
 	}
 
