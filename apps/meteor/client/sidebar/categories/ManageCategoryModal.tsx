@@ -75,7 +75,6 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 			icon={null}
 			confirmText={t('Save')}
 			confirmLoading={isSubmitting}
-			confirmDisabled={isSubmitting}
 			onCancel={onClose}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
 		>
