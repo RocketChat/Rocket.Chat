@@ -1,0 +1,23 @@
+packages/core-services/src/types/IStatusVisibilityService.ts
+  s_ebb8da85f4bb0c::t_05cbcaaabb2f26 6
+ee/packages/presence/src/Presence.ts
+  s_ebb8da85f4bb0c::t_05cbcaaabb2f26 423-426
+packages/core-services/src/events/Events.ts
+  s_ebb8da85f4bb0c::t_323250d1047444 160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "50879d3f802e39dab02e4b6bffbb917bebd07ab8",
+  "prompts": {},
+  "sessions": {
+    "s_ebb8da85f4bb0c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ece5076a-1106-4728-9258-23f6299299c5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
