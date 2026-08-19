@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"outDir": "./dist/cjs"
+		"outDir": "./dist/cjs",
+		"declaration": false,
+		"declarationMap": false
 	},
 	"exclude": ["**/*.spec.*", "jest.config.*"]
 }
