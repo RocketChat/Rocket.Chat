@@ -162,11 +162,11 @@ export const getMatrixInviteRoutes = () => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
 
-			const userToCheck = event.state_key as string;
+			const userToCheck = event.state_key;
 
 			// matches Synapse: the PDU itself stays unvalidated, but an event that is not an invite
 			// membership event cannot be processed, so reject it instead of failing later
-			if (!userToCheck || event.type !== 'm.room.member' || event.content?.membership !== 'invite') {
+			if (typeof userToCheck !== 'string' || !userToCheck || event.type !== 'm.room.member' || event.content?.membership !== 'invite') {
 				return {
 					body: {
 						errcode: 'M_UNKNOWN',
