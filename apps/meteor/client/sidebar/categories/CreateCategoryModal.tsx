@@ -18,7 +18,7 @@ type CreateCategoryModalProps = {
 const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { createCategory, createCategoryAndMoveRoom, validateName } = useCustomCategories();
+	const { createCategory, createCategoryAndMoveRoom, validateName, isPersisting } = useCustomCategories();
 
 	const {
 		handleSubmit,
@@ -71,6 +71,7 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 			variant='warning'
 			icon={null}
 			confirmText={room ? t('Create_and_move') : t('Create')}
+			confirmLoading={isPersisting}
 			onCancel={onClose}
 			annotation={room ? undefined : t('You_can_add_rooms_after')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}

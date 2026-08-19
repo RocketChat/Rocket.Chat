@@ -1,6 +1,7 @@
 import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint, useToastMessageDispatch, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,10 +39,10 @@ export const useCustomCategories = () => {
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
 
-	const persist = useCallback(
-		(next: ISidebarCustomCategory[]) => saveUserPreferences({ data: { sidebarCustomCategories: next } }),
-		[saveUserPreferences],
-	);
+	const persistMutation = useMutation({
+		mutationFn: (next: ISidebarCustomCategory[]) => saveUserPreferences({ data: { sidebarCustomCategories: next } }),
+	});
+	const persist = useCallback((next: ISidebarCustomCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
 
 	const setFavorite = useCallback(
 		async (rid: string, favorite: boolean) => {
@@ -254,6 +255,7 @@ export const useCustomCategories = () => {
 	return useMemo(
 		() => ({
 			hasLicenseModule,
+			isPersisting: persistMutation.isPending,
 			categories,
 			validateName,
 			createCategory,
@@ -268,6 +270,7 @@ export const useCustomCategories = () => {
 		}),
 		[
 			hasLicenseModule,
+			persistMutation.isPending,
 			categories,
 			validateName,
 			createCategory,

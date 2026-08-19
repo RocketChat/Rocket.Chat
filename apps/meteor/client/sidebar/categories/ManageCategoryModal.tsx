@@ -25,7 +25,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 		control,
 		setError,
 		setFocus,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useForm({
 		defaultValues: {
 			name: category.name,
@@ -74,6 +74,8 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 			variant='warning'
 			icon={null}
 			confirmText={t('Save')}
+			confirmLoading={isSubmitting}
+			confirmDisabled={isSubmitting}
 			onCancel={onClose}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
 		>
