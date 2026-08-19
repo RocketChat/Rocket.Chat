@@ -9,7 +9,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
-import { STATUS_VISIBILITY_SETTING_ID, StatusVisibilityGate } from './lib/StatusVisibilityGate';
 import { normalizeStatusText } from './lib/normalizeStatusText';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
 
@@ -39,8 +38,6 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
-	private statusVisibility = new StatusVisibilityGate();
-
 	private hasPresenceLicense = false;
 
 	private hasScalabilityLicense = false;
@@ -64,10 +61,6 @@ export class Presence extends ServiceClass implements IPresence {
 			batchSize: 500,
 			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
 			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
-		});
-
-		this.onSettingChanged(STATUS_VISIBILITY_SETTING_ID, async ({ setting }): Promise<void> => {
-			this.statusVisibility.setEnabled(setting.value);
 		});
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
@@ -124,7 +117,6 @@ export class Presence extends ServiceClass implements IPresence {
 		try {
 			await Settings.set('Presence_broadcast_disabled', false);
 
-			await this.statusVisibility.start();
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
 			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
@@ -428,20 +420,10 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-
-		if (this.statusVisibility.isEnabled()) {
-			void this.statusVisibility.hasRestrictions(user._id).then((hasVisibilityRestrictions) =>
-				this.api?.broadcast('presence.status', {
-					user,
-					previousStatus,
-					hasVisibilityRestrictions,
-				}),
-			);
-
-			return;
-		}
-
-		void this.api?.broadcast('presence.status', { user, previousStatus });
+		void this.api?.broadcast('presence.status', {
+			user,
+			previousStatus,
+		});
 	}
 
 	private async validateAvailability(): Promise<void> {

@@ -160,10 +160,10 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
-		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
+		service.onEvent('presence.invalidateVisibility', ({ targets, viewers }) => {
 			void StatusVisibility.refresh(targets)
 				.then(async (users) => {
-					await refreshVisibility();
+					await Promise.all([refreshVisibility(viewers), statusVisibilityGate.syncRestrictedUsers()]);
 
 					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
 						if (username) {
@@ -181,7 +181,7 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
-		service.onEvent('presence.status', ({ user, hasVisibilityRestrictions }) => {
+		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
 				return;
@@ -207,7 +207,9 @@ export class ListenersModule {
 				},
 			});
 
-			if (!hasVisibilityRestrictions) {
+			// TODO: no client in this repo subscribes to notify-logged/user-status; if mobile and the
+			// SDK don't either, this check and the restricted mirror behind it can be dropped
+			if (!statusVisibilityGate.hasRestrictions(_id)) {
 				notifications.notifyLoggedInThisInstance('user-status', [
 					_id,
 					username,

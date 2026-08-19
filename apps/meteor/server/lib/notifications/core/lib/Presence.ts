@@ -112,6 +112,10 @@ class UserPresence {
 		this.publication._session.socket.send(payload);
 	};
 
+	get viewerId(): IUser['_id'] | undefined {
+		return this.publication._session?.userId;
+	}
+
 	stop(): void {
 		this.listeners.forEach(this.off);
 		clients.delete(this.publication.connection);
@@ -185,6 +189,12 @@ export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void =>
 	e.emit(uid, { uid, args });
 };
 
-export const refreshVisibility = async (): Promise<void> => {
-	await Promise.allSettled(Array.from(liveClients, (client) => client.refreshHiddenFrom()));
+// no viewers means the setting itself changed, so every client has to re-pull
+export const refreshVisibility = async (viewers?: IUser['_id'][]): Promise<void> => {
+	const affected = viewers && new Set(viewers);
+	const clients = affected
+		? Array.from(liveClients).filter(({ viewerId }) => viewerId && affected.has(viewerId))
+		: liveClients;
+
+	await Promise.allSettled(Array.from(clients, (client) => client.refreshHiddenFrom()));
 };

@@ -1,11 +1,12 @@
 import { StatusVisibilityService } from './service';
 
 const getSetting = jest.fn();
+const broadcast = jest.fn();
 const findPresenceUsersByIds = jest.fn();
 const findWithStatusVisibilityConfig = jest.fn();
 
 jest.mock('@rocket.chat/core-services', () => ({
-	api: { broadcast: jest.fn() },
+	api: { broadcast: (...args: unknown[]) => broadcast(...args) },
 	Settings: { get: (key: string) => getSetting(key) },
 	ServiceClassInternal: class {
 		onSettingChanged() {
@@ -30,6 +31,7 @@ describe('status visibility service', () => {
 	beforeEach(async () => {
 		jest.resetAllMocks();
 		getSetting.mockReturnValue(true);
+		broadcast.mockResolvedValue(undefined);
 		findPresenceUsersByIds.mockReturnValue(cursor([]));
 		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
 		service = new StatusVisibilityService();
@@ -76,6 +78,26 @@ describe('status visibility service', () => {
 		await service.refresh();
 
 		expect(await service.hasRestrictions('ana')).toBe(false);
+	});
+
+	it('reports the viewers on both sides of a block list change', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		await service.refresh();
+
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['carla'])]));
+		await service.invalidate(['ana']);
+
+		const [, payload] = broadcast.mock.calls.at(-1) as [string, { viewers?: string[] }];
+
+		expect(payload.viewers?.sort()).toEqual(['bruno', 'carla']);
+	});
+
+	it('leaves the viewers unscoped when the whole mirror is invalidated', async () => {
+		await service.invalidate();
+
+		const [, payload] = broadcast.mock.calls.at(-1) as [string, { viewers?: string[] }];
+
+		expect(payload.viewers).toBeUndefined();
 	});
 
 	it('clears everything when the setting is off and reports who became visible', async () => {

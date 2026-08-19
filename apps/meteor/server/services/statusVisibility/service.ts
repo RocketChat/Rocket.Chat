@@ -43,6 +43,10 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		return this.enabled && this.hiddenFromByUser.has(targetId);
 	}
 
+	async getRestrictedUsers(): Promise<IUser['_id'][]> {
+		return [...this.hiddenFromByUser.keys()];
+	}
+
 	async refresh(targets?: IUser['_id'][]): Promise<UserPresence[]> {
 		const result = this.lock.then(() => this.rebuildHiddenUsers(targets));
 		this.lock = result.catch(() => undefined);
@@ -85,11 +89,23 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		return users;
 	}
 
+	private viewersOf(targets: IUser['_id'][]): IUser['_id'][] {
+		const viewers = new Set<IUser['_id']>();
+
+		for (const target of targets) {
+			this.hiddenFromByUser.get(target)?.forEach((viewer) => viewers.add(viewer));
+		}
+
+		return [...viewers];
+	}
+
 	async invalidate(targets?: IUser['_id'][]): Promise<UserPresence[]> {
+		const previousViewers = targets && this.viewersOf(targets);
 		const affected = await this.refresh(targets);
+		const viewers = previousViewers && [...new Set([...previousViewers, ...this.viewersOf(targets)])];
 
 		void api
-			.broadcast('presence.invalidateVisibility', { targets })
+			.broadcast('presence.invalidateVisibility', { targets, viewers })
 			.catch((err) => logger.error({ msg: 'Status visibility invalidation failed', err, targets }));
 
 		return affected;
