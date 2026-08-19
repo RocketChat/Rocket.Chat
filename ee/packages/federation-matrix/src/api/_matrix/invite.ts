@@ -4,6 +4,7 @@ import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { getUsernameServername } from '../../helpers/getUsernameServername';
 import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
@@ -186,11 +187,31 @@ export const getMatrixInviteRoutes = () => {
 				};
 			}
 
-			const [username /* domain */] = userToCheck.split(':');
+			if (!userToCheck.startsWith('@') || userToCheck.indexOf(':', 1) === -1) {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The invite event state_key is not a valid user ID',
+					},
+					statusCode: 400,
+				};
+			}
 
-			// TODO: check domain
+			// an invite addressed to a user of another homeserver would create a local subscription
+			// that can never be accepted, since the remote server never invited our copy of that user
+			const [username, , isLocalUser] = getUsernameServername(userToCheck, federationSDK.getConfig('serverName'));
 
-			const ourUser = await Users.findOneByUsername(username.slice(1));
+			if (!isLocalUser) {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The invite event must be for a user of this server',
+					},
+					statusCode: 400,
+				};
+			}
+
+			const ourUser = await Users.findOneByUsername(username);
 
 			if (!ourUser) {
 				throw new Error('user not found not processing invite');
