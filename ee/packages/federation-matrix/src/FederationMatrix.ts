@@ -112,9 +112,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				// TODO: Check if it should exclude himself from the list
 				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
-				if (!roomsUserIsMemberOf.length) {
-					return;
-				}
 				const statusMap: Record<UserStatus, PresenceState> = {
 					[UserStatus.ONLINE]: 'online',
 					[UserStatus.OFFLINE]: 'offline',
@@ -122,8 +119,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
-				// local users carry no federation metadata, so derive their Matrix ID the same way
-				// notifyUserTyping does instead of requiring a stored `mui`
 				const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
 
 				void federationSDK.sendPresenceUpdateToRooms(
