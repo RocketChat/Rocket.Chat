@@ -214,8 +214,9 @@ const BackfillQuerySchema = {
 	type: 'object',
 	properties: {
 		limit: {
-			// unbounded per spec; the handler caps it
-			type: 'number',
+			// unbounded above per spec; the handler caps it. Synapse rejects 0 and negatives
+			type: 'integer',
+			minimum: 1,
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
