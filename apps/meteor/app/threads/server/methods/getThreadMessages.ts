@@ -31,6 +31,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (typeof tmid !== 'string') {
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'getThreadMessages' });
+		}
+
 		const thread = await Messages.findOneById(tmid);
 		if (!thread) {
 			return [];
@@ -48,14 +52,14 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await callbacks.run('beforeReadMessages', thread.rid, user._id);
-		await readThread({ userId: user._id, rid: thread.rid, tmid });
+		await readThread({ userId: user._id, rid: thread.rid, tmid: thread._id });
 
-		const result = await Messages.findVisibleThreadByThreadId(tmid, {
+		const result = await Messages.findVisibleThreadByThreadId(thread._id, {
 			...(skip && { skip }),
 			...(limit && { limit }),
 			sort: { ts: -1 },
 		}).toArray();
-		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
+		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid: thread._id });
 
 		return [thread, ...result];
 	},
