@@ -11081,7 +11081,6 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     "@types/stylis": "npm:^4.2.7"
     eslint: "npm:~9.39.5"
-    prettier: "npm:~3.3.3"
     stylis: "npm:~4.4.0"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -31875,15 +31874,6 @@ __metadata:
   bin:
     prettier: bin-prettier.js
   checksum: 10/00cdb6ab0281f98306cd1847425c24cbaaa48a5ff03633945ab4c701901b8e96ad558eb0777364ffc312f437af9b5a07d0f45346266e8245beaf6247b9c62b24
-  languageName: node
-  linkType: hard
-
-"prettier@npm:~3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10/5beac1f30b5b40162532b8e2f7c3a4eb650910a2695e9c8512a62ffdc09dae93190c29db9107fa7f26d1b6c71aad3628ecb9b5de1ecb0911191099be109434d7
   languageName: node
   linkType: hard
 
