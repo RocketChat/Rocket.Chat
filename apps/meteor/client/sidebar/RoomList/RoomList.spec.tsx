@@ -173,7 +173,7 @@ describe('RoomList', () => {
 					{ key: 'Direct_Messages', group: groups[1], items: [rooms[2]] },
 					{ key: 'Empty_Group', group: groups[2], items: [] },
 				],
-				bufferSize: 25,
+				bufferSize: 240,
 			}),
 		);
 		expect(screen.getAllByTestId('group-header').map((element) => element.textContent)).toEqual([

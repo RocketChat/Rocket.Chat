@@ -24,6 +24,16 @@ const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' 
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
 
+type SidebarViewMode = 'extended' | 'medium' | 'condensed';
+
+const sidebarRowHeight: Record<SidebarViewMode, number> = {
+	condensed: 28,
+	medium: 36,
+	extended: 48,
+};
+
+const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
+
 const RoomList = () => {
 	const { t } = useTranslation();
 	const userId = useUserId();
@@ -36,7 +46,8 @@ const RoomList = () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const ref = useRef<HTMLElement | null>(null);
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
+	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
+	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
 	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
@@ -73,7 +84,7 @@ const RoomList = () => {
 			<SidebarVirtualList
 				groups={virtualGroups}
 				as={RoomListWrapper}
-				bufferSize={25}
+				bufferSize={bufferSize}
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser
