@@ -103,7 +103,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				if (!user.username || !user.status || user.username.includes(':')) {
 					return;
 				}
-				const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>>(user.username, {
+				const localUser = await Users.findOneByUsername(user.username, {
 					projection: { _id: 1, username: 1, federated: 1, federation: 1 },
 				});
 				if (!localUser?.username) {
