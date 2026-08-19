@@ -1,3 +1,11 @@
+apps/meteor/server/api/v1/rooms.ts
+  ai_agent 64,564-569
+apps/meteor/tests/end-to-end/api/rooms.ts
+  ai_agent 35,141-167
+apps/meteor/tests/unit/server/lib/rooms/findDirectRoomByIdentifier.spec.ts
+  ai_agent 15-19,107-129
+apps/meteor/server/lib/rooms/findDirectRoomByIdentifier.ts
+  ai_agent 6-19,34-35
 ---
 {
   "schema_version": "authorship/3.0.0",
