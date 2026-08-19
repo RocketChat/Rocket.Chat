@@ -1,7 +1,10 @@
 import type { IStatusVisibilityService } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
+
+const logger = new Logger('StatusVisibility');
 
 const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1 } as const;
 
@@ -85,7 +88,9 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 	async invalidate(targets?: IUser['_id'][]): Promise<UserPresence[]> {
 		const affected = await this.refresh(targets);
 
-		void api.broadcast('presence.invalidateVisibility', { targets });
+		void api
+			.broadcast('presence.invalidateVisibility', { targets })
+			.catch((err) => logger.error({ msg: 'Status visibility invalidation failed', err, targets }));
 
 		return affected;
 	}
