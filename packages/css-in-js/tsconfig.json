@@ -1,0 +1,50 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"exactOptionalPropertyTypes": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"allowArbitraryExtensions": true,
+		"allowImportingTsExtensions": false,
+		"allowUmdGlobalAccess": false,
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"noUncheckedSideEffectImports": true,
+		"resolveJsonModule": true,
+
+		"declaration": true,
+		"declarationMap": true,
+		"downlevelIteration": false,
+		"inlineSourceMap": false,
+		"inlineSources": false,
+		"removeComments": false,
+		"sourceMap": true,
+		"stripInternal": true,
+
+		"allowJs": false,
+
+		"erasableSyntaxOnly": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedDeclarations": false,
+		"isolatedModules": true,
+		"preserveSymlinks": false,
+		"verbatimModuleSyntax": false,
+
+		"jsx": "react-jsx",
+		"target": "es2024",
+
+		"rootDir": "./src",
+		"lib": ["dom", "es6"],
+		"outDir": "./dist"
+	},
+	"include": ["src"],
+	"exclude": ["dist", "node_modules"]
+}
