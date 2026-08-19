@@ -160,7 +160,7 @@ export class ListenersModule {
 		service.onEvent('presence.invalidateVisibility', ({ targets }) => {
 			void StatusVisibility.refresh(targets)
 				.then(async (users) => {
-					await refreshVisibility();
+					await refreshVisibility(notifications.streamPresence);
 
 					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
 						if (username) {
