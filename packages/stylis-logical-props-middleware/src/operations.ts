@@ -1,5 +1,6 @@
 import type { RuleSet, Declaration } from './elements';
 import { attachDeclaration } from './elements';
+import { splitValueList } from './values';
 
 export type Operation = (
 	value: Declaration['children'],
@@ -16,6 +17,24 @@ export const compileOperations = ({
 	isPropertyValueSupported: (property: string, value: string) => boolean;
 }): Map<string, Operation> => {
 	const ops = new Map<string, Operation>();
+
+	/** Routes a value through `property`'s own fallback, if it has one. */
+	const applyTo = (
+		property: string,
+		value: string,
+		ruleSet: Readonly<RuleSet>,
+		ltrRuleSet: Readonly<RuleSet>,
+		rtlRuleSet: Readonly<RuleSet>,
+	): void => {
+		const op = ops.get(property);
+
+		if (op) {
+			op(value, ruleSet, ltrRuleSet, rtlRuleSet);
+			return;
+		}
+
+		attachDeclaration(property, value, ruleSet);
+	};
 
 	const withLogicalValues = (property: string): void => {
 		const logicalValues = new Map<string, boolean>(
@@ -69,6 +88,11 @@ export const compileOperations = ({
 		ops.set(property, op);
 	};
 
+	/**
+	 * Shorthands whose value applies whole to every fallback: `border-inline`
+	 * takes one border value for both sides, and the single-target mappings
+	 * (`inline-size` → `width`, …) are a straight rename.
+	 */
 	const withFallback = (property: string, ...fallbackProperties: string[]): void => {
 		if (isPropertySupported(property)) {
 			return;
@@ -76,15 +100,69 @@ export const compileOperations = ({
 
 		const op: Operation = (value, ruleSet, ltrRuleSet, rtlRuleSet): void => {
 			for (const fallbackProperty of fallbackProperties) {
-				const fallbackTransform = ops.get(fallbackProperty);
-
-				if (fallbackTransform) {
-					fallbackTransform(value, ruleSet, ltrRuleSet, rtlRuleSet);
-					continue;
-				}
-
-				attachDeclaration(fallbackProperty, value, ruleSet);
+				applyTo(fallbackProperty, value, ruleSet, ltrRuleSet, rtlRuleSet);
 			}
+		};
+
+		ops.set(property, op);
+	};
+
+	/**
+	 * Shorthands over the two sides of an axis: `<start>` or `<start> <end>`.
+	 * The value has to be split before it reaches the per-side fallbacks —
+	 * handing `4px 8px` to a longhand emits CSS the browser drops outright, so
+	 * the declaration would be lost rather than merely mispositioned.
+	 */
+	const withAxisFallback = (property: string, startProperty: string, endProperty: string): void => {
+		if (isPropertySupported(property)) {
+			return;
+		}
+
+		const op: Operation = (value, ruleSet, ltrRuleSet, rtlRuleSet): void => {
+			const { components, important } = splitValueList(value);
+			const [start, end = start] = components;
+
+			if (!start) {
+				attachDeclaration(property, value, ruleSet);
+				return;
+			}
+
+			applyTo(startProperty, start + important, ruleSet, ltrRuleSet, rtlRuleSet);
+			applyTo(endProperty, end + important, ruleSet, ltrRuleSet, rtlRuleSet);
+		};
+
+		ops.set(property, op);
+	};
+
+	/**
+	 * `inset` is a physical shorthand — `<'top'>{1,4}` in the usual box order —
+	 * so it expands straight to the physical sides and needs no direction
+	 * handling of its own.
+	 */
+	const withBoxFallback = (
+		property: string,
+		topProperty: string,
+		rightProperty: string,
+		bottomProperty: string,
+		leftProperty: string,
+	): void => {
+		if (isPropertySupported(property)) {
+			return;
+		}
+
+		const op: Operation = (value, ruleSet, ltrRuleSet, rtlRuleSet): void => {
+			const { components, important } = splitValueList(value);
+			const [top, right = top, bottom = top, left = right] = components;
+
+			if (!top) {
+				attachDeclaration(property, value, ruleSet);
+				return;
+			}
+
+			applyTo(topProperty, top + important, ruleSet, ltrRuleSet, rtlRuleSet);
+			applyTo(rightProperty, right + important, ruleSet, ltrRuleSet, rtlRuleSet);
+			applyTo(bottomProperty, bottom + important, ruleSet, ltrRuleSet, rtlRuleSet);
+			applyTo(leftProperty, left + important, ruleSet, ltrRuleSet, rtlRuleSet);
 		};
 
 		ops.set(property, op);
@@ -115,12 +193,12 @@ export const compileOperations = ({
 	withDirectionalFallback('padding-inline-end', 'padding-right', 'padding-left');
 
 	withFallback('border-inline', 'border-inline-start', 'border-inline-end');
-	withFallback('border-inline-width', 'border-inline-start-width', 'border-inline-end-width');
-	withFallback('border-inline-style', 'border-inline-start-style', 'border-inline-end-style');
-	withFallback('border-inline-color', 'border-inline-start-color', 'border-inline-end-color');
-	withFallback('inset-inline', 'inset-inline-start', 'inset-inline-end');
-	withFallback('margin-inline', 'margin-inline-start', 'margin-inline-end');
-	withFallback('padding-inline', 'padding-inline-start', 'padding-inline-end');
+	withAxisFallback('border-inline-width', 'border-inline-start-width', 'border-inline-end-width');
+	withAxisFallback('border-inline-style', 'border-inline-start-style', 'border-inline-end-style');
+	withAxisFallback('border-inline-color', 'border-inline-start-color', 'border-inline-end-color');
+	withAxisFallback('inset-inline', 'inset-inline-start', 'inset-inline-end');
+	withAxisFallback('margin-inline', 'margin-inline-start', 'margin-inline-end');
+	withAxisFallback('padding-inline', 'padding-inline-start', 'padding-inline-end');
 
 	withFallback('border-block-start', 'border-top');
 	withFallback('border-block-end', 'border-bottom');
@@ -138,14 +216,14 @@ export const compileOperations = ({
 	withFallback('padding-block-end', 'padding-bottom');
 
 	withFallback('border-block', 'border-block-start', 'border-block-end');
-	withFallback('border-block-width', 'border-block-start-width', 'border-block-end-width');
-	withFallback('border-block-style', 'border-block-start-style', 'border-block-end-style');
-	withFallback('border-block-color', 'border-block-start-color', 'border-block-end-color');
-	withFallback('inset-block', 'inset-block-start', 'inset-block-end');
-	withFallback('margin-block', 'margin-block-start', 'margin-block-end');
-	withFallback('padding-block', 'padding-block-start', 'padding-block-end');
+	withAxisFallback('border-block-width', 'border-block-start-width', 'border-block-end-width');
+	withAxisFallback('border-block-style', 'border-block-start-style', 'border-block-end-style');
+	withAxisFallback('border-block-color', 'border-block-start-color', 'border-block-end-color');
+	withAxisFallback('inset-block', 'inset-block-start', 'inset-block-end');
+	withAxisFallback('margin-block', 'margin-block-start', 'margin-block-end');
+	withAxisFallback('padding-block', 'padding-block-start', 'padding-block-end');
 
-	withFallback('inset', 'inset-inline', 'inset-block');
+	withBoxFallback('inset', 'top', 'right', 'bottom', 'left');
 
 	withFallback('inline-size', 'width');
 	withFallback('min-inline-size', 'min-width');
