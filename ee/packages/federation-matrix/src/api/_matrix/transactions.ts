@@ -3,6 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
+import { logger } from '../logger';
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
@@ -104,12 +105,8 @@ const SendTransactionResponseSchema = {
 			type: 'object',
 			description: 'Processing results for each PDU',
 		},
-		edus: {
-			type: 'object',
-			description: 'Processing results for each EDU',
-		},
 	},
-	required: ['pdus', 'edus'],
+	required: ['pdus'],
 };
 
 const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema);
@@ -298,19 +295,24 @@ export const getMatrixTransactionsRoutes = () => {
 							};
 						}
 
-						return {
-							statusCode: 400,
-							body: {
-								errcode: 'M_UNKNOWN',
-								error: 'Failed to process transaction',
-							},
-						};
+						if (error.message === 'too-many-events') {
+							return {
+								statusCode: 400,
+								body: {
+									errcode: 'M_UNKNOWN',
+									error: 'Too many PDUs or EDUs',
+								},
+							};
+						}
+
+						// spec: the 200 response is used even when PDUs fail to be processed, so a
+						// failure here must not fail the whole transaction
+						logger.error({ msg: 'Error processing incoming transaction', err: error });
 					}
 
 					return {
 						body: {
 							pdus: {},
-							edus: {},
 						},
 						statusCode: 200,
 					};
