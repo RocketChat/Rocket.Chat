@@ -14,7 +14,6 @@ import {
 } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { usePeekMediaSessionFeatures } from '../../context/usePeekMediaSessionFeatures';
 import useRegisterView from '../../context/useRegisterView';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
@@ -61,7 +60,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const isPopout = currentViews.has('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
@@ -70,11 +69,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	useRegisterView('room');
 
-	const features = usePeekMediaSessionFeatures();
-
-	const screenShareAvailable = features.includes('screen-share');
-	const holdAvailable = features.includes('hold');
-	const transferAvailable = features.includes('transfer');
+	const screenShareAvailable = supportedFeatures.includes('screen-share');
+	const holdAvailable = supportedFeatures.includes('hold');
+	const transferAvailable = supportedFeatures.includes('transfer');
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
