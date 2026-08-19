@@ -103,7 +103,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
-		"@rocket.chat/css-in-js": "^0.33.1",
+		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/favicon": "workspace:^",
