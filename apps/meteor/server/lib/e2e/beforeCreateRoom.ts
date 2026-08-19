@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { MeteorError } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings';
 import { prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
