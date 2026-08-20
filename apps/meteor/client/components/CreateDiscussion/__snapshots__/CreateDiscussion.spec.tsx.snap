@@ -77,7 +77,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-autocomplete rcx-css-t3n91h"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-6d871f"
@@ -100,7 +100,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-rm4moq"
+                        class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
                       >
                         
                       </i>
@@ -200,7 +200,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-select"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-1sr8su7"

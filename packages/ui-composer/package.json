@@ -22,10 +22,10 @@
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/fuselage": "^0.86.0",
+		"@rocket.chat/fuselage": "^0.87.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.34.0",
-		"@rocket.chat/icons": "^0.48.0",
+		"@rocket.chat/icons": "^0.49.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
