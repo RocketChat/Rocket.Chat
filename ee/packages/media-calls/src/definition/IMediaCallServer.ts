@@ -2,7 +2,7 @@ import type { CallPreventionRecord, IMediaCall, IUser, MediaCallContact } from '
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import type { InternalCallParams, SignalProcessingOptions } from './common';
+import type { InternalCallParams, MediaCallHeader, SignalProcessingOptions } from './common';
 
 export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
 export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';
@@ -61,12 +61,16 @@ export interface IMediaCallServerSettings {
 			host: string;
 			port: number;
 		};
+		pexipServer: {
+			host: string;
+			port: number;
+		};
 	};
 
 	mobileRinging: boolean;
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
-	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
+	isFeatureEnabled: (feature: CallFeature) => boolean;
 }
 
 export interface IMediaCallServer {
@@ -86,6 +90,7 @@ export interface IMediaCallServer {
 	hangupExpiredCalls(): Promise<void>;
 	scheduleExpirationCheck(): void;
 	configure(settings: IMediaCallServerSettings): void;
+	hangupEscalatedCall(call: MediaCallHeader, endedBy?: IMediaCall['endedBy']): Promise<boolean>;
 	setHooks(hooks: MediaCallHooks): void;
 
 	runPreCallCreatedHook(params: PreCallCreatedHookParams): Promise<PreCallCreatedHookResult>;
@@ -93,5 +98,5 @@ export interface IMediaCallServer {
 	requestCall(params: InternalCallParams): Promise<void>;
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
-	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
+	isFeatureAvailableForParticipants(feature: CallFeature, participants: MediaCallContact[]): boolean;
 }
