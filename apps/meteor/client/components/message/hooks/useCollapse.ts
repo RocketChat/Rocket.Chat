@@ -27,5 +27,5 @@ export const useCollapse = (attachmentCollapsed?: boolean, key?: string) => {
 		return [toggled !== defaultCollapsed, togglePersistedCollapsed] as const;
 	}
 
-	return [localCollapsed, toggleLocalCollapsed] as const;
+	return [localCollapsed, () => toggleLocalCollapsed()] as const;
 };
