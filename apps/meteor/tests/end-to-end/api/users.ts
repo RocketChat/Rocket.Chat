@@ -26,6 +26,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
+const USER_PROFILE_FIELD_MAX_LENGTH = 260;
+const USER_PROFILE_LANGUAGES_MAX_COUNT = 20;
 
 const customFieldText = {
 	type: 'text',
@@ -2610,6 +2612,51 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it("should update a user's title, nationality and languages by userId", (done) => {
+			void request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						title: 'Staff Engineer',
+						nationality: 'Brazilian',
+						languages: ['Portuguese', 'English'],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.title', 'Staff Engineer');
+					expect(res.body).to.have.nested.property('user.nationality', 'Brazilian');
+					expect(res.body.user.languages).to.be.deep.equal(['Portuguese', 'English']);
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a title longer than ${USER_PROFILE_FIELD_MAX_LENGTH} characters`, (done) => {
+			void request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						title: Random.hexString(USER_PROFILE_FIELD_MAX_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						`title size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters [error-field-size-exceeded]`,
+					);
+				})
+				.end(done);
+		});
+
 		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
 			void request
 				.post(api('users.update'))
@@ -3629,6 +3676,127 @@ describe('[Users]', () => {
 			const userData = await getUserByUsername(user.username);
 			expect(userData).to.not.have.property('bio');
 			expect(userData).to.not.have.property('nickname');
+		});
+
+		it('should update title, nationality and languages, trimming values and dropping empty languages', async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(testUserCredentials)
+				.send({
+					data: {
+						title: '  Staff Engineer  ',
+						nationality: 'Brazilian',
+						languages: [' Portuguese ', '', 'English'],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const userData = await getUserByUsername(testUser.username);
+			expect(userData).to.have.property('title', 'Staff Engineer');
+			expect(userData).to.have.property('nationality', 'Brazilian');
+			expect(userData.languages).to.be.deep.equal(['Portuguese', 'English']);
+
+			await deleteUser(testUser);
+		});
+
+		it('should erase title, nationality and languages when empty values are sent', async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(testUserCredentials)
+				.send({
+					data: {
+						title: 'Staff Engineer',
+						nationality: 'Brazilian',
+						languages: ['Portuguese'],
+					},
+				})
+				.expect(200);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(testUserCredentials)
+				.send({
+					data: {
+						title: '',
+						nationality: '',
+						languages: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const userData = await getUserByUsername(testUser.username);
+			expect(userData).to.not.have.property('title');
+			expect(userData).to.not.have.property('nationality');
+			expect(userData).to.not.have.property('languages');
+
+			await deleteUser(testUser);
+		});
+
+		it(`should return an error when trying to set a title longer than ${USER_PROFILE_FIELD_MAX_LENGTH} characters`, async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						title: Random.hexString(USER_PROFILE_FIELD_MAX_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						`title size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters [error-field-size-exceeded]`,
+					);
+				});
+		});
+
+		it(`should return an error when trying to set more than ${USER_PROFILE_LANGUAGES_MAX_COUNT} languages`, async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						languages: Array.from({ length: USER_PROFILE_LANGUAGES_MAX_COUNT + 1 }, (_, i) => `language-${i}`),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'languages size exceeded [error-field-size-exceeded]');
+				});
+		});
+
+		it('should return an error when languages is not an array of strings', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						languages: 'Portuguese',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 
 		describe('[Password Policy]', () => {
