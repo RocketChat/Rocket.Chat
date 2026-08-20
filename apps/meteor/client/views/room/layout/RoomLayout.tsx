@@ -22,9 +22,9 @@ const useBreakpointsElement = () => {
 
 	const breakpoints = useMemo(
 		() =>
-			breakpointsDefinitions
-				.filter(({ minViewportWidth }) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
-				.map(({ name }) => name),
+			Object.entries(breakpointsDefinitions)
+				.filter(([, { minViewportWidth }]) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
+				.map(([name]) => name),
 		[borderBoxSize],
 	);
 
