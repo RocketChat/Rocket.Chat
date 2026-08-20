@@ -3542,6 +3542,7 @@
   "Master_volume_hint": "Controls the volume for all sounds coming from your workspace",
   "Max_Retry": "Maximum attemps to reconnect to the server",
   "Max_length_is": "Max length is %s",
+  "Max_number_of_items_is": "Max number of items is %s",
   "Max_logs_export": "Max (2000)",
   "Max_number_incoming_livechats_displayed": "Max number of items displayed in the queue",
   "Max_number_incoming_livechats_displayed_description": "(Optional) Max number of items displayed in the incoming Omnichannel queue.",
