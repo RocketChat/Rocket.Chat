@@ -23,7 +23,6 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const {
 		handleSubmit,
 		control,
-		setError,
 		setFocus,
 		formState: { errors, isSubmitting },
 	} = useForm({
@@ -38,16 +37,6 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	}, [setFocus]);
 
 	const handleConfirm = async ({ name, rooms }: { name: string; rooms: string[] }) => {
-		const error = validateName(name);
-		if (error) {
-			setError(
-				'name',
-				{ message: error === 'empty' ? t('Please_enter_a_category_name') : t('A_category_with_this_name_already_exists') },
-				{ shouldFocus: true },
-			);
-			return;
-		}
-
 		try {
 			if (room) {
 				await createCategoryAndMoveRoom(
@@ -86,6 +75,9 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 						<Controller
 							control={control}
 							name='name'
+							rules={{
+								validate: (name: string) => validateName(name),
+							}}
 							render={({ field }) => (
 								<TextInput
 									autoComplete='off'

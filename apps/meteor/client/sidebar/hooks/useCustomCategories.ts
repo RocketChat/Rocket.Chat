@@ -10,8 +10,6 @@ import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
 
-export type CategoryNameError = 'empty' | 'duplicate';
-
 export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; categoryId?: string };
 
 /** The `favorites` sentinel is mutually exclusive with the custom categories. */
@@ -47,18 +45,21 @@ export const useCustomCategories = () => {
 	);
 
 	const validateName = useCallback(
-		(name: string, excludeId?: string): CategoryNameError | undefined => {
+		(name: string, excludeId?: string): string | undefined => {
 			const trimmed = name.trim();
 			if (!trimmed) {
-				return 'empty';
+				return t('Please_enter_a_category_name');
+			}
+			if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
+				return t('Category_name_is_too_long__max__maxLength__characters', { maxLength: MAX_CATEGORY_NAME_LENGTH });
 			}
 			const normalized = trimmed.toLowerCase();
 			if (categories.some((category) => category._id !== excludeId && category.name.trim().toLowerCase() === normalized)) {
-				return 'duplicate';
+				return t('A_category_with_this_name_already_exists');
 			}
 			return undefined;
 		},
-		[categories],
+		[categories, t],
 	);
 
 	/** Create a category and optionally assign rooms to it. */

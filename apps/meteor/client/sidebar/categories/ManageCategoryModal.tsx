@@ -35,7 +35,6 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const {
 		handleSubmit,
 		control,
-		setError,
 		setFocus,
 		formState: { errors, isSubmitting },
 	} = useForm({
@@ -64,18 +63,6 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 			return;
 		}
 
-		if (!nameUnchanged) {
-			const error = validateName(name, category._id);
-			if (error) {
-				setError(
-					'name',
-					{ message: error === 'empty' ? t('Please_enter_a_category_name') : t('A_category_with_this_name_already_exists') },
-					{ shouldFocus: true },
-				);
-				return;
-			}
-		}
-
 		try {
 			await updateCategory(category._id, trimmed || category.name, addedRoomIds, removedRoomIds);
 			dispatchToastMessage({ type: 'success', message: t('Category_saved') });
@@ -102,6 +89,9 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 						<Controller
 							control={control}
 							name='name'
+							rules={{
+								validate: (name: string) => validateName(name, category._id),
+							}}
 							render={({ field }) => (
 								<TextInput
 									autoComplete='off'
