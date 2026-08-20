@@ -1,0 +1,23 @@
+apps/meteor/server/api/v1/middlewares/metrics.ts
+  s_9c02adec81f5a5::t_09ba75c3b29fb5 28-31
+  s_9c02adec81f5a5::t_51d7e452ae5dbc 26-27
+apps/meteor/server/api/v1/middlewares/metrics.spec.ts
+  s_9c02adec81f5a5::t_6934c7e5974613 243-254
+  s_9c02adec81f5a5::t_1d01c395189c05 202-242,255-288
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "712cfc5f6042f83006b5ec752e7e4200c8a98cba",
+  "prompts": {},
+  "sessions": {
+    "s_9c02adec81f5a5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf94e11-88c4-4791-877e-b72831ecd202",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
