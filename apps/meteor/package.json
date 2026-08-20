@@ -225,7 +225,7 @@
 		"i18next-http-backend": "^3.0.6",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"iconv-lite": "^0.6.3",
-		"image-size": "^1.2.1",
+		"image-size": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.1",
 		"is-svg": "^5.1.0",
