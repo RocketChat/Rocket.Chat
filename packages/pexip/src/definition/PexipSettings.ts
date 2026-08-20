@@ -23,4 +23,9 @@ export type PexipSettings = {
 		discussionsEnabled: boolean;
 		persistentChatEnabled: boolean;
 	};
+	sip: {
+		addAlias: boolean;
+		host: string;
+		port: number;
+	};
 };
