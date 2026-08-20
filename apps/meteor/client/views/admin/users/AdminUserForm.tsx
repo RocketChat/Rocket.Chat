@@ -39,6 +39,7 @@ import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
+import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from '../../../../lib/constants';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
@@ -56,8 +57,8 @@ export type AdminUserFormProps = {
 
 export type UserFormProps = Omit<
 	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
-	'fields'
->;
+	'fields' | 'languages'
+> & { languages: string };
 
 const getInitialValue = ({
 	data,
@@ -78,6 +79,9 @@ const getInitialValue = ({
 	username: data?.username ?? '',
 	bio: data?.bio ?? '',
 	nickname: data?.nickname ?? '',
+	title: data?.title ?? '',
+	nationality: data?.nationality ?? '',
+	languages: data?.languages?.join(', ') ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: isSmtpEnabled && isVerificationNeeded && ((data?.emails?.length && data.emails[0].verified) || false),
 	setRandomPassword: isNewUserPage && isSmtpEnabled,
@@ -171,7 +175,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, languages, ...restFormData } = userFormPayload;
+
+		const userFormData = {
+			...restFormData,
+			languages: languages
+				.split(',')
+				.map((language) => language.trim())
+				.filter(Boolean),
+		};
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
@@ -188,6 +200,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const statusTextId = useId();
 	const bioId = useId();
 	const nicknameId = useId();
+	const titleId = useId();
+	const nationalityId = useId();
+	const languagesId = useId();
 	const passwordId = useId();
 	const rolesId = useId();
 	const joinDefaultChannelsId = useId();
@@ -531,6 +546,100 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<FieldRow>
 							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
 						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={titleId}>{t('Title')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='title'
+								rules={{
+									maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH) },
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={titleId}
+										error={errors?.title?.message}
+										aria-invalid={errors.title ? 'true' : 'false'}
+										aria-describedby={`${titleId}-error`}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors?.title && (
+							<FieldError aria-live='assertive' id={`${titleId}-error`}>
+								{errors.title.message}
+							</FieldError>
+						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={nationalityId}>{t('Nationality')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='nationality'
+								rules={{
+									maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH) },
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={nationalityId}
+										error={errors?.nationality?.message}
+										aria-invalid={errors.nationality ? 'true' : 'false'}
+										aria-describedby={`${nationalityId}-error`}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors?.nationality && (
+							<FieldError aria-live='assertive' id={`${nationalityId}-error`}>
+								{errors.nationality.message}
+							</FieldError>
+						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={languagesId}>{t('Languages')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='languages'
+								rules={{
+									validate: (value) => {
+										const items = value
+											.split(',')
+											.map((language) => language.trim())
+											.filter(Boolean);
+										if (items.length > USER_PROFILE_LANGUAGES_MAX_COUNT) {
+											return t('Max_number_of_items_is', USER_PROFILE_LANGUAGES_MAX_COUNT);
+										}
+										if (items.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)) {
+											return t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH);
+										}
+										return true;
+									},
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={languagesId}
+										error={errors?.languages?.message}
+										aria-invalid={errors.languages ? 'true' : 'false'}
+										aria-describedby={`${languagesId}-error`}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldHint>{t('Languages_hint')}</FieldHint>
+						{errors?.languages && (
+							<FieldError aria-live='assertive' id={`${languagesId}-error`}>
+								{errors.languages.message}
+							</FieldError>
+						)}
 					</Field>
 					{!!customFieldsMetadata.length && (
 						<>

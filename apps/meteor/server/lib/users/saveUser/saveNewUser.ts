@@ -8,6 +8,7 @@ import { notifyOnUserChangeById } from '../../notifyListener';
 import { validateEmailDomain } from '../../validateEmailDomain';
 import { setUserAvatar } from '../setUserAvatar';
 import { handleBio } from './handleBio';
+import { handleProfileFields } from './handleProfileFields';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
@@ -58,6 +59,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
+	handleProfileFields(updater, userData);
 
 	await Users.updateFromUpdater({ _id }, updater);
 
