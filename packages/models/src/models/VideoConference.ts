@@ -21,6 +21,7 @@ import type {
 	Db,
 	CountDocumentsOptions,
 	FindOptions,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -35,6 +36,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
 			{ key: { discussionRid: 1 }, unique: false },
+			{ key: { mediaCallIds: 1 }, unique: true, sparse: true },
 			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
 		];
 	}
@@ -130,11 +132,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		mediaCallIds,
 		sipAlias,
 		discussionRid,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'sipAlias' | 'discussionRid'>): Promise<string> {
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -143,6 +146,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			...(mediaCallIds?.length && { mediaCallIds }),
 			...(sipAlias && { sipAlias }),
 			...(discussionRid && { discussionRid }),
 			...callDetails,
@@ -345,6 +349,46 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				},
 			},
 		);
+	}
+
+	public async findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				mediaCallIds: callId,
+			},
+			options || {},
+		);
+	}
+
+	public async addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null> {
+		return this.findOneAndUpdate(
+			{
+				providerName,
+				sipAlias,
+				status: VideoConferenceStatus.STARTED,
+				mediaCallIds: { $not: { $eq: mediaCallId } },
+			},
+			{
+				$addToSet: {
+					mediaCallIds: mediaCallId,
+				},
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult> {
+		return this.updateOneById(conferenceId, {
+			$addToSet: {
+				mediaCallIds: mediaCallId,
+			},
+		});
 	}
 
 	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {
