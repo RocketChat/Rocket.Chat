@@ -111,6 +111,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						startedAt: undefined,
 						supportedFeatures: [],
 						confirmed: instanceState.confirmed,
+						escalated: false,
 					},
 				});
 				return;
@@ -122,6 +123,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
+				escalated,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 				ringing,
 			} = instanceState;
@@ -161,6 +163,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					startedAt,
 					supportedFeatures,
 					confirmed: instanceState.confirmed,
+					escalated,
 					ringing,
 				},
 			});

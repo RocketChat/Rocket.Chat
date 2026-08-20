@@ -76,6 +76,10 @@ export class OutgoingSipCall extends BaseSipCall {
 			return this.processTransferredCall(call);
 		}
 
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
+		}
+
 		if (call.state === 'hangup') {
 			return this.processEndedCall(call);
 		}
