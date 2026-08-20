@@ -1,7 +1,7 @@
 import { clientCallbacks } from '@rocket.chat/ui-client';
 
-import { hasPermission } from '../../../app/authorization/client';
 import { PermissionsCachedStore } from '../../cachedStores';
+import { hasPermission } from '../../lib/authorization';
 import { settings } from '../../lib/settings';
 import { Users } from '../../stores';
 

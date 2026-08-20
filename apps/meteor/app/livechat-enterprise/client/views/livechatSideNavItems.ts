@@ -1,5 +1,5 @@
+import { hasPermission, hasAtLeastOnePermission } from '../../../../client/lib/authorization';
 import { registerOmnichannelSidebarItem } from '../../../../client/views/omnichannel/sidebarItems';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/client';
 
 registerOmnichannelSidebarItem({
 	href: '/omnichannel/reports',
