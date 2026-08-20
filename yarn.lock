@@ -10020,38 +10020,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@workspace:packages/layout, @rocket.chat/layout@workspace:~":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/layout@workspace:packages/layout"
-  dependencies:
-    "@rocket.chat/fuselage": "npm:^0.92.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
-    "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
-    "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/logo": "workspace:~"
-    "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
-    "@rocket.chat/styled": "npm:~0.34.1"
-    "@rocket.chat/tsconfig": "workspace:~"
-    "@testing-library/dom": "npm:~10.4.2"
-    "@testing-library/react": "npm:~16.3.3"
-    "@types/react": "npm:~19.2.18"
-    "@types/react-dom": "npm:~19.2.7"
-    eslint: "npm:~10.7.0"
-    i18next: "npm:~26.4.2"
-    jest: "npm:~30.2.0"
-    react: "npm:~19.2.8"
-    react-dom: "npm:~19.2.8"
-    react-i18next: "npm:~17.0.15"
-    storybook: "npm:~9.1.20"
-    typescript: "npm:~5.9.3"
+"@rocket.chat/layout@npm:~0.36.2":
+  version: 0.36.2
+  resolution: "@rocket.chat/layout@npm:0.36.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: ">=19"
     react-dom: ">=19"
     react-i18next: "*"
-  languageName: unknown
-  linkType: soft
+  checksum: 10/ed0d5d3438f8b4fed986f62a5ce9349b4de1f46e2dabc63fdd39f46ed9c4b9ab06b4d8e8031d847578fb56658919d09950049733ae6715bed59bec295527e18a
+  languageName: node
+  linkType: hard
 
 "@rocket.chat/license@workspace:^, @rocket.chat/license@workspace:ee/packages/license":
   version: 0.0.0-use.local
@@ -10087,7 +10066,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.34.0"
     "@rocket.chat/gazzodown": "workspace:^"
-    "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/logo": "npm:~0.33.2"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
@@ -10173,9 +10152,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/logo@workspace:packages/logo, @rocket.chat/logo@workspace:~":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/logo@workspace:packages/logo"
+"@rocket.chat/logo@npm:~0.33.2":
+  version: 0.33.2
+  resolution: "@rocket.chat/logo@npm:0.33.2"
   dependencies:
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -10354,11 +10333,11 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "workspace:~"
+    "@rocket.chat/layout": "npm:~0.36.2"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/logo": "npm:~0.33.2"
     "@rocket.chat/media-calls": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/memo": "workspace:~"
@@ -10373,7 +10352,7 @@ __metadata:
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": "workspace:^"
+    "@rocket.chat/onboarding-ui": "npm:~0.37.3"
     "@rocket.chat/passport-x": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
@@ -10936,9 +10915,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@workspace:^, @rocket.chat/onboarding-ui@workspace:packages/onboarding-ui":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/onboarding-ui@workspace:packages/onboarding-ui"
+"@rocket.chat/onboarding-ui@npm:~0.37.3":
+  version: 0.37.3
+  resolution: "@rocket.chat/onboarding-ui@npm:0.37.3"
   dependencies:
     "@rocket.chat/fuselage": "npm:^0.92.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -10975,8 +10954,9 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  languageName: unknown
-  linkType: soft
+  checksum: 10/7ba5cb2cdbbe1ad52069ea267a0806d665cb3db15bab50842cffae22a562716e75b5c353fa495d038449753679bee892d9feeeee902cfb67dcc7d324a750d518
+  languageName: node
+  linkType: hard
 
 "@rocket.chat/passport-x@workspace:packages/passport-x, @rocket.chat/passport-x@workspace:~":
   version: 0.0.0-use.local
@@ -11457,11 +11437,11 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.34.0"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/layout": "workspace:~"
-    "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/layout": "npm:~0.36.2"
+    "@rocket.chat/logo": "npm:~0.33.2"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
-    "@rocket.chat/onboarding-ui": "workspace:^"
+    "@rocket.chat/onboarding-ui": "npm:~0.37.3"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tools": "workspace:~"
@@ -11829,8 +11809,8 @@ __metadata:
     "@rocket.chat/fuselage-toastbar": "npm:~0.36.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.34.0"
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
-    "@rocket.chat/icons": "npm:^0.50.0"
-    "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/icons": "npm:^0.48.0"
+    "@rocket.chat/logo": "npm:~0.33.2"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
@@ -11866,9 +11846,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.34.0"
     "@rocket.chat/i18n": "workspace:~"
-    "@rocket.chat/icons": "npm:^0.50.0"
-    "@rocket.chat/layout": "workspace:~"
-    "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/icons": "npm:^0.48.0"
+    "@rocket.chat/layout": "npm:~0.36.2"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
