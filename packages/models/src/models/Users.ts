@@ -80,6 +80,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
+			{ key: { 'phones.number': 1 }, sparse: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -2709,6 +2710,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				freeSwitchExtension,
 			},
+			options,
+		);
+	}
+
+	findByPhone<T extends Document = IUser>(phoneNumber: string, options: FindOptions<IUser> = {}): FindCursor<T> {
+		return this.find<T>(
+			{
+				'phones.number': phoneNumber,
+			} as Filter<IUser>,
 			options,
 		);
 	}
