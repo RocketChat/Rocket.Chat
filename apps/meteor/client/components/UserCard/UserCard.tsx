@@ -116,7 +116,9 @@ const UserCard = ({
 						)}
 						{title && (
 							<UserCardListItem icon='business' label={t('Title')}>
-								{title}
+								<Box is='span' display='block' withTruncatedText title={title}>
+									{title}
+								</Box>
 							</UserCardListItem>
 						)}
 						{roles && (
