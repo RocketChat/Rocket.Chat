@@ -36,6 +36,7 @@
 	},
 	"resolutions": {
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
+		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"postcss-svgo/svgo": "4.0.2",
 		"@vue/compiler-sfc/postcss": "8.5.26",
 		"css-loader@npm:6.11.0/postcss": "8.5.26",
