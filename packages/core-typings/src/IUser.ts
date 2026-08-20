@@ -172,7 +172,6 @@ export interface ISidebarCustomCategory {
 	name: string;
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
-	rooms?: string[];
 }
 
 export interface IUser extends IRocketChatRecord {

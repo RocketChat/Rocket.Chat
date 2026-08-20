@@ -109,10 +109,6 @@ export const validateSidebarCustomCategories = (categories: ISidebarCustomCatego
 	if (new Set(ids).size !== ids.length) {
 		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate category _id values');
 	}
-	const allRids = categories.flatMap((category) => category.rooms ?? []);
-	if (new Set(allRids).size !== allRids.length) {
-		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate room ids across categories');
-	}
 };
 
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
@@ -153,7 +149,6 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 				name: String,
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
-				rooms: Match.Optional([String]),
 			},
 		]),
 		sidebarCategoriesOrder: Match.Optional([String]),

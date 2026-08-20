@@ -5,8 +5,11 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createRoom, deleteRoom, getSubscriptionByRoomId, addUserToRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
+
+const experimentalEndpoint = (path: string) => `/api/experimental/${path}`;
 
 /**
  * Persistence + validation of the `sidebarCustomCategories` user preference (custom sidebar categories).
@@ -62,11 +65,8 @@ describe('[Sidebar Custom Categories]', () => {
 				});
 		});
 
-		it('should persist the optional showUnreads and rooms fields verbatim', async () => {
-			const categories = [
-				category({ name: 'Team', showUnreads: false, rooms: ['rid-1', 'rid-2'] }),
-				category({ name: 'Personal', showUnreads: true, rooms: [] }),
-			];
+		it('should persist the optional showUnreads field verbatim', async () => {
+			const categories = [category({ name: 'Team', showUnreads: false }), category({ name: 'Personal', showUnreads: true })];
 
 			await setCategories(categories).expect(200);
 
@@ -190,6 +190,142 @@ describe('[Sidebar Custom Categories]', () => {
 				.expect((res) => {
 					expect(res.body.preferences.sidebarCustomCategories).to.deep.equal(categories);
 				});
+		});
+	});
+
+	describe('[Experimental] rooms.setCategory', () => {
+		let catId: string;
+		let roomId: string;
+		let roomId2: string;
+
+		const setCategory = (body: object, creds: Credentials = testUserCredentials) =>
+			request.post(experimentalEndpoint('rooms.setCategory')).set(creds).send(body);
+
+		before(async () => {
+			catId = Random.id();
+			await setCategories([{ _id: catId, name: 'E2E Cat' }]);
+
+			// Create rooms as admin (regular users lack create-c permission by default),
+			// then invite the test user so they are subscribed.
+			const r1 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` }).expect(200);
+			roomId = r1.body.channel._id;
+			await addUserToRoom({ usernames: [testUser.username as string], rid: roomId, type: 'c' });
+
+			const r2 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` }).expect(200);
+			roomId2 = r2.body.channel._id;
+			await addUserToRoom({ usernames: [testUser.username as string], rid: roomId2, type: 'c' });
+		});
+
+		after(async () => {
+			await setCategories([]);
+			await Promise.all([
+				...(roomId ? [deleteRoom({ type: 'c', roomId })] : []),
+				...(roomId2 ? [deleteRoom({ type: 'c', roomId: roomId2 })] : []),
+			]);
+		});
+
+		it('should assign a room to a category and persist it on the subscription', async () => {
+			await setCategory({ roomIds: [roomId], category: catId })
+				.expect(200)
+				.expect((res) => expect(res.body).to.have.property('success', true));
+
+			const sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+			expect(sub).to.have.property('category', catId);
+		});
+
+		it('should unassign a room from its category when category is null', async () => {
+			await setCategory({ roomIds: [roomId], category: catId }).expect(200);
+			await setCategory({ roomIds: [roomId], category: null }).expect(200);
+
+			const sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+			expect(sub).to.not.have.property('category');
+		});
+
+		it('should assign multiple rooms to a category in one call', async () => {
+			await setCategory({ roomIds: [roomId, roomId2], category: catId }).expect(200);
+
+			const [s1, s2] = await Promise.all([
+				getSubscriptionByRoomId(roomId, testUserCredentials),
+				getSubscriptionByRoomId(roomId2, testUserCredentials),
+			]);
+			expect(s1).to.have.property('category', catId);
+			expect(s2).to.have.property('category', catId);
+		});
+
+		it('should deduplicate roomIds and not error on duplicates', async () => {
+			await setCategory({ roomIds: [roomId, roomId], category: catId }).expect(200);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(experimentalEndpoint('rooms.setCategory'))
+				.send({ roomIds: [roomId], category: catId })
+				.expect(401);
+		});
+
+		describe('validation', () => {
+			it('should reject a missing roomIds field', async () => {
+				await setCategory({ category: catId }).expect(400);
+			});
+
+			it('should reject an empty roomIds array (minItems: 1)', async () => {
+				await setCategory({ roomIds: [], category: catId }).expect(400);
+			});
+
+			it('should reject a missing category field', async () => {
+				await setCategory({ roomIds: [roomId] }).expect(400);
+			});
+
+			it('should reject unknown properties (additionalProperties: false)', async () => {
+				await setCategory({ roomIds: [roomId], category: catId, extra: true }).expect(400);
+			});
+		});
+
+		describe('business logic', () => {
+			it('should reject a category id not found in the user preferences', async () => {
+				await setCategory({ roomIds: [roomId], category: Random.id() })
+					.expect(400)
+					.expect((res) => expect(res.body).to.have.property('success', false));
+			});
+
+			it('should reject a room the user is not subscribed to', async () => {
+				const adminRoom = await createRoom({ type: 'c', name: `admin-only-${Random.id()}` }).expect(200);
+				const adminRoomId = adminRoom.body.channel._id;
+				try {
+					await setCategory({ roomIds: [adminRoomId], category: catId })
+						.expect(400)
+						.expect((res) => expect(res.body).to.have.property('success', false));
+				} finally {
+					await deleteRoom({ type: 'c', roomId: adminRoomId });
+				}
+			});
+
+			it('should remove a room from favorites when assigning it to a category', async () => {
+				// First favorite the room
+				await request.post(api('rooms.favorite')).set(testUserCredentials).send({ roomId, favorite: true }).expect(200);
+				let sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+				expect(sub).to.have.property('f', true);
+				expect(sub).to.not.have.property('category');
+
+				// Now assign it to a category — server atomically unsets f
+				await setCategory({ roomIds: [roomId], category: catId }).expect(200);
+				sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+				expect(sub).to.have.property('category', catId);
+				expect(sub).to.have.property('f', false);
+			});
+
+			it('should remove a room from its category when favoriting it', async () => {
+				// First assign the room to a category
+				await setCategory({ roomIds: [roomId], category: catId }).expect(200);
+				let sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+				expect(sub).to.have.property('category', catId);
+
+				// Now favorite it — server atomically unsets category
+				await request.post(api('rooms.favorite')).set(testUserCredentials).send({ roomId, favorite: true }).expect(200);
+				sub = await getSubscriptionByRoomId(roomId, testUserCredentials);
+				expect(sub).to.have.property('f', true);
+				expect(sub).to.not.have.property('category');
+			});
 		});
 	});
 });

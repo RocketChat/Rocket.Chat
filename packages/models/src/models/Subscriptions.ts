@@ -1312,13 +1312,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': userId,
 		};
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				f: favorite,
-			},
-		};
+		const update: UpdateFilter<ISubscription> = favorite ? { $set: { f: true }, $unset: { category: 1 } } : { $set: { f: false } };
 
 		return this.updateOne(query, update);
+	}
+
+	setCategoryByRoomIdsAndUserId(roomIds: string[], userId: string, category: string | null): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			'rid': { $in: roomIds },
+		};
+
+		const update: UpdateFilter<ISubscription> = category !== null ? { $set: { category }, $unset: { f: 1 } } : { $unset: { category: 1 } };
+
+		return this.updateMany(query, update);
 	}
 
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
