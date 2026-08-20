@@ -1,0 +1,19 @@
+.changeset/witty-beds-bow.md
+  s_1194bea602a2c1::t_4f97a9fe547eff 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fba18417fdcfefbf9e27a93bdf32e5ee858adfd4",
+  "prompts": {},
+  "sessions": {
+    "s_1194bea602a2c1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "63593259-4c9c-4be7-b3f9-872060a28515",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
