@@ -1,4 +1,3 @@
-import '../app/emoji/client';
 import '../app/gitlab/client';
 import '../app/license/client';
 import '../app/lib/client';

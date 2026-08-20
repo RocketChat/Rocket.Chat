@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { emoji } from '../../../../app/emoji/client';
 import { runOptimisticSetReaction } from '../../../../app/reactions/client/methods/setReaction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { emoji } from '../../emoji';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
