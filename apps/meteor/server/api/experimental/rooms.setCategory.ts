@@ -1,4 +1,3 @@
-import { License } from '@rocket.chat/license';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -15,11 +14,13 @@ const setCategory = ajv.compile<{ roomIds: string[]; category: string | null }>(
 	properties: {
 		roomIds: {
 			type: 'array',
-			items: { type: 'string' },
+			items: { type: 'string', minLength: 1 },
 			minItems: 1,
+			uniqueItems: true,
 		},
 		category: {
-			type: ['string', 'null'],
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['roomIds', 'category'],
@@ -30,6 +31,7 @@ API.experimental.post(
 	'rooms.setCategory',
 	{
 		authRequired: true,
+		license: ['experimental-enterprise-features'],
 		body: setCategory,
 		response: {
 			200: ajv.compile<void>({
@@ -46,10 +48,6 @@ API.experimental.post(
 		},
 	},
 	async function action() {
-		if (!License.hasModule('experimental-enterprise-features')) {
-			return API.experimental.failure('error-license-not-found', 'This is a premium feature.');
-		}
-
 		const { roomIds, category } = this.bodyParams;
 		const { userId } = this;
 
@@ -67,19 +65,10 @@ API.experimental.post(
 			}
 		}
 
-		// Deduplicate so the subscription count check and notify loop are correct.
-		const uniqueRoomIds = [...new Set(roomIds)];
-
-		// Verify the user is subscribed to all specified rooms.
-		const subs = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, { projection: { rid: 1 } }).toArray();
-		if (subs.length !== uniqueRoomIds.length) {
-			return API.experimental.failure('error-invalid-param', 'One or more rooms not found in user subscriptions.');
-		}
-
-		const { modifiedCount } = await Subscriptions.setCategoryByRoomIdsAndUserId(uniqueRoomIds, userId, category);
+		const { modifiedCount } = await Subscriptions.setCategoryByRoomIdsAndUserId(roomIds, userId, category);
 
 		if (modifiedCount) {
-			await Promise.all(uniqueRoomIds.map((rid) => notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId)));
+			await Promise.all(roomIds.map((rid) => notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId)));
 		}
 
 		return API.experimental.success();

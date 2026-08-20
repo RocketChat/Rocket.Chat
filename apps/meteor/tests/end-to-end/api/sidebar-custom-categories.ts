@@ -289,13 +289,15 @@ describe('[Sidebar Custom Categories]', () => {
 					.expect((res) => expect(res.body).to.have.property('success', false));
 			});
 
-			it('should reject a room the user is not subscribed to', async () => {
+			it('should silently skip a room the user is not subscribed to', async () => {
 				const adminRoom = await createRoom({ type: 'c', name: `admin-only-${Random.id()}` }).expect(200);
 				const adminRoomId = adminRoom.body.channel._id;
 				try {
-					await setCategory({ roomIds: [adminRoomId], category: catId })
-						.expect(400)
-						.expect((res) => expect(res.body).to.have.property('success', false));
+					await setCategory({ roomIds: [adminRoomId], category: catId }).expect(200);
+					// The subscription for adminRoom belongs to the admin, not testUser — setCategoryByRoomIdsAndUserId
+					// filters by userId, so the unsubscribed room is silently ignored.
+					const sub = await getSubscriptionByRoomId(adminRoomId, credentials);
+					expect(sub).to.not.have.property('category');
 				} finally {
 					await deleteRoom({ type: 'c', roomId: adminRoomId });
 				}
