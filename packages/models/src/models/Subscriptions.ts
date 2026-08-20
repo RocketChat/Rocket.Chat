@@ -1318,9 +1318,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	setCategoryByRoomIdsAndUserId(roomIds: string[], userId: string, category: string | null): Promise<UpdateResult | Document> {
-		const query = {
+		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			'rid': { $in: roomIds },
+			't': { $ne: 'l' },
 		};
 
 		const update: UpdateFilter<ISubscription> = category !== null ? { $set: { category, f: false } } : { $unset: { category: 1 } };
