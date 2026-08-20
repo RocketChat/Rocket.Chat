@@ -1,6 +1,6 @@
-import { queryClient } from '../../../client/lib/queryClient';
-import { roomsQueryKeys } from '../../../client/lib/queryKeys';
-import { slashCommands } from '../../utils/client/slashCommand';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
+import { queryClient } from '../../lib/queryClient';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 
 slashCommands.add({
 	command: 'invite',

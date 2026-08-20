@@ -1,4 +1,4 @@
-import { slashCommands } from '../../utils/client/slashCommand';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
 
 slashCommands.add({
 	command: 'unarchive',
