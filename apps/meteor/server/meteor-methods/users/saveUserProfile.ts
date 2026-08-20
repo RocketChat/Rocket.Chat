@@ -8,6 +8,7 @@ import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
 import { setUserStatusMethod } from './setUserStatus';
+import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from '../../../lib/constants';
 import { getUserInfo } from '../../api/lib/getUserInfo';
 import { type AuthenticatedContext, twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
@@ -117,7 +118,6 @@ async function saveUserProfile(
 		await Users.setNickname(user._id, settings.nickname.trim());
 	}
 
-	const MAX_PROFILE_FIELD_LENGTH = 260;
 	for await (const field of ['title', 'nationality'] as const) {
 		const value = settings[field];
 		if (!user || value === undefined) {
@@ -126,8 +126,8 @@ async function saveUserProfile(
 		if (typeof value !== 'string') {
 			throw new Meteor.Error('error-invalid-field', field, { method: 'saveUserProfile' });
 		}
-		if (value.length > MAX_PROFILE_FIELD_LENGTH) {
-			throw new Meteor.Error('error-field-size-exceeded', `${field} size exceeds ${MAX_PROFILE_FIELD_LENGTH} characters`, {
+		if (value.length > USER_PROFILE_FIELD_MAX_LENGTH) {
+			throw new Meteor.Error('error-field-size-exceeded', `${field} size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -140,7 +140,10 @@ async function saveUserProfile(
 			throw new Meteor.Error('error-invalid-field', 'languages', { method: 'saveUserProfile' });
 		}
 		const languages = settings.languages.map((language) => language.trim()).filter(Boolean);
-		if (languages.length > 20 || languages.some((language) => language.length > MAX_PROFILE_FIELD_LENGTH)) {
+		if (
+			languages.length > USER_PROFILE_LANGUAGES_MAX_COUNT ||
+			languages.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)
+		) {
 			throw new Meteor.Error('error-field-size-exceeded', 'languages size exceeded', { method: 'saveUserProfile' });
 		}
 		await Users.updateOne({ _id: user._id }, languages.length ? { $set: { languages } } : { $unset: { languages: 1 } });
