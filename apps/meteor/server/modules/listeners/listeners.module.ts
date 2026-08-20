@@ -181,6 +181,10 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
+		service.onEvent('video-conference.discussionUpdated', ({ callId, discussionRid }) => {
+			notifications.notifyVideoConference(callId, 'discussionUpdated', { discussionRid });
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {

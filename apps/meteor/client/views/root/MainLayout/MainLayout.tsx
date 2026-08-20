@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
+import LayoutWithSidebar from './LayoutWithSidebar';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
 
@@ -20,7 +21,9 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 		return (
 			<EmbeddedPreload>
 				<AuthenticationCheck>
-					<Suspense fallback={null}>{children}</Suspense>
+					<LayoutWithSidebar>
+						<Suspense fallback={null}>{children}</Suspense>
+					</LayoutWithSidebar>
 				</AuthenticationCheck>
 			</EmbeddedPreload>
 		);
@@ -29,7 +32,9 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 	return (
 		<Preload>
 			<AuthenticationCheck>
-				<Suspense fallback={null}>{children}</Suspense>
+				<LayoutWithSidebar>
+					<Suspense fallback={null}>{children}</Suspense>
+				</LayoutWithSidebar>
 			</AuthenticationCheck>
 		</Preload>
 	);
