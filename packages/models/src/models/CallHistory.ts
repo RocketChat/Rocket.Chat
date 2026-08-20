@@ -1,7 +1,7 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ICallHistoryModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Db, Filter, FindCursor, IndexDescription, Document } from 'mongodb';
+import type { Db, Filter, FindCursor, FindOptions, IndexDescription, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

@@ -1,5 +1,5 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type { FindCursor, Document } from 'mongodb';
+import type { FindCursor, Document, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
