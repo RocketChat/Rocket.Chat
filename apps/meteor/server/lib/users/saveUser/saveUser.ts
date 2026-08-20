@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
+import { handleProfileFields } from './handleProfileFields';
 import { handleNickname } from './handleNickname';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
@@ -42,6 +43,9 @@ export type SaveUserData = {
 
 	bio?: string;
 	nickname?: string;
+	title?: string;
+	nationality?: string;
+	languages?: string[];
 
 	roles?: IRole['_id'][];
 	settings?: Partial<IUserSettings>;
@@ -155,6 +159,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		handleBio(updater, userData.bio);
 		handleNickname(updater, userData.nickname);
+		handleProfileFields(updater, userData);
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);

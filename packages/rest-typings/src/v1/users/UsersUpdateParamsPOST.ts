@@ -12,6 +12,9 @@ export type UsersUpdateParamsPOST = {
 		active?: boolean;
 		bio?: string;
 		nickname?: string;
+		title?: string;
+		nationality?: string;
+		languages?: string[];
 		statusText?: string;
 		roles?: string[];
 		requirePasswordChange?: boolean;
@@ -58,6 +61,21 @@ const UsersUpdateParamsPostSchema = {
 				},
 				bio: {
 					type: 'string',
+					nullable: true,
+				},
+				title: {
+					type: 'string',
+					nullable: true,
+				},
+				nationality: {
+					type: 'string',
+					nullable: true,
+				},
+				languages: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
 					nullable: true,
 				},
 				nickname: {

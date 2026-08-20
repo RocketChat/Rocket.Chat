@@ -10,6 +10,9 @@ export type UserCreateParamsPOST = {
 	active?: boolean;
 	bio?: string;
 	nickname?: string;
+	title?: string;
+	nationality?: string;
+	languages?: string[];
 	statusText?: string;
 	roles?: string[];
 	joinDefaultChannels?: boolean;
@@ -34,6 +37,9 @@ const userCreateParamsPostSchema = {
 		active: { type: 'boolean', nullable: true },
 		bio: { type: 'string', nullable: true },
 		nickname: { type: 'string', nullable: true },
+		title: { type: 'string', nullable: true },
+		nationality: { type: 'string', nullable: true },
+		languages: { type: 'array', items: { type: 'string' }, nullable: true },
 		statusText: { type: 'string', nullable: true },
 		roles: { type: 'array', items: { type: 'string' } },
 		joinDefaultChannels: { type: 'boolean', nullable: true },
