@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useExperimentalEndpoint } from '../../hooks/useExperimentalEndpoint';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
@@ -31,7 +32,7 @@ export const useCustomCategories = () => {
 	const categories = hasLicenseModule ? rawCategories : EMPTY;
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-	const setCategoryEndpoint = useEndpoint('POST', '/experimental/rooms.setCategory');
+	const setCategoryEndpoint = useExperimentalEndpoint('POST', '/experimental/rooms.setCategory');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
 
 	const persistMutation = useMutation({
