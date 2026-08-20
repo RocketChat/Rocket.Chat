@@ -136,6 +136,7 @@ export interface IVideoConference extends IRocketChatRecord {
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
 
+	mediaCallIds?: string[];
 	/**
 	 * A short numeric address a SIP endpoint can dial to reach this conference, given out while
 	 * `Pexip_Integration_SIP_AddAlias` is on.
