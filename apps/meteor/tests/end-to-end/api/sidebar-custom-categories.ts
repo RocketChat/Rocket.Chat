@@ -8,6 +8,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom, getSubscriptionByRoomId, addUserToRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 const experimentalEndpoint = (path: string) => `/api/experimental/${path}`;
 
@@ -193,7 +194,7 @@ describe('[Sidebar Custom Categories]', () => {
 		});
 	});
 
-	describe('[Experimental] rooms.setCategory', () => {
+	(IS_EE ? describe : describe.skip)('[Experimental] rooms.setCategory', () => {
 		let catId: string;
 		let roomId: string;
 		let roomId2: string;
