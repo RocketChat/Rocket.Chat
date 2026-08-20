@@ -23,11 +23,9 @@ export const useCollapse = (attachmentCollapsed?: boolean, key?: string) => {
 		RoomManager.getStore(rid)?.toggleCollapsible(key);
 	}, [key, rid]);
 
-	const toggleLocalCollapse = useCallback(() => toggleLocalCollapsed(), [toggleLocalCollapsed]);
-
 	if (key) {
 		return [toggled !== defaultCollapsed, togglePersistedCollapsed] as const;
 	}
 
-	return [localCollapsed, toggleLocalCollapse] as const;
+	return [localCollapsed, toggleLocalCollapsed] as const;
 };
