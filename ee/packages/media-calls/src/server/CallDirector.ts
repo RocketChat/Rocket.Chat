@@ -311,7 +311,18 @@ class MediaCallDirector {
 		}
 
 		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
-		const allowedFeatures = requestedFeatures.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const participants = [caller, callee];
+		const allowedFeatures = requestedFeatures.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureAvailableForParticipants(feature, participants),
+		);
+
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			...getCallIdentity({ ...params, createdBy, service }),
 
