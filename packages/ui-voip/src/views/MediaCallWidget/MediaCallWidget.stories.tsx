@@ -118,3 +118,17 @@ export const OngoingCallConnecting: Story = {
 		connectionState: 'CONNECTING',
 	},
 };
+
+export const OngoingCallDisabledAllFeatures: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: [],
+	},
+};
+
+export const OngoingCallDisabledAllButScreenshare: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: ['screen-share'],
+	},
+};
