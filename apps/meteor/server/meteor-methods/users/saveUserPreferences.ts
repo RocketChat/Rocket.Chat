@@ -105,8 +105,9 @@ export const validateSidebarCustomCategories = (categories: ISidebarCustomCatego
 			throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories category name exceeds maximum length');
 		}
 	}
-	const ids = categories.map((category) => category._id);
-	if (new Set(ids).size !== ids.length) {
+
+	const hasDuplicates = (values: string[]): boolean => new Set(values).size !== values.length;
+	if (hasDuplicates(categories.map((category) => category._id))) {
 		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate category _id values');
 	}
 };
