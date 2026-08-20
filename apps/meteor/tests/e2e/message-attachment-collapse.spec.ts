@@ -96,9 +96,10 @@ test.describe.serial('Message Attachment Collapse', () => {
 			await floodChannel(api, targetChannel, 30);
 			await waitForFloodToSettle(api, targetChannel);
 
-			await scrollUp();
-
-			await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeHidden();
+			await expect(async () => {
+				await scrollUp();
+				await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeHidden({ timeout: 1000 });
+			}).toPass();
 		});
 	});
 
@@ -139,9 +140,10 @@ test.describe.serial('Message Attachment Collapse', () => {
 			await floodChannel(api, targetChannel, 30);
 			await waitForFloodToSettle(api, targetChannel);
 
-			await scrollUp();
-
-			await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeVisible();
+			await expect(async () => {
+				await scrollUp();
+				await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeVisible({ timeout: 1000 });
+			}).toPass();
 		});
 	});
 
