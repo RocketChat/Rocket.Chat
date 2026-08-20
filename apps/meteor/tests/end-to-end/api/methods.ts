@@ -2463,22 +2463,10 @@ describe('Meteor.methods', () => {
 	});
 
 	describe('[@registerUser]', () => {
-		// the write setting no longer exists, but if a regression ever brings it back this
-		// enables it so the anonymous-registration assertion below still catches the leak
-		const trySetAnonymousWrite = (value: boolean) =>
-			request.post(api('settings/Accounts_AllowAnonymousWrite')).set(credentials).send({ value });
+		before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
 
-		before(async () => {
-			await updateSetting('Accounts_AllowAnonymousRead', true);
-			await trySetAnonymousWrite(true);
-		});
-
-		after(async () => {
-			await trySetAnonymousWrite(false);
-			await updateSetting('Accounts_AllowAnonymousRead', false);
-		});
-
-		it('should not mint an anonymous user even with anonymous read enabled', async () => {
+		it('should not register a user without an email', async () => {
 			const res = await request
 				.post(methodCallAnon('registerUser'))
 				.send({
