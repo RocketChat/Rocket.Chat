@@ -13,7 +13,7 @@ exports[`renders Default without crashing 1`] = `
       <div
         aria-label="User Info"
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-c5vmbm"
         role="dialog"
         tabindex="-1"
       >
@@ -21,7 +21,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -48,7 +48,7 @@ exports[`renders Default without crashing 1`] = `
                   >
                     <button
                       aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
                       title="View_avatar"
                       type="button"
                     >
@@ -69,7 +69,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -96,7 +96,7 @@ exports[`renders Default without crashing 1`] = `
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-15mc0du"
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
@@ -113,14 +113,14 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                         id="_r_1_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_1_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -146,12 +146,12 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -177,7 +177,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Workspace_roles
                       </div>
@@ -216,12 +216,12 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -251,12 +251,12 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -337,7 +337,7 @@ exports[`renders Default without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-r98g7d"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div
@@ -375,7 +375,7 @@ exports[`renders InvitedUser without crashing 1`] = `
       <div
         aria-label="User Info"
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-c5vmbm"
         role="dialog"
         tabindex="-1"
       >
@@ -383,7 +383,7 @@ exports[`renders InvitedUser without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -410,7 +410,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                   >
                     <button
                       aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
                       title="View_avatar"
                       type="button"
                     >
@@ -431,7 +431,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -458,7 +458,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-15mc0du"
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
@@ -475,14 +475,14 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                         id="_r_3_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_3_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -508,12 +508,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -539,7 +539,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Workspace_roles
                       </div>
@@ -578,12 +578,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -613,12 +613,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -658,12 +658,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Invitation_date
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
                         January 1st, 2025
                       </div>
@@ -713,7 +713,7 @@ exports[`renders InvitedUser without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-r98g7d"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div
@@ -751,7 +751,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
       <div
         aria-label="User Info"
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-c5vmbm"
         role="dialog"
         tabindex="-1"
       >
@@ -759,7 +759,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -786,7 +786,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                   >
                     <button
                       aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
                       title="View_avatar"
                       type="button"
                     >
@@ -807,7 +807,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -834,7 +834,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-15mc0du"
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
@@ -851,14 +851,14 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                         id="_r_5_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_5_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -884,12 +884,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -915,7 +915,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Workspace_roles
                       </div>
@@ -954,12 +954,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -989,12 +989,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1034,12 +1034,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         ABAC_Attributes
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-ffrv0l"
+                          class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-wdtxj5"
                           title="ABAC_Attributes_description"
                         >
                           
@@ -1135,7 +1135,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-r98g7d"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div
@@ -1173,7 +1173,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
       <div
         aria-label="User Info"
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-c5vmbm"
         role="dialog"
         tabindex="-1"
       >
@@ -1181,7 +1181,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -1208,7 +1208,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                   >
                     <button
                       aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-nvgfwt"
+                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
                       title="View_avatar"
                       type="button"
                     >
@@ -1229,7 +1229,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-102ogdb"
+                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -1256,7 +1256,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-15mc0du"
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
@@ -1273,14 +1273,14 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                         id="_r_7_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_7_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1306,12 +1306,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1337,7 +1337,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Workspace_roles
                       </div>
@@ -1376,12 +1376,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -1411,12 +1411,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1456,12 +1456,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
                         Voice_call_extension
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1528,7 +1528,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
           style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-r98g7d"
+            class="rcx-box rcx-box--full rcx-css-124vum9"
           />
         </div>
         <div

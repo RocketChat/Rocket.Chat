@@ -15,12 +15,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -62,7 +62,7 @@ exports[`renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1svuzur"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               data-overlayscrollbars="host"
             >
               <div
@@ -116,7 +116,7 @@ exports[`renders Default without crashing 1`] = `
                       </label>
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-i0xim0"
+                      class="rcx-box rcx-box--full rcx-css-14258hb"
                     >
                       Expire on February 4, 2020 4:45 PM.
                     </div>
@@ -164,7 +164,7 @@ exports[`renders Default without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -205,12 +205,12 @@ exports[`renders InviteEdit without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -252,7 +252,7 @@ exports[`renders InviteEdit without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1svuzur"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               data-overlayscrollbars="host"
             >
               <div
@@ -332,19 +332,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_c_"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                         id="_r_3_"
                         type="button"
                       >
                         <span
-                          class="rcx-box rcx-box--full rcx-css-e3nij6"
+                          class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                           id="react-aria-_r_c_"
                         >
                           1
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>
@@ -417,19 +417,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_k_"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                         id="_r_4_"
                         type="button"
                       >
                         <span
-                          class="rcx-box rcx-box--full rcx-css-e3nij6"
+                          class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                           id="react-aria-_r_k_"
                         >
                           5
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>
@@ -494,7 +494,7 @@ exports[`renders InviteEdit without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -535,12 +535,12 @@ exports[`renders InviteError without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -582,7 +582,7 @@ exports[`renders InviteError without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1svuzur"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               data-overlayscrollbars="host"
             >
               <div
@@ -667,7 +667,7 @@ exports[`renders InviteError without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -708,12 +708,12 @@ exports[`renders InviteLoading without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -755,7 +755,7 @@ exports[`renders InviteLoading without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1svuzur"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               data-overlayscrollbars="host"
             >
               <div
@@ -820,7 +820,7 @@ exports[`renders InviteLoading without crashing 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
