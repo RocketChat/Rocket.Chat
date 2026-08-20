@@ -1323,7 +1323,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'rid': { $in: roomIds },
 		};
 
-		const update: UpdateFilter<ISubscription> = category !== null ? { $set: { category }, $unset: { f: 1 } } : { $unset: { category: 1 } };
+		const update: UpdateFilter<ISubscription> = category !== null ? { $set: { category, f: false } } : { $unset: { category: 1 } };
 
 		return this.updateMany(query, update);
 	}
