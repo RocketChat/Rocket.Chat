@@ -180,6 +180,7 @@ export const addSettings = async function (name: string): Promise<void> {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
 					public: true,
+					alert: 'Premium_required_from_9_0_0_alert',
 				});
 				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',

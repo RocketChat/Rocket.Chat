@@ -9,6 +9,7 @@ import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
 import { cors } from './v1/middlewares/cors';
+import { experimentalWarningMiddleware } from './v1/middlewares/experimental';
 import { loggerMiddleware } from './v1/middlewares/logger';
 import { metricsMiddleware } from './v1/middlewares/metrics';
 import { remoteAddressMiddleware } from './v1/middlewares/remoteAddressMiddleware';
@@ -42,6 +43,7 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
+	experimental: APIClass<'/experimental'>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
@@ -73,6 +75,10 @@ export const API: {
 		version: 'v1',
 		useDefaultAuth: true,
 	}),
+	experimental: createApi({
+		version: 'experimental',
+		useDefaultAuth: true,
+	}),
 	default: createApi({}),
 };
 
@@ -89,14 +95,19 @@ settings.watch<string>('Accounts_CustomFields', (value) => {
 	}
 });
 
+const reloadRoutesToRefreshRateLimiter = () => {
+	API.v1.reloadRoutesToRefreshRateLimiter();
+	API.experimental.reloadRoutesToRefreshRateLimiter();
+};
+
 settings.watch<number>('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
-	API.v1.reloadRoutesToRefreshRateLimiter();
+	reloadRoutesToRefreshRateLimiter();
 });
 
 settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
-	API.v1.reloadRoutesToRefreshRateLimiter();
+	reloadRoutesToRefreshRateLimiter();
 });
 
 export const startRestAPI = () => {
@@ -113,11 +124,39 @@ export const startRestAPI = () => {
 					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
 				}),
 			)
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\/experimental\//),
+					api: API.experimental,
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
+			.use(
+				// Catch-all sampler for the default router (`/api/info`, `/api/docs/json`) and for
+				// unmatched `/api/*` paths, which belong to none of the versioned prefixes above.
+				// Add any new versioned namespace to `excludePathRegex` as well, or it gets counted twice.
+				metricsMiddleware({
+					excludePathRegex: new RegExp(/^\/api\/(v1|experimental|apps)\//),
+					// `API.default` has no `version`; label it explicitly so the series is not blank.
+					api: { version: 'default' },
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
 			.use(tracerSpanMiddleware)
 			.use(remoteAddressMiddleware)
+			.use(experimentalWarningMiddleware({ basePathRegex: new RegExp(/^\/api\/experimental(\/|$)/) }))
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(API.v1.router)
+			.use(API.experimental.router)
 			.use(API.default.router).router,
 	);
 };

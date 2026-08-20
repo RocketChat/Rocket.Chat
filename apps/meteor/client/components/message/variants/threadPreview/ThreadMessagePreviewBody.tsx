@@ -5,18 +5,29 @@ import type { Root } from '@rocket.chat/message-parser';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import GazzodownText from '../../../GazzodownText';
 
 export type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
 };
 
+function getMdTokens(message: IMessage): Root | undefined {
+	if (message.md) {
+		return [...message.md];
+	}
+
+	if (message.msg) {
+		return toPlainTextRoot(message.msg);
+	}
+}
+
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps) => {
 	const { t } = useTranslation();
 	const isEncryptedMessage = isE2EEMessage(message);
 
 	const getMessage = () => {
-		const mdTokens: Root | undefined = message.md && [...message.md];
+		const mdTokens = getMdTokens(message);
 		if (
 			message.attachments &&
 			Array.isArray(message.attachments) &&

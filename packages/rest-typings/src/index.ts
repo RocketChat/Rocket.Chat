@@ -238,6 +238,7 @@ export type * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
 export type * from './v1/instances';
 export * from './v1/ldap';
+export * from './v1/saml';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
@@ -270,6 +271,10 @@ export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
 export * from './v1/twoFactorChallenges';
+
+// Opt-in experimental endpoint typings. Deliberately NOT part of the `Endpoints`
+// union above — see ./experimental for the rationale.
+export type * from './experimental';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';

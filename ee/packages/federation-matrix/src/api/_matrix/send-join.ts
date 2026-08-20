@@ -1,4 +1,3 @@
-import type { EventID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
@@ -29,12 +28,6 @@ const TimestampSchema = {
 	description: 'Unix timestamp in milliseconds',
 };
 
-const DepthSchema = {
-	type: 'number',
-	minimum: 0,
-	description: 'Event depth',
-};
-
 const ServerNameSchema = {
 	type: 'string',
 	description: 'Matrix server name',
@@ -51,137 +44,42 @@ const SendJoinParamsSchema = {
 
 const isSendJoinParamsProps = ajv.compile(SendJoinParamsSchema);
 
-const EventHashSchema = {
-	type: 'object',
-	properties: {
-		sha256: {
-			type: 'string',
-			description: 'SHA256 hash of the event',
-		},
-	},
-	required: ['sha256'],
-};
-
-const EventSignatureSchema = {
-	type: 'object',
-	description: 'Event signatures by server and key ID',
-};
-
-const MembershipEventContentSchema = {
-	type: 'object',
-	properties: {
-		membership: {
-			type: 'string',
-			enum: ['join', 'leave', 'invite', 'ban', 'knock'],
-			description: 'Membership state',
-		},
-		displayname: {
-			type: 'string',
-			nullable: true,
-		},
-		avatar_url: {
-			type: 'string',
-			nullable: true,
-		},
-		join_authorised_via_users_server: {
-			type: 'string',
-			nullable: true,
-		},
-		is_direct: {
-			type: 'boolean',
-			nullable: true,
-		},
-		reason: {
-			type: 'string',
-			description: 'Reason for membership change',
-			nullable: true,
-		},
-	},
-	required: ['membership'],
-};
-
-const EventBaseSchema = {
+const SendJoinEventSchema = {
 	type: 'object',
 	properties: {
 		type: {
 			type: 'string',
-			description: 'Event type',
+			const: 'm.room.member',
 		},
-		content: {
-			type: 'object',
-			description: 'Event content',
+		state_key: {
+			...UsernameSchema,
+			description: 'Matrix user ID of the joining member',
 		},
-		sender: UsernameSchema,
-		room_id: RoomIdSchema,
-		origin_server_ts: TimestampSchema,
-		depth: DepthSchema,
-		prev_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Previous events in the room',
-		},
-		auth_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Authorization events',
+		sender: {
+			...UsernameSchema,
+			description: 'Matrix user ID of the joining member',
 		},
 		origin: {
-			type: 'string',
-			description: 'Origin server',
+			...ServerNameSchema,
+			description: 'The name of the joining homeserver',
 		},
-		hashes: {
-			...EventHashSchema,
-			nullable: true,
-		},
-		signatures: {
-			...EventSignatureSchema,
-			nullable: true,
-		},
-		unsigned: {
-			type: 'object',
-			description: 'Unsigned data',
-			nullable: true,
-		},
-	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events', 'origin'],
-};
-
-const SendJoinEventSchema = {
-	type: 'object',
-	allOf: [
-		EventBaseSchema,
-		{
+		origin_server_ts: TimestampSchema,
+		content: {
 			type: 'object',
 			properties: {
-				type: {
+				membership: {
 					type: 'string',
-					const: 'm.room.member',
+					const: 'join',
 				},
-				content: {
-					type: 'object',
-					allOf: [
-						MembershipEventContentSchema,
-						{
-							type: 'object',
-							properties: {
-								membership: {
-									type: 'string',
-									const: 'join',
-								},
-							},
-							required: ['membership'],
-						},
-					],
+				join_authorised_via_users_server: {
+					...UsernameSchema,
+					description: 'User ID of a resident server member authorizing the join into a restricted room',
 				},
-				state_key: UsernameSchema,
 			},
-			required: ['type', 'content', 'state_key'],
+			required: ['membership'],
 		},
-	],
+	},
+	required: ['type', 'state_key', 'sender', 'origin', 'origin_server_ts', 'content'],
 };
 
 const isSendJoinEventProps = ajv.compile(SendJoinEventSchema);
@@ -235,7 +133,7 @@ export const getMatrixSendJoinRoutes = () => {
 			const { roomId, stateKey } = c.req.param();
 			const body = await c.req.json();
 
-			const response = await federationSDK.sendJoin(roomId, stateKey as EventID, body);
+			const response = await federationSDK.sendJoin(roomId, stateKey, body);
 
 			return {
 				body: response,

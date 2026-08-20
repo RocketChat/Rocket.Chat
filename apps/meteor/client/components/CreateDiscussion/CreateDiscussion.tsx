@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage-forms';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -84,6 +84,7 @@ const CreateDiscussion = ({
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
 	const goToRoom = useGoToRoom();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDiscussionMutation = useMutation({
 		mutationFn: createDiscussion,
@@ -91,6 +92,9 @@ const CreateDiscussion = ({
 			goToRoom(discussion._id);
 			void onSuccess?.(discussion._id);
 			onClose();
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
 

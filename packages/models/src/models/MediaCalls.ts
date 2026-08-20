@@ -7,18 +7,8 @@ import type {
 	IUser,
 	MediaCallActor,
 } from '@rocket.chat/core-typings';
-import type { IMediaCallsModel } from '@rocket.chat/model-typings';
-import type {
-	IndexDescription,
-	Collection,
-	Db,
-	UpdateFilter,
-	UpdateOptions,
-	UpdateResult,
-	FindOptions,
-	Document,
-	FindCursor,
-} from 'mongodb';
+import type { IMediaCallsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, Document, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -38,12 +28,12 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		];
 	}
 
-	public async findOneByIdAndCallee<T extends Document = IMediaCall>(
+	public async findOneByIdAndCallee<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		id: IMediaCall['_id'],
 		callee: MediaCallActor,
-		options?: FindOptions<IMediaCall>,
-	): Promise<T | null> {
-		return this.findOne<T>(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>(
 			{
 				'_id': id,
 				'callee.type': callee.type,
@@ -54,12 +44,15 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
+	public async findOneByCallerRequestedId<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },
-		options?: FindOptions<T>,
-	): Promise<T | null> {
-		return this.findOne(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>(
 			{
 				'caller.type': caller.type,
 				'caller.id': caller.id,
@@ -184,8 +177,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllExpiredCalls<T extends Document = IMediaCall>(options?: FindOptions<T>): FindCursor<T> {
-		return this.find(
+	public findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				ended: false,
 				expiresAt: {
@@ -196,8 +191,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T> {
-		return this.find(
+	public findAllNotOverByUid<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				ended: false,
 				expiresAt: {

@@ -1,6 +1,6 @@
 import type { ICustomUserStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ICustomUserStatusModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { ICustomUserStatusModel, InsertionModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,39 +13,49 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return [{ key: { name: 1 } }];
 	}
 
-	// find one by name
-
-	async findOneByName(name: string, options?: undefined): Promise<ICustomUserStatus | null>;
-
-	async findOneByName(name: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
-		return options ? this.findOne({ name }, options) : this.findOne({ name });
+	async findOneByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return options ? this.findOne<T, O>({ name }, options) : this.findOne<T, O>({ name });
 	}
 
-	findOneByNameExceptId(name: string, except: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
+	findOneByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		except: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	// find
-	findByName(name: string, options?: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
+	findByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			name,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
+	findByNameExceptId<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		except: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	// update

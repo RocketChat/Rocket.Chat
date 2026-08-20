@@ -73,7 +73,7 @@ export async function findRooms({
 			projection: { name: 1 },
 		}).toArray();
 
-		rooms.forEach((room: IOmnichannelRoom & { department?: ILivechatDepartment }) => {
+		rooms.forEach((room: IOmnichannelRoom & { department?: Pick<ILivechatDepartment, '_id' | 'name'> }) => {
 			if (!room.departmentId) {
 				return;
 			}

@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import zlib from 'node:zlib';
 
@@ -117,6 +118,15 @@ export class SAMLUtils {
 		return lines.join('\n');
 	}
 
+	public static isParsableCertificate(cert: string): boolean {
+		try {
+			void new crypto.X509Certificate(this.certToPEM(cert));
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	public static fillTemplateData(template: string, data: Record<string, string>): string {
 		let newTemplate = template;
 
@@ -135,6 +145,37 @@ export class SAMLUtils {
 	public static getValidationActionRedirectPath(credentialToken: string): string {
 		// the saml_idp_credentialToken param is needed by the mobile app
 		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
+	}
+
+	public static isSupportedLoginClient(value: unknown): value is 'desktop' | 'mobile' {
+		return value === 'desktop' || value === 'mobile';
+	}
+
+	public static encodeAuthorizeRelayState(provider: string, loginClient?: string): string {
+		if (!this.isSupportedLoginClient(loginClient)) {
+			return provider;
+		}
+
+		return new URLSearchParams({ provider, loginClient }).toString();
+	}
+
+	public static decodeAuthorizeRelayState(relayState?: string | null): { provider?: string; loginClient?: 'desktop' | 'mobile' } {
+		if (!relayState) {
+			return {};
+		}
+
+		if (relayState.startsWith('provider=') && relayState.includes('&loginClient=')) {
+			const params = new URLSearchParams(relayState);
+			const provider = params.get('provider') ?? undefined;
+			const loginClient = params.get('loginClient');
+
+			return {
+				provider,
+				loginClient: this.isSupportedLoginClient(loginClient) ? loginClient : undefined,
+			};
+		}
+
+		return { provider: relayState };
 	}
 
 	public static log(obj: object | string): void {

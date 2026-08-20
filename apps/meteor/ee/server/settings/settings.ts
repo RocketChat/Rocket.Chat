@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings, SettingsEvents } from '../../../server/settings';
 import { use } from '../../../server/settings/Middleware';
 
-export function changeSettingValue(record: ISetting): SettingValue {
+export function changeSettingValue(record: Pick<ISetting, 'value' | 'enterprise' | 'invalidValue' | 'modules'>): SettingValue {
 	if (!record.enterprise) {
 		return record.value;
 	}
@@ -40,7 +40,7 @@ settings.set = use(settings.set, (context, next) => {
 	return next({ ...record, value });
 });
 
-SettingsEvents.on('fetch-settings', (settings: Array<ISetting>): void => {
+SettingsEvents.on('fetch-settings', (settings): void => {
 	for (const setting of settings) {
 		const changedValue = changeSettingValue(setting);
 		if (changedValue === undefined) {

@@ -2001,6 +2001,62 @@ describe('[Rooms]', () => {
 				expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
 			});
 		});
+
+		describe('E2E forced encryption for private rooms', () => {
+			let unencryptedPrivateParent: IRoom;
+			let encryptedPrivateParent: IRoom;
+			let createdDiscussionId: IRoom['_id'] | undefined;
+
+			before(async () => {
+				// the unencrypted private parent must exist before the policy is enforced
+				unencryptedPrivateParent = (await createRoom({ type: 'p', name: `unencrypted-parent-${Date.now()}` })).body.group;
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+				encryptedPrivateParent = (await createRoom({ type: 'p', name: `encrypted-parent-${Date.now()}`, extraData: { encrypted: true } }))
+					.body.group;
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('E2E_Enable', false),
+					updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
+					...(unencryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: unencryptedPrivateParent._id })] : []),
+					...(encryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: encryptedPrivateParent._id })] : []),
+					...(createdDiscussionId ? [deleteRoom({ type: 'p', roomId: createdDiscussionId })] : []),
+				]);
+			});
+
+			it('should reject creating a discussion in an unencrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: unencryptedPrivateParent._id,
+						t_name: `forced-discussion-${Date.now()}`,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-encrypted-private-rooms-enforced-discussion');
+					});
+			});
+
+			it('should create an encrypted discussion in an encrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: encryptedPrivateParent._id,
+						t_name: `forced-discussion-encrypted-${Date.now()}`,
+					})
+					.expect(200)
+					.expect((res) => {
+						createdDiscussionId = res.body.discussion?._id;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('discussion.t', 'p');
+						expect(res.body).to.have.nested.property('discussion.encrypted', true);
+					});
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {
@@ -2070,6 +2126,14 @@ describe('[Rooms]', () => {
 			return body.messages.find((message: IMessage & { drid: IRoom['_id'] }) => message.drid === discussion._id);
 		};
 
+		const saveDiscussionSettings = (settings: Record<string, unknown>) =>
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({ rid: discussion._id, ...settings })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
 		beforeEach(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
 
@@ -2085,27 +2149,55 @@ describe('[Rooms]', () => {
 		// deleting the parent channel also deletes its discussions
 		afterEach(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should count the message just sent on the discussion', async () => {
-			const sentMessage = await sendSimpleMessage({ roomId: discussion._id });
-			const discussionMessage = await getDiscussionMessage();
+		describe('with no system message hidden', () => {
+			it('should count the message just sent on the discussion', async () => {
+				const sentMessage = await sendSimpleMessage({ roomId: discussion._id });
+				const discussionMessage = await getDiscussionMessage();
 
-			expect(discussionMessage).to.have.property('dcount', 1);
-			expect(discussionMessage).to.have.property('dlm', sentMessage.body.message.ts);
+				expect(discussionMessage).to.have.property('dcount', 1);
+				expect(discussionMessage).to.have.property('dlm', sentMessage.body.message.ts);
+			});
+
+			it('should count the system messages of the discussion', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
 		});
 
-		it('should count the system message just sent on the discussion', async () => {
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: discussion._id,
-					roomName: 'edited-discussion-name',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			const discussionMessage = await getDiscussionMessage();
+		describe('with system messages hidden on the discussion', () => {
+			beforeEach(() => saveDiscussionSettings({ systemMessages: ['r'] }));
 
-			expect(discussionMessage).to.have.property('dcount', 1);
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+
+			it('should count them again once they are not hidden anymore', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await saveDiscussionSettings({ systemMessages: [] });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+		});
+
+		describe('with system messages hidden by the global setting', () => {
+			before(() => updateSetting('Hide_System_Messages', ['r']));
+
+			// the setting applies to the whole workspace, so it has to be restored
+			after(() => updateSetting('Hide_System_Messages', []));
+
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
 		});
 	});
 

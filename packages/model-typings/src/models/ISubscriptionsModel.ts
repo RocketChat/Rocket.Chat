@@ -17,20 +17,38 @@ import type {
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection } from '../types/DocumentWithProjection';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
 
-	findOneByRoomIdAndUserId(rid: string, uid: string, options?: FindOptions<ISubscription>): Promise<ISubscription | null>;
+	findOneByRoomIdAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		uid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByUserIdAndRoomIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		roomIds: Array<string>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findUnarchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findUnarchivedByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRoomIdAndNotUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations?: boolean): Promise<number>;
 
@@ -50,41 +68,44 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateResult>;
 
-	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<FindCursor<IUser>>;
-
-	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
-
-	findUsersInRoles<P extends Document = IUser>(
+	findUsersInRoles<P extends Document = IUser, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		roles: IRole['_id'][],
 		rid: string | undefined,
-		options: FindOptions<P extends IUser ? IUser : P>,
-	): Promise<FindCursor<P>>;
-
-	findUsersInRoles<P extends Document = IUser>(
-		roles: IRole['_id'][],
-		rid: IRoom['_id'] | undefined,
-		options?: FindOptions<P extends IUser ? IUser : P>,
-	): Promise<FindCursor<P>>;
+		options?: O,
+	): Promise<FindCursor<DocumentWithProjection<P, O>>>;
 
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult>;
 
 	isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
-	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRolesAndRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		{ roles, rid }: { roles: string; rid?: string },
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByUserIdAndTypes<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		types: ISubscription['t'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findOpenByVisitorIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		visitorIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
+	findByRoomIdAndNotAlertOrOpenExcludingUserIds<
+		T extends Document = ISubscription,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		filter: {
 			roomId: ISubscription['rid'];
 			uidsExclude?: ISubscription['u']['_id'][];
 			uidsInclude?: ISubscription['u']['_id'][];
 			onlyRead: boolean;
 		},
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	removeByRoomId(roomId: ISubscription['rid'], options?: DeleteOptions & { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
@@ -151,80 +172,121 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]>;
 
-	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRidWithoutE2EKey<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findUsersWithPublicE2EKeyByRids(
 		rids: IRoom['_id'][],
 		excludeUserId: IUser['_id'],
 		usersLimit?: number,
 	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }>;
-	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
 
 	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document>;
-	findByAutoTranslateAndUserId(
+	findByAutoTranslateAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		autoTranslate?: ISubscription['autoTranslate'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByUserIdAndRoomType(
+	findByUserIdAndRoomType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		type: ISubscription['t'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
-	findByNameAndRoomType(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByNameAndRoomType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		filter: Partial<Pick<ISubscription, 'name' | 't'>>,
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document>;
 
-	findByUserIdWithoutE2E(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByUserIdWithoutE2E<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	resetUserE2EKey(userId: string): Promise<UpdateResult | Document>;
 
-	findOneByRoomIdAndUsername(roomId: string, username: string, options: FindOptions<ISubscription>): Promise<ISubscription | null>;
+	findOneByRoomIdAndUsername<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		username: string,
+		options: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findByTypeAndUserId(type: ISubscription['t'], userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByTypeAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		type: ISubscription['t'],
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		types: ISubscription['t'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByUserIdAndRoles(userId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByUserIdAndRoles<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	getLastSeen(options?: FindOptions<ISubscription>): Promise<Date | undefined>;
-	findByRoomWithUserHighlights(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	findByUserIdAndType(userId: string, type: ISubscription['t'], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	findByUserIdExceptType(
+	findByRoomWithUserHighlights<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByUserIdAndType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		type: ISubscription['t'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByUserIdExceptType<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		typeException: ISubscription['t'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptions<P> = FindOptions<P>>(
+	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		roomId: string,
 		roles: string[],
 		options?: O,
 	): FindCursor<DocumentWithProjection<P, O>>;
-
-	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	findByRoomIdAndUserIds(
+	findByRoomIdAndUserIds<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: ISubscription['rid'],
 		userIds: ISubscription['u']['_id'][],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null>;
+	getMinimumLastSeenByRoomId(rid: string): Promise<Pick<ISubscription, '_id' | 'ls'> | null>;
 
 	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult>;
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
-	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findArchivedByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findArchivedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
-	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRoomIdWhenUsernameExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
-	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findByRoomIdWhenUserIdExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
@@ -267,12 +329,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		notificationField: keyof ISubscription,
 		notificationOriginField: keyof ISubscription,
 	): Promise<UpdateResult | Document>;
-	findByUserPreferences(
+	findByUserPreferences<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		notificationOriginField: keyof ISubscription,
 		originFieldNotEqualValue: 'user' | 'subscription',
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	clearNotificationUserPreferences(
 		userId: string,
 		notificationField: string,
@@ -298,11 +360,11 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert?: boolean): Promise<UpdateResult>;
 
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
-	findUnreadThreadsByRoomId(
+	findUnreadThreadsByRoomId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: ISubscription['rid'],
 		tunread: ISubscription['tunread'],
-		options?: FindOptions<ISubscription>,
-	): FindCursor<ISubscription>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
@@ -318,5 +380,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
-	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T>;
+	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: ISubscription['u']['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

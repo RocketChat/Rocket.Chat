@@ -4,6 +4,9 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { getUsersHiddenFrom } from '../statusVisibility/hiddenUsers';
+import { redactStatus } from '../statusVisibility/redactStatus';
+import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
 
 const logger = new Logger('getFullUserData');
 
@@ -120,7 +123,10 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
-			...(myself && { services: 1 }),
+			...(myself && {
+				services: 1,
+				...(settings.get<boolean>('Accounts_StatusVisibility_Enabled') && { 'settings.preferences.statusVisibilityDenied': 1 }),
+			}),
 		},
 	};
 
@@ -140,5 +146,13 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.resume;
 	delete user?.services?.email;
 
-	return user;
+	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
+
+	if (settings.get<boolean>('Accounts_StatusVisibility_Enabled') && ownBlockList?.length && user.settings?.preferences) {
+		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
+	}
+
+	const hidden = await getUsersHiddenFrom(userId);
+
+	return hidden?.has(user._id) ? redactStatus(user) : user;
 }

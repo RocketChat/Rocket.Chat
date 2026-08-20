@@ -1,5 +1,14 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { DefaultFields, FindPaginated, IBaseModel, InsertionModel, ResultFields } from '@rocket.chat/model-typings';
+import type {
+	DefaultFields,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	FindPaginated,
+	IBaseModel,
+	InsertionModel,
+	DocumentWithDriverProjection,
+	FindOneAndUpdateOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
@@ -61,40 +70,38 @@ export class BaseDummy<
 		return null;
 	}
 
-	async findOneAndUpdate(): Promise<WithId<T> | null> {
+	async findOneAndUpdate<
+		P extends Document = T,
+		O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection,
+	>(): Promise<DocumentWithDriverProjection<P, O> | null> {
 		return null;
 	}
 
-	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
-
-	findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
-
-	async findOneById(_id: T['_id'], _options?: any): Promise<T | null> {
+	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: T['_id'],
+		_options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		return null;
 	}
 
-	findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
-
-	findOne<P extends Document = T>(query: Filter<T> | T['_id'], options: FindOptions<P extends T ? T : P>): Promise<P | null>;
-
-	async findOne<P>(_query: Filter<T> | T['_id'], _options?: any): Promise<WithId<T> | WithId<P> | null> {
+	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_query?: Filter<T> | T['_id'],
+		_options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		return null;
 	}
 
-	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
-
-	find<P extends Document = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
-
-	find<P extends Document>(
-		_query: Filter<T> | undefined,
-		_options?: FindOptions<P extends T ? T : P>,
-	): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_query?: Filter<T>,
+		_options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
 		return undefined as any;
 	}
 
-	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
-
-	findPaginated(_query: Filter<T>, _options?: any): FindPaginated<FindCursor<WithId<T>>> {
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_query?: Filter<T>,
+		_options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
 		return {
 			cursor: undefined as any,
 			totalCount: Promise.resolve(0),
@@ -168,7 +175,7 @@ export class BaseDummy<
 		_query: Filter<TDeleted>,
 		_options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>> | undefined {
-		return undefined as any;
+		return undefined;
 	}
 
 	trashFindOneById(_id: TDeleted['_id']): Promise<TDeleted | null>;

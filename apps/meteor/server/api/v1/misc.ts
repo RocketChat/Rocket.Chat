@@ -25,7 +25,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
-import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
@@ -38,6 +37,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
+import { logMethodCallError } from '../lib/logMethodCallError';
 
 /**
  * @openapi
@@ -670,13 +670,7 @@ API.v1.post(
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
 
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
@@ -732,12 +726,8 @@ API.v1.post(
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
+
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
 	},

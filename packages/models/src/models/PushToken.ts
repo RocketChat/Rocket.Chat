@@ -1,6 +1,6 @@
 import type { IPushToken, IUser, AtLeast } from '@rocket.chat/core-typings';
-import type { IPushTokenModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, FindOptions, IndexDescription, InsertOneResult, UpdateResult, FindCursor } from 'mongodb';
+import type { IPushTokenModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, FindCursor, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -42,12 +42,18 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		return this.countDocuments(query);
 	}
 
-	async findFirstByUserId<T extends IPushToken>(userId: IUser['_id'], options: FindOptions<IPushToken> = {}): Promise<T | null> {
-		return this.findOne<T>({ userId }, options);
+	async findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ userId }, options);
 	}
 
-	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T> {
-		return this.find<T>(
+	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				userId,
 				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
@@ -56,12 +62,12 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		);
 	}
 
-	findTokensByUserIdExceptId<T extends IPushToken>(
+	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		idToIgnore: IPushToken['_id'],
-		options?: FindOptions<IPushToken>,
-	): FindCursor<T> {
-		return this.find<T>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				_id: { $ne: idToIgnore },
 				userId,

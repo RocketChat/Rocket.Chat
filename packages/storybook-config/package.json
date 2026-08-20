@@ -19,7 +19,7 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
-		"@rocket.chat/emitter": "^0.33.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"@storybook/addon-a11y": "^9.1.20",
@@ -33,8 +33,8 @@
 		"webpack": "~5.104.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.86.0",
-		"@rocket.chat/icons": "^0.48.0",
+		"@rocket.chat/fuselage": "^0.87.0",
+		"@rocket.chat/icons": "^0.49.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^9.1.20",
 		"eslint": "~9.39.5",
