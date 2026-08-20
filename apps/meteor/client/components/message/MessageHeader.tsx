@@ -1,13 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import {
-	Box,
 	MessageHeader as FuselageMessageHeader,
 	MessageName,
 	MessageTimestamp,
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
-	Palette,
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
@@ -24,35 +21,6 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
-
-const nameStyle = css`
-	/* The underline is painted with the wrapper's color, so it must match
-	   the name's color token to not look washed out. */
-	color: ${Palette.text['font-titles-labels']};
-
-	&:hover {
-		text-decoration: underline;
-	}
-
-	& .rcx-message-header__name {
-		color: ${Palette.text['font-titles-labels']};
-	}
-`;
-
-const timestampStyle = css`
-	& .rcx-message-header__time {
-		color: ${Palette.text['font-secondary-info']};
-	}
-
-	/* secondary-info clears the 4.5:1 contrast requirement on the room
-	   surface (4.80:1) but not on the hover surface (4.33:1), so it steps up
-	   to the default token while hovered. Mirrors the rule added to the
-	   design system in fuselage#2138; both this block and the wrapper
-	   applying it can drop once that lands and the package is bumped. */
-	.rcx-message:hover & .rcx-message-header__time {
-		color: ${Palette.text['font-default']};
-	}
-`;
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -82,7 +50,6 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				role='button'
 				tabIndex={0}
 				aria-haspopup='dialog'
-				style={{ cursor: 'pointer' }}
 				onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 				onClick={() => openUserInfo(message.u.username)}
 				onKeyDown={(e) => {
@@ -93,9 +60,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				}}
 				{...triggerProps}
 			>
-				<Box is='span' className={nameStyle}>
-					<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
-				</Box>
+				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 			</MessageNameContainer>
 			{shouldShowRolesList && (
 				<MessageRoles
@@ -105,11 +70,9 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 					onClick={(e) => openUserCard(e, message.u.username)}
 				/>
 			)}
-			<Box is='span' className={timestampStyle}>
-				<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
-					{formatTime(message.ts)}
-				</MessageTimestamp>
-			</Box>
+			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
+				{formatTime(message.ts)}
+			</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>

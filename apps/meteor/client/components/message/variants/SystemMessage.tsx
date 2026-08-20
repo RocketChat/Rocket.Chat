@@ -1,7 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import {
-	Box,
 	MessageSystem,
 	MessageSystemBody,
 	MessageSystemContainer,
@@ -11,7 +9,6 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageNameContainer,
-	Palette,
 } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -32,22 +29,6 @@ import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListFormatDateAndTime, useMessageListFormatTime, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
-
-const hoverUnderlineStyle = css`
-	&:hover {
-		text-decoration: underline;
-	}
-
-	& .rcx-message-system__name {
-		color: ${Palette.text['font-titles-labels']};
-	}
-`;
-
-const timestampStyle = css`
-	& .rcx-message-system__time {
-		color: ${Palette.text['font-secondary-info']};
-	}
-`;
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -113,7 +94,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						role='button'
 						tabIndex={0}
 						aria-haspopup='dialog'
-						style={{ cursor: 'pointer' }}
 						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, user.username) : undefined}
 						onClick={() => openUserInfo(user.username)}
 						onKeyDown={(e) => {
@@ -124,18 +104,14 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						}}
 						{...triggerProps}
 					>
-						<Box is='span' className={hoverUnderlineStyle}>
-							<MessageSystemName>{displayName}</MessageSystemName>
-						</Box>
+						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
-					<Box is='span' className={timestampStyle}>
-						<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
-					</Box>
+					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
