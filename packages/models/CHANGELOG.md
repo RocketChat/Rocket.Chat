@@ -1,5 +1,15 @@
 # @rocket.chat/models
 
+## 1.6.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.10.15
+  - @rocket.chat/model-typings@1.7.15
+  </details>
+
 ## 1.6.14
 
 ### Patch Changes

@@ -1,5 +1,49 @@
 # @rocket.chat/meteor
 
+## 7.10.15
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41858](https://github.com/RocketChat/Rocket.Chat/pull/41858) by [@dionisio-bot](https://github.com/dionisio-bot)) Adds per-client rate limiting to the unauthenticated sendForgotPasswordEmail method, matching the REST users.forgotPassword endpoint
+
+- ([#41851](https://github.com/RocketChat/Rocket.Chat/pull/41851) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41852](https://github.com/RocketChat/Rocket.Chat/pull/41852) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes special characters not being escaped in the visitor name shown in the Omnichannel queue side panel's message preview
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.15
+  - @rocket.chat/rest-typings@7.10.15
+  - @rocket.chat/license@1.0.43
+  - @rocket.chat/omnichannel-services@0.3.49
+  - @rocket.chat/pdf-worker@0.3.31
+  - @rocket.chat/presence@0.2.52
+  - @rocket.chat/api-client@0.2.52
+  - @rocket.chat/apps@0.5.31
+  - @rocket.chat/core-services@0.10.15
+  - @rocket.chat/cron@0.1.52
+  - @rocket.chat/freeswitch@1.2.39
+  - @rocket.chat/fuselage-ui-kit@22.0.15
+  - @rocket.chat/gazzodown@22.0.15
+  - @rocket.chat/http-router@7.9.19
+  - @rocket.chat/model-typings@1.7.15
+  - @rocket.chat/ui-avatar@18.0.15
+  - @rocket.chat/ui-client@22.0.15
+  - @rocket.chat/ui-contexts@22.0.15
+  - @rocket.chat/web-ui-registration@22.0.15
+  - @rocket.chat/models@1.6.15
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.31
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.15
+  - @rocket.chat/ui-voip@12.0.15
+  - @rocket.chat/omni-core-ee@0.0.17
+  - @rocket.chat/instance-status@0.1.52
+  - @rocket.chat/omni-core@0.0.17
+  </details>
+
 ## 7.10.14
 
 ### Patch Changes
