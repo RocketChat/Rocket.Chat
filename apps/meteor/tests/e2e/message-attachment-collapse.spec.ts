@@ -37,6 +37,12 @@ test.describe.serial('Message Attachment Collapse', () => {
 		});
 	};
 
+	const waitForFloodToSettle = async (api: BaseTest['api'], channel: string): Promise<void> => {
+		const marker = `flood settled ${faker.string.uuid()}`;
+		await api.post('/chat.postMessage', { channel, text: marker });
+		await expect(poHomeChannel.content.mainMessageList.getByText(marker)).toBeVisible();
+	};
+
 	test.describe('Default preference (expanded by default)', () => {
 		let targetChannel: string;
 
@@ -88,6 +94,7 @@ test.describe.serial('Message Attachment Collapse', () => {
 			await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeHidden();
 
 			await floodChannel(api, targetChannel, 30);
+			await waitForFloodToSettle(api, targetChannel);
 
 			await scrollUp();
 
@@ -130,6 +137,7 @@ test.describe.serial('Message Attachment Collapse', () => {
 			await expect(poHomeChannel.content.mainMessageList.getByText(text)).toBeVisible();
 
 			await floodChannel(api, targetChannel, 30);
+			await waitForFloodToSettle(api, targetChannel);
 
 			await scrollUp();
 
