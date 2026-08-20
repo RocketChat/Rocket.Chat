@@ -1,5 +1,4 @@
 import '../app/lib/client';
-import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';
 import '../app/slashcommands-ban/client';
