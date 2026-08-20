@@ -1,4 +1,8 @@
 import type {
+	AtLeast,
+	ExternalVideoConference,
+	IGroupVideoConference,
+	IRegisterUser,
 	IRoom,
 	IStats,
 	IUser,
@@ -74,4 +78,14 @@ export interface IVideoConfService {
 	makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string>;
 	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
 	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']>;
+	joinCall(
+		call: ExternalVideoConference,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
+		options: VideoConferenceJoinOptions,
+	): Promise<string>;
+	createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+		options: { createDiscussion: boolean },
+	): Promise<IGroupVideoConference | null>;
 }
