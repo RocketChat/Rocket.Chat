@@ -17,13 +17,14 @@ export type MoveToItem = GenericMenuItemProps;
  */
 export const useRoomCategoryItems = () => {
 	const { t } = useTranslation();
-	const { hasLicenseModule, categories, moveRoom, removeRoom, getRoomCategory } = useCustomCategories();
+	const { hasLicenseModule, categories, moveRoom, removeRoom } = useCustomCategories();
 	const { openCreate } = useCategoryModals();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 
 	return useCallback(
 		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; hasLicenseModule: boolean } => {
-			const current = getRoomCategory(room.rid);
+			// Favorites and custom categories are mutually exclusive — guard against stale categoryId during DDP propagation.
+			const current = !room.isFavorite && room.categoryId ? categories.find((c) => c._id === room.categoryId) : undefined;
 			const selected = <Icon name='check' size='x16' />;
 
 			const moveToItems: MoveToItem[] = [
@@ -64,6 +65,6 @@ export const useRoomCategoryItems = () => {
 
 			return { moveToItems, removeItem, hasLicenseModule };
 		},
-		[isFavoritesEnabled, hasLicenseModule, t, categories, moveRoom, removeRoom, getRoomCategory, openCreate],
+		[isFavoritesEnabled, hasLicenseModule, t, categories, moveRoom, removeRoom, openCreate],
 	);
 };

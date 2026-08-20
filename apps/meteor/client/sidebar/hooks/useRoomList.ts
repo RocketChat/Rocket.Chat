@@ -106,12 +106,17 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const conversation = new Set<SubscriptionWithRoom>();
 			const onHold = new Set<SubscriptionWithRoom>();
 
-			// Map assigned rooms to their custom category, seeding an (initially empty) set per category.
+			// Seed an empty set for each custom category.
 			const roomToCategory = new Map<string, string>();
 			const customSets = new Map<string, Set<SubscriptionWithRoom>>();
 			customCategories.forEach((category) => {
 				customSets.set(category._id, new Set<SubscriptionWithRoom>());
-				category.rooms?.forEach((rid) => roomToCategory.set(rid, category._id));
+			});
+			// Build the rid → categoryId map from the subscription's `category` field.
+			rooms.forEach((room) => {
+				if (room.category && customSets.has(room.category)) {
+					roomToCategory.set(room.rid, room.category);
+				}
 			});
 
 			rooms.forEach((room) => {

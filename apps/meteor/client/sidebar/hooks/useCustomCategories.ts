@@ -1,42 +1,37 @@
 import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { useEndpoint, useToastMessageDispatch, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { toggleFavoriteRoom } from '../../lib/mutationEffects/room';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export type CategoryNameError = 'empty' | 'duplicate';
 
-export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean };
+export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; categoryId?: string };
 
 /** The `favorites` sentinel is mutually exclusive with the custom categories. */
 export const FAVORITES_TARGET = 'favorites';
 
 const EMPTY: ISidebarCustomCategory[] = [];
 
-const stripRoom = (categories: ISidebarCustomCategory[], rid: string): ISidebarCustomCategory[] =>
-	categories.map((category) =>
-		category.rooms?.includes(rid) ? { ...category, rooms: category.rooms.filter((room) => room !== rid) } : category,
-	);
-
 /**
  * Per-user custom sidebar categories, persisted in the `sidebarCustomCategories` user preference.
- * All mutations are silent except `moveRoom`/`createCategoryAndMoveRoom`, which dispatch the move toast.
+ * Room assignment is managed via POST /experimental/rooms.setCategory, which stores `category`
+ * on each subscription and handles unfavoriting atomically server-side.
  */
 export const useCustomCategories = () => {
 	const { t } = useTranslation();
-	const uid = useUserId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const rawCategories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', EMPTY) ?? EMPTY;
 	const categories = hasLicenseModule ? rawCategories : EMPTY;
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+	const setCategoryEndpoint = useEndpoint('POST', '/experimental/rooms.setCategory');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
 
 	const persistMutation = useMutation({
@@ -44,12 +39,10 @@ export const useCustomCategories = () => {
 	});
 	const persist = useCallback((next: ISidebarCustomCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
 
-	const setFavorite = useCallback(
-		async (rid: string, favorite: boolean) => {
-			await toggleFavoriteEndpoint({ roomId: rid, favorite });
-			toggleFavoriteRoom(rid, favorite, uid ?? undefined);
-		},
-		[toggleFavoriteEndpoint, uid],
+	/** Assign a batch of rooms to a category (or null to return them to their system group). */
+	const setCategory = useCallback(
+		(roomIds: string[], category: string | null) => setCategoryEndpoint({ roomIds, category }),
+		[setCategoryEndpoint],
 	);
 
 	const validateName = useCallback(
@@ -67,26 +60,21 @@ export const useCustomCategories = () => {
 		[categories],
 	);
 
-	/** Create a category, optionally pre-populated with room IDs. Strips each room from any prior category. */
+	/** Create a category and optionally assign rooms to it. */
 	const createCategory = useCallback(
-		async (name: string, rooms: string[] = []): Promise<ISidebarCustomCategory> => {
-			const stripped = rooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
+		async (name: string, roomIds: string[] = []): Promise<ISidebarCustomCategory> => {
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: false,
-				rooms,
 			};
-			await persist([category, ...stripped]);
-			try {
-				await Promise.all(rooms.map((rid) => setFavorite(rid, false)));
-			} catch (e) {
-				await persist(categories);
-				throw e;
+			await persist([category, ...categories]);
+			if (roomIds.length > 0) {
+				await setCategory(roomIds, category._id);
 			}
 			return category;
 		},
-		[categories, persist, setFavorite],
+		[categories, persist, setCategory],
 	);
 
 	const deleteCategory = useCallback(
@@ -96,11 +84,7 @@ export const useCustomCategories = () => {
 
 	const toggleShowUnreads = useCallback(
 		(categoryId: string) =>
-			persist(
-				categories.map((category) =>
-					category._id === categoryId ? { ...category, showUnreads: category.showUnreads === false } : category,
-				),
-			),
+			persist(categories.map((category) => (category._id === categoryId ? { ...category, showUnreads: !category.showUnreads } : category))),
 		[categories, persist],
 	);
 
@@ -117,19 +101,8 @@ export const useCustomCategories = () => {
 	/** Move a room into a custom category (by id) or to Favorites. Assignment is exclusive. */
 	const moveRoom = useCallback(
 		async (room: MovableRoom, target: string, { silent = false }: { silent?: boolean } = {}) => {
-			const stripped = stripRoom(categories, room.rid);
-
 			if (target === FAVORITES_TARGET) {
-				await persist(stripped);
-				if (!room.isFavorite) {
-					try {
-						await setFavorite(room.rid, true);
-					} catch (e) {
-						await persist(categories);
-						dispatchToastMessage({ type: 'error', message: e });
-						throw e;
-					}
-				}
+				await toggleFavoriteEndpoint({ roomId: room.rid, favorite: true });
 				if (!silent && room.name) {
 					dispatchToastMessage({
 						type: 'success',
@@ -143,19 +116,9 @@ export const useCustomCategories = () => {
 			if (!category) {
 				return;
 			}
-			const next = stripped.map((current) =>
-				current._id === target ? { ...current, rooms: [...(current.rooms ?? []), room.rid] } : current,
-			);
-			await persist(next);
-			if (room.isFavorite) {
-				try {
-					await setFavorite(room.rid, false);
-				} catch (e) {
-					await persist(categories);
-					dispatchToastMessage({ type: 'error', message: e });
-					throw e;
-				}
-			}
+
+			await setCategory([room.rid], target);
+
 			if (!silent && room.name) {
 				dispatchToastMessage({
 					type: 'success',
@@ -163,94 +126,59 @@ export const useCustomCategories = () => {
 				});
 			}
 		},
-		[categories, persist, setFavorite, dispatchToastMessage, t],
+		[categories, setCategory, toggleFavoriteEndpoint, dispatchToastMessage, t],
 	);
 
-	/** Create a category, move a room into it (with full move semantics), and optionally add more rooms. */
+	/** Create a category, move a room into it (with full move semantics), and optionally assign more rooms. */
 	const createCategoryAndMoveRoom = useCallback(
-		async (name: string, room: MovableRoom, extraRooms: string[] = []) => {
-			const allRooms = [room.rid, ...extraRooms];
-			const stripped = allRooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
+		async (name: string, room: MovableRoom, extraRoomIds: string[] = []) => {
 			const category: ISidebarCustomCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: false,
-				rooms: allRooms,
 			};
-			await persist([category, ...stripped]);
-			if (room.isFavorite) {
-				try {
-					await setFavorite(room.rid, false);
-				} catch (e) {
-					await persist(categories);
-					throw e;
-				}
-			}
-			try {
-				await Promise.all(extraRooms.map((rid) => setFavorite(rid, false)));
-			} catch (e) {
-				await persist(categories);
-				throw e;
-			}
+			await persist([category, ...categories]);
+			await setCategory([room.rid, ...extraRoomIds], category._id);
 			dispatchToastMessage({
 				type: 'success',
 				message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
 			});
 		},
-		[categories, persist, setFavorite, dispatchToastMessage, t],
+		[categories, persist, setCategory, dispatchToastMessage, t],
 	);
 
-	/** Update a category's name and room list in a single persist. Strips added rooms from any prior category. */
+	/** Update a category's name and room assignment.
+	 * Pass the diff: addedRoomIds for rooms newly assigned to the category,
+	 * removedRoomIds for rooms no longer in it (they return to their system group). */
 	const updateCategory = useCallback(
-		async (categoryId: string, name: string, rooms: string[]) => {
-			const previous = categories.find((cat) => cat._id === categoryId);
-			const previousRooms = new Set(previous?.rooms ?? []);
-			const newlyAdded = rooms.filter((rid) => !previousRooms.has(rid));
-
-			const stripped = rooms.reduce((cats, rid) => stripRoom(cats, rid), categories);
-			await persist(stripped.map((category) => (category._id === categoryId ? { ...category, name: name.trim(), rooms } : category)));
-
-			// Unfavorite newly added rooms — mirrors moveRoom semantics.
-			try {
-				await Promise.all(newlyAdded.map((rid) => setFavorite(rid, false)));
-			} catch (e) {
-				await persist(categories);
-				throw e;
-			}
+		async (categoryId: string, name: string, addedRoomIds: string[], removedRoomIds: string[]) => {
+			await persist(categories.map((category) => (category._id === categoryId ? { ...category, name: name.trim() } : category)));
+			if (addedRoomIds.length > 0) await setCategory(addedRoomIds, categoryId);
+			if (removedRoomIds.length > 0) await setCategory(removedRoomIds, null);
 		},
-		[categories, persist, setFavorite],
-	);
-
-	const getRoomCategory = useCallback(
-		(rid: string): ISidebarCustomCategory | undefined => categories.find((category) => category.rooms?.includes(rid)),
-		[categories],
+		[categories, persist, setCategory],
 	);
 
 	/** Remove a room from its current grouping (custom category or Favorites) — it returns to its system group. */
 	const removeRoom = useCallback(
 		async (room: MovableRoom) => {
-			const current = categories.find((category) => category.rooms?.includes(room.rid));
-			const fromName = current?.name ?? (room.isFavorite ? t('Favorites') : '');
-
-			await persist(stripRoom(categories, room.rid));
 			if (room.isFavorite) {
-				try {
-					await setFavorite(room.rid, false);
-				} catch (e) {
-					await persist(categories);
-					dispatchToastMessage({ type: 'error', message: e });
-					throw e;
-				}
+				await toggleFavoriteEndpoint({ roomId: room.rid, favorite: false });
+			} else {
+				await setCategory([room.rid], null);
 			}
-			if (fromName) {
+			if (room.name) {
 				dispatchToastMessage({
 					type: 'success',
-					message: t('__roomName__removed_from__categoryName__', { roomName: room.name, categoryName: fromName }),
+					message: t('__roomName__removed_from_category', { roomName: room.name }),
 				});
 			}
 		},
-		[categories, persist, setFavorite, dispatchToastMessage, t],
+		[setCategory, toggleFavoriteEndpoint, dispatchToastMessage, t],
 	);
+
+	/** Look up which category a room is in. With subscription-based storage, read from sub.category directly. */
+	const getRoomCategory = useCallback((_rid: string): ISidebarCustomCategory | undefined => undefined, []);
 
 	return useMemo(
 		() => ({

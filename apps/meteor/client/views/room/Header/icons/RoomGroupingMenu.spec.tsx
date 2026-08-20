@@ -21,10 +21,10 @@ const mockedUseToggleFavoriteMutation = jest.mocked(useToggleFavoriteMutation);
 
 const ROOM_ID = 'test-room-id';
 
-const catDesign = { _id: 'cat-design', name: 'Design', rooms: [ROOM_ID], showUnreads: true };
-const catOther = { _id: 'cat-other', name: 'Engineering', rooms: [] as string[], showUnreads: true };
+const catDesign = { _id: 'cat-design', name: 'Design', showUnreads: true };
+const catOther = { _id: 'cat-other', name: 'Engineering', showUnreads: true };
 
-const makeRoom = (overrides: Partial<IRoom & { f?: boolean }> = {}): IRoom & { f?: boolean } =>
+const makeRoom = (overrides: Partial<IRoom & { f?: boolean; category?: string }> = {}): IRoom & { f?: boolean; category?: string } =>
 	({ _id: ROOM_ID, name: 'General', t: 'c', ...overrides }) as any;
 
 const wrapper = mockAppRoot().withSetting('Favorite_Rooms', true).build();
@@ -49,14 +49,14 @@ it('shows Favorites in the grouping menu when the room is favorited', async () =
 	expect(await screen.findByRole('menuitem', { name: 'Favorites' })).toBeInTheDocument();
 });
 
-it('shows the matching category in the grouping menu when the room is categorized', async () => {
+it('shows the matching category in the grouping menu when the room has a category subscription field', async () => {
 	mockedUseCustomCategories.mockReturnValue({
 		hasLicenseModule: true,
 		categories: [catDesign, catOther],
-		getRoomCategory: jest.fn(() => catDesign),
+		getRoomCategory: jest.fn(() => undefined),
 	} as any);
 
-	render(<RoomGroupingMenu room={makeRoom({ f: false })} />, { wrapper });
+	render(<RoomGroupingMenu room={makeRoom({ f: false, category: 'cat-design' })} />, { wrapper });
 
 	await userEvent.click(screen.getByRole('button'));
 

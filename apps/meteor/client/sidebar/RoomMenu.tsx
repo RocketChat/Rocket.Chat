@@ -58,7 +58,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	if (!hideDefaultOptions && type !== 'l') {
 		const isFavorite = Boolean(subscription?.f);
-		const { moveToItems, removeItem, hasLicenseModule } = buildCategoryItems({ rid, name, isFavorite });
+		const { moveToItems, removeItem, hasLicenseModule } = buildCategoryItems({ rid, name, isFavorite, categoryId: subscription?.category });
 
 		// Strip toggleFavorite only when showing the category submenu — it takes over the favorites action.
 		const actionSections = hasLicenseModule

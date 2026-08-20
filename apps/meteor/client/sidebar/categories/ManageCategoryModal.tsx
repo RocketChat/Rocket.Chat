@@ -2,13 +2,15 @@ import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useToastMessageDispatch, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCustomCategories';
+
+const OPEN_QUERY = { open: { $ne: false } } as const;
 
 type ManageCategoryModalProps = {
 	category: ISidebarCustomCategory;
@@ -20,6 +22,16 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { updateCategory, validateName } = useCustomCategories();
 
+	// Load the rooms currently assigned to this category from subscriptions.
+	const categorySubscriptions = useUserSubscriptions(OPEN_QUERY, {});
+	const initialRoomIds = useMemo(
+		() => categorySubscriptions.filter((s) => s.category === category._id).map((s) => s.rid),
+		// Intentionally computed once on mount — category._id is stable for a given modal instance.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+	const initialRoomsRef = useRef(initialRoomIds);
+
 	const {
 		handleSubmit,
 		control,
@@ -29,7 +41,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	} = useForm({
 		defaultValues: {
 			name: category.name,
-			rooms: category.rooms ?? [],
+			rooms: initialRoomIds,
 		},
 	});
 
@@ -40,7 +52,12 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const handleConfirm = async ({ name, rooms }: { name: string; rooms: string[] }) => {
 		const trimmed = name.trim();
 		const nameUnchanged = trimmed === category.name.trim();
-		const roomsUnchanged = JSON.stringify([...(category.rooms ?? [])].sort()) === JSON.stringify([...rooms].sort());
+
+		const initialSet = new Set(initialRoomsRef.current);
+		const newSet = new Set(rooms);
+		const addedRoomIds = rooms.filter((rid) => !initialSet.has(rid));
+		const removedRoomIds = initialRoomsRef.current.filter((rid) => !newSet.has(rid));
+		const roomsUnchanged = addedRoomIds.length === 0 && removedRoomIds.length === 0;
 
 		if (nameUnchanged && roomsUnchanged) {
 			onClose();
@@ -60,7 +77,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 		}
 
 		try {
-			await updateCategory(category._id, trimmed || category.name, rooms);
+			await updateCategory(category._id, trimmed || category.name, addedRoomIds, removedRoomIds);
 			dispatchToastMessage({ type: 'success', message: t('Category_saved') });
 			onClose();
 		} catch (e) {

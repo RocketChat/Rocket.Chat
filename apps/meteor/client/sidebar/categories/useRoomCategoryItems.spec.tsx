@@ -11,16 +11,16 @@ jest.mock('./useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
 const mockedUseCustomCategories = jest.mocked(useCustomCategories);
 const mockedUseCategoryModals = jest.mocked(useCategoryModals);
 
-const catA = { _id: 'cat-a', name: 'Design', rooms: ['room-1'], showUnreads: true };
-const catB = { _id: 'cat-b', name: 'Engineering', rooms: [] as string[], showUnreads: true };
+const catA = { _id: 'cat-a', name: 'Design', showUnreads: true };
+const catB = { _id: 'cat-b', name: 'Engineering', showUnreads: true };
 
-const makeCategories = (categorizedRid?: string) =>
+const makeCategories = () =>
 	({
 		hasLicenseModule: true,
 		categories: [catA, catB],
 		moveRoom: jest.fn(),
 		removeRoom: jest.fn(),
-		getRoomCategory: jest.fn((rid: string) => (categorizedRid && rid === categorizedRid ? catA : undefined)),
+		getRoomCategory: jest.fn(() => undefined),
 		validateName: jest.fn(),
 		createCategory: jest.fn(),
 		createCategoryAndMoveRoom: jest.fn(),
@@ -45,13 +45,22 @@ it('marks only Favorites as selected when the room is favorited and not in a cat
 	expect(selected[0].id).toBe('favorites');
 });
 
-it('marks only the matching category as selected when the room is in a category', () => {
-	mockedUseCustomCategories.mockReturnValue(makeCategories('room-1'));
+it('marks only the matching category as selected when the room has a categoryId', () => {
+	mockedUseCustomCategories.mockReturnValue(makeCategories());
 	const { result } = renderHook(() => useRoomCategoryItems(), { wrapper });
-	const { moveToItems } = result.current({ rid: 'room-1', name: 'Design Room', isFavorite: false });
+	const { moveToItems } = result.current({ rid: 'room-1', name: 'Design Room', isFavorite: false, categoryId: 'cat-a' });
 	const selected = moveToItems.filter((item) => item.addon != null);
 	expect(selected).toHaveLength(1);
 	expect(selected[0].id).toBe('cat-a');
+});
+
+it('marks only Favorites as selected when isFavorite is true even if categoryId is also set (stale state)', () => {
+	mockedUseCustomCategories.mockReturnValue(makeCategories());
+	const { result } = renderHook(() => useRoomCategoryItems(), { wrapper });
+	const { moveToItems } = result.current({ rid: 'room-1', name: 'Design Room', isFavorite: true, categoryId: 'cat-a' });
+	const selected = moveToItems.filter((item) => item.addon != null);
+	expect(selected).toHaveLength(1);
+	expect(selected[0].id).toBe('favorites');
 });
 
 it('marks nothing as selected when the room is neither favorited nor in a category', () => {

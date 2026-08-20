@@ -24,11 +24,11 @@ const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnable
 	return isFavoritesEnabled ? 'star' : 'folder';
 };
 
-const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }) => {
+const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f']; category?: ISubscription['category'] } }) => {
 	const { t } = useTranslation();
 	const subscribed = useUserIsSubscribed();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true) && ['c', 'p', 'd', 't'].includes(room.t);
-	const { hasLicenseModule, getRoomCategory } = useCustomCategories();
+	const { hasLicenseModule } = useCustomCategories();
 	const buildCategoryItems = useRoomCategoryItems();
 	const favorite = Boolean(room.f);
 	const { mutate: toggleFavorite } = useToggleFavoriteMutation();
@@ -64,10 +64,15 @@ const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f'] } }
 		);
 	}
 
-	const category = Boolean(getRoomCategory(room._id));
+	const category = Boolean(room.category);
 	const groupingIcon = getGroupingIcon(favorite, category, isFavoritesEnabled);
 
-	const { moveToItems, removeItem } = buildCategoryItems({ rid: room._id, name: room.name || '', isFavorite: favorite });
+	const { moveToItems, removeItem } = buildCategoryItems({
+		rid: room._id,
+		name: room.name || '',
+		isFavorite: favorite,
+		categoryId: room.category,
+	});
 	const targetItems = moveToItems.filter((item) => item.id !== 'newCategory');
 	const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
 
