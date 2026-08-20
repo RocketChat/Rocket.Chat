@@ -253,8 +253,8 @@ describe('[Sidebar Custom Categories]', () => {
 			expect(s2).to.have.property('category', catId);
 		});
 
-		it('should deduplicate roomIds and not error on duplicates', async () => {
-			await setCategory({ roomIds: [roomId, roomId], category: catId }).expect(200);
+		it('should reject duplicate roomIds', async () => {
+			await setCategory({ roomIds: [roomId, roomId], category: catId }).expect(400);
 		});
 
 		it('should return 401 when not authenticated', async () => {
