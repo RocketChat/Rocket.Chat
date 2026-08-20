@@ -113,18 +113,19 @@ export class SipServerSession {
 
 	public async sendReferRequest(
 		sipDialog: Srf.Dialog,
-		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact },
-	): Promise<void> {
-		const { transferredBy, transferredTo } = params;
-		if (!transferredTo) {
+		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact; conferenceAlias?: string },
+	): Promise<number> {
+		const { transferredBy, transferredTo, conferenceAlias } = params;
+		if (!transferredTo && !conferenceAlias) {
 			throw new Error('Missing refer destination');
 		}
 
 		// Sip targets can only be referred to other sip users
-		const referToActor = await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' });
+		const referToActor = transferredTo && (await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' }));
 		const referredBy = transferredBy && this.geContactUri(transferredBy);
+		const referToConference = conferenceAlias && this.getPexipUri(conferenceAlias);
 
-		const referTo = referToActor && this.geContactUri(referToActor);
+		const referTo = referToConference || (referToActor && this.geContactUri(referToActor));
 		if (!referTo) {
 			throw new Error('invalid-transfer');
 		}
@@ -140,6 +141,31 @@ export class SipServerSession {
 		if (res.status === 202) {
 			logger.debug({ msg: 'REFER was accepted', method: 'SipServerSession.sendReferRequest', ...params });
 		}
+
+		return res.status;
+	}
+
+	public getPexipUri(alias: string): string {
+		const { host, port } = this.settings.sip.pexipServer;
+		if (!host) {
+			throw new Error('Pexip Server Host is not configured');
+		}
+
+		const portStr = port ? `:${port}` : '';
+		return `sip:${alias}@${host}${portStr}`;
+	}
+
+	public isPexipIdentity(identity: string): boolean {
+		if (!identity) {
+			return false;
+		}
+
+		const { host } = this.settings.sip.pexipServer;
+		if (!host) {
+			return false;
+		}
+
+		return identity.includes(host);
 	}
 
 	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {
