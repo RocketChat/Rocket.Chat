@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useMemo, useSyncExternalStore } from 'react';
 
+import { MAX_TOGGLED_COLLAPSIBLES_PER_ROOM } from './constants';
 import { getConfig } from './utils/getConfig';
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
@@ -51,9 +52,19 @@ class RoomStore extends Emitter<{
 	toggleCollapsible(key: string): void {
 		if (this.toggledCollapsibles.has(key)) {
 			this.toggledCollapsibles.delete(key);
-		} else {
-			this.toggledCollapsibles.add(key);
+			this.emit(getCollapsibleEventKey(key));
+			return;
 		}
+
+		if (this.toggledCollapsibles.size >= MAX_TOGGLED_COLLAPSIBLES_PER_ROOM) {
+			const oldest = this.toggledCollapsibles.values().next().value;
+			if (oldest !== undefined) {
+				this.toggledCollapsibles.delete(oldest);
+				this.emit(getCollapsibleEventKey(oldest));
+			}
+		}
+
+		this.toggledCollapsibles.add(key);
 		this.emit(getCollapsibleEventKey(key));
 	}
 
