@@ -6,7 +6,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/notifyListener';
+import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
 import { API } from '../api';
 
 const setCategory = ajv.compile<{ roomIds: string[]; category: string | null }>({
@@ -68,7 +68,7 @@ API.experimental.post(
 		const { modifiedCount } = await Subscriptions.setCategoryByRoomIdsAndUserId(roomIds, userId, category);
 
 		if (modifiedCount) {
-			await Promise.all(roomIds.map((rid) => notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId)));
+			void notifyOnSubscriptionsChangedByRoomIdsAndUserId(roomIds, userId);
 		}
 
 		return API.experimental.success();
