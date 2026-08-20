@@ -1,10 +1,10 @@
-import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
+import { OngoingCall, NewCall, IncomingCall, OutgoingCall } from '..';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const MediaCallWidgetViewRouter = () => {
 	const {
-		sessionState: { state, transferredBy, supportedFeatures },
+		sessionState: { state, supportedFeatures },
 	} = useMediaCallView();
 
 	switch (state) {
@@ -14,14 +14,8 @@ const MediaCallWidgetViewRouter = () => {
 			}
 			return <OngoingCall />;
 		case 'ringing':
-			if (transferredBy) {
-				return <IncomingCallTransfer />;
-			}
 			return <IncomingCall />;
 		case 'calling':
-			if (transferredBy) {
-				return <OutgoingCallTransfer />;
-			}
 			return <OutgoingCall />;
 		case 'none':
 		default:
