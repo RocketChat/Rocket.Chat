@@ -124,7 +124,7 @@ export class HomeChannel {
 	}
 
 	private get btnCategorySelector(): Locator {
-		return this.page.getByRole('main').getByRole('button', { name: 'Move to ' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Move to', exact: true });
 	}
 
 	getBtnOpenRoomInfo(roomName: string): Locator {

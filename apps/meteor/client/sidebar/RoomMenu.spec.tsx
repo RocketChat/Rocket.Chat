@@ -42,6 +42,7 @@ const buildBase = () =>
 			Move_to: 'Move to',
 			New_category: 'New category',
 			Leave_room: 'Leave',
+			Remove_from__categoryName__: 'Remove from {{categoryName}}',
 		})
 		.withSetting('Favorite_Rooms', true)
 		.withPermission('leave-c')
@@ -115,13 +116,13 @@ const enterpriseCategoryRenderOptions = {
 		.build(),
 };
 
-it('shows Favorites in the Move to submenu when the room is favorited', async () => {
+it('shows "Remove from Favorites" in the Move to submenu when the room is in favorites', async () => {
 	render(<RoomMenu {...defaultProps} />, enterpriseFavoriteRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
 
-	expect(await screen.findByRole('menuitem', { name: 'Favorites' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Remove from Favorites' })).toBeInTheDocument();
 });
 
 it('shows the matching category in the Move to submenu when the room is in a custom category', async () => {
