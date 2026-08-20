@@ -13,7 +13,7 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
-import { SIP_CALL_FEATURES } from '../constants';
+import { EXTERNAL_CALL_FEATURES, SIP_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import { CallRejectedError } from '../definition/common';
@@ -73,7 +73,7 @@ function getCallIdentity(params: CallIdentityParams) {
 
 function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
 	if (caller.type !== 'sip' && callee.type !== 'sip') {
-		return features;
+		return features.filter((feature) => !EXTERNAL_CALL_FEATURES.includes(feature));
 	}
 
 	return features.filter((feature) => SIP_CALL_FEATURES.includes(feature));
@@ -310,7 +310,17 @@ class MediaCallDirector {
 		}
 
 		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
-		const allowedFeatures = requestedFeatures.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const allowedFeatures = requestedFeatures.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureEnabled(feature),
+		);
+
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			...getCallIdentity({ ...params, createdBy, service }),
 

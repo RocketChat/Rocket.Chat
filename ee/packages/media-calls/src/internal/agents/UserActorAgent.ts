@@ -59,14 +59,18 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
-		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason'>>(callId, {
-			projection: { endedBy: 1, hangupReason: 1 },
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason' | 'escalatedAt'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1, escalatedAt: 1 },
 		});
 		if (!call) {
 			return 'remote';
 		}
 
-		const { endedBy, hangupReason } = call;
+		const { endedBy, hangupReason, escalatedAt } = call;
+		// If we requested an escalation, treat the hangup as normal
+		if (escalatedAt) {
+			return 'normal';
+		}
 
 		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
 			return 'remote';
