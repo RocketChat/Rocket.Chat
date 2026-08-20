@@ -1,6 +1,8 @@
 import type {
 	AtLeast,
 	ExternalVideoConference,
+	IGroupVideoConference,
+	IRegisterUser,
 	IRoom,
 	IStats,
 	IUser,
@@ -66,6 +68,11 @@ export interface IVideoConfService {
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string>;
+	createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+		options: { createDiscussion: boolean },
+	): Promise<IGroupVideoConference | null>;
 	getRidForExternalConference(): Promise<string | null>;
 	makePersistentChatUrlForConference(conferenceId: string): Promise<string>;
 	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<string>;
