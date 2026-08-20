@@ -272,5 +272,9 @@ export * from './v1/banners';
 export * from './default';
 export * from './v1/twoFactorChallenges';
 
+// Opt-in experimental endpoint typings. Deliberately NOT part of the `Endpoints`
+// union above — see ./experimental for the rationale.
+export type * from './experimental';
+
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';
