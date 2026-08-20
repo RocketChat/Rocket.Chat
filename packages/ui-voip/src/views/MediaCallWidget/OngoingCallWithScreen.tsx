@@ -18,6 +18,7 @@ import {
 	CardWidgetContainer,
 	StreamCard,
 	getPeerDisplayName,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
@@ -30,6 +31,8 @@ const OngoingCall = () => {
 
 	const {
 		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onMute,
 		onHold,
 		onForward,
@@ -40,7 +43,7 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
 	const isInline = !useDraggableWidget();
@@ -48,6 +51,7 @@ const OngoingCall = () => {
 	const screenShareAvailable = supportedFeatures.includes('screen-share');
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -115,6 +119,10 @@ const OngoingCall = () => {
 								</Box>
 							)}
 						</>
+					)}
+
+					{videoConfAvailable && (
+						<VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />
 					)}
 				</CardWidgetContainer>
 			</WidgetContent>
