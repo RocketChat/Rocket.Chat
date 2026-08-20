@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { retry } from './helpers/retry';
-import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
+import { api, credentials, getCredentials, methodCall, methodCallAnon, request } from '../../data/api-data';
 import { sendMessage, sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, makeAgentAvailable } from '../../data/livechat/rooms';
@@ -2459,6 +2459,41 @@ describe('Meteor.methods', () => {
 				expect(data).to.have.a.property('error').that.is.an('object');
 				expect(data.error).to.have.a.property('error', 'error-invalid-update-key');
 			});
+		});
+	});
+
+	describe('[@registerUser]', () => {
+		// the write setting no longer exists, but if a regression ever brings it back this
+		// enables it so the anonymous-registration assertion below still catches the leak
+		const trySetAnonymousWrite = (value: boolean) =>
+			request.post(api('settings/Accounts_AllowAnonymousWrite')).set(credentials).send({ value });
+
+		before(async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+			await trySetAnonymousWrite(true);
+		});
+
+		after(async () => {
+			await trySetAnonymousWrite(false);
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
+
+		it('should not mint an anonymous user even with anonymous read enabled', async () => {
+			const res = await request
+				.post(methodCallAnon('registerUser'))
+				.send({
+					message: JSON.stringify({ msg: 'method', id: 'id', method: 'registerUser', params: [{ email: null }] }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.property('error');
+			expect(data).to.not.have.property('result');
+		});
+
+		it('should no longer expose the Accounts_AllowAnonymousWrite setting', async () => {
+			await request.get(api('settings/Accounts_AllowAnonymousWrite')).set(credentials).expect(400);
 		});
 	});
 
