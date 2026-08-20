@@ -30,6 +30,7 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
@@ -1023,6 +1024,59 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await this.addSipAlias(callId);
+	}
+
+	public async createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+		{ createDiscussion }: { createDiscussion: boolean },
+	): Promise<IGroupVideoConference | null> {
+		logger.debug({
+			msg: 'VideoConf.createEscalatedConference',
+			rid: data.rid,
+			mediaCallIds: data.mediaCallIds,
+			uid: user._id,
+		});
+
+		try {
+			const providerName = 'core.pexip';
+
+			const { _id, name, username } = user;
+
+			const callId = await VideoConferenceModel.createGroup({
+				...data,
+				// TODO: custom title
+				title: 'Escalated Media Call',
+				providerName,
+				createdBy: {
+					_id,
+					name,
+					username,
+				},
+			});
+
+			await this.maybeAddSipAliasToCall(callId, providerName);
+			if (createDiscussion) {
+				await this.maybeCreateDiscussion(callId);
+			}
+
+			const call = await VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+			if (!call) {
+				return null;
+			}
+
+			const messageId = await this.createMessage(call, user);
+			await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+
+			const result = await VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+			return result;
+		} catch (err) {
+			logger.error({
+				msg: 'Error on VideoConf.createEscalatedConference',
+				err,
+			});
+			throw err;
+		}
 	}
 
 	private async startGroup(
