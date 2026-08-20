@@ -1,6 +1,8 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import { MediaCall } from '@rocket.chat/core-services';
 import type { VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import type { VideoConference, IVideoConferenceUser, RequiredField } from '@rocket.chat/core-typings';
+import { MediaCalls } from '@rocket.chat/models';
 
 import type { Pexip } from './Pexip';
 import { logger } from './logger';
@@ -54,12 +56,19 @@ export class PexipVideoConfProvider {
 		logger.debug({ msg: 'Pexip.customizeUrl', options });
 
 		const pin = await this.getPinForUser(call, user);
+		const escalationParams = this.getEscalationParams();
 
 		const { url: userUrl } = call;
 
 		const url = new URL(userUrl);
 		if (user) {
-			const { name } = user;
+			const { _id: uid, name } = user;
+
+			if (escalationParams?.size && (await this.isEscalatedUser(call, uid))) {
+				for (const [key, value] of escalationParams) {
+					url.searchParams.set(key, value);
+				}
+			}
 
 			if (name) {
 				url.searchParams.set('name', name);
@@ -76,6 +85,25 @@ export class PexipVideoConfProvider {
 
 		url.searchParams.set('pin', pin);
 		return url.toString();
+	}
+
+	private getEscalationParams(): URLSearchParams | null {
+		try {
+			return new URLSearchParams(this.pexip.settings.escalationParams);
+		} catch (err) {
+			logger.error({ msg: 'Failed to parse Pexip Escalation Params', err });
+			return null;
+		}
+	}
+
+	private async isEscalatedUser(conference: VideoConference, uid: string): Promise<boolean> {
+		const { mediaCallIds } = conference;
+
+		if (!mediaCallIds?.length) {
+			return false;
+		}
+
+		return MediaCalls.isUserInCallIds(uid, mediaCallIds);
 	}
 
 	public async onNewVideoConference(call: VideoConference): Promise<void> {
@@ -113,6 +141,23 @@ export class PexipVideoConfProvider {
 
 	public async onUserJoin(call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
 		logger.debug({ msg: 'Pexip.onUserJoin', conferenceId: call._id, userId: user?._id });
+		if (!user || !call.mediaCallIds?.length) {
+			return;
+		}
+
+		void this.autoEscalateCallBasedOnConferenceJoin(call.mediaCallIds, user._id).catch((err) => {
+			logger.error({ msg: 'Unexpected error flagging media call as auto escalated', err });
+		});
+	}
+
+	private async autoEscalateCallBasedOnConferenceJoin(mediaCallIds: string[], uid: string): Promise<void> {
+		logger.debug({ msg: 'Pexip.autoEscalateCallBasedOnConferenceJoin', mediaCallIds, uid });
+		const [mediaCall] = await MediaCalls.findAllPendingEscalationByUidAndCallIds(uid, mediaCallIds, { limit: 1 }).toArray();
+		if (!mediaCall) {
+			return;
+		}
+
+		await MediaCall.hangupAutoEscalatedCall(mediaCall, uid);
 	}
 
 	private async getPinForUser(call: VideoConference, user: IVideoConferenceUser | undefined): Promise<string> {
