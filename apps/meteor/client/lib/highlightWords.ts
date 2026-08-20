@@ -16,13 +16,13 @@ const highlightTemplate = '$1<mark class="highlight-text">$2</mark>$3';
 
 export const getRegexHighlight = (highlight: string) =>
 	new RegExp(
-		`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${escapeRegExp(highlight)})($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`,
+		`(^|\\b|[\\s\\n\\r\\t.,،'\\"\\+!?:-])(${escapeRegExp(highlight)})($|\\b|[\\s\\n\\r\\t.,،'\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`,
 		'gmi',
 	);
 
 export const getRegexHighlightUrl = (highlight: string) =>
 	new RegExp(
-		`https?:\/\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${escapeRegExp(
+		`https?://(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${escapeRegExp(
 			highlight,
 		)})\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)`,
 		'gmi',
