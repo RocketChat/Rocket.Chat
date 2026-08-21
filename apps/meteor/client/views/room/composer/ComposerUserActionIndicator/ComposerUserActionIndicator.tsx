@@ -57,7 +57,7 @@ const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorP
 	return (
 		<Box
 			role='status'
-			h='x20'
+			height='x20'
 			className='rc-message-box__activity-wrapper'
 			fontScale='c1'
 			color='annotation'

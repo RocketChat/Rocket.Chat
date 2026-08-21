@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 export type AttachmentRowProps = ComponentPropsWithoutRef<typeof Box>;
 
 const AttachmentRow = (props: AttachmentRowProps) => (
-	<Box mi={-2} mbe={2} rcx-message-attachment display='flex' alignItems='center' {...props} />
+	<Box marginInline={-2} marginBlockEnd={2} rcx-message-attachment display='flex' alignItems='center' {...props} />
 );
 
 export default AttachmentRow;

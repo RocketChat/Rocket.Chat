@@ -75,9 +75,8 @@ settings.observe(FORGET_SESSION_SETTING_ID, applyForgetSessionOnWindowClose);
 
 getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
 	try {
-		await sdk.call('verifyEmail', token);
+		await sdk.rest.post('/v1/users.verifyEmail', { token });
 		await whenMainReady();
-		void sdk.call('afterVerifyEmail');
 		dispatchToastMessage({ type: 'success', message: t('Email_verified') });
 	} catch (error) {
 		await whenMainReady();

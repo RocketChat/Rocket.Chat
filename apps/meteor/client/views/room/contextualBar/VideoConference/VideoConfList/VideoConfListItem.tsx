@@ -76,7 +76,7 @@ const VideoConfListItem = ({
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
-			pb={8}
+			paddingBlock={8}
 		>
 			<Message {...props}>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
@@ -103,7 +103,7 @@ const VideoConfListItem = ({
 							)}
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
-							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
+							<Box marginInlineStart={8} fontScale='c1' display='flex' alignItems='center'>
 								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
@@ -119,7 +119,7 @@ const VideoConfListItem = ({
 											),
 									)}
 								</AvatarStack>
-								<Box mis={4}>
+								<Box marginInlineStart={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
@@ -127,7 +127,7 @@ const VideoConfListItem = ({
 							</Box>
 						)}
 						{joinedUsers.length === 0 && !endedAt && (
-							<Box mis={8} fontScale='c1'>
+							<Box marginInlineStart={8} fontScale='c1'>
 								{t('Be_the_first_to_join')}
 							</Box>
 						)}

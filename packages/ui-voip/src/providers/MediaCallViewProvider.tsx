@@ -16,12 +16,11 @@ import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
-import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
-import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import TransferModal from '../views/TransferModal';
 
@@ -35,9 +34,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView, setTargetPeer, targetPeer } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const sessionState = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -56,12 +55,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	useEffect(() => {
 		if (audioInput?.id && !sessionState.hidden) {
-			void controls.changeDevice(audioInput.id);
+			void controls.changeDevice(audioInput.id).catch((e) => console.error('Media Call - failed to change input device', e));
 		}
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'closed' : sessionState.state,
+		sessionState.hidden ? 'none' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
@@ -82,36 +81,37 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (sessionState.state !== 'new') {
+		if (sessionState.state !== 'none') {
 			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}
 
-		const { peerInfo } = sessionState;
-
-		if (!peerInfo) {
+		if (!targetPeer) {
 			return;
 		}
+
+		const startCall = (micless: boolean) => {
+			if ('userId' in targetPeer) {
+				void controls.startCall(targetPeer.userId, 'user', micless);
+				return;
+			}
+
+			if ('number' in targetPeer) {
+				void controls.startCall(targetPeer.number, 'sip', micless);
+				return;
+			}
+
+			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
+		};
 
 		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
 			stopTracks(stream);
+			startCall(false);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			return;
+			startCall(true);
 		}
-
-		if ('userId' in peerInfo) {
-			void controls.startCall(peerInfo.userId, 'user');
-			return;
-		}
-
-		if ('number' in peerInfo) {
-			void controls.startCall(peerInfo.number, 'sip');
-			return;
-		}
-
-		throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 	};
 
 	const onAccept = async () => {
@@ -123,14 +123,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		try {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
+			controls.acceptCall(false);
 		} catch (error) {
-			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				controls.endCall();
-			}
-			return;
+			console.error('MediaCall - onAccept - Failed to get device, procceeding without microphone', error);
+			controls.acceptCall(true);
 		}
-
-		controls.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -201,7 +198,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	};
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
-		selectPeer(peerInfo);
+		setTargetPeer(peerInfo);
 	};
 
 	const onToggleScreenSharing = () => {
@@ -218,17 +215,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const streams = useScreenShareStreams(instance);
 
-	useWidgetExternalControlSignalListener(
-		'toggleWidget',
-		useCallback(
-			({ peerInfo }) => {
-				toggleWidget(peerInfo);
-			},
-			[toggleWidget],
-		),
-	);
-
-	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
+	const { onChangePosition, lastKnownPosition } = useWidgetPositionTracker();
 
 	useEffect(() => {
 		return instance?.on('endedCall', () => {
@@ -238,6 +225,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const contextValue = {
 		sessionState,
+		targetPeer,
 		onClickDirectMessage,
 		onMute,
 		onHold,
@@ -254,7 +242,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		streams,
 		widgetPositionTracker: {
 			onChangePosition,
-			getRestorePosition,
+			lastKnownPosition,
 		},
 	};
 

@@ -34,7 +34,7 @@ const TeamsTable = () => {
 				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key='channelsCount' w='100px'>
+				<GenericTableHeaderCell key='channelsCount' width='100px'>
 					{t('Channels')}
 				</GenericTableHeaderCell>,
 				mediaQuery && (
@@ -44,7 +44,7 @@ const TeamsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						w='150px'
+						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>

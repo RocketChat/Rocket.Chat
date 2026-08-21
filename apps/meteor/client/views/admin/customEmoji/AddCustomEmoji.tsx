@@ -105,9 +105,9 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 					</FieldLabel>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
-						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
+						<Box display='flex' flexDirection='row' marginInline='neg-x4' justifyContent='center'>
 							<Margins inline={4}>
-								<Box is='img' objectFit='contain' w='x120' h='x120' src={newEmojiPreview} />
+								<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 							</Margins>
 						</Box>
 					)}

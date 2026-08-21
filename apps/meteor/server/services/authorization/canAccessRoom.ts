@@ -6,13 +6,13 @@ import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/mode
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 
-async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
+async function canAccessPublicRoom(user?: IUser): Promise<boolean> {
 	if (!user?._id) {
 		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
-	return Authorization.hasPermission(user._id, 'view-c-room');
+	return Authorization.hasPermission(user, 'view-c-room');
 }
 
 type RoomAccessValidatorConverted = (
@@ -106,7 +106,7 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 ];
 
 export const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
-	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
+	return Boolean(user && Object.keys(user).length === 1 && user._id);
 };
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {

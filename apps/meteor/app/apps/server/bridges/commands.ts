@@ -6,7 +6,7 @@ import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams 
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
-import { slashCommands } from '../../../utils/server/slashCommand';
+import { slashCommands } from '../../../../server/lib/utils/slashCommand';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;

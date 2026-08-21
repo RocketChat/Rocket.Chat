@@ -12,8 +12,8 @@ const PeerCardSlot = ({ muted, held, displayName }: PeerCardSlotProps) => {
 	return (
 		<CardSlot position='bottomLeft'>
 			{displayName}
-			{muted && <Icon name='mic-off' size='x12' color='danger' mis={4} />}
-			{held && <Icon name='pause-shape-unfilled' size='x12' color='danger' mis={4} />}
+			{muted && <Icon name='mic-off' size='x12' color='danger' marginInlineStart={4} />}
+			{held && <Icon name='pause-shape-unfilled' size='x12' color='danger' marginInlineStart={4} />}
 		</CardSlot>
 	);
 };

@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../../server/settings';
 
 const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 

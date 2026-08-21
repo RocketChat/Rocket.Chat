@@ -17,15 +17,16 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	saveDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
 	saveDepartmentAgents,
 	removeDepartment,
-} from '../../../../app/livechat/server/lib/departmentsLib';
-import { settings } from '../../../../app/settings/server';
-import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+} from '../../../lib/omnichannel/departmentsLib';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(
@@ -140,8 +141,8 @@ API.v1.addRoute(
 			return API.v1.success({ department, agents });
 		},
 		async put() {
-			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
-			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
+			const permissionToSave = await hasPermissionAsync(this.user, 'manage-livechat-departments');
+			const permissionToAddAgents = await hasPermissionAsync(this.user, 'add-livechat-department-agents');
 
 			check(this.bodyParams, {
 				department: Object,
@@ -254,10 +255,16 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
+			const parsedSelector = JSON.parse(selector);
+
+			if (parsedSelector.conditions && Object.keys(parsedSelector.conditions).length > 0) {
+				apiDeprecationLogger.parameter(this.route, 'conditions', '9.0.0', this.response);
+			}
+
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector: parsedSelector,
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					showArchived: showArchived === 'true',
 				}),

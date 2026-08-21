@@ -13,9 +13,9 @@ import {
 	POSTCalendarSyncTestConnectionBodySchema,
 	POSTCalendarSyncTestConnectionResponseSchema,
 } from './schemas';
-import { settings } from '../../../../app/settings/server';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
+import { settings } from '../../../../server/settings';
 import { getConfiguredProvider } from '../../lib/calendarSync/factory';
 import { calendarSyncEngine } from '../../lib/calendarSync/startup';
 import type { IGraphNotificationPayload } from '../../lib/calendarSync/webhooks';

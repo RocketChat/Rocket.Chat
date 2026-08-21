@@ -10,7 +10,7 @@ export default {
 	component: Extended,
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x300' bg='dark' borderRadius='x4'>
+			<Box maxWidth='x300' backgroundColor='dark' borderRadius='x4'>
 				{fn()}
 			</Box>
 		),
@@ -22,7 +22,7 @@ const Template: StoryFn<typeof Extended> = (args) => (
 		{...args}
 		title='John Doe'
 		subtitle={
-			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
+			<Box display='flex' flexDirection='row' width='full' alignItems='center'>
 				<Box flexGrow='1' withTruncatedText>
 					John Doe: test 123
 				</Box>
@@ -40,7 +40,7 @@ const Template: StoryFn<typeof Extended> = (args) => (
 			</Box>
 		}
 		titleIcon={
-			<Box mi={4}>
+			<Box marginInline={4}>
 				<Status.Online />
 			</Box>
 		}

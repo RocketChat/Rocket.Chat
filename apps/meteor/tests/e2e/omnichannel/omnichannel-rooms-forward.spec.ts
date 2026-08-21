@@ -69,6 +69,7 @@ test.describe('OC - Forwarding to away departments (EE)', () => {
 		// Away Agent window opens with idleTimeLimit of 1, therefore after a second it will turn away
 		({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
 		poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+		await poHomeOmnichannelAwayAgent.waitForHome();
 		await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 	});
 

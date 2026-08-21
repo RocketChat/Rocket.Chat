@@ -6,7 +6,7 @@ import sinon from 'sinon';
 const loadFactory = (settingsValues: Record<string, unknown>) => {
 	const graphConstructor = sinon.stub();
 	const factory = proxyquire.noCallThru().load('../../../../../ee/server/lib/calendarSync/factory.ts', {
-		'../../../../app/settings/server': { settings: { get: (id: string) => settingsValues[id] } },
+		'../../../../server/settings': { settings: { get: (id: string) => settingsValues[id] } },
 		'@rocket.chat/server-fetch': { serverFetch: sinon.stub() },
 		'./providers/graph/MicrosoftGraphCalendarProvider': {
 			MicrosoftGraphCalendarProvider: class {

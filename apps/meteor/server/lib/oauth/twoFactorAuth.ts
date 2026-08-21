@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { getRememberDate } from '../../../app/2fa/server/code';
-import { EmailCheckForOAuth } from '../../../app/2fa/server/code/EmailCheckForOAuth';
-import { TOTPCheckForOAuth } from '../../../app/2fa/server/code/TOTPCheckForOAuth';
+import { getRememberDate } from '../2fa/code';
+import { EmailCheckForOAuth } from '../2fa/code/EmailCheckForOAuth';
+import { TOTPCheckForOAuth } from '../2fa/code/TOTPCheckForOAuth';
 
 export const emailCheckForOAuth = new EmailCheckForOAuth();
 export const totpCheckForOAuth = new TOTPCheckForOAuth();

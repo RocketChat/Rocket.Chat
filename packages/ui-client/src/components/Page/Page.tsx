@@ -20,7 +20,7 @@ const Page = ({ background = 'light', ...props }: PageProps) => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
-				bg={background}
+				backgroundColor={background}
 				color='default'
 				{...props}
 			/>

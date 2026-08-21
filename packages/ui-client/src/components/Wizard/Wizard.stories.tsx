@@ -44,7 +44,7 @@ const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 			<WizardTabs ordered={ordered} />
 
 			<WizardContent id='first-step'>
-				<Box width='100%' height='100%' pbs={24}>
+				<Box width='100%' height='100%' paddingBlockStart={24}>
 					<States>
 						<StatesIcon name='magnifier' />
 						<StatesTitle>First step</StatesTitle>
@@ -56,7 +56,7 @@ const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 				</WizardActions>
 			</WizardContent>
 			<WizardContent id='second-step'>
-				<Box width='100%' height='100%' pbs={24}>
+				<Box width='100%' height='100%' paddingBlockStart={24}>
 					<States>
 						<StatesIcon name='magnifier' />
 						<StatesTitle>Second step</StatesTitle>
@@ -69,7 +69,7 @@ const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 				</WizardActions>
 			</WizardContent>
 			<WizardContent id='third-step'>
-				<Box width='100%' height='100%' pbs={24}>
+				<Box width='100%' height='100%' paddingBlockStart={24}>
 					<States>
 						<StatesIcon name='magnifier' />
 						<StatesTitle>Third step</StatesTitle>

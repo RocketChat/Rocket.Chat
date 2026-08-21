@@ -44,7 +44,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 	}
 
 	return (
-		<Box w='full' p={8} mbs={40}>
+		<Box width='full' padding={8} marginBlockStart={40}>
 			<States>
 				<StatesIcon name='rocket' />
 				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
@@ -57,14 +57,14 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 					md: 4,
 					lg: 6,
 					xl: 4,
-					p: 8,
+					padding: 8,
 				}}
 			>
 				{upgradeModules.map((card, index) => {
 					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
 				})}
 			</CardGrid>
-			<Box pbs={24}>
+			<Box paddingBlockStart={24}>
 				<ButtonGroup large vertical>
 					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
 						{t('Compare_plans')}

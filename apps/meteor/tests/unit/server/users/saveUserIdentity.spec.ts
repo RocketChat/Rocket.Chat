@@ -42,7 +42,7 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../server/li
 		'@global': true,
 	},
 	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../../../app/file-upload/server': {
+	'../media/file-upload': {
 		FileUpload: stubs.FileUpload,
 	},
 	'./setUsername': {

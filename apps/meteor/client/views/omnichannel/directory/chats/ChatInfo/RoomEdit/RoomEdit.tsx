@@ -160,7 +160,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 					</Button>
 
 					<Button
-						mie='none'
+						marginInlineEnd='none'
 						flexGrow={1}
 						onClick={handleSubmit(handleSave)}
 						loading={isSubmitting}

@@ -87,7 +87,7 @@ const UserInfo = ({
 	const usernameId = useId();
 
 	return (
-		<ContextualbarScrollableContent p={24} {...props}>
+		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
 				{username && (
 					<InfoPanelAvatar>

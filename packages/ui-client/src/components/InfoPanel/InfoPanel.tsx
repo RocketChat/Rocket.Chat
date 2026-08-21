@@ -6,7 +6,7 @@ export type InfoPanelProps = {
 };
 
 const InfoPanel = ({ children }: InfoPanelProps) => (
-	<Box flexGrow={1} mb='neg-x24'>
+	<Box flexGrow={1} marginBlock='neg-x24'>
 		{children}
 	</Box>
 );

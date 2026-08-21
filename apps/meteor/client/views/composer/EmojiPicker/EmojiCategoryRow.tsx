@@ -31,7 +31,7 @@ const EmojiCategoryRow = ({ item, handleLoadMore, handleSelectEmoji }: EmojiCate
 	if (isRowDivider(item)) {
 		return (
 			<>
-				<Box is='h4' fontScale='c1' pb={8} id={`emoji-list-category-${item.category}`}>
+				<Box is='h4' fontScale='c1' paddingBlock={8} id={`emoji-list-category-${item.category}`}>
 					{t(item.i18n)}
 				</Box>
 			</>

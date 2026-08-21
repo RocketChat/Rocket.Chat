@@ -11,7 +11,7 @@ export const isPlausibleLicense = (license: string): boolean => license.trim().l
 const isValidationFailure = (error: unknown): error is { reasons: BehaviorWithContext[] } =>
 	typeof error === 'object' && error !== null && Array.isArray((error as { reasons?: unknown }).reasons);
 
-export const useValidateLicense = (license: string) => {
+export const useValidateLicense = (license: string, enabled = true) => {
 	const validateLicense = useEndpoint('POST', '/v1/licenses.validate');
 	const trimmedLicense = license.trim();
 
@@ -28,7 +28,7 @@ export const useValidateLicense = (license: string) => {
 				throw error;
 			}
 		},
-		enabled: isPlausibleLicense(trimmedLicense),
+		enabled: enabled && isPlausibleLicense(trimmedLicense),
 		staleTime: Infinity,
 		gcTime: Infinity,
 		retry: false,

@@ -90,7 +90,8 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 				<Box is='ul'>
 					{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
 						<Box is='li' display='flex' key={_matrixId}>
-							{_matrixId} <Icon mis={4} name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
+							{_matrixId}{' '}
+							<Icon marginInlineStart={4} name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
 						</Box>
 					))}
 					{rocketChatUsers.map((_user) => (
@@ -100,12 +101,12 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 					))}
 				</Box>
 				{bannedError && (
-					<Box color='danger' fontScale='c1' mbs={8}>
+					<Box color='danger' fontScale='c1' marginBlockStart={8}>
 						{t('User_is_banned_from_room_confirm_unban')}
 					</Box>
 				)}
 				{error && (
-					<Box color='danger' fontScale='c1' mbs={8}>
+					<Box color='danger' fontScale='c1' marginBlockStart={8}>
 						{error}
 					</Box>
 				)}
@@ -115,7 +116,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 					<ModalFooterAnnotation>
 						<Box display='flex' alignItems='center'>
 							<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
-							<Label htmlFor={checkboxId} mis={8}>
+							<Label htmlFor={checkboxId} marginInlineStart={8}>
 								{t('Yes_unban_user')}
 							</Label>
 						</Box>

@@ -2,7 +2,7 @@ import { parseISO, isToday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
@@ -23,9 +23,11 @@ export type MessageTimeProps = {
 	inverted?: boolean;
 	className?: string;
 	style?: CSSProperties;
-	t: TFunction;
 };
-const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: MessageTimeProps) => {
+
+const MessageTime = ({ ts, normal, inverted, className, style = {} }: MessageTimeProps) => {
+	const { t } = useTranslation();
+
 	return (
 		<div className={createClassName(styles, 'message-time-wrapper')}>
 			<time
@@ -39,4 +41,4 @@ const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: Message
 	);
 };
 
-export default withTranslation()(memo(MessageTime));
+export default memo(MessageTime);

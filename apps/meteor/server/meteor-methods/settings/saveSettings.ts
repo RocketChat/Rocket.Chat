@@ -2,9 +2,10 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { twoFactorRequired } from '../../../app/2fa/server/twoFactorRequired';
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { SettingValidationError } from '../../lib/settingValidationRules';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,11 +35,18 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await saveSettingsBulk(uid, params, {
-			username: (await Meteor.userAsync())!.username!,
-			ip: this.connection.clientAddress || '',
-			useragent: this.connection.httpHeaders['user-agent'] || '',
-		});
+		try {
+			await saveSettingsBulk(uid, params, {
+				username: (await Meteor.userAsync())!.username!,
+				ip: this.connection.clientAddress || '',
+				useragent: this.connection.httpHeaders['user-agent'] || '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				throw new Meteor.Error('error-setting-validation-failed', error.message);
+			}
+			throw error;
+		}
 
 		return true;
 	}, {}),

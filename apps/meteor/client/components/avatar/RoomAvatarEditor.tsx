@@ -49,7 +49,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
 
 	return (
-		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative'>
+		<Box borderRadius='x2' maxWidth='x332' width='full' position='relative'>
 			<RoomAvatar {...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })} room={room} size='x332' />
 			<Box
 				className={[
@@ -59,7 +59,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 					`,
 				]}
 				position='absolute'
-				m={12}
+				margin={12}
 			>
 				<ButtonGroup>
 					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>

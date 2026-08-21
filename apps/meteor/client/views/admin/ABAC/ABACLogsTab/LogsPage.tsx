@@ -185,7 +185,7 @@ const LogsPage = () => {
 									<GenericTableRow key={eventInfo.id}>
 										<GenericTableCell withTruncatedText>
 											{eventInfo.userAvatar && (
-												<Box is='span' mie={4}>
+												<Box is='span' marginInlineEnd={4}>
 													{eventInfo.userAvatar}
 												</Box>
 											)}

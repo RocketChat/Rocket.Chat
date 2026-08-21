@@ -8,14 +8,21 @@ export type EmojiPickerPreviewProps = { emoji: string; name: string } & Omit<All
 const EmojiPickerPreview = ({ emoji, name, ...props }: EmojiPickerPreviewProps) => {
 	const previewEmojiClass = css`
 		span {
-			font-size: 1.375rem;
+			font-size: 2.5rem;
+		}
+		span.emoji--custom {
+			width: 2.5rem;
+			height: 2.5rem;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 		}
 	`;
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
 			<Box className={previewEmojiClass} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(emoji) }}></Box>
-			<Box mis={4} display='flex' flexDirection='column' maxWidth='x160'>
+			<Box marginInlineStart={4} display='flex' flexDirection='column' maxWidth='x160'>
 				<Box fontScale='c2' withTruncatedText>
 					{name}
 				</Box>

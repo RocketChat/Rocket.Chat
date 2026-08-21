@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
@@ -62,18 +61,14 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelAgentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Agents' }));
-	}
-}
-
 export class OmnichannelAgents extends OmnichannelAdmin {
+	protected readonly route = 'agents';
+
+	protected readonly title = 'Agents';
+
 	readonly editAgent: OmnichannelEditAgentFlexTab;
 
 	readonly agentInfo: OmnichannelAgentInfoFlexTab;
-
-	readonly table: OmnichannelAgentsTable;
 
 	readonly listbox: Listbox;
 
@@ -81,7 +76,6 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 		super(page);
 		this.editAgent = new OmnichannelEditAgentFlexTab(page);
 		this.agentInfo = new OmnichannelAgentInfoFlexTab(page);
-		this.table = new OmnichannelAgentsTable(page);
 		this.listbox = new Listbox(page);
 	}
 

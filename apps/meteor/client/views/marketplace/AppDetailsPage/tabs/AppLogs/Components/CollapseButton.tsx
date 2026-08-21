@@ -34,7 +34,7 @@ export const CollapseButton = ({ regionId, children, expanded, onClick }: Collap
 				color={Palette.text['font-default']}
 			>
 				<Chevron size={32} down={!expanded} up={expanded} style={{ alignSelf: 'flex-start' }} />
-				<Box pb='x4' pi='x4' fontWeight='700'>
+				<Box paddingBlock='x4' paddingInline='x4' fontWeight='700'>
 					{children}
 				</Box>
 			</Box>

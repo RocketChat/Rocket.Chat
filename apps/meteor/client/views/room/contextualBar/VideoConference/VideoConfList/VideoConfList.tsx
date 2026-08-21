@@ -43,7 +43,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				{loading && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

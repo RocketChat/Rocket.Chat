@@ -1,10 +1,19 @@
 import { proxify } from './lib/proxify';
+import type {
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+} from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import type { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
@@ -34,6 +43,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -138,6 +148,7 @@ export type {
 	NPSVotePayload,
 	ResizeResult,
 	RoomAccessValidator,
+	UserWithRoles,
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
@@ -146,12 +157,20 @@ export type {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
 	IMessageService,
 	ISettingsService,
+	IStatusVisibilityService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
@@ -188,6 +207,7 @@ export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
+export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');
 export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
@@ -204,3 +224,4 @@ export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
 export const Abac = proxify<IAbacService>('abac');
+export const AISearch = proxify<IAISearchService>('ai-search');

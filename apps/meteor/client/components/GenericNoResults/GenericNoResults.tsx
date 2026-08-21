@@ -24,7 +24,7 @@ const GenericNoResults = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>
+		<Box role='group' aria-label={t('No_results_found')} display='flex' height='100%' flexDirection='column' justifyContent='center'>
 			<States>
 				{icon && <StatesIcon name={icon} />}
 				<StatesTitle>{title || t('No_results_found')}</StatesTitle>

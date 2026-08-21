@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-import { settings, settingsRegistry } from '../../../app/settings/server';
+import { settings, settingsRegistry } from '../../settings';
 
 export const addMatrixBridgeFederationSettings = async (): Promise<void> => {
 	await settingsRegistry.add('Federation_Matrix_enabled', false, {

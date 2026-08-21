@@ -1,6 +1,6 @@
 import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
 	await settingsRegistry.addGroup('Federation', async function () {
@@ -115,6 +115,41 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,
+		});
+
+		await this.section('XMPP', async function () {
+			await this.add('Federation_XMPP_Enabled', false, {
+				type: 'boolean',
+				enterprise: true,
+				modules: ['federation'],
+				i18nLabel: 'Enabled',
+				invalidValue: false,
+				enableQuery: { _id: 'Federation_Service_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_URL', '', {
+				type: 'string',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_HS_Token', '', {
+				type: 'password',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
+
+			await this.add('Federation_XMPP_Bridge_AS_Token', '', {
+				type: 'password',
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: '',
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
+			});
 		});
 	});
 };

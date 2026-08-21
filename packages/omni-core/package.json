@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -13,7 +13,8 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
-		"testunit": "jest"
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
@@ -25,7 +26,7 @@
 		"@rocket.chat/tools": "workspace:*",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},

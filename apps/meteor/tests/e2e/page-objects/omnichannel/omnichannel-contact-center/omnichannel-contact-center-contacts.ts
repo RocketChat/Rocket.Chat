@@ -5,20 +5,15 @@ import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { MenuMoreActions } from '../../fragments';
 import { OmnichannelEditContactFlexTab } from '../../fragments/flextabs';
 import { OmnichannelDeleteContactModal } from '../../fragments/modals';
-import { Table } from '../../fragments/table';
-
-class OmnichannelContactCenterContactsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Omnichannel Contact Center Contacts' }));
-	}
-}
 
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
+	protected readonly route = 'current/contacts';
+
+	protected override readonly tableName = 'Omnichannel Contact Center Contacts';
+
 	readonly contactInfo: OmnichannelContactInfo;
 
 	readonly editContact: OmnichannelEditContactFlexTab;
-
-	readonly table: OmnichannelContactCenterContactsTable;
 
 	readonly deleteContactModal: OmnichannelDeleteContactModal;
 
@@ -28,7 +23,6 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 		super(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
 		this.editContact = new OmnichannelEditContactFlexTab(page);
-		this.table = new OmnichannelContactCenterContactsTable(page);
 		this.deleteContactModal = new OmnichannelDeleteContactModal(page);
 		this.menu = new MenuMoreActions(page);
 	}

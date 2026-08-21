@@ -8,7 +8,7 @@ export type VideoConfPopupTitleProps = {
 const VideoConfPopupTitle = ({ text, counter = false }: VideoConfPopupTitleProps) => (
 	<Box display='flex' alignItems='center'>
 		<Box fontScale='p2b'>{text}</Box>
-		{counter && <Throbber size='x8' mis={4} />}
+		{counter && <Throbber size='x8' marginInlineStart={4} />}
 	</Box>
 );
 

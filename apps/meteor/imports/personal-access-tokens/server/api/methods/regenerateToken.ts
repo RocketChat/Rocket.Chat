@@ -4,7 +4,7 @@ import { Users } from '@rocket.chat/models';
 import { isPersonalAccessToken } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
-import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../../server/lib/2fa/twoFactorRequired';
 import { removePersonalAccessTokenOfUser } from './removeToken';
 import { generatePersonalAccessTokenOfUser } from './generateToken';
 declare module '@rocket.chat/ddp-client' {

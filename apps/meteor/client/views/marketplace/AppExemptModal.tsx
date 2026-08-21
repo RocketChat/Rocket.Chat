@@ -39,7 +39,7 @@ const AppExemptModal = ({ onCancel, appName }: AppExemptModalProps) => {
 			onCancel={onCancel}
 			onConfirm={goToManageSubscriptionPage}
 		>
-			<Box mbe={28}>{t('Apps_Private_App_Is_Exempt', { appName })}</Box>
+			<Box marginBlockEnd={28}>{t('Apps_Private_App_Is_Exempt', { appName })}</Box>
 			{t('Upgrade_subscription_to_enable_private_apps')}
 		</GenericModal>
 	);

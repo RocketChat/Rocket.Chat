@@ -1,5 +1,5 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
 import { getURL } from '../../app/utils/client';

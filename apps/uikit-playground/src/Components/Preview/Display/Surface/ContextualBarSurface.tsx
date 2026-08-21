@@ -22,7 +22,7 @@ const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
 			<ContextualbarAction data-qa='ContextualbarActionClose' title='Close' name='cross' />
 		</ContextualbarHeader>
 
-		<Box height='100%' p='12px'>
+		<Box height='100%' padding='12px'>
 			<Box height='100%' display='flex' flexShrink={1} flexDirection='column' flexGrow={1}>
 				<Scrollbars
 					autoHide

@@ -51,7 +51,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 			<ModalContent>
 				<Box>{t('User_is_banned_from_room_confirm_unban')}</Box>
 				{error && (
-					<Box color='danger' fontScale='c1' mbs={8}>
+					<Box color='danger' fontScale='c1' marginBlockStart={8}>
 						{error}
 					</Box>
 				)}
@@ -60,7 +60,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 				<ModalFooterAnnotation>
 					<Box display='flex' alignItems='center'>
 						<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
-						<Label htmlFor={checkboxId} mis={8}>
+						<Label htmlFor={checkboxId} marginInlineStart={8}>
 							{t('Yes_unban_user')}
 						</Label>
 					</Box>

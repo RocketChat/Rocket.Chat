@@ -29,7 +29,7 @@ const AppSettings = ({ settings }: AppSettingsProps) => {
 	}, [settings]);
 
 	return (
-		<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
+		<Box display='flex' flexDirection='column' maxWidth='x640' width='full' marginInline='auto'>
 			<Accordion>
 				{groupedSettings.map(([section, sectionSettings], index) => (
 					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>

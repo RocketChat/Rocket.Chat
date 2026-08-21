@@ -56,8 +56,7 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelUnits = new OmnichannelUnits(page);
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidebar.linkUnits.click();
+		await poOmnichannelUnits.goTo();
 	});
 
 	test('OC - Manage Units - Create Unit', async () => {
@@ -92,7 +91,7 @@ test.describe('OC - Manage Units', () => {
 		});
 	});
 
-	test('OC - Manage Units - Edit unit name', async ({ api, page }) => {
+	test('OC - Manage Units - Edit unit name', async ({ api }) => {
 		const unitName = faker.string.uuid();
 		const editedUnitName = faker.string.uuid();
 
@@ -107,8 +106,7 @@ test.describe('OC - Manage Units', () => {
 			return newUnit;
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidebar.linkUnits.click();
+		await poOmnichannelUnits.goTo();
 
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);

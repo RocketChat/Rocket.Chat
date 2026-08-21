@@ -38,7 +38,7 @@ const NowPlayingSection = () => {
 
 	return (
 		<SidebarCard>
-			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={10} style={{ gap: 8 }}>
+			<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd={10} style={{ gap: 8 }}>
 				<Box
 					display='flex'
 					alignItems='center'

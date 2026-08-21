@@ -3,7 +3,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../server/api';
 import { canAccessRoomAsync } from '../../../../../server/lib/authorization/canAccessRoom';
-import { requestPdfTranscript } from '../../../../app/livechat-enterprise/server/lib/requestPdfTranscript';
+import { requestPdfTranscript } from '../../../lib/omnichannel/requestPdfTranscript';
 
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',

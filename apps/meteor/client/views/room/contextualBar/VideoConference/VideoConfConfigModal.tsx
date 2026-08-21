@@ -39,7 +39,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
-					<Box is='ul' pis={24}>
+					<Box is='ul' paddingInlineStart={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
@@ -56,10 +56,10 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Margins>
-				<Box fontScale='h3' mbs={24}>
+				<Box fontScale='h3' marginBlockStart={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout mbs={12} mbe={24} title={t('Missing_configuration')} type='warning'>
+				<Callout marginBlockStart={12} marginBlockEnd={24} title={t('Missing_configuration')} type='warning'>
 					{isAdmin
 						? t('An_app_needs_to_be_installed_and_configured')
 						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}

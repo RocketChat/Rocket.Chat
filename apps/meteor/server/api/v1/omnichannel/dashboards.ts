@@ -20,7 +20,7 @@ import {
 	findAllAgentsStatusAsyncCached,
 	findAllChatMetricsByDepartmentAsyncCached,
 	findAllResponseTimeMetricsAsyncCached,
-} from '../../../../app/livechat/server/lib/analytics/dashboards';
+} from '../../../lib/omnichannel/analytics/dashboards';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 
 API.v1.addRoute(

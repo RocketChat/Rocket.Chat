@@ -4,10 +4,10 @@ import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { hasRoleAsync } from '../../lib/authorization/hasRole';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -29,8 +29,8 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 	}
 
 	if (
-		(room.t === 'c' && !(await hasPermissionAsync(user._id, 'leave-c'))) ||
-		(room.t === 'p' && !(await hasPermissionAsync(user._id, 'leave-p')))
+		(room.t === 'c' && !(await hasPermissionAsync(user, 'leave-c'))) ||
+		(room.t === 'p' && !(await hasPermissionAsync(user, 'leave-p')))
 	) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 	}

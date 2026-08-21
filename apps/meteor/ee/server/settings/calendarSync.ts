@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): void {
 	void settingsRegistry.addGroup('Calendar_Sync', async function () {

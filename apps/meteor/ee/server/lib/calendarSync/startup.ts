@@ -5,7 +5,7 @@ import { CalendarSyncState, Permissions } from '@rocket.chat/models';
 import { CalendarSyncEngine } from './CalendarSyncEngine';
 import type { ICalendarSyncEngineConfig } from './CalendarSyncEngine';
 import { getConfiguredProvider } from './factory';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../server/settings';
 
 const JOB_NAME = 'calendar-sync';
 

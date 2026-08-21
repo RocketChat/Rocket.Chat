@@ -9,8 +9,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { permissionsGetMethod } from '../../../app/authorization/server/streamer/permissions';
-import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
+import { permissionsGetMethod } from '../../lib/authorization/streamer/permissions';
+import { notifyOnPermissionChangedById } from '../../lib/notifyListener';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -61,6 +62,25 @@ const permissionUpdatePropsSchema = {
 const isPermissionsListAll = ajvQuery.compile<PermissionsListAllProps>(permissionListAllSchema);
 
 const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+
+type PermissionRolePayload = { permissionId: string; role: string };
+
+const isPermissionRolePayload = ajv.compile<PermissionRolePayload>({
+	type: 'object',
+	properties: {
+		permissionId: { type: 'string', minLength: 1 },
+		role: { type: 'string', minLength: 1 },
+	},
+	required: ['permissionId', 'role'],
+	additionalProperties: false,
+});
+
+const voidPermissionResponse = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
 
 const permissionsEndpoints = API.v1
 	.get(
@@ -160,17 +180,17 @@ const permissionsEndpoints = API.v1
 			}
 
 			const permissionKeys = bodyParams.permissions.map(({ _id }) => _id);
-			const permissions = await Permissions.find({ _id: { $in: permissionKeys } }).toArray();
+			const permissionsCount = await Permissions.countDocuments({ _id: { $in: permissionKeys } });
 
-			if (permissions.length !== bodyParams.permissions.length) {
+			if (permissionsCount !== bodyParams.permissions.length) {
 				return API.v1.failure('Invalid permission', 'error-invalid-permission');
 			}
 
 			const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
 
-			const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
+			const rolesCount = await Roles.countDocuments({ _id: { $in: roleKeys } });
 
-			if (roles.length !== roleKeys.length) {
+			if (rolesCount !== roleKeys.length) {
 				return API.v1.failure('Invalid role', 'error-invalid-role');
 			}
 
@@ -184,6 +204,44 @@ const permissionsEndpoints = API.v1
 			return API.v1.success({
 				permissions: result,
 			});
+		},
+	)
+	.post(
+		'permissions.addRole',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isPermissionRolePayload,
+			response: {
+				200: voidPermissionResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { permissionId, role } = this.bodyParams;
+			await addPermissionToRoleMethod(this.userId, permissionId, role);
+			return API.v1.success();
+		},
+	)
+	.post(
+		'permissions.removeRole',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isPermissionRolePayload,
+			response: {
+				200: voidPermissionResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { permissionId, role } = this.bodyParams;
+			await removeRoleFromPermissionMethod(this.userId, permissionId, role);
+			return API.v1.success();
 		},
 	);
 

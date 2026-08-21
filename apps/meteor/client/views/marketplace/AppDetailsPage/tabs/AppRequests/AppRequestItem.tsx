@@ -17,16 +17,16 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 	const isAdminUser = usePermission('manage-apps');
 
 	return (
-		<Box display='flex' flexDirection='row' pb={12} pie={24} mbe={8} flexGrow='1'>
-			<Box mie={8} mbs={2} display='flex' flexDirection='row' alignItems='flex-start' h='full'>
-				<Box mie={16} alignSelf='center' height='100%' width='x8'>
+		<Box display='flex' flexDirection='row' paddingBlock={12} paddingInlineEnd={24} marginBlockEnd={8} flexGrow='1'>
+			<Box marginInlineEnd={8} marginBlockStart={2} display='flex' flexDirection='row' alignItems='flex-start' height='full'>
+				<Box marginInlineEnd={16} alignSelf='center' height='100%' width='x8'>
 					{!seen && isAdminUser && <Badge small variant='primary' />}
 				</Box>
 				{username && <UserAvatar size='x36' username={username} />}
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='flex-start' mbe={4}>
-					<Box fontScale='p2b' mie={4} lineHeight='initial' color='titles-labels'>
+				<Box display='flex' flexDirection='row' alignItems='flex-start' marginBlockEnd={4}>
+					<Box fontScale='p2b' marginInlineEnd={4} lineHeight='initial' color='titles-labels'>
 						{name}
 					</Box>
 					<Box fontScale='c1' color='annotation'>

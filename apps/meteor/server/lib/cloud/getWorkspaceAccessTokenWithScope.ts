@@ -1,11 +1,12 @@
+import { License } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
+import { workspaceScopes } from './oauthScopes';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { workspaceScopes } from '../../../app/cloud/server/oauthScopes';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 type WorkspaceAccessTokenWithScope = {
@@ -28,6 +29,10 @@ export async function getWorkspaceAccessTokenWithScope({
 	const tokenResponse = { token: '', expiresAt: new Date(), scope: '' };
 
 	if (!workspaceRegistered) {
+		return tokenResponse;
+	}
+
+	if (License.hasOfflineLicense()) {
 		return tokenResponse;
 	}
 

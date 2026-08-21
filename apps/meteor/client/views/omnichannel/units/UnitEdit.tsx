@@ -270,7 +270,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={() => onDelete?.()}>
 								{t('Delete')}

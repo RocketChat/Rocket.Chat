@@ -3,9 +3,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { settings } from '../../settings';
 
 const MAX_LIMIT = 100;
 
@@ -29,6 +29,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadsList' });
 		}
 
+		if (typeof rid !== 'string') {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getThreadsList' });
+		}
+
 		const user = await Meteor.userAsync();
 		const room = await Rooms.findOneById(rid);
 
@@ -36,6 +40,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Messages.findThreadsByRoomId(rid, skip, limit).toArray();
+		return Messages.findThreadsByRoomId(room._id, skip, limit).toArray();
 	},
 });

@@ -20,13 +20,13 @@ jest.mock('codemirror', () => ({
 	default: { fromTextArea: (...args: unknown[]) => fromTextArea(...(args as [])) },
 }));
 
-jest.mock('codemirror/addon/edit/matchbrackets', () => ({}), { virtual: true });
-jest.mock('codemirror/addon/edit/closebrackets', () => ({}), { virtual: true });
-jest.mock('codemirror/addon/edit/matchtags', () => ({}), { virtual: true });
-jest.mock('codemirror/addon/edit/trailingspace', () => ({}), { virtual: true });
-jest.mock('codemirror/addon/search/match-highlighter', () => ({}), { virtual: true });
-jest.mock('codemirror/lib/codemirror.css', () => ({}), { virtual: true });
-jest.mock('../../../../../../../app/ui/client/lib/codeMirror/codeMirror', () => ({}), { virtual: true });
+jest.mock('codemirror/addon/edit/matchbrackets', () => ({}));
+jest.mock('codemirror/addon/edit/closebrackets', () => ({}));
+jest.mock('codemirror/addon/edit/matchtags', () => ({}));
+jest.mock('codemirror/addon/edit/trailingspace', () => ({}));
+jest.mock('codemirror/addon/search/match-highlighter', () => ({}));
+jest.mock('codemirror/lib/codemirror.css', () => ({}));
+jest.mock('../../../../../../../app/ui/client/lib/codeMirror/codeMirror', () => ({}));
 
 const flushAsync = () => act(() => Promise.resolve());
 

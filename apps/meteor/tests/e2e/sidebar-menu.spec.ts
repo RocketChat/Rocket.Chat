@@ -13,7 +13,7 @@ test.describe('sidebar-menu', () => {
 		});
 
 		await page.goto('/home', { waitUntil: 'domcontentloaded' });
-		await expect(page.getByRole('button', { name: 'Create new' })).toBeVisible();
+		await page.getByRole('button', { name: 'Create new' }).waitFor();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');

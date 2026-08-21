@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Mongo } from 'meteor/mongo';
 import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 
-import { settings } from '../../../app/settings/server';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
 
 type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
 

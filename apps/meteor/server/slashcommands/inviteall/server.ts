@@ -9,13 +9,13 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { i18n } from '../../lib/i18n';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { createChannelMethod } from '../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../meteor-methods/rooms/createPrivateGroup';
+import { settings } from '../../settings';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -49,8 +49,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		if (!baseChannel) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
+					channelName: channel,
 					lng,
 				}),
 			});
@@ -84,8 +83,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
-						postProcess: 'sprintf',
-						sprintf: [channel],
+						channelName: channel,
 						lng,
 					}),
 				});

@@ -3,11 +3,14 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
 import { getRedirectUri } from './getRedirectUri';
-import { userScopes } from '../../../app/cloud/server/oauthScopes';
-import { settings } from '../../../app/settings/server';
+import { userScopes } from './oauthScopes';
+import { assertNotOfflineLicense } from './offlineLicense';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function finishOAuthAuthorization(code: string, state: string) {
+	assertNotOfflineLicense();
+
 	if (settings.get<string>('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
 			method: 'cloud:finishOAuthAuthorization',

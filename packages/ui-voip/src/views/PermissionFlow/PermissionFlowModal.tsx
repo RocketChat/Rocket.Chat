@@ -10,11 +10,11 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useAbsoluteUrl, useSetModal } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type PermissionFlowModalType = 'denied' | 'incomingPrompt' | 'outgoingPrompt' | 'deviceChangePrompt';
+export type PermissionFlowModalType = 'denied' | 'incomingPrompt' | 'outgoingPrompt' | 'deviceChangePrompt' | 'noDevices';
 
 export type PermissionFlowModalProps = {
 	onCancel: () => void;
@@ -30,24 +30,20 @@ const breakSpaces = css`
 
 const getFooter = (
 	type: PermissionFlowModalProps['type'],
-	{
-		onCancel,
-		onConfirm,
-		onClose,
-		t,
-	}: { onCancel: () => void; onConfirm: () => void; onClose: () => void; t: ReturnType<typeof useTranslation>['t'] },
+	{ onCancel, onConfirm, t }: { onCancel: () => void; onConfirm: () => void; t: ReturnType<typeof useTranslation>['t'] },
 ) => {
 	switch (type) {
+		case 'noDevices':
 		case 'denied':
 			return [
-				<Button key='cancel' onClick={onClose}>
-					{t('Cancel')}
+				<Button key='join-micless' onClick={onCancel} icon='mic-off'>
+					{t('Continue_without_mic')}
 				</Button>,
 			];
 		case 'incomingPrompt':
 			return [
-				<Button key='cancel' danger onClick={onCancel} icon='phone-off'>
-					{t('VoIP_cancel_and_reject')}
+				<Button key='join-micless' onClick={onCancel} icon='mic-off'>
+					{t('Accept_without_mic')}
 				</Button>,
 				<Button key='confirm' success onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_accept')}
@@ -55,8 +51,8 @@ const getFooter = (
 			];
 		case 'outgoingPrompt':
 			return [
-				<Button key='cancel' onClick={onClose}>
-					{t('Cancel')}
+				<Button key='join-micless' onClick={onCancel} icon='mic-off'>
+					{t('Call_without_mic')}
 				</Button>,
 				<Button key='confirm' success onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_call')}
@@ -64,7 +60,7 @@ const getFooter = (
 			];
 		case 'deviceChangePrompt':
 			return [
-				<Button key='cancel' onClick={onClose}>
+				<Button key='cancel' onClick={onCancel}>
 					{t('Cancel')}
 				</Button>,
 				<Button key='confirm' primary onClick={onConfirm}>
@@ -74,31 +70,39 @@ const getFooter = (
 	}
 };
 
+const getTitleAndText = (type: PermissionFlowModalProps['type'], t: ReturnType<typeof useTranslation>['t'], workspaceUrl: string) => {
+	if (type === 'noDevices') {
+		return [t('VoIP_devices_not_found'), t('VoIP_devices_not_found_description')];
+	}
+
+	return [
+		t('VoIP_device_permission_required'),
+		t('VoIP_device_permission_required_description', {
+			workspaceUrl,
+		}),
+	];
+};
+
 const PermissionFlowModal = ({ onCancel, onConfirm, type }: PermissionFlowModalProps) => {
 	const { t } = useTranslation();
 	const modalId = useId();
 	const absoluteUrl = useAbsoluteUrl();
-	const setModal = useSetModal();
 
-	const onClose = () => {
-		setModal(null);
-	};
+	const [title, text] = getTitleAndText(type, t, absoluteUrl(''));
 
 	return (
 		<Modal aria-labelledby={modalId}>
 			<ModalHeader>
-				<ModalTitle id={modalId}>{t('VoIP_device_permission_required')}</ModalTitle>
-				<ModalClose aria-label={t('Close')} onClick={onClose} />
+				<ModalTitle id={modalId}>{title}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onCancel} />
 			</ModalHeader>
 			<ModalContent>
 				<Box is='span' className={breakSpaces} fontScale='p2'>
-					{t('VoIP_device_permission_required_description', {
-						workspaceUrl: absoluteUrl(''),
-					})}
+					{text}
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<ModalFooterControllers>{getFooter(type, { onCancel, onConfirm, onClose, t })}</ModalFooterControllers>
+				<ModalFooterControllers>{getFooter(type, { onCancel, onConfirm, t })}</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>
 	);

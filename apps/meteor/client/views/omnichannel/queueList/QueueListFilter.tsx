@@ -47,18 +47,18 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 	}, [setFilter, servedBy, status, department]);
 
 	return (
-		<Box mb={16} is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
+		<Box marginBlock={16} is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Served_By')}</Label>
+				<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+					<Label marginBlock={4}>{t('Served_By')}</Label>
 					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Status')}</Label>
+				<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+					<Label marginBlock={4}>{t('Status')}</Label>
 					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
 				</Box>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Department')}</Label>
+				<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+					<Label marginBlock={4}>{t('Department')}</Label>
 					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>

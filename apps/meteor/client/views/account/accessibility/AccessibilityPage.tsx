@@ -81,9 +81,18 @@ const AccessibilityPage = () => {
 		<Page>
 			<PageHeader title={t('Accessibility_and_Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
-					<Box fontScale='p1' mbe={24}>
-						<Box pb={16} is='p'>
+				<Box
+					is='form'
+					id={pageFormId}
+					onSubmit={handleSubmit(handleSaveData)}
+					maxWidth='x600'
+					width='full'
+					alignSelf='center'
+					marginBlock={40}
+					marginInline={36}
+				>
+					<Box fontScale='p1' marginBlockEnd={24}>
+						<Box paddingBlock={16} is='p'>
 							{t('Accessibility_activation')}
 						</Box>
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
@@ -103,7 +112,11 @@ const AccessibilityPage = () => {
 						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
-									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
+									<Field
+										key={id}
+										paddingBlockEnd={themes.length - 1 ? undefined : 'x28'}
+										paddingBlockStart={index === 0 ? undefined : 'x28'}
+									>
 										<FieldRow>
 											<FieldLabel display='flex' alignItems='center'>
 												{t(title)}
@@ -116,7 +129,7 @@ const AccessibilityPage = () => {
 												)}
 											/>
 										</FieldRow>
-										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
+										<FieldHint marginBlockStart={12} style={{ whiteSpace: 'break-spaces' }}>
 											{t(description)}
 										</FieldHint>
 									</Field>
@@ -129,11 +142,11 @@ const AccessibilityPage = () => {
 									<legend>{t('Adjustable_layout')}</legend>
 								</VisuallyHidden>
 								<Field>
-									<FieldLabel mbe={12}>{t('Font_size')}</FieldLabel>
+									<FieldLabel marginBlockEnd={12}>{t('Font_size')}</FieldLabel>
 									<FieldRow>
 										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>
-									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
+									<FieldDescription marginBlock={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
 								<Field>
 									<FieldRow>
@@ -148,7 +161,7 @@ const AccessibilityPage = () => {
 										className={css`
 											white-space: break-spaces;
 										`}
-										mb={12}
+										marginBlock={12}
 									>
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>

@@ -2,8 +2,8 @@ import type { IUser, ILivechatContactVisitorAssociation } from '@rocket.chat/cor
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
-import { closeRoom } from '../../../../../../app/livechat/server/lib/closeRoom';
 import { i18n } from '../../../../../../server/lib/i18n';
+import { closeRoom } from '../../../../../../server/lib/omnichannel/closeRoom';
 
 export async function changeContactBlockStatus({ block, visitor }: { visitor: ILivechatContactVisitorAssociation; block: boolean }) {
 	const result = await LivechatContacts.setChannelBlockStatus(visitor, block);

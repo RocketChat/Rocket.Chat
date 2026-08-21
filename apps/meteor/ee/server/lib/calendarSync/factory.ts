@@ -4,7 +4,7 @@ import type { CalendarSyncFetchFn, ICalendarSyncProvider } from './definition';
 import { ExchangeEwsCalendarProvider } from './providers/ews/ExchangeEwsCalendarProvider';
 import { MicrosoftGraphCalendarProvider } from './providers/graph/MicrosoftGraphCalendarProvider';
 import { GRAPH_CLOUDS, resolveGraphCloud } from './providers/graph/clouds';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../server/settings';
 
 // The provider only ever targets the hardcoded Microsoft cloud hosts, so SSRF
 // validation (meant for user-supplied URLs) does not apply — same as the Slack bridge

@@ -21,7 +21,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 	const { t } = useTranslation();
 
 	return (
-		<Box mbs={20}>
+		<Box marginBlockStart={20}>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>

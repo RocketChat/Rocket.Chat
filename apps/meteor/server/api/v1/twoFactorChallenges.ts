@@ -4,7 +4,7 @@ import { isTwoFactorChallengesSendEmailCodeParamsPOST, isTwoFactorChallengesVeri
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { getUserForCheck, rememberAuthorizationByToken } from '../../../app/2fa/server/code';
+import { getUserForCheck, rememberAuthorizationByToken } from '../../lib/2fa/code';
 import { emailCheckForOAuth, getTwoFAMethodForOAuth } from '../../lib/oauth/twoFactorAuth';
 import { generateConnection } from '../ApiClass';
 import { API } from '../api';

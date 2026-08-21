@@ -44,6 +44,7 @@ import type { AppOutboundCommunicationProviderManager } from '../../server/manag
 import type { AppManager } from '../../src/server/AppManager';
 import { ProxiedApp } from '../../src/server/ProxiedApp';
 import type { AppBridges } from '../../src/server/bridges';
+import { AppResourceBridge } from '../../src/server/bridges/AppResourceBridge';
 import { AppPackageParser } from '../../src/server/compiler';
 import type {
 	AppExternalComponentManager,
@@ -129,6 +130,9 @@ export class TestInfastructureSetup {
 			},
 			getSettingsManager() {
 				return {} as AppSettingsManager;
+			},
+			getAppResourceBridge() {
+				return new AppResourceBridge(this as unknown as AppManager);
 			},
 			getRuntime: () => {
 				return this.runtimeManager;

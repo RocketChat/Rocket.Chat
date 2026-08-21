@@ -6,17 +6,17 @@ import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { hasRoleAsync } from '../../lib/authorization/hasRole';
 import { callbacks } from '../../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { removeUserFromRolesAsync } from '../../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

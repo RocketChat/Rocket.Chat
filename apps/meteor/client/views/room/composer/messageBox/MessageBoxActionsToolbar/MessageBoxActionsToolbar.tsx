@@ -1,11 +1,10 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { memo } from 'react';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
@@ -55,13 +54,15 @@ const MessageBoxActionsToolbar = ({
 
 	const room = useRoom();
 
-	const audioMessageAction = useAudioMessageAction(!canSend || isRecording || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(!canSend || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
-	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
-	const createDiscussionAction = useCreateDiscussionAction(room);
-	const shareLocationAction = useShareLocationAction(room, tmid);
-	const timestampAction = useTimestampAction(chatContext.composer);
+	const disableBasicActions = !canSend || isRecording || isEditing;
+
+	const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(disableBasicActions);
+	const fileUploadAction = useFileUploadAction(disableBasicActions);
+	const webdavActions = useWebdavActions(disableBasicActions);
+	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
+	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
+	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -112,7 +113,7 @@ const MessageBoxActionsToolbar = ({
 			.filter((item) => !hiddenActions.includes(item.id))
 			.map((item) => ({
 				id: item.id,
-				icon: item.icon as ComponentProps<typeof Icon>['name'],
+				icon: item.icon,
 				content: t(item.label),
 				onClick: (event?: MouseEvent<HTMLElement>) =>
 					item.action({
@@ -122,6 +123,7 @@ const MessageBoxActionsToolbar = ({
 						chat: chatContext,
 					}),
 				gap: Boolean(!item.icon),
+				disabled: disableBasicActions,
 			}));
 
 		return {
@@ -147,7 +149,7 @@ const MessageBoxActionsToolbar = ({
 			<MessageComposerActionsDivider />
 			{featured.map((action) => action && renderAction(action))}
 			<GenericMenu
-				disabled={isRecording}
+				disabled={isRecording || !canSend}
 				data-qa-id='menu-more-actions'
 				detached
 				icon='plus'

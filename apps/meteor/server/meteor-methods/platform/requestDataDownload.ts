@@ -7,9 +7,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
 import * as dataExport from '../../lib/dataExport';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -60,7 +60,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<Box flexShrink={0} mbs={28} mis={8}>
+				<Box flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
 					<ButtonGroup align='end'>
 						<Button secondary onClick={() => window.print()}>
 							{t('Export')} {t('PDF')}

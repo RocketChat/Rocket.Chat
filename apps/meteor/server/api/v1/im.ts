@@ -11,6 +11,7 @@ import {
 	validateBadRequestErrorResponse,
 	isDmBlockUserProps,
 	isDmFileProps,
+	isDmLeaveProps,
 	isDmMemberProps,
 	isDmMessagesProps,
 	isDmCreateProps,
@@ -20,19 +21,22 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
-import { settings } from '../../../app/settings/server';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { leaveRoomMethod } from '../../meteor-methods/rooms/leaveRoom';
 import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { TypedAction } from '../definition';
@@ -170,7 +174,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
 
 		const canAccess =
-			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
+			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.user, 'view-room-administration'));
 
 		if (!canAccess) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -547,8 +551,10 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		);
 		const { status, filter } = this.queryParams;
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const roomUids = status && hidden ? room.uids?.filter((uid) => !hidden.has(uid)) : room.uids;
 		const extraQuery: Record<string, unknown> = {
-			_id: { $in: room.uids },
+			_id: { $in: roomUids },
 			...(status && { status: { $in: status } }),
 		};
 
@@ -590,7 +596,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...member,
+				...(hidden?.has(member._id) ? redactStatus(member) : member),
 				subscription,
 			};
 		});
@@ -927,6 +933,35 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		});
 	};
 
+const dmLeaveEndpointsProps = {
+	authRequired: true,
+	body: isDmLeaveProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+} as const;
+
+const dmLeaveAction = <Path extends string>(_path: Path): TypedAction<typeof dmLeaveEndpointsProps, Path> =>
+	async function action() {
+		const { room } = await findDirectMessageRoom(
+			'roomId' in this.bodyParams ? { roomId: this.bodyParams.roomId } : { username: this.bodyParams.roomName },
+			this.userId,
+		);
+
+		await leaveRoomMethod(this.user, room._id);
+
+		return API.v1.success();
+	};
+
 const dmBlockUserEndpointsProps = {
 	authRequired: true,
 	body: isDmBlockUserProps,
@@ -990,7 +1025,10 @@ const dmEndpoints = API.v1
 	.get('im.list', dmListEndpointsProps, dmListAction('im.list'))
 	.get('dm.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('dm.list.everyone'))
 	.get('im.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('im.list.everyone'))
-	.post('im.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('im.blockUser'));
+	.post('im.leave', dmLeaveEndpointsProps, dmLeaveAction('im.leave'))
+	.post('dm.leave', dmLeaveEndpointsProps, dmLeaveAction('dm.leave'))
+	.post('im.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('im.blockUser'))
+	.post('dm.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('dm.blockUser'));
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 

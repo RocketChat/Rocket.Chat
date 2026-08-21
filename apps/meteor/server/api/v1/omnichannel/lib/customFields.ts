@@ -1,7 +1,7 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatCustomField, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { UpdateResult, Document } from 'mongodb';
 
 export async function findLivechatCustomFields({
@@ -9,7 +9,7 @@ export async function findLivechatCustomFields({
 	pagination: { offset, count, sort },
 }: {
 	text?: string;
-	pagination: { offset: number; count: number; sort: Record<string, number> };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<PaginatedResult<{ customFields: Array<ILivechatCustomField> }>> {
 	const query = {
 		...(text && {

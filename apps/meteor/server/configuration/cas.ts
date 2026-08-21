@@ -3,10 +3,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { loginHandlerCAS } from '../lib/cas/loginHandler';
 import { middlewareCAS } from '../lib/cas/middleware';
 import { updateCasServices } from '../lib/cas/updateCasService';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureCAS(settings: ICachedSettings) {
 	const _updateCasServices = debounce(updateCasServices, 2000);

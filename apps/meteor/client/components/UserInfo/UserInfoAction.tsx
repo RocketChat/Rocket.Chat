@@ -8,11 +8,11 @@ export type UserInfoActionProps = {
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {
 	if (!label && icon && title) {
-		return <IconButton small secondary icon={icon} title={title} aria-label={title} {...props} mi={4} size={40} />;
+		return <IconButton small secondary icon={icon} title={title} aria-label={title} {...props} marginInline={4} size={40} />;
 	}
 
 	return (
-		<Button icon={icon} {...props} mi={4}>
+		<Button icon={icon} {...props} marginInline={4}>
 			{label}
 		</Button>
 	);

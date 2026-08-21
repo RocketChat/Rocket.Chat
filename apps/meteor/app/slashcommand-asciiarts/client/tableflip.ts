@@ -11,7 +11,7 @@ slashCommands.add({
 	command: 'tableflip',
 	callback: async ({ message, params }: SlashCommandCallbackParams<'tableflip'>): Promise<void> => {
 		const msg = message;
-		await sdk.call('sendMessage', { ...msg, msg: `${params} (╯°□°）╯︵ ┻━┻` });
+		await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `${params} (╯°□°）╯︵ ┻━┻` } });
 	},
 	options: {
 		description: 'Slash_Tableflip_Description',

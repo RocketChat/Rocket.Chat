@@ -5,10 +5,10 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { getHiddenSystemMessages } from '../../../app/lib/server/lib/getHiddenSystemMessages';
-import { settings } from '../../../app/settings/server/cached';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { getHiddenSystemMessages } from '../../lib/messaging/getHiddenSystemMessages';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
+import { settings } from '../../settings/cached';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -1,5 +1,4 @@
-import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -9,6 +8,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
+import { useStatusVisibilityModalHandler } from './useStatusVisibilityModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
@@ -77,6 +77,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
+	const handleStatusVisibility = useStatusVisibilityModalHandler();
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
@@ -86,7 +88,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					id: 'presence-disabled',
 					content: (
 						<Box fontScale='p2'>
-							<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+							<Box marginBlockEnd={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
 								{t('User_status_disabled')}
 							</Box>
 							<Box is='a' color='info' onClick={handleStatusDisabledModal}>
@@ -111,7 +113,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
-								<Icon name='clock' size='x16' mie={4} />
+								<Icon name='clock' size='x16' marginInlineEnd={4} />
 								{customStatusExpiration}
 							</Box>
 						)}
@@ -131,12 +133,10 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
 			.filter((s) => userStatuses.isValidType(s.id))
-			.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
 			.map(
 				(status): GenericMenuItemProps => ({
 					id: status.id,
@@ -162,7 +162,18 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					)
 			: [];
 
-		return [...items, ...presetItems, ...customItems];
+		const actionItems: GenericMenuItemProps[] = [];
+
+		if (statusVisibilityEnabled) {
+			actionItems.push({
+				id: 'status-visibility-edit',
+				icon: 'eye-off',
+				content: t('Accounts_StatusVisibility_HideFrom'),
+				onClick: handleStatusVisibility,
+			});
+		}
+
+		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
 		allowUserStatusMessageChange,
@@ -173,6 +184,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		customStatusExpiration,
 		statuses,
 		handleCustomStatus,
+		handleStatusVisibility,
+		statusVisibilityEnabled,
 		setStatusMutation,
 	]);
 };

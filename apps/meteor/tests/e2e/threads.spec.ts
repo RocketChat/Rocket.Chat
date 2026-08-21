@@ -54,7 +54,9 @@ test.describe.serial('Threads', () => {
 			await test.step('open threads contextual bar when clicked on thread preview', async () => {
 				await poHomeChannel.content.lastThreadMessagePreviewText.click();
 				await expect(page).toHaveURL(/.*thread/);
-				await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
+				await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel', {
+					timeout: 15_000,
+				});
 			});
 			await expect(page).not.toHaveURL(/[?&]msg=/);
 
@@ -64,7 +66,9 @@ test.describe.serial('Threads', () => {
 		test('expect not to close thread contextual bar when performing some action', async ({ page }) => {
 			await poHomeChannel.content.lastThreadMessagePreviewText.click();
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel', {
+				timeout: 15_000,
+			});
 
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();

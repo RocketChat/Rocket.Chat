@@ -8,7 +8,7 @@ import { hasPermissionAsync } from './authorization/hasPermission';
 import { deleteRoom } from './rooms/deleteRoom';
 import { roomCoordinator } from './rooms/roomCoordinator';
 
-export async function eraseRoom(roomOrId: string | IRoom, user: AtLeast<IUser, '_id' | 'name' | 'username'>): Promise<void> {
+export async function eraseRoom(roomOrId: string | IRoom, user: AtLeast<IUser, '_id' | 'name' | 'username' | 'roles'>): Promise<void> {
 	const room = typeof roomOrId === 'string' ? await Rooms.findOneById(roomOrId) : roomOrId;
 
 	if (!room) {
@@ -26,7 +26,7 @@ export async function eraseRoom(roomOrId: string | IRoom, user: AtLeast<IUser, '
 	if (
 		!(await roomCoordinator
 			.getRoomDirectives(room.t)
-			?.canBeDeleted((permissionId, rid) => hasPermissionAsync(user._id, permissionId, rid), room))
+			?.canBeDeleted((permissionId, rid) => hasPermissionAsync(user, permissionId, rid), room))
 	) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'eraseRoom',
@@ -34,7 +34,7 @@ export async function eraseRoom(roomOrId: string | IRoom, user: AtLeast<IUser, '
 	}
 
 	const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { roomId: 1 } }));
-	if (team && !(await hasPermissionAsync(user._id, `delete-team-${room.t === 'c' ? 'channel' : 'group'}`, team.roomId))) {
+	if (team && !(await hasPermissionAsync(user, `delete-team-${room.t === 'c' ? 'channel' : 'group'}`, team.roomId))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'eraseRoom',
 		});

@@ -1,3 +1,4 @@
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useLayoutEffect } from 'react';
 
 import { emoji } from '../../../../app/emoji/client';
@@ -7,6 +8,8 @@ import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojio
 const config = getEmojiConfig(emoji);
 
 export const useNativeEmoji = () => {
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+
 	useLayoutEffect(() => {
 		emoji.packages.native = {
 			emojiCategories: config.emojiCategories as any,
@@ -47,4 +50,13 @@ export const useNativeEmoji = () => {
 
 		emoji.dispatchUpdate();
 	}, []);
+
+	useLayoutEffect(() => {
+		if (!emoji.packages.native) {
+			return;
+		}
+
+		emoji.packages.native.ascii = convertAsciiToEmoji ?? true;
+		emoji.dispatchUpdate();
+	}, [convertAsciiToEmoji]);
 };

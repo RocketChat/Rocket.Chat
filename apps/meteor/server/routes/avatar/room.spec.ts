@@ -29,11 +29,6 @@ const { roomAvatar } = proxyquire.noCallThru().load('./room', {
 			findOneByRoomId: mocks.avatarFindOneByRoomId,
 		},
 	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
 	'./utils': mocks.utils,
 	'../../lib/rooms/roomCoordinator': {
 		roomCoordinator: {

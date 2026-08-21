@@ -59,7 +59,7 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 		const serverFetchStub = sinon.stub();
 
 		const { getConfiguredProvider } = proxyquire.noCallThru().load('../../../../../ee/server/lib/calendarSync/factory.ts', {
-			'../../../../app/settings/server': { settings: { get: (id: string) => settingsValues[id] } },
+			'../../../../server/settings': { settings: { get: (id: string) => settingsValues[id] } },
 			'@rocket.chat/server-fetch': { serverFetch: serverFetchStub },
 			'./providers/graph/MicrosoftGraphCalendarProvider': {
 				MicrosoftGraphCalendarProvider: class {

@@ -24,8 +24,8 @@ const CallHistoryInternalUser = ({ contact: { username, name, _id } }: CallHisto
 
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center' role='button' onClick={(e) => openUserCard(e, username)} {...triggerProps}>
-			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x28' /> : <Icon name='user' size='x28' />}</Box>
-			<Box mie={8}>
+			<Box marginInlineEnd={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x28' /> : <Icon name='user' size='x28' />}</Box>
+			<Box marginInlineEnd={8}>
 				<StatusBullet status={userStatus?.status || 'loading'} size='small' />
 			</Box>
 			<Box>{displayName}</Box>

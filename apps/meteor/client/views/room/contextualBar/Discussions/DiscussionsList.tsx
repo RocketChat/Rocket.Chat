@@ -82,20 +82,20 @@ function DiscussionsList({
 			<ContextualbarContent paddingInline={0}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 				{error instanceof Error && (
-					<Callout mi={24} type='danger'>
+					<Callout marginInline={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={discussionListId} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<Box h='full' w='full' style={{ minHeight: 0 }}>
+							<Box height='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
 									items={discussions}
 									totalCount={itemCount}

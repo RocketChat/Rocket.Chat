@@ -4,12 +4,12 @@ import type { ComponentPropsWithoutRef } from 'react';
 export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
 
 export const FormSkeleton = (props: FormSkeletonProps) => (
-	<Box w='full' pb={24} {...props}>
-		<Skeleton mbe={8} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={8} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={8} />
+	<Box width='full' paddingBlock={24} {...props}>
+		<Skeleton marginBlockEnd={8} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={8} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={8} />
 	</Box>
 );

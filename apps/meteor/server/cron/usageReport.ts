@@ -3,7 +3,7 @@ import { AirGappedRestriction } from '@rocket.chat/license';
 import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 
-import { sendUsageReport } from '../../app/statistics/server/functions/sendUsageReport';
+import { sendUsageReport } from '../lib/statistics/functions/sendUsageReport';
 
 export const sendUsageReportAndComputeRestriction = async (statsToken?: string) => {
 	// If the report failed to be sent we need to get the last existing token

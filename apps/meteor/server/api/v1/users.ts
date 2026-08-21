@@ -28,34 +28,35 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
-import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
+import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
+import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
+import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
+import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';
@@ -65,6 +66,9 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { setUsernameWithValidation } from '../../lib/users/setUsername';
 import { validateCustomFields } from '../../lib/users/validateCustomFields';
 import { validateUsername } from '../../lib/users/validateUsername';
+import { verifyEmail } from '../../lib/users/verifyEmail';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
 import { generateAccessToken } from '../../meteor-methods/auth/createToken';
 import { sendConfirmationEmail } from '../../meteor-methods/auth/sendConfirmationEmail';
 import { sendForgotPasswordEmail } from '../../meteor-methods/auth/sendForgotPasswordEmail';
@@ -75,6 +79,7 @@ import { resetAvatar } from '../../meteor-methods/users/resetAvatar';
 import { saveUserPreferences } from '../../meteor-methods/users/saveUserPreferences';
 import { executeSaveUserProfile } from '../../meteor-methods/users/saveUserProfile';
 import { executeSetUserActiveStatus } from '../../meteor-methods/users/setUserActiveStatus';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -83,6 +88,7 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
+import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -234,7 +240,7 @@ API.v1
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
+				!(await hasPermissionAsync(this.user, 'edit-other-user-info'))
 			) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
@@ -243,7 +249,9 @@ API.v1
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await saveUserPreferences(this.bodyParams.data, userId);
+			const { statusVisibilityDenied: _ownBlockList, ...preferences } = this.bodyParams.data;
+
+			await saveUserPreferences(userId === this.userId ? this.bodyParams.data : preferences, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -255,16 +263,23 @@ API.v1
 				return API.v1.failure('User not found');
 			}
 
+			const { statusVisibilityDenied, ...savedPreferences } = user.settings?.preferences ?? {};
+
 			return API.v1.success({
 				user: {
 					_id: user._id,
 					settings: {
 						preferences: {
-							...user.settings?.preferences,
+							...savedPreferences,
+							...(userId === this.userId &&
+								settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
+								statusVisibilityDenied?.length && {
+									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
+								}),
 							language: user.language,
 						},
 					},
-				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
+				},
 			});
 		},
 	)
@@ -281,7 +296,7 @@ API.v1
 			},
 		},
 		async function action() {
-			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
+			const canEditOtherUserAvatar = await hasPermissionAsync(this.user, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
@@ -335,9 +350,17 @@ API.v1
 				}
 
 				const isAnotherUser = this.userId !== user._id;
-				if (isAnotherUser && !(await hasPermissionAsync(this.userId, 'edit-other-user-avatar'))) {
+				if (isAnotherUser && !(await hasPermissionAsync(this.user, 'edit-other-user-avatar'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
+			}
+
+			// an avatar coming from an OAuth service suggestion carries the provider data URI (a string) in the
+			// image field; setUserAvatar parses it and records the provider name as the avatar origin. A regular
+			// upload has no service and is stored from the binary buffer.
+			if (typeof fields.service === 'string' && fields.service.length > 0) {
+				await setUserAvatar(user, fileBuffer.toString('utf8'), mimetype, fields.service);
+				return API.v1.success();
 			}
 
 			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
@@ -604,7 +627,7 @@ API.v1.get(
 
 		const myself = user._id === this.userId;
 
-		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.user, 'view-other-user-channels')))) {
 			return API.v1.success({
 				user: {
 					...user,
@@ -646,11 +669,11 @@ API.v1.addRoute(
 		async get() {
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+				!(await hasPermissionAsync(this.user, 'view-outside-room'))
 			) {
 				return API.v1.forbidden();
 			}
-			const canViewFullOtherUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+			const canViewFullOtherUserInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -693,6 +716,12 @@ API.v1.addRoute(
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+			}
+
+			const hidden = await getUsersHiddenFrom(this.userId);
+
+			if (hidden && queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
 			}
 
 			const actualSort = sort || { username: 1 };
@@ -752,7 +781,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users,
+				users: redactHiddenUsers(users, hidden),
 				count: users.length,
 				offset,
 				total,
@@ -789,7 +818,7 @@ API.v1.get(
 	async function action() {
 		if (
 			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			!(await hasPermissionAsync(this.user, 'view-outside-room'))
 		) {
 			return API.v1.forbidden();
 		}
@@ -798,20 +827,25 @@ API.v1.get(
 		const { sort } = await this.parseJsonQuery();
 		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
-		return API.v1.success(
-			await findPaginatedUsersByStatus({
-				uid: this.userId,
-				offset,
-				count,
-				sort,
-				status,
-				roles,
-				searchTerm,
-				hasLoggedIn,
-				type,
-				inactiveReason,
-			}),
-		);
+		const result = await findPaginatedUsersByStatus({
+			uid: this.userId,
+			offset,
+			count,
+			sort,
+			status,
+			roles,
+			searchTerm,
+			hasLoggedIn,
+			type,
+			inactiveReason,
+		});
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		return API.v1.success({
+			...result,
+			users: redactHiddenUsers(result.users, hidden),
+		});
 	},
 );
 
@@ -952,8 +986,8 @@ API.v1.post(
 		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			await resetAvatar(this.userId, this.userId);
 		} else if (
-			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			(await hasPermissionAsync(this.user, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.user, 'manage-moderation-actions'))
 		) {
 			await resetAvatar(this.userId, user._id);
 		} else {
@@ -1541,9 +1575,14 @@ API.v1.get(
 			},
 		};
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+
 		if (ids) {
+			const requested = Array.isArray(ids) ? ids : ids.split(',');
+			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
+
 			return API.v1.success({
-				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: filterHiddenUsers(users, hidden),
 				full: false,
 			});
 		}
@@ -1553,15 +1592,19 @@ API.v1.get(
 			const diff = (Date.now() - Number(ts)) / 1000 / 60;
 
 			if (diff < 10) {
+				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
+
 				return API.v1.success({
-					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
+					users: filterHiddenUsers(users, hidden),
 					full: false,
 				});
 			}
 		}
 
+		const users = await Users.findUsersNotOffline(options).toArray();
+
 		return API.v1.success({
-			users: await Users.findUsersNotOffline(options).toArray(),
+			users: filterHiddenUsers(users, hidden),
 			full: true,
 		});
 	},
@@ -1685,7 +1728,7 @@ API.v1.get(
 
 		try {
 			if (selector?.conditions) {
-				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const canViewFullInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
 
 				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
@@ -1748,7 +1791,7 @@ API.v1
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
@@ -1785,7 +1828,7 @@ API.v1
 		},
 		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
@@ -1838,7 +1881,7 @@ API.v1
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
-			const adminId = (await hasPermissionAsync(this.userId, 'view-all-teams')) ? undefined : this.userId;
+			const adminId = (await hasPermissionAsync(this.user, 'view-all-teams')) ? undefined : this.userId;
 
 			const teams = await Team.findBySubscribedUserIds(userId, adminId);
 
@@ -1870,9 +1913,11 @@ API.v1
 		async function action() {
 			const userId = this.bodyParams.userId || this.userId;
 
-			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
+			if (userId !== this.userId && !(await hasPermissionAsync(this.user, 'logout-other-user'))) {
 				return API.v1.forbidden();
 			}
+
+			const user = await Users.findOneById(userId);
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
@@ -1882,6 +1927,10 @@ API.v1
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
+			if (user) {
+				await runUserLogoutCleanUp(user);
+			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -1983,7 +2032,7 @@ API.v1
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
-				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
+				if (await hasPermissionAsync(this.user, 'edit-other-user-info')) {
 					return getUserFromParams(this.bodyParams);
 				}
 			})();
@@ -2070,6 +2119,200 @@ API.v1
 				...(user.statusSource && { statusSource: user.statusSource }),
 				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
 			});
+		},
+	);
+
+API.v1.post(
+	'users.verifyEmail',
+	{
+		authRequired: false,
+		body: ajv.compile<{ token: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+			},
+			required: ['token'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+
+		const user = await Users.findOneByEmailVerificationToken<Pick<IUser, '_id' | 'services' | 'emails'>>(token);
+		if (!user) {
+			return API.v1.forbidden('Verify email link expired');
+		}
+
+		await verifyEmail(user, token);
+
+		await runAfterVerifyEmail(user._id);
+
+		return API.v1.success();
+	},
+);
+API.v1
+	.post(
+		'users.enableTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ secret: string; url: string }>({
+					type: 'object',
+					properties: {
+						secret: { type: 'string' },
+						url: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['secret', 'url', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await enableTotp(this.userId));
+		},
+	)
+	.post(
+		'users.disableTotp',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ disabled: boolean }>({
+					type: 'object',
+					properties: {
+						disabled: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['disabled', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const disabled = await disableTotp(this.userId, this.bodyParams.code);
+			return API.v1.success({ disabled });
+		},
+	)
+	.post(
+		'users.validateTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.request.headers.get('x-auth-token') ?? undefined);
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'users.regenerateTotpCodes',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await regenerateTotpCodes(this.userId, this.bodyParams.code);
+			if (!result) {
+				return API.v1.failure('invalid-totp');
+			}
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'users.totpCodesRemaining',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ remaining: number }>({
+					type: 'object',
+					properties: {
+						remaining: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['remaining', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await codesRemainingTotp(this.userId));
 		},
 	);
 

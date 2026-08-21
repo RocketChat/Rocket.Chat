@@ -1,4 +1,4 @@
-import { format, formatDistanceToNow, formatDuration, intervalToDuration, differenceInCalendarDays } from 'date-fns';
+import { format, formatDistanceToNow, formatDuration, intervalToDuration, differenceInCalendarDays, parse } from 'date-fns';
 import type { Locale } from 'date-fns';
 
 export type DateInput = string | Date | number;
@@ -181,6 +181,27 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 	return out;
 };
 
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Normalize a date input to a Date.
+ *
+ * Calendar-date-only strings (`yyyy-MM-dd`, e.g. produced by an `<input type="date">`)
+ * are parsed in LOCAL time, the way Moment.js did before the date-fns migration.
+ * `new Date('2026-07-02')` instead parses as UTC midnight, which renders as the
+ * previous day in negative-offset timezones (e.g. UTC-3 shows "Jul 1"). Full ISO
+ * datetimes, numbers and Date objects keep their original instant semantics.
+ */
+export const toDate = (date: DateInput): Date => {
+	if (date instanceof Date) {
+		return date;
+	}
+	if (typeof date === 'string' && DATE_ONLY_RE.test(date)) {
+		return parse(date, 'yyyy-MM-dd', new Date());
+	}
+	return new Date(date);
+};
+
 const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
 	const options = {
 		...(locale && { locale }),
@@ -195,8 +216,7 @@ const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
 };
 
 export const formatDate = (date: DateInput, formatStr: string, locale?: Locale): string => {
-	const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
-	return safeFormat(d, formatStr, locale);
+	return safeFormat(toDate(date), formatStr, locale);
 };
 
 export const formatTimeAgo = (
@@ -211,7 +231,7 @@ export const formatTimeAgo = (
 	},
 	locale?: Locale,
 ): string => {
-	const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
+	const d = toDate(date);
 	const now = new Date();
 	const diffDays = differenceInCalendarDays(now, d);
 
@@ -233,8 +253,7 @@ export const formatTimeAgo = (
 };
 
 export const formatFromNow = (date: DateInput, addSuffix: boolean, locale?: Locale): string => {
-	const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
-	return formatDistanceToNow(d, { addSuffix, locale });
+	return formatDistanceToNow(toDate(date), { addSuffix, locale });
 };
 
 export const formatDurationMs = (timeMs: number, locale?: Locale): string => {

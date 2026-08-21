@@ -51,7 +51,7 @@ import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
-	const target = event.target as HTMLInputElement;
+	const { target } = event;
 
 	return Boolean(target.value.trim());
 };
@@ -95,6 +95,7 @@ export type MessageBoxProps = {
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
+	threadExists?: boolean;
 };
 
 const MessageBox = ({
@@ -107,6 +108,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	threadExists,
 }: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
@@ -130,7 +132,12 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
+	const { initialValue, persistLocal, flushDraft } = useDraft(
+		room._id,
+		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
+		tmid,
+		threadExists,
+	);
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
@@ -188,23 +195,21 @@ const MessageBox = ({
 		});
 	});
 
-	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const mid = chat.currentEditingMessage.getMID();
 		if (mid) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			chat.currentEditingMessage.reset().then((reset) => {
-				// NOTE: if the message was reset (i.e. content changed), we just update the popup (to re-apply/remove the preview)
-				if (reset) {
-					popup.update();
-					return;
-				}
+			// NOTE: if the message was reset (i.e. content changed), we keep the editing mode on
+			const reset = await chat.currentEditingMessage.reset();
 
-				chat.currentEditingMessage.cancel();
-				chat.currentEditingMessage.stop();
-				popup.clear();
-			});
+			if (!reset) {
+				await chat.currentEditingMessage.cancel();
+				await chat.currentEditingMessage.stop();
+			}
+
+			popup.clear();
 		}
 	};
 

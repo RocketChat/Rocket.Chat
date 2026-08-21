@@ -1,5 +1,5 @@
 import { getUserInfo } from './getUserInfo';
-import type { CachedSettings } from '../../../app/settings/server/CachedSettings';
+import type { CachedSettings } from '../../settings/CachedSettings';
 
 const mockInfoVersion = jest.fn(() => '7.5.0');
 
@@ -23,7 +23,7 @@ jest.mock('@rocket.chat/models', () => ({
 
 const settings = new Map<string, unknown>();
 
-jest.mock('../../../app/settings/server', () => ({
+jest.mock('../../settings', () => ({
 	settings: {
 		getByRegexp(_id) {
 			return [...settings].filter(([key]) => key.match(_id)) as any;

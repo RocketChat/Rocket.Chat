@@ -23,7 +23,7 @@ const DatePicker = ({ value, onChange }: DatePickerProps) => {
 	const dateValue = value && !isNaN(value.getTime()) ? format(value, 'yyyy-MM-dd') : '';
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel htmlFor={fieldId}>{t('Date')}</FieldLabel>
 				<FieldRow>

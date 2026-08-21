@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import Bridge from '../bridges/irc/irc-bridge';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureIRC(settings: ICachedSettings): Promise<void> {
 	if (!settings.get('IRC_Enabled')) {

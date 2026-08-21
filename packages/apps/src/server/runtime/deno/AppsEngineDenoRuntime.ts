@@ -25,7 +25,7 @@ function getDenoConfigPath(): string {
  *
  * Returns the path to the generated config file.
  */
-function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string, appsEnginePath: string): void {
+function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string, appsEnginePath: string, packagePath: string): void {
 	let staticConfig: DenoConfigurationFileSchema;
 
 	try {
@@ -39,10 +39,44 @@ function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string,
 		imports: {
 			...staticConfig.imports,
 			'@rocket.chat/apps-engine/': `${appsEnginePath}/`,
+			'@rocket.chat/apps/base-runtime/': `${path.join(packagePath, 'base-runtime', 'src')}/`,
+			'@rocket.chat/apps/': `${packagePath}/`,
 		},
 	};
 
 	fs.writeFileSync(targetPath, JSON.stringify(runtimeConfig, null, '\t'));
+}
+
+/**
+ * Ensures a directory symlink exists at `symlinkPath` pointing to `targetPath`.
+ *
+ * First removes whatever currently lives at `symlinkPath` (broken symlink,
+ * wrong target, or a non-symlink entry), ignoring ENOENT if nothing is there.
+ * Then creates the symlink, catching EEXIST to guard against race conditions.
+ */
+export function ensureSymlink(symlinkPath: string, targetPath: string): void {
+	try {
+		const currentTarget = fs.readlinkSync(symlinkPath);
+
+		if (currentTarget === targetPath) {
+			return;
+		}
+
+		fs.rmSync(symlinkPath, { recursive: true, force: true });
+	} catch (err: unknown) {
+		if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+			fs.rmSync(symlinkPath, { recursive: true, force: true });
+		}
+	}
+
+	// Create the symlink; guard against a concurrent creator
+	try {
+		fs.symlinkSync(targetPath, symlinkPath, 'dir');
+	} catch (err: unknown) {
+		if ((err as NodeJS.ErrnoException).code !== 'EEXIST') {
+			throw err;
+		}
+	}
 }
 
 export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessController {
@@ -67,22 +101,16 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
 		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
-		this.denoEphemeralConfigPath = this.denoConfigPath.replace('.jsonc', '.runtime.jsonc');
+		this.denoEphemeralConfigPath = path.join(this.tempFilePath, 'deno.runtime.jsonc');
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
-		try {
-			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
-		} catch (reason: unknown) {
-			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
-				throw reason;
-			}
-		}
+		ensureSymlink(path.dirname(this.denoRuntimePath), path.dirname(this.denoConfigPath));
 
-		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/
-		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
+		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/ and @rocket.chat/apps/ paths
+		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath, this.packagePath);
 	}
 
 	protected buildProcessConfiguration(): ProcessConfiguration {
