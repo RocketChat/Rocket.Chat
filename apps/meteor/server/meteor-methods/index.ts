@@ -4,7 +4,6 @@ import './auth/addOAuthService';
 import './auth/addPermissionToRole';
 import './auth/addSamlService';
 import './auth/addUserToRole';
-import './auth/afterVerifyEmail';
 import './auth/checkCodesRemaining';
 import './auth/checkRegistrationSecretURL';
 import './auth/crowd';
