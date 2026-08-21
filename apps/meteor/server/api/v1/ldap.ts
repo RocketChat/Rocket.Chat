@@ -1,8 +1,8 @@
 import { LDAP } from '@rocket.chat/core-services';
 import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
-import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 import { API } from '../api';
 
 const messageResponseSchema = {

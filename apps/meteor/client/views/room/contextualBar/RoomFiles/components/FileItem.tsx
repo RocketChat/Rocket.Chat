@@ -47,7 +47,7 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
 					<FilePreviewIcon format={getFileExtension(name)} />
-					<Box mis={8} flexShrink={1} overflow='hidden'>
+					<Box marginInlineStart={8} flexShrink={1} overflow='hidden'>
 						<Box withTruncatedText color='default' fontScale='p2m'>
 							{name}
 						</Box>

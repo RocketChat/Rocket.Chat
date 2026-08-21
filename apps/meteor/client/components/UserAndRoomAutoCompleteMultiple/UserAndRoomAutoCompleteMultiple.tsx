@@ -1,7 +1,7 @@
 import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -81,9 +81,9 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
+				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
 					<RoomAvatar size='x20' room={{ ...label, _id: value }} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}
 					</Box>
 				</Chip>

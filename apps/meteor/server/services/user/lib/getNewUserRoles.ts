@@ -1,7 +1,7 @@
 import type { IRole } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import { settings } from '../../../settings';
 
 export function getNewUserRoles(previousRoles?: IRole['_id'][]): IRole['_id'][] {
 	const currentRoles = previousRoles ?? [];

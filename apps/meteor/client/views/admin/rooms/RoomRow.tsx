@@ -72,7 +72,7 @@ const RoomRow = ({ room }: RoomRowProps) => {
 						alignItems='center'
 						withTruncatedText
 					>
-						{icon && <Icon mi={4} name={icon} fontScale='p2m' color='hint' />}
+						{icon && <Icon marginInline={4} name={icon} fontScale='p2m' color='hint' />}
 						<Box fontScale='p2m' withTruncatedText color='default' qa-room-name={roomName}>
 							{roomName}
 						</Box>

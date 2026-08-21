@@ -47,6 +47,14 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-user-administration'),
 	},
 	{
+		href: '/admin/ai-center',
+		i18nLabel: 'AI_Center',
+		icon: 'stars',
+		tag: 'Beta',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+	},
+	{
 		href: '/admin/invites',
 		i18nLabel: 'Invites',
 		icon: 'user-plus',

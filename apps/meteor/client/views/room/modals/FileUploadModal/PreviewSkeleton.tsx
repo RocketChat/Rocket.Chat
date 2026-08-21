@@ -1,5 +1,5 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 
-const PreviewSkeleton = () => <Skeleton variant='rect' w='full' h='x200' />;
+const PreviewSkeleton = () => <Skeleton variant='rect' width='full' height='x200' />;
 
 export default PreviewSkeleton;

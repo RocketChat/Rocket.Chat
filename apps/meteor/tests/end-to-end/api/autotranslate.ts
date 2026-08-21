@@ -32,40 +32,36 @@ describe('AutoTranslate', () => {
 			before(() => resetAutoTranslateDefaults());
 			after(() => resetAutoTranslateDefaults());
 
-			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				void request
+			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', async () => {
+				const res = await request
 					.get(api('autotranslate.getSupportedLanguages'))
 					.set(credentials)
 					.query({
 						targetLanguage: 'en',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
 			});
-			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
-				void updateSetting('AutoTranslate_Enabled', true).then(() => {
-					void updatePermission('auto-translate', []).then(() => {
-						void request
-							.get(api('autotranslate.getSupportedLanguages'))
-							.set(credentials)
-							.query({
-								targetLanguage: 'en',
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', false);
-								expect(res.body.errorType).to.be.equal('error-action-not-allowed');
-								expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
-							})
-							.end(done);
-					});
-				});
+			it('should throw an error when the user does not have the "auto-translate" permission', async () => {
+				await updateSetting('AutoTranslate_Enabled', true);
+
+				await updatePermission('auto-translate', []);
+
+				const res = await request
+					.get(api('autotranslate.getSupportedLanguages'))
+					.set(credentials)
+					.query({
+						targetLanguage: 'en',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.errorType).to.be.equal('error-action-not-allowed');
+				expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
 			});
 
 			it('should return a list of languages', async () => {
@@ -109,8 +105,8 @@ describe('AutoTranslate', () => {
 				]);
 			});
 
-			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				void request
+			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -120,66 +116,58 @@ describe('AutoTranslate', () => {
 						value: true,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
+			});
+			it('should throw an error when the user does not have the "auto-translate" permission', async () => {
+				await updateSetting('AutoTranslate_Enabled', true);
+
+				await updatePermission('auto-translate', []);
+
+				const res = await request
+					.post(api('autotranslate.saveSettings'))
+					.set(credentials)
+					.send({
+						roomId: testChannelId,
+						defaultLanguage: 'en',
+						field: 'autoTranslateLanguage',
+						value: 'en',
 					})
-					.end(done);
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.errorType).to.be.equal('error-action-not-allowed');
+				expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
 			});
-			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
-				void updateSetting('AutoTranslate_Enabled', true).then(() => {
-					void updatePermission('auto-translate', []).then(() => {
-						void request
-							.post(api('autotranslate.saveSettings'))
-							.set(credentials)
-							.send({
-								roomId: testChannelId,
-								defaultLanguage: 'en',
-								field: 'autoTranslateLanguage',
-								value: 'en',
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', false);
-								expect(res.body.errorType).to.be.equal('error-action-not-allowed');
-								expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
-							})
-							.end(done);
-					});
-				});
+			it('should throw an error when the bodyParam "roomId" is not provided', async () => {
+				await updatePermission('auto-translate', ['admin']);
+
+				const res = await request
+					.post(api('autotranslate.saveSettings'))
+					.set(credentials)
+					.send({})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "roomId" is not provided', (done) => {
-				void updatePermission('auto-translate', ['admin']).then(() => {
-					void request
-						.post(api('autotranslate.saveSettings'))
-						.set(credentials)
-						.send({})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
-				});
-			});
-			it('should throw an error when the bodyParam "field" is not provided', (done) => {
-				void request
+			it('should throw an error when the bodyParam "field" is not provided', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: testChannelId,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "value" is not provided', (done) => {
-				void request
+			it('should throw an error when the bodyParam "value" is not provided', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -187,14 +175,12 @@ describe('AutoTranslate', () => {
 						field: 'autoTranslate',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "autoTranslate" is not a boolean', (done) => {
-				void request
+			it('should throw an error when the bodyParam "autoTranslate" is not a boolean', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -203,14 +189,12 @@ describe('AutoTranslate', () => {
 						value: 'test',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "autoTranslateLanguage" is not a string', (done) => {
-				void request
+			it('should throw an error when the bodyParam "autoTranslateLanguage" is not a string', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -219,14 +203,12 @@ describe('AutoTranslate', () => {
 						value: 12,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "field" is invalid', (done) => {
-				void request
+			it('should throw an error when the bodyParam "field" is invalid', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -235,14 +217,12 @@ describe('AutoTranslate', () => {
 						value: 12,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "roomId" is invalid or the user is not subscribed', (done) => {
-				void request
+			it('should throw an error when the bodyParam "roomId" is invalid or the user is not subscribed', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -251,13 +231,11 @@ describe('AutoTranslate', () => {
 						value: 'en',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-invalid-subscription');
-						expect(res.body.error).to.be.equal('Invalid subscription [error-invalid-subscription]');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.errorType).to.be.equal('error-invalid-subscription');
+				expect(res.body.error).to.be.equal('Invalid subscription [error-invalid-subscription]');
 			});
 			it('should throw an error when E2E encryption is enabled', async () => {
 				await request
@@ -276,8 +254,8 @@ describe('AutoTranslate', () => {
 						expect(res.body).to.have.property('errorType', 'error-e2e-enabled');
 					});
 			});
-			it('should return success when the setting is saved correctly', (done) => {
-				void request
+			it('should return success when the setting is saved correctly', async () => {
+				const res = await request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -286,11 +264,9 @@ describe('AutoTranslate', () => {
 						value: 'en',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.a.property('success', true);
 			});
 		});
 
@@ -313,8 +289,8 @@ describe('AutoTranslate', () => {
 				await Promise.all([resetAutoTranslateDefaults(), deleteRoom({ type: 'c', roomId: testChannelId })]);
 			});
 
-			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				void request
+			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', async () => {
+				const res = await request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
@@ -322,57 +298,49 @@ describe('AutoTranslate', () => {
 						targetLanguage: 'en',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
 			});
-			it('should throw an error when the bodyParam "messageId" is not provided', (done) => {
-				void updateSetting('AutoTranslate_Enabled', true).then(() => {
-					void updatePermission('auto-translate', ['admin']).then(() => {
-						void request
-							.post(api('autotranslate.translateMessage'))
-							.set(credentials)
-							.send({})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', false);
-							})
-							.end(done);
-					});
-				});
+			it('should throw an error when the bodyParam "messageId" is not provided', async () => {
+				await updateSetting('AutoTranslate_Enabled', true);
+
+				await updatePermission('auto-translate', ['admin']);
+
+				const res = await request
+					.post(api('autotranslate.translateMessage'))
+					.set(credentials)
+					.send({})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
 			});
-			it('should throw an error when the bodyParam "messageId" is invalid', (done) => {
-				void request
+			it('should throw an error when the bodyParam "messageId" is invalid', async () => {
+				const res = await request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
 						messageId: 'invalid',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('Message not found.');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body.error).to.be.equal('Message not found.');
 			});
-			it('should return success when the translate is successful', (done) => {
-				void request
+			it('should return success when the translate is successful', async () => {
+				const res = await request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
 						messageId: messageSent._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.a.property('success', true);
 			});
 
 			describe('room access check', () => {
@@ -417,19 +385,17 @@ describe('AutoTranslate', () => {
 					]);
 				});
 
-				it('should return 403 forbidden when the user is not a member of the room', (done) => {
-					void request
+				it('should return 403 forbidden when the user is not a member of the room', async () => {
+					const res = await request
 						.post(api('autotranslate.translateMessage'))
 						.set(credB)
 						.send({
 							messageId: privateMessage._id,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
+						.expect(403);
+
+					expect(res.body).to.have.a.property('success', false);
 				});
 			});
 		});
@@ -476,8 +442,8 @@ describe('AutoTranslate', () => {
 				]);
 			});
 
-			it('should fail when messageId is not a string', (done) => {
-				void request
+			it('should fail when messageId is not a string', async () => {
+				const res = await request
 					.post(methodCall('autoTranslate.translateMessage'))
 					.set(credA)
 					.send({
@@ -489,17 +455,15 @@ describe('AutoTranslate', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						const parsedBody = JSON.parse(res.body.message);
-						expect(parsedBody).to.have.a.property('error');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				const parsedBody = JSON.parse(res.body.message);
+				expect(parsedBody).to.have.a.property('error');
 			});
 
-			it('should return error-not-allowed when the caller is not a member of the room', (done) => {
-				void request
+			it('should return error-not-allowed when the caller is not a member of the room', async () => {
+				const res = await request
 					.post(methodCall('autoTranslate.translateMessage'))
 					.set(credB)
 					.send({
@@ -511,14 +475,12 @@ describe('AutoTranslate', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', false);
-						const parsedBody = JSON.parse(res.body.message);
-						expect(parsedBody).to.have.a.property('error');
-						expect(parsedBody.error).to.have.a.property('error', 'error-not-allowed');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.a.property('success', false);
+				const parsedBody = JSON.parse(res.body.message);
+				expect(parsedBody).to.have.a.property('error');
+				expect(parsedBody.error).to.have.a.property('error', 'error-not-allowed');
 			});
 		});
 

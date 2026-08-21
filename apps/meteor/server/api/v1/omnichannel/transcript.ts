@@ -4,8 +4,8 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { sendTranscript, requestTranscript } from '../../../../app/livechat/server/lib/sendTranscript';
 import { i18n } from '../../../lib/i18n';
+import { sendTranscript, requestTranscript } from '../../../lib/omnichannel/sendTranscript';
 
 API.v1.addRoute(
 	'livechat/transcript',

@@ -3,6 +3,8 @@ import type { Locator } from '@playwright/test';
 import { OmnichannelAdmin } from '../omnichannel-admin';
 
 export abstract class OmnichannelContactCenter extends OmnichannelAdmin {
+	protected readonly title = 'Omnichannel Contact Center';
+
 	get tabContacts(): Locator {
 		return this.page.getByRole('tab', { name: 'Contacts' });
 	}

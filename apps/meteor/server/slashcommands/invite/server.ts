@@ -5,11 +5,11 @@ import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../meteor-methods/rooms/addUsersToRoom';
 import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
+import { settings } from '../../settings';
 
 // Type guards for the error
 function isStringError(error: unknown): error is { error: string } {
@@ -63,8 +63,7 @@ slashCommands.add({
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('User_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [usernames.join(' @')],
+					username: usernames.join(' @'),
 					lng: settings.get('Language') || 'en',
 				}),
 			});
@@ -84,8 +83,7 @@ slashCommands.add({
 			const usernameStr = user.username as string;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_is_already_in_here', {
-					postProcess: 'sprintf',
-					sprintf: [usernameStr],
+					username: usernameStr,
 					lng: settings.get('Language') || 'en',
 				}),
 			});

@@ -30,12 +30,12 @@ const EditOauthAppWithData = ({ _id, ...props }: EditOauthAppWithDataProps) => {
 	}, [refetch]);
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (error || !data || !_id) {
 		return (
-			<Box fontScale='h2' pb={20}>
+			<Box fontScale='h2' paddingBlock={20}>
 				{t('error-application-not-found')}
 			</Box>
 		);

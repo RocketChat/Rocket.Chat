@@ -16,8 +16,8 @@ export default {
 
 export const ListWithIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
+		<Tile elevation='2' padding='0' display='flex' flexDirection='column' overflow='auto' width='x240'>
+			<Box flexShrink={1} paddingBlock={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' icon='info' />
 				<ListItem text='Item 2' icon='star' />
@@ -30,8 +30,8 @@ export const ListWithIcon: StoryFn<typeof Tile> = () => {
 
 export const NoIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
+		<Tile elevation='2' padding='0' display='flex' flexDirection='column' overflow='auto' width='x240'>
+			<Box flexShrink={1} paddingBlock={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' />
 				<ListItem text='Item 2' />
@@ -45,8 +45,8 @@ export const NoIcon: StoryFn<typeof Tile> = () => {
 export const MixedWithGap: StoryObj<typeof Tile> = {
 	render: () => {
 		return (
-			<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-				<Box flexShrink={1} pb={12}>
+			<Tile elevation='2' padding='0' display='flex' flexDirection='column' overflow='auto' width='x240'>
+				<Box flexShrink={1} paddingBlock={12}>
 					<OptionTitle>Title</OptionTitle>
 					<ListItem text='Item 1' icon='hashtag' />
 					<ListItem text='Item 2' icon='team' />
@@ -70,8 +70,8 @@ export const MixedWithGap: StoryObj<typeof Tile> = {
 export const MixedWithoutGap: StoryObj<typeof Tile> = {
 	render: () => {
 		return (
-			<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-				<Box flexShrink={1} pb={12}>
+			<Tile elevation='2' padding='0' display='flex' flexDirection='column' overflow='auto' width='x240'>
+				<Box flexShrink={1} paddingBlock={12}>
 					<OptionTitle>Title</OptionTitle>
 					<ListItem text='Item 1' icon='hashtag' />
 					<ListItem text='Item 2' icon='team' />

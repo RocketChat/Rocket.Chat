@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { WebdavAccounts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { getWebdavCredentials } from '../lib/getWebdavCredentials';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 

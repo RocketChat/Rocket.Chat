@@ -171,7 +171,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public async findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null> {
+	public async findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null> {
 		return this.findOne(
 			{
 				startTime: { $gte: startTime },
@@ -187,7 +187,13 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findEventsStartingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
+	public findEventsStartingNow({
+		now,
+		offset = 1000,
+	}: {
+		now: Date;
+		offset?: number;
+	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>> {
 		return this.find(
 			{
 				startTime: {

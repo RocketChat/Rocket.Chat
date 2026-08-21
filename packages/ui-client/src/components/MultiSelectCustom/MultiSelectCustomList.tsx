@@ -37,9 +37,18 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2} maxHeight='50vh'>
+		<Tile
+			overflow='auto'
+			paddingBlock={12}
+			paddingInline={0}
+			elevation='2'
+			width='full'
+			backgroundColor='light'
+			borderRadius={2}
+			maxHeight='50vh'
+		>
 			{searchBarText && (
-				<Box pi={12} mbe={12}>
+				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput
 						name='select-search'
 						placeholder={t(searchBarText as TranslationKey)}
@@ -53,16 +62,22 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
-						<Box mi='x10' mb={4} fontScale='p2b' color='default'>
+						<Box marginInline='x10' marginBlock={4} fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
 						<Option key={option.id}>
-							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} mie={4} />}
-							<Box w='full' display='flex' justifyContent='space-between' is='label'>
+							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} marginInlineEnd={4} />}
+							<Box width='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
+								<CheckBox
+									checked={option.checked}
+									paddingInline={0}
+									name={option.text}
+									id={option.id}
+									onChange={() => onSelected(option)}
+								/>
 							</Box>
 						</Option>
 					)}

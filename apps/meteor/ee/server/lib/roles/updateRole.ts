@@ -2,8 +2,8 @@ import { api, MeteorError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-import { notifyOnRoleChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
+import { notifyOnRoleChangedById } from '../../../../server/lib/notifyListener';
 
 type UpdateRoleOptions = {
 	broadcastUpdate?: boolean;

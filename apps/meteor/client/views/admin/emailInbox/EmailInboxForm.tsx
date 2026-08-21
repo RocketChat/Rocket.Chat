@@ -212,7 +212,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 
 	return (
 		<PageScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
+			<Box maxWidth='x600' width='full' alignSelf='center'>
 				<Accordion>
 					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>

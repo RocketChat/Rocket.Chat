@@ -48,7 +48,7 @@ const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalPr
 			onConfirm={handleResetRoomKey}
 			onDismiss={() => undefined}
 		>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				<Trans i18nKey='E2E_reset_encryption_keys_modal_description' tOptions={{ roomType }}>
 					Resetting E2EE keys is only recommend if no {roomType} member has a valid key to regain access to the previously encrypted
 					content. All members may lose access to previously encrypted content.

@@ -37,7 +37,7 @@ const UsersMock = {
 const getUserPreferenceMock = sinon.stub();
 
 const serviceMocks = {
-	'../../../app/settings/server': { settings: settingsMock },
+	'../../settings': { settings: settingsMock },
 	'@rocket.chat/core-services': {
 		api,
 		ServiceClassInternal: class {},
@@ -45,7 +45,7 @@ const serviceMocks = {
 	},
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
-	'../../../app/utils/server/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
+	'../../lib/utils/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
 	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
 

@@ -1,4 +1,4 @@
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export const validateUsername = (username: string): boolean => {
 	const settingsRegExp = settings.get('UTF8_User_Names_Validation');

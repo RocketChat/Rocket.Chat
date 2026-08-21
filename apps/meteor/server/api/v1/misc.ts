@@ -17,27 +17,27 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { passwordPolicy } from '../../../app/lib/server';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { getBaseUserFields } from '../../../app/utils/server/functions/getBaseUserFields';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
-import { SystemLogger } from '../../lib/logger/system';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
 import { browseChannelsMethod } from '../../meteor-methods/rooms/browseChannels';
 import { spotlightMethod } from '../../publications/spotlight';
+import { settings } from '../../settings';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
+import { logMethodCallError } from '../lib/logMethodCallError';
 
 /**
  * @openapi
@@ -467,7 +467,7 @@ API.v1.get(
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1, roles: 1 } });
 		const result = await browseChannelsMethod(
 			{
 				...filter,
@@ -647,7 +647,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update((this.requestIp ?? '') + this.user._id)
 				.digest('hex');
 
@@ -670,13 +670,7 @@ API.v1.post(
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
 
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
@@ -708,7 +702,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update(this.requestIp ?? '')
 				.digest('hex');
 
@@ -732,12 +726,8 @@ API.v1.post(
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
+
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
 	},

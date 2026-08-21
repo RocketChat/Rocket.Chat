@@ -3,7 +3,7 @@ import { ContactVisitorAssociationSchema, ajv } from '@rocket.chat/rest-typings'
 
 import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
 import { API } from '../../../../../server/api';
-import { logger } from '../../../../app/livechat-enterprise/server/lib/logger';
+import { logger } from '../../../lib/omnichannel/logger';
 
 type blockContactProps = {
 	visitor: ILivechatContactVisitorAssociation;

@@ -4,10 +4,11 @@ import type { DoneCallback, Profile } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from './passportOAuthCallback';
+import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { verifyFunction } from './verifyFunction';
-import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
-import { settings } from '../../../app/settings/server';
 import { oAuthRouter } from '../../configuration/configurePassport';
+import { settings } from '../../settings';
+import { CustomOAuthStrategy } from '../auth-providers/custom-oauth/customOAuth';
 
 export const addPassportCustomOAuth = (
 	serviceName: string,
@@ -15,6 +16,7 @@ export const addPassportCustomOAuth = (
 	isCustomOAuth: boolean = false,
 ) => {
 	passport.unuse(serviceName);
+	removeOAuthRoutes(serviceName);
 
 	if (!config.clientId || !config.clientSecret || !config.serverURL) {
 		return;

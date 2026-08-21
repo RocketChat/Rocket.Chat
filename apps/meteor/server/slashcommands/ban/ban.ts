@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
 import { i18n } from '../../lib/i18n';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { sanitizeUsername } from '../../meteor-methods/rooms/addUsersToRoom';
+import { settings } from '../../settings';
 
 slashCommands.add({
 	command: 'ban',
@@ -21,8 +21,7 @@ slashCommands.add({
 		if (!user) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [username],
+					username,
 					lng: settings.get('Language') || 'en',
 				}),
 			});

@@ -167,7 +167,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<p>{t('You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM')}</p>
 					<p>
 						<ExternalLink to={INTEGRATION_URL}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
@@ -200,12 +200,18 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 						<Field>
 							<FieldLabel>{t('Send_request_on')}</FieldLabel>
 							<FieldRow>
-								<Box w='full' display='flex' alignItems='stretch' justifyContent='stretch'>
+								<Box width='full' display='flex' alignItems='stretch' justifyContent='stretch'>
 									<Controller
 										control={control}
 										name='sendOn'
 										render={({ field: { onChange, value } }) => (
-											<MultiSelect w='full' value={value} onChange={onChange} options={sendOptions} placeholder={t('Select_an_option')} />
+											<MultiSelect
+												width='full'
+												value={value}
+												onChange={onChange}
+												options={sendOptions}
+												placeholder={t('Select_an_option')}
+											/>
 										)}
 									/>
 								</Box>

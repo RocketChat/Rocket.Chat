@@ -18,3 +18,12 @@ slashCommands.add({
 	previewer,
 	previewCallback,
 });
+
+slashCommands.add({
+	command: 'xmpp-join',
+	options: {
+		description: 'Join xmpp rooms',
+		params: '#channel',
+	},
+	providesPreview: false,
+});

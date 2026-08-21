@@ -2,9 +2,9 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
 import { syncWorkspace } from './syncWorkspace';
-import { settings } from '../../../app/settings/server';
-import { getURL } from '../../../app/utils/server/getURL';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
+import { getURL } from '../utils/getURL';
 
 export const fallback = 'https://go.rocket.chat/i/contact-sales';
 

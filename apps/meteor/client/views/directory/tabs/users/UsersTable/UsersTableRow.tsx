@@ -30,13 +30,13 @@ const UsersTableRow = ({
 				<FlexContainer>
 					<Box>
 						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
-						<Box withTruncatedText mi={8}>
+						<Box withTruncatedText marginInline={8}>
 							<Box display='flex'>
 								<Box fontScale='p2m' withTruncatedText>
 									{name || username}
 									{nickname && ` (${nickname})`}
 								</Box>{' '}
-								<Box mi={4} />{' '}
+								<Box marginInline={4} />{' '}
 								<Box fontScale='p2' color='hint' withTruncatedText>
 									{username}
 								</Box>

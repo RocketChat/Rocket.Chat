@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
 
-const servicesToBeShownOnDesktop = ['saml', 'cas', 'ldap'];
+const servicesToBeShownOnDesktop = ['cas', 'ldap'];
 
 export type LoginServicesProps = { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> };
 
@@ -41,7 +41,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	return (
 		<>
 			{showFormLogin && (
-				<Divider mb={24} p={0}>
+				<Divider marginBlock={24} padding={0}>
 					{t('registration.component.form.divider')}
 				</Divider>
 			)}

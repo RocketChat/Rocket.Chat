@@ -124,7 +124,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
@@ -139,7 +139,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 							{t('Delete')}

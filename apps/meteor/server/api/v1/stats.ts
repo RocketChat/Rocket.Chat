@@ -7,8 +7,8 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { getStatistics, getLastStatistics } from '../../../app/statistics/server';
-import telemetryEvent from '../../../app/statistics/server/lib/telemetryEvents';
+import { getStatistics, getLastStatistics } from '../../lib/statistics';
+import telemetryEvent from '../../lib/statistics/lib/telemetryEvents';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 

@@ -5,7 +5,7 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 export async function findTriggers({
 	pagination: { offset, count, sort },
 }: {
-	pagination: { offset: number; count: number; sort: Record<string, number> };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<PaginatedResult<{ triggers: Array<ILivechatTrigger> }>> {
 	const { cursor, totalCount } = LivechatTrigger.findPaginated(
 		{},

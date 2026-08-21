@@ -34,7 +34,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	}
 
 	if (isError || !data?.visitor) {
-		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	const {
@@ -50,7 +50,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentInfoDetails mis={10} name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
+				<AgentInfoDetails marginInlineStart={10} name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

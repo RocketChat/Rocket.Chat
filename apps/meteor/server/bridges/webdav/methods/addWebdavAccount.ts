@@ -5,7 +5,7 @@ import { WebdavAccounts } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 declare module '@rocket.chat/ddp-client' {

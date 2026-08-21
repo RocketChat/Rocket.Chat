@@ -14,15 +14,15 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { deleteCustomSound } from '../../../app/custom-sounds/server/lib/deleteCustomSound';
-import { insertOrUpdateSound } from '../../../app/custom-sounds/server/lib/insertOrUpdateSound';
-import { uploadCustomSound } from '../../../app/custom-sounds/server/lib/uploadCustomSound';
 import { getExtension, getMimeTypeFromFileName } from '../../../app/utils/lib/mimeTypes';
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../lib/constants';
 import { SystemLogger } from '../../lib/logger/system';
+import { deleteCustomSound } from '../../lib/media/custom-sounds/lib/deleteCustomSound';
+import { insertOrUpdateSound } from '../../lib/media/custom-sounds/lib/insertOrUpdateSound';
+import { uploadCustomSound } from '../../lib/media/custom-sounds/lib/uploadCustomSound';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -120,7 +120,7 @@ const customSoundsEndpoints = API.v1
 			authRequired: true,
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;

@@ -4,7 +4,6 @@ import { OmnichannelAdmin } from './omnichannel-admin';
 import { ToastMessages } from '../fragments';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { OmnichannelResetPrioritiesModal } from '../fragments/modals';
-import { Table } from '../fragments/table';
 
 class OmnichannelEditPriorityFlexTab extends FlexTab {
 	readonly toastMessage: ToastMessages;
@@ -15,24 +14,19 @@ class OmnichannelEditPriorityFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelPrioritiesTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Priorities' }));
-	}
-}
-
 export class OmnichannelPriorities extends OmnichannelAdmin {
+	protected readonly route = 'priorities';
+
+	protected readonly title = 'Priorities';
+
 	readonly editPriority: OmnichannelEditPriorityFlexTab;
 
 	readonly resetPrioritiesModal: OmnichannelResetPrioritiesModal;
-
-	readonly table: OmnichannelPrioritiesTable;
 
 	constructor(page: Page) {
 		super(page);
 		this.resetPrioritiesModal = new OmnichannelResetPrioritiesModal(page);
 		this.editPriority = new OmnichannelEditPriorityFlexTab(page);
-		this.table = new OmnichannelPrioritiesTable(page);
 	}
 
 	get btnReset() {

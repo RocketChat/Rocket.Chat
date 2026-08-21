@@ -17,4 +17,12 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null>;
 	findEventsStartingNow({ now, offset }: { now: Date; offset?: number }): FindCursor<ICalendarEvent>;
 	findServerSyncedByUserIdBetweenDates(uid: IUser['_id'], startTime: Date, endTime: Date): FindCursor<ICalendarEvent>;
+	findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null>;
+	findEventsStartingNow({
+		now,
+		offset,
+	}: {
+		now: Date;
+		offset?: number;
+	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
 }

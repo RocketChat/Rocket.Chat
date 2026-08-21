@@ -1,6 +1,7 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 import {
 	isCloudConfirmationPollProps,
+	isCloudConnectWorkspaceProps,
 	isCloudCreateRegistrationIntentProps,
 	isCloudManualRegisterProps,
 	ajv,
@@ -10,6 +11,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { CloudWorkspaceRegistrationError } from '../../../lib/errors/CloudWorkspaceRegistrationError';
+import { connectWorkspace } from '../../lib/cloud/connectWorkspace';
 import { getCheckoutUrl } from '../../lib/cloud/getCheckoutUrl';
 import { getConfirmationPoll } from '../../lib/cloud/getConfirmationPoll';
 import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError } from '../../lib/cloud/getWorkspaceAccessToken';
@@ -283,6 +285,28 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+API.v1.post(
+	'cloud.connectWorkspace',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		body: isCloudConnectWorkspaceProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const connected = await connectWorkspace(this.bodyParams.token);
+		if (!connected) {
+			return API.v1.failure('Failed to connect the workspace with Rocket.Chat Cloud');
+		}
+		return API.v1.success();
+	},
+);
 
 API.v1.get(
 	'cloud.checkoutUrl',

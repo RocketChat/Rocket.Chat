@@ -64,7 +64,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 
 	return (
 		<Box
-			mb={16}
+			marginBlock={16}
 			is='form'
 			onSubmit={(event) => {
 				event.preventDefault();
@@ -84,7 +84,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 					aria-label={t('Search_Users')}
 				/>
 			</Margins>
-			<Box mb={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+			<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
 					defaultTitle='All_roles'

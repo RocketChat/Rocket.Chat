@@ -7,7 +7,7 @@ export default {
 	component: BusinessHoursForm,
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x600' alignSelf='center' w='full' m={24}>
+			<Box maxWidth='x600' alignSelf='center' width='full' margin={24}>
 				{fn()}
 			</Box>
 		),

@@ -1,6 +1,3 @@
-import { randomBytes } from 'node:crypto';
-
-import { UIHelper } from '@rocket.chat/apps/dist/server/misc/UIHelper';
 import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator';
 import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator';
@@ -20,7 +17,13 @@ import type { IBotUser } from '@rocket.chat/apps-engine/definition/users/IBotUse
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import { UserType } from '@rocket.chat/apps-engine/definition/users/UserType';
 
+import { ContactCreator } from './ContactCreator';
+import { EmailCreator } from './EmailCreator';
+import { LivechatCreator } from './LivechatCreator';
+import { UploadCreator } from './UploadCreator';
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { UIHelper } from '../../UIHelper';
+import { bridgeCall } from '../../bridges/bridgeCall';
 import type * as Messenger from '../../messenger';
 import { BlockBuilder } from '../builders/BlockBuilder';
 import { DiscussionBuilder } from '../builders/DiscussionBuilder';
@@ -31,100 +34,24 @@ import { RoomBuilder } from '../builders/RoomBuilder';
 import { UserBuilder } from '../builders/UserBuilder';
 import type { AppVideoConference } from '../builders/VideoConferenceBuilder';
 import { VideoConferenceBuilder } from '../builders/VideoConferenceBuilder';
-import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyCreator implements IModifyCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	getLivechatCreator(): ILivechatCreator {
-		return new Proxy(
-			{ __kind: 'getLivechatCreator' },
-			{
-				get: (_target: unknown, prop: string) => {
-					// It's not worthwhile to make an asynchronous request for such a simple method
-					if (prop === 'createToken') {
-						return () => randomBytes(16).toString('hex');
-					}
-
-					if (prop === 'toJSON') {
-						return () => ({});
-					}
-
-					return (...params: unknown[]) =>
-						this.senderFn({
-							method: `accessor:getModifier:getCreator:getLivechatCreator:${prop}`,
-							params,
-						})
-							.then((response) => response.result)
-							.catch((err) => {
-								throw formatErrorResponse(err);
-							});
-				},
-			},
-		) as ILivechatCreator;
+		return new LivechatCreator((request) => this.senderFn(request));
 	}
 
 	getUploadCreator(): IUploadCreator {
-		return new Proxy(
-			{ __kind: 'getUploadCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IUploadCreator;
+		return new UploadCreator((request) => this.senderFn(request));
 	}
 
 	getEmailCreator(): IEmailCreator {
-		return new Proxy(
-			{ __kind: 'getEmailCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IEmailCreator;
+		return new EmailCreator((request) => this.senderFn(request));
 	}
 
 	getContactCreator(): IContactCreator {
-		return new Proxy(
-			{ __kind: 'getContactCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IContactCreator;
+		return new ContactCreator((request) => this.senderFn(request));
 	}
 
 	getBlockBuilder() {
@@ -218,14 +145,7 @@ export class ModifyCreator implements IModifyCreator {
 		delete result.id;
 
 		if (!result.sender?.id) {
-			const response = await this.senderFn({
-				method: 'bridges:getUserBridge:doGetAppUser',
-				params: ['APP_ID'],
-			}).catch((err) => {
-				throw formatErrorResponse(err);
-			});
-
-			const appUser = response.result;
+			const appUser = await bridgeCall(this.senderFn, 'getUserBridge', 'doGetAppUser', 'APP_ID');
 
 			if (!appUser) {
 				throw new Error('Invalid sender assigned to the message.');
@@ -239,14 +159,9 @@ export class ModifyCreator implements IModifyCreator {
 			result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getMessageBridge:doCreate',
-			params: [result, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdMessageId = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doCreate', result, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdMessageId);
 	}
 
 	private async _finishLivechatMessage(builder: ILivechatMessageBuilder): Promise<string> {
@@ -263,14 +178,9 @@ export class ModifyCreator implements IModifyCreator {
 
 		result.token = result.visitor ? result.visitor.token : result.token;
 
-		const response = await this.senderFn({
-			method: 'bridges:getLivechatBridge:doCreateMessage',
-			params: [result, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdMessageId = (await bridgeCall(this.senderFn, 'getLivechatBridge', 'doCreateMessage', result, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdMessageId);
 	}
 
 	private async _finishRoom(builder: IRoomBuilder): Promise<string> {
@@ -299,14 +209,16 @@ export class ModifyCreator implements IModifyCreator {
 			}
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getRoomBridge:doCreate',
-			params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdRoomId = (await bridgeCall(
+			this.senderFn,
+			'getRoomBridge',
+			'doCreate',
+			result,
+			builder.getMembersToBeAddedUsernames(),
+			'APP_ID',
+		)) as string;
 
-		return String(response.result);
+		return String(createdRoomId);
 	}
 
 	private async _finishDiscussion(builder: DiscussionBuilder): Promise<string> {
@@ -330,14 +242,18 @@ export class ModifyCreator implements IModifyCreator {
 			throw new Error('Invalid parentRoom assigned to the discussion.');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getRoomBridge:doCreateDiscussion',
-			params: [room, builder.getParentMessage(), builder.getReply(), builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdDiscussionId = (await bridgeCall(
+			this.senderFn,
+			'getRoomBridge',
+			'doCreateDiscussion',
+			room,
+			builder.getParentMessage(),
+			builder.getReply(),
+			builder.getMembersToBeAddedUsernames(),
+			'APP_ID',
+		)) as string;
 
-		return String(response.result);
+		return String(createdDiscussionId);
 	}
 
 	private async _finishVideoConference(builder: IVideoConferenceBuilder): Promise<string> {
@@ -355,26 +271,16 @@ export class ModifyCreator implements IModifyCreator {
 			throw new Error('Invalid roomId assigned to the video conference.');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getVideoConferenceBridge:doCreate',
-			params: [videoConference, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdCallId = (await bridgeCall(this.senderFn, 'getVideoConferenceBridge', 'doCreate', videoConference, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdCallId);
 	}
 
 	private async _finishUser(builder: IUserBuilder): Promise<string> {
 		const user = builder.getUser();
 
-		const response = await this.senderFn({
-			method: 'bridges:getUserBridge:doCreate',
-			params: [user, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdUserId = (await bridgeCall(this.senderFn, 'getUserBridge', 'doCreate', user, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdUserId);
 	}
 }

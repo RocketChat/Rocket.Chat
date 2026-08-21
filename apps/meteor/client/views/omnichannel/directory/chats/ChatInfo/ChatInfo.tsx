@@ -90,7 +90,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<Margins block='x4'>
 					{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
 					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
@@ -103,7 +103,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>
 								<ul aria-labelledby={`${roomId}-tags`}>
 									{tags.map((tag) => (
-										<Box is='li' key={tag} mie={4} display='inline'>
+										<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
 											<Tag style={{ display: 'inline' }} disabled>
 												{tag}
 											</Tag>

@@ -10,6 +10,7 @@ import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { useRoomMessages } from '../../contexts/RoomContext';
+import { useGoToRoom } from '../../hooks/useGoToRoom';
 import { clearHighlightMessage, setHighlightMessage } from '../providers/messageHighlightSubscription';
 
 type UseTryToJumpToMessageProps = {
@@ -25,6 +26,8 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 	const { isLoadingMoreMessages } = useRoomMessages();
 
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
+
+	const goToRoom = useGoToRoom();
 
 	const { data: message } = useQuery({
 		queryKey: messageJumpParam ? messagesQueryKeys.message(messageJumpParam) : [],
@@ -48,6 +51,11 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		// If tshow is true, there is a preview on the main list, in this case we scroll to it
 		if (message && isThreadMessage(message) && !isThreadMainMessage(message) && message.tshow !== true) {
 			setIsJumpingToMessage(false);
+			return;
+		}
+		if (!isThreadMessage(message) && !isThreadMainMessage(message) && message.rid !== rid) {
+			setIsJumpingToMessage(false);
+			goToRoom(message.rid);
 			return;
 		}
 		if (!virtualizerRef.current) {
@@ -84,7 +92,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isLoadingMoreMessages]);
+	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isLoadingMoreMessages, goToRoom]);
 };
 
 export default useTryToJumpToMessage;

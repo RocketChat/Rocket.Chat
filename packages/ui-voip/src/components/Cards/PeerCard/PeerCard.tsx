@@ -23,7 +23,7 @@ const PeerCard = ({ displayName, avatarUrl, muted, held }: PeerCardProps) => {
 				height='100%'
 			>
 				<PeerCardSlot muted={muted} held={held} displayName={displayName} />
-				<Box mbe={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x48' /> : <Icon name='user' size='x48' />}</Box>
+				<Box marginBlockEnd={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x48' /> : <Icon name='user' size='x48' />}</Box>
 			</Box>
 		</Card>
 	);

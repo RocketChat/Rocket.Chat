@@ -8,11 +8,11 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { deleteCustomUserStatus } from '../../../app/user-status/server/methods/deleteCustomUserStatus';
-import { insertOrUpdateUserStatus } from '../../../app/user-status/server/methods/insertOrUpdateUserStatus';
+import { deleteCustomUserStatus } from '../../meteor-methods/users/deleteCustomUserStatus';
+import { insertOrUpdateUserStatus } from '../../meteor-methods/users/insertOrUpdateUserStatus';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -98,7 +98,7 @@ const customUserStatusEndpoints = API.v1.get(
 		},
 	},
 	async function action() {
-		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, query } = await this.parseJsonQuery();
 
 		const { name, _id } = this.queryParams;

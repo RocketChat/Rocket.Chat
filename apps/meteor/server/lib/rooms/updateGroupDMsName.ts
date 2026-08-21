@@ -3,19 +3,21 @@ import { isNotUndefined } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { notifyOnSubscriptionChangedByRoomId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomId } from '../notifyListener';
 
-const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
+type GroupDMMember = Pick<IUser, '_id' | 'username' | 'name'>;
 
-async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
+const getFname = (members: GroupDMMember[]): string => members.map(({ name, username }) => name || username).join(', ');
+const getName = (members: GroupDMMember[]): string => members.map(({ username }) => username).join(',');
+
+async function getUsersWhoAreInTheSameGroupDMsAs(user: GroupDMMember) {
 	// add all users to single array so we can fetch details from them all at once
 	if ((await Rooms.countGroupDMsByUids([user._id])) === 0) {
 		return;
 	}
 
 	const userIds = new Set<string>();
-	const users = new Map<string, IUser>();
+	const users = new Map<string, GroupDMMember>();
 
 	const rooms = Rooms.findGroupDMsByUids([user._id], { projection: { uids: 1 } });
 	await rooms.forEach((room) => {
@@ -31,13 +33,13 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 	return users;
 }
 
-function sortUsersAlphabetically(u1: IUser, u2: IUser): number {
+function sortUsersAlphabetically(u1: GroupDMMember, u2: GroupDMMember): number {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 
 export const updateGroupDMsName = async (
-	userThatChangedName: IUser,
+	userThatChangedName: GroupDMMember,
 	options?: {
 		session?: ClientSession;
 	},
@@ -57,7 +59,6 @@ export const updateGroupDMsName = async (
 
 	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 }, session });
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(isNotUndefined);
 
 	// loop rooms to update the subscriptions from them all

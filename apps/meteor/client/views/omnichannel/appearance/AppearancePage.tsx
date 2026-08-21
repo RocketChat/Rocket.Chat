@@ -82,7 +82,7 @@ const AppearancePage = ({ settings }: AppearancePageProps) => {
 		<Page>
 			<PageHeader title={t('Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<AppearanceForm />

@@ -32,7 +32,7 @@ const CustomUserStatusService = () => {
 
 	if (result.isPending || disablePresenceService.isPending || licenseIsLoading) {
 		return (
-			<Box pi={16} pb={8}>
+			<Box paddingInline={16} paddingBlock={8}>
 				<Skeleton />
 				<Skeleton />
 				<Skeleton />
@@ -43,7 +43,7 @@ const CustomUserStatusService = () => {
 	}
 	if (result.isError || disablePresenceService.isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 				<StatesIcon name='circle-exclamation' />
 				<StatesSubtitle>{t('Unable_to_load_active_connections')}</StatesSubtitle>
 				<StatesAction icon='reload' onClick={() => result.refetch()}>
@@ -59,7 +59,7 @@ const CustomUserStatusService = () => {
 		<>
 			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
 				<div>
-					<Box display='flex' justifyContent='space-between' mb={16}>
+					<Box display='flex' justifyContent='space-between' marginBlock={16}>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
 						<ToggleSwitch
 							disabled={disablePresenceService.isPending || !presenceDisabled || percentage === 100}
@@ -67,7 +67,7 @@ const CustomUserStatusService = () => {
 							onChange={() => disablePresenceService.mutate()}
 						/>
 					</Box>
-					<Box display='flex' fontScale='c1' justifyContent='space-between' mb={16}>
+					<Box display='flex' fontScale='c1' justifyContent='space-between' marginBlock={16}>
 						<Box>{t('Active_connections')}</Box>
 						<Box>{license?.isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
@@ -80,13 +80,13 @@ const CustomUserStatusService = () => {
 						</Margins>
 					)}
 				</div>
-				<Box display='flex' flexDirection='column' mb={16}>
+				<Box display='flex' flexDirection='column' marginBlock={16}>
 					{license?.isEnterprise ? (
 						<>
-							<Box fontScale='p2' mb={8}>
+							<Box fontScale='p2' marginBlock={8}>
 								{t('Premium_cap_description')}
 							</Box>
-							<Box fontScale='p2' mb={8}>
+							<Box fontScale='p2' marginBlock={8}>
 								<Trans i18nKey='Larger_amounts_of_active_connections'>
 									For larger amounts of active connections you can consider our
 									<Box is='a' href={links.scaling} target='_blank' color='info'>
@@ -98,10 +98,10 @@ const CustomUserStatusService = () => {
 						</>
 					) : (
 						<>
-							<Box fontScale='p2' mb={8}>
+							<Box fontScale='p2' marginBlock={8}>
 								{t('Community_cap_description')}
 							</Box>
-							<Box fontScale='p2' mb={8}>
+							<Box fontScale='p2' marginBlock={8}>
 								{t('Premium_cap_description')}
 							</Box>
 						</>

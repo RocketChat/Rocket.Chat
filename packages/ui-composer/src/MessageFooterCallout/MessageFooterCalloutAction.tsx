@@ -6,7 +6,7 @@ export type MessageFooterCalloutActionProps = ComponentProps<typeof Button>;
 
 const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, MessageFooterCalloutActionProps>(
 	function MessageFooterCalloutAction(props, ref) {
-		return <Button mi={4} ref={ref} primary small flexShrink={0} {...props} />;
+		return <Button marginInline={4} ref={ref} primary small flexShrink={0} {...props} />;
 	},
 );
 

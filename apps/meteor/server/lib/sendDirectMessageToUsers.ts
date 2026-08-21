@@ -8,7 +8,7 @@ import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 export async function sendDirectMessageToUsers(
 	fromId = 'rocket.cat',
 	toIds: string[],
-	messageFn: (user: IUser) => string,
+	messageFn: (user: Pick<IUser, '_id' | 'username' | 'language'>) => string,
 ): Promise<string[]> {
 	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1, username: 1 } });
 	if (!fromUser) {

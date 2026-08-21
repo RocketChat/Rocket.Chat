@@ -80,7 +80,7 @@ const SliderBtn = () => {
 						cursor: pointer;
 					`}
 				>
-					<Box size='50%' bg='info' className={slideBtnAnimation} />
+					<Box size='50%' backgroundColor='info' className={slideBtnAnimation} />
 				</Box>
 			)}
 		</Box>

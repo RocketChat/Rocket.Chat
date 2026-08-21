@@ -24,15 +24,19 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { checkSettingValueBounds } from '../../../app/lib/server/lib/checkSettingValueBonds';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { SettingsEvents, settings } from '../../../app/settings/server';
-import { setValue } from '../../../app/settings/server/raw';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { refreshLoginServices } from '../../lib/refreshLoginServices';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
+import { SettingsEvents, settings } from '../../settings';
+import type { FetchedSetting } from '../../settings/SettingsRegistry';
+import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
+import { setValue } from '../../settings/raw';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -42,7 +46,7 @@ async function fetchSettings(
 	offset: FindOptions<ISetting>['skip'],
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
-): Promise<{ settings: ISetting[]; totalCount: number }> {
+): Promise<{ settings: FetchedSetting[]; totalCount: number }> {
 	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
@@ -56,7 +60,7 @@ async function fetchSettings(
 	return { settings: settingsList, totalCount: total };
 }
 
-const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -86,7 +90,7 @@ const addCustomOAuthBodySchema = ajv.compile<{ name: string }>({
 	additionalProperties: false,
 });
 
-const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -194,11 +198,14 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+				if (service.service && ['cas', 'ldap'].includes(service.service)) {
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+				if (
+					(service as OAuthConfiguration).custom ||
+					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
+				) {
 					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
@@ -225,6 +232,9 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
 		body: addCustomOAuthBodySchema,
 		response: {
 			200: ajv.compile<void>({
@@ -233,13 +243,9 @@ API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -250,6 +256,65 @@ API.v1.post(
 
 		await addOAuthServiceMethod(this.userId, name);
 
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.removeCustomOAuth',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		body: addCustomOAuthBodySchema,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { name } = this.bodyParams;
+		if (!name?.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		await removeCustomOAuthSettings(name);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.refreshOAuthServices',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await refreshLoginServices();
 		return API.v1.success();
 	},
 );
@@ -273,7 +338,7 @@ API.v1.get(
 			hidden: { $ne: true },
 		};
 
-		if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
+		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
 
@@ -334,12 +399,7 @@ API.v1.post(
 		body: settingsUpdateBodySchema,
 		response: {
 			200: settingByIdPostResponseSchema,
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] } },
-				required: ['success'],
-				additionalProperties: true,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -393,7 +453,17 @@ API.v1.post(
 		}
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
+			// TODO(next major): unify both validations into one function with a common API error response
 			checkSettingValueBounds(setting, bodyParams.value);
+
+			try {
+				validateSettingRules([{ _id, value: bodyParams.value }]);
+			} catch (error) {
+				if (error instanceof SettingValidationError) {
+					return API.v1.failure(error.message, 'error-setting-validation-failed');
+				}
+				throw error;
+			}
 
 			const { matchedCount } = await auditSettingOperation(Settings.updateValueNotHiddenById, _id, bodyParams.value);
 
@@ -433,11 +503,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
-			username: this.user.username ?? '',
-			ip: this.requestIp ?? '',
-			useragent: this.request.headers.get('user-agent') ?? '',
-		});
+		try {
+			await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				return API.v1.failure(error.message, 'error-setting-validation-failed');
+			}
+			throw error;
+		}
 
 		return API.v1.success();
 	},

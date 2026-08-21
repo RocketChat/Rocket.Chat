@@ -27,12 +27,12 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
-					<Box display='flex' withTruncatedText mi={8}>
+					<Box display='flex' withTruncatedText marginInline={8}>
 						<Box fontScale='p2m' withTruncatedText color='default'>
 							{name || username}
 						</Box>
 						{name && (
-							<Box mis={4} fontScale='p2' color='hint' withTruncatedText>
+							<Box marginInlineStart={4} fontScale='p2' color='hint' withTruncatedText>
 								{`@${username}`}
 							</Box>
 						)}

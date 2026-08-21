@@ -69,7 +69,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
-					<Box mi={24} mb={16}>
+					<Box marginInline={24} marginBlock={16}>
 						<Callout type='warning' title={t('ABAC_automatically_disabled_callout')}>
 							<Trans
 								i18nKey='ABAC_automatically_disabled_callout_description'

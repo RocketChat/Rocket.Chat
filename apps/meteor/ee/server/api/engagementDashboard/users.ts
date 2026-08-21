@@ -1,4 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../server/api';
@@ -10,6 +16,147 @@ import {
 	findBusiestsChatsWithinAWeek,
 	findUserSessionsByHourWithinAWeek,
 } from '../../lib/engagementDashboard/users';
+
+const newUsersResponseSchema = ajv.compile<{
+	days: { day: Date; users: number }[];
+	period: { count: number; variation: number };
+	yesterday: { count: number; variation: number };
+}>({
+	type: 'object',
+	properties: {
+		days: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'string', format: 'date-time' },
+					users: { type: 'number' },
+				},
+				required: ['day', 'users'],
+				additionalProperties: false,
+			},
+		},
+		period: {
+			type: 'object',
+			properties: {
+				count: { type: 'number' },
+				variation: { type: 'number' },
+			},
+			required: ['count', 'variation'],
+			additionalProperties: false,
+		},
+		yesterday: {
+			type: 'object',
+			properties: {
+				count: { type: 'number' },
+				variation: { type: 'number' },
+			},
+			required: ['count', 'variation'],
+			additionalProperties: false,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['days', 'period', 'yesterday', 'success'],
+	additionalProperties: false,
+});
+
+const activeUsersResponseSchema = ajv.compile<{
+	month: { day: number; month: number; year: number; usersList: IUser['_id'][]; users: number }[];
+}>({
+	type: 'object',
+	properties: {
+		month: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'number' },
+					month: { type: 'number' },
+					year: { type: 'number' },
+					usersList: { type: 'array', items: { type: 'string' } },
+					users: { type: 'number' },
+				},
+				required: ['day', 'month', 'year', 'usersList', 'users'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['month', 'success'],
+	additionalProperties: false,
+});
+
+const hourlyDataResponseSchema = ajv.compile<{ hours: { hour: number; users: number }[] }>({
+	type: 'object',
+	properties: {
+		hours: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					hour: { type: 'number' },
+					users: { type: 'number' },
+				},
+				required: ['hour', 'users'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['hours', 'success'],
+	additionalProperties: false,
+});
+
+const weeklyChatBusierResponseSchema = ajv.compile<{
+	month: { day: number; month: number; year: number; users: number }[];
+}>({
+	type: 'object',
+	properties: {
+		month: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'number' },
+					month: { type: 'number' },
+					year: { type: 'number' },
+					users: { type: 'number' },
+				},
+				required: ['day', 'month', 'year', 'users'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['month', 'success'],
+	additionalProperties: false,
+});
+
+const userSessionsByHourResponseSchema = ajv.compile<{
+	week: { hour: number; day: number; month: number; year: number; users: number }[];
+}>({
+	type: 'object',
+	properties: {
+		week: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					hour: { type: 'number' },
+					day: { type: 'number' },
+					month: { type: 'number' },
+					year: { type: 'number' },
+					users: { type: 'number' },
+				},
+				required: ['hour', 'day', 'month', 'year', 'users'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['week', 'success'],
+	additionalProperties: false,
+});
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -70,125 +217,145 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
-API.v1.addRoute(
+API.v1.get(
 	'engagement-dashboard/users/new-users',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					start: Match.Where(isDateISOString),
-					end: Match.Where(isDateISOString),
-				}),
-			);
-
-			const { start, end } = this.queryParams;
-
-			const data = await findWeeklyUsersRegisteredData(transformDatesForAPI(start, end));
-			return API.v1.success(data);
+		response: {
+			200: newUsersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				start: Match.Where(isDateISOString),
+				end: Match.Where(isDateISOString),
+			}),
+		);
+
+		const { start, end } = this.queryParams;
+
+		const data = await findWeeklyUsersRegisteredData(transformDatesForAPI(start, end));
+		return API.v1.success(data);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'engagement-dashboard/users/active-users',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					start: Match.Where(isDateISOString),
-					end: Match.Where(isDateISOString),
-				}),
-			);
-
-			const { start, end } = this.queryParams;
-
-			const data = await findActiveUsersMonthlyData(transformDatesForAPI(start, end));
-			return API.v1.success(data);
+		response: {
+			200: activeUsersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				start: Match.Where(isDateISOString),
+				end: Match.Where(isDateISOString),
+			}),
+		);
+
+		const { start, end } = this.queryParams;
+
+		const data = await findActiveUsersMonthlyData(transformDatesForAPI(start, end));
+		return API.v1.success(data);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'engagement-dashboard/users/chat-busier/hourly-data',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					start: Match.Where(isDateISOString),
-				}),
-			);
-
-			const { start } = this.queryParams;
-
-			const data = await findBusiestsChatsInADayByHours(transformDatesForAPI(start));
-			return API.v1.success(data);
+		response: {
+			200: hourlyDataResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				start: Match.Where(isDateISOString),
+			}),
+		);
+
+		const { start } = this.queryParams;
+
+		const data = await findBusiestsChatsInADayByHours(transformDatesForAPI(start));
+		return API.v1.success(data);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'engagement-dashboard/users/chat-busier/weekly-data',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					start: Match.Where(isDateISOString),
-				}),
-			);
-
-			const { start } = this.queryParams;
-
-			const data = await findBusiestsChatsWithinAWeek(transformDatesForAPI(start));
-			return API.v1.success(data);
+		response: {
+			200: weeklyChatBusierResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				start: Match.Where(isDateISOString),
+			}),
+		);
+
+		const { start } = this.queryParams;
+
+		const data = await findBusiestsChatsWithinAWeek(transformDatesForAPI(start));
+		return API.v1.success(data);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'engagement-dashboard/users/users-by-time-of-the-day-in-a-week',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					start: Match.Where(isDateISOString),
-					end: Match.Where(isDateISOString),
-				}),
-			);
-
-			const { start, end } = this.queryParams;
-
-			const data = await findUserSessionsByHourWithinAWeek(transformDatesForAPI(start, end));
-			return API.v1.success(data);
+		response: {
+			200: userSessionsByHourResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				start: Match.Where(isDateISOString),
+				end: Match.Where(isDateISOString),
+			}),
+		);
+
+		const { start, end } = this.queryParams;
+
+		const data = await findUserSessionsByHourWithinAWeek(transformDatesForAPI(start, end));
+		return API.v1.success(data);
 	},
 );

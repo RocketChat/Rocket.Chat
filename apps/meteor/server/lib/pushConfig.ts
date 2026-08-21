@@ -3,11 +3,12 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { PushToken } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { RateLimiterClass as RateLimiter } from './RateLimiter';
 import { hasPermissionAsync } from './authorization/hasPermission';
+import { methodDeprecationLogger } from './deprecationWarningLogger';
 import { i18n } from './i18n';
-import { RateLimiter } from '../../app/lib/server/lib';
-import { Push } from '../../app/push/server';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
+import { Push } from './notifications/push';
 
 export const executePushTest = async (userId: IUser['_id'], username: IUser['username']): Promise<number> => {
 	const tokens = await PushToken.countTokensByUserId(userId);
@@ -38,6 +39,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async push_test() {
+		methodDeprecationLogger.method('push_test', '9.0.0', '/v1/push.test');
+
 		const user = await Meteor.userAsync();
 
 		if (!user) {
@@ -46,7 +49,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-push-notifications'))) {
+		if (!(await hasPermissionAsync(user, 'test-push-notifications'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});

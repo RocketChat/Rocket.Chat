@@ -4,10 +4,11 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
-import { readThread } from '../../../app/threads/server/functions';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { callbacks } from '../../lib/callbacks';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { readThread } from '../../lib/messaging/threads/functions';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,6 +19,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async readThreads(tmid) {
+		methodDeprecationLogger.method('readThreads', '9.0.0', '/v1/chat.readThread');
+
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {

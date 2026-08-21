@@ -36,11 +36,11 @@ const SidebarNavigationItem = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} aria-current={isActive ? 'page' : undefined}>
-			{icon && <Icon name={icon} size='x20' mi={4} />}
+			{icon && <Icon name={icon} size='x20' marginInline={4} />}
 			<Box
 				withTruncatedText
 				fontScale='p2'
-				mi={4}
+				marginInline={4}
 				flexGrow={1}
 				display='flex'
 				alignItems='center'

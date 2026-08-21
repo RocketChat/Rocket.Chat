@@ -79,7 +79,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' mbs={24} icon='mail'>
+						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>

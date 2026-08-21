@@ -79,10 +79,10 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' width='x200'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' width='x100'>
 				{t('Type')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
@@ -91,13 +91,20 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				active={sortBy === 'usersCount'}
 				onClick={setSort}
 				sort='usersCount'
-				w='x80'
+				width='x80'
 			>
 				{t('Users')}
 			</GenericTableHeaderCell>
 			{mediaQuery && (
 				<>
-					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs' w='x80'>
+					<GenericTableHeaderCell
+						key='messages'
+						direction={sortDirection}
+						active={sortBy === 'msgs'}
+						onClick={setSort}
+						sort='msgs'
+						width='x80'
+					>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell
@@ -106,7 +113,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 						active={sortBy === 'default'}
 						onClick={setSort}
 						sort='default'
-						w='x80'
+						width='x80'
 					>
 						{t('Default')}
 					</GenericTableHeaderCell>
@@ -116,11 +123,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 						active={sortBy === 'featured'}
 						onClick={setSort}
 						sort='featured'
-						w='x80'
+						width='x80'
 					>
 						{t('Featured')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' width='x120'>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
 				</>

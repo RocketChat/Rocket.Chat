@@ -10,7 +10,7 @@ const RoomTags = ({ room }: RoomTagsProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box mi={4} alignItems='center' display='flex' withTruncatedText>
+		<Box marginInline={4} alignItems='center' display='flex' withTruncatedText>
 			<Margins inline={2}>
 				{room.default && <Tag variant='secondary'>{t('default')}</Tag>}
 				{room.featured && <Tag variant='secondary'>{t('featured')}</Tag>}

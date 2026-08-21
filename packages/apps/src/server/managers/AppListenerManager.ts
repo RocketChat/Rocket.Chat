@@ -31,7 +31,6 @@ import type {
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 
-import type { AppAccessorManager } from './AppAccessorManager';
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { Utilities } from '../misc/Utilities';
@@ -248,8 +247,6 @@ export interface IListenerExecutor {
 // type EventReturn = void | boolean | IMessage | IRoom | IUser | IUIKitResponse | ILivechatRoom | IEmailDescriptor;
 
 export class AppListenerManager {
-	private am: AppAccessorManager;
-
 	private listeners: Map<string, Array<string>>;
 
 	private defaultHandlers = new Map<string, any>();
@@ -263,7 +260,6 @@ export class AppListenerManager {
 	private lockedEvents: Map<string, Set<string>>;
 
 	constructor(private readonly manager: AppManager) {
-		this.am = manager.getAccessorManager();
 		this.listeners = new Map<string, Array<string>>();
 		this.lockedEvents = new Map<string, Set<string>>();
 
@@ -557,8 +553,7 @@ export class AppListenerManager {
 			for (const appId of this.listeners.get(AppInterface.IPostMessageSentToBot)) {
 				const app = this.manager.getOneById(appId);
 
-				const reader = this.am.getReader(appId);
-				const bot = await reader.getUserReader().getAppUser();
+				const bot = await this.manager.getBridges().getUserBridge().doGetAppUser(appId);
 				if (!bot) {
 					continue;
 				}

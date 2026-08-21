@@ -1,4 +1,4 @@
-import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
@@ -16,7 +16,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getRolesCached = mem(this.getRoles.bind(this), {
 		maxAge: 1000,
-		cacheKey: JSON.stringify,
+		cacheKey: (args: unknown[]) => {
+			const [user, scope] = args as [string | UserWithRoles, IRoom['_id']?];
+			return typeof user === 'string' ? `${user}/${scope ?? ''}` : `${user._id}/${scope ?? ''}/${JSON.stringify(user.roles ?? [])}`;
+		},
 	});
 
 	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
@@ -56,21 +59,21 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 	}
 
-	async hasAllPermission(userId: string | IUser, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAllPermission(userId: string | UserWithRoles, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, permissions, scope);
 	}
 
-	async hasPermission(userId: string | IUser, permissionId: string, scope?: string): Promise<boolean> {
+	async hasPermission(userId: string | UserWithRoles, permissionId: string, scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, [permissionId], scope);
 	}
 
-	async hasAtLeastOnePermission(userId: string | IUser, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAtLeastOnePermission(userId: string | UserWithRoles, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
@@ -101,10 +104,6 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 
 		return this.canAccessRoom(room, { _id: user });
-	}
-
-	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
-		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
 	async getUsersFromPublicRoles(): Promise<
@@ -160,7 +159,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return !!result;
 	}
 
-	private async getRoles(user: string | IUser, scope?: IRoom['_id']): Promise<string[]> {
+	private async getRoles(user: string | UserWithRoles, scope?: IRoom['_id']): Promise<string[]> {
 		const { roles: userRoles = [] } = typeof user === 'string' ? (await Users.findOneById(user, { projection: { roles: 1 } })) || {} : user;
 		const { roles: subscriptionsRoles = [] } =
 			(scope &&
@@ -172,8 +171,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
-	private async atLeastOne(user: string | IUser, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(user, scope);
+	private async resolveRoles(user: string | UserWithRoles, scope?: IRoom['_id']): Promise<string[]> {
+		if (typeof user !== 'string' && !scope) {
+			return [...(user.roles ?? [])].sort((a, b) => a.localeCompare(b));
+		}
+		return this.getRolesCached(user, scope);
+	}
+
+	private async atLeastOne(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
+		const sortedRoles = await this.resolveRoles(user, scope);
 		for await (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
@@ -183,8 +189,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return false;
 	}
 
-	private async all(user: string | IUser, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(user, scope);
+	private async all(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
+		const sortedRoles = await this.resolveRoles(user, scope);
 		for await (const permission of permissions) {
 			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;

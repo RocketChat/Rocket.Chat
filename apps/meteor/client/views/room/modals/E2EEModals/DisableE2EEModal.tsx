@@ -24,18 +24,18 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 			onDismiss={() => undefined}
 			annotation={t('Proceed_with_caution')}
 		>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				<Trans i18nKey='E2E_disable_encryption_description' tOptions={{ roomType }} />
 			</Box>
 
 			{canResetRoomKey && (
 				<>
-					<Box mbe={16} is='p'>
+					<Box marginBlockEnd={16} is='p'>
 						{t('E2E_disable_encryption_reset_keys_description')}
 					</Box>
 					<Accordion>
 						<AccordionItem title={t('E2E_reset_encryption_keys')}>
-							<Box mbe={16} is='p'>
+							<Box marginBlockEnd={16} is='p'>
 								{t('E2E_reset_encryption_keys_description')}
 							</Box>
 							<Button secondary danger small onClick={onResetRoomKey}>

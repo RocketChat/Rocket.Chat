@@ -46,12 +46,12 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<Box display='flex' flexDirection='column' pi={24}>
+			<Box display='flex' flexDirection='column' paddingInline={24}>
 				{name && (
-					<Box width='100%' pb={16} display='flex' alignItems='center' justifyContent='space-between'>
+					<Box width='100%' paddingBlock={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box withTruncatedText display='flex'>
 							<UserAvatar size='x40' title={name} username={name} />
-							<Box withTruncatedText mis={16} display='flex' flexDirection='column'>
+							<Box withTruncatedText marginInlineStart={16} display='flex' flexDirection='column'>
 								<Box withTruncatedText fontScale='h4'>
 									{name}
 								</Box>
@@ -69,7 +69,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				)}
 				{hasConflicts && (
 					<Callout
-						mbe={8}
+						marginBlockEnd={8}
 						alignItems='center'
 						icon='members'
 						actions={

@@ -34,7 +34,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -45,14 +45,14 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
 
       - uses: ./.github/actions/restore-packages
 
       - name: Restore TypeScript incremental cache
         id: restore-typecheck
         if: matrix.check == 'ts'
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -101,7 +101,7 @@ jobs:
       - name: Restore ESLint cache
         id: restore-eslint
         if: matrix.check == 'lint'
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./apps/meteor/.eslintcache
           key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}

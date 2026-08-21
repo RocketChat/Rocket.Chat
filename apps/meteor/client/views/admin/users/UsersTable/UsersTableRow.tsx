@@ -133,7 +133,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
-						<Box mi={8}>
+						<Box marginInline={8}>
 							<UserStatus status={status || Status.OFFLINE} />
 						</Box>
 						<Box fontScale='p2' withTruncatedText>

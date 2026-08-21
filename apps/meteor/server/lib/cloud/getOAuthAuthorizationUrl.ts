@@ -2,12 +2,15 @@ import { Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { getRedirectUri } from './getRedirectUri';
-import { userScopes } from '../../../app/cloud/server/oauthScopes';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { userScopes } from './oauthScopes';
+import { assertNotOfflineLicense } from './offlineLicense';
+import { settings } from '../../settings';
 import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../notifyListener';
 
 export async function getOAuthAuthorizationUrl() {
+	assertNotOfflineLicense();
+
 	const state = Random.id();
 
 	await updateAuditedBySystem({

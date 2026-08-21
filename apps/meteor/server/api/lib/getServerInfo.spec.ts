@@ -23,7 +23,7 @@ describe.skip('#getServerInfo()', () => {
 			'../../lib/cloud/supportedVersionsToken/supportedVersionsToken': {
 				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 			},
-			'../../../app/settings/server': {
+			'../../settings': {
 				settings: new Map(),
 			},
 		});

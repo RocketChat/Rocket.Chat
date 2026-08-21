@@ -2,9 +2,9 @@ import { LivechatPriority } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { findPriority, updatePriority } from './lib/priorities';
-import { notifyOnLivechatPriorityChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+import { notifyOnLivechatPriorityChanged } from '../../../../../server/lib/notifyListener';
 
 API.v1.addRoute(
 	'livechat/priorities',

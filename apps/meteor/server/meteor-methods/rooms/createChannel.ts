@@ -4,8 +4,8 @@ import { Users, Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { createRoom } from '../../lib/rooms/createRoom';
 
 declare module '@rocket.chat/ddp-client' {

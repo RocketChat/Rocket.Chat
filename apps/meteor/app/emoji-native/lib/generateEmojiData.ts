@@ -1,6 +1,6 @@
-import type { Emoji } from 'emojibase';
 import data from 'emojibase-data/en/data.json';
-import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
+import emojibaseShortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
+import joypixelsShortcodes from 'emojibase-data/en/shortcodes/joypixels.json';
 
 // Map emojibase group numbers to our category keys
 const groupToCategory: Record<number, string> = {
@@ -17,6 +17,7 @@ const groupToCategory: Record<number, string> = {
 };
 
 export type EmojiEntry = {
+	name: string;
 	uc_base: string;
 	uc_output: string;
 	uc_match: string;
@@ -31,8 +32,16 @@ function hexFromEmoji(emoji: string): string {
 	return [...emoji].map((cp) => cp.codePointAt(0)!.toString(16)).join('-');
 }
 
+function isRegionalIndicator(hexcode: string): boolean {
+	if (hexcode.includes('-')) return false;
+	const cp = parseInt(hexcode, 16);
+	return cp >= 0x1f1e6 && cp <= 0x1f1ff;
+}
+
 function getShortcodes(hexcode: string): string[] {
-	const entry = (shortcodes as Record<string, string | string[]>)[hexcode];
+	const entry =
+		(joypixelsShortcodes as Record<string, string | string[]>)[hexcode] ??
+		(emojibaseShortcodes as Record<string, string | string[]>)[hexcode];
 	if (!entry) return [];
 	return Array.isArray(entry) ? entry : [entry];
 }
@@ -50,12 +59,14 @@ function buildEmojiData() {
 		flags: [],
 	};
 	const toneList: Record<string, number> = {};
+	const bareAliases: [string, string][] = [];
 
-	for (const emojiData of data as Emoji[]) {
+	for (const emojiData of data) {
 		// Skip component group (skin tones, hair styles)
 		if (emojiData.group === 2) continue;
 
-		const category = groupToCategory[emojiData.group ?? -1];
+		const isRegional = isRegionalIndicator(emojiData.hexcode);
+		const category = groupToCategory[emojiData.group ?? -1] ?? (isRegional ? 'flags' : undefined);
 		if (!category) continue;
 
 		const codes = getShortcodes(emojiData.hexcode);
@@ -64,8 +75,10 @@ function buildEmojiData() {
 		const primaryShortcode = codes[0];
 		const altShortcodes = codes.slice(1).map((s) => `:${s}:`);
 		const hex = hexFromEmoji(emojiData.emoji);
+		const bare = emojiData.emoji.replace(/\uFE0F/g, '');
 
 		const entry: EmojiEntry = {
+			name: primaryShortcode,
 			uc_base: hex,
 			uc_output: hex,
 			uc_match: hex,
@@ -79,8 +92,12 @@ function buildEmojiData() {
 		const key = `:${primaryShortcode}:`;
 		emojiList[key] = entry;
 
+		if (emojiData.type === 1 && bare !== emojiData.emoji) {
+			bareAliases.push([bare, key]);
+		}
+
 		// Only add to category if it's NOT a skin tone variant
-		if (!emojiData.tone) {
+		if (!emojiData.tone && !isRegional) {
 			emojisByCategory[category].push(primaryShortcode);
 		}
 
@@ -98,10 +115,10 @@ function buildEmojiData() {
 				if (!skin.tone) continue;
 
 				const tones = Array.isArray(skin.tone) ? skin.tone : [skin.tone];
-				const toneKey = `:${primaryShortcode}_tone${tones.join('-')}:`;
 				const skinHex = hexFromEmoji(skin.emoji);
 
-				emojiList[toneKey] = {
+				const skinEntry: EmojiEntry = {
+					name: primaryShortcode,
 					uc_base: skinHex,
 					uc_output: skinHex,
 					uc_match: skinHex,
@@ -111,11 +128,17 @@ function buildEmojiData() {
 					emojiPackage: 'native',
 					unicode: skin.emoji,
 				};
+
+				const toneShortcodes = getShortcodes(skin.hexcode);
+				const fallbackShortcode = `${primaryShortcode}_tone${tones.join('-')}`;
+				for (const code of [...toneShortcodes, fallbackShortcode]) {
+					emojiList[`:${code}:`] = skinEntry;
+				}
 			}
 		}
 	}
 
-	return { emojiList, emojisByCategory, toneList };
+	return { emojiList, emojisByCategory, toneList, bareAliases };
 }
 
 // Build once and cache

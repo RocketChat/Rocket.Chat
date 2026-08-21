@@ -78,10 +78,10 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
 				<>
-					<Box margin='none' mi={2}>
+					<Box margin='none' marginInline={2}>
 						<RoomAvatar size={AVATAR_SIZE} room={{ ...label, type: label?.type || 'c', _id: value }} />
 					</Box>
-					<Box margin='none' mi={2}>
+					<Box margin='none' marginInline={2}>
 						{label?.name}
 					</Box>
 					{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}

@@ -9,7 +9,7 @@ export type TextSeparatorProps = {
 };
 
 const TextSeparator = ({ label, value }: TextSeparatorProps) => (
-	<Box display='flex' flexDirection='row' mb={4}>
+	<Box display='flex' flexDirection='row' marginBlock={4}>
 		<Box display='inline-flex' alignItems='center'>
 			{label}
 		</Box>

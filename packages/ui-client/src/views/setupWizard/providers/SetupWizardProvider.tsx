@@ -8,11 +8,11 @@ import {
 	useSettingsDispatch,
 	useMethod,
 	useEndpoint,
-	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks';
 import { clientCallbacks } from '../../../lib';
@@ -43,7 +43,7 @@ export type SetupWizardProviderProps = {
 
 const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const invalidateLicenseQuery = useInvalidateLicense();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();

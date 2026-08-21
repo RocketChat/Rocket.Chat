@@ -88,14 +88,14 @@ test.describe.serial('OC - Livechat', () => {
 			await poLiveChat.page.reload();
 			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
 		});
-	});
 
-	test('OC - Livechat - Send message to agent after reload', async () => {
-		await test.step('expect unread counter to be empty after user sends a message', async () => {
+		await test.step('expect unread counter to be empty after user sends a message after reload', async () => {
 			await poLiveChat.openAnyLiveChat();
 			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			expect(await poLiveChat.unreadMessagesBadge(0).all()).toHaveLength(0);
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+			await expect(poLiveChat.unreadMessagesBadge(2)).toHaveCount(0);
+			await expect(poLiveChat.unreadMessagesBadge(1)).toHaveCount(0);
 		});
 	});
 

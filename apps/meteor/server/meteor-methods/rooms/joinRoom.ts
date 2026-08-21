@@ -5,7 +5,7 @@ import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

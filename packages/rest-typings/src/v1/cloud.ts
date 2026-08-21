@@ -59,6 +59,22 @@ const CloudConfirmationPollSchema = {
 
 export const isCloudConfirmationPollProps = ajvQuery.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
 
+type CloudConnectWorkspace = { token: string };
+
+const CloudConnectWorkspaceSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isCloudConnectWorkspaceProps = ajv.compile<CloudConnectWorkspace>(CloudConnectWorkspaceSchema);
+
 export type CloudEndpoints = {
 	'/v1/cloud.manualRegister': {
 		POST: (params: CloudManualRegister) => void;
@@ -86,5 +102,8 @@ export type CloudEndpoints = {
 	};
 	'/v1/cloud.removeLicense': {
 		POST: () => { success: boolean };
+	};
+	'/v1/cloud.connectWorkspace': {
+		POST: (params: CloudConnectWorkspace) => { success: boolean };
 	};
 };

@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export type UserCardRoleProps = { children: ReactNode };
 
 const UserCardRole = ({ children }: UserCardRoleProps) => (
-	<Box m={2} fontScale='c2'>
+	<Box margin={2} fontScale='c2'>
 		<Tag>{children}</Tag>
 	</Box>
 );

@@ -1,7 +1,7 @@
 import { NPS } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 
 async function runNPS(): Promise<void> {
 	// if NPS is disabled close any pending scheduled survey

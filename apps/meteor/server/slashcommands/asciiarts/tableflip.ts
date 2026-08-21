@@ -1,6 +1,6 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
 /*
  * Tableflip is a named function that will replace /Tableflip commands

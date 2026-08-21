@@ -91,7 +91,7 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' w='full'>
+			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
 				<InputComponent
 					value={value}
 					hint={hint}

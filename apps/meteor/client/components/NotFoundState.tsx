@@ -21,7 +21,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps) => {
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{subtitle}</StatesSubtitle>
-				<Box mbs={16}>
+				<Box marginBlockStart={16}>
 					<StatesActions>
 						<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
 					</StatesActions>

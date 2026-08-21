@@ -27,7 +27,7 @@ const SideBar = () => {
 			`;
 
 	return (
-		<Box position='absolute' height='100%' display='flex' zIndex={4} bg='#fff' className={[slide]}>
+		<Box position='absolute' height='100%' display='flex' zIndex={4} backgroundColor='#fff' className={[slide]}>
 			<SliderBtn />
 			<ScrollableSideBar />
 		</Box>

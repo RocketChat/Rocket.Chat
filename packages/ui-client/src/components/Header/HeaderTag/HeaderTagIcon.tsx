@@ -16,7 +16,7 @@ const HeaderTagIcon = ({ icon }: HeaderIconProps) => {
 			{icon}
 		</Box>
 	) : (
-		<Icon size='x12' mie={4} {...icon} />
+		<Icon size='x12' marginInlineEnd={4} {...icon} />
 	);
 };
 

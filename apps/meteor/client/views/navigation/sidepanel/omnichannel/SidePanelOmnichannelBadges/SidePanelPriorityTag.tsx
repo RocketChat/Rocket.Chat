@@ -13,7 +13,7 @@ const SidePanelPriorityTag = ({ priorityWeight }: SidePanelPriorityTagProps) => 
 	}
 
 	return (
-		<Tag icon={<Icon mie={4} size='x12' name={prioritiesConfig?.iconName} />} variant={prioritiesConfig?.variant}>
+		<Tag icon={<Icon marginInlineEnd={4} size='x12' name={prioritiesConfig?.iconName} />} variant={prioritiesConfig?.variant}>
 			{prioritiesConfig?.name}
 		</Tag>
 	);

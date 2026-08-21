@@ -2,8 +2,8 @@ import { Settings } from '@rocket.chat/models';
 import { isPOSTomnichannelIntegrations } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
 
 API.v1.addRoute(

@@ -17,7 +17,7 @@ const OmnichannelVerificationTag = ({ verified, onClick }: OmnichannelVerificati
 		<Tag
 			variant={isVerified ? 'primary' : undefined}
 			onClick={!isVerified && onClick ? onClick : undefined}
-			icon={<Icon size='x12' mie={4} name={isVerified ? 'success-circle' : 'question-mark'} />}
+			icon={<Icon size='x12' marginInlineEnd={4} name={isVerified ? 'success-circle' : 'question-mark'} />}
 		>
 			{isVerified ? t('Verified') : t('Unverified')}
 		</Tag>

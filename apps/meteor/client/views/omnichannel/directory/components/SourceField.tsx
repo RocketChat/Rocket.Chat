@@ -38,7 +38,7 @@ const SourceField = ({ room }: SourceFieldProps) => {
 			<Info>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon source={room.source} status={room.v.status} size='x24' />
-					<Label mi={8} mbe='0'>
+					<Label marginInline={8} marginBlockEnd='0'>
 						{getSourceName(room.source)}
 					</Label>
 					{defaultTypesVisitorData[room.source.type]}
