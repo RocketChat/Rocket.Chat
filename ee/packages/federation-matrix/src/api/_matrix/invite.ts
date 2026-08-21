@@ -213,8 +213,18 @@ export const getMatrixInviteRoutes = () => {
 
 			const ourUser = await Users.findOneByUsername(username);
 
+			// same response as the federation permission check below, so an unauthorized remote
+			// server cannot use the invite endpoint to probe which local users exist
 			if (!ourUser) {
-				throw new Error('user not found not processing invite');
+				logger.info({ msg: 'Invite for unknown local user, rejecting invite to room', userId: userToCheck, roomId });
+
+				return {
+					body: {
+						errcode: 'M_FORBIDDEN',
+						error: 'User does not have permission to access federation',
+					},
+					statusCode: 403,
+				};
 			}
 
 			// check federation permission before processing the invite
