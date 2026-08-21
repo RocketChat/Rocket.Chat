@@ -1,7 +1,8 @@
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
-import type { ConnectionOptions, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
-import { Empty, RequestStrategy, connect } from 'nats';
+import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
+import { Empty, RequestStrategy, ServiceError, connect } from 'nats';
 
 import { getInstanceMethods } from './getInstanceMethods';
 import type { ServiceNodes } from './licenseEnforcement';
@@ -69,6 +70,46 @@ function decodePayload(data: Uint8Array): any {
 
 function decodeParams(data: Uint8Array): any[] {
 	return decodePayload(data) ?? [];
+}
+
+function encodeError(e: unknown): Uint8Array {
+	if (isMeteorError(e)) {
+		return TE.encode(EJSON.stringify(e.toJSON()));
+	}
+
+	const { message, stack } = e instanceof Error ? e : new Error(String(e));
+
+	return TE.encode(EJSON.stringify({ message, stack }));
+}
+
+/** Header values are line based, so newlines in a message would corrupt the protocol frame. */
+function toErrorDescription(e: unknown): string {
+	const message = e instanceof Error ? e.message : String(e);
+
+	return message.replace(/\s+/g, ' ').trim().slice(0, 200) || 'service error';
+}
+
+function restoreError(msg: Msg, serviceError: ServiceError): Error {
+	const plain = decodePayload(msg.data);
+
+	if (!plain) {
+		return serviceError;
+	}
+
+	if (plain.errorType === 'Meteor.Error') {
+		const error = new MeteorError(plain.error, plain.reason, plain.details);
+		if (typeof plain.isClientSafe !== 'undefined') {
+			error.isClientSafe = plain.isClientSafe;
+		}
+		return error;
+	}
+
+	const error = new Error(plain.message ?? serviceError.message);
+	if (plain.stack) {
+		error.stack = plain.stack;
+	}
+
+	return error;
 }
 
 export class NatsBroker implements IBroker {
@@ -162,7 +203,9 @@ export class NatsBroker implements IBroker {
 				try {
 					msg.respond(encodePayload(await serviceInstance[method](...decodeParams(msg.data))));
 				} catch (e) {
-					console.error('error', e);
+					// nats only turns *synchronous* throws into an error reply, so an async
+					// handler has to answer explicitly or the caller waits for the timeout
+					msg.respondError(500, toErrorDescription(e), encodeError(e));
 				}
 			};
 
@@ -206,6 +249,11 @@ export class NatsBroker implements IBroker {
 		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
 
 		const msg = await this.nc.request(subject, encodePayload(data), { timeout: requestTimeout });
+
+		const serviceError = ServiceError.toServiceError(msg);
+		if (serviceError) {
+			throw restoreError(msg, serviceError);
+		}
 
 		return decodePayload(msg.data);
 	}
