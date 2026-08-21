@@ -19,6 +19,11 @@ on:
         type: string
       transporter:
         type: string
+      # 'nats' selects NatsBroker; anything else keeps MoleculerBroker
+      broker:
+        default: ''
+        required: false
+        type: string
       mongodb-version:
         default: "['8.0']"
         required: false
@@ -209,7 +214,7 @@ jobs:
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
           APPS_ENGINE_RUNTIME_BACKEND: ${{ inputs.type == 'api-apps-deno' && 'deno' || '' }}
           FIPS_OVERRIDE: ${{ inputs.fips && '-f docker-compose-ci.fips.yml' || '' }}
-          BROKER: nats
+          BROKER: ${{ inputs.broker }}
         run: |
           read -r -a fips_override <<< "$FIPS_OVERRIDE"
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml "${fips_override[@]}" up -d --wait
@@ -219,11 +224,20 @@ jobs:
 
       - name: Wait services to start up
         if: inputs.release == 'ee'
+        env:
+          BROKER: ${{ inputs.broker }}
         run: |
           docker ps
 
-          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -qE "(Moleculer|Nats)Broker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
+          # assert the broker that was asked for actually started, so a silent
+          # fallback to the other one fails the run instead of passing
+          expected="MoleculerBroker started successfully"
+          if [ "$BROKER" = 'nats' ]; then
+            expected="NatsBroker started successfully"
+          fi
+
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "$expected"; do
+            echo "Waiting 'ddp-streamer' to start up with $expected"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done;
