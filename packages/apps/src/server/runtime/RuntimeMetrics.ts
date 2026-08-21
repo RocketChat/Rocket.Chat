@@ -18,6 +18,8 @@ export type RuntimeThroughput = {
 	appName: string;
 	/** Version of the app the runtime is executing. */
 	appVersion: string;
+	/** Version of the `@rocket.chat/apps` package hosting the runtime boundary. */
+	engineVersion: string;
 	/** The platform runtime backing the subprocess (e.g. `deno`, `node`). */
 	runtime: string;
 	/** Which way the data flowed across the boundary. */

@@ -273,7 +273,7 @@ export const metrics = {
 	appsEngineRuntimeThroughput: new client.Counter({
 		name: 'rocketchat_apps_engine_runtime_throughput_bytes_total',
 		help: 'total bytes exchanged across the boundary between an app runtime (subprocess) and the host',
-		labelNames: ['app_id', 'app_name', 'version', 'runtime', 'direction'],
+		labelNames: ['app_id', 'app_name', 'version', 'engine_version', 'runtime', 'direction'],
 	}),
 
 	// Meteor Facts

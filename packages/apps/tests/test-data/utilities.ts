@@ -140,6 +140,7 @@ export class TestInfastructureSetup {
 			},
 			getTempFilePath: this.getTempFilePath,
 			getRuntimeMetrics: () => noopRuntimeMetrics,
+			getPackageVersion: () => '0.0.0-test',
 		} as unknown as AppManager;
 	}
 

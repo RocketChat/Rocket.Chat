@@ -1,4 +1,6 @@
 import { Buffer } from 'node:buffer';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
@@ -51,6 +53,14 @@ export interface IAppInstallParameters {
 export interface IAppUninstallParameters {
 	user: IUser;
 }
+
+/**
+ * Version of this very package (`@rocket.chat/apps`), read once from its own
+ * `package.json`. `src/server` and `dist/server` sit at the same depth relative
+ * to the package root, so this single relative path resolves both when running
+ * the compiled output and when running from source (tests, ts-node).
+ */
+const PACKAGE_VERSION: string = JSON.parse(readFileSync(join(__dirname, '..', '..', 'package.json'), 'utf-8')).version;
 
 export interface IAppManagerDeps {
 	metadataStorage: AppMetadataStorage;
@@ -200,6 +210,15 @@ export class AppManager {
 	 */
 	public getRuntimeMetrics(): IAppsRuntimeMetrics {
 		return this.runtimeMetrics;
+	}
+
+	/**
+	 * Version of the `@rocket.chat/apps` package running this Apps-Engine host.
+	 * Lets the package report its own version (e.g. as an observability label)
+	 * without the host having to resolve it.
+	 */
+	public getPackageVersion(): string {
+		return PACKAGE_VERSION;
 	}
 
 	/** Gets the instance of the storage connector. */

@@ -100,6 +100,8 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private readonly runtimeMetrics: IAppsRuntimeMetrics;
 
+	private readonly engineVersion: string;
+
 	protected readonly tempFilePath: string;
 
 	protected readonly appsEnginePath: string;
@@ -118,6 +120,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.appsEnginePath = getAppsEngineDir();
 
 		this.runtimeMetrics = manager.getRuntimeMetrics();
+		this.engineVersion = manager.getPackageVersion();
 
 		this.debug = debugFactory(`appsEngine:runtime:${runtimeName}`).extend(appPackage.info.id);
 		this.messenger = new ProcessMessenger((bytes) => this.observeThroughput('outbound', bytes));
@@ -533,6 +536,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			appId: this.getAppId(),
 			appName: this.appPackage.info.name,
 			appVersion: this.appPackage.info.version,
+			engineVersion: this.engineVersion,
 			runtime: this.runtimeName,
 			direction,
 			bytes,
