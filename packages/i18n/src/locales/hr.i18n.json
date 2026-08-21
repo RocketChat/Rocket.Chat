@@ -1816,8 +1816,6 @@
   "Push_enable": "Omogući",
   "Push_enable_gateway": "Omogući Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API ključ",
-  "Push_gcm_project_number": "GCM Broj projekta",
   "Push_production": "Produkcija",
   "Push_show_message": "Prikaži poruku u obavijesti",
   "Push_show_username_room": "Prikaži kanala/grupu/korisničko ime u obavijesti",

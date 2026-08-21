@@ -1969,8 +1969,6 @@
   "Push_enable": "قادر ساختن",
   "Push_enable_gateway": "فعال کردن دروازه",
   "Push_gateway": "دروازه",
-  "Push_gcm_api_key": "کلید GCM API",
-  "Push_gcm_project_number": "GCM پروژه شماره",
   "Push_production": "تولید",
   "Push_show_message": "نمایش پیام در اطلاع رسانی",
   "Push_show_username_room": "نمایش کانال / گروه / نام کاربری در اطلاع رسانی",

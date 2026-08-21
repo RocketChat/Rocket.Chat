@@ -1699,8 +1699,6 @@
   "Push_enable": "இயக்கு",
   "Push_enable_gateway": "நுழைவாயில் செயல்படுத்த",
   "Push_gateway": "நுழைவாயில்",
-  "Push_gcm_api_key": "GCM API விசை",
-  "Push_gcm_project_number": ", GCM திட்ட எண்",
   "Push_production": "உற்பத்தி",
   "Push_show_message": "அறிவிப்பை செய்தி காட்டு",
   "Push_show_username_room": "சேனல் / குழு / அறிவிப்பு பயனர்பெயர்",

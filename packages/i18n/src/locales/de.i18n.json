@@ -3252,8 +3252,6 @@
   "Push_enable_gateway_Description": "**Warnung:** Sie müssen Ihren Server registrieren (Setup-Assistent > Organisations-Info > Server registrieren) und unsere Datenschutzerklärung akzeptieren (Setup-Assistent > Cloud-Informationen > Cloud-Dienst-Datenschutzbestimmungen), um diese Einstellung zu aktivieren und unser Gateway zu verwenden. Auch wenn diese Einstellung aktiviert ist, wird sie **nicht** funktionieren, wenn der Server nicht registriert ist.",
   "Push_gateway": "Gateway",
   "Push_gateway_description": "Mehrere Zeilen können verwendet werden, um mehrere Gateways anzugeben",
-  "Push_gcm_api_key": "GCM-API-Schlüssel",
-  "Push_gcm_project_number": "GCM-Projektnummer",
   "Push_production": "Produktion",
   "Push_request_content_from_server": "Bei Empfang den gesamten Nachrichteninhalt vom Server abrufen",
   "Push_request_content_from_server_Description": "Anstatt den Inhalt der Nachricht an Apple/Google weiterzugeben, indem er in die Daten der Push-Benachrichtigung aufgenommen wird, wird nur eine Nachrichten-ID übertragen.  Der mobile Client ruft den Inhalt dynamisch vom Server ab und aktualisiert die Benachrichtigung, bevor er sie anzeigt.  Im Falle eines API-Fehlers wird die Meldung \"Sie haben eine neue Nachricht\" angezeigt.  Diese Einstellung ist nur in der Enterprise Edition wirksam.",

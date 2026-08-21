@@ -2460,8 +2460,6 @@
   "Push_enable_gateway_Description": "Pro povolení tohoto nastavení a použití naší brány je třeba zaregistrovat vaši instanci (Průvodce instalací >  Informace o organizaci > Zaregistrovat server) a přijmout podmínky ochrany osobních údajů v cloudu (Průvodce instalací > Informace o Cloudu > Souhlas s podmínkami soukromí služby Cloud)",
   "Push_gateway": "Brána",
   "Push_gateway_description": "K určení více bran lze použít více řádků",
-  "Push_gcm_api_key": "GCM API Klíč",
-  "Push_gcm_project_number": "GCM Číslo projektu",
   "Push_production": "Produkční režim",
   "Push_request_content_from_server": "Po přijetí načíst plné znění zprávy",
   "Push_show_message": "Zobrazit v notifikaci obsah zprávy",

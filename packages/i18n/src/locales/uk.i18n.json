@@ -2159,8 +2159,6 @@
   "Push_enable": "включити",
   "Push_enable_gateway": "включити шлюз",
   "Push_gateway": "шлюз",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Номер проекту",
   "Push_production": "виробництво",
   "Push_show_message": "Показати повідомлення повідомлення",
   "Push_show_username_room": "Показати канал / група / ім'я користувача в повідомленні",

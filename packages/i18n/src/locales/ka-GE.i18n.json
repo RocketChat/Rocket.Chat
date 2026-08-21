@@ -2312,8 +2312,6 @@
   "Push_enable_gateway": "ჩართეთ გეითვეი",
   "Push_gateway": "გეითვეი",
   "Push_gateway_description": "მრავალი გეითვეის მისათითებლად შეგიძლიათ მრავალი ხაზის გამოყენება",
-  "Push_gcm_api_key": "GCM API გასაღები",
-  "Push_gcm_project_number": "GCM პროექტის ნომერი",
   "Push_production": "წარმოება",
   "Push_show_message": "აჩვენეთ მესიჯი შეტყობინებაში",
   "Push_show_username_room": "აჩვენეთ არხი/ჯგუფი/მომხმარების სახელი შეტყობინებებში",

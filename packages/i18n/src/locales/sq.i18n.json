@@ -1699,8 +1699,6 @@
   "Push_enable": "Aktivizoj",
   "Push_enable_gateway": "Aktivizo Gateway",
   "Push_gateway": "portë",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Numri i Projektit",
   "Push_production": "Produksioni",
   "Push_show_message": "Trego mesazh në njoftimin",
   "Push_show_username_room": "Trego channel / grupi / përdorues në njoftimin",

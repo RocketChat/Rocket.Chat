@@ -1938,8 +1938,6 @@
   "Push_enable": "Aktivieren",
   "Push_enable_gateway": "Gateway aktivieren",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM-API-Key",
-  "Push_gcm_project_number": "GCM-Projektnummer",
   "Push_production": "Produktion",
   "Push_show_message": "Nachricht in der Benachrichtigung anzeigen",
   "Push_show_username_room": "Kanal/Gruppe/Benutzername in der Benachrichtigung anzeigen",

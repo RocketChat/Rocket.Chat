@@ -1699,8 +1699,6 @@
   "Push_enable": "Бататгах",
   "Push_enable_gateway": "Гарцыг идэвхжүүлнэ үү",
   "Push_gateway": "Гарц",
-  "Push_gcm_api_key": "GCM API түлхүүр",
-  "Push_gcm_project_number": "GCM Төслийн дугаар",
   "Push_production": "Бүтээгдэхүүн",
   "Push_show_message": "Мэдэгдэлээр мэдэгдэл харуулах",
   "Push_show_username_room": "Мэдэгдэлийн суваг / Бүлэг / Хэрэглэгчийн нэрийг харуулах",

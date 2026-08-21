@@ -1697,8 +1697,6 @@
   "Push_enable": "Hidupkan",
   "Push_enable_gateway": "aktifkan Gateway",
   "Push_gateway": "pintu gerbang",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Project Number",
   "Push_production": "Produksi",
   "Push_show_message": "Tampilkan pesan dalam pemberitahuan",
   "Push_show_username_room": "Tampilkan channel / group / username di pemberitahuan",

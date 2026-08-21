@@ -1696,8 +1696,6 @@
   "Push_enable": "Omogoči",
   "Push_enable_gateway": "Omogoči prehod",
   "Push_gateway": "Prehod",
-  "Push_gcm_api_key": "Ključ GCM API",
-  "Push_gcm_project_number": "Številka projekta GCM ",
   "Push_production": "Proizvodnja",
   "Push_show_message": "Prikaži sporočilo v obvestilih",
   "Push_show_username_room": "Pokaži kanal/skupino/uporabniško ime v obvestilu",

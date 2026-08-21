@@ -1538,8 +1538,6 @@
   "Push_enable": "омогућити",
   "Push_enable_gateway": "Омогући Гатеваи",
   "Push_gateway": "пролаз",
-  "Push_gcm_api_key": "ГЦМ АПИ кључ",
-  "Push_gcm_project_number": "ГЦМ Број пројекта",
   "Push_production": "производња",
   "Push_show_message": "Показати поруку у обавештењу",
   "Push_show_username_room": "Схов канал / група / корисничко име у обавештењу",

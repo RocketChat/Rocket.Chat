@@ -1715,8 +1715,6 @@
   "Push_enable": "Iespējot",
   "Push_enable_gateway": "Iespējot vārteju",
   "Push_gateway": "Vārteja",
-  "Push_gcm_api_key": "GCM API atslēga",
-  "Push_gcm_project_number": "GCM projekta numurs",
   "Push_production": "Ražošana",
   "Push_show_message": "Rādīt ziņojumu pie paziņojumiem",
   "Push_show_username_room": "Rādīt kanālu / grupu / lietotājvārdu pie paziņojumiem",

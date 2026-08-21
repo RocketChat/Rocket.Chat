@@ -3336,8 +3336,6 @@
   "Push_enable_gateway_Description": "**Varoitus:** Sinun on hyväksyttävä palvelimesi rekisteröinti (Ohjattu asennus > Organisaation tiedot > Rekisteröi palvelin) ja tietosuojaehtomme (Ohjattu asennus > Pilvitiedot > Pilvipalvelun tietosuojaehtosopimus), jotta voit ottaa tämän asetuksen käyttöön ja käyttää yhdyskäytäväämme. Vaikka tämä asetus olisi käytössä, se **ei toimi**, jos palvelinta ei ole rekisteröity.",
   "Push_gateway": "Yhdyskäytävä",
   "Push_gateway_description": "Useita rivejä voidaan käyttää useamman yhdyskäytävän määrittämiseen",
-  "Push_gcm_api_key": "GCM API -avain",
-  "Push_gcm_project_number": "GCM-projektin numero",
   "Push_production": "Tuotanto",
   "Push_request_content_from_server": "Nouda koko viestin sisältö palvelimelta vastaanotettaessa",
   "Push_request_content_from_server_Description": "Käyttämällä push-ilmoituksessa vain viestin tunnusta koko viestin sisällön sijasta voit piilottaa viestin sisällön Applelta/Googlelta. Mobiilisovellus noutaa sisällön palvelimesta dynaamisesti ja päivittää ilmoituksen ennen sen näyttämistä. API-virheen yhteydessä saat ilmoituksen Sinulla on uusi viesti. Asetus toimii vain yritysversiossa.",

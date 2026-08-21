@@ -2543,8 +2543,6 @@
   "Push_enable_gateway_Description": "Du skal acceptere for at registrere din server (Opsætningsguide > Organisationsinfo > Registrer server) og vores privatlivspolitik-betingelser (Opsætningsguide > Cloud-info>  Aftale om Cloud-service om privatlivets fred) for at aktivere denne indstilling og bruge vores gateway",
   "Push_gateway": "Gateway",
   "Push_gateway_description": "Flere linjer kan bruges til at specificere flere gateways",
-  "Push_gcm_api_key": "GCM API-nøgle",
-  "Push_gcm_project_number": "GCM Projektnummer",
   "Push_production": "Produktion",
   "Push_request_content_from_server": "Hent det fulde meddelelsesindhold fra serveren ved modtagelse",
   "Push_show_message": "Vis besked i meddelelse",

@@ -1699,8 +1699,6 @@
   "Push_enable": "Activează",
   "Push_enable_gateway": "Activați Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Project Number",
   "Push_production": "Producție",
   "Push_show_message": "Afișați mesajul în notificare",
   "Push_show_username_room": "Afișează canalul / grup / nume de utilizator în notificare",

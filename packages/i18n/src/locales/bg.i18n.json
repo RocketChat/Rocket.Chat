@@ -1698,8 +1698,6 @@
   "Push_enable": "Активиране",
   "Push_enable_gateway": "Активиране на портала",
   "Push_gateway": "врата",
-  "Push_gcm_api_key": "GCM API ключ",
-  "Push_gcm_project_number": "Номер на проекта в GCM",
   "Push_production": "производство",
   "Push_show_message": "Показване на съобщението в известието",
   "Push_show_username_room": "Показване на канал / група / потребителско име в известието",

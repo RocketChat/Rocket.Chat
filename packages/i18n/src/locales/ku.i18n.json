@@ -1693,8 +1693,6 @@
   "Push_enable": "Bikêrkirin",
   "Push_enable_gateway": "çalak Gateway",
   "Push_gateway": "Derî",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Hejmara Project",
   "Push_production": "Çêkerî",
   "Push_show_message": "Nîşan message in notification",
   "Push_show_username_room": "Show channel / group / navê bikarhêner li notification",

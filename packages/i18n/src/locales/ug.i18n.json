@@ -744,8 +744,6 @@
   "Push_enable": "قوزغىتىش",
   "Push_enable_gateway": "تور ئۆتكىلى قوزغىتىلدى",
   "Push_gateway": "تور ئۆتكىلى",
-  "Push_gcm_api_key": "GCM API key",
-  "Push_gcm_project_number": "تۈر سانىGCM",
   "Push_production": "ئىشلەپ چىقىرىش",
   "Push_show_message": "ئۇقتۇرۇشتا ئۇچۇرنى كۆرسىتىش",
   "Push_show_username_room": "ئەزا ئىسمى قاتارلىقلارنى كۆرسىتىشى كېرەك \\ گۇرۇپپا \\' ئۇقتۇرۇشتا قانالنى ",
