@@ -135,7 +135,7 @@ export function message() {
 
 	onHomeserverEvent('homeserver.matrix.redaction', async ({ event, redacts }) => {
 		try {
-			const redactedEventId = event.redacts || redacts;
+			const redactedEventId = redacts || event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
 				return;
