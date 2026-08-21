@@ -1,0 +1,22 @@
+docs/npm-publishing.md
+  s_a17a776612fabf::t_2a40ebd7c7aaa1 1-11,19-37,39-64,70,73-112
+  s_a17a776612fabf::t_6f6aa1bc97641b 12-18,38,65-69,71-72
+CLAUDE.md
+  s_a17a776612fabf::t_e3182fa0a3f840 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a54a103c6a26ce5296d14099ff7b649769ec7ae2",
+  "prompts": {},
+  "sessions": {
+    "s_a17a776612fabf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2b2ab6e-4018-4e00-8c6e-c07cd846ca61",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
