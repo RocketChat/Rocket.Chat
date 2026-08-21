@@ -532,6 +532,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.runtimeMetrics.observeThroughput({
 			appId: this.getAppId(),
 			appName: this.appPackage.info.name,
+			appVersion: this.appPackage.info.version,
 			runtime: this.runtimeName,
 			direction,
 			bytes,

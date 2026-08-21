@@ -9,7 +9,7 @@ import { metrics } from '../../../server/lib/metrics';
  * injects into the `AppManager`.
  */
 export const appsRuntimeMetrics: IAppsRuntimeMetrics = {
-	observeThroughput({ appId, appName, runtime, direction, bytes }) {
-		metrics.appsEngineRuntimeThroughput.inc({ app_id: appId, app_name: appName, runtime, direction }, bytes);
+	observeThroughput({ appId, appName, appVersion, runtime, direction, bytes }) {
+		metrics.appsEngineRuntimeThroughput.inc({ app_id: appId, app_name: appName, version: appVersion, runtime, direction }, bytes);
 	},
 };
