@@ -18,16 +18,18 @@ export const useCategoryModals = () => {
 	return useMemo(() => {
 		const onClose = () => setModal(null);
 
-		const handleOpenCreate = (room?: MovableRoom) => {
-			if (shouldShowUpsell) {
-				return setModal(<CustomCategoryUpsellModal onClose={onClose} onConfirm={handleManageSubscription} />);
-			}
+		if (shouldShowUpsell) {
+			const handleOpenUpsellModal = () => setModal(<CustomCategoryUpsellModal onClose={onClose} onConfirm={handleManageSubscription} />);
 
-			setModal(<CreateCategoryModal room={room} onClose={onClose} />);
-		};
+			return {
+				openCreate: handleOpenUpsellModal,
+				openManage: handleOpenUpsellModal,
+				openDelete: handleOpenUpsellModal,
+			};
+		}
 
 		return {
-			openCreate: handleOpenCreate,
+			openCreate: (room?: MovableRoom) => setModal(<CreateCategoryModal room={room} onClose={onClose} />),
 			openManage: (category: ISidebarCustomCategory) => setModal(<ManageCategoryModal category={category} onClose={onClose} />),
 			openDelete: (category: ISidebarCustomCategory) => setModal(<DeleteCategoryModal category={category} onClose={onClose} />),
 		};
