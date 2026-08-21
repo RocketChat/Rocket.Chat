@@ -20,7 +20,6 @@ import {
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from './lib/visitors';
 import { canAccessRoomAsync } from '../../../lib/authorization';
-import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { normalizeMessagesForUser } from '../../../lib/utils/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
@@ -121,15 +120,11 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector } = this.queryParams;
-			const parsedSelector = JSON.parse(selector);
-
-			if (parsedSelector.conditions && Object.keys(parsedSelector.conditions).length > 0) {
-				apiDeprecationLogger.parameter(this.route, 'conditions', '9.0.0', this.response);
-			}
+			const { term, exceptions } = JSON.parse(selector);
 
 			return API.v1.success(
 				await findVisitorsToAutocomplete({
-					selector: parsedSelector,
+					selector: { term, exceptions },
 				}),
 			);
 		},
