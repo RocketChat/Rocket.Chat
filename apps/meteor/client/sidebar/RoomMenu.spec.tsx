@@ -111,7 +111,7 @@ const enterpriseCategoryRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
 		.withQueryClient(buildEnterpriseQueryClient())
-		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c' }))
+		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c', category: 'cat-design' }))
 		.withUserPreference('sidebarCategories', [{ _id: 'cat-design', name: 'Design', showUnreads: true }])
 		.build(),
 };
@@ -125,13 +125,13 @@ it('shows "Remove from Favorites" in the Move to submenu when the room is in fav
 	expect(await screen.findByRole('menuitem', { name: 'Remove from Favorites' })).toBeInTheDocument();
 });
 
-it('shows the matching category in the Move to submenu when the room is in a custom category', async () => {
+it('shows "Remove from Design" in the Move to submenu when the room is in a custom category', async () => {
 	render(<RoomMenu {...defaultProps} />, enterpriseCategoryRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
 
-	expect(await screen.findByRole('menuitem', { name: 'Design' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Remove from Design' })).toBeInTheDocument();
 });
 
 it('should display only mark unread and favorite for omnichannel rooms', async () => {
