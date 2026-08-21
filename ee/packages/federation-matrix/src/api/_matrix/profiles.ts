@@ -460,11 +460,7 @@ export const getMatrixProfilesRoutes = () => {
 				return {
 					body: {
 						room_version: response.room_version,
-						event: {
-							...response.event,
-							// origin is not a PDU field, but is required in the response for federation
-							origin: federationSDK.getConfig('serverName'),
-						},
+						event: response.event,
 					},
 					statusCode: 200,
 				};
