@@ -45,9 +45,6 @@
 		"ts-jest": "~29.4.11",
 		"typescript": "~5.9.3"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"volta": {
 		"extends": "../../package.json"
 	}

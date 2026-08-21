@@ -77,9 +77,6 @@
 	"volta": {
 		"extends": "../../package.json"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"
 	}
