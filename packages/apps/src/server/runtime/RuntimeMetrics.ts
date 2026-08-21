@@ -8,6 +8,23 @@
 export type RuntimeThroughputDirection = 'inbound' | 'outbound';
 
 /**
+ * A measurement of data crossing the boundary between an app's runtime and the
+ * host, reported to {@link IAppsRuntimeMetrics.observeThroughput}.
+ */
+export type RuntimeThroughput = {
+	/** The app whose runtime produced/consumed the data. */
+	appId: string;
+	/** Human-readable name of the app, for readability alongside `appId`. */
+	appName: string;
+	/** The platform runtime backing the subprocess (e.g. `deno`, `node`). */
+	runtime: string;
+	/** Which way the data flowed across the boundary. */
+	direction: RuntimeThroughputDirection;
+	/** Size of the (encoded) message in bytes. */
+	bytes: number;
+};
+
+/**
  * Sink for runtime observability signals produced by the subprocess controllers.
  *
  * The Apps-Engine package must stay decoupled from the host's metrics backend
@@ -21,12 +38,8 @@ export interface IAppsRuntimeMetrics {
 	 * Records the number of bytes that crossed the boundary between an app's
 	 * runtime and the host, so the host can expose the throughput of that
 	 * channel.
-	 *
-	 * @param appId - the app whose runtime produced/consumed the data
-	 * @param direction - which way the data flowed across the boundary
-	 * @param bytes - size of the (encoded) message in bytes
 	 */
-	observeThroughput(appId: string, direction: RuntimeThroughputDirection, bytes: number): void;
+	observeThroughput(throughput: RuntimeThroughput): void;
 }
 
 /**

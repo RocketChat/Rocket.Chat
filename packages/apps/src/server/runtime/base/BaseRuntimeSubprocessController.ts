@@ -19,7 +19,7 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
-import type { IAppsRuntimeMetrics } from '../RuntimeMetrics';
+import type { IAppsRuntimeMetrics, RuntimeThroughputDirection } from '../RuntimeMetrics';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
@@ -120,7 +120,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.runtimeMetrics = manager.getRuntimeMetrics();
 
 		this.debug = debugFactory(`appsEngine:runtime:${runtimeName}`).extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger((bytes) => this.runtimeMetrics.observeThroughput(this.getAppId(), 'outbound', bytes));
+		this.messenger = new ProcessMessenger((bytes) => this.observeThroughput('outbound', bytes));
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
@@ -524,6 +524,21 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 	}
 
 	/**
+	 * Reports the size of a message crossing the runtime/host boundary to the
+	 * injected metrics sink, tagging it with the app and platform runtime it
+	 * belongs to.
+	 */
+	private observeThroughput(direction: RuntimeThroughputDirection, bytes: number): void {
+		this.runtimeMetrics.observeThroughput({
+			appId: this.getAppId(),
+			appName: this.appPackage.info.name,
+			runtime: this.runtimeName,
+			direction,
+			bytes,
+		});
+	}
+
+	/**
 	 * Transparent pass-through over the subprocess stdout that measures the
 	 * throughput of the runtime → host channel by observing the size of each raw
 	 * chunk before it reaches the decoder. It does not alter the data nor
@@ -531,7 +546,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 	 */
 	private async *countInboundThroughput(stream: Readable): AsyncIterable<Buffer> {
 		for await (const chunk of stream as AsyncIterable<Buffer>) {
-			this.runtimeMetrics.observeThroughput(this.getAppId(), 'inbound', chunk.length);
+			this.observeThroughput('inbound', chunk.length);
 			yield chunk;
 		}
 	}
