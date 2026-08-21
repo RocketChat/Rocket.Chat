@@ -1,9 +1,9 @@
 import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenuItem } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './useCategoryModals';
@@ -49,8 +49,8 @@ const CategoryMenu = ({
 	onMoveDown,
 }: CategoryMenuProps) => {
 	const { t } = useTranslation();
-	const [isOpen, setIsOpen] = useState(false);
-	const close = () => setIsOpen(false);
+	const [isOpen, toggleOpen] = useToggle(false);
+	const close = () => toggleOpen(false);
 
 	const { openManage, openDelete } = useCategoryModals();
 	const {
@@ -157,7 +157,7 @@ const CategoryMenu = ({
 			mini
 			selectionMode='multiple'
 			isOpen={isOpen}
-			onOpenChange={setIsOpen}
+			onOpenChange={toggleOpen}
 			{...(disabledKeys.length ? { disabledKeys } : {})}
 			onAction={handleAction}
 		>
