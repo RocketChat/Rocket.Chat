@@ -1631,8 +1631,8 @@ describe('[Rooms]', () => {
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
-				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
-				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
+				updatePermission('leave-c', ['admin', 'user', 'bot', 'app']),
+				updatePermission('leave-p', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user2),
 				updateSetting('API_User_Limit', 10000),
 			]),
@@ -2065,10 +2065,7 @@ describe('[Rooms]', () => {
 		});
 
 		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
-			]),
+			Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), updatePermission('view-c-room', ['admin', 'user', 'bot', 'app'])]),
 		);
 
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', async () => {
@@ -2088,7 +2085,7 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Not Allowed');
 					})
-					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot']).then(done));
 			});
 		});
 		it('should return a list of discussions with ONE discussion', async () => {

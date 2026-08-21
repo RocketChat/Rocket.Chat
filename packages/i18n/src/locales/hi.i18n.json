@@ -21,7 +21,6 @@
   "Accounts_Admin_Email_Approval_Needed_Subject_Default": "एक नया उपयोगकर्ता पंजीकृत है और उसे अनुमोदन की आवश्यकता है",
   "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>The user <b>[name] ([email])</b> has been registered.</p><p>Reason: <b>[reason]</b></p><p>Please check \"Administration -> Users\" to activate or delete it.</p>",
   "Accounts_AllowAnonymousRead": "अनाम पढ़ने की अनुमति दें",
-  "Accounts_AllowAnonymousWrite": "अनाम लिखने की अनुमति दें",
   "Accounts_AllowDeleteOwnAccount": "उपयोगकर्ताओं को स्वयं का खाता हटाने की अनुमति दें",
   "Accounts_AllowEmailChange": "ईमेल परिवर्तन की अनुमति दें",
   "Accounts_AllowPasswordChange": "पासवर्ड बदलने की अनुमति दें",

@@ -21,7 +21,6 @@
   "Accounts_Admin_Email_Approval_Needed_Subject_Default": "Uus kasutaja on registreeritud ja vajab kinnitust",
   "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>Kasutaja <b>[nimi] ([e]) </b> on registreeritud. </p><p>Põhjus: <b>[põhjus] </b></p><p>Palun vaadake \"Administration ->Kasutajad selle aktiveerimiseks või kustutamiseks. </p>",
   "Accounts_AllowAnonymousRead": "Luba anonüümne lugemine",
-  "Accounts_AllowAnonymousWrite": "Luba anonüümne kirjutamine",
   "Accounts_AllowDeleteOwnAccount": "Luba kasutajatel oma konto kustutada",
   "Accounts_AllowEmailChange": "Luba e-maili muutmine",
   "Accounts_AllowPasswordChange": "Luba parooli muutmine",

@@ -9,21 +9,9 @@ type PriorityRoleName =
 	| 'user'
 	| 'app'
 	| 'bot'
-	| 'guest'
-	| 'anonymous';
+	| 'guest';
 
-const order = [
-	'admin',
-	'livechat-manager',
-	'livechat-monitor',
-	'livechat-agent',
-	'custom-role',
-	'user',
-	'app',
-	'bot',
-	'guest',
-	'anonymous',
-] as const;
+const order = ['admin', 'livechat-manager', 'livechat-monitor', 'livechat-agent', 'custom-role', 'user', 'app', 'bot', 'guest'] as const;
 
 const rolesToConsiderAsUser = ['auditor', 'auditor-log'];
 
