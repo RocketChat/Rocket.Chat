@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { QueryClient } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
@@ -52,13 +53,16 @@ const renderOptions = {
 	wrapper: buildBase().build(),
 };
 
+const buildEnterpriseQueryClient = () => {
+	const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+	client.setQueryData(['licenses', 'getLicenses', undefined], {
+		license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+	});
+	return client;
+};
+
 const enterpriseRenderOptions = {
-	wrapper: buildBase()
-		.withJohnDoe()
-		.withEndpoint('GET', '/v1/licenses.info', async () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
-		}))
-		.build(),
+	wrapper: buildBase().withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build(),
 };
 
 it('should display Hide, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
@@ -98,9 +102,7 @@ it('should reveal Favorites and New category inside the "Move to" submenu for en
 const enterpriseFavoriteRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
-		.withEndpoint('GET', '/v1/licenses.info', async () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
-		}))
+		.withQueryClient(buildEnterpriseQueryClient())
 		.withSubscription(createFakeSubscription({ rid: 'roomId', f: true, t: 'c' }))
 		.build(),
 };
@@ -108,9 +110,7 @@ const enterpriseFavoriteRenderOptions = {
 const enterpriseCategoryRenderOptions = {
 	wrapper: buildBase()
 		.withJohnDoe()
-		.withEndpoint('GET', '/v1/licenses.info', async () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
-		}))
+		.withQueryClient(buildEnterpriseQueryClient())
 		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c' }))
 		.withUserPreference('sidebarCustomCategories', [{ _id: 'cat-design', name: 'Design', rooms: ['roomId'], showUnreads: true }])
 		.build(),
