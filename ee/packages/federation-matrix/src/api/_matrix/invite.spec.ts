@@ -102,6 +102,38 @@ describe('PUT /_matrix/federation/v2/invite/:roomId/:eventId', () => {
 		expect(mockProcessInvite).not.toHaveBeenCalled();
 	});
 
+	it('should reject an invite whose state_key has an empty localpart', async () => {
+		const response = await sendInvite(buildInviteEvent(`@:${OUR_SERVER_NAME}`));
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			errcode: 'M_UNKNOWN',
+			error: 'The invite event state_key is not a valid user ID',
+		});
+		expect(mockFindOneByUsername).not.toHaveBeenCalled();
+		expect(mockProcessInvite).not.toHaveBeenCalled();
+	});
+
+	it('should reject an invite addressed to a user that does not exist on this server', async () => {
+		mockFindOneByUsername.mockResolvedValue(null);
+
+		const response = await sendInvite(buildInviteEvent(`@ghost:${OUR_SERVER_NAME}`));
+
+		expect(response.status).toBe(403);
+		expect(await response.json()).toEqual({
+			errcode: 'M_FORBIDDEN',
+			error: 'User does not have permission to access federation',
+		});
+		expect(mockProcessInvite).not.toHaveBeenCalled();
+	});
+
+	it('should accept a state_key whose localpart contains characters the spec allows', async () => {
+		const response = await sendInvite(buildInviteEvent(`@victim+1/2:${OUR_SERVER_NAME}`));
+
+		expect(response.status).toBe(200);
+		expect(mockFindOneByUsername).toHaveBeenCalledWith('victim+1/2');
+	});
+
 	it('should process an invite addressed to a user of this server', async () => {
 		const response = await sendInvite(buildInviteEvent(`@victim:${OUR_SERVER_NAME}`));
 
