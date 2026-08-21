@@ -12,6 +12,7 @@ addMigration({
 			{
 				$set: { active: false },
 				$unset: { 'services.resume.loginTokens': 1 },
+				$pull: { roles: 'anonymous' },
 			},
 		);
 		await Permissions.updateMany({ roles: 'anonymous' }, { $pull: { roles: 'anonymous' } });
