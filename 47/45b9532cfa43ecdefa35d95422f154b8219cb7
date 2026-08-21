@@ -1,0 +1,21 @@
+ee/packages/federation-matrix/src/api/_matrix/profiles.ts
+  s_72c7717eccf972::t_f7518cbc835184 257-276
+  s_72c7717eccf972::t_465f5a548bf8ec 160-166
+  s_72c7717eccf972::t_9bed0e95eafdc6 462,473-479,481-503
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4745b9532cfa43ecdefa35d95422f154b8219cb7",
+  "prompts": {},
+  "sessions": {
+    "s_72c7717eccf972": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2aad1e5e-c543-4714-9ea2-7326a3a076ef",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

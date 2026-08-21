@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/src/api/_matrix/transactions.ts
+  s_c670bdb0c385e6::t_6c63d9fa755dcb 217-219
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ee4fd21143cb60e499fb94d5a5250eb914ab47e7",
+  "prompts": {},
+  "sessions": {
+    "s_c670bdb0c385e6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "812d60f9-e376-4dce-8563-f358524e74a5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
