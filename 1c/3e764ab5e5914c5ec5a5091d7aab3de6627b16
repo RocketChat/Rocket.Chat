@@ -1,0 +1,16 @@
+ee/packages/federation-matrix/src/api/_matrix/send-join.ts
+  h_4c386397e672f4 82
+ee/packages/federation-matrix/src/api/_matrix/profiles.ts
+  h_4c386397e672f4 463
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "1c3e764ab5e5914c5ec5a5091d7aab3de6627b16",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
