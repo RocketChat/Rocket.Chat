@@ -72,7 +72,7 @@ New-ManagementRoleAssignment -Name "RocketChat Calendar Sync" -Role ApplicationI
 ```
 
 3. In Rocket.Chat, set the **EWS endpoint URL** (e.g. `https://mail.example.mil/EWS/Exchange.asmx`), the service account username (`DOMAIN\username` for NTLM; a UPN also works) and password, and the auth method. NTLM (NTLMv2) is the default; use Basic only where the endpoint requires it (always over HTTPS).
-4. TLS: if the endpoint uses a private CA, prefer starting the server with `NODE_EXTRA_CA_CERTS=/path/to/ca.pem`. The "Allow self-signed TLS certificates" setting disables certificate validation **for the EWS endpoint only** and is an explicit opt-in for trusted networks.
+4. TLS: certificate validation is always enforced. If the endpoint uses a private CA or a self-signed certificate, start the server with `NODE_EXTRA_CA_CERTS=/path/to/ca.pem` so Node trusts that issuer. There is deliberately no setting to skip validation.
 
 Free/busy-only mode uses `GetUserAvailability` under the service account's own identity and relies on organization-default free/busy visibility; impersonation is only exercised by full event sync (`FindItem`/`GetItem`).
 

@@ -14,7 +14,6 @@ const CONFIG = {
 	username: 'CONTOSO\\svc',
 	password: 'pw',
 	authMethod: 'ntlm' as const,
-	allowSelfSignedCerts: false,
 };
 
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';

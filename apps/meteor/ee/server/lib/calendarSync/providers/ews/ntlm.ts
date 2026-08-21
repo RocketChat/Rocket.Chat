@@ -79,12 +79,18 @@ export function parseType2Message(authenticateHeader: string): INtlmChallenge {
 	return { serverChallenge, targetInfo, flags };
 }
 
+/**
+ * NTLMv2 compatibility primitive.
+ * Per [MS-NLMP], NTLMv2 response construction requires HMAC-MD5.
+ * Do not replace with a different digest unless NTLM authentication support is removed.
+ */
 function hmacMd5(key: Buffer, data: Buffer): Buffer {
 	return crypto.createHmac('md5', key).update(data).digest();
 }
 
 /** NTOWFv2 ([MS-NLMP] 3.3.2): HMAC_MD5(MD4(UTF16LE(password)), UTF16LE(UPPER(user) + domain)) */
 export function ntowfv2(username: string, password: string, domain: string): Buffer {
+	// NTLMv2 requires MD4 here for NT hash derivation; this is protocol-defined legacy behavior.
 	const passwordHash = md4(Buffer.from(password, 'utf16le'));
 	return hmacMd5(passwordHash, Buffer.from(username.toUpperCase() + domain, 'utf16le'));
 }

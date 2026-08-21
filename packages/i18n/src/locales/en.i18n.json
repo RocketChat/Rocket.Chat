@@ -1123,8 +1123,6 @@
   "CalendarSync_Connection_Successful": "Connection successful. The configured calendar provider accepted the credentials.",
   "CalendarSync_Enabled": "Enable server calendar sync",
   "CalendarSync_Enabled_Description": "Periodically synchronize users' calendars from Microsoft Exchange/Outlook into Rocket.Chat using a server-side connection.",
-  "CalendarSync_Ews_AllowSelfSignedCerts": "Allow self-signed TLS certificates",
-  "CalendarSync_Ews_AllowSelfSignedCerts_Description": "Skip TLS certificate validation for the EWS endpoint only. Use exclusively with self-signed certificates on trusted networks; prefer adding your CA via NODE_EXTRA_CA_CERTS instead.",
   "CalendarSync_Ews_AuthMethod": "Authentication method",
   "CalendarSync_Ews_AuthMethod_Basic": "Basic",
   "CalendarSync_Ews_AuthMethod_Description": "How the service account authenticates against the EWS endpoint. NTLM is the default for on-premises Exchange; use Basic only where the endpoint requires it.",

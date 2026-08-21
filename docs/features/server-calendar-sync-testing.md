@@ -136,10 +136,12 @@ Set-ManagementRoleAssignment "RocketChat Calendar Sync" -CustomRecipientWriteSco
 
 ### 2.4 TLS
 
-Exchange installs with a self-signed certificate. Two ways to make the Rocket.Chat host trust it, in order of preference:
+Exchange installs with a self-signed certificate, and the integration always enforces certificate validation — there is no setting to bypass it. Make the Rocket.Chat host trust the lab certificate:
 
-1. Export the cert (`Export-Certificate` or from the browser) and start Rocket.Chat with `NODE_EXTRA_CA_CERTS=/path/to/ex01-ca.pem`.
-2. Or enable **Allow self-signed TLS certificates** in the Calendar Sync EWS settings (scoped to the EWS endpoint only).
+1. Export the cert (`Export-Certificate` on `EX01`, or from the browser).
+2. Start Rocket.Chat with `NODE_EXTRA_CA_CERTS=/path/to/ex01-ca.pem`.
+
+Skipping this yields a `network-error` on test connection.
 
 Also make sure the Rocket.Chat host resolves `ex01.corp.lab` (add to `/etc/hosts` if the lab DNS isn't reachable).
 

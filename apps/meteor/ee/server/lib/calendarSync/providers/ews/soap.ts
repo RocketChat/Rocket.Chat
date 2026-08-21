@@ -146,7 +146,7 @@ function parseXml(xml: string): Document {
 	if (!doc?.documentElement) {
 		throw new CalendarSyncError('provider-error', 'Unable to parse the EWS response as XML');
 	}
-	return doc as unknown as Document;
+	return doc;
 }
 
 function elementsNS(parent: Document | Element, ns: string, localName: string): Element[] {

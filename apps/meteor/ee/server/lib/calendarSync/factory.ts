@@ -64,17 +64,16 @@ export function getConfiguredProvider(): ICalendarSyncProvider | null {
 		const username = settings.get<string>('CalendarSync_Ews_Username')?.trim();
 		const password = settings.get<string>('CalendarSync_Ews_Password');
 		const authMethod = settings.get<string>('CalendarSync_Ews_AuthMethod') === 'basic' ? ('basic' as const) : ('ntlm' as const);
-		const allowSelfSignedCerts = settings.get<boolean>('CalendarSync_Ews_AllowSelfSignedCerts') === true;
 
 		if (!url || !username || !password) {
 			return null;
 		}
 
-		const key = JSON.stringify([type, url, username, password, authMethod, allowSelfSignedCerts]);
+		const key = JSON.stringify([type, url, username, password, authMethod]);
 		if (cached?.key !== key) {
 			cached = {
 				key,
-				provider: new ExchangeEwsCalendarProvider({ url, username, password, authMethod, allowSelfSignedCerts }),
+				provider: new ExchangeEwsCalendarProvider({ url, username, password, authMethod }),
 			};
 		}
 		return cached.provider;

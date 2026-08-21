@@ -22,10 +22,7 @@ const response = (statusCode: number, headers: Record<string, string> = {}, body
 describe('calendarSync/ews/EwsHttpClient', () => {
 	it('should send a single Basic-authenticated request', async () => {
 		const requestFn = sinon.stub().resolves(response(200, {}, '<xml/>'));
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'svc@example.mil', password: 'pw', authMethod: 'basic', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'svc@example.mil', password: 'pw', authMethod: 'basic' }, requestFn);
 
 		const result = await client.post('<soap/>');
 
@@ -42,10 +39,7 @@ describe('calendarSync/ews/EwsHttpClient', () => {
 		requestFn.onFirstCall().resolves(response(401, { 'www-authenticate': type2 }));
 		requestFn.onSecondCall().resolves(response(200, {}, '<ok/>'));
 
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm' }, requestFn);
 
 		const result = await client.post('<soap/>');
 		expect(result.body).to.equal('<ok/>');
@@ -72,10 +66,7 @@ describe('calendarSync/ews/EwsHttpClient', () => {
 			return type === 1 ? response(401, { 'www-authenticate': type2 }) : response(200, {}, '<ok/>');
 		});
 
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm' }, requestFn);
 
 		await Promise.all([client.post('<a/>'), client.post('<b/>')]);
 
@@ -84,10 +75,7 @@ describe('calendarSync/ews/EwsHttpClient', () => {
 
 	it('should fail with auth-failed when the endpoint does not offer NTLM', async () => {
 		const requestFn = sinon.stub().resolves(response(401, { 'www-authenticate': 'Negotiate' }));
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm' }, requestFn);
 
 		await client.post('<soap/>').then(
 			() => expect.fail('expected rejection'),
@@ -97,10 +85,7 @@ describe('calendarSync/ews/EwsHttpClient', () => {
 
 	it('should map transport failures to network-error', async () => {
 		const requestFn = sinon.stub().rejects(new Error('ECONNREFUSED 10.0.0.5:443'));
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'svc', password: 'pw', authMethod: 'basic', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'svc', password: 'pw', authMethod: 'basic' }, requestFn);
 
 		await client.post('<soap/>').then(
 			() => expect.fail('expected rejection'),
@@ -112,10 +97,7 @@ describe('calendarSync/ews/EwsHttpClient', () => {
 		const requestFn = sinon.stub();
 		requestFn.onFirstCall().rejects(new Error('boom'));
 		requestFn.onSecondCall().resolves(response(200, {}, '<ok/>'));
-		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'svc', password: 'pw', authMethod: 'basic', allowSelfSignedCerts: false },
-			requestFn,
-		);
+		const client = new EwsHttpClient({ url: ENDPOINT, username: 'svc', password: 'pw', authMethod: 'basic' }, requestFn);
 
 		await client.post('<soap/>').catch(() => undefined);
 		const result = await client.post('<soap/>');

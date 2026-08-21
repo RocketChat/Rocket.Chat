@@ -52,7 +52,6 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 			CalendarSync_Ews_Username: 'CONTOSO\\svc',
 			CalendarSync_Ews_Password: 'pw',
 			CalendarSync_Ews_AuthMethod: 'ntlm',
-			CalendarSync_Ews_AllowSelfSignedCerts: false,
 		};
 
 		const graphConstructor = sinon.stub();
@@ -131,11 +130,11 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 		};
 
 		const client = new EwsHttpClient(
-			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm', allowSelfSignedCerts: false },
+			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm' },
 			recordingRequestFn as any,
 		);
 		const provider = new ExchangeEwsCalendarProvider(
-			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm', allowSelfSignedCerts: false },
+			{ url: ENDPOINT, username: 'CONTOSO\\svc', password: 'pw', authMethod: 'ntlm' },
 			client,
 		);
 

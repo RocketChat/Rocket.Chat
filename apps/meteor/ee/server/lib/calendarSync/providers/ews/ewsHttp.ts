@@ -26,8 +26,6 @@ export interface IEwsHttpConfig {
 	username: string;
 	password: string;
 	authMethod: 'ntlm' | 'basic';
-	/** Explicit admin opt-in only; scoped to the EWS endpoint, never global */
-	allowSelfSignedCerts: boolean;
 	timeoutMs?: number;
 }
 
@@ -96,7 +94,6 @@ export class EwsHttpClient {
 			? new https.Agent({
 					keepAlive: true,
 					maxSockets: 1,
-					...(config.allowSelfSignedCerts && { rejectUnauthorized: false }),
 				})
 			: new http.Agent({ keepAlive: true, maxSockets: 1 });
 		this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;

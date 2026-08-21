@@ -5,14 +5,18 @@ import { CalendarSyncError } from '../../definition';
 const base64url = (input: Buffer | string): string =>
 	(typeof input === 'string' ? Buffer.from(input) : input).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 
-/** SHA-1 thumbprint (x5t) of the certificate, as Entra ID expects in the assertion header */
-export function certificateThumbprint(certificatePem: string): string {
+const certificateDer = (certificatePem: string): Buffer => {
 	const match = /-----BEGIN CERTIFICATE-----([A-Za-z0-9+/=\s]+)-----END CERTIFICATE-----/.exec(certificatePem);
 	if (!match) {
 		throw new CalendarSyncError('invalid-certificate', 'The configured value is not a PEM-encoded certificate');
 	}
-	const der = Buffer.from(match[1].replace(/\s+/g, ''), 'base64');
-	return base64url(crypto.createHash('sha1').update(der).digest());
+
+	return Buffer.from(match[1].replace(/\s+/g, ''), 'base64');
+};
+
+/** SHA-256 thumbprint (x5t#S256) of the certificate */
+export function certificateThumbprintSha256(certificatePem: string): string {
+	return base64url(crypto.createHash('sha256').update(certificateDer(certificatePem)).digest());
 }
 
 /**
@@ -36,7 +40,11 @@ export function buildClientAssertion({
 	now?: number;
 	jti?: string;
 }): string {
-	const header = { alg: 'RS256', typ: 'JWT', x5t: certificateThumbprint(certificatePem) };
+	const header = {
+		'alg': 'RS256',
+		'typ': 'JWT',
+		'x5t#S256': certificateThumbprintSha256(certificatePem),
+	};
 	const nowSeconds = Math.floor(now / 1000);
 	const payload = {
 		aud: tokenUrl,

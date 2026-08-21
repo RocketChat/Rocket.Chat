@@ -126,12 +126,6 @@ export function addSettings(): void {
 						invalidValue: 'ntlm',
 						enableQuery: ewsQuery,
 					});
-
-					await this.add('CalendarSync_Ews_AllowSelfSignedCerts', false, {
-						type: 'boolean',
-						invalidValue: false,
-						enableQuery: ewsQuery,
-					});
 				});
 
 				await this.section('CalendarSync_Section_Schedule', async function () {
