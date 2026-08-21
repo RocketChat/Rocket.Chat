@@ -15,7 +15,12 @@ export class ProcessMessenger {
 
 	private _sendStrategy: (message: Message) => void;
 
-	constructor() {
+	/**
+	 * @param onSend - optional hook invoked with the number of bytes of each
+	 * encoded message written to the subprocess, used to measure the throughput
+	 * of the host → runtime channel.
+	 */
+	constructor(private readonly onSend?: (bytes: number) => void) {
 		this._sendStrategy = this.strategyError;
 	}
 
@@ -52,6 +57,10 @@ export class ProcessMessenger {
 	}
 
 	private strategySend(message: Message) {
-		this.process.stdin.write(this.encoder.encode(message));
+		const encoded = this.encoder.encode(message);
+
+		this.onSend?.(encoded.byteLength);
+
+		this.process.stdin.write(encoded);
 	}
 }

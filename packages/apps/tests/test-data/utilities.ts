@@ -60,6 +60,7 @@ import { MarketplacePurchaseType } from '../../src/server/marketplace/Marketplac
 import { MarketplaceSubscriptionStatus } from '../../src/server/marketplace/MarketplaceSubscriptionStatus';
 import { MarketplaceSubscriptionType } from '../../src/server/marketplace/MarketplaceSubscriptionType';
 import type { IRuntimeController } from '../../src/server/runtime/IRuntimeController';
+import { noopRuntimeMetrics } from '../../src/server/runtime/RuntimeMetrics';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
 import { AppInstallationSource } from '../../src/server/storage/IAppStorageItem';
 
@@ -138,6 +139,7 @@ export class TestInfastructureSetup {
 				return this.runtimeManager;
 			},
 			getTempFilePath: this.getTempFilePath,
+			getRuntimeMetrics: () => noopRuntimeMetrics,
 		} as unknown as AppManager;
 	}
 

@@ -19,6 +19,7 @@ import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './commun
 import { redactionFieldPaths } from './lib/redactor';
 import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
+import { appsRuntimeMetrics } from './runtimeMetrics';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import type { HandleEvent } from '../../../app/apps/server/bridges/listeners';
@@ -136,6 +137,7 @@ export class AppServerOrchestrator implements IAppServerOrchestrator {
 			bridges: this.getBridges(),
 			sourceStorage: this._appSourceStorage,
 			tempFilePath,
+			runtimeMetrics: appsRuntimeMetrics,
 		});
 
 		this._communicators = new Map() as IAppCommunicatorsMap;

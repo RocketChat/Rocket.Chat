@@ -19,6 +19,7 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
+import type { IAppsRuntimeMetrics } from '../RuntimeMetrics';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
@@ -97,6 +98,8 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private readonly livenessManager: LivenessManager;
 
+	private readonly runtimeMetrics: IAppsRuntimeMetrics;
+
 	protected readonly tempFilePath: string;
 
 	protected readonly appsEnginePath: string;
@@ -114,8 +117,10 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.tempFilePath = manager.getTempFilePath();
 		this.appsEnginePath = getAppsEngineDir();
 
+		this.runtimeMetrics = manager.getRuntimeMetrics();
+
 		this.debug = debugFactory(`appsEngine:runtime:${runtimeName}`).extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger();
+		this.messenger = new ProcessMessenger((bytes) => this.runtimeMetrics.observeThroughput(this.getAppId(), 'outbound', bytes));
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
@@ -518,9 +523,22 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.emit(`result:${id}`, result, error);
 	}
 
+	/**
+	 * Transparent pass-through over the subprocess stdout that measures the
+	 * throughput of the runtime → host channel by observing the size of each raw
+	 * chunk before it reaches the decoder. It does not alter the data nor
+	 * interfere with the decoder's back-pressure handling.
+	 */
+	private async *countInboundThroughput(stream: Readable): AsyncIterable<Buffer> {
+		for await (const chunk of stream as AsyncIterable<Buffer>) {
+			this.runtimeMetrics.observeThroughput(this.getAppId(), 'inbound', chunk.length);
+			yield chunk;
+		}
+	}
+
 	private async parseStdout(stream: Readable): Promise<void> {
 		try {
-			for await (const message of newDecoder().decodeStream(stream)) {
+			for await (const message of newDecoder().decodeStream(this.countInboundThroughput(stream))) {
 				this.debug('Received message from subprocess %s', inspect(message));
 				try {
 					// Process PONG resonse first as it is not JSON RPC

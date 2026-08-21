@@ -34,6 +34,8 @@ import { UIActionButtonManager } from './managers/UIActionButtonManager';
 import type { IMarketplaceInfo } from './marketplace';
 import { defaultPermissions } from './permissions/AppPermissions';
 import { EmptyRuntime } from './runtime/EmptyRuntime';
+import type { IAppsRuntimeMetrics } from './runtime/RuntimeMetrics';
+import { noopRuntimeMetrics } from './runtime/RuntimeMetrics';
 import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
@@ -61,6 +63,11 @@ export interface IAppManagerDeps {
 	 * Needs to be accessible for reading and writing.
 	 */
 	tempFilePath: string;
+	/**
+	 * Optional sink for runtime observability signals (e.g. throughput at the
+	 * runtime/host boundary). When omitted, a no-op reporter is used.
+	 */
+	runtimeMetrics?: IAppsRuntimeMetrics;
 }
 
 interface IPurgeAppConfigOpts {
@@ -115,9 +122,11 @@ export class AppManager {
 
 	private readonly tempFilePath: string;
 
+	private readonly runtimeMetrics: IAppsRuntimeMetrics;
+
 	private isLoaded: boolean;
 
-	constructor({ metadataStorage, logStorage, bridges, sourceStorage, tempFilePath }: IAppManagerDeps) {
+	constructor({ metadataStorage, logStorage, bridges, sourceStorage, tempFilePath, runtimeMetrics }: IAppManagerDeps) {
 		// Singleton style. There can only ever be one AppManager instance
 		if (typeof AppManager.Instance !== 'undefined') {
 			throw new Error('There is already a valid AppManager instance');
@@ -148,6 +157,8 @@ export class AppManager {
 		}
 
 		this.tempFilePath = tempFilePath;
+
+		this.runtimeMetrics = runtimeMetrics ?? noopRuntimeMetrics;
 
 		this.apps = new Map<string, ProxiedApp>();
 
@@ -180,6 +191,15 @@ export class AppManager {
 	 */
 	public getTempFilePath(): string {
 		return this.tempFilePath;
+	}
+
+	/**
+	 * Gets the sink for runtime observability signals (e.g. throughput at the
+	 * runtime/host boundary). Falls back to a no-op reporter when the host did
+	 * not inject one.
+	 */
+	public getRuntimeMetrics(): IAppsRuntimeMetrics {
+		return this.runtimeMetrics;
 	}
 
 	/** Gets the instance of the storage connector. */

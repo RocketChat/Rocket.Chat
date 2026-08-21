@@ -270,6 +270,11 @@ export const metrics = {
 		labelNames: ['bridge', 'method', 'app_id'],
 		buckets: latencyBuckets,
 	}),
+	appsEngineRuntimeThroughput: new client.Counter({
+		name: 'rocketchat_apps_engine_runtime_throughput_bytes_total',
+		help: 'total bytes exchanged across the boundary between an app runtime (subprocess) and the host',
+		labelNames: ['app_id', 'direction'],
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({
