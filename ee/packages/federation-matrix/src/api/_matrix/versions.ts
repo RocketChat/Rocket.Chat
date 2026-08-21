@@ -25,6 +25,7 @@ const GetVersionsResponseSchema = {
 const isGetVersionsResponseProps = ajv.compile(GetVersionsResponseSchema);
 
 export const getFederationVersionsRoutes = (version: string) => {
+	// GET /_matrix/federation/v1/version
 	// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1version
 	return new Router('/federation').get(
 		'/v1/version',

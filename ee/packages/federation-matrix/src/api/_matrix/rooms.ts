@@ -149,6 +149,7 @@ export const getMatrixRoomsRoutes = () => {
 	return (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware())
+			// GET /_matrix/federation/v1/publicRooms
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1publicrooms
 			.get(
 				'/v1/publicRooms',
@@ -181,6 +182,7 @@ export const getMatrixRoomsRoutes = () => {
 					};
 				},
 			)
+			// POST /_matrix/federation/v1/publicRooms
 			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1publicrooms
 			.post(
 				'/v1/publicRooms',
