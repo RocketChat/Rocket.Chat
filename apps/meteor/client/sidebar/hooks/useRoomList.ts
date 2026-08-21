@@ -40,20 +40,15 @@ type GroupUnreadInfo = {
 };
 
 export type SidebarRoomListGroup = {
-	/** Collapse/show-unreads identity: translation key for system groups, category id for custom ones. */
 	key: string;
-	/** Raw title — a translation key for system groups (translate it), the category name for custom ones. */
 	title: string;
 	translateTitle: boolean;
 	category?: ISidebarCustomCategory;
 	showUnreads: boolean;
-	/** When opened, whether unread rooms are sorted to the top of the category. */
 	keepUnreadsOnTop: boolean;
 	collapsed: boolean;
-	/** Rooms to render — already filtered for collapse + "Show unreads". */
 	rooms: SubscriptionWithRoom[];
 	unreadInfo: GroupUnreadInfo;
-	/** A custom category with no rooms (renders the empty placeholder). */
 	empty: boolean;
 };
 
@@ -68,9 +63,7 @@ export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
-	// "Types" grouping toggle: on = Teams/Channels/Discussions/DMs; off = everything in "Conversations".
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
-	// "Group by" checkboxes: group favorites into a "Favorites" group / unread rooms into an "Unread" group.
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true);
 	const sidebarOrder = useUserPreference<typeof SYSTEM_GROUP_KEYS>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
@@ -106,17 +99,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const conversation = new Set<SubscriptionWithRoom>();
 			const onHold = new Set<SubscriptionWithRoom>();
 
-			// Seed an empty set for each custom category.
-			const roomToCategory = new Map<string, string>();
 			const customSets = new Map<string, Set<SubscriptionWithRoom>>();
 			customCategories.forEach((category) => {
 				customSets.set(category._id, new Set<SubscriptionWithRoom>());
-			});
-			// Build the rid → categoryId map from the subscription's `category` field.
-			rooms.forEach((room) => {
-				if (room.category && customSets.has(room.category)) {
-					roomToCategory.set(room.rid, room.category);
-				}
 			});
 
 			rooms.forEach((room) => {
@@ -128,21 +113,15 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				// "Unread" grouping has priority over everything below, including custom categories.
 				if (sidebarShowUnread && isUnreadRoom(room)) {
 					return unread.add(room);
 				}
 
-				// A room in a custom category is shown only there (exclusive with everything below).
-				// "keep unreads on top" handles unread emphasis within the category.
-				// When custom categories are hidden, the room falls through.
-				const categoryId = roomToCategory.get(room.rid);
-				if (categoryId && customSets.has(categoryId)) {
-					customSets.get(categoryId)?.add(room);
+				if (room.category && customSets.has(room.category)) {
+					customSets.get(room.category)?.add(room);
 					return;
 				}
 
-				// "Favorites" grouping: gated by its own "Group by" checkbox.
 				if (favoritesEnabled && room.f) {
 					return favorite.add(room);
 				}
@@ -184,7 +163,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 
-			// "Unread" grouping renders only when the toggle is on and there are unread rooms.
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 
 			favoritesEnabled && (hasLicenseModule || favorite.size > 0) && groups.set('Favorites', favorite);
@@ -255,7 +233,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				};
 			};
 
-			// Custom categories render above the system groups and persist even when empty — unless hidden.
 			const customGroups = customCategories.map((category) =>
 				makeGroup(category._id, category.name, false, customSets.get(category._id) ?? new Set<SubscriptionWithRoom>(), category),
 			);
