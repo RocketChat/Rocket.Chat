@@ -4093,13 +4093,13 @@ describe('Threads', () => {
 	before(async () => {
 		testThreadChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
 
-		await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+		await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 	});
 
 	after(() =>
 		Promise.all([
 			updateSetting('Threads_enabled', true),
-			updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+			updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 			deleteRoom({ type: 'c', roomId: testThreadChannel._id }),
 		]),
 	);
@@ -4154,7 +4154,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);
@@ -4390,7 +4390,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);
@@ -4535,7 +4535,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);
@@ -4725,7 +4725,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);
@@ -4868,7 +4868,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);
@@ -4972,7 +4972,7 @@ describe('Threads', () => {
 			Promise.all([
 				updateSetting('Threads_enabled', true),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user),
 			]),
 		);

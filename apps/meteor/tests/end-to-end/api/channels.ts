@@ -317,14 +317,14 @@ describe('[Channels]', () => {
 	describe('/channels.list', () => {
 		let testChannel: IRoom;
 		before(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
-			await updatePermission('view-joined-room', ['guest', 'bot', 'app', 'anonymous']);
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
+			await updatePermission('view-joined-room', ['guest', 'bot', 'app']);
 			testChannel = (await createRoom({ type: 'c', name: `channels.messages.test.${Date.now()}` })).body.channel;
 		});
 
 		after(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
-			await updatePermission('view-joined-room', ['guest', 'bot', 'app', 'anonymous']);
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
+			await updatePermission('view-joined-room', ['guest', 'bot', 'app']);
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
@@ -4073,7 +4073,7 @@ describe('[Channels]', () => {
 		let pinnedMessageId: IMessage['_id'];
 
 		before(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 			emptyChannel = (await createRoom({ type: 'c', name: `channels.messages.empty.test.${Date.now()}` })).body.channel;
 			testChannel = (await createRoom({ type: 'c', name: `channels.messages.test.${Date.now()}` })).body.channel;
 
@@ -4111,7 +4111,7 @@ describe('[Channels]', () => {
 		});
 
 		after(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
@@ -4166,7 +4166,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 		});
 
 		it('should return messages that mention a single user', async () => {
