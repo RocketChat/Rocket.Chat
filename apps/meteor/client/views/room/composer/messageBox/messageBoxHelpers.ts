@@ -1,5 +1,5 @@
-import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import type { FormattingButton } from '../../../../lib/messageBoxFormatting';
 
 export const emptySubscribe = () => () => undefined;
 export const getEmptyFalse = () => false;

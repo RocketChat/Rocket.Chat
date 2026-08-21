@@ -4,7 +4,7 @@ import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { isValidLink } from '../../../../client/views/room/MessageList/lib/isValidLink';
+import { isValidLink } from '../room/MessageList/lib/isValidLink';
 
 export type AddLinkComposerActionModalProps = {
 	selectedText?: string;

@@ -2,12 +2,12 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { RefObject } from 'react';
 
+import type { ComposerAPI } from './chats/ChatAPI';
+import { createUploadsAPI } from './chats/uploads';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import { settings } from '../../../../client/lib/settings';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import { settings } from './settings';
+import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 
 export type SetText = (
 	text: string,

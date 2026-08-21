@@ -1,8 +1,8 @@
 import type { RefObject } from 'react';
 
-import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
-import { limitQuoteChain } from './limitQuoteChain';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import { createComposerAPICore, triggerEvent, type SetText } from '../../../../lib/createComposerAPICore';
+import { limitQuoteChain } from '../../../../lib/limitQuoteChain';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,

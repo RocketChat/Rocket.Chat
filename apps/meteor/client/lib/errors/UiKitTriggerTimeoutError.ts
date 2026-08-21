@@ -1,4 +1,4 @@
-import { RocketChatError } from '../../../client/lib/errors/RocketChatError';
+import { RocketChatError } from './RocketChatError';
 
 export class UiKitTriggerTimeoutError extends RocketChatError<'trigger-timeout'> {
 	constructor(message = 'Timeout', details: { triggerId: string; appId: string }) {

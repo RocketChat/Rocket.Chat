@@ -8,13 +8,13 @@ import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
-import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
-import * as banners from '../../../client/lib/banners';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
-import { sdk } from '../../utils/client/lib/SDKClient';
+import * as banners from './banners';
+import { UiKitTriggerTimeoutError } from './errors/UiKitTriggerTimeoutError';
+import { dispatchToastMessage } from './toast';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { exhaustiveCheck } from '../../lib/utils/exhaustiveCheck';
 
-const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
+const UiKitModal = lazy(() => import('../views/modal/uikit/UiKitModal'));
 
 export class ActionManager implements IActionManager {
 	protected static TRIGGER_TIMEOUT = 5000;
@@ -305,7 +305,7 @@ export class ActionManager implements IActionManager {
 		});
 	}
 
-	public disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']) {
+	public disposeView(viewId: UiKit.ModalView['id']) {
 		const instance = this.viewInstances.get(viewId);
 		instance?.close?.();
 		this.viewInstances.delete(viewId);
