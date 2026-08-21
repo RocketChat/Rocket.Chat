@@ -212,7 +212,7 @@ const UsersSetPreferencesParamsPostSchema = {
 						properties: {
 							_id: { type: 'string' },
 							name: { type: 'string', minLength: 1, maxLength: 30 },
-							default: { type: 'boolean', nullable: true },
+							default: { type: 'boolean' },
 							showUnreads: { type: 'boolean', nullable: true },
 							keepUnreadsOnTop: { type: 'boolean', nullable: true },
 						},
