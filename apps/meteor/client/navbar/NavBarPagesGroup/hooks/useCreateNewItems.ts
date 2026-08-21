@@ -13,7 +13,7 @@ const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
 export type useCreateNewItemsParams = {
-	onCreateSuccess?: (rid: string, name: string) => void | Promise<void>;
+	onCreateSuccess?: (rid: string, name?: string) => void | Promise<void>;
 };
 
 export const useCreateNewItems = ({ onCreateSuccess }: useCreateNewItemsParams = {}): GenericMenuItemProps[] => {

@@ -40,7 +40,7 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-export type CreateTeamModalProps = { onClose: () => void; onSuccess?: (rid: string, name: string) => void | Promise<void> };
+export type CreateTeamModalProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
 const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 	const t = useTranslation();
@@ -145,7 +145,7 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 			const { team } = await createTeamAction(params);
 			dispatchToastMessage({ type: 'success', message: t('Team_has_been_created') });
 			goToRoom(team.roomId);
-			void onSuccess?.(team.roomId, name);
+			void onSuccess?.(team.roomId);
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

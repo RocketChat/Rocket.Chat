@@ -63,7 +63,7 @@ const CategoryMenu = ({
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
-	const onCreateSuccess = async (rid: string, name: string) => {
+	const onCreateSuccess = async (rid: string, name?: string) => {
 		if (!category) {
 			return;
 		}
