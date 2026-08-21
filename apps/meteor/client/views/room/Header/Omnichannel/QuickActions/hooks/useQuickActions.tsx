@@ -14,9 +14,9 @@ import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
+import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
