@@ -7484,6 +7484,7 @@
   "Keep_on_top": "Keep on top",
   "Please_enter_a_category_name": "Please enter a category name.",
   "A_category_with_this_name_already_exists": "A category with this name already exists.",
+  "Category_name_conflicts_with_system_group": "This name conflicts with a system group.",
   "Category_name_is_too_long__max__maxLength__characters": "Category name is too long (max {{maxLength}} characters).",
   "Category_created": "Category created.",
   "Category_saved": "Category saved.",

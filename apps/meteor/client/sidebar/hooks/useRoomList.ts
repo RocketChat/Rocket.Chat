@@ -17,7 +17,7 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-const order = [
+export const SYSTEM_GROUP_KEYS = [
 	'Incoming_Calls',
 	'Incoming_Livechats',
 	'Open_Livechats',
@@ -72,7 +72,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	// "Group by" checkboxes: group favorites into a "Favorites" group / unread rooms into an "Unread" group.
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true);
-	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
+	const sidebarOrder = useUserPreference<typeof SYSTEM_GROUP_KEYS>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 

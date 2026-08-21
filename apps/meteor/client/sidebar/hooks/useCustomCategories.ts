@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { SYSTEM_GROUP_KEYS } from './useRoomList';
 import { useExperimentalEndpoint } from '../../hooks/useExperimentalEndpoint';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
@@ -54,6 +55,9 @@ export const useCustomCategories = () => {
 				return t('Category_name_is_too_long__max__maxLength__characters', { maxLength: MAX_CATEGORY_NAME_LENGTH });
 			}
 			const normalized = trimmed.toLowerCase();
+			if (SYSTEM_GROUP_KEYS.some((key) => t(key).toLowerCase() === normalized)) {
+				return t('Category_name_conflicts_with_system_group');
+			}
 			if (categories.some((category) => category._id !== excludeId && category.name.trim().toLowerCase() === normalized)) {
 				return t('A_category_with_this_name_already_exists');
 			}
