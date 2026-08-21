@@ -19,7 +19,7 @@ class DelayedStopBroker extends BrokerMocked {
 
 const broker = new MoleculerBroker(new DelayedStopBroker() as any);
 
-describe('NetworkBroker', () => {
+describe('MoleculerBroker', () => {
 	it('should wait services to be fully destroyed', async () => {
 		const stoppedStub = sinon.stub();
 
