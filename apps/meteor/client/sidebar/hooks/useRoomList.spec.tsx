@@ -5,16 +5,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
-import { useShowUnreadsGroups } from './useShowUnreadsGroups';
 import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
-
-const mockedUseShowUnreadsGroups = jest.mocked(useShowUnreadsGroups);
 
 jest.mock('../../lib/RoomManager', () => ({
 	useOpenedRoom: () => undefined,
 }));
-
-jest.mock('./useShowUnreadsGroups');
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
 const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
@@ -84,6 +79,7 @@ const getWrapperSettings = ({
 	isEnterprise = false,
 	fakeRoom = undefined,
 	rooms = fakeRooms as unknown as SubscriptionWithRoom[],
+	sidebarCategories = [],
 }: {
 	sidebarGroupByType?: boolean;
 	sidebarShowFavorites?: boolean;
@@ -92,6 +88,7 @@ const getWrapperSettings = ({
 	isEnterprise?: boolean;
 	fakeRoom?: SubscriptionWithRoom;
 	rooms?: SubscriptionWithRoom[];
+	sidebarCategories?: { _id: string; name?: string; default?: boolean; showUnreads?: boolean; keepUnreadsOnTop?: boolean }[];
 }) => {
 	const root = mockAppRoot()
 		.wrap((children) => (
@@ -110,6 +107,7 @@ const getWrapperSettings = ({
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
 		.withUserPreference('sidebarShowFavorites', sidebarShowFavorites)
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
+		.withUserPreference('sidebarCategories', sidebarCategories)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
 
 	if (isEnterprise) {
@@ -120,10 +118,6 @@ const getWrapperSettings = ({
 
 	return root;
 };
-
-beforeEach(() => {
-	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => false, toggleShowUnreads: jest.fn() });
-});
 
 it('should return roomList, groupsCount and groupsList', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
@@ -238,8 +232,7 @@ it('should return groupsList without "Discussions" if isDiscussionEnabled is dis
 });
 
 it('should remove corresponding items from roomList and return groupCount 0 when group is collapsed and "Show unreads" is off', async () => {
-	// "Show unreads" defaults ON; mocking the hook to simulate EE per-group toggle being off for Channels.
-	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
+	// "Show unreads" for Channels defaults to false — no preference entry needed.
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
@@ -266,9 +259,12 @@ it('should hide all rooms and show a badge when a group is collapsed in CE ("Sho
 });
 
 it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on in EE', async () => {
-	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: () => true, toggleShowUnreads: jest.fn() });
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
-		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			isEnterprise: true,
+			sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }],
+		}).build(),
 	});
 	// hasLicenseModule resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
@@ -320,7 +316,7 @@ it('should keep the Favorites category visible when it is empty', async () => {
 
 it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed and "Show unreads" is off', async () => {
 	// The header total badge only accumulates when unreads are hidden, i.e. "Show unreads" off for the group.
-	mockedUseShowUnreadsGroups.mockReturnValue({ isShowUnreads: (group) => group !== 'Channels', toggleShowUnreads: jest.fn() });
+	// Channels defaults to showUnreads=false — no preference entry needed.
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});

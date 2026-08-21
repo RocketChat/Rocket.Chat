@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory, ThemePreference } from '@rocket.chat/core-typings';
+import type { ISidebarCategory, ThemePreference } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
@@ -40,8 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
-		sidebarCustomCategories?: ISidebarCustomCategory[];
-		sidebarCategoriesOrder?: string[];
+		sidebarCategories?: ISidebarCategory[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -206,23 +205,20 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
-				sidebarCustomCategories: {
+				sidebarCategories: {
 					type: 'array',
 					items: {
 						type: 'object',
 						properties: {
 							_id: { type: 'string' },
 							name: { type: 'string', minLength: 1, maxLength: 30 },
+							default: { type: 'boolean', nullable: true },
 							showUnreads: { type: 'boolean', nullable: true },
 							keepUnreadsOnTop: { type: 'boolean', nullable: true },
 						},
 						required: ['_id', 'name'],
 						additionalProperties: false,
 					},
-				},
-				sidebarCategoriesOrder: {
-					type: 'array',
-					items: { type: 'string' },
 				},
 				muteFocusedConversations: {
 					type: 'boolean',

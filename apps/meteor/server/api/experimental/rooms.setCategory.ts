@@ -52,14 +52,14 @@ const roomsSetCategoryEndpoints = API.experimental.post(
 		const { roomIds, category } = this.bodyParams;
 		const { userId } = this;
 
-		const user = await Users.findOneById(userId, { projection: { 'settings.preferences.sidebarCustomCategories': 1 } });
+		const user = await Users.findOneById(userId, { projection: { 'settings.preferences.sidebarCategories': 1 } });
 		if (!user) {
 			return API.experimental.failure('error-invalid-user');
 		}
 
 		// When assigning to a category, verify it exists in the user's preferences.
 		if (category !== null) {
-			const categories: Array<{ _id: string }> = user.settings?.preferences?.sidebarCustomCategories ?? [];
+			const categories: Array<{ _id: string }> = user.settings?.preferences?.sidebarCategories ?? [];
 			const exists = categories.some((cat) => cat._id === category);
 			if (!exists) {
 				return API.experimental.failure('error-invalid-param', 'Category not found in user preferences.');

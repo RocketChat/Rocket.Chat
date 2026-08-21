@@ -127,8 +127,8 @@ export class HomeChannel {
 		return this.page.getByRole('main').getByRole('button', { name: 'Move to', exact: true });
 	}
 
+	// TODO: this button should name open room info or something instead of the room name
 	getBtnOpenRoomInfo(roomName: string): Locator {
-		// TODO: this button should name open room info or something instead of the room name
 		return this.page.getByRole('main').getByRole('button', { name: roomName, exact: true });
 	}
 

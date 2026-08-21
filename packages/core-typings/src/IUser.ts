@@ -167,9 +167,10 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
-export interface ISidebarCustomCategory {
+export interface ISidebarCategory {
 	_id: string;
 	name: string;
+	default?: boolean;
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
 }

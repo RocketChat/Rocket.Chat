@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -9,11 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { useCategoryModals } from './useCategoryModals';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
 import { useCustomCategories } from '../hooks/useCustomCategories';
-import { useKeepUnreadsOnTopGroups } from '../hooks/useKeepUnreadsOnTopGroups';
-import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
 
 type CategoryMenuProps = {
-	category?: ISidebarCustomCategory;
+	category?: ISidebarCategory;
 	groupKey: string;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
@@ -38,13 +36,7 @@ const CategoryMenu = ({
 	const close = () => toggleOpen(false);
 
 	const { openManage, openDelete } = useCategoryModals();
-	const {
-		toggleShowUnreads: toggleCustomShowUnreads,
-		toggleKeepUnreadsOnTop: toggleCustomKeepUnreadsOnTop,
-		moveRoom,
-	} = useCustomCategories();
-	const { toggleShowUnreads: toggleSystemShowUnreads } = useShowUnreadsGroups();
-	const { toggleKeepUnreadsOnTop: toggleSystemKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
+	const { toggleShowUnreads, toggleKeepUnreadsOnTop, moveRoom } = useCustomCategories();
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 
@@ -59,9 +51,8 @@ const CategoryMenu = ({
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
 
-	const handleToggleShowUnreads = () => (category ? toggleCustomShowUnreads(category._id) : toggleSystemShowUnreads(groupKey));
-	const handleToggleKeepUnreadsOnTop = () =>
-		category ? toggleCustomKeepUnreadsOnTop(category._id) : toggleSystemKeepUnreadsOnTop(groupKey);
+	const handleToggleShowUnreads = () => toggleShowUnreads(category?._id ?? groupKey);
+	const handleToggleKeepUnreadsOnTop = () => toggleKeepUnreadsOnTop(category?._id ?? groupKey);
 
 	const orderItems: GenericMenuItemProps[] = [
 		{

@@ -20,7 +20,6 @@ const makeCategories = () =>
 		categories: [catA, catB],
 		moveRoom: jest.fn(),
 		removeRoom: jest.fn(),
-		getRoomCategory: jest.fn(() => undefined),
 		validateName: jest.fn(),
 		createCategory: jest.fn(),
 		createCategoryAndMoveRoom: jest.fn(),

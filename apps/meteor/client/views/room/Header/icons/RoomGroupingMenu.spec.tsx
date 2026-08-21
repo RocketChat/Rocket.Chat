@@ -39,7 +39,6 @@ it('shows Favorites in the grouping menu when the room is favorited', async () =
 	mockedUseCustomCategories.mockReturnValue({
 		hasLicenseModule: true,
 		categories: [catDesign, catOther],
-		getRoomCategory: jest.fn(() => undefined),
 	} as any);
 
 	render(<RoomGroupingMenu room={makeRoom({ f: true })} />, { wrapper });
@@ -53,7 +52,6 @@ it('shows the matching category in the grouping menu when the room has a categor
 	mockedUseCustomCategories.mockReturnValue({
 		hasLicenseModule: true,
 		categories: [catDesign, catOther],
-		getRoomCategory: jest.fn(() => undefined),
 	} as any);
 
 	render(<RoomGroupingMenu room={makeRoom({ f: false, category: 'cat-design' })} />, { wrapper });

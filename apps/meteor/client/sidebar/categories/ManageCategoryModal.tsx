@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -13,7 +13,7 @@ import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCusto
 const OPEN_QUERY = { open: { $ne: false } } as const;
 
 type ManageCategoryModalProps = {
-	category: ISidebarCustomCategory;
+	category: ISidebarCategory;
 	onClose: () => void;
 };
 
@@ -22,11 +22,9 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { updateCategory, validateName } = useCustomCategories();
 
-	// Load the rooms currently assigned to this category from subscriptions.
 	const categorySubscriptions = useUserSubscriptions(OPEN_QUERY, {});
 	const initialRoomIds = useMemo(
 		() => categorySubscriptions.filter((s) => s.category === category._id).map((s) => s.rid),
-		// Intentionally computed once on mount — category._id is stable for a given modal instance.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);

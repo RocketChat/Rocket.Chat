@@ -1,14 +1,11 @@
-import type { ILivechatInquiryRecord, ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useAllGroupsOrder } from './useAllGroupsOrder';
 import { useCustomCategories } from './useCustomCategories';
-import { useKeepUnreadsOnTopGroups } from './useKeepUnreadsOnTopGroups';
-import { useShowUnreadsGroups } from './useShowUnreadsGroups';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
@@ -43,7 +40,7 @@ export type SidebarRoomListGroup = {
 	key: string;
 	title: string;
 	translateTitle: boolean;
-	category?: ISidebarCustomCategory;
+	category?: ISidebarCategory;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
 	collapsed: boolean;
@@ -69,10 +66,13 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 
-	const { categories: customCategories, hasLicenseModule } = useCustomCategories();
-	const { isShowUnreads } = useShowUnreadsGroups();
-	const { isKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
-	const { sortGroups: sortAllGroups } = useAllGroupsOrder();
+	const {
+		categories: customCategories,
+		hasLicenseModule,
+		isShowUnreads,
+		isKeepUnreadsOnTop,
+		sortGroups: sortAllGroups,
+	} = useCustomCategories();
 
 	const options = useSortQueryOptions();
 
@@ -198,7 +198,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				title: string,
 				translateTitle: boolean,
 				set: Set<SubscriptionWithRoom>,
-				category?: ISidebarCustomCategory,
+				category?: ISidebarCategory,
 			): SidebarRoomListGroup => {
 				const collapsed = isCollapsed(key);
 				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;

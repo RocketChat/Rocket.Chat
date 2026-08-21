@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -30,8 +30,8 @@ export const useCategoryModals = () => {
 
 		return {
 			openCreate: (room?: MovableRoom) => setModal(<CreateCategoryModal room={room} onClose={onClose} />),
-			openManage: (category: ISidebarCustomCategory) => setModal(<ManageCategoryModal category={category} onClose={onClose} />),
-			openDelete: (category: ISidebarCustomCategory) => setModal(<DeleteCategoryModal category={category} onClose={onClose} />),
+			openManage: (category: ISidebarCategory) => setModal(<ManageCategoryModal category={category} onClose={onClose} />),
+			openDelete: (category: ISidebarCategory) => setModal(<DeleteCategoryModal category={category} onClose={onClose} />),
 		};
 	}, [handleManageSubscription, setModal, shouldShowUpsell]);
 };

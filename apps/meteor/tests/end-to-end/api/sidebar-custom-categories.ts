@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ISidebarCustomCategory, IUser } from '@rocket.chat/core-typings';
+import type { ISidebarCategory, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -13,7 +13,7 @@ import { IS_EE } from '../../e2e/config/constants';
 const experimentalEndpoint = (path: string) => `/api/experimental/${path}`;
 
 /**
- * Persistence + validation of the `sidebarCustomCategories` user preference (custom sidebar categories).
+ * Persistence + validation of the `sidebarCategories` user preference (custom sidebar categories).
  *
  * The feature has no dedicated endpoint — categories are stored on the user preferences and round-trip
  * through `users.setPreferences` / `users.getPreferences`. The REST schema validates each entry with
@@ -23,7 +23,7 @@ describe('[Sidebar Custom Categories]', () => {
 	let testUser: IUser;
 	let testUserCredentials: Credentials;
 
-	const category = (overrides: Partial<ISidebarCustomCategory> = {}): ISidebarCustomCategory => ({
+	const category = (overrides: Partial<ISidebarCategory> = {}): ISidebarCategory => ({
 		_id: Random.id(),
 		name: `category-${Random.id()}`,
 		...overrides,
@@ -42,7 +42,7 @@ describe('[Sidebar Custom Categories]', () => {
 		request
 			.post(api('users.setPreferences'))
 			.set(asCredentials)
-			.send({ data: { sidebarCustomCategories: data } });
+			.send({ data: { sidebarCategories: data } });
 
 	describe('persistence', () => {
 		it('should persist a minimal category (only the required _id + name)', async () => {
@@ -53,7 +53,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.user.settings.preferences).to.have.property('sidebarCustomCategories').that.is.an('array').with.lengthOf(1);
+					expect(res.body.user.settings.preferences).to.have.property('sidebarCategories').that.is.an('array').with.lengthOf(1);
 				});
 
 			await request
@@ -62,7 +62,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.preferences.sidebarCustomCategories).to.deep.equal(categories);
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
 				});
 		});
 
@@ -76,7 +76,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.set(testUserCredentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.preferences.sidebarCustomCategories).to.deep.equal(categories);
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
 				});
 		});
 
@@ -90,7 +90,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.set(testUserCredentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.preferences.sidebarCustomCategories.map((c: ISidebarCustomCategory) => c.name)).to.deep.equal(['A', 'B', 'C']);
+					expect(res.body.preferences.sidebarCategories.map((c: ISidebarCategory) => c.name)).to.deep.equal(['A', 'B', 'C']);
 				});
 		});
 
@@ -104,8 +104,8 @@ describe('[Sidebar Custom Categories]', () => {
 				.set(testUserCredentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.preferences.sidebarCustomCategories).to.have.lengthOf(1);
-					expect(res.body.preferences.sidebarCustomCategories[0]).to.have.property('name', 'second');
+					expect(res.body.preferences.sidebarCategories).to.have.lengthOf(1);
+					expect(res.body.preferences.sidebarCategories[0]).to.have.property('name', 'second');
 				});
 		});
 
@@ -118,7 +118,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.set(testUserCredentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.preferences.sidebarCustomCategories).to.be.an('array').with.lengthOf(0);
+					expect(res.body.preferences.sidebarCategories).to.be.an('array').with.lengthOf(0);
 				});
 		});
 	});
@@ -166,19 +166,19 @@ describe('[Sidebar Custom Categories]', () => {
 		it('should return 401 when not authenticated', async () => {
 			await request
 				.post(api('users.setPreferences'))
-				.send({ data: { sidebarCustomCategories: [] } })
+				.send({ data: { sidebarCategories: [] } })
 				.expect(401);
 		});
 	});
 
 	describe('permissions', () => {
-		it("should let an admin set another user's sidebarCustomCategories", async () => {
+		it("should let an admin set another user's sidebarCategories", async () => {
 			const categories = [category({ name: 'set-by-admin' })];
 
 			await request
 				.post(api('users.setPreferences'))
 				.set(credentials)
-				.send({ userId: testUser._id, data: { sidebarCustomCategories: categories } })
+				.send({ userId: testUser._id, data: { sidebarCategories: categories } })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -189,7 +189,7 @@ describe('[Sidebar Custom Categories]', () => {
 				.set(testUserCredentials)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.preferences.sidebarCustomCategories).to.deep.equal(categories);
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
 				});
 		});
 	});

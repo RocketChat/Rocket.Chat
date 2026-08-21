@@ -11,9 +11,9 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useOpenedRoom } from '../../lib/RoomManager';
-import { useAllGroupsOrder } from '../hooks/useAllGroupsOrder';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useCustomCategories } from '../hooks/useCustomCategories';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
@@ -26,7 +26,7 @@ const RoomList = () => {
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups, groupsCount, totalCount } = useRoomList({ collapsedGroups });
-	const { move: moveGroup } = useAllGroupsOrder();
+	const { move: moveGroup } = useCustomCategories();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });

@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useCustomCategories } from '../hooks/useCustomCategories';
 
 type DeleteCategoryModalProps = {
-	category: ISidebarCustomCategory;
+	category: ISidebarCategory;
 	onClose: () => void;
 };
 

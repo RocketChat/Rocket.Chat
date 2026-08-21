@@ -112,7 +112,7 @@ const enterpriseCategoryRenderOptions = {
 		.withJohnDoe()
 		.withQueryClient(buildEnterpriseQueryClient())
 		.withSubscription(createFakeSubscription({ rid: 'roomId', f: false, t: 'c' }))
-		.withUserPreference('sidebarCustomCategories', [{ _id: 'cat-design', name: 'Design', rooms: ['roomId'], showUnreads: true }])
+		.withUserPreference('sidebarCategories', [{ _id: 'cat-design', name: 'Design', showUnreads: true }])
 		.build(),
 };
 

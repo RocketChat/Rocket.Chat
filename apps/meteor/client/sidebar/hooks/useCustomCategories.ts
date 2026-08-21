@@ -1,4 +1,4 @@
-import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint, useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -13,33 +13,28 @@ export const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; categoryId?: string };
 
-/** The `favorites` sentinel is mutually exclusive with the custom categories. */
 export const FAVORITES_TARGET = 'favorites';
 
-const EMPTY: ISidebarCustomCategory[] = [];
+const EMPTY: ISidebarCategory[] = [];
 
-/**
- * Per-user custom sidebar categories, persisted in the `sidebarCustomCategories` user preference.
- * Room assignment is managed via POST /experimental/rooms.setCategory, which stores `category`
- * on each subscription and handles unfavoriting atomically server-side.
- */
 export const useCustomCategories = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
-	const rawCategories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', EMPTY) ?? EMPTY;
-	const categories = hasLicenseModule ? rawCategories : EMPTY;
+
+	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', EMPTY) ?? EMPTY;
+
+	const categories = hasLicenseModule ? allEntries.filter((entry) => !entry.default) : EMPTY;
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const setCategoryEndpoint = useExperimentalEndpoint('POST', '/experimental/rooms.setCategory');
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
 
 	const persistMutation = useMutation({
-		mutationFn: (next: ISidebarCustomCategory[]) => saveUserPreferences({ data: { sidebarCustomCategories: next } }),
+		mutationFn: (next: ISidebarCategory[]) => saveUserPreferences({ data: { sidebarCategories: next } }),
 	});
-	const persist = useCallback((next: ISidebarCustomCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
+	const persist = useCallback((next: ISidebarCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
 
-	/** Assign a batch of rooms to a category (or null to return them to their system group). */
 	const setCategory = useCallback(
 		(roomIds: string[], category: string | null) => setCategoryEndpoint({ roomIds, category }),
 		[setCategoryEndpoint],
@@ -66,45 +61,27 @@ export const useCustomCategories = () => {
 		[categories, t],
 	);
 
-	/** Create a category and optionally assign rooms to it. */
 	const createCategory = useCallback(
-		async (name: string, roomIds: string[] = []): Promise<ISidebarCustomCategory> => {
-			const category: ISidebarCustomCategory = {
+		async (name: string, roomIds: string[] = []): Promise<ISidebarCategory> => {
+			const category: ISidebarCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: false,
 			};
-			await persist([category, ...categories]);
+			await persist([category, ...allEntries]);
 			if (roomIds.length > 0) {
 				await setCategory(roomIds, category._id);
 			}
 			return category;
 		},
-		[categories, persist, setCategory],
+		[allEntries, persist, setCategory],
 	);
 
 	const deleteCategory = useCallback(
-		(categoryId: string) => persist(categories.filter((category) => category._id !== categoryId)),
-		[categories, persist],
+		(categoryId: string) => persist(allEntries.filter((entry) => entry._id !== categoryId)),
+		[allEntries, persist],
 	);
 
-	const toggleShowUnreads = useCallback(
-		(categoryId: string) =>
-			persist(categories.map((category) => (category._id === categoryId ? { ...category, showUnreads: !category.showUnreads } : category))),
-		[categories, persist],
-	);
-
-	const toggleKeepUnreadsOnTop = useCallback(
-		(categoryId: string) =>
-			persist(
-				categories.map((category) =>
-					category._id === categoryId ? { ...category, keepUnreadsOnTop: !category.keepUnreadsOnTop } : category,
-				),
-			),
-		[categories, persist],
-	);
-
-	/** Move a room into a custom category (by id) or to Favorites. Assignment is exclusive. */
 	const moveRoom = useCallback(
 		async (room: MovableRoom, target: string, { silent = false }: { silent?: boolean } = {}) => {
 			if (target === FAVORITES_TARGET) {
@@ -135,37 +112,32 @@ export const useCustomCategories = () => {
 		[categories, setCategory, toggleFavoriteEndpoint, dispatchToastMessage, t],
 	);
 
-	/** Create a category, move a room into it (with full move semantics), and optionally assign more rooms. */
 	const createCategoryAndMoveRoom = useCallback(
 		async (name: string, room: MovableRoom, extraRoomIds: string[] = []) => {
-			const category: ISidebarCustomCategory = {
+			const category: ISidebarCategory = {
 				_id: Random.id(),
 				name: name.trim(),
 				showUnreads: false,
 			};
-			await persist([category, ...categories]);
+			await persist([category, ...allEntries]);
 			await setCategory([room.rid, ...extraRoomIds], category._id);
 			dispatchToastMessage({
 				type: 'success',
 				message: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
 			});
 		},
-		[categories, persist, setCategory, dispatchToastMessage, t],
+		[allEntries, persist, setCategory, dispatchToastMessage, t],
 	);
 
-	/** Update a category's name and room assignment.
-	 * Pass the diff: addedRoomIds for rooms newly assigned to the category,
-	 * removedRoomIds for rooms no longer in it (they return to their system group). */
 	const updateCategory = useCallback(
 		async (categoryId: string, name: string, addedRoomIds: string[], removedRoomIds: string[]) => {
-			await persist(categories.map((category) => (category._id === categoryId ? { ...category, name: name.trim() } : category)));
+			await persist(allEntries.map((entry) => (entry._id === categoryId ? { ...entry, name: name.trim() } : entry)));
 			if (addedRoomIds.length > 0) await setCategory(addedRoomIds, categoryId);
 			if (removedRoomIds.length > 0) await setCategory(removedRoomIds, null);
 		},
-		[categories, persist, setCategory],
+		[allEntries, persist, setCategory],
 	);
 
-	/** Remove a room from its current grouping (custom category or Favorites) — it returns to its system group. */
 	const removeRoom = useCallback(
 		async (room: MovableRoom) => {
 			if (room.isFavorite) {
@@ -183,8 +155,61 @@ export const useCustomCategories = () => {
 		[setCategory, toggleFavoriteEndpoint, dispatchToastMessage, t],
 	);
 
-	/** Look up which category a room is in. With subscription-based storage, read from sub.category directly. */
-	const getRoomCategory = useCallback((_rid: string): ISidebarCustomCategory | undefined => undefined, []);
+	const isShowUnreads = useCallback((id: string) => allEntries.find((entry) => entry._id === id)?.showUnreads ?? false, [allEntries]);
+
+	const isKeepUnreadsOnTop = useCallback(
+		(id: string) => allEntries.find((entry) => entry._id === id)?.keepUnreadsOnTop ?? false,
+		[allEntries],
+	);
+
+	const upsertGroupEntry = useCallback(
+		(id: string, patch: Partial<ISidebarCategory>) => {
+			const existing = allEntries.find((entry) => entry._id === id);
+			const next = existing
+				? allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry))
+				: [...allEntries, { _id: id, name: id, default: true, ...patch }];
+			return persist(next);
+		},
+		[allEntries, persist],
+	);
+
+	const toggleShowUnreads = useCallback(
+		(id: string) => upsertGroupEntry(id, { showUnreads: !isShowUnreads(id) }),
+		[upsertGroupEntry, isShowUnreads],
+	);
+
+	const toggleKeepUnreadsOnTop = useCallback(
+		(id: string) => upsertGroupEntry(id, { keepUnreadsOnTop: !isKeepUnreadsOnTop(id) }),
+		[upsertGroupEntry, isKeepUnreadsOnTop],
+	);
+
+	const sortGroups = useCallback(
+		<T extends { key: string }>(groups: T[]): T[] => {
+			const order = allEntries.map((entry) => entry._id);
+			if (!order.length) return groups;
+			const rank = (key: string) => {
+				const i = order.indexOf(key);
+				return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+			};
+			return [...groups].sort((a, b) => rank(a.key) - rank(b.key));
+		},
+		[allEntries],
+	);
+
+	const move = useCallback(
+		(currentKeys: string[], key: string, direction: 'up' | 'down') => {
+			const i = currentKeys.indexOf(key);
+			const target = direction === 'up' ? i - 1 : i + 1;
+			if (i === -1 || target < 0 || target >= currentKeys.length) return;
+			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
+			const visibleEntries: ISidebarCategory[] = currentKeys.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true });
+			const hiddenEntries = allEntries.filter((e) => !currentKeys.includes(e._id));
+			const next = [...visibleEntries, ...hiddenEntries];
+			[next[i], next[target]] = [next[target], next[i]];
+			persist(next);
+		},
+		[allEntries, persist],
+	);
 
 	return useMemo(
 		() => ({
@@ -200,7 +225,10 @@ export const useCustomCategories = () => {
 			toggleKeepUnreadsOnTop,
 			moveRoom,
 			removeRoom,
-			getRoomCategory,
+			isShowUnreads,
+			isKeepUnreadsOnTop,
+			sortGroups,
+			move,
 		}),
 		[
 			hasLicenseModule,
@@ -208,14 +236,17 @@ export const useCustomCategories = () => {
 			categories,
 			validateName,
 			createCategory,
+			createCategoryAndMoveRoom,
 			updateCategory,
 			deleteCategory,
 			toggleShowUnreads,
 			toggleKeepUnreadsOnTop,
 			moveRoom,
-			createCategoryAndMoveRoom,
 			removeRoom,
-			getRoomCategory,
+			isShowUnreads,
+			isKeepUnreadsOnTop,
+			sortGroups,
+			move,
 		],
 	);
 };

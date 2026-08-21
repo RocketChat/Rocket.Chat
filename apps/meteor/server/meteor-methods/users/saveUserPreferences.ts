@@ -1,5 +1,5 @@
 import { StatusVisibility } from '@rocket.chat/core-services';
-import type { ISidebarCustomCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
+import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
@@ -47,8 +47,7 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
-	sidebarCustomCategories: ISidebarCustomCategory[];
-	sidebarCategoriesOrder: string[];
+	sidebarCategories: ISidebarCategory[];
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
@@ -95,20 +94,23 @@ async function updateNotificationPreferences(
 
 const MAX_CATEGORY_NAME_LENGTH = 30;
 
-export const validateSidebarCustomCategories = (categories: ISidebarCustomCategory[]): void => {
+export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
+		if (category.default) {
+			continue;
+		}
 		const trimmed = category.name.trim();
 		if (!trimmed) {
-			throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains a blank category name');
+			throw new Meteor.Error('error-invalid-param', 'sidebarCategories contains a blank category name');
 		}
 		if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
-			throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories category name exceeds maximum length');
+			throw new Meteor.Error('error-invalid-param', 'sidebarCategories category name exceeds maximum length');
 		}
 	}
 
 	const hasDuplicates = (values: string[]): boolean => new Set(values).size !== values.length;
 	if (hasDuplicates(categories.map((category) => category._id))) {
-		throw new Meteor.Error('error-invalid-param', 'sidebarCustomCategories contains duplicate category _id values');
+		throw new Meteor.Error('error-invalid-param', 'sidebarCategories contains duplicate category _id values');
 	}
 };
 
@@ -144,15 +146,15 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarViewMode: Match.Optional(String),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
-		sidebarCustomCategories: Match.Optional([
+		sidebarCategories: Match.Optional([
 			{
 				_id: String,
 				name: String,
+				default: Match.Optional(Boolean),
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
 			},
 		]),
-		sidebarCategoriesOrder: Match.Optional([String]),
 		muteFocusedConversations: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
 		fontSize: Match.Optional(String),
@@ -167,8 +169,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
-	if (settings.sidebarCustomCategories) {
-		validateSidebarCustomCategories(settings.sidebarCustomCategories);
+	if (settings.sidebarCategories) {
+		validateSidebarCategories(settings.sidebarCategories);
 	}
 
 	const user = await Users.findOneById(userId);

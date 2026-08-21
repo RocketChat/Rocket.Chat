@@ -42,17 +42,17 @@ test.describe.serial('sidebar custom categories', () => {
 		targetChannel = name;
 		targetChannelId = created.channel._id;
 
-		await setUserPreferences(api, { sidebarCustomCategories: [] });
+		await setUserPreferences(api, { sidebarCategories: [] });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setUserPreferences(api, { sidebarCustomCategories: [] });
+		await setUserPreferences(api, { sidebarCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		await deleteChannel(api, targetChannel);
 	});
 
 	test.beforeEach(async ({ api, page }) => {
-		await setUserPreferences(api, { sidebarCustomCategories: [] });
+		await setUserPreferences(api, { sidebarCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
