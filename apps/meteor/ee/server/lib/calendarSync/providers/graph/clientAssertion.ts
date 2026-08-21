@@ -19,11 +19,6 @@ export function certificateThumbprintSha256(certificatePem: string): string {
 	return base64url(crypto.createHash('sha256').update(certificateDer(certificatePem)).digest());
 }
 
-/** Legacy SHA-1 thumbprint (x5t) for compatibility with providers expecting it */
-export function certificateThumbprintSha1(certificatePem: string): string {
-	return base64url(crypto.createHash('sha1').update(certificateDer(certificatePem)).digest());
-}
-
 /**
  * Builds the signed JWT (client_assertion) for the OAuth 2.0 client credentials
  * flow with a certificate credential, per the Microsoft identity platform
@@ -49,7 +44,6 @@ export function buildClientAssertion({
 		alg: 'RS256',
 		typ: 'JWT',
 		'x5t#S256': certificateThumbprintSha256(certificatePem),
-		x5t: certificateThumbprintSha1(certificatePem),
 	};
 	const nowSeconds = Math.floor(now / 1000);
 	const payload = {
