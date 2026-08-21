@@ -40,7 +40,7 @@ test.describe.serial('Join rooms', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 		});
 
 		test('should let a non-member join a public channel', async () => {
@@ -60,7 +60,7 @@ test.describe.serial('Join rooms', () => {
 		// hasn't propagated, the user lands on the "not subscribed" screen and the composer's
 		// Join button never renders.
 		test.beforeAll(async ({ api }) => {
-			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 		});
 
 		test.beforeEach(async ({ api }) => {
@@ -100,7 +100,7 @@ test.describe.serial('Join rooms', () => {
 
 		test.beforeAll(async ({ api }) => {
 			// Don't depend on an earlier block's `afterAll` to restore preview-c-room (racy).
-			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 			discussion = await createTargetDiscussion(api);
 		});
 
