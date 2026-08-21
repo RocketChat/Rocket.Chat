@@ -8,7 +8,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ui-kit"
 	},
 	"license": "MIT",
 	"author": {

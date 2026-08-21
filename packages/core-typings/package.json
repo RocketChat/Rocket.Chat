@@ -2,6 +2,11 @@
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
 	"version": "8.9.0-develop",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/core-typings"
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

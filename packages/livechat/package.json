@@ -4,7 +4,7 @@
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RocketChat/Rocket.Chat",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/livechat"
 	},
 	"license": "MIT",

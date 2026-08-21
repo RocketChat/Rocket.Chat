@@ -1,6 +1,11 @@
 {
 	"name": "@rocket.chat/ddp-client",
 	"version": "1.1.1",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ddp-client"
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
