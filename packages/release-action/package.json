@@ -4,7 +4,7 @@
 	"private": true,
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.js",
+		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix src"
 	},
