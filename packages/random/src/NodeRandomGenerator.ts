@@ -42,7 +42,7 @@ export class NodeRandomGenerator extends RandomGenerator {
 		let result = '';
 		for (let i = 0; i < count; i++) {
 			const fraction = bytes.readUInt32BE(i * 4) * 2.3283064365386963e-10; // 2^-32
-			result += alphabet[Math.floor(fraction * alphabet.length)];
+			result += alphabet.charAt(Math.floor(fraction * alphabet.length));
 		}
 		return result;
 	}

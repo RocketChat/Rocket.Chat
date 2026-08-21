@@ -76,10 +76,9 @@ export class MentionsServer extends MentionsParser {
 				userMentions.add(mention);
 				continue;
 			}
-			const messageMaxAll = this.messageMaxAll();
-			if (messageMaxAll > 0) {
+			if (this.messageMaxAll() > 0) {
 				totalChannelMembers ??= await this.getTotalChannelMembers(rid);
-				if (totalChannelMembers > messageMaxAll) {
+				if (totalChannelMembers > this.messageMaxAll()) {
 					await this.onMaxRoomMembersExceeded({ sender, rid });
 					continue;
 				}
