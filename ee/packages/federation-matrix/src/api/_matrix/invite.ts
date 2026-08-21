@@ -187,7 +187,10 @@ export const getMatrixInviteRoutes = () => {
 				};
 			}
 
-			if (!userToCheck.startsWith('@') || userToCheck.indexOf(':', 1) === -1) {
+			// spec grammar is `@localpart:server_name`, where localpart is non-empty. deliberately
+			// not `validateFederatedUsername`, which is stricter than the spec and would reject
+			// legal localparts containing `/` or `+`
+			if (!/^@[A-Za-z0-9_=/.+-]+:.+$/.test(userToCheck)) {
 				return {
 					body: {
 						errcode: 'M_UNKNOWN',
