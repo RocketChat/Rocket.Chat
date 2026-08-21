@@ -4,7 +4,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useRoomCategoryItems } from '../../../../sidebar/categories/useRoomCategoryItems';
+import { useCategoryMenuItems } from '../../../../sidebar/categories/useCategoryMenuItems';
 
 const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean): 'star-filled' | 'folder' | 'star' => {
 	if (favorite) {
@@ -29,18 +29,12 @@ const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 	const category = Boolean(room.category);
 	const groupingIcon = getGroupingIcon(favorite, category, isFavoritesEnabled);
 
-	const buildCategoryItems = useRoomCategoryItems();
-
-	const { moveToItems, removeItem } = buildCategoryItems({
+	const { targetItems, utilItems } = useCategoryMenuItems({
 		rid: room._id,
-		name: room.name || '',
+		name: room.name,
 		isFavorite: favorite,
 		categoryId: room.category,
 	});
-	const targetItems = moveToItems.filter((item) => item.id !== 'newCategory');
-	const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
-
-	const utilItems = [...(newCategoryItem ? [newCategoryItem] : []), ...(removeItem ? [removeItem] : [])];
 
 	const sections = [{ items: targetItems }, ...(utilItems.length ? [{ items: utilItems }] : [])];
 
