@@ -2,7 +2,7 @@ import type { ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { GenericMenuItem } from '@rocket.chat/ui-client';
+import { renderItem } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -13,9 +13,7 @@ import { useKeepUnreadsOnTopGroups } from '../hooks/useKeepUnreadsOnTopGroups';
 import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
 
 type CategoryMenuProps = {
-	/** Present for a custom category; omitted for a system/standard group. */
 	category?: ISidebarCustomCategory;
-	/** Collapse/show-unreads identity (category id for custom, translation key for system). */
 	groupKey: string;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
@@ -24,19 +22,6 @@ type CategoryMenuProps = {
 	onMoveUp: () => void;
 	onMoveDown: () => void;
 };
-
-const renderItem = (item: GenericMenuItemProps) => (
-	<MenuItem key={item.id} aria-label={typeof item.content === 'string' ? item.content : item.id}>
-		<GenericMenuItem {...item} />
-	</MenuItem>
-);
-
-const renderSubmenuItem = (item: GenericMenuItemProps) => (
-	<MenuItem key={item.id} aria-label={typeof item.content === 'string' ? item.content : item.id}>
-		{item.icon && <MenuItemIcon name={item.icon} />}
-		{item.content && <MenuItemContent>{item.content}</MenuItemContent>}
-	</MenuItem>
-);
 
 const CategoryMenu = ({
 	category,
@@ -171,7 +156,7 @@ const CategoryMenu = ({
 									<MenuItemIcon name='plus' />
 									<MenuItemContent>{t('Create_new')}</MenuItemContent>
 								</MenuItem>
-								<MenuSection items={createItems}>{renderSubmenuItem}</MenuSection>
+								<MenuSection items={createItems}>{renderItem}</MenuSection>
 							</MenuSubmenuTrigger>
 						)}
 						{category && manageItems.map(renderItem)}
