@@ -1,8 +1,8 @@
-import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 import { createHash } from 'node:crypto';
 
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
+import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 const WellKnownServerResponseSchema = {
 	type: 'object',
