@@ -8,7 +8,7 @@ const { BROKER = 'moleculer' } = process.env;
 
 export function startBroker(options: Moleculer.BrokerOptions = {}): IBroker {
 	if (BROKER === 'nats') {
-		return startNatsBroker();
+		return startNatsBroker(options.nodeID ?? undefined);
 	}
 
 	return startMoleculerBroker(options);

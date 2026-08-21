@@ -1,26 +1,80 @@
-import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
-import type { ConnectionOptions, NatsConnection } from 'nats';
-import { connect } from 'nats';
+import type { ConnectionOptions, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
+import { Empty, RequestStrategy, connect } from 'nats';
 
 import { getInstanceMethods } from './getInstanceMethods';
+import type { ServiceNodes } from './licenseEnforcement';
+import { startLicenseEnforcement } from './licenseEnforcement';
 
 export { connect } from 'nats';
+
+const { REQUEST_TIMEOUT = '60' } = process.env;
+
+const requestTimeout = (parseInt(REQUEST_TIMEOUT) || 60) * 1000;
 
 const TE = new TextEncoder();
 const TD = new TextDecoder();
 
+const SERVICE_VERSION = '0.1.0';
+
+/**
+ * Events and service methods must not share a subject space: several event names
+ * are identical to a `<service>.<method>` pair (`accounts.login`), so without
+ * distinct prefixes a broadcast would invoke the method and a call would be
+ * delivered to the event listeners.
+ */
+const RPC_PREFIX = 'rpc';
+const EVENT_PREFIX = 'event';
+
+/** `node.<nodeID>.<service>.<method>`, used to honour `CallingOptions.nodeID`. */
+const NODE_PREFIX = 'node';
+
+const NODE_ID_METADATA = 'rocketchat-node-id';
+
+const DISCOVERY_TIMEOUT = 1000;
+
+/** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
+const DISCOVERY_TTL = 1000;
+
 const lifecycleMethods = new Set(['created', 'started', 'stopped']);
 
-const serviceEvents = new Set<{
-	eventName: keyof EventSignatures;
-	listeners: {
-		(...args: any[]): void;
-	}[];
-}>();
+const internalMethods = new Set(['$node.list', '$node.services']);
+
+type RegisteredService = {
+	service: Service;
+	subscriptions: Subscription[];
+	stopLicenseEnforcement?: () => void;
+};
+
+/**
+ * A NATS subject token cannot contain `.`, `*`, `>` or whitespace, so the node id
+ * is reduced to a single safe token and that reduced form is used as the node
+ * identity everywhere - including what `nodeList()` reports - so that a node id
+ * handed back to `call()` always addresses the same subject.
+ */
+function toSubjectToken(nodeID: string): string {
+	return nodeID.replace(/[^A-Za-z0-9_-]/g, '_');
+}
+
+function encodePayload(value: unknown): Uint8Array {
+	return value === undefined ? Empty : TE.encode(EJSON.stringify(value));
+}
+
+function decodePayload(data: Uint8Array): any {
+	const decoded = TD.decode(data);
+
+	return decoded ? EJSON.parse(decoded) : undefined;
+}
+
+function decodeParams(data: Uint8Array): any[] {
+	return decodePayload(data) ?? [];
+}
 
 export class NatsBroker implements IBroker {
 	metrics?: IServiceMetrics | undefined;
+
+	readonly nodeID: string;
 
 	private nc?: NatsConnection;
 
@@ -28,10 +82,32 @@ export class NatsBroker implements IBroker {
 
 	private pendingServices: IServiceClass[] = [];
 
-	constructor(private options: ConnectionOptions) {}
+	private services = new Map<IServiceClass, RegisteredService>();
 
-	async destroyService(service: IServiceClass): Promise<void> {
-		await service.stopped();
+	private discovery?: { at: number; identities: Promise<ServiceIdentity[]> };
+
+	constructor(
+		private options: ConnectionOptions,
+		nodeID: string,
+	) {
+		this.nodeID = toSubjectToken(nodeID);
+	}
+
+	async destroyService(instance: IServiceClass): Promise<void> {
+		const registered = this.services.get(instance);
+		this.services.delete(instance);
+
+		if (registered) {
+			registered.stopLicenseEnforcement?.();
+
+			if (this.nc && !this.nc.isClosed()) {
+				await Promise.all(registered.subscriptions.map((subscription) => subscription.drain()));
+				await registered.service.stop();
+			}
+		}
+
+		await instance.stopped();
+		instance.removeAllListeners();
 	}
 
 	async createService(instance: IServiceClass, _serviceDependencies?: string[]): Promise<void> {
@@ -46,72 +122,103 @@ export class NatsBroker implements IBroker {
 	}
 
 	private async registerService(instance: IServiceClass): Promise<void> {
-		if (!this.nc) {
+		const { nc } = this;
+		if (!nc) {
 			throw new Error('NatsBroker not connected');
 		}
 
-		const name = instance.getName() ?? 'error';
+		const name = instance.getName();
+		if (!name) {
+			return;
+		}
 
 		const serviceInstance = instance as any;
 
-		const natsService = await this.nc.services.add({
+		const service = await nc.services.add({
 			name,
-			version: '0.1.0',
+			version: SERVICE_VERSION,
+			metadata: { [NODE_ID_METADATA]: this.nodeID },
 		});
 
-		for (const event of instance.getEvents()) {
-			// TODO need to add a routine to remove the events once the service is destroyed
-			serviceEvents.add(event);
+		// one subscription per event routed through `emit`, so listeners registered
+		// after this point are still reached
+		const subscriptions = instance.getEvents().map(({ eventName }) =>
+			nc.subscribe(`${EVENT_PREFIX}.${String(eventName)}`, {
+				callback: (_error, msg): void => {
+					instance.emit(eventName, ...(decodeParams(msg.data) as Parameters<EventSignatures[typeof eventName]>));
+				},
+			}),
+		);
 
-			for (const listener of event.listeners) {
-				this.nc.subscribe(String(event.eventName), {
-					callback: (_error, msg) => {
-						const decoded = TD.decode(msg.data);
-						const params = decoded ? EJSON.parse(decoded) : [];
+		const shared = service.addGroup(`${RPC_PREFIX}.${name}`);
+		const scoped = service.addGroup(`${NODE_PREFIX}.${this.nodeID}.${name}`);
 
-						listener(...params);
-					},
-				});
-			}
-		}
-
-		const group = natsService.addGroup(name);
-
-		const methods = getInstanceMethods(instance);
-		for (const method of methods) {
+		for (const method of getInstanceMethods(instance)) {
 			if (method.match(/^on[A-Z]/) || lifecycleMethods.has(method)) {
 				continue;
 			}
 
-			group.addEndpoint(method, async (_error, msg) => {
+			const respond = async (msg: ServiceMsg): Promise<void> => {
 				try {
-					const decoded = TD.decode(msg.data);
-					const params = decoded ? EJSON.parse(decoded) : [];
-
-					const res = await serviceInstance[method](...params);
-
-					msg?.respond(TE.encode(EJSON.stringify(res)));
+					msg.respond(encodePayload(await serviceInstance[method](...decodeParams(msg.data))));
 				} catch (e) {
 					console.error('error', e);
 				}
-			});
+			};
+
+			const handler: ServiceHandler = (_error, msg): void => void respond(msg);
+
+			shared.addEndpoint(method, handler);
+			// same handler on a subject unique to this process, so a call can target one
+			// instance instead of being load balanced across the queue group
+			scoped.addEndpoint(method, handler);
 		}
+
+		this.services.set(instance, {
+			service,
+			subscriptions,
+			...(!instance.isInternal() && { stopLicenseEnforcement: this.startLicenseEnforcement(name) }),
+		});
 	}
 
-	async call(method: string, data: any): Promise<any> {
+	private startLicenseEnforcement(serviceName: string): () => void {
+		return startLicenseEnforcement({
+			serviceName,
+			nodeID: this.nodeID,
+			hasValidLicense: () => this.call('license.hasValidLicense', ['scalability']),
+			listServices: () => this.serviceList(),
+			fatal: (message: string): void => {
+				console.error(message);
+				process.exit(1);
+			},
+		});
+	}
+
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
 		if (!this.started || !this.nc) {
 			return;
 		}
 
-		try {
-			const params = data ? TE.encode(EJSON.stringify(data)) : new Uint8Array(0);
-			const res = await this.nc.request(method, params);
+		if (internalMethods.has(method)) {
+			return this.callInternal(method);
+		}
 
-			const decoded = TD.decode(res.data);
-			return decoded ? EJSON.parse(decoded) : undefined;
-		} catch (e) {
-			console.error(e);
-			throw e;
+		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
+
+		const msg = await this.nc.request(subject, encodePayload(data), { timeout: requestTimeout });
+
+		return decodePayload(msg.data);
+	}
+
+	/** Moleculer internals that application code still calls through the broker. */
+	private async callInternal(method: string): Promise<any> {
+		switch (method) {
+			case '$node.list':
+				return this.nodeList();
+			case '$node.services':
+				return this.serviceList();
+			default:
+				throw new Error(`unknown internal method: ${method}`);
 		}
 	}
 
@@ -128,21 +235,80 @@ export class NatsBroker implements IBroker {
 			return;
 		}
 
-		this.nc.publish(String(event), TE.encode(EJSON.stringify(args)));
+		this.nc.publish(`${EVENT_PREFIX}.${String(event)}`, encodePayload(args));
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		for (const serviceEvent of serviceEvents) {
-			if (serviceEvent.eventName === event) {
-				serviceEvent.listeners.forEach((listener) => {
-					listener(...args);
-				});
-			}
+		for (const instance of this.services.keys()) {
+			instance.emit(event, ...args);
 		}
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
-		return [];
+		const nodes = new Map<string, IBrokerNode>();
+
+		for (const { metadata } of await this.discover()) {
+			const nodeID = metadata?.[NODE_ID_METADATA];
+			if (!nodeID) {
+				continue;
+			}
+
+			nodes.set(nodeID, { id: nodeID, available: true, local: nodeID === this.nodeID });
+		}
+
+		return [...nodes.values()];
+	}
+
+	private async serviceList(): Promise<ServiceNodes[]> {
+		const nodesByService = new Map<string, Set<string>>();
+
+		for (const { name, metadata } of await this.discover()) {
+			const nodeID = metadata?.[NODE_ID_METADATA];
+			if (!nodeID) {
+				continue;
+			}
+
+			const nodes = nodesByService.get(name) ?? new Set<string>();
+			nodes.add(nodeID);
+			nodesByService.set(name, nodes);
+		}
+
+		return [...nodesByService].map(([name, nodes]) => ({ name, nodes: [...nodes] }));
+	}
+
+	private async discover(): Promise<ServiceIdentity[]> {
+		const { nc } = this;
+		if (!nc || nc.isClosed()) {
+			throw new Error('NatsBroker not connected');
+		}
+
+		const now = Date.now();
+		if (this.discovery && now - this.discovery.at < DISCOVERY_TTL) {
+			return this.discovery.identities;
+		}
+
+		const identities = (async (): Promise<ServiceIdentity[]> => {
+			const client = nc.services.client({ strategy: RequestStrategy.JitterTimer, maxWait: DISCOVERY_TIMEOUT });
+
+			const found: ServiceIdentity[] = [];
+			for await (const identity of await client.ping()) {
+				found.push(identity);
+			}
+
+			return found;
+		})();
+
+		const discovery = { at: now, identities };
+		this.discovery = discovery;
+
+		// a failed discovery must not be served from the cache
+		identities.catch(() => {
+			if (this.discovery === discovery) {
+				this.discovery = undefined;
+			}
+		});
+
+		return identities;
 	}
 
 	async start(): Promise<void> {
