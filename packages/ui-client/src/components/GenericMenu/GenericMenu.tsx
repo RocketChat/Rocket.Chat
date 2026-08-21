@@ -30,6 +30,16 @@ type GenericMenuConditionalProps =
 
 export type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
 
+export const renderItem = (item: GenericMenuItemProps) => (
+	<MenuItem
+		key={item.id}
+		aria-label={typeof item.content === 'string' ? item.content : item.id}
+		textValue={typeof item.content === 'string' ? item.content : item.id}
+	>
+		<GenericMenuItem {...item} />
+	</MenuItem>
+);
+
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
 	const { t, i18n } = useTranslation();
 
