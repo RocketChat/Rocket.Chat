@@ -275,6 +275,12 @@ export const metrics = {
 		help: 'total bytes exchanged across the boundary between an app runtime (subprocess) and the host',
 		labelNames: ['app_id', 'app_name', 'version', 'engine_version', 'runtime', 'direction'],
 	}),
+	appsEngineRuntimeRequestDuration: new client.Histogram({
+		name: 'rocketchat_apps_engine_runtime_request_duration_seconds',
+		help: 'histogram of the duration in seconds of requests sent from the host to an app runtime, per method',
+		labelNames: ['app_id', 'method', 'status'],
+		buckets: latencyBuckets,
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({

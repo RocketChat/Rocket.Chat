@@ -28,6 +28,29 @@ export type RuntimeThroughput = {
 	bytes: number;
 };
 
+/** Outcome of a request sent across the boundary from the host to a runtime. */
+export type RuntimeRequestStatus = 'success' | 'error';
+
+/**
+ * A completed request sent across the boundary from the host to an app's
+ * runtime, reported to {@link IAppsRuntimeMetrics.observeRequestDuration}.
+ */
+export type RuntimeRequestDuration = {
+	/** The app whose runtime handled the request. */
+	appId: string;
+	/**
+	 * Bounded identifier of the request method, safe to use as a metric label.
+	 * `app:*` lifecycle/event methods keep their name; every other category
+	 * (which embeds unbounded ids) is reduced to its category. See
+	 * {@link normalizeRuntimeMethodLabel}.
+	 */
+	method: string;
+	/** Whether the request resolved or rejected/timed out. */
+	status: RuntimeRequestStatus;
+	/** Wall-clock time the request took, in milliseconds. */
+	durationMs: number;
+};
+
 /**
  * Sink for runtime observability signals produced by the subprocess controllers.
  *
@@ -44,6 +67,33 @@ export interface IAppsRuntimeMetrics {
 	 * channel.
 	 */
 	observeThroughput(throughput: RuntimeThroughput): void;
+	/**
+	 * Records how long a request sent from the host to an app's runtime took,
+	 * so the host can expose per-method request duration.
+	 */
+	observeRequestDuration(duration: RuntimeRequestDuration): void;
+}
+
+/**
+ * Reduces a namespaced runtime request method to a bounded metric label.
+ *
+ * Every method sent to a runtime is namespaced as `<category>:<...>`.
+ * `app:<AppMethod>` carries the bounded lifecycle/event method name, which we
+ * keep for per-method granularity (e.g. `executePostMessageSent`). Every other
+ * category embeds unbounded ids — api paths, slashcommand names, scheduler ids,
+ * provider names — so we label by the category alone to keep cardinality
+ * bounded (e.g. `api`, `slashcommand`, `scheduler`).
+ */
+export function normalizeRuntimeMethodLabel(method: string): string {
+	const separator = method.indexOf(':');
+
+	if (separator === -1) {
+		return method;
+	}
+
+	const category = method.slice(0, separator);
+
+	return category === 'app' ? method.slice(separator + 1) : category;
 }
 
 /**
@@ -52,6 +102,9 @@ export interface IAppsRuntimeMetrics {
  */
 export const noopRuntimeMetrics: IAppsRuntimeMetrics = {
 	observeThroughput() {
+		// no-op
+	},
+	observeRequestDuration() {
 		// no-op
 	},
 };

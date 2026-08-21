@@ -19,7 +19,7 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
-import type { IAppsRuntimeMetrics, RuntimeThroughputDirection } from '../RuntimeMetrics';
+import { normalizeRuntimeMethodLabel, type IAppsRuntimeMetrics, type RuntimeThroughputDirection, type RuntimeRequestStatus } from '../RuntimeMetrics';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
@@ -310,8 +310,32 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			abort(e);
 		}
 
-		return promise.finally(() => {
-			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
+		return promise
+			.then(
+				(result) => {
+					this.observeRequestDuration(message.method, 'success', Date.now() - start);
+					return result;
+				},
+				(error) => {
+					this.observeRequestDuration(message.method, 'error', Date.now() - start);
+					throw error;
+				},
+			)
+			.finally(() => {
+				this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
+			});
+	}
+
+	/**
+	 * Reports the duration of a host → runtime request to the injected metrics
+	 * sink, tagging it with the app and a bounded, per-method label.
+	 */
+	private observeRequestDuration(method: string, status: RuntimeRequestStatus, durationMs: number): void {
+		this.runtimeMetrics.observeRequestDuration({
+			appId: this.getAppId(),
+			method: normalizeRuntimeMethodLabel(method),
+			status,
+			durationMs,
 		});
 	}
 
