@@ -7492,6 +7492,6 @@
   "Anything_you_added_to__name__will_move_back_to_default": "Anything you added to {{name}} will move back to their default categories.",
   "No_content_access_or_security_setting_will_be_lost_or_changed": "No content, access or security setting will be lost or changed.",
   "__roomName__moved_to__categoryName__": "{{roomName}} moved to {{categoryName}}.",
-  "__roomName__removed_from__categoryName__": "{{roomName}} removed from {{categoryName}}.",
+  "__roomName__removed_from_category": "{{roomName}} removed from category.",
   "Remove_from__categoryName__": "Remove from {{categoryName}}"
 }
