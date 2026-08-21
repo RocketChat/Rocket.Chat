@@ -56,6 +56,7 @@ const isMakeLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixMakeLeaveRoutes = () => {
+	// GET /_matrix/federation/v1/make_leave/{roomId}/{userId}
 	// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1make_leaveroomiduserid
 	return new Router('/federation').get(
 		'/v1/make_leave/:roomId/:userId',

@@ -76,6 +76,7 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 export const getMatrixMediaRoutes = () => {
 	return (
 		new Router('/federation')
+			// GET /_matrix/federation/v1/media/download/{mediaId}
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1mediadownloadmediaid
 			.get(
 				'/v1/media/download/:mediaId',
@@ -130,6 +131,7 @@ export const getMatrixMediaRoutes = () => {
 					}
 				},
 			)
+			// GET /_matrix/federation/v1/media/thumbnail/{mediaId}
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1mediathumbnailmediaid
 			.get(
 				'/v1/media/thumbnail/:mediaId',

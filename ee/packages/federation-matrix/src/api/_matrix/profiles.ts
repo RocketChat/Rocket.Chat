@@ -368,6 +368,7 @@ export const getMatrixProfilesRoutes = () => {
 	return (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware())
+			// GET /_matrix/federation/v1/query/profile
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1queryprofile
 			.get(
 				'/v1/query/profile',
@@ -412,6 +413,7 @@ export const getMatrixProfilesRoutes = () => {
 					};
 				},
 			)
+			// POST /_matrix/federation/v1/user/keys/query
 			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1userkeysquery
 			.post(
 				'/v1/user/keys/query',
@@ -434,6 +436,7 @@ export const getMatrixProfilesRoutes = () => {
 					};
 				},
 			)
+			// GET /_matrix/federation/v1/user/devices/{userId}
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1userdevicesuserid
 			.get(
 				'/v1/user/devices/:userId',
@@ -456,6 +459,7 @@ export const getMatrixProfilesRoutes = () => {
 					};
 				},
 			)
+			// GET /_matrix/federation/v1/make_join/{roomId}/{userId}
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1make_joinroomiduserid
 			.get(
 				'/v1/make_join/:roomId/:userId',
@@ -508,6 +512,7 @@ export const getMatrixProfilesRoutes = () => {
 					}
 				},
 			)
+			// POST /_matrix/federation/v1/get_missing_events/{roomId}
 			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1get_missing_eventsroomid
 			.post(
 				'/v1/get_missing_events/:roomId',
@@ -550,6 +555,7 @@ export const getMatrixProfilesRoutes = () => {
 					};
 				},
 			)
+			// GET /_matrix/federation/v1/event_auth/{roomId}/{eventId}
 			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1event_authroomideventid
 			.get(
 				'/v1/event_auth/:roomId/:eventId',
