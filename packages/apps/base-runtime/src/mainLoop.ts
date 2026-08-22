@@ -7,7 +7,7 @@ import handleScheduler from './handlers/scheduler-handler';
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
 import { decoder } from './lib/codec';
-import { JsonRpcError, type SuccessObject } from './lib/jsonrpc';
+import { JsonRpcError, NotificationObject, type SuccessObject } from './lib/jsonrpc';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
 import { sendMetrics } from './lib/metricsCollector';
@@ -25,7 +25,7 @@ type Handlers = {
 
 const COMMAND_PING = '_zPING';
 
-async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promise<void> {
+async function requestRouter(message: Messenger.JsonRpcRequest): Promise<void> {
 	const methodHandlers: Handlers = {
 		app: handleApp,
 		api: apiHandler,
@@ -37,15 +37,15 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 	};
 
 	// We're not handling notifications at the moment
-	if (type === 'notification') {
+	if (message instanceof NotificationObject) {
 		return Messenger.sendInvalidRequestError();
 	}
 
-	const { id, method } = payload;
+	const { id, method } = message;
 
 	const logger = new Logger(method);
 
-	const context: RequestContext = Object.assign(payload, {
+	const context: RequestContext = Object.assign(message, {
 		context: { logger },
 	});
 
@@ -76,13 +76,13 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 function handleResponse(response: Messenger.JsonRpcResponse): void {
 	let payload: { error: Error } | { detail: SuccessObject };
 
-	if (Messenger.isErrorResponse(response.payload)) {
-		payload = { error: new Error(response.payload.error.message) };
+	if (Messenger.isErrorResponse(response)) {
+		payload = { error: new Error(response.error.message) };
 	} else {
-		payload = { detail: response.payload };
+		payload = { detail: response };
 	}
 
-	Messenger.RPCResponseObserver.emit(`response:${response.payload.id}`, payload);
+	Messenger.RPCResponseObserver.emit(`response:${response.id}`, payload);
 }
 
 /**
@@ -105,7 +105,7 @@ export async function startMainLoop(): Promise<void> {
 				continue;
 			}
 
-			const JSONRPCMessage = Messenger.parseMessage(message as Record<string, unknown>);
+			const JSONRPCMessage = Messenger.parseMessage(message);
 
 			if (Messenger.isRequest(JSONRPCMessage)) {
 				void requestRouter(JSONRPCMessage);

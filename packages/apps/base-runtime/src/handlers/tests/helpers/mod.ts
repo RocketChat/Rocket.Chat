@@ -13,7 +13,6 @@ export function createMockRequest({ method, params }: RequestDescriptor): Reques
 		context: {
 			logger: new Logger(method),
 		},
-		serialize: () => '',
 	};
 }
 
