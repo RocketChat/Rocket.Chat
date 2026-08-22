@@ -333,6 +333,10 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 	private observeRequestDuration(method: string, status: RuntimeRequestStatus, durationMs: number): void {
 		this.runtimeMetrics.observeRequestDuration({
 			appId: this.getAppId(),
+			appName: this.appPackage.info.name,
+			appVersion: this.appPackage.info.version,
+			engineVersion: this.engineVersion,
+			runtime: this.runtimeName,
 			method: normalizeRuntimeMethodLabel(method),
 			status,
 			durationMs,

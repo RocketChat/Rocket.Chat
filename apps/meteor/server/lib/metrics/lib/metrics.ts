@@ -278,7 +278,7 @@ export const metrics = {
 	appsEngineRuntimeRequestDuration: new client.Histogram({
 		name: 'rocketchat_apps_engine_runtime_request_duration_seconds',
 		help: 'histogram of the duration in seconds of requests sent from the host to an app runtime, per method',
-		labelNames: ['app_id', 'method', 'status'],
+		labelNames: ['app_id', 'app_name', 'version', 'engine_version', 'runtime', 'method', 'status'],
 		buckets: latencyBuckets,
 	}),
 

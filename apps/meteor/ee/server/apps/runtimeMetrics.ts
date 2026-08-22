@@ -20,7 +20,10 @@ export const appsRuntimeMetrics: IAppsRuntimeMetrics = {
 			bytes,
 		);
 	},
-	observeRequestDuration({ appId, method, status, durationMs }) {
-		metrics.appsEngineRuntimeRequestDuration.observe({ app_id: appId, method, status }, durationMs / 1000);
+	observeRequestDuration({ appId, appName, appVersion, engineVersion, runtime, method, status, durationMs }) {
+		metrics.appsEngineRuntimeRequestDuration.observe(
+			{ app_id: appId, app_name: appName, version: appVersion, engine_version: engineVersion, runtime, method, status },
+			durationMs / 1000,
+		);
 	},
 };

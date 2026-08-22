@@ -38,6 +38,14 @@ export type RuntimeRequestStatus = 'success' | 'error';
 export type RuntimeRequestDuration = {
 	/** The app whose runtime handled the request. */
 	appId: string;
+	/** Human-readable name of the app, for readability alongside `appId`. */
+	appName: string;
+	/** Version of the app the runtime is executing. */
+	appVersion: string;
+	/** Version of the `@rocket.chat/apps` package hosting the runtime boundary. */
+	engineVersion: string;
+	/** The platform runtime backing the subprocess (e.g. `deno`, `node`). */
+	runtime: string;
 	/**
 	 * Bounded identifier of the request method, safe to use as a metric label.
 	 * `app:*` lifecycle/event methods keep their name; every other category
