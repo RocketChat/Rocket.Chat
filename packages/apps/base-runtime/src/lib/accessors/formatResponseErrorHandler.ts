@@ -1,4 +1,4 @@
-import { ErrorObject } from 'jsonrpc-lite';
+import { ErrorObject } from '../jsonrpc';
 
 export const formatErrorResponse = (error: any): Error => {
 	if (error instanceof ErrorObject || typeof error?.error?.message === 'string') {

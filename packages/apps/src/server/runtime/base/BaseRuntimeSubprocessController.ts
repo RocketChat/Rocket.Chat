@@ -6,12 +6,12 @@ import { inspect as utilInspect } from 'node:util';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
-import * as jsonrpc from 'jsonrpc-lite';
 
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
+import * as jsonrpc from './jsonrpc';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import { AppResourceBridge } from '../../bridges/AppResourceBridge';

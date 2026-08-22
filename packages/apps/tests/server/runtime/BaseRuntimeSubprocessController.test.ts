@@ -6,7 +6,6 @@ import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
@@ -18,8 +17,6 @@ import { TestInfastructureSetup } from '../../test-data/utilities';
 // Exercises the platform-agnostic message loop in BaseRuntimeSubprocessController
 // through its concrete Node implementation.
 describe('BaseRuntimeSubprocessController', () => {
-	const rpcTypeRequest = 'request' as RpcStatusType.request;
-
 	let manager: AppManager;
 	let controller: NodeRuntimeSubprocessController;
 	let appPackage: IParseAppPackageResult;
@@ -77,7 +74,6 @@ describe('BaseRuntimeSubprocessController', () => {
 				id: 'requestId',
 				method: 'bridges:getMessageBridge:doCreate',
 				params: [messageParam, 'APP_ID'],
-				serialize: () => '',
 			},
 		});
 
