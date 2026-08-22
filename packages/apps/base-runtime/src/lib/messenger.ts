@@ -12,15 +12,15 @@ export type SuccessResponseDescriptor = Pick<jsonrpc.SuccessObject, 'id' | 'resu
 
 export type ErrorResponseDescriptor = Pick<jsonrpc.ErrorObject, 'id' | 'error'>;
 
-export type JsonRpcRequest = jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification;
-export type JsonRpcResponse = jsonrpc.IParsedObjectSuccess | jsonrpc.IParsedObjectError;
+export type JsonRpcRequest = jsonrpc.RequestObject | jsonrpc.NotificationObject;
+export type JsonRpcResponse = jsonrpc.SuccessObject | jsonrpc.ErrorObject;
 
-export function isRequest(message: jsonrpc.IParsedObject): message is JsonRpcRequest {
-	return message.type === 'request' || message.type === 'notification';
+export function isRequest(message: jsonrpc.JsonRpc): message is JsonRpcRequest {
+	return message instanceof jsonrpc.RequestObject || message instanceof jsonrpc.NotificationObject;
 }
 
-export function isResponse(message: jsonrpc.IParsedObject): message is JsonRpcResponse {
-	return message.type === 'success' || message.type === 'error';
+export function isResponse(message: jsonrpc.JsonRpc): message is JsonRpcResponse {
+	return message instanceof jsonrpc.SuccessObject || message instanceof jsonrpc.ErrorObject;
 }
 
 export function isErrorResponse(message: jsonrpc.JsonRpc): message is jsonrpc.ErrorObject {
@@ -97,24 +97,19 @@ export function setTransport(newTransport: Transport): void {
 	transport = newTransport;
 }
 
-export function parseMessage(message: string | Record<string, unknown>) {
-	let parsed: jsonrpc.IParsedObject | jsonrpc.IParsedObject[];
-
-	if (typeof message === 'string') {
-		parsed = jsonrpc.parse(message);
-	} else {
-		parsed = jsonrpc.parseObject(message);
+export function parseMessage(message: unknown): jsonrpc.JsonRpc {
+	// The codec's JSON-RPC extension has already rebuilt the envelope classes on decode;
+	// anything that is not one of them is not a valid message for this bridge.
+	if (
+		message instanceof jsonrpc.RequestObject ||
+		message instanceof jsonrpc.NotificationObject ||
+		message instanceof jsonrpc.SuccessObject ||
+		message instanceof jsonrpc.ErrorObject
+	) {
+		return message;
 	}
 
-	if (Array.isArray(parsed)) {
-		throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(null));
-	}
-
-	if (parsed.type === 'invalid') {
-		throw jsonrpc.error(null, parsed.payload);
-	}
-
-	return parsed;
+	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message));
 }
 
 export async function sendInvalidRequestError(): Promise<void> {

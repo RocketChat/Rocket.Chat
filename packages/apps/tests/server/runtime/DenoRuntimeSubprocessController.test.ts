@@ -10,14 +10,12 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';
-import { SuccessObject } from '../../../src/server/runtime/base/jsonrpc';
+import { request, SuccessObject } from '../../../src/server/runtime/base/jsonrpc';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 describe('DenoRuntimeSubprocessController', () => {
-	const rpcTypeRequest = 'request' as const;
-
 	let manager: AppManager;
 	let controller: DenoRuntimeSubprocessController;
 	let appPackage: IParseAppPackageResult;
@@ -73,15 +71,9 @@ describe('DenoRuntimeSubprocessController', () => {
 			avatarUrl: 'https://avatars.com/123',
 		};
 
-		const response = await controller['handleBridgeMessage']({
-			type: rpcTypeRequest,
-			payload: {
-				jsonrpc: '2.0',
-				id: 'requestId',
-				method: 'bridges:getMessageBridge:doCreate',
-				params: [messageParam, 'APP_ID'],
-			},
-		});
+		const response = await controller['handleBridgeMessage'](
+			request('requestId', 'bridges:getMessageBridge:doCreate', [messageParam, 'APP_ID']),
+		);
 
 		assert.ok(response instanceof SuccessObject);
 
