@@ -1,5 +1,5 @@
-import { settings } from '../../../client/lib/settings';
-import { fileUploadIsValidContentTypeFromSettings } from '../lib/restrictions';
+import { fileUploadIsValidContentTypeFromSettings } from '../../../app/utils/lib/restrictions';
+import { settings } from '../settings';
 
 export const fileUploadIsValidContentType = function (type: string | undefined, customWhiteList?: string): boolean {
 	const blackList = settings.peek<string>('FileUpload_MediaTypeBlackList') ?? 'image/svg+xml';

@@ -9,12 +9,12 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { slashCommands } from '../../../../app/utils/client';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { hasAtLeastOnePermission } from '../../../lib/authorization';
 import { pipe } from '../../../lib/cachedStores/pipe';
 import { emoji } from '../../../lib/emoji';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { slashCommands } from '../../../lib/slashCommand';
 import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';

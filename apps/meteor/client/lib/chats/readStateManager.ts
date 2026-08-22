@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { Messages } from '../../stores';
 import { LegacyRoomManager } from '../LegacyRoomManager';
 import { RoomHistoryManager } from '../RoomHistoryManager';
+import { sdk } from '../SDKClient';
 import { getUserId } from '../user';
 
 export class ReadStateManager extends Emitter {

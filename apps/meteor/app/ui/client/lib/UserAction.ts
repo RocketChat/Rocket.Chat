@@ -2,10 +2,10 @@ import type { IExtras, IRoomActivity, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 
+import { sdk } from '../../../../client/lib/SDKClient';
 import { settings } from '../../../../client/lib/settings';
 import { getUser, getUserId } from '../../../../client/lib/user';
 import { Users } from '../../../../client/stores';
-import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
@@ -23,7 +23,7 @@ const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-const rooms = new Map<string, (username: string, activityType: string[], extras?: object | undefined) => void>();
+const rooms = new Map<string, (username: string, activityType: string[], extras?: object) => void>();
 
 const performingUsers = new Map<string, IRoomActivity>();
 const performingUsersEmitter = new Emitter<{ changed: void }>();

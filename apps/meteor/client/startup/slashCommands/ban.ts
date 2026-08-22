@@ -1,6 +1,6 @@
-import { slashCommands } from '../../../app/utils/client/slashCommand';
 import { queryClient } from '../../lib/queryClient';
 import { roomsQueryKeys } from '../../lib/queryKeys';
+import { slashCommands } from '../../lib/slashCommand';
 
 const invalidateMembers = (err: unknown, _result: unknown, params: { msg: { rid: string } }) => {
 	if (err) return;

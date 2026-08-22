@@ -7,11 +7,11 @@ import type { Filter } from 'mongodb';
 import { RoomManager } from './RoomManager';
 import { Messages, Subscriptions } from '../stores';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { sdk } from './SDKClient';
 import { roomCoordinator } from './rooms/roomCoordinator';
 import { fireGlobalEvent } from './utils/fireGlobalEvent';
 import { getConfig } from './utils/getConfig';
 import { modifyMessageOnFilesDelete } from './utils/modifyMessageOnFilesDelete';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 

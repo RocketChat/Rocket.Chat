@@ -8,10 +8,10 @@ import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
+import { sdk } from './SDKClient';
 import * as banners from './banners';
 import { UiKitTriggerTimeoutError } from './errors/UiKitTriggerTimeoutError';
 import { dispatchToastMessage } from './toast';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { exhaustiveCheck } from '../../lib/utils/exhaustiveCheck';
 
 const UiKitModal = lazy(() => import('../views/modal/uikit/UiKitModal'));

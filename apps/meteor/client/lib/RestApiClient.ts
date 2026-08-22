@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
 
-import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
-import { baseURI } from '../../../../client/lib/baseURI';
-import { clearStoredCredentials } from '../../../../client/lib/sdk/ddpSdk';
-import { STORAGE_KEYS, getStoredItem } from '../../../../client/lib/sdk/storage';
+import { invokeTwoFactorModal } from './2fa/process2faReturn';
+import { baseURI } from './baseURI';
+import { clearStoredCredentials } from './sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem } from './sdk/storage';
 
 class RestApiClient extends RestClient {
 	override getCredentials():
