@@ -9172,7 +9172,6 @@ __metadata:
     esbuild: "npm:~0.28.2"
     eslint: "npm:~9.39.5"
     jose: "npm:^4.15.9"
-    jsonrpc-lite: "npm:^2.2.0"
     lodash.clonedeep: "npm:^4.5.0"
     npm-run-all: "npm:^4.1.5"
     rimraf: "npm:^6.0.1"
@@ -27603,13 +27602,6 @@ __metadata:
     graceful-fs:
       optional: true
   checksum: 10/03014769e7dc77d4cf05fa0b534907270b60890085dd5e4d60a382ff09328580651da0b8b4cdf44d91e4c8ae64d91791d965f05707beff000ed494a38b6fec85
-  languageName: node
-  linkType: hard
-
-"jsonrpc-lite@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "jsonrpc-lite@npm:2.2.0"
-  checksum: 10/d3115da6b6e1ce30289621bb625ef278bf92c85cff2ec4006fc6a435c79b102323af13abd452be7853c89a9d3e13fa21fc390c3049bd200af045c5ff56a69e42
   languageName: node
   linkType: hard
 

@@ -1,9 +1,8 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import jsonrpc from 'jsonrpc-lite';
-
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import jsonrpc from '../../jsonrpc';
 import { ModifyExtender } from '../modify/ModifyExtender';
 
 describe('ModifyExtender', () => {

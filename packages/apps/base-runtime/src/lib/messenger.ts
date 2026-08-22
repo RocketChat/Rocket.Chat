@@ -1,8 +1,7 @@
 import EventEmitter from 'node:events';
 
-import * as jsonrpc from 'jsonrpc-lite';
-
 import { encoder } from './codec';
+import * as jsonrpc from './jsonrpc';
 import type { RequestContext } from './requestContext';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
