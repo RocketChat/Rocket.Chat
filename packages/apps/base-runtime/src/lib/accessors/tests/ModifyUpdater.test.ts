@@ -4,9 +4,9 @@ import { after, beforeEach, describe, it, mock } from 'node:test';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import jsonrpc from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import jsonrpc from '../../jsonrpc';
 import type { RoomBuilder } from '../builders/RoomBuilder';
 import { ModifyUpdater } from '../modify/ModifyUpdater';
 
