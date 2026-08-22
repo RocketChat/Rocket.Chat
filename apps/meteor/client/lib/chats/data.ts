@@ -4,8 +4,8 @@ import { Random } from '@rocket.chat/random';
 import { differenceInMinutes } from 'date-fns';
 
 import type { DataAPI } from './ChatAPI';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { hasAtLeastOnePermission, hasPermission } from '../authorization';
 import { settings } from '../settings';
 import { getUserId } from '../user';

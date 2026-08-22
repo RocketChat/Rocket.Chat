@@ -3,7 +3,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 
 export interface IAppAccountBoxItem extends IUIActionButton {
 	name: string;

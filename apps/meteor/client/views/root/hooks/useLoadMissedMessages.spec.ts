@@ -3,8 +3,8 @@ import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useLoadMissedMessages } from './useLoadMissedMessages';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { upsertMessageBulk } from '../../../lib/RoomHistoryManager';
+import { sdk } from '../../../lib/SDKClient';
 import { Messages } from '../../../stores/Messages';
 import { Subscriptions } from '../../../stores/Subscriptions';
 
@@ -20,7 +20,7 @@ jest.mock('../../../lib/RoomHistoryManager', () => ({
 	upsertMessageBulk: jest.fn(),
 }));
 
-jest.mock('../../../../app/utils/client/lib/SDKClient', () => ({
+jest.mock('../../../lib/SDKClient', () => ({
 	sdk: { rest: { get: jest.fn() } },
 }));
 

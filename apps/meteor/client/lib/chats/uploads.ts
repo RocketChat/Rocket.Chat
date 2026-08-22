@@ -6,10 +6,10 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
+import { fileUploadIsValidContentType } from './restrictions';
 import { USER_ACTIVITIES, UserAction } from '../../../app/ui/client/lib/UserAction';
-import { fileUploadIsValidContentType } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { i18n } from '../../../app/utils/lib/i18n';
+import { sdk } from '../SDKClient';
 import { settings } from '../settings';
 
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {

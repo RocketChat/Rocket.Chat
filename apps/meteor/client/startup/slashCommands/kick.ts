@@ -1,8 +1,8 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../../app/utils/client/slashCommand';
 import { queryClient } from '../../lib/queryClient';
 import { roomsQueryKeys } from '../../lib/queryKeys';
+import { slashCommands } from '../../lib/slashCommand';
 
 slashCommands.add({
 	command: 'kick',

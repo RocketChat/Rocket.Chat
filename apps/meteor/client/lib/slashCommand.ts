@@ -7,7 +7,7 @@ import type {
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
 
-import { InvalidCommandUsage, InvalidPreview } from '../../../client/lib/errors';
+import { InvalidCommandUsage, InvalidPreview } from './errors';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;

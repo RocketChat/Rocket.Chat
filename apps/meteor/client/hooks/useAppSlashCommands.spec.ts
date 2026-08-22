@@ -4,8 +4,8 @@ import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
-import { slashCommands } from '../../app/utils/client/slashCommand';
 import { appsQueryKeys } from '../lib/queryKeys';
+import { slashCommands } from '../lib/slashCommand';
 
 const mockSlashCommands: SlashCommand[] = [
 	{

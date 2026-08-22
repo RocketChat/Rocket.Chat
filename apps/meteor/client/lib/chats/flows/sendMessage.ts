@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages, Rooms } from '../../../stores';
@@ -14,6 +13,7 @@ import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { sdk } from '../../SDKClient';
 import { onClientMessageReceived } from '../../onClientMessageReceived';
 import { settings } from '../../settings';
 import { getUserId, getUser } from '../../user';

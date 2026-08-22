@@ -4,9 +4,9 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
-import { parseDDP } from '../../../../client/lib/sdk/ddpProtocol';
-import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../../../client/lib/sdk/ddpSdk';
-import { isSdkTransportEnabled } from '../../../../client/lib/sdk/sdkTransportEnabled';
+import { parseDDP } from './sdk/ddpProtocol';
+import { ensureConnectedAndAuthenticated, getDdpSdk } from './sdk/ddpSdk';
+import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -299,9 +299,7 @@ const createStreamManager = () => {
 
 		const stream =
 			streams.get(eventLiteral) ||
-			(sdkTransportEnabled
-				? createNewDdpSdkStream(streamProxy, name, key as StreamKeys<StreamNames>, args)
-				: createNewMeteorStream(name, key as StreamKeys<StreamNames>, args));
+			(sdkTransportEnabled ? createNewDdpSdkStream(streamProxy, name, key, args) : createNewMeteorStream(name, key, args));
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
