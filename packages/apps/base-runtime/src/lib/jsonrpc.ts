@@ -2,8 +2,8 @@
  * Minimal JSON-RPC 2.0 types and helpers for the apps runtime bridge.
  *
  * This is a purpose-built, dependency-free replacement for `jsonrpc-lite`. We
- * only need to build and categorize the handful of message shapes that cross
- * the process boundary between the Apps-Engine host and the app subprocess.
+ * only need to build the handful of message shapes that cross the process
+ * boundary between the Apps-Engine host and the app subprocess.
  *
  * Notably, this does NOT validate the messages it builds. `jsonrpc-lite` ran
  * `JSON.stringify` over every object it created just to assert it was
@@ -12,6 +12,12 @@
  * `JSON.stringify`, so the check validated something we never do and rejected
  * payloads (e.g. `Buffer`s, circular-free but large graphs) that msgpack
  * handles fine. The factory helpers below simply construct the objects.
+ *
+ * The wire form is owned by the msgpack codec: a dedicated extension (see
+ * `./codec`) tags each of these classes on encode and rebuilds the exact
+ * instance on decode. There is therefore no separate parse/categorization
+ * step - the decoder yields ready-to-use instances on both sides, and callers
+ * distinguish them with `instanceof`.
  */
 
 export type ID = string | number | null;
@@ -19,8 +25,6 @@ export type ID = string | number | null;
 export type Defined = string | number | boolean | object | null;
 
 export type RpcParams = object | Defined[];
-
-export type RpcStatusType = 'request' | 'notification' | 'success' | 'error' | 'invalid';
 
 const JSONRPC_VERSION = '2.0';
 
@@ -132,38 +136,6 @@ export class ErrorObject {
 
 export type JsonRpc = RequestObject | NotificationObject | SuccessObject | ErrorObject;
 
-export interface IParsedObjectRequest {
-	type: 'request';
-	payload: RequestObject;
-}
-
-export interface IParsedObjectNotification {
-	type: 'notification';
-	payload: NotificationObject;
-}
-
-export interface IParsedObjectSuccess {
-	type: 'success';
-	payload: SuccessObject;
-}
-
-export interface IParsedObjectError {
-	type: 'error';
-	payload: ErrorObject;
-}
-
-export interface IParsedObjectInvalid {
-	type: 'invalid';
-	payload: JsonRpcError;
-}
-
-export type IParsedObject =
-	| IParsedObjectRequest
-	| IParsedObjectNotification
-	| IParsedObjectSuccess
-	| IParsedObjectError
-	| IParsedObjectInvalid;
-
 export function request(id: ID, method: string, params?: RpcParams): RequestObject {
 	return new RequestObject(id, method, params);
 }
@@ -180,67 +152,12 @@ export function error(id: ID, err: JsonRpcError): ErrorObject {
 	return new ErrorObject(id, err);
 }
 
-const hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
- * Categorizes a decoded JSON-RPC 2.0 object into one of the message shapes and
- * rebuilds it as the matching class instance (so `instanceof` checks work after
- * a msgpack round-trip). This mirrors `jsonrpc-lite`'s categorization but drops
- * the per-field validation it performed.
- */
-export function parseObject(obj: any): IParsedObject {
-	if (obj == null || obj.jsonrpc !== JSONRPC_VERSION) {
-		return { type: 'invalid', payload: JsonRpcError.invalidRequest(obj) };
-	}
-
-	if (!hasOwnProperty.call(obj, 'id')) {
-		return { type: 'notification', payload: new NotificationObject(obj.method, obj.params) };
-	}
-
-	if (hasOwnProperty.call(obj, 'method')) {
-		return { type: 'request', payload: new RequestObject(obj.id, obj.method, obj.params) };
-	}
-
-	if (hasOwnProperty.call(obj, 'result')) {
-		return { type: 'success', payload: new SuccessObject(obj.id, obj.result) };
-	}
-
-	if (hasOwnProperty.call(obj, 'error')) {
-		if (obj.error == null) {
-			return { type: 'invalid', payload: JsonRpcError.internalError(obj) };
-		}
-
-		const err = new JsonRpcError(obj.error.message, obj.error.code, obj.error.data);
-		return { type: 'error', payload: new ErrorObject(obj.id, err) };
-	}
-
-	return { type: 'invalid', payload: JsonRpcError.invalidRequest(obj) };
-}
-
-export function parse(message: string): IParsedObject | IParsedObject[] {
-	let parsed: unknown;
-
-	try {
-		parsed = JSON.parse(message);
-	} catch {
-		return { type: 'invalid', payload: JsonRpcError.parseError(message) };
-	}
-
-	if (Array.isArray(parsed)) {
-		return parsed.map(parseObject);
-	}
-
-	return parseObject(parsed);
-}
-
 const jsonrpc = {
 	JsonRpcError,
 	request,
 	notification,
 	success,
 	error,
-	parse,
-	parseObject,
 };
 
 export default jsonrpc;

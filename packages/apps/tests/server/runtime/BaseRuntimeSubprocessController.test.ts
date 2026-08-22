@@ -67,15 +67,9 @@ describe('BaseRuntimeSubprocessController', () => {
 			avatarUrl: 'https://avatars.com/123',
 		};
 
-		const response = await controller['handleBridgeMessage']({
-			type: rpcTypeRequest,
-			payload: {
-				jsonrpc: '2.0',
-				id: 'requestId',
-				method: 'bridges:getMessageBridge:doCreate',
-				params: [messageParam, 'APP_ID'],
-			},
-		});
+		const response = await controller['handleBridgeMessage'](
+			request('requestId', 'bridges:getMessageBridge:doCreate', [messageParam, 'APP_ID']),
+		);
 
 		assert.ok(response instanceof SuccessObject);
 

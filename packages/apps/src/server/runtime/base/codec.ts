@@ -1,5 +1,6 @@
-import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, decode, encode, ExtensionCodec } from '@msgpack/msgpack';
 
+import { ErrorObject, JsonRpcError, NotificationObject, RequestObject, SuccessObject, type Defined, type ID, type RpcParams } from './jsonrpc';
 import { hasSecureFields } from '../../../lib/SecureFields';
 
 const extensionCodec = new ExtensionCodec();
@@ -7,6 +8,13 @@ const extensionCodec = new ExtensionCodec();
 const FUNCTION_DISABLER_EXT = 0;
 const BUFFER_HANDLER_EXT = 1;
 const SECURE_FIELDS_HANDLER_EXT = 2;
+const JSONRPC_HANDLER_EXT = 3;
+
+// Discriminants for the JSON-RPC envelope classes inside the extension payload.
+const JSONRPC_REQUEST = 0;
+const JSONRPC_NOTIFICATION = 1;
+const JSONRPC_SUCCESS = 2;
+const JSONRPC_ERROR = 3;
 
 extensionCodec.register({
 	type: FUNCTION_DISABLER_EXT,
@@ -58,6 +66,61 @@ extensionCodec.register({
 
 	// We don't really need to handle decoding here, as the subprocess will never send a message with secure fields
 	decode: (_data: Uint8Array) => undefined,
+});
+
+/**
+ * Tags the JSON-RPC envelope classes on the wire so the decoder rebuilds the exact
+ * instance on the other side - this is the single place where the bridge maps between
+ * the wire form and the `jsonrpc` classes, replacing a separate parse/categorization
+ * step. The fields are (de)serialized through the same `extensionCodec`, so nested
+ * Buffers and secure fields are still handled by their own extensions.
+ */
+extensionCodec.register({
+	type: JSONRPC_HANDLER_EXT,
+	encode: (object: unknown) => {
+		if (object instanceof RequestObject) {
+			return encode(
+				object.params === undefined
+					? [JSONRPC_REQUEST, object.id, object.method]
+					: [JSONRPC_REQUEST, object.id, object.method, object.params],
+				{ extensionCodec },
+			);
+		}
+
+		if (object instanceof NotificationObject) {
+			return encode(
+				object.params === undefined ? [JSONRPC_NOTIFICATION, object.method] : [JSONRPC_NOTIFICATION, object.method, object.params],
+				{ extensionCodec },
+			);
+		}
+
+		if (object instanceof SuccessObject) {
+			return encode([JSONRPC_SUCCESS, object.id, object.result], { extensionCodec });
+		}
+
+		if (object instanceof ErrorObject) {
+			return encode([JSONRPC_ERROR, object.id, object.error.message, object.error.code, object.error.data], { extensionCodec });
+		}
+
+		return null;
+	},
+
+	decode: (data: Uint8Array) => {
+		const [kind, ...rest] = decode(data, { extensionCodec }) as [number, ...unknown[]];
+
+		switch (kind) {
+			case JSONRPC_REQUEST:
+				return new RequestObject(rest[0] as ID, rest[1] as string, rest[2] as RpcParams);
+			case JSONRPC_NOTIFICATION:
+				return new NotificationObject(rest[0] as string, rest[1] as RpcParams);
+			case JSONRPC_SUCCESS:
+				return new SuccessObject(rest[0] as ID, rest[1] as Defined);
+			case JSONRPC_ERROR:
+				return new ErrorObject(rest[0] as ID, new JsonRpcError(rest[1] as string, rest[2] as number, rest[3]));
+			default:
+				throw new Error(`Unknown JSON-RPC message kind: ${String(kind)}`);
+		}
+	},
 });
 
 /**
