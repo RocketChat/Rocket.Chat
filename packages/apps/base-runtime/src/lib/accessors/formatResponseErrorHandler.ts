@@ -1,4 +1,4 @@
-import { ErrorObject } from 'jsonrpc-lite';
+import { ErrorObject } from '../jsonrpc';
 
 // deno-lint-ignore no-explicit-any -- that is the type we get from `catch`
 export const formatErrorResponse = (error: any): Error => {

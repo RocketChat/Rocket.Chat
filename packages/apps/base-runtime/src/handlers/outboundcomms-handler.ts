@@ -1,9 +1,8 @@
 import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
-import type { Defined } from 'jsonrpc-lite';
-import { JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
+import { JsonRpcError, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
 

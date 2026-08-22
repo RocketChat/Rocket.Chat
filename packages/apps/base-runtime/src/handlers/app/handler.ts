@@ -1,6 +1,3 @@
-import type { Defined } from 'jsonrpc-lite';
-import { JsonRpcError } from 'jsonrpc-lite';
-
 import handleConstructApp from './construct';
 import handleGetStatus from './handleGetStatus';
 import handleInitialize from './handleInitialize';
@@ -13,6 +10,7 @@ import handleOnUninstall from './handleOnUninstall';
 import handleOnUpdate from './handleOnUpdate';
 import handleSetStatus from './handleSetStatus';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { isOneOf } from '../lib/assertions';
 import handleListener from '../listener/handler';

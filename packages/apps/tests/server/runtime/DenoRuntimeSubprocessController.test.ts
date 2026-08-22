@@ -6,17 +6,17 @@ import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';
+import { SuccessObject } from '../../../src/server/runtime/base/jsonrpc';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 describe('DenoRuntimeSubprocessController', () => {
-	const rpcTypeRequest = 'request' as RpcStatusType.request;
+	const rpcTypeRequest = 'request' as const;
 
 	let manager: AppManager;
 	let controller: DenoRuntimeSubprocessController;
@@ -80,7 +80,6 @@ describe('DenoRuntimeSubprocessController', () => {
 				id: 'requestId',
 				method: 'bridges:getMessageBridge:doCreate',
 				params: [messageParam, 'APP_ID'],
-				serialize: () => '',
 			},
 		});
 
