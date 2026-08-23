@@ -16,8 +16,8 @@ type PasswordPolicyName<K extends PasswordPolicyKey> = `get-password-policy-${K}
 
 type PasswordPolicyParametersEntry = {
 	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
-	? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
-	: [PasswordPolicyName<K>];
+		? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
+		: [PasswordPolicyName<K>];
 }[PasswordPolicyKey];
 
 type PasswordPolicyType<Entry = PasswordPolicyParametersEntry> = {
@@ -34,8 +34,8 @@ export type PasswordPolicyOptions = Partial<
 
 export type PasswordPolicyValidation = {
 	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
-	? { name: PasswordPolicyName<K>; limit: number }
-	: { name: PasswordPolicyName<K> };
+		? { name: PasswordPolicyName<K>; limit: number }
+		: { name: PasswordPolicyName<K> };
 }[PasswordPolicyKey] & { isValid: boolean };
 
 export class PasswordPolicy {
@@ -79,10 +79,12 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
 	}: PasswordPolicyOptions) {
+		// Anything that is not a plain positive integer is interpolated into the quantifier below as
+		// `{NaN,}`, `{-1,}`, `{1.5,}` or `{1e+21,}`, none of which are valid quantifiers: the engine reads
+		// them as literals instead of throwing, and the rule silently stops matching repeated characters.
+		// A count of 0 is rejected for the opposite reason — `(.)\1{0,}` matches every non-empty password.
 		const safeForbidRepeatingCharactersCount =
-			typeof forbidRepeatingCharactersCount === 'number' &&
-				Number.isSafeInteger(forbidRepeatingCharactersCount) &&
-				forbidRepeatingCharactersCount >= 0 ? forbidRepeatingCharactersCount : 3;
+			Number.isSafeInteger(forbidRepeatingCharactersCount) && forbidRepeatingCharactersCount >= 1 ? forbidRepeatingCharactersCount : 3;
 
 		this.enabled = enabled;
 		this.minLength = minLength;

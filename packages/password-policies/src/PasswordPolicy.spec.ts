@@ -217,34 +217,31 @@ describe('Password Policy', () => {
 		expect(policy.policy.length).toBe(0);
 	});
 
-	it.each([-1, 1.5, Number.NaN, 1e21, '3'])(
-		'should use the default repeating character count when configured with %p',
-		(count) => {
-			const passwordPolicy = new PasswordPolicy({
-				enabled: true,
-				forbidRepeatingCharacters: true,
-				forbidRepeatingCharactersCount: count as number,
-				throwError: false,
-			});
+	it.each([0, -1, 1.5, Number.NaN, 1e21, '3'])('should use the default repeating character count when configured with %p', (count) => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: count as number,
+			throwError: false,
+		});
 
-			// Default count is 3 → "111" is allowed, "1111" is not
-			expect(passwordPolicy.validate('111')).toBe(true);
-			expect(passwordPolicy.validate('1111')).toBe(false);
+		// Default count is 3 → "111" is allowed, "1111" is not
+		expect(passwordPolicy.validate('111')).toBe(true);
+		expect(passwordPolicy.validate('1111')).toBe(false);
 
-			expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
-				name: 'get-password-policy-forbidRepeatingCharactersCount',
-				isValid: false,
-				limit: 3,
-			});
+		expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
+			name: 'get-password-policy-forbidRepeatingCharactersCount',
+			isValid: false,
+			limit: 3,
+		});
 
-			expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
-				'get-password-policy-forbidRepeatingCharactersCount',
-				{ forbidRepeatingCharactersCount: 3 },
-			]);
-		},
-	);
+		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
+			'get-password-policy-forbidRepeatingCharactersCount',
+			{ forbidRepeatingCharactersCount: 3 },
+		]);
+	});
 
-	it('should preserve a configured count of 0 instead of falling back to the default', () => {
+	it('should not lock every password out when configured with a count of 0', () => {
 		const passwordPolicy = new PasswordPolicy({
 			enabled: true,
 			forbidRepeatingCharacters: true,
@@ -252,15 +249,20 @@ describe('Password Policy', () => {
 			throwError: false,
 		});
 
-		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
-			'get-password-policy-forbidRepeatingCharactersCount',
-			{ forbidRepeatingCharactersCount: 0 },
-		]);
+		// `(.)\1{0,}` matches any non-empty string, so a count of 0 would reject every password
+		expect(passwordPolicy.validate('1')).toBe(true);
+		expect(passwordPolicy.validate('Passw0rd!')).toBe(true);
+	});
 
-		expect(passwordPolicy.sendValidationMessage('1')).toContainEqual({
-			name: 'get-password-policy-forbidRepeatingCharactersCount',
-			isValid: false,
-			limit: 0,
+	it('should keep enforcing the rule when configured with an unusable count', () => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: -1,
+			throwError: false,
 		});
+
+		// a `{-1,}` quantifier is read as a literal, which would silently disable the rule
+		expect(passwordPolicy.validate('11111111')).toBe(false);
 	});
 });
