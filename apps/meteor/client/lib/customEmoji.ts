@@ -35,7 +35,6 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
 	}
 
-	// Don't inherit fields from a native emoji being overridden (e.g. its unicode), or the picker would output the native emoji
 	emoji.list[`:${emojiData.name}:`] = {
 		name: emojiData.name,
 		extension: emojiData.extension,
