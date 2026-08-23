@@ -77,11 +77,6 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 			return;
 		}
 
-		// `expiresAt` only exists on unconfirmed (temporary) uploads. Requiring it
-		// in the filter turns this update into an atomic claim: since `_id` is
-		// unique, at most one concurrent caller can match and unset it here.
-		// Callers can inspect `matchedCount` to know whether they won the claim
-		// (see rooms.mediaConfirm, which relies on this for confirm idempotency).
 		const filter = {
 			_id: fileId,
 			userId,
@@ -91,6 +86,25 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		const update: Filter<T> = {
 			$unset: {
 				expiresAt: 1,
+			},
+		};
+
+		return this.updateOne(filter, update);
+	}
+
+	releaseTemporaryFileClaim(fileId: string, userId: string, expiresAt: Date): Promise<UpdateResult> | undefined {
+		if (!fileId) {
+			return;
+		}
+
+		const filter = {
+			_id: fileId,
+			userId,
+		} as Filter<T>;
+
+		const update: Filter<T> = {
+			$set: {
+				expiresAt,
 			},
 		};
 

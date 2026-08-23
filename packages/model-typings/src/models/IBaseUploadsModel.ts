@@ -10,6 +10,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined;
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<UpdateResult> | undefined;
+	releaseTemporaryFileClaim(fileId: string, userId: string, expiresAt: Date): Promise<UpdateResult> | undefined;
 
 	findByIds<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
 		_ids: string[],
