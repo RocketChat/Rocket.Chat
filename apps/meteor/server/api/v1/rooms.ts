@@ -384,9 +384,12 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed');
 				}
 			} catch (err) {
-				const expiresAt = new Date();
-				expiresAt.setHours(expiresAt.getHours() + 24);
-				await Uploads.releaseTemporaryFileClaim(this.urlParams.fileId, this.userId, expiresAt).catch(() => undefined);
+				const createdMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId, this.urlParams.rid);
+				if (!createdMessage) {
+					const expiresAt = new Date();
+					expiresAt.setHours(expiresAt.getHours() + 24);
+					await Uploads.releaseTemporaryFileClaim(this.urlParams.fileId, this.userId, expiresAt).catch(() => undefined);
+				}
 				throw err;
 			}
 
