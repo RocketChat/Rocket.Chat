@@ -8,15 +8,21 @@ import ScheduleMessageModal from '../../../ScheduleMessageModal';
 
 export const useScheduleMessageAction = (
 	disabled: boolean,
-	rid: IRoom['_id'],
+	room: IRoom,
 	composer: ComposerAPI | undefined,
 	tmid?: IMessage['_id'],
 ): GenericMenuItemProps | undefined => {
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 	const enabled = useSetting('Message_AllowScheduling', true);
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const allowUnencryptedMessages = useSetting('E2E_Allow_Unencrypted_Messages', false);
 
-	if (!enabled) {
+	const rid = room._id;
+
+	// scheduling stores the message as plaintext for a background job to send, which the server refuses
+	// to do in an encrypted room — mirror that here instead of offering an action that always fails
+	if (!enabled || (room.encrypted && e2eEnabled && !allowUnencryptedMessages)) {
 		return undefined;
 	}
 

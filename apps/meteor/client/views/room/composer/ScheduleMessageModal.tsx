@@ -11,8 +11,10 @@ import DatePicker from '../../../components/message/toolbar/items/actions/Timest
 import TimePicker from '../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker/TimePicker';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 
-/** Matches the server-side minimum lead time, so the modal rejects impossible dates before the round trip. */
+/** Match the server-side bounds, so the modal rejects impossible dates before the round trip. */
 const MIN_SCHEDULING_LEAD_MS = 60 * 1000;
+
+const MAX_SCHEDULING_HORIZON_MS = 365 * 24 * 60 * 60 * 1000;
 
 const getDefaultDate = (): Date => {
 	const date = new Date();
@@ -50,6 +52,8 @@ const ScheduleMessageModal = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 	const messageFieldId = useId();
+	const messageErrorId = useId();
+	const dateErrorId = useId();
 
 	const isEditing = Boolean(scheduledMessage);
 
@@ -106,22 +110,41 @@ const ScheduleMessageModal = ({
 							name='msg'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Message') }) }}
-							render={({ field }) => <TextAreaInput id={messageFieldId} rows={3} {...field} />}
+							render={({ field }) => (
+								<TextAreaInput
+									id={messageFieldId}
+									rows={3}
+									aria-required='true'
+									aria-invalid={Boolean(errors.msg)}
+									aria-describedby={errors.msg && messageErrorId}
+									{...field}
+								/>
+							)}
 						/>
 					</FieldRow>
-					{errors.msg && <FieldError>{errors.msg.message}</FieldError>}
+					{errors.msg && <FieldError id={messageErrorId}>{errors.msg.message}</FieldError>}
 				</Field>
 				<Controller
 					name='date'
 					control={control}
 					rules={{
-						validate: (date) => (date.getTime() >= Date.now() + MIN_SCHEDULING_LEAD_MS ? true : t('Scheduled_date_must_be_in_the_future')),
+						validate: (date) => {
+							if (date.getTime() < Date.now() + MIN_SCHEDULING_LEAD_MS) {
+								return t('Scheduled_date_must_be_in_the_future');
+							}
+
+							if (date.getTime() > Date.now() + MAX_SCHEDULING_HORIZON_MS) {
+								return t('Scheduled_date_must_be_within_a_year');
+							}
+
+							return true;
+						},
 					}}
 					render={({ field }) => (
 						<>
-							<DatePicker {...field} />
-							<TimePicker {...field} />
-							{errors.date && <FieldError>{errors.date.message}</FieldError>}
+							<DatePicker {...field} aria-invalid={Boolean(errors.date)} aria-describedby={errors.date && dateErrorId} />
+							<TimePicker {...field} aria-invalid={Boolean(errors.date)} aria-describedby={errors.date && dateErrorId} />
+							{errors.date && <FieldError id={dateErrorId}>{errors.date.message}</FieldError>}
 						</>
 					)}
 				/>

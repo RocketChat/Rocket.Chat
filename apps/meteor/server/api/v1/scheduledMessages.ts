@@ -18,10 +18,35 @@ import {
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
+/** Dates are serialized before the response is validated, so every date field is a string here. */
+const scheduledMessageSchema = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		_updatedAt: { type: 'string' },
+		uid: { type: 'string' },
+		rid: { type: 'string' },
+		msg: { type: 'string' },
+		scheduledAt: { type: 'string' },
+		createdAt: { type: 'string' },
+		updatedAt: { type: 'string' },
+		status: { type: 'string', enum: ['scheduled', 'sending', 'sent', 'failed'] },
+		slot: { type: 'number' },
+		tmid: { type: 'string' },
+		tshow: { type: 'boolean' },
+		messageId: { type: 'string' },
+		error: { type: 'string' },
+		claimId: { type: 'string' },
+		claimedAt: { type: 'string' },
+	},
+	required: ['_id', 'uid', 'rid', 'msg', 'scheduledAt', 'createdAt', 'updatedAt', 'status', 'slot'],
+	additionalProperties: false,
+};
+
 const successWithScheduledMessageSchema = ajv.compile<{ scheduledMessage: IScheduledMessage }>({
 	type: 'object',
 	properties: {
-		scheduledMessage: { type: 'object' },
+		scheduledMessage: scheduledMessageSchema,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['scheduledMessage', 'success'],
@@ -36,7 +61,7 @@ const successWithListSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		messages: { type: 'array', items: { type: 'object' } },
+		messages: { type: 'array', items: scheduledMessageSchema },
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },

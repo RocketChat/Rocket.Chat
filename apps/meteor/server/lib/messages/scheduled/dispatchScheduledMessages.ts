@@ -67,7 +67,14 @@ export async function dispatchScheduledMessages(now = new Date()): Promise<void>
 			await deliver(scheduledMessage, claimId);
 		} catch (err: any) {
 			logger.error({ msg: 'Failed to deliver scheduled message', scheduledMessageId: scheduledMessage._id, err });
-			await ScheduledMessages.setAsFailed(scheduledMessage._id, claimId, err?.error || err?.message || 'error-unknown');
+
+			// marking the failure must not abort the run: the message is left claimed and `requeueStale`
+			// picks it up again, which is preferable to stalling every message queued behind it
+			try {
+				await ScheduledMessages.setAsFailed(scheduledMessage._id, claimId, err?.error || err?.message || 'error-unknown');
+			} catch (markErr) {
+				logger.error({ msg: 'Failed to mark scheduled message as failed', scheduledMessageId: scheduledMessage._id, err: markErr });
+			}
 		}
 	}
 }

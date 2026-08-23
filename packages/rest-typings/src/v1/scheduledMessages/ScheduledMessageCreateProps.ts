@@ -24,7 +24,7 @@ const scheduledMessageCreatePropsSchema: JSONSchemaType<ScheduledMessageCreatePr
 		},
 		scheduledAt: {
 			type: 'string',
-			minLength: 1,
+			format: 'date-time',
 		},
 		tmid: {
 			type: 'string',

@@ -23,7 +23,7 @@ const scheduledMessageUpdatePropsSchema: JSONSchemaType<ScheduledMessageUpdatePr
 		},
 		scheduledAt: {
 			type: 'string',
-			minLength: 1,
+			format: 'date-time',
 			nullable: true,
 		},
 	},

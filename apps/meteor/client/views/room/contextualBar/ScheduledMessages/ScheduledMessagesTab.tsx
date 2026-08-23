@@ -19,6 +19,9 @@ import { roomsQueryKeys } from '../../../../lib/queryKeys';
 import ScheduleMessageModal from '../../composer/ScheduleMessageModal';
 import { useRoom } from '../../contexts/RoomContext';
 
+/** Matches the cron cadence of the server-side dispatcher. */
+const DISPATCHER_INTERVAL_MS = 60 * 1000;
+
 const ScheduledMessagesTab = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
@@ -33,6 +36,9 @@ const ScheduledMessagesTab = () => {
 	const { data, isPending, isSuccess, error } = useQuery({
 		queryKey: roomsQueryKeys.scheduledMessages(room._id),
 		queryFn: () => getScheduledMessages({ rid: room._id }),
+		// the dispatcher delivers due messages once a minute; without this the list keeps showing
+		// messages that have already been sent for as long as the tab stays open
+		refetchInterval: DISPATCHER_INTERVAL_MS,
 	});
 
 	const { mutate: removeScheduledMessage } = useMutation({

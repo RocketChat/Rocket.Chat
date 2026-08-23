@@ -49,10 +49,29 @@ describe('dispatchScheduledMessages', () => {
 
 	it('should requeue claims left behind by a dead instance', async () => {
 		claimNextDue.resolves(null);
+		const now = new Date('2026-01-01T12:00:00.000Z');
+
+		await dispatchScheduledMessages(now);
+
+		expect(requeueStale.calledOnce).to.equal(true);
+		// claims older than five minutes belonged to an instance that died mid-delivery
+		expect(requeueStale.firstCall.args[0]).to.deep.equal(new Date('2026-01-01T11:55:00.000Z'));
+	});
+
+	it('should keep dispatching when marking a failure throws', async () => {
+		claimNextDue
+			.onFirstCall()
+			.resolves(pending)
+			.onSecondCall()
+			.resolves({ ...pending, _id: 'other-id' })
+			.onThirdCall()
+			.resolves(null);
+		executeSendMessage.onFirstCall().rejects(new Error('error-not-allowed'));
+		setAsFailed.rejects(new Error('connection lost'));
 
 		await dispatchScheduledMessages();
 
-		expect(requeueStale.calledOnce).to.equal(true);
+		expect(setAsSent.calledWith('other-id', 'claim-id', 'other-id')).to.equal(true);
 	});
 
 	it('should send every due message and mark it as sent', async () => {

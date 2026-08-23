@@ -20,8 +20,10 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 		return [
 			// the dispatcher's hot path: oldest due message still waiting to be delivered
 			{ key: { status: 1, scheduledAt: 1 } },
-			// listing a user's pending messages, optionally scoped to a room
-			{ key: { uid: 1, rid: 1, scheduledAt: 1 } },
+			// listing a user's pending messages across every room, in delivery order
+			{ key: { uid: 1, status: 1, scheduledAt: 1 } },
+			// same listing scoped to one room; `rid` sits before `scheduledAt` so the sort stays indexed
+			{ key: { uid: 1, rid: 1, status: 1, scheduledAt: 1 } },
 			// sweeping claims left behind by an instance that died mid-delivery
 			{ key: { status: 1, claimedAt: 1 } },
 			// enforces Message_MaxScheduledMessagesPerUser in the database: concurrent requests competing

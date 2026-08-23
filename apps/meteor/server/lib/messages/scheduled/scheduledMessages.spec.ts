@@ -153,6 +153,34 @@ describe('scheduledMessages', () => {
 			expect(insertPending.callCount).to.equal(5);
 		});
 
+		it('should reject messages larger than Message_MaxAllowedSize', async () => {
+			settingsGet.withArgs('Message_MaxAllowedSize').returns(10);
+
+			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'a'.repeat(11), scheduledAt: inMinutes(30) })).to.be.rejectedWith(
+				'Message size exceeds Message_MaxAllowedSize',
+			);
+			expect(insertPending.called).to.equal(false);
+		});
+
+		it('should reject scheduling in an encrypted room', async () => {
+			settingsGet.withArgs('E2E_Enable').returns(true);
+			settingsGet.withArgs('E2E_Allow_Unencrypted_Messages').returns(false);
+			canSendMessageAsync.resolves({ _id: 'room-id', encrypted: true });
+
+			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) })).to.be.rejectedWith(
+				'Messages cannot be scheduled in encrypted rooms',
+			);
+			expect(insertPending.called).to.equal(false);
+		});
+
+		it('should allow scheduling in an encrypted room that permits unencrypted messages', async () => {
+			settingsGet.withArgs('E2E_Enable').returns(true);
+			settingsGet.withArgs('E2E_Allow_Unencrypted_Messages').returns(true);
+			canSendMessageAsync.resolves({ _id: 'room-id', encrypted: true });
+
+			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) })).to.be.fulfilled;
+		});
+
 		it('should reject when the user cannot post in the room', async () => {
 			canSendMessageAsync.rejects(new Error('error-not-allowed'));
 
@@ -202,6 +230,28 @@ describe('scheduledMessages', () => {
 			findOneByIdAndUserId.resolves(null);
 
 			await expect(updateScheduledMessage(user, 'scheduled-id', { msg: 'updated' })).to.be.rejectedWith('Scheduled message not found');
+		});
+
+		it('should apply the same date bounds as scheduling', async () => {
+			findOneByIdAndUserId.resolves({ _id: 'scheduled-id', rid: 'room-id', status: 'scheduled' });
+
+			await expect(updateScheduledMessage(user, 'scheduled-id', { scheduledAt: inMinutes(0.5) })).to.be.rejectedWith(
+				'Messages must be scheduled at least one minute in the future',
+			);
+			await expect(updateScheduledMessage(user, 'scheduled-id', { scheduledAt: inMinutes(366 * 24 * 60) })).to.be.rejectedWith(
+				'Messages cannot be scheduled more than a year in advance',
+			);
+			expect(updatePendingById.called).to.equal(false);
+		});
+
+		it('should apply the same size limit as scheduling', async () => {
+			settingsGet.withArgs('Message_MaxAllowedSize').returns(10);
+			findOneByIdAndUserId.resolves({ _id: 'scheduled-id', rid: 'room-id', status: 'scheduled' });
+
+			await expect(updateScheduledMessage(user, 'scheduled-id', { msg: 'a'.repeat(11) })).to.be.rejectedWith(
+				'Message size exceeds Message_MaxAllowedSize',
+			);
+			expect(updatePendingById.called).to.equal(false);
 		});
 	});
 

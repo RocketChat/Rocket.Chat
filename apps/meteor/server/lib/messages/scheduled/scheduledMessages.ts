@@ -71,6 +71,17 @@ const assertValidMessage = (msg: string): void => {
 };
 
 /**
+ * A scheduled message is stored as plaintext and posted later by a background job, which cannot hold
+ * the room key. Mirrors the check `executeSendMessage` applies to un-encrypted messages, so scheduling
+ * is refused exactly where sending the message unencrypted would be.
+ */
+const assertRoomAcceptsPlaintext = (room: IRoom): void => {
+	if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
+		throw new Meteor.Error('error-message-scheduling-not-allowed-in-encrypted-room', 'Messages cannot be scheduled in encrypted rooms');
+	}
+};
+
+/**
  * Resolves the room a scheduled message will land in and verifies the user may post there *now*.
  * Permissions are re-checked at delivery time as well, since they may change while the message waits.
  */
@@ -90,7 +101,11 @@ const resolveTargetRoom = async (user: IUser, rid: IRoom['_id'], tmid?: IMessage
 		targetRid = parentMessage.rid;
 	}
 
-	return canSendMessageAsync(targetRid, user);
+	const room = await canSendMessageAsync(targetRid, user);
+
+	assertRoomAcceptsPlaintext(room);
+
+	return room;
 };
 
 export async function scheduleMessage(

@@ -64,7 +64,7 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
 	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
-	const scheduleMessageAction = useScheduleMessageAction(disableBasicActions, rid, chatContext.composer, tmid);
+	const scheduleMessageAction = useScheduleMessageAction(disableBasicActions, room, chatContext.composer, tmid);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
