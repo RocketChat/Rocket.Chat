@@ -342,15 +342,38 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-size-exceeded');
 			}
 
-			// Idempotency guard: a prior confirm for this fileId may have already
-			// created the message (e.g. a queued client retry flushed on reconnect).
-			// If so, return the existing message instead of inserting a duplicate.
+			// Fast path: a prior confirm for this fileId already completed and
+			// created the message (e.g. a queued client retry flushed on
+			// reconnect). Return it instead of inserting a duplicate.
 			const existingMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId);
 			if (existingMessage) {
-				await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 				return API.v1.success({
 					message: existingMessage,
 				});
+			}
+
+			// Atomically claim this confirmation. `Uploads.confirmTemporaryFile` only
+			// matches (and unsets `expiresAt`) once per upload, since `_id` is unique
+			// and `expiresAt` only exists before the first successful confirm. This
+			// makes the claim itself race-safe without requiring a unique index on
+			// `Messages`, which would be unsafe here: `file._id` is legitimately
+			// shared across messages by other flows (e.g. livechat file messages,
+			// forwarding a message with an attachment), so it can't be used to
+			// enforce uniqueness at the Messages layer (see issue #41886 discussion).
+			const claim = await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+			if (!claim?.matchedCount) {
+				// Another concurrent request already won the claim above. Its message
+				// insert may still be in flight, so poll briefly instead of failing.
+				for (let attempt = 0; attempt < 5; attempt++) {
+					const racedMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId);
+					if (racedMessage) {
+						return API.v1.success({
+							message: racedMessage,
+						});
+					}
+					await new Promise((resolve) => setTimeout(resolve, 200));
+				}
+				throw new Meteor.Error('error-file-already-confirmed');
 			}
 
 			file.description = this.bodyParams.description;
@@ -369,8 +392,6 @@ API.v1.addRoute(
 			await applyAirGappedRestrictionsValidation(() =>
 				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
-
-			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 
 			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 
