@@ -377,9 +377,12 @@ API.v1.addRoute(
 			}
 
 			try {
-				await applyAirGappedRestrictionsValidation(() =>
+				const sent = await applyAirGappedRestrictionsValidation(() =>
 					sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 				);
+				if (!sent) {
+					throw new Meteor.Error('error-not-allowed');
+				}
 			} catch (err) {
 				const expiresAt = new Date();
 				expiresAt.setHours(expiresAt.getHours() + 24);
