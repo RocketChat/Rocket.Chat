@@ -15,6 +15,28 @@ const MAX_SCHEDULING_HORIZON_MS = 365 * 24 * 60 * 60 * 1000;
  */
 const MIN_SCHEDULING_LEAD_MS = 60 * 1000;
 
+/**
+ * How many times a single request will look for a free quota slot. Losing a slot means another request
+ * from the *same user* inserted concurrently, so the contention is tiny and bounded in practice.
+ */
+const MAX_SLOT_ATTEMPTS = 5;
+
+/**
+ * Lowest slot below `limit` that the user is not already holding. `undefined` means the quota is full.
+ * With no configured limit the search stops at the first gap, so slots stay dense.
+ */
+const findFreeSlot = (occupied: number[], limit: number): number | undefined => {
+	const taken = new Set(occupied);
+
+	for (let slot = 0; slot < limit; slot++) {
+		if (!taken.has(slot)) {
+			return slot;
+		}
+	}
+
+	return undefined;
+};
+
 const assertSchedulingEnabled = (): void => {
 	if (!settings.get<boolean>('Message_AllowScheduling')) {
 		throw new Meteor.Error('error-message-scheduling-disabled', 'Message scheduling is disabled');
@@ -86,14 +108,10 @@ export async function scheduleMessage(
 	const room = await resolveTargetRoom(user, rid, tmid);
 
 	const maxPerUser = settings.get<number>('Message_MaxScheduledMessagesPerUser') ?? 0;
-	if (maxPerUser > 0 && (await ScheduledMessages.countPendingByUserId(user._id)) >= maxPerUser) {
-		throw new Meteor.Error('error-max-scheduled-messages-reached', 'Maximum number of scheduled messages reached', {
-			limit: maxPerUser,
-		});
-	}
+	const limit = maxPerUser > 0 ? maxPerUser : Infinity;
 
 	const now = new Date();
-	const scheduledMessage: IScheduledMessage = {
+	const scheduledMessage: Omit<IScheduledMessage, 'slot'> = {
 		_id: Random.id(),
 		_updatedAt: now,
 		uid: user._id,
@@ -107,9 +125,23 @@ export async function scheduleMessage(
 		...(tshow && { tshow }),
 	};
 
-	await ScheduledMessages.insertOne(scheduledMessage);
+	for (let attempt = 0; attempt < MAX_SLOT_ATTEMPTS; attempt++) {
+		const slot = findFreeSlot(await ScheduledMessages.findOccupiedSlotsByUserId(user._id), limit);
 
-	return scheduledMessage;
+		if (slot === undefined) {
+			throw new Meteor.Error('error-max-scheduled-messages-reached', 'Maximum number of scheduled messages reached', {
+				limit: maxPerUser,
+			});
+		}
+
+		const record: IScheduledMessage = { ...scheduledMessage, slot };
+
+		if (await ScheduledMessages.insertPending(record)) {
+			return record;
+		}
+	}
+
+	throw new Meteor.Error('error-scheduled-message-conflict', 'Could not schedule the message, please try again');
 }
 
 export async function listScheduledMessages(

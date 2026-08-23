@@ -6581,6 +6581,7 @@
   "error-message-scheduling-disabled": "Message scheduling is disabled",
   "error-max-scheduled-messages-reached": "You have reached the maximum of {{limit}} scheduled messages",
   "error-scheduled-message-already-processed": "This message is no longer pending",
+  "error-scheduled-message-conflict": "Could not schedule the message, please try again",
   "error-scheduled-message-not-found": "Scheduled message not found",
   "error-missing-unsubscribe-link": "You must provide the [unsubscribe] link.",
   "error-no-agents-available-for-service-on-department": "No agents are available for service on this department.",

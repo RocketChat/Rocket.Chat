@@ -5,7 +5,8 @@ import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
 const countPendingByUserId = sinon.stub();
-const insertOne = sinon.stub();
+const findOccupiedSlotsByUserId = sinon.stub();
+const insertPending = sinon.stub();
 const findOneByIdAndUserId = sinon.stub();
 const updatePendingById = sinon.stub();
 const deletePendingByIdAndUserId = sinon.stub();
@@ -17,7 +18,8 @@ const { scheduleMessage, updateScheduledMessage, cancelScheduledMessage } = prox
 		Messages: { findOneById },
 		ScheduledMessages: {
 			countPendingByUserId,
-			insertOne,
+			findOccupiedSlotsByUserId,
+			insertPending,
 			findOneByIdAndUserId,
 			updatePendingById,
 			deletePendingByIdAndUserId,
@@ -55,7 +57,8 @@ describe('scheduledMessages', () => {
 
 		canSendMessageAsync.resolves({ _id: 'room-id' });
 		countPendingByUserId.resolves(0);
-		insertOne.resolves({ insertedId: 'scheduled-id' });
+		findOccupiedSlotsByUserId.resolves([]);
+		insertPending.resolves(true);
 	});
 
 	describe('scheduleMessage', () => {
@@ -64,7 +67,7 @@ describe('scheduledMessages', () => {
 
 			const result = await scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt });
 
-			expect(insertOne.calledOnce).to.equal(true);
+			expect(insertPending.calledOnce).to.equal(true);
 			expect(result).to.include({ uid: 'user-id', rid: 'room-id', msg: 'hello', status: 'scheduled' });
 			expect(result.scheduledAt).to.equal(scheduledAt);
 		});
@@ -73,14 +76,14 @@ describe('scheduledMessages', () => {
 			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(0.5) })).to.be.rejectedWith(
 				'Messages must be scheduled at least one minute in the future',
 			);
-			expect(insertOne.called).to.equal(false);
+			expect(insertPending.called).to.equal(false);
 		});
 
 		it('should reject dates more than a year away', async () => {
 			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(366 * 24 * 60) })).to.be.rejectedWith(
 				'Messages cannot be scheduled more than a year in advance',
 			);
-			expect(insertOne.called).to.equal(false);
+			expect(insertPending.called).to.equal(false);
 		});
 
 		it('should reject empty messages', async () => {
@@ -97,12 +100,57 @@ describe('scheduledMessages', () => {
 			);
 		});
 
-		it('should reject when the user reached the pending limit', async () => {
-			countPendingByUserId.resolves(25);
+		it('should take the first free slot of the user quota', async () => {
+			findOccupiedSlotsByUserId.resolves([2, 0, 1]);
+
+			const result = await scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) });
+
+			expect(result.slot).to.equal(3);
+		});
+
+		it('should reuse a slot freed by a cancelled message', async () => {
+			findOccupiedSlotsByUserId.resolves([0, 2, 3]);
+
+			const result = await scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) });
+
+			expect(result.slot).to.equal(1);
+		});
+
+		it('should reject when every slot of the user quota is taken', async () => {
+			findOccupiedSlotsByUserId.resolves(Array.from({ length: 25 }, (_, slot) => slot));
 
 			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) })).to.be.rejectedWith(
 				'Maximum number of scheduled messages reached',
 			);
+			expect(insertPending.called).to.equal(false);
+		});
+
+		it('should not apply a quota when the limit setting is zero', async () => {
+			settingsGet.withArgs('Message_MaxScheduledMessagesPerUser').returns(0);
+			findOccupiedSlotsByUserId.resolves(Array.from({ length: 500 }, (_, slot) => slot));
+
+			const result = await scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) });
+
+			expect(result.slot).to.equal(500);
+		});
+
+		it('should retry on another slot when a concurrent request wins the one it picked', async () => {
+			findOccupiedSlotsByUserId.onFirstCall().resolves([]).onSecondCall().resolves([0]);
+			insertPending.onFirstCall().resolves(false).onSecondCall().resolves(true);
+
+			const result = await scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) });
+
+			expect(insertPending.calledTwice).to.equal(true);
+			expect(result.slot).to.equal(1);
+		});
+
+		it('should give up after repeated slot contention instead of exceeding the quota', async () => {
+			insertPending.resolves(false);
+
+			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) })).to.be.rejectedWith(
+				'Could not schedule the message, please try again',
+			);
+			expect(insertPending.callCount).to.equal(5);
 		});
 
 		it('should reject when the user cannot post in the room', async () => {
@@ -111,7 +159,7 @@ describe('scheduledMessages', () => {
 			await expect(scheduleMessage(user, { rid: 'room-id', msg: 'hello', scheduledAt: inMinutes(30) })).to.be.rejectedWith(
 				'error-not-allowed',
 			);
-			expect(insertOne.called).to.equal(false);
+			expect(insertPending.called).to.equal(false);
 		});
 
 		it('should resolve the room from the thread parent message', async () => {

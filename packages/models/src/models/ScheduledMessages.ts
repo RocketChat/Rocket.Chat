@@ -1,8 +1,15 @@
 import type { IRoom, IScheduledMessage, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IScheduledMessagesModel } from '@rocket.chat/model-typings';
-import type { Collection, DeleteResult, Db, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, DeleteResult, Db, FindCursor, FindOptions, IndexDescription, MongoServerError } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+const DUPLICATE_KEY_ERROR = 11000;
+
+/** Statuses in which a message still holds on to its quota slot. */
+const OCCUPYING_SLOT = ['scheduled', 'sending'] as const;
+
+const isDuplicateKeyError = (error: unknown): boolean => (error as MongoServerError)?.code === DUPLICATE_KEY_ERROR;
 
 export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements IScheduledMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IScheduledMessage>>) {
@@ -15,6 +22,11 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 			{ key: { status: 1, scheduledAt: 1 } },
 			// listing a user's pending messages, optionally scoped to a room
 			{ key: { uid: 1, rid: 1, scheduledAt: 1 } },
+			// sweeping claims left behind by an instance that died mid-delivery
+			{ key: { status: 1, claimedAt: 1 } },
+			// enforces Message_MaxScheduledMessagesPerUser in the database: concurrent requests competing
+			// for the last slot cannot both win, because only one of them can hold a given uid+slot pair
+			{ key: { uid: 1, slot: 1 }, unique: true, partialFilterExpression: { status: { $in: OCCUPYING_SLOT } } },
 		];
 	}
 
@@ -43,11 +55,32 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 		});
 	}
 
+	public async findOccupiedSlotsByUserId(uid: IUser['_id']): Promise<number[]> {
+		const occupying = await this.find({ uid, status: { $in: OCCUPYING_SLOT } }, { projection: { slot: 1 } }).toArray();
+
+		return occupying.map(({ slot }) => slot);
+	}
+
+	public async insertPending(record: IScheduledMessage): Promise<boolean> {
+		try {
+			await this.insertOne(record);
+			return true;
+		} catch (error) {
+			if (isDuplicateKeyError(error)) {
+				return false;
+			}
+
+			throw error;
+		}
+	}
+
 	public async findOneByIdAndUserId(id: IScheduledMessage['_id'], uid: IUser['_id']): Promise<IScheduledMessage | null> {
 		return this.findOne({ _id: id, uid });
 	}
 
-	public async claimNextDue(now: Date): Promise<IScheduledMessage | null> {
+	public async claimNextDue(now: Date, claimId: string): Promise<IScheduledMessage | null> {
+		const claimedAt = new Date();
+
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: 'scheduled',
@@ -56,7 +89,9 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 			{
 				$set: {
 					status: 'sending',
-					updatedAt: new Date(),
+					claimId,
+					claimedAt,
+					updatedAt: claimedAt,
 				},
 			},
 			{
@@ -68,31 +103,36 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 		return result;
 	}
 
-	public async setAsSent(id: IScheduledMessage['_id'], messageId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: id },
+	public async setAsSent(id: IScheduledMessage['_id'], claimId: string, messageId: string): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{ _id: id, claimId },
 			{
 				$set: {
 					status: 'sent',
 					messageId,
 					updatedAt: new Date(),
 				},
-				$unset: { error: 1 },
+				$unset: { error: 1, claimId: 1, claimedAt: 1 },
 			},
 		);
+
+		return modifiedCount === 1;
 	}
 
-	public async setAsFailed(id: IScheduledMessage['_id'], error: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: id },
+	public async setAsFailed(id: IScheduledMessage['_id'], claimId: string, error: string): Promise<boolean> {
+		const { modifiedCount } = await this.updateOne(
+			{ _id: id, claimId },
 			{
 				$set: {
 					status: 'failed',
 					error,
 					updatedAt: new Date(),
 				},
+				$unset: { claimId: 1, claimedAt: 1 },
 			},
 		);
+
+		return modifiedCount === 1;
 	}
 
 	public async updatePendingById(
@@ -123,13 +163,14 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> implements 
 		await this.updateMany(
 			{
 				status: 'sending',
-				updatedAt: { $lte: before },
+				claimedAt: { $lte: before },
 			},
 			{
 				$set: {
 					status: 'scheduled',
 					updatedAt: new Date(),
 				},
+				$unset: { claimId: 1, claimedAt: 1 },
 			},
 		);
 	}
