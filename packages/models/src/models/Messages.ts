@@ -50,7 +50,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
 			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
 			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
-			{ key: { 'file._id': 1 }, sparse: true },
+			// unique: prevents rooms.mediaConfirm race conditions (issue #41886) from
+			// inserting multiple messages for the same confirmed upload
+			{ key: { 'file._id': 1 }, unique: true, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
 			{ key: { pinned: 1 }, sparse: true },

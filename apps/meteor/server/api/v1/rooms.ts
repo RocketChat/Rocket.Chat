@@ -342,6 +342,16 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-size-exceeded');
 			}
 
+			// Idempotency guard: a prior confirm for this fileId may have already
+			// created the message (e.g. a queued client retry flushed on reconnect).
+			// If so, return the existing message instead of inserting a duplicate.
+			const existingMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId);
+			if (existingMessage) {
+				return API.v1.success({
+					message: existingMessage,
+				});
+			}
+
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
@@ -355,9 +365,25 @@ API.v1.addRoute(
 				delete this.bodyParams.fileContent;
 			}
 
-			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
-			);
+			try {
+				await applyAirGappedRestrictionsValidation(() =>
+					sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
+				);
+			} catch (err) {
+				// Concurrent confirms for the same fileId can race past the guard above.
+				// If the insert failed on the unique `file._id` index, another request
+				// already won; fetch and return its message instead of failing.
+				if (typeof err === 'object' && err !== null && (err as { code?: number }).code === 11000) {
+					const racedMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId);
+					if (racedMessage) {
+						await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+						return API.v1.success({
+							message: racedMessage,
+						});
+					}
+				}
+				throw err;
+			}
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 
