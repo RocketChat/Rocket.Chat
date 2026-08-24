@@ -55,6 +55,7 @@ type UserPreferences = {
 	notifyCalendarEvents: boolean;
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
+	receiveReactionNotifications?: boolean;
 	utcOffset?: number;
 	statusVisibilityDenied?: string[];
 };
@@ -132,6 +133,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		notifyCalendarEvents: Match.Optional(Boolean),
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
+		receiveReactionNotifications: Match.Optional(Boolean),
 		utcOffset: Match.Optional(Number),
 		statusVisibilityDenied: Match.Optional([String]),
 	};
