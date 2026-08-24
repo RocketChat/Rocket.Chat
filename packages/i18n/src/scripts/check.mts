@@ -585,6 +585,8 @@ const tasksByName = {
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 	// We're lenient by default excluding some non-critical tasks
 	const tasks = new Set<keyof typeof tasksByName>([
+		// 'sort-base-keys' has to run before 'sort-keys', which derives every other locale's order from it
+		'sort-base-keys',
 		'sort-keys',
 		'wipe-extra-keys',
 		'wipe-invalid-plurals',
