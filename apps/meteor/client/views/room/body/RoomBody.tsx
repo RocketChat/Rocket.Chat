@@ -12,6 +12,7 @@ import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import E2EEWarningBanner from '../E2EEWarningBanner';
 import RoomAnnouncement from '../RoomAnnouncement';
 import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -162,6 +163,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
+			{!isLayoutEmbedded && <E2EEWarningBanner />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'

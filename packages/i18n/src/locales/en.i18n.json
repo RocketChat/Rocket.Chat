@@ -2014,6 +2014,7 @@
   "Duplicated_Email_address_will_be_ignored": "Duplicated email address will be ignored.",
   "Duration": "Duration",
   "E2EE_Composer_Unencrypted_Message": "You're sending an unencrypted message",
+  "E2EE_not_enabled_for_this_dm_warning": "This direct message is not end-to-end encrypted. Anyone with server access could read its content.",
   "E2EE_password_reset": "E2EE password reset",
   "E2EE_alert": "<b>Enabling E2EE affects other functionalities</b> <ul><li> - Encrypted content cannot be found by search</li> <li> - Encrypted content cannot be audited</li> <li> - Bot interactions may not work with encrypted messages</li></ul>",
   "E2E_Allow_Unencrypted_Messages": "Unencrypted messages in encrypted rooms",
