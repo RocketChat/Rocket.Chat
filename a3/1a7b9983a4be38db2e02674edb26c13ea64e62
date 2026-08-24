@@ -1,0 +1,41 @@
+packages/peggy-loader/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 16
+packages/emitter/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 13-14
+packages/eslint-config/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 5-9
+packages/ddp-client/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 4-8
+packages/livechat/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 7
+packages/apps-engine/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 16-17
+packages/message-parser/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 11
+packages/core-typings/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 5-9
+packages/rest-typings/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 4-8
+packages/ui-kit/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 11-12
+packages/api-client/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 4-8
+packages/desktop-api/package.json
+  s_a17a776612fabf::t_9f4dfe231b0036 5-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a31a7b9983a4be38db2e02674edb26c13ea64e62",
+  "prompts": {},
+  "sessions": {
+    "s_a17a776612fabf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2b2ab6e-4018-4e00-8c6e-c07cd846ca61",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
