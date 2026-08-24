@@ -41,10 +41,6 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
-					// A hidden container (e.g. display: none behind a full-width contextual bar) reads as
-					// scrollTop 0 / clientHeight 0, which the "near top" check below mistakes for "scrolled
-					// to top" — every getMore then mutates the DOM and re-triggers the observers, draining
-					// the entire room history while nothing is visible.
 					if (clientHeight === 0) {
 						return;
 					}
