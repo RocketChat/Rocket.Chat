@@ -34,7 +34,6 @@ if (false) {
 	import('@rocket.chat/i18n/dist/resources/gl.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/he.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/hi-IN.i18n.json');
-	import('@rocket.chat/i18n/dist/resources/hi.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/hr.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/hu.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/id.i18n.json');
