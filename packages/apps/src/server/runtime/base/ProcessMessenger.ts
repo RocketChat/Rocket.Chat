@@ -3,7 +3,7 @@ import type { ChildProcess } from 'node:child_process';
 import type { COMMAND_PING } from './LivenessManager';
 import type { Encoder } from './codec';
 import { newEncoder } from './codec';
-import type { JsonRpc } from './jsonrpc';
+import type { JsonRpc } from '../../../lib/jsonrpc';
 
 type Message = JsonRpc | typeof COMMAND_PING;
 

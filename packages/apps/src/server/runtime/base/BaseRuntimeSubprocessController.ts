@@ -11,7 +11,7 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
-import * as jsonrpc from './jsonrpc';
+import * as jsonrpc from '../../../lib/jsonrpc';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import { AppResourceBridge } from '../../bridges/AppResourceBridge';
