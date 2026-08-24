@@ -1334,7 +1334,6 @@
   "Favorite_Rooms": "대화방 즐겨찾기 사용",
   "Favorites": "즐겨찾기",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "이 기능은 '방문자 동선 내역을 메시지로 전송'을 사용하도록 설정되어 있습니다.",
-  "Federation_Matrix_enabled": "활성화",
   "Federation_Public_key": "공개 키",
   "Field": "필드",
   "Field_removed": "필드 지우기",

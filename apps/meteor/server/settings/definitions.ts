@@ -33,7 +33,6 @@ import { createThreadSettings } from './threads';
 import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
-import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
 	createFederationServiceSettings(),
@@ -72,6 +71,3 @@ await Promise.all([
 	createVConfSettings(),
 	createUserDataSettings(),
 ]);
-
-// Run after all the other settings are created since it depends on some of them
-await addMatrixBridgeFederationSettings(); // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
