@@ -51,6 +51,25 @@ describe('mutateThreadMessagesInfiniteData', () => {
 		expect(data?.pageParams).toEqual([76]);
 	});
 
+	it('keeps a pageParam of 0 unshifted when a newer message is inserted and user is at the newest message', () => {
+		const cache: ThreadMessagesInfiniteData = {
+			pages: [{ items: [createMessage('reply-150', 150), createMessage('reply-199', 199)], itemCount: 200 }],
+			pageParams: [0],
+		};
+		queryClient.setQueryData(queryKey, cache);
+
+		mutateThreadMessagesInfiniteData(queryClient, queryKey, (messages) => {
+			messages.push(createMessage('reply-200', 1000));
+			messages.sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
+		});
+
+		const data = queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey);
+
+		expect(data?.pages[0].itemCount).toBe(201);
+		expect(data?.pages[0].items.map((m) => m._id)).toContain('reply-200');
+		expect(data?.pageParams).toEqual([0]);
+	});
+
 	it('shifts every page pageParam, not just the last one, when a newer message arrives', () => {
 		const cache: ThreadMessagesInfiniteData = {
 			pages: [

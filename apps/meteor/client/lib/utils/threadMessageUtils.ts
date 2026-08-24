@@ -91,7 +91,10 @@ export const mutateThreadMessagesInfiniteData = (
 
 		return {
 			pages,
-			pageParams: newerInsertedCount > 0 ? old.pageParams.map((pageParam) => pageParam + newerInsertedCount) : old.pageParams,
+			pageParams:
+				newerInsertedCount > 0
+					? old.pageParams.map((pageParam) => (pageParam > 0 ? pageParam + newerInsertedCount : pageParam))
+					: old.pageParams,
 		};
 	});
 };
