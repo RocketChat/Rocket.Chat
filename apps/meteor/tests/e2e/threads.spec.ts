@@ -252,11 +252,11 @@ test.describe.serial('Threads - small screens', () => {
 		await expect(poHomeChannel.content.mainMessageListScroller).toBeHidden();
 
 		// A hidden-history drain re-triggers ~every 100ms, growing the list by a 50-message page each
-		// cycle. Sample the count across the window instead of one fixed sleep: growth fails fast,
-		// a count stable across every sample proves the guard held.
+		// cycle, while hiding alone only makes the virtualized list re-render a few extra rows of the
+		// already-loaded page. Sample across the window: page-sized growth means the guard broke.
 		for (let i = 0; i < 5; i++) {
 			await page.waitForTimeout(500);
-			expect(await mainMessageListItems.count()).toBe(loadedMessages);
+			expect(await mainMessageListItems.count()).toBeLessThan(loadedMessages + 50);
 		}
 	});
 });
