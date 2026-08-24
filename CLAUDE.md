@@ -34,6 +34,10 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/meteor-modern-stack.md](docs/meteor-modern-stack.md) — Meteor modern build stack, file-watching caveats
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 
+### Testing
+
+- [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
+
 ### Other
 
 - [docs/adr/](docs/adr/) — architecture decision records
