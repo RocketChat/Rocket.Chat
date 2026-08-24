@@ -2054,6 +2054,8 @@
   "E2E_reset_encryption_keys_modal_description": "Resetting E2EE keys is only recommend if no {{roomType}} member has a valid key to regain access to the previously encrypted content. All members may lose access to previously encrypted content.<br/><br/><3>Learn more</3> about resetting encryption keys.<br/><br/>Proceed with caution.",
   "E2E_reset_encryption_keys_success": "Encryption keys reset",
   "E2E_unavailable_for_federation": "E2E is unavailable for federated rooms",
+  "E2E_Leave_Encrypted_Room_Warning": "Leaving this encrypted room may remove locally stored encryption keys. You may lose access to previously encrypted message history if the keys are not available elsewhere.",
+  "E2E_Delete_Encrypted_Room_Warning": "Deleting this encrypted room may remove locally stored encryption keys. You may lose access to previously encrypted message history if the keys are not available elsewhere.",
   "ECDH_Enabled": "Enable second layer encryption for data transport",
   "Edit": "Edit",
   "Edit_Business_Hour": "Edit Business Hour",
