@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { MenuOptions, MenuMoveTo } from './menu';
+import { DeleteCategoryModal, ManageCategoryModal, CreateNewCategoryModal } from './modals';
 import { expect } from '../../utils/test';
 
 export abstract class Sidebar {
@@ -19,8 +21,25 @@ export abstract class Sidebar {
 }
 
 export class RoomSidebar extends Sidebar {
+	readonly menuOptions: MenuOptions;
+
+	readonly menuMoveTo: MenuMoveTo;
+
+	readonly modals: {
+		deleteCategory: DeleteCategoryModal;
+		manageCategory: ManageCategoryModal;
+		createCategory: CreateNewCategoryModal;
+	};
+
 	constructor(protected page: Page) {
 		super(page.getByRole('navigation', { name: 'Sidebar' }));
+		this.modals = {
+			deleteCategory: new DeleteCategoryModal(page),
+			manageCategory: new ManageCategoryModal(page),
+			createCategory: new CreateNewCategoryModal(page),
+		};
+		this.menuOptions = new MenuOptions(page);
+		this.menuMoveTo = new MenuMoveTo(page);
 	}
 
 	get teamCollabFilters(): Locator {
@@ -130,6 +149,18 @@ export class RoomSidebar extends Sidebar {
 		await this.getCategoryKebab(name).click();
 	}
 
+	async renameCategory(name: string, newName: string): Promise<void> {
+		await this.openCategoryMenu(name);
+		await this.page.getByRole('menuitemcheckbox', { name: 'Manage', exact: true }).click();
+		await this.modals.manageCategory.rename(newName);
+	}
+
+	async deleteCategory(name: string): Promise<void> {
+		await this.openCategoryMenu(name);
+		await this.page.getByRole('menuitemcheckbox', { name: 'Delete', exact: true }).click();
+		await this.modals.deleteCategory.delete();
+	}
+
 	get moveToOption(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Move to', exact: true });
 	}
@@ -139,7 +170,7 @@ export class RoomSidebar extends Sidebar {
 		await item.hover();
 		await item.focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
-		await expect(this.moveToOption).toBeVisible();
+		await this.menuOptions.waitForDisplay();
 	}
 
 	/** The open submenu keeps the first Escape, so the kebab menu itself needs a second one. */
@@ -152,42 +183,35 @@ export class RoomSidebar extends Sidebar {
 	/** Move a room into a custom category (or to "Favorites") through the kebab "Move to ▸" submenu. */
 	async moveRoomToCategory(roomName: string, categoryName: string): Promise<void> {
 		await this.openRoomMoveToSubmenu(roomName);
-		await this.roomMenuMoveToItem(categoryName).click();
-		await expect(this.moveToOption).toBeHidden();
+		await this.menuMoveTo.selectMenuItem(categoryName);
 	}
 
 	async removeRoomFromCategory(roomName: string, categoryName: string): Promise<void> {
 		await this.openRoomMoveToSubmenu(roomName);
-		await this.roomMenuMoveToItem(`Remove from ${categoryName}`).click();
-		await expect(this.moveToOption).toBeHidden();
+		await this.menuMoveTo.selectMenuItem(`Remove from ${categoryName}`);
 	}
 
-	async createCategoryFromRoom(roomName: string): Promise<void> {
+	async createCategoryFromRoom(roomName: string, name: string): Promise<void> {
 		await this.openRoomMoveToSubmenu(roomName);
-		await this.roomMenuMoveToItem('New category').click();
-		await expect(this.moveToOption).toBeHidden();
+		await this.menuMoveTo.selectMenuItem('New category');
+		await this.modals.createCategory.inputName.fill(name);
+		await this.modals.createCategory.create(true);
 	}
 
 	async moveRoomToFavorites(roomName: string): Promise<void> {
 		await this.openRoomMoveToSubmenu(roomName);
-		await this.roomMenuMoveToItem('Favorites').click();
-		await expect(this.moveToOption).toBeHidden();
+		await this.menuMoveTo.selectMenuItem('Favorites');
 	}
 
 	async removeRoomFromFavorites(roomName: string): Promise<void> {
 		await this.openRoomMoveToSubmenu(roomName);
-		await this.roomMenuMoveToItem('Remove from Favorites').click();
-		await expect(this.moveToOption).toBeHidden();
-	}
-
-	roomMenuMoveToItem(name: string): Locator {
-		return this.page.getByRole('menu', { name: 'Move to', exact: true }).getByRole('menuitem', { name, exact: true });
+		await this.menuMoveTo.selectMenuItem('Remove from Favorites');
 	}
 
 	async openRoomMoveToSubmenu(roomName: string): Promise<void> {
 		await this.openRoomMenu(roomName);
-		await this.moveToOption.hover();
-		await expect(this.roomMenuMoveToItem('New category')).toBeVisible();
+		await this.menuOptions.selectMenuItem('Move to', true);
+		await this.menuMoveTo.waitForDisplay();
 	}
 }
 

@@ -4,6 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
+import { RoomHeader } from './room-header';
 import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
@@ -16,6 +17,8 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
+	readonly header: RoomHeader;
+
 	readonly composer: RoomComposer;
 
 	protected readonly threadComposer: ThreadComposer;
@@ -24,27 +27,11 @@ export class HomeContent {
 		this.page = page;
 		this.composer = new RoomComposer(page);
 		this.threadComposer = new ThreadComposer(page);
+		this.header = new RoomHeader(page.locator('main header'));
 	}
 
 	get channelHeader(): Locator {
-		return this.page.locator('main header');
-	}
-
-	get headerGroupingButton(): Locator {
-		return this.channelHeader.getByRole('button', { name: 'Move to' });
-	}
-
-	headerGroupingIcon(name: 'star' | 'star-filled' | 'folder'): Locator {
-		return this.headerGroupingButton.locator(`.rcx-icon--name-${name}`);
-	}
-
-	async openHeaderGroupingMenu(): Promise<void> {
-		await this.headerGroupingButton.click();
-	}
-
-	async pickHeaderGroupingTarget(name: string | RegExp): Promise<void> {
-		await this.openHeaderGroupingMenu();
-		await this.page.getByRole('menuitem', { name }).click();
+		return this.header.root;
 	}
 
 	get burgerButton(): Locator {

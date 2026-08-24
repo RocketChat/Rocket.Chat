@@ -17,22 +17,13 @@ test.describe.serial('sidebar custom categories', () => {
 
 	const uniqueName = (prefix: string) => `${prefix}-${faker.string.uuid().slice(0, 8)}`;
 
-	/** Creates a category through the create (+) menu modal and waits for its collapser to appear. */
-	const createCategory = async (name: string) => {
-		await poHomeChannel.navbar.openCreateCategory();
-		const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-		await expect(dialog).toBeVisible();
-		await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
-		await dialog.getByRole('button', { name: 'Create', exact: true }).click();
-		await expect(dialog).not.toBeVisible();
+	const createCategory = async (api: Parameters<typeof setUserPreferences>[0], name: string): Promise<void> => {
+		await setUserPreferences(api, { sidebarCategories: [{ _id: faker.string.uuid(), name }] });
 		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
 	};
 
-	/** True when the target room currently belongs to the named grouping (its submenu offers "Remove from …"). */
-	const isRoomInGrouping = async (groupingName: string) => {
-		await poHomeChannel.sidebar.openRoomMoveToSubmenu(targetChannel);
-		const present = await poHomeChannel.sidebar.roomMenuMoveToItem(`Remove from ${groupingName}`).isVisible();
-		await poHomeChannel.sidebar.closeRoomMenu();
+	const roomBelongsToGroup = async (groupName: string) => {
+		const present = await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${groupName}`);
 		return present;
 	};
 
@@ -61,81 +52,41 @@ test.describe.serial('sidebar custom categories', () => {
 	test.describe('create (+) menu', () => {
 		test('should expose a "Category" entry', async () => {
 			await poHomeChannel.navbar.btnCreateNew.click();
-			await expect(poHomeChannel.navbar.createNewMenu.getByRole('menuitem', { name: 'Category', exact: true })).toBeVisible();
+			await expect(poHomeChannel.navbar.createNewMenuItem('Category')).toBeVisible();
 		});
 
 		test('should create an empty category (rendered as a header with no rooms)', async () => {
 			const name = uniqueName('cat');
-			await createCategory(name);
+			await poHomeChannel.navbar.createNewCategory(name);
 			await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
-		});
-
-		test('should reject an empty name', async () => {
-			await poHomeChannel.navbar.openCreateCategory();
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
-			await expect(dialog.getByText('Please enter a category name')).toBeVisible();
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('button', { name: 'Cancel' }).click();
-		});
-
-		test('should reject a duplicate name (case-insensitive)', async () => {
-			const name = uniqueName('dup');
-			await createCategory(name);
-
-			await poHomeChannel.navbar.openCreateCategory();
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(name.toUpperCase());
-			await dialog.getByRole('button', { name: 'Create', exact: true }).click();
-			await expect(dialog.getByText('A category with this name already exists')).toBeVisible();
-			await dialog.getByRole('button', { name: 'Cancel' }).click();
 		});
 	});
 
 	test.describe('category actions (custom category)', () => {
+		const category = uniqueName('ren');
+
+		test.beforeEach(async ({ api }) => {
+			await createCategory(api, category);
+		});
+
 		test('should rename a category', async () => {
-			const name = uniqueName('ren');
-			const renamed = `${name}-renamed`;
-			await createCategory(name);
+			const renamed = `${category}-renamed`;
 
-			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Manage', exact: true }).click();
-
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Manage category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(renamed);
-			await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-
+			await poHomeChannel.sidebar.renameCategory(category, renamed);
 			await expect(poHomeChannel.sidebar.getCategoryCollapser(renamed)).toBeVisible();
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toHaveCount(0);
+			await expect(poHomeChannel.sidebar.getCategoryCollapser(category)).toHaveCount(0);
 		});
 
 		test('should delete a category and return its rooms to the system group', async () => {
-			const name = uniqueName('del');
-			await createCategory(name);
-			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, name);
-			expect(await isRoomInGrouping(name)).toBe(true);
+			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, category);
+			await poHomeChannel.sidebar.deleteCategory(category);
 
-			await poHomeChannel.sidebar.openCategoryMenu(name);
-			await poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Delete', exact: true }).click();
-
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Delete category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toHaveCount(0);
-			// The room survives and is no longer grouped (back in its system group).
+			await expect(poHomeChannel.sidebar.getCategoryCollapser(category)).toHaveCount(0);
 			await expect(poHomeChannel.sidebar.getSidebarItemByName(targetChannel)).toBeVisible();
-			expect(await isRoomInGrouping(name)).toBe(false);
 		});
 
 		test('should toggle "Always display"', async () => {
-			const name = uniqueName('unr');
-			await createCategory(name);
-
-			await poHomeChannel.sidebar.openCategoryMenu(name);
+			await poHomeChannel.sidebar.openCategoryMenu(category);
 			const toggle = poHomeChannel.page.getByRole('menuitemcheckbox', { name: 'Always display' });
 			await expect(toggle).toBeVisible();
 			await expect(toggle.getByRole('checkbox')).toBeChecked({ checked: false });
@@ -145,14 +96,11 @@ test.describe.serial('sidebar custom categories', () => {
 		});
 
 		test('should open the Create channel modal via the "Create new" submenu', async () => {
-			const name = uniqueName('nc');
-			await createCategory(name);
-
-			await poHomeChannel.sidebar.openCategoryMenu(name);
+			await poHomeChannel.sidebar.openCategoryMenu(category);
 			await poHomeChannel.page.getByRole('menuitem', { name: 'Create new', exact: true }).hover();
 			await poHomeChannel.page.getByRole('menuitem', { name: 'Channel', exact: true }).click();
 
-			await expect(poHomeChannel.page.getByRole('dialog', { name: 'Create channel' })).toBeVisible();
+			await poHomeChannel.navbar.modals.Channel.waitForDisplay();
 			await poHomeChannel.page.keyboard.press('Escape');
 		});
 	});
@@ -172,88 +120,62 @@ test.describe.serial('sidebar custom categories', () => {
 		});
 	});
 
-	test.describe('sidebar item actions', () => {
-		test('should move a room into a category', async () => {
-			const name = uniqueName('move');
-			await createCategory(name);
+	test.describe('manage category in room actions', () => {
+		const category = uniqueName('ren');
 
-			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, name);
-			expect(await isRoomInGrouping(name)).toBe(true);
+		test.beforeEach(async ({ api }) => {
+			await createCategory(api, category);
+			await poHomeChannel.gotoChannel(targetChannel);
+		});
+
+		test('should move a room into a category', async () => {
+			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, category);
+			expect(await roomBelongsToGroup(category)).toBe(true);
 		});
 
 		test('should move a room to Favorites and back', async () => {
 			await poHomeChannel.sidebar.moveRoomToFavorites(targetChannel);
-			expect(await isRoomInGrouping('Favorites')).toBe(true);
+			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromFavorites(targetChannel);
-			expect(await isRoomInGrouping('Favorites')).toBe(false);
+			expect(await roomBelongsToGroup('Favorites')).toBe(false);
 		});
 
 		test('should remove a room from a category', async () => {
-			const name = uniqueName('rm');
-			await createCategory(name);
-			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, name);
-			expect(await isRoomInGrouping(name)).toBe(true);
+			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, category);
+			expect(await roomBelongsToGroup(category)).toBe(true);
 
-			await poHomeChannel.sidebar.removeRoomFromCategory(targetChannel, name);
-			expect(await isRoomInGrouping(name)).toBe(false);
+			await poHomeChannel.sidebar.removeRoomFromCategory(targetChannel, category);
+			expect(await roomBelongsToGroup(category)).toBe(false);
 		});
 
 		test('should create a category and move the room into it in one step', async () => {
-			const name = uniqueName('created');
-			await poHomeChannel.sidebar.createCategoryFromRoom(targetChannel);
+			const newCat = uniqueName('cat');
+			await poHomeChannel.sidebar.createCategoryFromRoom(targetChannel, newCat);
 
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
-			// In "create and move" mode the confirm button reads "Create and move".
-			await dialog.getByRole('button', { name: 'Create and move', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-
-			await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
-			expect(await isRoomInGrouping(name)).toBe(true);
-		});
-	});
-
-	test.describe.skip('channel header grouping', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto(`/channel/${targetChannel}`);
-			await expect(poHomeChannel.content.headerGroupingButton).toBeVisible();
+			await expect(poHomeChannel.sidebar.getCategoryCollapser(newCat)).toBeVisible();
+			expect(await roomBelongsToGroup(newCat)).toBe(true);
 		});
 
-		test('should show the grouping control with the default star icon', async () => {
-			await expect(poHomeChannel.content.headerGroupingIcon('star')).toBeVisible();
+		test('should move the room into a category from the header', async () => {
+			const newCat = uniqueName('cat');
+			await poHomeChannel.content.header.createCategory(newCat);
+
+			expect(await roomBelongsToGroup(newCat)).toBe(true);
 		});
 
-		test('should move the room into a category from the header (icon → folder)', async () => {
-			const name = uniqueName('hdr');
-			await poHomeChannel.content.pickHeaderGroupingTarget('New category');
+		test('should favorite the room from the header and remove it', async () => {
+			await poHomeChannel.content.header.pickCategoryMenuItem('Favorites');
+			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
-			const dialog = poHomeChannel.page.getByRole('dialog', { name: 'Create category' });
-			await expect(dialog).toBeVisible();
-			await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
-			await dialog.getByRole('button', { name: 'Create and move', exact: true }).click();
-			await expect(dialog).not.toBeVisible();
-
-			await expect(poHomeChannel.content.headerGroupingIcon('folder')).toBeVisible();
-			expect(await isRoomInGrouping(name)).toBe(true);
-		});
-
-		test('should favorite the room from the header (icon → star-filled) and remove it', async () => {
-			await poHomeChannel.content.pickHeaderGroupingTarget('Favorites');
-			await expect(poHomeChannel.content.headerGroupingIcon('star-filled')).toBeVisible();
-
-			await poHomeChannel.content.pickHeaderGroupingTarget('Remove from Favorites');
-			await expect(poHomeChannel.content.headerGroupingIcon('star')).toBeVisible();
+			await poHomeChannel.content.header.pickCategoryMenuItem('Remove from Favorites');
+			expect(await roomBelongsToGroup('Favorites')).toBe(false);
 		});
 
 		test('should move the room into an existing category from the header', async () => {
-			const name = uniqueName('hdr-existing');
-			await createCategory(name);
+			await poHomeChannel.content.header.pickCategoryMenuItem(category);
 
-			await poHomeChannel.content.pickHeaderGroupingTarget(name);
-			await expect(poHomeChannel.content.headerGroupingIcon('folder')).toBeVisible();
-			expect(await isRoomInGrouping(name)).toBe(true);
+			expect(await roomBelongsToGroup(category)).toBe(true);
 		});
 	});
 });

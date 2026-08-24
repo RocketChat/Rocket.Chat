@@ -118,7 +118,6 @@ export class HomeChannel {
 		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
 	}
 
-	/** Prefer using getRoomHeaderFavoriteBtn instead */
 	private get roomHeaderFavoriteBtn(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
