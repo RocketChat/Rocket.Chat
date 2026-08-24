@@ -2048,6 +2048,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "การปรับขนาดภาพจะไม่ทำงานเนื่องจากเราไม่สามารถตรวจพบ ImageMagick หรือ GraphicsMagick ที่ติดตั้งบนเซิร์ฟเวอร์ของคุณ",
   "The_redirectUri_is_required": "จำเป็นต้องมี redirectUri",
   "The_server_will_restart_in_s_seconds": "เซิร์ฟเวอร์จะรีสตาร์ทเป็น %s วินาที",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>ได้รับการกำหนดค่าให้",
   "The_user_will_be_removed_from_s": "ผู้ใช้จะถูกนำออกจาก{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "ผู้ใช้จะไม่สามารถพิมพ์{{roomName}} ได้",
   "Theme": "กระทู้",
