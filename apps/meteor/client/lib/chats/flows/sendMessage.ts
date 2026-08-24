@@ -9,30 +9,42 @@ import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
+import { processGroupMentionConfirmation } from './processGroupMentionConfirmation';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
-const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
+const process = async (
+	chat: ChatAPI,
+	message: IMessage,
+	originalText: string,
+	previewUrls?: string[],
+	isSlashCommandAllowed?: boolean,
+): Promise<boolean> => {
 	const mid = chat.currentEditingMessage.getMID();
 
 	if (await processSetReaction(chat, message)) {
-		return;
+		return true;
 	}
 
 	if (await processTooLongMessage(chat, message)) {
-		return;
+		return true;
+	}
+
+	if (await processGroupMentionConfirmation(chat, message)) {
+		chat.composer?.setText(originalText);
+		return true;
 	}
 
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
-		return;
+		return true;
 	}
 
 	if (await processMessageUploads(chat, message)) {
 		chat.composer?.clear();
-		return;
+		return true;
 	}
 
 	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!mid })) as IMessage & { isEditing?: boolean };
@@ -42,7 +54,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	delete (message as IMessage & { isEditing?: boolean }).isEditing;
 
 	if (await processMessageEditing(chat, message, previewUrls)) {
-		return;
+		return true;
 	}
 
 	chat.composer?.clear();
@@ -58,6 +70,8 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		(record) => record._id === message._id && record.temp === true,
 		({ temp: _, ...record }) => record,
 	);
+
+	return false;
 };
 
 export const sendMessage = async (
@@ -82,6 +96,7 @@ export const sendMessage = async (
 
 	const uploadsStore = chat.composer?.uploads;
 
+	const rawText = text;
 	text = text.trim();
 	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
@@ -117,8 +132,10 @@ export const sendMessage = async (
 			// resolved request leaves the quote stuck in the composer when the REST call
 			// rejects even though the message was already broadcast over the stream.
 			chat.composer?.dismissAllQuotedMessages();
-			await process(chat, message, previewUrls, isSlashCommandAllowed);
-			await afterSendMessageCallback(message, message.rid);
+			const isHandled = await process(chat, message, rawText, previewUrls, isSlashCommandAllowed);
+			if (!isHandled) {
+				await afterSendMessageCallback(message, message.rid);
+			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
