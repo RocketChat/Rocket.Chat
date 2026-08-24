@@ -33,7 +33,8 @@ export const useCustomCategories = () => {
 	const persistMutation = useMutation({
 		mutationFn: (next: ISidebarCategory[]) => saveUserPreferences({ data: { sidebarCategories: next } }),
 	});
-	const persist = useCallback((next: ISidebarCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
+
+	const persist = useCallback((next: ISidebarCategory[]) => persistMutation.mutateAsync(next), [persistMutation]);
 
 	const setCategory = useCallback(
 		(roomIds: string[], category: string | null) => setCategoryEndpoint({ roomIds, category }),
@@ -183,19 +184,6 @@ export const useCustomCategories = () => {
 		[upsertGroupEntry, isKeepUnreadsOnTop],
 	);
 
-	const sortGroups = useCallback(
-		<T extends { key: string }>(groups: T[]): T[] => {
-			const order = allEntries.map((entry) => entry._id);
-			if (!order.length) return groups;
-			const rank = (key: string) => {
-				const i = order.indexOf(key);
-				return i === -1 ? Number.MAX_SAFE_INTEGER : i;
-			};
-			return [...groups].sort((a, b) => rank(a.key) - rank(b.key));
-		},
-		[allEntries],
-	);
-
 	const move = useCallback(
 		(currentKeys: string[], key: string, direction: 'up' | 'down') => {
 			const i = currentKeys.indexOf(key);
@@ -227,7 +215,6 @@ export const useCustomCategories = () => {
 			removeRoom,
 			isShowUnreads,
 			isKeepUnreadsOnTop,
-			sortGroups,
 			move,
 		}),
 		[
@@ -245,7 +232,6 @@ export const useCustomCategories = () => {
 			removeRoom,
 			isShowUnreads,
 			isKeepUnreadsOnTop,
-			sortGroups,
 			move,
 		],
 	);
