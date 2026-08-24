@@ -1,5 +1,4 @@
 import { Icon } from '@rocket.chat/fuselage';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { useCategoryModals } from './useCategoryModals';
 import type { MovableRoom } from '../hooks/useCustomCategories';
 import { FAVORITES_TARGET, useCustomCategories } from '../hooks/useCustomCategories';
-
-/** A "Move to" target. */
-export type MoveToItem = GenericMenuItemProps;
 
 /**
  * Builds the "Move to" targets (Favorites, each custom category, New category) for a room.
@@ -22,12 +18,12 @@ export const useRoomCategoryItems = () => {
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 
 	return useCallback(
-		(room: MovableRoom): { moveToItems: MoveToItem[]; removeItem?: GenericMenuItemProps; hasLicenseModule: boolean } => {
+		(room: MovableRoom) => {
 			// Favorites and custom categories are mutually exclusive — guard against stale categoryId during DDP propagation.
 			const current = !room.isFavorite && room.categoryId ? categories.find((c) => c._id === room.categoryId) : undefined;
 			const selected = <Icon name='check' size='x16' />;
 
-			const moveToItems: MoveToItem[] = [
+			const moveToItems = [
 				...(isFavoritesEnabled
 					? [
 							{
@@ -39,25 +35,23 @@ export const useRoomCategoryItems = () => {
 							},
 						]
 					: []),
-				...categories.map(
-					(category): MoveToItem => ({
-						id: category._id,
-						icon: 'folder',
-						content: category.name,
-						onClick: current?._id === category._id ? () => void removeRoom(room) : () => void moveRoom(room, category._id),
-						addon: current?._id === category._id ? selected : undefined,
-					}),
-				),
+				...categories.map((category) => ({
+					id: category._id,
+					icon: 'folder' as const,
+					content: category.name,
+					onClick: current?._id === category._id ? () => void removeRoom(room) : () => void moveRoom(room, category._id),
+					addon: current?._id === category._id ? selected : undefined,
+				})),
 				...(hasLicenseModule
 					? [{ id: 'newCategory', icon: 'plus' as const, content: t('New_category'), onClick: () => openCreate(room) }]
 					: []),
 			];
 
 			const currentName = current?.name ?? (room.isFavorite ? t('Favorites') : undefined);
-			const removeItem: GenericMenuItemProps | undefined = currentName
+			const removeItem = currentName
 				? {
 						id: 'removeFromCategory',
-						icon: 'cross',
+						icon: 'cross' as const,
 						content: t('Remove_from__categoryName__', { categoryName: currentName }),
 						onClick: () => void removeRoom(room),
 					}

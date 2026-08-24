@@ -1,6 +1,6 @@
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { GenericMenuItem, renderItem, useHandleMenuAction } from '@rocket.chat/ui-client';
+import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,11 @@ const CategoryRoomMenu = ({ rid, name = '', sections }: CategoryRoomMenuProps) =
 			{[
 				...actionSections.map(({ title, items }, index) => (
 					<MenuSection key={title || String(index)} aria-label={title || t('Options')} title={title || undefined} items={items}>
-						{renderItem}
+						{(item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuItem {...item} />
+							</MenuItem>
+						)}
 					</MenuSection>
 				)),
 				<MenuSection key='category' title={t('Category')}>
@@ -44,8 +48,22 @@ const CategoryRoomMenu = ({ rid, name = '', sections }: CategoryRoomMenuProps) =
 						<MenuItem aria-label={t('Move_to')}>
 							<GenericMenuItem icon='folder' content={t('Move_to')} id='moveTo' />
 						</MenuItem>
-						<MenuSection items={targetItems}>{renderItem}</MenuSection>
-						{utilItems.length > 0 && <MenuSection items={utilItems}>{renderItem}</MenuSection>}
+						<MenuSection items={targetItems}>
+							{(item) => (
+								<MenuItem key={item.id}>
+									<GenericMenuItem {...item} />
+								</MenuItem>
+							)}
+						</MenuSection>
+						{utilItems.length > 0 && (
+							<MenuSection items={utilItems}>
+								{(item) => (
+									<MenuItem key={item.id}>
+										<GenericMenuItem {...item} />
+									</MenuItem>
+								)}
+							</MenuSection>
+						)}
 					</MenuSubmenuTrigger>
 				</MenuSection>,
 			]}

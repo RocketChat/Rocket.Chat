@@ -1,8 +1,8 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { GenericMenuItem } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { renderItem } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -140,21 +140,40 @@ const CategoryMenu = ({
 			{[
 				<MenuSection key='main' aria-label={t('Options')}>
 					<>
-						{orderItems.map(renderItem)}
+						{orderItems.map((item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuItem {...item} />
+							</MenuItem>
+						))}
 						{category && createItems.length > 0 && (
 							<MenuSubmenuTrigger key='create-new' textValue={t('Create_new')}>
 								<MenuItem aria-label={t('Create_new')}>
 									<MenuItemIcon name='plus' />
 									<MenuItemContent>{t('Create_new')}</MenuItemContent>
 								</MenuItem>
-								<MenuSection items={createItems}>{renderItem}</MenuSection>
+								<MenuSection items={createItems}>
+									{(item) => (
+										<MenuItem key={item.id}>
+											<GenericMenuItem {...item} />
+										</MenuItem>
+									)}
+								</MenuSection>
 							</MenuSubmenuTrigger>
 						)}
-						{category && manageItems.map(renderItem)}
+						{category &&
+							manageItems.map((item) => (
+								<MenuItem key={item.id}>
+									<GenericMenuItem {...item} />
+								</MenuItem>
+							))}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
-					{renderItem}
+					{(item) => (
+						<MenuItem key={item.id}>
+							<GenericMenuItem {...item} />
+						</MenuItem>
+					)}
 				</MenuSection>,
 			]}
 		</Menu>
