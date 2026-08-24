@@ -10,7 +10,7 @@ import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 export type MessageBoxFormattingToolbarProps = {
 	composer: ComposerAPI;
 	variant?: 'small' | 'large';
-	items: FormattingButton[];
+	items: readonly FormattingButton[];
 	disabled: boolean;
 };
 

@@ -78,8 +78,8 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 
 const emptySubscribe = () => () => undefined;
 const getEmptyFalse = () => false;
-const a: any[] = [];
-const getEmptyArray = () => a;
+const EMPTY_FORMATTER: readonly FormattingButton[] = [];
+const getEmptyArray = () => EMPTY_FORMATTER;
 
 export type MessageBoxProps = {
 	tmid?: IMessage['_id'];
