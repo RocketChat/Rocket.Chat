@@ -77,7 +77,7 @@ export const mutateThreadMessagesInfiniteData = (
 		const itemCountDelta = beforeMutationItemsLength - afterMutationItemsLength;
 		const newTotal = Math.max(0, oldTotal - itemCountDelta);
 
-		const newerInsertedCount = items.filter((message) => !oldIds.has(message._id) && new Date(message.ts).getTime() > oldMaxTs).length;
+		const newerInsertedCount = items.filter((message) => !oldIds.has(message._id) && new Date(message.ts).getTime() >= oldMaxTs).length;
 
 		const pages: ThreadMessagesPage[] = [];
 		let cursor = 0;

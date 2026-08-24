@@ -70,6 +70,19 @@ describe('mutateThreadMessagesInfiniteData', () => {
 		expect(data?.pageParams).toEqual([0]);
 	});
 
+	it('shifts pageParams when the inserted message ties the newest cached timestamp', () => {
+		queryClient.setQueryData(queryKey, createAnchoredCache());
+
+		mutateThreadMessagesInfiniteData(queryClient, queryKey, (messages) => {
+			messages.push(createMessage('reply-200', 124));
+		});
+
+		const data = queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey);
+
+		expect(data?.pages[0].itemCount).toBe(201);
+		expect(data?.pageParams).toEqual([76]);
+	});
+
 	it('shifts every page pageParam, not just the last one, when a newer message arrives', () => {
 		const cache: ThreadMessagesInfiniteData = {
 			pages: [
