@@ -157,6 +157,7 @@ export const getRoomCategory = (
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', EMPTY) ?? EMPTY;
+	const sidebarSectionsOrder = useUserPreference<string[]>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
@@ -164,7 +165,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 
 	const categoryList = useMemo(() => {
 		if (hasLicenseModule) {
-			const categoriesIds = Array.from(new Set(sidebarCategories.map(({ _id }) => _id).concat(SYSTEM_GROUP_KEYS)));
+			const categoriesIds = Array.from(new Set(sidebarCategories.map(({ _id }) => _id).concat(sidebarSectionsOrder)));
 			return filterSystemCategories(categoriesIds, {
 				showOmnichannel,
 				inquiriesEnabled,
@@ -175,7 +176,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 			});
 		}
 
-		return filterSystemCategories(SYSTEM_GROUP_KEYS, {
+		return filterSystemCategories(sidebarSectionsOrder, {
 			showOmnichannel,
 			inquiriesEnabled,
 			sidebarGroupByType,
@@ -185,6 +186,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 		});
 	}, [
 		sidebarCategories,
+		sidebarSectionsOrder,
 		hasLicenseModule,
 		showOmnichannel,
 		inquiriesEnabled,
