@@ -2,7 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, setSettingValueById } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -185,6 +186,20 @@ test.describe.serial('message-composer', () => {
 		await expect(poHomeChannel.composer.boxPopup).toBeVisible();
 
 		await poHomeChannel.composer.inputMessage.fill('');
+	});
+
+	test('should clear the composer after running a client-only slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/shrug');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('(ツ)');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+	});
+
+	test('should clear the composer after an unrecognized slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/notaslashcommand');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('No such command');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 	});
 
 	test.describe('audio recorder', () => {
