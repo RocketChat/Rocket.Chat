@@ -10,7 +10,6 @@ import { createSoundsSettings } from './custom-sounds';
 import { createDiscussionsSettings } from './discussions';
 import { createE2ESettings } from './e2e';
 import { createEmailSettings } from './email';
-import { createFederationSettings } from './federation';
 import { createFederationServiceSettings } from './federation-service';
 import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
@@ -75,7 +74,4 @@ await Promise.all([
 ]);
 
 // Run after all the other settings are created since it depends on some of them
-await Promise.all([
-	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
-	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
-]);
+await addMatrixBridgeFederationSettings(); // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
