@@ -1,13 +1,13 @@
 import {
 	IconButton,
-	SidebarV2Item,
-	SidebarV2ItemAvatarWrapper,
-	SidebarV2ItemCol,
-	SidebarV2ItemContent,
-	SidebarV2ItemMenu,
-	SidebarV2ItemRow,
-	SidebarV2ItemTimestamp,
-	SidebarV2ItemTitle,
+	SidebarItem,
+	SidebarItemAvatarWrapper,
+	SidebarItemCol,
+	SidebarItemContent,
+	SidebarItemMenu,
+	SidebarItemRow,
+	SidebarItemTimestamp,
+	SidebarItemTitle,
 } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -53,7 +53,7 @@ const SidePanelItem = ({
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item
+		<SidebarItem
 			{...props}
 			href={href}
 			onClick={() => !selected && sidebar.toggle()}
@@ -64,26 +64,26 @@ const SidePanelItem = ({
 			aria-current={selected ? 'page' : undefined}
 			level={2}
 		>
-			<SidebarV2ItemCol>
-				<SidebarV2ItemRow>
-					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+			<SidebarItemCol>
+				<SidebarItemRow>
+					{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 					{icon}
-					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-					{time && <SidebarV2ItemTimestamp unread={unread}>{formatDate(time)}</SidebarV2ItemTimestamp>}
-				</SidebarV2ItemRow>
-				<SidebarV2ItemRow>
-					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
+					{time && <SidebarItemTimestamp unread={unread}>{formatDate(time)}</SidebarItemTimestamp>}
+				</SidebarItemRow>
+				<SidebarItemRow>
+					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>
 					{parentRoom}
 					{titleIcon}
 					{badges}
 					{menu && (
-						<SidebarV2ItemMenu>
-							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
-						</SidebarV2ItemMenu>
+						<SidebarItemMenu>
+							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
+						</SidebarItemMenu>
 					)}
-				</SidebarV2ItemRow>
-			</SidebarV2ItemCol>
-		</SidebarV2Item>
+				</SidebarItemRow>
+			</SidebarItemCol>
+		</SidebarItem>
 	);
 };
 
