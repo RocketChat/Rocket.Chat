@@ -13,12 +13,17 @@ import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
+import { processConfirmMassMention } from './processConfirmMassMention';
 import { processTooLongMessage } from './processTooLongMessage';
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
 	const mid = chat.currentEditingMessage.getMID();
 
 	if (await processSetReaction(chat, message)) {
+		return;
+	}
+
+	if (await processConfirmMassMention(chat, message)) {
 		return;
 	}
 
