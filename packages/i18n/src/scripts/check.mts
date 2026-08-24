@@ -64,13 +64,30 @@ const describeTask =
 	};
 
 /**
+ * JavaScript objects hoist integer-like keys to the front, so a resource file cannot hold one anywhere else;
+ * the expected order has to match what `JSON.parse` yields, otherwise the sorted file never lints clean.
+ */
+const isIntegerLikeKey = (key: string) => String(Number(key) >>> 0) === key;
+
+const compareBaseKeys = (a: string, b: string) => {
+	const aIsIntegerLike = isIntegerLikeKey(a);
+	const bIsIntegerLike = isIntegerLikeKey(b);
+
+	if (aIsIntegerLike !== bIsIntegerLike) return aIsIntegerLike ? -1 : 1;
+	if (aIsIntegerLike && bIsIntegerLike) return Number(a) - Number(b);
+
+	// Keys differing only in case tie under the case-insensitive comparison; break it so the order stays canonical
+	return a.toLowerCase().localeCompare(b.toLowerCase(), 'en') || (a < b ? -1 : 1);
+};
+
+/**
  * Sort keys of the base language (en) alphabetically and write back the sorted resource file if necessary
  */
 const sortBaseKeys = describeTask('sort-base-keys', async function* () {
 	const baseResource = await readResource(baseLanguage);
 
 	const keys = Object.keys(baseResource);
-	const sortedKeys = keys.toSorted((a, b) => a.toLowerCase().localeCompare(b.toLowerCase(), 'en'));
+	const sortedKeys = keys.toSorted(compareBaseKeys);
 
 	if (keys.join(',') === sortedKeys.join(',')) return;
 
@@ -78,9 +95,9 @@ const sortBaseKeys = describeTask('sort-base-keys', async function* () {
 		lint: async (reportError) => {
 			for (let i = 0; i < keys.length; i++) {
 				const key = keys[i];
-				const beforeKey = keys.at(i - 1);
+				const beforeKey = i > 0 ? keys[i - 1] : undefined;
 				const j = sortedKeys.indexOf(key);
-				const expectedBeforeKey = sortedKeys.at(j - 1);
+				const expectedBeforeKey = j > 0 ? sortedKeys[j - 1] : undefined;
 
 				if (beforeKey !== expectedBeforeKey) {
 					if (expectedBeforeKey) {
@@ -141,8 +158,8 @@ const sortKeys = describeTask('sort-keys', async function* () {
 					if (extraKeys.has(key)) continue;
 
 					const j = sortedKeys.indexOf(key);
-					const expectedBeforeKey = sortedKeys.at(j - 1);
-					const beforeKey = keys.at(i - 1);
+					const expectedBeforeKey = j > 0 ? sortedKeys[j - 1] : undefined;
+					const beforeKey = i > 0 ? keys[i - 1] : undefined;
 
 					if (beforeKey !== expectedBeforeKey) {
 						if (expectedBeforeKey) {
