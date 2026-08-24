@@ -75,7 +75,7 @@ export const filterGroupVisibility = <T>(
 		}
 
 		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats', 'Unread'].includes(key)) {
-			if (groups.size > 0) {
+			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}
 
@@ -117,7 +117,7 @@ export const getRoomCategory = (
 		return room.category;
 	}
 
-	if (room.f && groups.has('Favorite')) {
+	if (room.f && groups.has('Favorites')) {
 		return 'Favorites';
 	}
 
