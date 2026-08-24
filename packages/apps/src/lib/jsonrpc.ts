@@ -3,21 +3,24 @@
  *
  * This is a purpose-built, dependency-free replacement for `jsonrpc-lite`. We
  * only need to build the handful of message shapes that cross the process
- * boundary between the Apps-Engine host and the app subprocess.
+ * boundary between the Apps-Engine host and the app subprocess. Both sides
+ * share this module: the host imports it directly, the app runtime through
+ * `base-runtime/src/lib/jsonrpc`.
  *
  * Notably, this does NOT validate the messages it builds. `jsonrpc-lite` ran
  * `JSON.stringify` over every object it created just to assert it was
  * serializable, then threw the resulting string away. That is pure overhead
- * here: messages are serialized with msgpack (see `./codec`), never with
- * `JSON.stringify`, so the check validated something we never do and rejected
- * payloads (e.g. `Buffer`s, circular-free but large graphs) that msgpack
- * handles fine. The factory helpers below simply construct the objects.
+ * here: messages are serialized with msgpack, never with `JSON.stringify`, so
+ * the check validated something we never do and rejected payloads (e.g.
+ * `Buffer`s, circular-free but large graphs) that msgpack handles fine. The
+ * factory helpers below simply construct the objects.
  *
- * The wire form is owned by the msgpack codec: a dedicated extension (see
- * `./codec`) tags each of these classes on encode and rebuilds the exact
- * instance on decode. There is therefore no separate parse/categorization
- * step - the decoder yields ready-to-use instances on both sides, and callers
- * distinguish them with `instanceof`.
+ * The wire form is owned by the msgpack codecs on each side of the boundary
+ * (`src/server/runtime/base/codec` and `base-runtime/src/lib/codec`): a
+ * dedicated extension tags each of these classes on encode and rebuilds the
+ * exact instance on decode. There is therefore no separate parse/
+ * categorization step - the decoder yields ready-to-use instances on both
+ * sides, and callers distinguish them with `instanceof`.
  */
 
 export type ID = string | number | null;
@@ -41,7 +44,7 @@ export class JsonRpcError {
 
 	// `any` (rather than `unknown`) mirrors `jsonrpc-lite` and keeps call sites that
 	// read/augment `data` (e.g. `error.data?.logs`, `data.logs = ...`) type-checking.
-	declare public data?: any;
+	public declare data?: any;
 
 	constructor(message: string, code: number, data?: any) {
 		this.message = message;
@@ -80,7 +83,7 @@ export class RequestObject {
 
 	public method: string;
 
-	declare public params?: RpcParams;
+	public declare params?: RpcParams;
 
 	constructor(id: ID, method: string, params?: RpcParams) {
 		this.id = id;
@@ -97,7 +100,7 @@ export class NotificationObject {
 
 	public method: string;
 
-	declare public params?: RpcParams;
+	public declare params?: RpcParams;
 
 	constructor(method: string, params?: RpcParams) {
 		this.method = method;

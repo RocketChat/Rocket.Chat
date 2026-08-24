@@ -7,10 +7,10 @@ import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import { request, SuccessObject } from '../../../src/lib/jsonrpc';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';
-import { request, SuccessObject } from '../../../src/server/runtime/base/jsonrpc';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
