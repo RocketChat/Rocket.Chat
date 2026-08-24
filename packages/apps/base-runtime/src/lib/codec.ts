@@ -3,7 +3,16 @@ import { Buffer } from 'node:buffer';
 import { decode, Decoder, encode, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
-import { ErrorObject, JsonRpcError, NotificationObject, RequestObject, SuccessObject, type Defined, type ID, type RpcParams } from './jsonrpc';
+import {
+	ErrorObject,
+	JsonRpcError,
+	NotificationObject,
+	RequestObject,
+	SuccessObject,
+	type Defined,
+	type ID,
+	type RpcParams,
+} from './jsonrpc';
 import { applySecureFields, type WithSecureFields } from './secureFields';
 
 const FUNCTION_DISABLER_EXT = 0;

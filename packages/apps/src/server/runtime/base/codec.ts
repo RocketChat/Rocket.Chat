@@ -1,7 +1,16 @@
 import { Decoder as _Decoder, Encoder as _Encoder, decode, encode, ExtensionCodec } from '@msgpack/msgpack';
 
-import { ErrorObject, JsonRpcError, NotificationObject, RequestObject, SuccessObject, type Defined, type ID, type RpcParams } from './jsonrpc';
 import { hasSecureFields } from '../../../lib/SecureFields';
+import {
+	ErrorObject,
+	JsonRpcError,
+	NotificationObject,
+	RequestObject,
+	SuccessObject,
+	type Defined,
+	type ID,
+	type RpcParams,
+} from '../../../lib/jsonrpc';
 
 const extensionCodec = new ExtensionCodec();
 
