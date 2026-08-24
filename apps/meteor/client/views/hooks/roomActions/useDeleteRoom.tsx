@@ -1,5 +1,6 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -94,7 +95,16 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 				onCancel={(): void => setModal(null)}
 				confirmText={t('Yes_delete_it')}
 			>
-				{t('Delete_Room_Warning', { roomType })}
+				<Box is='span' display='flex' flexDirection='column'>
+					<Box is='span' mbe={room.encrypted ? 16 : 0}>
+						{t('Delete_Room_Warning', { roomType })}
+					</Box>
+					{room.encrypted && (
+						<Box is='span' color='danger' fontScale='c1'>
+							{t('E2E_Delete_Room_Warning')}
+						</Box>
+					)}
+				</Box>
 			</GenericModal>,
 		);
 	});

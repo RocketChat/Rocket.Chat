@@ -2804,6 +2804,8 @@
   "Incoming_voice_call_canceled_suddenly": "An Incoming Voice Call was canceled suddenly.",
   "Incoming_voice_call_canceled_user_not_registered": "An Incoming Voice Call was canceled due to an unexpected error.",
   "Incorrect_encryption_password": "Incorrect encryption password",
+  "E2E_Delete_Room_Warning": "Warning: Deleting this End-to-End Encrypted room will delete your local encryption keys. Historical messages will become permanently unreadable if you are the last active member with the keys.",
+  "E2E_Leave_Room_Warning": "Warning: Leaving this End-to-End Encrypted room will delete your local encryption keys. Historical messages will become permanently unreadable if you are the last active member with the keys.",
   "Industry": "Industry",
   "Info": "Info",
   "Information_to_keep_top_of_mind": "Information to keep top-of-mind",
