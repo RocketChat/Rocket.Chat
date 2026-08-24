@@ -19,9 +19,8 @@ on:
         type: string
       transporter:
         type: string
-      # 'nats' selects NatsBroker; anything else keeps MoleculerBroker
       broker:
-        default: ''
+        default: 'nats' # TODO remove default before merge
         required: false
         type: string
       mongodb-version:
