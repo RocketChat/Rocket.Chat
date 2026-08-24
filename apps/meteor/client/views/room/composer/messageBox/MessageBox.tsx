@@ -11,7 +11,7 @@ import {
 	MessageComposerButton,
 	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
@@ -21,6 +21,7 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
+import SensitiveDataWarningModal from '../../modals/SensitiveDataWarningModal';
 import { handleSelectionWrapping } from './wrapSelection';
 import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -179,12 +180,40 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const setModal = useSetModal();
+	const warnSensitiveData = useUserPreference<boolean>('warnSensitiveData') ?? true;
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
 
 		const text = chat.composer?.text ?? '';
+
+		if (warnSensitiveData) {
+			const patterns = [
+				/AKIA[0-9A-Z]{16}/,
+				/Bearer\s+eyJhbGciOi/,
+				/password\s*=\s*.+/i,
+				/-----BEGIN (RSA |DSA |EC |OPENSSH |)PRIVATE KEY-----/,
+			];
+
+			const hasSensitiveData = patterns.some((pattern) => pattern.test(text));
+			if (hasSensitiveData) {
+				setModal(
+					<SensitiveDataWarningModal
+						onConfirm={() => {
+							setModal(null);
+							popup.clear();
+							onSend?.({ value: text, tshow, previewUrls, isSlashCommandAllowed });
+						}}
+						onCancel={() => setModal(null)}
+					/>
+				);
+				return;
+			}
+		}
+
 		popup.clear();
 
 		onSend?.({
