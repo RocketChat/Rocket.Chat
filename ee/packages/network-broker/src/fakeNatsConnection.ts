@@ -108,7 +108,7 @@ export class FakeNatsConnection {
 			id: `${name}-${nodeID}`,
 			version: '0.1.0',
 			metadata: { 'rocketchat-node-id': nodeID },
-		} as ServiceIdentity);
+		} as unknown as ServiceIdentity);
 	}
 
 	private toMsg(subject: string, data: Uint8Array, hdrs?: MsgHdrs): Msg {
@@ -121,7 +121,7 @@ export class FakeNatsConnection {
 			respond: () => true,
 			json: () => EJSON.parse(new TextDecoder().decode(data)),
 			string: () => new TextDecoder().decode(data),
-		} as unknown as Msg;
+		};
 	}
 
 	private toServiceMsg(subject: string, data: Uint8Array, resolve: (msg: Msg) => void): ServiceMsg {
@@ -139,6 +139,6 @@ export class FakeNatsConnection {
 				resolve(this.toMsg(subject, payload, hdrs));
 				return true;
 			},
-		} as unknown as ServiceMsg;
+		};
 	}
 }

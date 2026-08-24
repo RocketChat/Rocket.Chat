@@ -1,8 +1,8 @@
 import { MeteorError, ServiceClass } from '@rocket.chat/core-services';
 import { connect } from 'nats';
 
-import { FakeNatsConnection } from './fakeNatsConnection';
 import { NatsBroker } from './NatsBroker';
+import { FakeNatsConnection } from './fakeNatsConnection';
 
 jest.mock('nats', () => ({
 	...jest.requireActual('nats'),
