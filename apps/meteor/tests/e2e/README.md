@@ -38,8 +38,8 @@ We can also provide some env vars to `test:e2e` script:
 - Prefer waiting for observable conditions over fixed delays. If a fixed delay is unavoidable, document why no observable condition can be awaited.
 
 ```ts
-await expect(anyElement).toBeVisible();
-```
+ await expect(anyElement).toBeVisible();
+ ```
 
 # Playwright Locator Best Practices
 
@@ -199,7 +199,7 @@ Test names should clearly describe the behavior and expected outcome being verif
 It can be used to group related tests into a test suite. It provides a way to organize tests logically and improve the readability and maintainability of your test code.
 ```ts
 test.describe('Feature Test', () => {
-  test('should show feature test', async ({ api}) => {
+  test('should show the feature after navigation', async ({ api}) => {
     // do some tests
   });
 });
@@ -209,7 +209,7 @@ test.describe('Feature Test', () => {
 Enhances test readability and provides more detailed information in test reports
 ```ts
 test.describe('Feature Test', () => {
-  test('should show feature test', async ({ page }) => {
+  test('should show the feature after navigation', async ({ page }) => {
     await test.step('Open the feature page', async () => {
       await page.goto('/feature');
     });
