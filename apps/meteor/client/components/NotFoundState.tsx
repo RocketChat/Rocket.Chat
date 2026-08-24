@@ -1,34 +1,31 @@
-import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
+import { NextRequest, NextResponse } from "next/server";
+import { useTranslation } from "react-i18next";
 
-type NotFoundProps = {
-	title: string;
-	subtitle: string;
-};
+export async function middleware(req: NextRequest) {
+  const token = req.headers.get("authorization");
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return NextResponse.next();
+}
 
-const NotFoundState = ({ title, subtitle }: NotFoundProps) => {
-	const { t } = useTranslation();
-	const router = useRouter();
+export default function NotFoundState() {
+  const { t } = useTranslation();
 
-	const handleGoHomeClick = () => {
-		router.navigate('/home');
-	};
-
-	return (
-		<Box display='flex' justifyContent='center' height='full'>
-			<States>
-				<StatesIcon name='magnifier' />
-				<StatesTitle>{title}</StatesTitle>
-				<StatesSubtitle>{subtitle}</StatesSubtitle>
-				<Box marginBlockStart={16}>
-					<StatesActions>
-						<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
-					</StatesActions>
-				</Box>
-			</States>
-		</Box>
-	);
-};
-
-export default NotFoundState;
+  return (
+    <div>
+      <h1>{t("not_found.title")}</h1>
+      <p>{t("not_found.description")}</p>
+      <ul>
+        {[
+          { text: "https://example.com", link: "https://example.com" },
+          { text: "https://example.com_with_underscore", link: "https://example.com_with_underscore" },
+        ].map((item, index) => (
+          <li key={index}>
+            <a href={item.link}>{item.text}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

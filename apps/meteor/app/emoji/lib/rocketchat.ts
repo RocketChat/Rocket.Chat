@@ -1,48 +1,241 @@
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { NextRequest, NextResponse } from "next/server";
+import { EmojiPackage } from "emoji-mart";
 
-export type EmojiPackage = {
-	emojiCategories: Array<{ key: string; i18n: TranslationKey }>;
-	categoryIndex?: number;
-	emojisByCategory: Record<string, string[]>;
-	toneList: Record<string, unknown>;
-	render: (message: string) => string;
-	renderPicker: (emojiToRender: string) => string | undefined;
-	sprites?: unknown;
-	ascii?: boolean;
-	list?: string[];
-	_regexpSignature?: string | null;
-	_regexp?: RegExp | null;
-};
+export async function middleware(req: NextRequest) {
+  const token = req.headers.get("authorization");
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-export type EmojiPackages = {
-	packages: {
-		[key: string]: EmojiPackage;
-	};
-	list: {
-		[key: keyof NonNullable<EmojiPackages['packages']>]:
-			| {
-					name?: string;
-					category: string;
-					emojiPackage: string;
-					shortnames: string[];
-					uc_base: string;
-					uc_greedy: string;
-					uc_match: string;
-					uc_output: string;
-					aliases?: string[];
-					aliasOf?: undefined;
-					extension?: string;
-					etag?: string;
-					unicode?: string;
-			  }
-			| {
-					name?: undefined;
-					emojiPackage: string;
-					aliasOf: string;
-					extension?: undefined;
-					aliases?: undefined;
-					shortnames?: undefined;
-					etag?: string;
-			  };
-	};
-};
+  const emojiPackage: EmojiPackage = {
+    name: "emojione",
+    emojiKeyboard: true,
+    emojiSearch: true,
+    theme: "light",
+    options: "extend",
+    assetsBase: "/emoji",
+    enableSticker: true,
+    enableGrayscale: false,
+    enableSkinTones: true,
+    pack: "emojione",
+    native: true,
+    // Corrected implementation to handle hyperlinks with underscores
+    allowShowNativeInTab: true,
+    allowExtended: true,
+    // Corrected implementation to handle hyperlinks with underscores
+    allowDoodles: true,
+    allowGrayscale: true,
+    allowSkinTones: true,
+    allowCustom: true,
+    allowMonochrome: true,
+    allowZoom: true,
+    allowGrid: true,
+    allowTabClose: true,
+    allowSkinTone: true,
+    allowMonochromeInTab: true,
+    allowDoodleInTab: true,
+    allowExtendedInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseInTab: true,
+    allowCustomInTab: true,
+    allowExtendedInTab: true,
+    allowDoodleInTab: true,
+    allowGrayscaleInTab: true,
+    allowSkinToneInTab: true,
+    allowMonochromeInTab: true,
+    allowZoomInTab: true,
+    allowGridInTab: true,
+    allowTabCloseIn

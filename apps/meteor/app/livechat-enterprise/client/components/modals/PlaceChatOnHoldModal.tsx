@@ -1,44 +1,205 @@
-import {
-	Button,
-	Modal,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalHeader,
-	ModalIcon,
-	ModalTitle,
-} from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
+import { NextRequest, NextResponse } from "next/server";
+
+export async function middleware(req: NextRequest) {
+  const token = req.headers.get("authorization");
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return NextResponse.next();
+}
+
+// rocketchat.ts
+import { EmojiPackage } from './rocketchat';
+
+export interface EmojiPackage {
+  name: string;
+  shortcodes: {
+    [key: string]: string;
+  };
+  url: string;
+  version: string;
+  description: string;
+  author: string;
+  license: string;
+  keywords: string[];
+  categories: string[];
+  tags: string[];
+  aliases: string[];
+  images: {
+    [key: string]: string;
+  };
+  shortcodes: {
+    [key: string]: string;
+  };
+  [key: string]: any;
+}
+
+// PlaceChatOnHoldModal.tsx
 import { useTranslation } from 'react-i18next';
 
-export type PlaceChatOnHoldModalProps = {
-	onOnHoldChat: () => void;
-	confirm?: () => void;
-	onCancel: () => void;
-};
+const PlaceChatOnHoldModal = () => {
+  const { t } = useTranslation();
 
-const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }: PlaceChatOnHoldModalProps) => {
-	const { t } = useTranslation();
-
-	return (
-		// TODO: Replace Modal with GenericModal
-		<Modal {...props} aria-label={t('Omnichannel_onHold_Chat')}>
-			<ModalHeader>
-				<ModalIcon name='pause-unfilled' />
-				<ModalTitle>{t('Omnichannel_onHold_Chat')}</ModalTitle>
-				<ModalClose onClick={onCancel} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Would_you_like_to_place_chat_on_hold')}</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={confirm}>
-						{t('Omnichannel_onHold_Chat')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
-	);
+  return (
+    <div>
+      <h1>{t('placeChatOnHold')}</h1>
+      <p>{t('placeChatOnHoldDescription')}</p>
+      <a href="https://example.com">{t('visitWebsite')}</a>
+      <a href="https://example.com/some_link_with_underscore">{t('visitWebsiteWithUnderscore')}</a>
+    </div>
+  );
 };
 
 export default PlaceChatOnHoldModal;
+
+// IBusinessHourBehavior.ts
+import { ILivechatBusinessHour } from './ILivechatBusinessHour';
+
+export interface IBusinessHourBehavior {
+  getBusinessHours: () => ILivechatBusinessHour;
+}
+
+export interface ILivechatBusinessHour {
+  id: string;
+  businessHourId: string;
+  businessHourName: string;
+  businessHourDescription: string;
+  businessHourStart: string;
+  businessHourEnd: string;
+  businessHourStartTz: string;
+  businessHourEndTz: string;
+  businessHourStartTzOffset: number;
+  businessHourEndTzOffset: number;
+  businessHourStartTzName: string;
+  businessHourEndTzName: string;
+  businessHourStartTzOffsetSeconds: number;
+  businessHourEndTzOffsetSeconds: number;
+  businessHourStartTzOffsetMinutes: number;
+  businessHourEndTzOffsetMinutes: number;
+  businessHourStartTzOffsetHours: number;
+  businessHourEndTzOffsetHours: number;
+  businessHourStartTzOffsetDays: number;
+  businessHourEndTzOffsetDays: number;
+  businessHourStartTzOffsetWeeks: number;
+  businessHourEndTzOffsetWeeks: number;
+  businessHourStartTzOffsetMonths: number;
+  businessHourEndTzOffsetMonths: number;
+  businessHourStartTzOffsetYears: number;
+  businessHourEndTzOffsetYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndTzOffsetTotalMinutes: number;
+  businessHourStartTzOffsetTotalHours: number;
+  businessHourEndTzOffsetTotalHours: number;
+  businessHourStartTzOffsetTotalDays: number;
+  businessHourEndTzOffsetTotalDays: number;
+  businessHourStartTzOffsetTotalWeeks: number;
+  businessHourEndTzOffsetTotalWeeks: number;
+  businessHourStartTzOffsetTotalMonths: number;
+  businessHourEndTzOffsetTotalMonths: number;
+  businessHourStartTzOffsetTotalYears: number;
+  businessHourEndTzOffsetTotalYears: number;
+  businessHourStartTzOffsetTotalSeconds: number;
+  businessHourEndTzOffsetTotalSeconds: number;
+  businessHourStartTzOffsetTotalMinutes: number;
+  businessHourEndT
