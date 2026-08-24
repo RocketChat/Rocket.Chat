@@ -181,18 +181,6 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
-		service.onEvent('video-conference.discussionUpdated', ({ callId, discussionRid }) => {
-			notifications.notifyVideoConference(callId, 'discussionUpdated', { discussionRid });
-		});
-
-		service.onEvent('video-conference.chatAccessUpdated', ({ callId }) => {
-			notifications.notifyVideoConference(callId, 'chatAccessUpdated');
-		});
-
-		service.onEvent('video-conference.membersUpdated', ({ callId }) => {
-			notifications.notifyVideoConference(callId, 'membersUpdated');
-		});
-
 		service.onEvent('video-conference.updated', ({ callId }) => {
 			notifications.notifyVideoConferenceUpdated(callId);
 		});

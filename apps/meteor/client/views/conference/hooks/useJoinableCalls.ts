@@ -1,5 +1,5 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -7,12 +7,12 @@ import { useEffect } from 'react';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
- * How often to look again for calls this user could join.
+ * How often to poll for joinable calls as a safety net.
  *
- * A call starting is not announced to everyone who could join it: doing that would mean a broadcast to every
- * subscriber of the room, which is the same fan-out that makes ringing a large room impossible in the first
- * place. So this polls. It is not a latency-critical list — it exists precisely for calls whose ring never
- * arrived, and anything the user does themselves invalidates it immediately.
+ * The subscription to `notify-user/video-conference` below handles instant discovery when the server sends a
+ * per-user event (ring, join, end, and — for embedded providers — started). Polling stays as a fallback for
+ * edge cases (missed events, reconnections, server not yet broadcasting 'started') and keeps the list
+ * self-healing.
  */
 const POLL_INTERVAL = 20_000;
 
@@ -25,6 +25,8 @@ const POLL_INTERVAL = 20_000;
 export const useJoinableCalls = () => {
 	const getJoinable = useEndpoint('GET', '/v1/video-conference.joinable');
 	const queryClient = useQueryClient();
+	const uid = useUserId();
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	// A ring *is* announced, to the person being rung — and waiting up to the poll interval to show a call that is
 	// ringing right now would miss it entirely. So the ring is what asks for the list again.
@@ -37,6 +39,19 @@ export const useJoinableCalls = () => {
 
 		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.joinable() });
 	}, [incomingCalls, queryClient]);
+
+	// Embedded (LiveKit) calls don't ring — they send a 'started' event instead. Any other video-conference
+	// event (join, end) also means the joinable list may have changed. Subscribing here makes discovery
+	// effectively instant instead of waiting for the next poll.
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${uid}/video-conference`, () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.joinable() });
+		});
+	}, [uid, subscribeToNotifyUser, queryClient]);
 
 	const { data, isLoading } = useQuery({
 		queryKey: videoConferenceQueryKeys.joinable(),

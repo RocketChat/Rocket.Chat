@@ -2,7 +2,7 @@ import { ContextualbarActions, ContextualbarClose, ContextualbarHeader, Contextu
 import type { ReactNode } from 'react';
 
 type CallPanelHeaderProps = {
-	title: string;
+	title: ReactNode;
 	/** Anything the panel offers about itself, sitting before the dismissal. */
 	children?: ReactNode;
 	onClose: () => void;

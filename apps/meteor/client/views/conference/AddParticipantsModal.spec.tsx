@@ -50,6 +50,8 @@ beforeEach(() => {
 	// The room-absent scenario (a conference member with no chat access) must be genuinely absent, not
 	// left over from a previous test that seeded it.
 	Rooms.state.replaceAll([]);
+	// The ring preference outlives a test, being remembered in storage on purpose.
+	localStorage.clear();
 });
 
 it('adds the selected user to the conference', async () => {
@@ -58,7 +60,7 @@ it('adds the selected user to the conference', async () => {
 	await selectOutsider();
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'] }));
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'], ring: true }));
 });
 
 it('disables the Add button until a user is selected', async () => {
@@ -122,3 +124,15 @@ it('reports the users it did add', async () => {
 
 // Taking a selection back is no longer this modal's doing: picking people is `UserAutoCompleteMultiple`, the
 // same component the room's own "add users" flow uses, and chips are how it offers that.
+
+// Someone added so they can join later is not someone to interrupt now, so adding asks the same question the
+// preflight does — and remembers the same answer, since it is one habit rather than two.
+it('adds without ringing when ringing is turned off', async () => {
+	renderModal();
+
+	await selectOutsider();
+	await userEvent.click(screen.getByRole('checkbox', { name: 'Ring_people' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'], ring: false }));
+});

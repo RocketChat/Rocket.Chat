@@ -2,7 +2,6 @@ import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
-import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
@@ -14,7 +13,6 @@ const query = { open: { $ne: false } };
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
 const order = [
-	'Incoming_Calls',
 	'Incoming_Livechats',
 	'Open_Livechats',
 	'On_Hold_Chats',
@@ -27,8 +25,10 @@ const order = [
 	'Conversations',
 ] as const;
 
+export type SidebarListItem = SubscriptionWithRoom;
+
 type useRoomListReturnType = {
-	roomList: Array<SubscriptionWithRoom>;
+	roomList: Array<SidebarListItem>;
 	groupsCount: number[];
 	groupsList: TranslationKey[];
 	groupedUnreadInfo: Pick<
@@ -50,15 +50,12 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const inquiries = useQueuedInquiries();
 
-	const incomingCalls = useVideoConfIncomingCalls();
-
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
 
-			const incomingCall = new Set();
 			const favorite = new Set();
 			const team = new Set();
 			const omnichannel = new Set();
@@ -72,10 +69,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
-				}
-
-				if (incomingCalls.find((call) => call.rid === room.rid)) {
-					return incomingCall.add(room);
 				}
 
 				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
@@ -114,7 +107,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			const groups = new Map<string, Set<any>>();
-			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
@@ -142,7 +134,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return acc;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					acc.groupsList.push(key);
 
 					const groupedUnreadInfoAcc = {
 						userMentions: 0,
@@ -200,7 +192,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,
-			incomingCalls,
 		]),
 		50,
 	);

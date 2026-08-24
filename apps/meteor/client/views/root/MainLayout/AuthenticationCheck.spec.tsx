@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { SessionContextValue } from '@rocket.chat/ui-contexts';
-import { SessionContext } from '@rocket.chat/ui-contexts';
+import type { AuthenticationContextValue, SessionContextValue } from '@rocket.chat/ui-contexts';
+import { AuthenticationContext, SessionContext } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 
 import AuthenticationCheck from './AuthenticationCheck';
@@ -72,4 +72,21 @@ describe('while the session is being resumed', () => {
 
 		expect(screen.getByText('login-page')).toBeInTheDocument();
 	});
+});
+
+// The regression that came with the guard above, and the reason it asks only about the stored token: `isLoggingIn`
+// is true of *any* login in flight, a person typing their password at the form included. Swapping the form for a
+// placeholder mid-attempt lost the rejection — the form came back blank, with neither field marked invalid — and
+// iframe login never appeared at all, since the flow that fetches its URL runs from inside `LoginPage`.
+it('keeps the login page up while someone is logging in at it', () => {
+	const loggingIn = { isLoggingIn: true } as AuthenticationContextValue;
+
+	renderGate(
+		mockAppRoot()
+			.withAnonymous()
+			.wrap((children) => <AuthenticationContext.Provider value={loggingIn}>{children}</AuthenticationContext.Provider>),
+	);
+
+	expect(screen.getByText('login-page')).toBeInTheDocument();
+	expect(screen.queryByText('route-placeholder')).not.toBeInTheDocument();
 });

@@ -15,6 +15,11 @@ export const buildJoinableCall = (
 	name: `Call ${overrides.callId}`,
 	createdAt: new Date('2026-08-03T10:00:00.000Z'),
 	usersCount: 2,
+	// As many faces as `usersCount` says are in it, so a fixture doesn't accidentally claim a "+N".
+	participants: [
+		{ _id: 'one', username: 'one', name: 'One' },
+		{ _id: 'two', username: 'two', name: 'Two' },
+	],
 	joined: false,
 	declined: false,
 	...overrides,

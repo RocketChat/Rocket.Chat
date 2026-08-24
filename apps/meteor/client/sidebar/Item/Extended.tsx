@@ -23,6 +23,11 @@ export type ExtendedProps = {
 	href?: string;
 	time?: any;
 	menu?: () => ReactNode;
+	/**
+	 * Said in the timestamp's place, when a row has something more useful to put there than when it happened — a
+	 * call that is ringing right now, say. Wins over `time`.
+	 */
+	timeLabel?: ReactNode;
 	subtitle?: ReactNode;
 	badges?: ReactNode;
 	unread?: boolean;
@@ -39,6 +44,7 @@ const Extended = ({
 	actions,
 	href,
 	time,
+	timeLabel,
 	menu,
 	menuOptions: _menuOptions,
 	subtitle = '',
@@ -59,7 +65,7 @@ const Extended = ({
 				<SidebarV2ItemRow>
 					{icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
+					{(timeLabel || time) && <SidebarV2ItemTimestamp>{timeLabel ?? formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>

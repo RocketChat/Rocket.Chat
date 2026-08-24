@@ -7,11 +7,20 @@ export const NEW_CONFERENCE_ID = 'new';
 /**
  * Closes the call window.
  *
- * `window.close` only works on a window that was opened by script, which the call window is — but a conference
- * reached by pasting the URL isn't, and there is no synchronous way to tell whether the close took. So give it a
- * moment, then fall back to leaving the page, which gets the user out of the call either way.
+ * Three strategies, tried in order:
+ *
+ * 1. **Desktop app**: the Electron preload exposes `videoCallWindow.close()` on the renderer's `window`.
+ *    `window.close()` does not reliably close a BrowserWindow that wasn't opened by `window.open()`, and
+ *    the desktop app opens the conference window internally via `openInternalVideoChatWindow`.
+ * 2. **Browser**: `window.close()` works when the window was opened by script (`window.open`).
+ * 3. **Fallback**: navigate to `/home` so the user at least leaves the call.
  */
 export const closeCallWindow = (): void => {
+	if (window.videoCallWindow?.close) {
+		window.videoCallWindow.close();
+		return;
+	}
+
 	window.close();
 	setTimeout(() => window.location.assign('/home'), CLOSE_GRACE);
 };

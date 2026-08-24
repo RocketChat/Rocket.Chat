@@ -1,6 +1,6 @@
 import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess
 type ChatAccessNoticeProps = {
 	callId: string;
 	access: ConferenceChatAccess;
+	onDismiss?: () => void;
 };
 
 // The banner itself isn't the control here — the Review button is — so undo the affordances
@@ -28,7 +29,7 @@ const notInteractive = css`
  * to read its chat. Rather than forcing that choice on whoever adds them, it is surfaced here once it
  * matters, with the ways to resolve it and their consequences a click away.
  */
-const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
+const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const uid = useUserId();
@@ -46,13 +47,12 @@ const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
 		<AnnouncementBanner className={notInteractive}>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
 				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: present.length })}</Box>
-				<Button
-					small
-					flexShrink={0}
-					onClick={() => setModal(<ChatAccessModal callId={callId} access={access} onClose={() => setModal(null)} />)}
-				>
-					{t('Review')}
-				</Button>
+				<Box display='flex' alignItems='center' flexShrink={0} style={{ gap: 4 }}>
+					<Button small onClick={() => setModal(<ChatAccessModal callId={callId} access={access} onClose={() => setModal(null)} />)}>
+						{t('Review')}
+					</Button>
+					{onDismiss && <IconButton small secondary icon='cross' aria-label={t('Dismiss')} onClick={onDismiss} />}
+				</Box>
 			</Box>
 		</AnnouncementBanner>
 	);

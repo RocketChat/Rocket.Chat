@@ -61,6 +61,12 @@ export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceIns
  * readers must treat an absent flag as joined. Use the `hasJoinedVideoConference` helper rather than
  * testing the field directly.
  */
+/**
+ * How a departure came to be recorded. `reported` is the member's own client saying so; `timeout` is their
+ * presence lease running out, which is what covers everything that can stop a client from reporting.
+ */
+export type VideoConferenceLeaveReason = 'reported' | 'timeout';
+
 export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
 	avatarETag: string | null;
 	/** When the user became a member of the conference. */
@@ -75,6 +81,20 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	declinedAt?: Date;
 	/** When they left the call. Cleared if they rejoin, so it only ever describes the latest departure. */
 	leftAt?: Date;
+	/**
+	 * How we learned they left. Absent means they told us — which is also how every entry written before this
+	 * existed should be read, since reporting was the only way a departure was recorded then.
+	 */
+	leftReason?: VideoConferenceLeaveReason;
+	/**
+	 * When we last had evidence this member was still in the call: their own call window saying so, or the
+	 * provider confirming it.
+	 *
+	 * Presence is a lease rather than a report because the report can be lost — the workspace can be down while
+	 * the call carries on in the provider, and a crashed tab, a dead battery or a closed laptop never report at
+	 * all. What survives all of those is *the absence of renewals*, which is what this records.
+	 */
+	lastSeenAt?: Date;
 	/**
 	 * When we last rang them. A ring is one-shot and short-lived, so this is what tells "their phone is ringing
 	 * right now" from "they were rung and did nothing", which decides whether ringing again is offered.
@@ -129,6 +149,20 @@ export const isRingingVideoConferenceMember = (
 	return now - user.ringingAt.getTime() < VIDEO_CONF_RINGING_WINDOW_MS;
 };
 
+/**
+ * Per-participant join/leave tracking. Used by embedded-SFU providers
+ * (e.g. LiveKit) where the room may persist across users joining and leaving
+ * independently. URL-based providers (Jitsi/Meet/Zoom) leave this undefined
+ * — they only know if the call is open at all, not who's currently in.
+ */
+export type IVideoConferenceParticipant = {
+	id: IUser['_id'];
+	username?: string;
+	displayName?: string;
+	joinedAt?: Date;
+	leftAt?: Date;
+};
+
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
 	rid: string;
@@ -151,6 +185,12 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+
+	/**
+	 * Populated by a provider that runs the call inside Rocket.Chat (LiveKit) rather than handing off to an
+	 * external URL. URL-based providers (Jitsi/Meet/Zoom) leave it undefined.
+	 */
+	participants?: IVideoConferenceParticipant[];
 }
 
 export interface IDirectVideoConference extends IVideoConference {
@@ -215,6 +255,11 @@ export type JoinableVideoConference = {
 	createdAt: Date;
 	/** How many people are in it right now. Never zero — an empty call isn't offered. */
 	usersCount: number;
+	/**
+	 * A few of the people in it, so a list can show faces instead of a number. Capped on the server — the count
+	 * above is still the whole truth, and what a "+3" is worked out from.
+	 */
+	participants: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
 	/** Whether the reader is one of them, which is what makes joining another call a matter of leaving this one. */
 	joined: boolean;
 	/** Whether the reader already turned this call down. The sidebar hides those; the call history keeps them. */

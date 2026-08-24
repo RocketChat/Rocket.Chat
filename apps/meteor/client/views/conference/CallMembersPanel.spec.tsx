@@ -8,13 +8,22 @@ import { buildChatAccess, buildConferenceMember } from './testFixtures';
 
 const ring = jest.fn(() => ({ rang: [], success: true }) as any);
 
-const renderPanel = (members: ConferenceMember[], membersWithoutAccess: string[] = []) =>
+const onMute = jest.fn();
+
+const renderPanel = (
+	members: ConferenceMember[],
+	membersWithoutAccess: string[] = [],
+	extras: { raisedHands?: Set<string>; mutedMembers?: Set<string> } = {},
+) =>
 	render(
 		<CallMembersPanel
 			callId='call-id'
 			rid='room-id'
 			members={members}
 			chatAccess={buildChatAccess({ membersWithoutAccess })}
+			raisedHands={extras.raisedHands}
+			mutedMembers={extras.mutedMembers}
+			onMute={onMute}
 			onClose={jest.fn()}
 		/>,
 		{
@@ -29,8 +38,12 @@ const renderPanel = (members: ConferenceMember[], membersWithoutAccess: string[]
 
 const rowFor = (username: string) => screen.getByText(username).closest('[role="listitem"], li') as HTMLElement;
 
+// Each voice indicator is three bars inside an `aria-hidden` row — see `VoiceActivity`.
+const voiceIndicatorCount = (container: HTMLElement) => container.querySelectorAll('div[aria-hidden="true"] > div').length / 3;
+
 beforeEach(() => {
 	ring.mockClear();
+	onMute.mockClear();
 });
 
 it('lists every member', () => {
@@ -138,4 +151,67 @@ it('offers to add people', async () => {
 	await userEvent.click(screen.getByRole('button', { name: 'Add_people' }));
 
 	expect(await screen.findByRole('dialog')).toBeInTheDocument();
+});
+
+// Asking someone else for silence, which is a request their own client honours — this list is where the people in
+// the call are, so it is where the asking belongs.
+describe('asking a member to mute', () => {
+	it('asks the member who is in the call', async () => {
+		renderPanel([buildConferenceMember({ _id: 'joiner', joined: true })]);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Mute__name__' }));
+
+		expect(onMute).toHaveBeenCalledWith('joiner');
+	});
+
+	// Nothing to mute for someone who isn't there, and a button that does nothing is worse than no button.
+	it('offers nothing for a member who has not joined', () => {
+		renderPanel([buildConferenceMember({ _id: 'invitee', joined: false })]);
+
+		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
+	});
+
+	// A muted member's row says nothing about their microphone. Everyone in the call already hears the silence, so
+	// stating it once per row would repeat it for exactly the rows there is least to say about.
+	it('says nothing at all about a muted member', () => {
+		const { container } = renderPanel([buildConferenceMember({ _id: 'quiet', joined: true })], [], {
+			mutedMembers: new Set(['quiet']),
+		});
+
+		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
+		expect(voiceIndicatorCount(container)).toBe(0);
+	});
+
+	// The useful case: a mic that is on, where whether it is picking anything up is worth seeing and asking for
+	// silence is a thing someone might want to do.
+	it('shows a live mic, with the way to quiet it beside it', () => {
+		const { container } = renderPanel([buildConferenceMember({ _id: 'talker', joined: true })]);
+
+		expect(voiceIndicatorCount(container)).toBe(1);
+		expect(screen.getByRole('button', { name: 'Mute__name__' })).toBeInTheDocument();
+	});
+
+	// The reader gets the level and no button: muting yourself is what the call's own bar is for.
+	it('shows the reader their own level without offering to mute them', () => {
+		const { container } = renderPanel([buildConferenceMember({ _id: 'john.doe', joined: true })]);
+
+		expect(voiceIndicatorCount(container)).toBe(1);
+		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
+	});
+
+	// Muting yourself is what the control on the call's own bar is for. `withJohnDoe` is the reader here.
+	it('offers nothing against the reader themselves', () => {
+		renderPanel([buildConferenceMember({ _id: 'john.doe', joined: true }), buildConferenceMember({ _id: 'someone', joined: true })]);
+
+		expect(screen.getAllByRole('button', { name: 'Mute__name__' })).toHaveLength(1);
+	});
+});
+
+// The queue's order is the call header's to state; here it is only who is waiting.
+it('marks the members who have their hand up', () => {
+	renderPanel([buildConferenceMember({ _id: 'waiting', joined: true }), buildConferenceMember({ _id: 'quiet', joined: true })], [], {
+		raisedHands: new Set(['waiting']),
+	});
+
+	expect(screen.getAllByTitle('Raised_hand')).toHaveLength(1);
 });

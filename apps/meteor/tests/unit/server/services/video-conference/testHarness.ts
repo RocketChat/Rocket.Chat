@@ -10,9 +10,23 @@ import sinon from 'sinon';
 // spec itself.
 export const commonServiceStubs = {
 	'@rocket.chat/apps': { Apps: {} },
+	// Every level, not just `error`: a missing one throws where the service only meant to say something, and the
+	// service catches around its logging — so the failure surfaces as the work silently not happening.
 	'@rocket.chat/logger': {
 		Logger: class {
 			error() {
+				/* no-op */
+			}
+
+			warn() {
+				/* no-op */
+			}
+
+			info() {
+				/* no-op */
+			}
+
+			debug() {
 				/* no-op */
 			}
 		},

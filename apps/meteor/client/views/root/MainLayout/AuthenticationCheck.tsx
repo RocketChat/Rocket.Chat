@@ -1,4 +1,4 @@
-import { useSession, useUser, useSetting, useIsLoggingIn } from '@rocket.chat/ui-contexts';
+import { useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactNode } from 'react';
 
@@ -28,18 +28,20 @@ const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckPr
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
-	const isLoggingIn = useIsLoggingIn();
 
 	/**
 	 * A window that opens with a session already stored — a call popout, or any plain reload — has no user until
 	 * the login is resumed from that token. Treating "no user yet" as "not logged in" showed a login form for the
 	 * few hundred milliseconds it took, to someone who never asked for one.
 	 *
-	 * `isLoggingIn` covers the resume once Meteor has started it; the stored token covers the instant before that,
-	 * where nothing is in flight yet but a session plainly exists. A token that turns out to be stale is cleared
-	 * when the resume fails, which lands here as an ordinary logged-out visitor.
+	 * The stored token is the whole of the test, and deliberately so. It is written before the window loads and
+	 * removed only on an explicit logout or a failed resume, so it covers the resume from end to end. Asking
+	 * `isLoggingIn` as well looked like it covered the same ground more directly, but it is true of *any* login in
+	 * flight, including one someone is making at the form right now: that unmounted the form mid-attempt, so a
+	 * rejected password came back to a blank form with nothing marked invalid, and iframe login — which runs from
+	 * inside `LoginPage` — could never get as far as showing its own form at all.
 	 */
-	const isResumingSession = !user && !forceLogin && (isLoggingIn || !!getStoredItem(STORAGE_KEYS.LOGIN_TOKEN));
+	const isResumingSession = !user && !forceLogin && !!getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 	if (isResumingSession) {
 		return <>{loading ?? <HomeSkeleton />}</>;

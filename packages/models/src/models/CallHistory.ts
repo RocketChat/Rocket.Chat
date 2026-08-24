@@ -1,5 +1,11 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type { FindPaginated, ICallHistoryModel, InsertionModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type {
+	FindPaginated,
+	ICallHistoryModel,
+	InsertionModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Db, Filter, FindCursor, IndexDescription, Document } from 'mongodb';
 

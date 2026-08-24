@@ -1,9 +1,9 @@
-import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { videoConferenceQueryKeys } from '../../../../../lib/queryKeys';
-import { mapVideoConfUserFromApi } from '../../../../../lib/utils/mapVideoConfUserFromApi';
+import { mapVideoConfFromApi } from '../../../../../lib/utils/mapVideoConfFromApi';
 
 export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 	const getVideoConfs = useEndpoint('GET', '/v1/video-conference.list');
@@ -20,15 +20,7 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 			});
 
 			return {
-				items: data.map(
-					(videoConf): VideoConference => ({
-						...videoConf,
-						_updatedAt: new Date(videoConf._updatedAt),
-						createdAt: new Date(videoConf.createdAt),
-						endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
-						users: videoConf.users.map(mapVideoConfUserFromApi),
-					}),
-				),
+				items: data.map(mapVideoConfFromApi),
 				itemCount: total,
 			};
 		},

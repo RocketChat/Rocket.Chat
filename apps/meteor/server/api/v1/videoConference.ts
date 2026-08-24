@@ -20,6 +20,7 @@ import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { canAccessConference } from '../../lib/videoConfAccess';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -45,11 +46,13 @@ const startResponseSchema = ajv.compile<{ data: VideoConferenceInstructions & { 
 	additionalProperties: false,
 });
 
-const joinResponseSchema = ajv.compile<{ url: string; providerName: string }>({
+const joinResponseSchema = ajv.compile<{ url: string; providerName: string; callId?: string; rid?: string }>({
 	type: 'object',
 	properties: {
 		url: { type: 'string' },
 		providerName: { type: 'string' },
+		callId: { type: 'string' },
+		rid: { type: 'string' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['url', 'providerName', 'success'],
@@ -62,34 +65,6 @@ const cancelResponseSchema = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
-
-/**
- * Being in the call and being able to read its chat are separate things, so authorization accepts either:
- * membership of the conference, or access to a room the conference lives in.
- *
- * Membership covers people added from outside the room — they were added to the *call*, not to a room, so
- * there is no subscription to check. The room checks cover everyone who can already see the conversation:
- * `rid` is the room the call started in, and `discussionRid` the discussion its chat may have moved to,
- * whose members may have no access to the parent room.
- */
-const canAccessConference = async (
-	call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>,
-	userId: string | undefined,
-): Promise<boolean> => {
-	if (!userId) {
-		return false;
-	}
-
-	if (call.users.some(({ _id }) => _id === userId)) {
-		return true;
-	}
-
-	if (await canAccessRoomIdAsync(call.rid, userId)) {
-		return true;
-	}
-
-	return !!call.discussionRid && canAccessRoomIdAsync(call.discussionRid, userId);
-};
 
 /**
  * How every conference endpoint below starts: the call has to exist, and the caller has to be allowed near it.
@@ -295,13 +270,19 @@ API.v1.post(
 			}
 		}
 
-		if (!url) {
+		// Embedded providers (LiveKit) intentionally return an empty url —
+		// they're rendered inline rather than opened as an external popup.
+		// Include rid so the client can route the join into its embedded
+		// provider context without an extra round-trip to look it up.
+		if (!url && !call.providerName) {
 			return API.v1.failure('failed-to-get-url');
 		}
 
 		return API.v1.success({
-			url,
+			url: url ?? '',
 			providerName: call.providerName,
+			callId: call._id,
+			rid: call.rid,
 		});
 	},
 );
@@ -393,6 +374,41 @@ API.v1.post(
 	},
 );
 
+/**
+ * Renews the caller's presence lease on a call — the conference window saying it is still in it.
+ *
+ * The counterpart of `video-conference.leave`, and the reason a lost leave is survivable: leaving is inferred from
+ * renewals stopping, so nothing has to reach us at the moment someone goes. Provider-agnostic, because the window
+ * doing the renewing is ours whatever runs the media.
+ */
+API.v1.post(
+	'video-conference.heartbeat',
+	{
+		authRequired: true,
+		body: isVideoConfCallIdProps,
+		// Renewals are every `PRESENCE_HEARTBEAT_MS`, so twice a minute, plus one whenever the window is brought
+		// back to the front. The allowance is for that: bursts of attention, not a higher steady rate.
+		rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const conference = await loadAccessibleConference(callId, this.userId);
+		if (!conference) {
+			return API.v1.failure('invalid-params');
+		}
+
+		await VideoConf.renewPresence(conference.userId, callId);
+
+		return API.v1.success();
+	},
+);
+
 API.v1.post(
 	'video-conference.ring',
 	{
@@ -433,7 +449,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, users } = this.bodyParams;
+		const { callId, users, ring } = this.bodyParams;
 
 		const conference = await loadAccessibleConference(callId, this.userId);
 		if (!conference) {
@@ -442,7 +458,7 @@ API.v1.post(
 
 		// Registers the users as conference members — it deliberately does not put them in any room. Being a
 		// member authorizes joining the call; whether they can read the chat is surfaced separately.
-		const added = await VideoConf.addMembers(conference.userId, callId, users);
+		const added = await VideoConf.addMembers(conference.userId, callId, users, { ring: ring ?? true });
 
 		return API.v1.success({ added });
 	},

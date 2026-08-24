@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
  */
 const ConferenceViewport = ({ children }: { children: ReactNode }) => (
 	// `100dvh` so a mobile browser's collapsing URL bar doesn't leave the call clipped or scrollable.
-	<Box backgroundColor='surface-light' height='100dvh' width='100%' display='flex' flexDirection='column' overflow='hidden'>
+	<Box backgroundColor='surface-tint' height='100dvh' width='100%' display='flex' flexDirection='column' overflow='hidden'>
 		{children}
 	</Box>
 );

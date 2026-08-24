@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Message, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Message, Presence, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -28,6 +28,7 @@ import type {
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import {
+	UserStatus,
 	VideoConferenceStatus,
 	hasJoinedVideoConference,
 	isDirectVideoConference,
@@ -53,8 +54,10 @@ import {
 	isLoggableConference,
 } from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
-import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
+import { conferenceNameFor } from '../../../lib/videoConference/conferenceName';
+import { availabilityErrors, CALL_FACES_SHOWN, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
+import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
@@ -62,6 +65,7 @@ import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { RocketChatAssets } from '../../lib/media/assets';
 import { sendMessage } from '../../lib/messages/sendMessage';
+import { follow } from '../../lib/messaging/threads/functions';
 import { metrics } from '../../lib/metrics/lib/metrics';
 import { Push } from '../../lib/notifications/push/push';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
@@ -71,6 +75,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
+import { videoConfPresence } from '../../lib/videoConfPresence';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
@@ -530,9 +535,21 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			await this.notifyUsersOfRoom(call.rid, '', 'end', {
+				callId: call._id,
+				rid: call.rid,
+				uid: call.createdBy._id,
+			});
+		}
+
 		// The members' rows have said `ongoing` since the call started; this is where each one's own outcome — who
 		// was there, and who never answered — is finally written.
 		await this.recordConferenceInHistory(call._id, { ended: true });
+
+		// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
+		// else reports their departure: the call is over, so there is no leave left to arrive.
+		await Promise.all(call.users.filter(isInVideoConference).map(({ _id }) => this.releaseBusyForCall(_id)));
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -633,6 +650,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
+		// Embedded (built-in) providers like LiveKit are registered by core
+		// only when their prerequisites are satisfied (e.g. VideoConf_LiveKit_
+		// Enabled + URL + API key + secret). Their presence in the registry
+		// IS the "fully configured" signal. Going through the apps-engine
+		// manager would fail because there's no app behind them.
+		if (videoConfProviders.getProviderCapabilities(providerName)?.embedded) {
+			return;
+		}
 		const manager = await this.getProviderManager();
 		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
 		if (!configured) {
@@ -819,12 +844,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (!call) {
 			throw new Error('failed-to-create-direct-call');
 		}
-		const url = await this.generateNewUrl(call);
-		await VideoConferenceModel.setUrlById(callId, url);
+		// Embedded providers (LiveKit) don't have an external URL to open —
+		// the call is rendered inline. Skip URL generation for them.
+		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		if (!isEmbedded) {
+			const url = await this.generateNewUrl(call);
+			await VideoConferenceModel.setUrlById(callId, url);
+		}
 
 		const messageId = await this.createMessage(call, user);
 		call.messages.started = messageId;
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+
+		// Auto-follow the thread for anyone who joined between call creation and message creation.
+		await this.autoFollowCallThreadForAllParticipants(call as IDirectVideoConference);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
 		setTimeout(async () => {
@@ -896,16 +929,25 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-group-call');
 		}
 
-		const url = await this.generateNewUrl(call);
-		await VideoConferenceModel.setUrlById(callId, url);
-
-		call.url = url;
+		// Embedded providers (LiveKit) render the call inline in Rocket.Chat —
+		// no URL handoff. Skip both URL generation and ringing notifications:
+		// the call shows up as an "active call" banner in the room and other
+		// participants tap to join. No incoming-call sound/modal.
+		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		if (!isEmbedded) {
+			const url = await this.generateNewUrl(call);
+			await VideoConferenceModel.setUrlById(callId, url);
+			call.url = url;
+		}
 
 		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
 		call.messages.started = messageId;
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
-		if (call.ringing) {
+		// Auto-follow the thread for anyone who joined between call creation and message creation.
+		await this.autoFollowCallThreadForAllParticipants(call as IGroupVideoConference);
+
+		if (call.ringing && !isEmbedded) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
 		}
 
@@ -944,6 +986,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call.messages.started = messageId;
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
+		// Auto-follow the thread for anyone who joined between call creation and message creation.
+		await this.autoFollowCallThreadForAllParticipants(call as ILivechatVideoConference);
+
 		return {
 			type: 'livechat',
 			callId,
@@ -958,6 +1003,31 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		void callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
+
+		// Embedded providers (LiveKit) don't return a URL — the client mounts
+		// the call inline via the embedded provider's React tree. We still
+		// track the per-participant join time so the cleanup cron + the
+		// raise-hand queue have something to work with. Returning an empty
+		// string tells the client there's no URL to open.
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			if (user) {
+				await VideoConferenceModel.addEmbeddedParticipant(call._id, {
+					id: user._id,
+					username: user.username,
+					displayName: user.name,
+					joinedAt: new Date(),
+				});
+
+				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
+					callId: call._id,
+					rid: call.rid,
+					uid: call.createdBy._id,
+				});
+
+				this.notifyUser(user._id, 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+			}
+			return '';
+		}
 
 		return this.getUrl(call, user, options);
 	}
@@ -1091,6 +1161,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
+		// Embedded (built-in) providers have no apps-engine app behind them,
+		// so the provider-manager dispatch would be a no-op at best and
+		// throw at worst. Skip the lifecycle hook for them.
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
+		}
+
 		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
 	}
 
@@ -1109,6 +1186,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
+		}
+
 		return (await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call);
 	}
 
@@ -1125,6 +1206,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
+		}
+
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			return;
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);
@@ -1160,11 +1245,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
 
+		// In a call is busy, for as long as it lasts.
+		await this.claimBusyForCall(_id);
+
 		// Someone new is in the call: they need a row of their own, and everyone else's count has changed.
 		await this.recordConferenceInHistory(call._id, { ended: false });
 
+		// When persistent chat is in "thread" mode, auto-follow the call's chat
+		// thread so the participant receives thread notifications for messages
+		// sent during the call. `follow` uses $addToSet and is idempotent.
+		await this.autoFollowCallThread(call, _id);
+
 		if (call.type === 'direct') {
-			await this.ringCalleeOnCallerArrival(call as IDirectVideoConference, _id);
+			await this.ringCalleeOnCallerArrival(call, _id);
 			return this.updateDirectCall(call, _id);
 		}
 
@@ -1180,6 +1273,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
+		{ ring = true }: { ring?: boolean } = {},
 	): Promise<IUser['_id'][]> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
 		if (!call) {
@@ -1211,9 +1305,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.recordConferenceInHistory(callId, { ended: false });
 		}
 
-		// The list being rung is just the people added, and the endpoint caps a single add at the ringing
-		// limit — so unlike starting a call in a large room, an add always rings.
-		if (shouldRingVideoConference(added.length)) {
+		// The list being rung is just the people added, and the endpoint caps a single add at the ringing limit —
+		// so unlike starting a call in a large room, an add can always ring. Whether it does is the adder's to
+		// say: someone added to carry on later is not someone to interrupt now.
+		if (ring && shouldRingVideoConference(added.length)) {
 			await this.ringUsers(callId, call.rid, uid, added);
 		}
 
@@ -1336,7 +1431,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]> {
 		const running = await VideoConferenceModel.find(
 			{ endedAt: { $exists: false } },
-			{ projection: { rid: 1, discussionRid: 1, users: 1, title: 1, type: 1, createdAt: 1 }, sort: { createdAt: -1 } },
+			// `createdBy` is here because naming a direct call needs it — a call is named after a person, and for a
+			// member with no subscription that person is whoever started it.
+			{ projection: { rid: 1, discussionRid: 1, users: 1, title: 1, type: 1, createdAt: 1, createdBy: 1 }, sort: { createdAt: -1 } },
 		).toArray();
 
 		const occupied = running.filter(({ users }) => hasActiveParticipants(users));
@@ -1347,10 +1444,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const rids = [...new Set(occupied.flatMap(({ rid, discussionRid }) => [rid, discussionRid].filter((id): id is string => !!id)))];
 		const subscriptions = new Map(
 			rids.length
-				? (await Subscriptions.findByUserIdAndRoomIds(uid, rids, { projection: { rid: 1, name: 1, fname: 1 } }).toArray()).map((sub) => [
-						sub.rid,
-						sub,
-					])
+				? (await Subscriptions.findByUserIdAndRoomIds(uid, rids, { projection: { rid: 1, name: 1, fname: 1, t: 1 } }).toArray()).map(
+						(sub) => [sub.rid, sub],
+					)
 				: [],
 		);
 
@@ -1370,10 +1466,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 				return {
 					callId: call._id,
+					// The room is the last resort, and only for a call named after a room in the first place — a
+					// direct call is named after a person, including for a member who has no subscription to read
+					// one from. `getRoomName` ends at the raw room id, which is nobody's idea of a name.
 					name:
-						(isGroupVideoConference(call) && call.title) || subscription?.fname || subscription?.name || (await this.getRoomName(call.rid)),
+						conferenceNameFor(call, uid, subscription?.fname || subscription?.name, subscription?.t) || (await this.getRoomName(call.rid)),
 					createdAt: call.createdAt,
 					usersCount: present.length,
+					// A few of them travel with the call so the list can show faces. Capped here rather than at the
+					// reader, because a call in a busy channel would otherwise send a roster to draw three avatars.
+					participants: present.slice(0, CALL_FACES_SHOWN).map(({ _id, username, name }) => ({ _id, username, name })),
 					joined: !!member && isInVideoConference(member),
 					declined: !!member?.declined,
 					// Whether that ring is still live is the reader's to decide, so the moment is what travels.
@@ -1445,7 +1547,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * in the call. That also absorbs a network blip taking the window down for a moment.
 	 */
 	public async leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
+		const call = await VideoConferenceModel.findOneById(callId, {
+			projection: { rid: 1, users: 1, endedAt: 1, providerName: 1, createdBy: 1 },
+		});
 		if (!call || call.endedAt) {
 			return;
 		}
@@ -1459,6 +1563,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
 
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			await this.notifyUsersOfRoom(call.rid, uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
+
+		// Out of the call, so back to whatever status they had before it.
+		await this.releaseBusyForCall(uid);
+
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.
 		const remaining = call.users.map((member) => (member._id === uid ? { ...member, leftAt } : member));
@@ -1469,6 +1581,113 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		setTimeout(() => {
 			void this.endCallIfEmpty(callId).catch((err) => logger.error({ msg: 'Failed to end an empty conference', callId, err }));
 		}, EMPTY_CALL_GRACE_MS);
+	}
+
+	/**
+	 * Says the user is busy for as long as they are in a call, without overwriting the status they chose.
+	 *
+	 * A *claim* rather than a status. `internal` is the strongest source there is, so busy is what shows for as long
+	 * as the call lasts; the status it displaced is stashed and handed back when the claim ends, which is how someone
+	 * who set themselves away before the call is away again after it. A status the user sets *during* the call is
+	 * queued the same way rather than displayed — the call is not overruled while it is happening, and their latest
+	 * intent is what they are left with once it ends.
+	 *
+	 * Ended by id, so it can end in any order relative to a voice call's own claim: two `internal` claims stash for
+	 * each other rather than one clobbering the other.
+	 *
+	 * Nothing here is allowed to break a call. Presence is a courtesy; joining is not.
+	 */
+	private async claimBusyForCall(uid: IUser['_id']): Promise<void> {
+		try {
+			const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(uid, { projection: { language: 1 } });
+			const lng = user?.language || settings.get<string>('Language') || 'en';
+
+			await Presence.setActiveState(uid, {
+				statusDefault: UserStatus.BUSY,
+				statusText: i18n.t('Presence_status_on_a_call', { lng }),
+				statusSource: 'internal',
+				statusId: this.name,
+			});
+		} catch (err) {
+			logger.warn({ msg: 'Failed to mark a user busy for a call', uid, err });
+		}
+	}
+
+	/** Gives the user their own status back. A no-op if something with a stronger claim has taken over since. */
+	private async releaseBusyForCall(uid: IUser['_id']): Promise<void> {
+		try {
+			await Presence.endActiveState(uid, this.name);
+		} catch (err) {
+			logger.warn({ msg: 'Failed to restore a user status after a call', uid, err });
+		}
+	}
+
+	/**
+	 * Renews a member's presence lease: their call window telling us it is still in the call.
+	 *
+	 * Provider-agnostic by construction — the conference window is ours whoever runs the media, so this is the one
+	 * presence signal that exists for every provider. See `lib/videoConference/presence` for why presence is a
+	 * lease rather than a reported departure.
+	 */
+	public async renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
+		await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
+	}
+
+	/**
+	 * Marks everyone whose presence lease has run out as having left, and ends the calls that empties.
+	 *
+	 * This is the durable half of leaving. `leaveCall` is the reported half: accurate, immediate, and impossible
+	 * to rely on — it needs a live client talking to a live server, so it is lost exactly when the workspace goes
+	 * down under a call that carries on in the provider. It is also lost by a crashed tab or a closed laptop, and
+	 * the grace period `leaveCall` schedules for an emptied call is an in-process timer that a restart discards.
+	 * Leases cover all of it, because their evidence lives in the database rather than in anyone's memory.
+	 *
+	 * Departures are stamped with the last evidence we had, never with the moment of the sweep — see
+	 * `expiredPresenceLeases`. Callers must respect `isPresenceSweepDue` first: right after a restart every lease
+	 * looks expired whether or not anyone actually left.
+	 */
+	public async expirePresenceLeases(now = new Date()): Promise<void> {
+		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
+			try {
+				// A provider that can say who is in its room is asked first, and its answer renews leases the same
+				// way a client's heartbeat does. Silence is not absence: `undefined` leaves the leases as they are.
+				const present = await videoConfPresence.getProbe(call.providerName)?.(call);
+				const users = present ? call.users.map((user) => (present.includes(user._id) ? { ...user, lastSeenAt: now } : user)) : call.users;
+
+				if (present?.length) {
+					await VideoConferenceModel.renewUsersPresenceById(call._id, present, now);
+				}
+
+				const expired = expiredPresenceLeases(users, now);
+				if (!expired.length) {
+					continue;
+				}
+
+				for (const { uid, leftAt } of expired) {
+					logger.info({ msg: 'Presence lease expired', callId: call._id, uid, leftAt });
+					await VideoConferenceModel.setUserLeftById(call._id, uid, leftAt, 'timeout');
+					// Whoever stopped renewing is not in a call any more, whatever their client failed to say — and a
+					// status left on busy by a crashed tab is exactly the kind of thing nobody thinks to fix by hand.
+					await this.releaseBusyForCall(uid);
+					// Embedded providers keep a second per-participant record, and the two disagreeing is how a
+					// call ends up counted as occupied by one half of the code and empty by the other.
+					await VideoConferenceModel.markEmbeddedParticipantLeft(call._id, uid, leftAt);
+				}
+
+				this.notifyVideoConfUpdate(call.rid, call._id);
+				this.notifyConferenceUpdate(call._id);
+
+				// No second grace period: the lease *was* the grace period, and it is far longer than the one a
+				// reported departure gets. Anyone who came back renewed it and is not in `expired` at all.
+				const remaining = users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
+				if (!hasActiveParticipants(remaining)) {
+					await this.endCall(call._id);
+				}
+			} catch (err) {
+				// One unreachable provider or one malformed call must not stop the sweep for every other call.
+				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
+			}
+		}
 	}
 
 	/** Ends a conference only if it is still empty — a rejoin inside the grace period is what cancels it. */
@@ -1590,8 +1809,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * A direct call has no title of its own — it is named after the other person — so there is nothing to set.
 	 */
 	public async renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void> {
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { type: 1, rid: 1, createdBy: 1, endedAt: 1 } });
-		if (!call || call.endedAt || !isGroupVideoConference(call as VideoConference)) {
+		const call = await VideoConferenceModel.findOneById<VideoConference>(callId, {
+			projection: { type: 1, rid: 1, createdBy: 1, endedAt: 1 },
+		});
+		if (!call || call.endedAt || !isGroupVideoConference(call)) {
 			throw new Error('error-invalid-video-conf');
 		}
 
@@ -1674,11 +1895,52 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private isPersistentChatEnabled(): boolean {
-		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled');
+		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat');
+	}
+
+	private getPersistentChatMode(): 'thread' | 'main_room' {
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
+	}
+
+	/**
+	 * Auto-follow the call's chat thread for a single user. Called when a
+	 * participant joins the call, so they receive thread notifications for
+	 * messages posted during the conference. Only applies when persistent
+	 * chat is enabled in "thread" mode and the started message already
+	 * exists. The underlying `follow` is idempotent ($addToSet).
+	 */
+	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
+		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
+			return;
+		}
+
+		if (!call.messages.started) {
+			return;
+		}
+
+		await follow({ tmid: call.messages.started, uid });
+	}
+
+	/**
+	 * Auto-follow the call's chat thread for every participant already in
+	 * the call. Called when `messages.started` is first set (i.e. the
+	 * thread parent message has just been created) so that any user who
+	 * joined before the message existed gets subscribed retroactively.
+	 */
+	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
+		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
+			return;
+		}
+
+		if (!call.messages.started || !call.users.length) {
+			return;
+		}
+
+		await Promise.all(call.users.map(({ _id }) => follow({ tmid: call.messages.started!, uid: _id })));
 	}
 
 	private async maybeCreateDiscussion(callId: VideoConference['_id'], createdBy?: IUser): Promise<void> {
-		if (!this.isPersistentChatEnabled()) {
+		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'main_room' || !settings.get<boolean>('Discussion_enabled')) {
 			return;
 		}
 

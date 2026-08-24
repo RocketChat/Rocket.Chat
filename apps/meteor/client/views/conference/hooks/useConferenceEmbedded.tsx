@@ -1,10 +1,11 @@
 import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useEndpoint, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
 import type { CallPreferences } from './useCallPreferences';
+import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
@@ -48,8 +49,8 @@ export const useConferenceEmbedded = (callId: string) => {
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
-	// The chat room comes from the conference record: show `discussionRid` when it's set (a discussion was
-	// created), otherwise the conference's `rid` (the original room). The `rid` never changes.
+	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'thread') as 'thread' | 'main_room';
+
 	const {
 		data: info,
 		isPending: isInfoPending,
@@ -75,8 +76,40 @@ export const useConferenceEmbedded = (callId: string) => {
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
 	const members = useMemo(() => info?.users.map(mapVideoConfUserFromApi) ?? [], [info?.users]);
 
-	/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
-	const currentName = (info?.type === 'videoconference' && info.title) || info?.chatAccess.name || '';
+	/**
+	 * What the call is called. A group call with a title uses that title. A DM or GDM call lists every
+	 * participant's name so each viewer sees who the call is with at a glance. Everything else falls back
+	 * to the room name.
+	 */
+	const currentName = useMemo(() => {
+		if (!info) return '';
+
+		const isDM = info.type === 'direct' || info.chatAccess.type === 'd';
+
+		// A group conference with an explicit title — but not in a DM, where the "title" is the
+		// subscription name the server defaulted to, not a user-chosen name.
+		if (!isDM && info.type === 'videoconference' && 'title' in info && info.title) {
+			return info.title;
+		}
+
+		// DM and GDM calls: list everyone in the call so each viewer sees who it is with.
+		// `info.type === 'direct'` covers 1:1 DMs (including when the chat lives in a discussion
+		// room whose type is 'p'); `chatAccess.type === 'd'` catches GDM calls.
+		if (isDM) {
+			const names = info.users.map((u) => u.name || u.username).filter(Boolean);
+			// When the other party isn't in `users` yet (ring unchecked, or they haven't joined),
+			// the title carries their name — include it so both sides appear.
+			const title = 'title' in info ? info.title : undefined;
+			if (title && !names.includes(title)) {
+				names.push(title);
+			}
+			if (names.length > 0) {
+				return names.join(', ');
+			}
+		}
+
+		return conferenceNameFor({ ...info, ...('title' in info ? { title: undefined } : {}) }, uid) || info.chatAccess.name;
+	}, [info, uid]);
 
 	const chatAccess = useMemo((): ConferenceChatAccess | undefined => {
 		if (!info) {
@@ -133,6 +166,8 @@ export const useConferenceEmbedded = (callId: string) => {
 			members,
 			/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
 			canRing: info?.type === 'direct',
+			/** Whether the conference has ended and can no longer be joined. */
+			ended: info ? 'endedAt' in info && !!info.endedAt : false,
 			/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
 			name: currentName,
 			/**
@@ -153,12 +188,23 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,
+			tmid: !info?.discussionRid && chatMode === 'thread' ? info?.messages.started : undefined,
+			name: info?.chatAccess.name,
+			type: info?.chatAccess.type,
 			loading: isInfoPending,
 			error: infoError,
 			chatAccess,
 		} as const,
 		conference: {
 			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
+			/**
+			 * A provider that runs the call inside Rocket.Chat rather than at a URL of its own. The server says so
+			 * by answering the join with an empty url — there is no page to send anyone to — so that is what this
+			 * reads, rather than a second capability the two sides would have to keep in step.
+			 */
+			embedded: data ? data.url === '' : false,
+			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */
+			joined: !!data,
 			loading: isPending,
 			error,
 			join,

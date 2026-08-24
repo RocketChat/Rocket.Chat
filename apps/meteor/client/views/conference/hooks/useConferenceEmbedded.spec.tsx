@@ -18,6 +18,7 @@ const buildInfo = (membersWithoutAccess: string[]) =>
 		title: '',
 		createdBy: { _id: 'someone-else', username: 'someone.else', name: 'Someone Else' },
 		users: [outsider],
+		messages: { started: 'some-msg-id' },
 		capabilities: {},
 		chatAccess: {
 			rid: 'room-id',
@@ -80,6 +81,7 @@ it('follows the chat to a discussion the conference moved into', async () => {
 	const { result } = renderHook(() => useConferenceEmbedded(callId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			.withSetting('VideoConf_Persistent_Chat_Mode', 'main_room')
 			.withStream('video-conference', streamRef)
 			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
@@ -92,6 +94,30 @@ it('follows the chat to a discussion the conference moved into', async () => {
 	streamRef.controller?.emit(`${callId}/updated`, []);
 
 	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
+});
+
+it('follows the chat to a discussion in thread mode too', async () => {
+	const streamRef: StreamControllerRef<'video-conference'> = {};
+	let discussionRid: string | undefined;
+
+	const { result } = renderHook(() => useConferenceEmbedded(callId), {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withSetting('VideoConf_Persistent_Chat_Mode', 'thread')
+			.withStream('video-conference', streamRef)
+			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
+			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+			.build(),
+	});
+
+	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+	expect(result.current.room.tmid).toBeDefined();
+
+	discussionRid = 'discussion-id';
+	streamRef.controller?.emit(`${callId}/updated`, []);
+
+	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
+	expect(result.current.room.tmid).toBeUndefined();
 });
 
 // Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices

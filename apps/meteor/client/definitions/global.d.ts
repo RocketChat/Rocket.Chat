@@ -1,8 +1,9 @@
-import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
+import type { IRocketChatDesktop, IVideoCallWindow } from '@rocket.chat/desktop-api';
 
 declare global {
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
+		videoCallWindow?: IVideoCallWindow;
 
 		/** @deprecated use `window.RTCPeerConnection` */
 		mozRTCPeerConnection?: RTCPeerConnection;

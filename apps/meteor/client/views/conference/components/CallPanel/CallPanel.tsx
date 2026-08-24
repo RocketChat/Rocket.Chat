@@ -25,7 +25,11 @@ const CallPanel = ({ visible, overlay = false, children }: CallPanelProps) => (
 	<Contextualbar
 		width={visible ? PANEL_WIDTH : 0}
 		minWidth={visible ? PANEL_WIDTH : 0}
+		borderBlockWidth='default'
+		borderBlockStyle='solid'
+		borderBlockColor='stroke-extra-light'
 		borderInlineStartWidth={visible ? 'default' : 0}
+		borderRadius='4px 0px 0px 4px'
 		position={overlay ? 'absolute' : 'relative'}
 		// The one thing not taken from the contextual bar's defaults, which is `surface-room`. Beside a call the
 		// panel is chrome rather than a room, and the chat inside it paints its own room background anyway.

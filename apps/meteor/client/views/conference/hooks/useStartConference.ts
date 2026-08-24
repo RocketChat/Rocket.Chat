@@ -36,8 +36,10 @@ export const useStartConference = (rid: string) => {
 	});
 
 	const { mutate: start, error } = useMutation({
-		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
-			const { data } = await startConference({ roomId: rid, title: name, allowRinging: true });
+		mutationFn: async ({ state, name, ring }: { state: CallPreferences; name?: string; ring?: boolean }) => {
+			// `allowRinging` is a request, not an instruction: the server decides from the room whether ringing is
+			// the right way to announce this call at all, and this only says whether the caller wants it where it is.
+			const { data } = await startConference({ roomId: rid, title: name, allowRinging: ring ?? true });
 			const joined = await joinConference({ callId: data.callId, state });
 
 			return { callId: data.callId, joined };

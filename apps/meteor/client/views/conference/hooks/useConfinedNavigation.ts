@@ -1,6 +1,6 @@
 import type { RouterContextValue, To } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Whether a URL is a conference — the one place this window is allowed to go.
@@ -26,8 +26,12 @@ const openElsewhere = (url: URL) => {
 // URL) would tear down the call. This pins the window to the conference: in-page links (`?jump=`, `#hash`) are
 // left untouched and everything else opens in a new tab. It covers both `<a href>` clicks and programmatic
 // `router.navigate` (channel/user mentions, room links).
-export const useConfinedNavigation = () => {
+export const useConfinedNavigation = ({ onOpenThread }: { onOpenThread?: (tmid: string) => void } = {}) => {
 	const router = useRouter();
+
+	// Ref so the monkey-patched navigate always reads the latest callback without re-patching.
+	const onOpenThreadRef = useRef(onOpenThread);
+	onOpenThreadRef.current = onOpenThread;
 
 	useEffect(() => {
 		const handleClick = (event: MouseEvent) => {
@@ -93,6 +97,19 @@ export const useConfinedNavigation = () => {
 		const wrapped = ((toOrDelta: To | number, options?: { replace?: boolean }) => {
 			if (typeof toOrDelta === 'number') {
 				original(toOrDelta);
+				return;
+			}
+
+			// Thread navigation: the chat panel's thread clicks try to set tab=thread on a route that has
+			// no such param — show the thread in a modal instead of letting the navigate fall through.
+			if (
+				onOpenThreadRef.current &&
+				typeof toOrDelta === 'object' &&
+				'params' in toOrDelta &&
+				toOrDelta.params?.tab === 'thread' &&
+				toOrDelta.params?.context
+			) {
+				onOpenThreadRef.current(toOrDelta.params.context);
 				return;
 			}
 

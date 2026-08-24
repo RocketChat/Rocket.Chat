@@ -7,7 +7,6 @@ import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import BannerSection from './sections/BannerSection';
 import NowPlayingSection from './sections/NowPlayingSection';
-import OngoingCallsSection from './sections/OngoingCallsSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();
@@ -22,7 +21,6 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			<OngoingCallsSection />
 			<SidebarRoomList />
 			<NowPlayingSection />
 			<SidebarFooter />

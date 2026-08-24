@@ -44,7 +44,11 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 			// put anything they like over it.
 			defaultName={isDirect ? undefined : t('Meeting_in__roomName__', { roomName: name })}
 			capabilities={capabilities}
-			onConfirm={(preferences, chosenName) => start({ state: preferences, name: chosenName })}
+			// Confirming here is what creates the call, so this is the one screen whose answer about ringing can
+			// still be acted on. Only offered where a ring is possible at all: a channel or a team announces a call
+			// rather than ringing it, so there would be nothing for the switch to change.
+			canChooseRinging={isDirect}
+			onConfirm={(preferences, chosenName, ring) => start({ state: preferences, name: chosenName, ring })}
 			onCancel={closeCallWindow}
 		/>
 	);

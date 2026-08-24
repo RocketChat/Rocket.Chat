@@ -5,47 +5,33 @@ import { useVideoConfDismissCall } from '@rocket.chat/ui-video-conf';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
+import { fakeOngoingCalls, fakeOngoingCallsEnabled } from './fakeOngoingCalls';
 import { useRingingExpiry } from '../../hooks/useRingingExpiry';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 import { useJoinCall } from '../../views/conference/hooks/useJoinCall';
 import { useJoinableCalls } from '../../views/conference/hooks/useJoinableCalls';
 
-/**
- * The calls worth offering the user, split into the ones asking something of them and the ones simply running.
- *
- * A call ringing now is being asked of the user; the rest are there to be joined. Both lists are freshest first.
- *
- * Separate from the actions below because the sidebar's card only needs to know whether there is anything to
- * make room for, and how much is ringing. Wiring up a decline and a silence list to answer that gave it a
- * second, unused copy of both.
- */
 export const useOngoingCallsList = () => {
-	const { calls } = useJoinableCalls();
+	const { calls: realCalls } = useJoinableCalls();
 
-	// Declining quiets this list — that is what it is for here; the call history is the way back to it. A call the
-	// reader is already in is not something to reach, either.
-	const actionable = useMemo(() => calls.filter((call) => !call.declined && !call.joined), [calls]);
+	const calls = useMemo(() => (fakeOngoingCallsEnabled() ? [...fakeOngoingCalls(), ...realCalls] : realCalls), [realCalls]);
 
-	const { ringing, ongoing } = useMemo(() => {
-		const isRinging = (call: JoinableVideoConference) => isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
+	// Not memoized: `isRingingVideoConferenceMember` is time-dependent (uses Date.now()), and the re-render
+	// triggered by `useRingingExpiry` must see a fresh evaluation to move a call from ringing to ongoing.
+	const isRinging = (call: JoinableVideoConference) => isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
+	const asked = calls.filter((call) => call.joined || !call.declined);
 
-		return {
-			ringing: actionable.filter(isRinging),
-			ongoing: actionable.filter((call) => !isRinging(call)),
-		};
-	}, [actionable]);
+	const ringing = asked.filter((call) => !call.joined && isRinging(call));
+	const ongoing = asked.filter((call) => call.joined || !isRinging(call));
+	const declined = calls.filter((call) => !call.joined && call.declined);
 
-	// So a call whose ring lapses settles into an ordinary one without waiting for something else to move.
 	useRingingExpiry(ringing.map(({ ringingAt }) => ringingAt));
 
-	return { ringing, ongoing };
+	return { ringing, ongoing, declined };
 };
 
-/**
- * The calls, and what can be done with each of them. For whoever actually renders the list.
- */
 export const useOngoingCalls = () => {
-	const { ringing, ongoing } = useOngoingCallsList();
+	const { ringing, ongoing, declined } = useOngoingCallsList();
 	const joinCall = useJoinCall();
 	const declineCall = useEndpoint('POST', '/v1/video-conference.decline');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -57,12 +43,6 @@ export const useOngoingCalls = () => {
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
-	/**
-	 * Silencing is not answering: the ring stops so the user can decide in their own time, and the call stays.
-	 *
-	 * Remembered here because the manager forgets a dismissed call entirely — and without remembering, a silenced
-	 * call would be indistinguishable from one whose ring this client never heard.
-	 */
 	const dismissCall = useVideoConfDismissCall();
 	const [silencedCalls, setSilencedCalls] = useState<string[]>([]);
 
@@ -74,5 +54,10 @@ export const useOngoingCalls = () => {
 		[dismissCall],
 	);
 
-	return { ringing, ongoing, joinCall, decline, silence, silencedCalls };
+	const [showAll, setShowAll] = useState(false);
+	const toggleShowAll = useCallback(() => setShowAll((v) => !v), []);
+
+	return { ringing, ongoing, declined, joinCall, decline, silence, silencedCalls, showAll, toggleShowAll };
 };
+
+export const canDeclineCall = (call: JoinableVideoConference): boolean => !call.declined && !call.joined;
