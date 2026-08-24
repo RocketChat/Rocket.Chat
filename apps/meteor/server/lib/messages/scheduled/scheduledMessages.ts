@@ -3,17 +3,9 @@ import { Messages, ScheduledMessages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
+import { MAX_SCHEDULING_HORIZON_MS, MIN_SCHEDULING_LEAD_MS } from '../../../../lib/messages/scheduling';
 import { settings } from '../../../settings';
 import { canSendMessageAsync } from '../../authorization/canSendMessage';
-
-/** Messages cannot be scheduled further away than this — keeps the pending list bounded and meaningful. */
-const MAX_SCHEDULING_HORIZON_MS = 365 * 24 * 60 * 60 * 1000;
-
-/**
- * The dispatcher runs every minute, so anything closer than that would be delivered "late" from the
- * user's point of view. Requiring a small lead time makes the delivery window predictable.
- */
-const MIN_SCHEDULING_LEAD_MS = 60 * 1000;
 
 /**
  * How many times a single request will look for a free quota slot. Losing a slot means another request

@@ -7,14 +7,10 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { MAX_SCHEDULING_HORIZON_MS, MIN_SCHEDULING_LEAD_MS } from '../../../../lib/messages/scheduling';
 import DatePicker from '../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker/DatePicker';
 import TimePicker from '../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker/TimePicker';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
-
-/** Match the server-side bounds, so the modal rejects impossible dates before the round trip. */
-const MIN_SCHEDULING_LEAD_MS = 60 * 1000;
-
-const MAX_SCHEDULING_HORIZON_MS = 365 * 24 * 60 * 60 * 1000;
 
 const getDefaultDate = (): Date => {
 	const date = new Date();
@@ -129,6 +125,10 @@ const ScheduleMessageModal = ({
 					control={control}
 					rules={{
 						validate: (date) => {
+							if (Number.isNaN(date.getTime())) {
+								return t('error-invalid-date');
+							}
+
 							if (date.getTime() < Date.now() + MIN_SCHEDULING_LEAD_MS) {
 								return t('Scheduled_date_must_be_in_the_future');
 							}
@@ -140,10 +140,21 @@ const ScheduleMessageModal = ({
 							return true;
 						},
 					}}
-					render={({ field }) => (
+					render={({ field: { value, onChange, ref } }) => (
 						<>
-							<DatePicker {...field} aria-invalid={Boolean(errors.date)} aria-describedby={errors.date && dateErrorId} />
-							<TimePicker {...field} aria-invalid={Boolean(errors.date)} aria-describedby={errors.date && dateErrorId} />
+							<DatePicker
+								ref={ref}
+								value={value}
+								onChange={onChange}
+								aria-invalid={Boolean(errors.date)}
+								aria-describedby={errors.date && dateErrorId}
+							/>
+							<TimePicker
+								value={value}
+								onChange={onChange}
+								aria-invalid={Boolean(errors.date)}
+								aria-describedby={errors.date && dateErrorId}
+							/>
 							{errors.date && <FieldError id={dateErrorId}>{errors.date.message}</FieldError>}
 						</>
 					)}
