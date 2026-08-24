@@ -4,6 +4,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryRoomIds } from './useCategoryRoomIds';
 import { useCustomCategories } from '../hooks/useCustomCategories';
 
 type DeleteCategoryModalProps = {
@@ -15,10 +16,11 @@ const DeleteCategoryModal = ({ category, onClose }: DeleteCategoryModalProps) =>
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { deleteCategory, isPersisting } = useCustomCategories();
+	const roomIds = useCategoryRoomIds(category._id);
 
 	const handleConfirm = async () => {
 		try {
-			await deleteCategory(category._id);
+			await deleteCategory(category._id, roomIds);
 			dispatchToastMessage({ type: 'success', message: t('Category__name__deleted', { name: category.name }) });
 			onClose();
 		} catch (e) {

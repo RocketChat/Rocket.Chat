@@ -24,7 +24,10 @@ export const useCustomCategories = () => {
 
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', EMPTY) ?? EMPTY;
 
-	const categories = hasLicenseModule ? allEntries.filter((entry) => !entry.default) : EMPTY;
+	const categories = useMemo(
+		() => (hasLicenseModule ? allEntries.filter((entry) => !entry.default) : EMPTY),
+		[hasLicenseModule, allEntries],
+	);
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const setCategoryEndpoint = useExperimentalEndpoint('POST', '/experimental/rooms.setCategory');
@@ -34,7 +37,7 @@ export const useCustomCategories = () => {
 		mutationFn: (next: ISidebarCategory[]) => saveUserPreferences({ data: { sidebarCategories: next } }),
 	});
 
-	const persist = useCallback((next: ISidebarCategory[]) => persistMutation.mutateAsync(next), [persistMutation]);
+	const persist = useCallback((next: ISidebarCategory[]) => persistMutation.mutateAsync(next), [persistMutation.mutateAsync]);
 
 	const setCategory = useCallback(
 		(roomIds: string[], category: string | null) => setCategoryEndpoint({ roomIds, category }),
@@ -79,8 +82,13 @@ export const useCustomCategories = () => {
 	);
 
 	const deleteCategory = useCallback(
-		(categoryId: string) => persist(allEntries.filter((entry) => entry._id !== categoryId)),
-		[allEntries, persist],
+		async (categoryId: string, roomIds: string[] = []) => {
+			await persist(allEntries.filter((entry) => entry._id !== categoryId));
+			if (roomIds.length > 0) {
+				await setCategory(roomIds, null);
+			}
+		},
+		[allEntries, persist, setCategory],
 	);
 
 	const moveRoom = useCallback(

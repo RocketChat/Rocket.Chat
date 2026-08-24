@@ -2,15 +2,14 @@ import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useRef } from 'react';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryRoomIds } from './useCategoryRoomIds';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCustomCategories';
-
-const OPEN_QUERY = { open: { $ne: false } } as const;
 
 type ManageCategoryModalProps = {
 	category: ISidebarCategory;
@@ -22,13 +21,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { updateCategory, validateName } = useCustomCategories();
 
-	const categorySubscriptions = useUserSubscriptions(OPEN_QUERY, {});
-	const initialRoomIds = useMemo(
-		() => categorySubscriptions.filter((s) => s.category === category._id).map((s) => s.rid),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[],
-	);
-	const initialRoomsRef = useRef(initialRoomIds);
+	const initialRoomsRef = useRef(useCategoryRoomIds(category._id));
 
 	const {
 		handleSubmit,
@@ -38,7 +31,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	} = useForm({
 		defaultValues: {
 			name: category.name,
-			rooms: initialRoomIds,
+			rooms: initialRoomsRef.current,
 		},
 	});
 
