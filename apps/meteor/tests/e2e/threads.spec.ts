@@ -1,8 +1,7 @@
-import { faker } from '@faker-js/faker';
-
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannel, createTargetChannelAndReturnFullRoom, deleteChannel, markRoomAsRead, sendMessage } from './utils';
+import { sendFillerMessages } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -217,21 +216,15 @@ test.describe.serial('Threads - small screens', () => {
 	let targetChannel: { name: string; _id: string };
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await api
-			.post('/channels.create', { name: faker.string.uuid() })
-			.then((res) => res.json())
-			.then((data) => data.channel);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = { name: channel.name as string, _id: channel._id };
 
-		for (let i = 0; i < 60; i++) {
-			await api.post('/chat.postMessage', { roomId: targetChannel._id, text: `history message ${i}` });
-		}
-		const { message: parent } = await api
-			.post('/chat.postMessage', { roomId: targetChannel._id, text: 'thread parent' })
-			.then((res) => res.json());
-		await api.post('/chat.postMessage', { roomId: targetChannel._id, text: 'thread reply', tmid: parent._id });
+		await sendFillerMessages(api, targetChannel._id, 60);
+		const parentId = await sendMessage(api, targetChannel._id, 'thread parent');
+		await sendMessage(api, targetChannel._id, 'thread reply', parentId);
 		// Without this the room opens at the first unread message and loads the whole history at
 		// once, leaving no older page for the hidden list to drain.
-		await api.post('/subscriptions.read', { rid: targetChannel._id });
+		await markRoomAsRead(api, targetChannel._id);
 	});
 
 	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel.name));
@@ -259,9 +252,11 @@ test.describe.serial('Threads - small screens', () => {
 		await expect(poHomeChannel.content.mainMessageListScroller).toBeHidden();
 
 		// A hidden-history drain re-triggers ~every 100ms, growing the list by a 50-message page each
-		// time — a fixed window is enough to catch it while a stable count proves the guard held.
-		await page.waitForTimeout(2500);
-
-		expect(await mainMessageListItems.count()).toBe(loadedMessages);
+		// cycle. Sample the count across the window instead of one fixed sleep: growth fails fast,
+		// a count stable across every sample proves the guard held.
+		for (let i = 0; i < 5; i++) {
+			await page.waitForTimeout(500);
+			expect(await mainMessageListItems.count()).toBe(loadedMessages);
+		}
 	});
 });
