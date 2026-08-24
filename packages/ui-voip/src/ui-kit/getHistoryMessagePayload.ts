@@ -6,8 +6,6 @@ const APP_ID = 'media-call-core';
 
 export const callStateToTranslationKey = (callState: CallHistoryItemState): TextObject => {
 	switch (callState) {
-		case 'ongoing':
-			return { type: 'mrkdwn', i18n: { key: 'Call_ongoing' }, text: 'Call ongoing' };
 		case 'ended':
 			return { type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' };
 		case 'not-answered':
@@ -22,8 +20,6 @@ export const callStateToTranslationKey = (callState: CallHistoryItemState): Text
 
 export const callStateToIcon = (callState: CallHistoryItemState): FrameableIconElement => {
 	switch (callState) {
-		case 'ongoing':
-			return { type: 'icon', icon: 'phone', variant: 'default', framed: true };
 		case 'ended':
 			return { type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true };
 		case 'not-answered':

@@ -1,16 +1,15 @@
-import type { CallHistoryItem, IExternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
+import type { CallHistoryItem, IInternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
 import {
 	CallHistoryContextualBar,
 	useWidgetExternalControls,
 	usePeekMediaSessionState,
 	type CallHistoryExternalContact,
+	type CallHistoryUnknownContact,
 } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-// Only the media-call variant is external-contact-shaped; a video-conference item has no `contactExtension`
-// or `duration` to show here, so it's deliberately excluded rather than folded into this branch.
 type ExternalCallEndpointData = Serialized<{
-	item: IExternalMediaCallHistoryItem;
+	item: Exclude<CallHistoryItem, IInternalMediaCallHistoryItem>;
 	call?: IMediaCall;
 }>;
 
@@ -19,14 +18,18 @@ export type MediaCallHistoryExternalProps = {
 	onClose: () => void;
 };
 
-export const getExternalContact = (item: ExternalCallEndpointData['item']): CallHistoryExternalContact => {
-	return {
-		number: item.contactExtension,
-	};
+export const getExternalContact = (item: ExternalCallEndpointData['item']): CallHistoryExternalContact | CallHistoryUnknownContact => {
+	if (item.type === 'media-call') {
+		return {
+			number: item.contactExtension,
+		};
+	}
+
+	return { unknown: true };
 };
 
 export const isExternalCallHistoryItem = (data: { item: Serialized<CallHistoryItem> }): data is ExternalCallEndpointData => {
-	return data.item.type === 'media-call' && data.item.external;
+	return data.item.type !== 'media-call' || data.item.external;
 };
 
 const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalProps) => {

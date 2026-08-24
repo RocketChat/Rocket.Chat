@@ -12,8 +12,6 @@ export type CallHistoryTableStatusProps = {
 
 const getCallStateText = (status: CallHistoryItemState, t: TFunction) => {
 	switch (status) {
-		case 'ongoing':
-			return t('Ongoing');
 		case 'ended':
 			return t('Ended');
 		case 'not-answered':
@@ -28,8 +26,6 @@ const getCallStateText = (status: CallHistoryItemState, t: TFunction) => {
 
 const getIcon = (status: CallHistoryItemState) => {
 	switch (status) {
-		case 'ongoing':
-			return 'phone';
 		case 'ended':
 			return 'phone-off';
 		case 'not-answered':
@@ -44,8 +40,6 @@ const getIcon = (status: CallHistoryItemState) => {
 
 const getVariant = (status: CallHistoryItemState) => {
 	switch (status) {
-		case 'ongoing':
-			return 'status-font-on-success';
 		case 'not-answered':
 			return 'status-font-on-warning';
 		case 'failed':

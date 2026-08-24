@@ -170,7 +170,7 @@ conference, for the person who started it. A direct call has no title of its own
 in the call could rewrite is a title nobody can rely on.
 
 The name matters beyond the label: it is what the provider is told to call the meeting (`customCallTitle`, read
-at join time — which is *after* the preflight), and what the call is listed as in the sidebar and in call history.
+at join time — which is *after* the preflight), and what the call is listed as in the sidebar.
 The field is prefilled with what the call is called today, which for a fresh conference is the room it was started
 in. Renaming is not worth failing a join over: if it doesn't take, the error is surfaced and the user goes into
 the call anyway, which is what they actually asked for.
@@ -365,7 +365,7 @@ Nothing about the conference's rooms changes, so `discussionRid` is untouched an
 | Rung, app on screen | The incoming-call popup, describing the call. It renders without the room — see [the popup note](#the-incoming-call-popup-assumed-the-callee-was-in-the-room). |
 | Accepts | Joins the conference outright; no handshake with whoever added them — see [Accepting a server ring](#accepting-a-server-ring-joins-it-doesnt-negotiate). |
 | Declines | Recorded on their `users[]` entry. It never ends the call for anyone else, and they can still join afterwards. |
-| Misses the ring | The conference is in their call history, joinable from there. The ring itself doesn't repeat. |
+| Misses the ring | The conference is joinable from the sidebar's ongoing calls list. The ring itself doesn't repeat. |
 | Opens the chat panel without room access | An explanation, not an error — see [A member who can't read the chat](#a-member-who-cant-read-the-chat-is-told-so-not-shown-an-error). |
 
 ## Busy While In A Call
@@ -402,7 +402,7 @@ it means:
 - The member's entry gets a `leftAt`. Leaving is neither declining nor un-joining — membership and `joined` both
   stand, so they keep their history entry and can rejoin, which clears `leftAt`.
 - If nobody is left in the call, the conference **ends** after `EMPTY_CALL_GRACE_MS` (10s) with nobody having come
-  back — which is what settles everyone's call history. The grace period is what makes a **reload** survivable: the
+  back. The grace period is what makes a **reload** survivable: the
   page unloading reports a leave, and for a moment the call is empty because its only participant is on their way
   back into it.
 
@@ -434,7 +434,7 @@ to arrive at the moment someone goes; what matters is that nothing arrives after
 Three details carry most of the weight:
 
 - **The departure is dated from the last evidence, never from the sweep.** Stamping "now" on a call recovered
-  twenty minutes after an outage would add twenty minutes to everyone's call history. `leftAt` is `lastSeenAt` —
+  twenty minutes after an outage would misreport the call duration. `leftAt` is `lastSeenAt` —
   which, during an outage, lands at about the moment the lights went out. `leftReason: 'timeout'` records that it
   was inferred, so nothing has to pretend the precision of a reported leave.
 - **A restart waits out a full lease before evicting anyone** (`isPresenceSweepDue`). From the database,
@@ -541,36 +541,6 @@ Every conference endpoint authorizes through one `canAccessConference` check, wh
 Because all of them share that check, `add-participants` no longer disagrees with `join` and `info` about who is allowed in. `loadAccessibleConference` is the shared prologue: it reads the call, applies the check, and answers both failures the same way — `invalid-params`, deliberately vague about which of the two it was, so a stranger can't use an endpoint to learn that a call id is real.
 
 The check lives in `server/lib/videoConfAccess.ts` rather than beside these endpoints, because a provider's own endpoints need it too and two versions of "may this person be here" drift into two answers for the same person. That is not hypothetical: the LiveKit transport endpoint originally checked room access instead, so a member added to a call in a DM was refused the credentials for the very call they had just joined — a window showing them alone, with inert controls, because a refused token looks exactly like one that hasn't arrived yet.
-
-## Conference Call History
-
-The room's "Conference call history" tab (`icon: history`) groups conferences into **Ongoing** / **Past** sections. Ongoing calls show a primary **Join**; ended calls show **Call chat**, linking to the discussion (disabled when there is none).
-
-`findPaginatedByRoomId` is an aggregation that:
-- matches `rid` **or** `discussionRid`, so opening a discussion resolves the conference it belongs to even when its members can't see the parent room;
-- `$lookup`s the discussion room to attach `discussionTitle` and `discussionLastMessage`, avoiding one request per conference.
-
-The `discussionRid` index is compound with `createdAt` specifically so that `$or` match can be served by an index-ordered merge. With a `discussionRid`-only index, Mongo cannot produce the sort from either branch and falls back to a blocking in-memory sort of the room's entire conference history before paginating.
-
-Entries are named after the discussion, falling back to the name the discussion *would* have had (`VideoConf_Persistent_Chat_Discussion_Name`, with `[date]` substitution matching the server).
-
-Conference discussions don't carry the call's message block, so `OngoingConferenceBanner` surfaces a "Join ongoing call" banner in discussion rooms.
-
-### Personal Call History
-
-Separately from the room-scoped tab above, a group conference also leaves an entry in the personal, cross-room "Call history" page (`GET /v1/call-history.list`) alongside VoIP calls — the same "rejoin from a past call" entry point, for conferences.
-
-`CallHistoryItem` (`packages/core-typings/src/ICallHistoryItem.ts`) gains a `type: 'video-conference'` variant, `IVideoConferenceHistoryItem`, alongside the existing 1:1-contact-shaped media-call variants. It carries `rid` (the conference's room), `title` (if the conference had one), and `usersCount` (how many members actually joined — `hasJoinedVideoConference`, not raw membership count). `callId`, `uid`, `ts`, `direction` and `state` come from the shared `ICallHistoryItem` base.
-
-*When* items are written is [A call is in the history from the moment it starts](#a-call-is-in-the-history-from-the-moment-it-starts): from the conference's creation onward, not once at the end. `isLoggableConference` decides what belongs in a personal log at all — a group or **direct** conference does; a livechat call is the visitor's, and a VoIP conference is already logged as a media call.
-
-`buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
-- `direction` is `outbound` for the conference's creator, `inbound` for everyone else.
-- `state` is `ongoing` while the call runs. Ending settles it: `ended` for a member who joined, `not-answered` for one who did not. Only members get an item, and a member either joined or was rung and didn't — so not joining *is* not answering, whether they declined explicitly or ignored it. Reporting an ignored ring as a normal ended call would hide a missed conference.
-
-All call-history items — media calls and conferences alike — live in the same `call_history` collection, so the existing `direction`/`state` filters on `call-history.list` already apply to conference items with no change. The free-text `filter` search term gains one more `$or` branch matching the conference's `title` (`CallHistoryRaw.findAllByUserIdAndSearchFilters`).
-
-The call-history page's table dispatches a conference item to `CallHistoryRowConference` (`apps/meteor/client/views/mediaCallHistory/`) instead of the three contact-shaped rows (`CallHistoryRowInternalUser`/`…External`/`…UnknownUser`), showing the room/title and joined-participant count in place of a contact. It doesn't reuse `CallHistoryTableRow` from `@rocket.chat/ui-voip` — that component's `contact`/`duration` props are contact-call-shaped and don't apply. Clicking the row opens the conference's room directly (`useGoToRoom`), the same "Call chat" action used by the room-scoped tab above, rather than the contact-shaped call-info side panel the other rows open — so `MediaCallHistoryContextualbar`/`MediaCallHistoryExternal` were only adjusted to keep compiling against the widened `CallHistoryItem` union, not to render a conference-specific detail view. Deep-linking straight to a conference item's `/call-history/details/:historyId` (bypassing the row) still falls through to the generic "Call info could not be loaded" panel — building a dedicated detail view was left out as out of scope.
 
 ## Reaching a call without a ring
 
@@ -694,25 +664,6 @@ The name comes from the conference's title, or — for a direct message, which h
 reader's **own subscription**, since a DM is named after the other person and that name is per-viewer. Both fall
 back to the room. One subscription query answers this and the room-membership question together. The payload
 carries nothing else: a list needs enough to decide whether to walk in, and joining goes by `callId`.
-
-### A call is in the history from the moment it starts
-
-The history is the one list of calls, so a call in progress is a row in it rather than a section above it. That
-means writing it when it starts, not when it finishes: `recordConferenceInHistory` upserts an item per member as
-the conference is created, again whenever membership moves (someone joins, is added, declines), and once more when
-it ends.
-
-While it runs, every member's row says the same thing — `ongoing` — because a member's own outcome doesn't exist
-yet. Ending is what settles it into `ended` or `not-answered` per member, along with the count of who was actually
-there. `{ uid, callId }` is unique in `call_history`, which is what makes writing repeatedly harmless: an app can
-resend `ENDED`, the expiry cron runs every three hours, and membership can move a dozen times.
-
-Two things fall out of this. Someone who was rung and never answered has a row while the call is still running, so
-turning a call down is not the end of it — the row is the way back in. And the client needs no second source: the
-table's rows, its filters and its states all come from `call-history.list`, with `ongoing` a state like any other.
-
-The sidebar keeps using `video-conference.joinable`, which answers a different question — *may I join this, right
-now* — and carries a live count.
 
 ### One call at a time
 
@@ -886,7 +837,7 @@ is what makes the service testable at all: `createService` proxyquires it with ~
 which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
 it exercises. And the decisions worth pinning down were deliberately moved *out* of the service into pure
 functions — `resolveChatAccessMode`, `chatAccessLeadsWithDiscussion`
-(`apps/meteor/lib/videoConference/chatAccess.ts`), `buildConferenceCallHistoryItems`, the member predicates in
+(`apps/meteor/lib/videoConference/chatAccess.ts`), the member predicates in
 `memberStatus.ts` — each shared by the server and the client that has to agree with it, so a rule is tested once
 and the two can't drift.
 
@@ -942,12 +893,6 @@ git — `git show 5ab58858d7d:<path>` restores any of them intact.
 | **Handing internal links to the opener** (the desktop bridge and the `postMessage` handshake) | needs a bridge on both sides for a nicer landing | a `noopener` new tab — see [Confined Navigation](#confined-navigation) |
 | **Regrouping the room's call list** into Ongoing/Past, named after the discussion | a redesign of a list that already works, and one every workspace sees | the existing flat list, with the fix that it no longer counts members who never joined |
 | ~~**Disabling join on message blocks inside the call window**~~ | done — `videoConfJoinDisabled` on `UiKitContext`, set when `useCurrentRoutePath` starts with `/conference/` | join and call-back buttons are disabled inside the call window |
-
-Two changes were dropped rather than deferred, because they were never this feature's to make. The room kebab's
-Calls item keeps its own name and icon — renaming it to *Conference call history* belonged to the regrouping
-above, and shipping the rename alone would change what every workspace sees for nothing. The *Ongoing* filter on
-the call-history page uses an existing icon colour, rather than teaching `MultiSelectCustom` a new one for a
-single green phone.
 
 The end-to-end REST suite (`tests/end-to-end/apps/video-conference-membership.ts`) is held back for a different
 reason: it has never been run locally — the API suite authenticates as a fixture admin a dev workspace does not
@@ -1016,12 +961,6 @@ The chat panel decides between the room and the not-shared explanation from `cha
 as the last read. A member removed from the room *during* a call still has the room attempted, and gets
 `ConferenceRoom`'s not-found fallback until the next read. Rare, and self-correcting.
 
-### No conference detail view in call history
-
-Clicking a conference row in the personal call history opens its room, which is the useful action. Deep-linking
-straight to `/call-history/details/:historyId` for a conference still falls through to the generic "call info
-could not be loaded" panel, because the detail panel is contact-call-shaped.
-
 ## Key Files
 
 | Layer | File |
@@ -1053,8 +992,6 @@ could not be loaded" panel, because the detail panel is contact-call-shaped.
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |
 | Ongoing banner | `apps/meteor/client/views/room/OngoingConferenceBanner/OngoingConferenceBanner.tsx` |
 | Room-scoped call history | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/` |
-| Personal call history (type + write path) | `packages/core-typings/src/ICallHistoryItem.ts`, `apps/meteor/lib/videoConference/callHistory.ts`, `apps/meteor/server/services/video-conference/service.ts` |
-| Personal call history (search + row) | `packages/models/src/models/CallHistory.ts`, `apps/meteor/client/views/mediaCallHistory/CallHistoryRowConference.tsx`, `CallHistoryPage.tsx` |
 | Join guard | `apps/meteor/client/uikit/hooks/useMessageBlockContextValue.ts`, `packages/fuselage-ui-kit/src/blocks/VideoConferenceBlock/VideoConferenceBlock.tsx` |
 | Layout | `apps/meteor/client/views/root/MainLayout/MainLayout.tsx`, `TwoFactorAuthSetupCheck.tsx`, `client/lib/appLayout.tsx` |
 | Notifications | `apps/meteor/client/hooks/notification/useNotification.ts`, `packages/core-typings/src/INotification.ts` |

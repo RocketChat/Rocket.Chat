@@ -262,7 +262,7 @@ export type JoinableVideoConference = {
 	participants: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
 	/** Whether the reader is one of them, which is what makes joining another call a matter of leaving this one. */
 	joined: boolean;
-	/** Whether the reader already turned this call down. The sidebar hides those; the call history keeps them. */
+	/** Whether the reader already turned this call down. The sidebar hides those. */
 	declined: boolean;
 	/**
 	 * When this reader was last rung, if ever. Whether that ring is still live is decided by the reader — see

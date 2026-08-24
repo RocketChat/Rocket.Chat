@@ -132,8 +132,8 @@ it is visible to the room, it deliberately raises no push, and it is kept so tha
 person tried to start a call and if that got declined".
 
 Ours: `POST /v1/video-conference.decline` writes `declined` and `declinedAt` **on the decliner's own entry**,
-never touches the conference's status, and leaves the call-history row in place so the call stays reachable
-afterwards. Same three properties: personal, non-terminating, persisted for history.
+never touches the conference's status, so the call stays reachable
+afterwards. Same three properties: personal, non-terminating, persisted.
 
 One difference worth keeping: because our decline is a field on the member rather than an event referencing a
 particular ring, "did they decline *this* ring?" needs `declinedAt` compared against `ringingAt` — the comparison
@@ -167,10 +167,10 @@ signal clients already subscribe to, rather than enumerating recipients.
 **Ours**
 - Membership independent of room membership — someone can be in a call without being given the room. Matrix
   structurally cannot do this.
-- A durable per-member outcome (`ended`, `not-answered`, `ongoing`) written from the start, which makes a real
-  call history. Matrix reconstructs history by replaying notification/decline events, and a call nobody answered
+- A durable per-member outcome (`ended`, `not-answered`, `ongoing`) written from the start. Matrix
+  reconstructs history by replaying notification/decline events, and a call nobody answered
   leaves only a notification to interpret.
-- One authoritative answer to "is this call still running", which is what lets the sidebar list, the history and
+- One authoritative answer to "is this call still running", which is what lets the sidebar list and
   the room's message block agree without each client computing it.
 - Chat that outlives the call, with an explicit, resolvable access model.
 

@@ -40,12 +40,10 @@ const VideoConferenceModelMock = {
 	}),
 };
 
-const CallHistoryMock = { upsertMany: sinon.stub().resolves() };
 const UsersMock = { findOneById: sinon.stub().resolves(null) };
 
 const VideoConfService = createService({
 	models: {
-		CallHistory: CallHistoryMock,
 		Users: UsersMock,
 		VideoConference: VideoConferenceModelMock,
 	},
@@ -69,7 +67,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			VideoConferenceModelMock.markEmbeddedParticipantLeft,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
-			CallHistoryMock.upsertMany,
 		);
 	});
 
@@ -116,7 +113,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		await service.expirePresenceLeases(at(0));
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
-		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
 	});
 
 	it('keeps the call open while anyone is still in it', async () => {
@@ -128,7 +124,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		await service.expirePresenceLeases(at(0));
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
-		expect(CallHistoryMock.upsertMany.called).to.be.false;
 	});
 
 	describe('when the provider can say who is in the room', () => {

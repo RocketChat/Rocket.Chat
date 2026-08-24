@@ -38,7 +38,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CallHistory, Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -47,12 +47,6 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import {
-	buildConferenceCallHistoryItems,
-	EMPTY_CALL_GRACE_MS,
-	hasActiveParticipants,
-	isLoggableConference,
-} from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { conferenceNameFor } from '../../../lib/videoConference/conferenceName';
 import { availabilityErrors, CALL_FACES_SHOWN, shouldRingVideoConference } from '../../../lib/videoConference/constants';
@@ -84,6 +78,12 @@ import { settings } from '../../settings';
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
+
+/**
+ * How long a conference is kept alive after the last participant leaves, before it is ended.
+ * Long enough for a reload to land and cancel it, short enough that a call really over doesn't linger.
+ */
+const EMPTY_CALL_GRACE_MS = 10_000;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -543,39 +543,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 		}
 
-		// The members' rows have said `ongoing` since the call started; this is where each one's own outcome — who
-		// was there, and who never answered — is finally written.
-		await this.recordConferenceInHistory(call._id, { ended: true });
-
 		// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
 		// else reports their departure: the call is over, so there is no leave left to arrive.
 		await Promise.all(call.users.filter(isInVideoConference).map(({ _id }) => this.releaseBusyForCall(_id)));
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
-		}
-	}
-
-	/**
-	 * Records a conference in every member's call history — while it runs, and again once it is over.
-	 *
-	 * The history is the single list of calls, so a call has to be in it from the moment it starts rather than
-	 * appearing once it finishes. `ongoing` is a state like any other there, which is also what lets a member who
-	 * declined find their way back in.
-	 *
-	 * Writes repeat for the same call, on purpose: whenever membership moves and once at the end, when each
-	 * member's own outcome is finally known. They are upserts keyed by member and call, so repeating is harmless.
-	 */
-	private async recordConferenceInHistory(callId: VideoConference['_id'], { ended }: { ended: boolean }): Promise<void> {
-		try {
-			const call = await this.getUnfiltered(callId);
-			if (!call || !isLoggableConference(call) || !call.users.length) {
-				return;
-			}
-
-			await CallHistory.upsertMany(buildConferenceCallHistoryItems(call, { ended }));
-		} catch (err: unknown) {
-			logger.error({ msg: 'Failed to record a conference in Call History', err, callId });
 		}
 	}
 
@@ -586,10 +559,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
-
-		// An expired call is one nobody ever ended, which is how a conference normally finishes when the provider
-		// doesn't report the end back. Its members' rows have to stop saying `ongoing` all the same.
-		await this.recordConferenceInHistory(call._id, { ended: true });
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
@@ -877,9 +846,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}, 40000);
 
-		// In both members' history from the moment it exists, as an `ongoing` call.
-		await this.recordConferenceInHistory(callId, { ended: false });
-
 		return {
 			type: 'direct',
 			callId,
@@ -950,9 +916,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.ringing && !isEmbedded) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
 		}
-
-		// In everyone's history from the moment it exists, as an `ongoing` call.
-		await this.recordConferenceInHistory(callId, { ended: false });
 
 		return {
 			type: 'videoconference',
@@ -1248,9 +1211,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// In a call is busy, for as long as it lasts.
 		await this.claimBusyForCall(_id);
 
-		// Someone new is in the call: they need a row of their own, and everyone else's count has changed.
-		await this.recordConferenceInHistory(call._id, { ended: false });
-
 		// When persistent chat is in "thread" mode, auto-follow the call's chat
 		// thread so the participant receives thread notifications for messages
 		// sent during the call. `follow` uses $addToSet and is idempotent.
@@ -1301,8 +1261,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (added.length) {
 			this.notifyVideoConfUpdate(call.rid, callId);
 			this.notifyConferenceUpdate(callId);
-			// Being added to a call is being in its history — that is where someone who never answers finds it.
-			await this.recordConferenceInHistory(callId, { ended: false });
 		}
 
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing limit —
@@ -1337,10 +1295,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
-
-		// Someone who was only rung has no history row until now: declining is how they end up with one, and it is
-		// what makes the call reachable again from there while it is still running.
-		await this.recordConferenceInHistory(callId, { ended: false });
 	}
 
 	/**
@@ -1436,7 +1390,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			{ projection: { rid: 1, discussionRid: 1, users: 1, title: 1, type: 1, createdAt: 1, createdBy: 1 }, sort: { createdAt: -1 } },
 		).toArray();
 
-		const occupied = running.filter(({ users }) => hasActiveParticipants(users));
+		const occupied = running.filter(({ users }) => users.some(isInVideoConference));
 
 		// One query for every room in play. It decides both halves of the answer: whether the user is in the room,
 		// and — for a direct message, which has no name of its own — what to call it, since a DM is named after the
@@ -1574,7 +1528,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.
 		const remaining = call.users.map((member) => (member._id === uid ? { ...member, leftAt } : member));
-		if (hasActiveParticipants(remaining)) {
+		if (remaining.some(isInVideoConference)) {
 			return;
 		}
 
@@ -1680,7 +1634,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// No second grace period: the lease *was* the grace period, and it is far longer than the one a
 				// reported departure gets. Anyone who came back renewed it and is not in `expired` at all.
 				const remaining = users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
-				if (!hasActiveParticipants(remaining)) {
+				if (!remaining.some(isInVideoConference)) {
 					await this.endCall(call._id);
 				}
 			} catch (err) {
@@ -1693,7 +1647,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/** Ends a conference only if it is still empty — a rejoin inside the grace period is what cancels it. */
 	private async endCallIfEmpty(callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, endedAt: 1 } });
-		if (!call || call.endedAt || hasActiveParticipants(call.users)) {
+		if (!call || call.endedAt || call.users.some(isInVideoConference)) {
 			return;
 		}
 

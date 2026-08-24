@@ -4,7 +4,9 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
-import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/callHistory';
+
+/** Must match the constant defined in the service. */
+const EMPTY_CALL_GRACE_MS = 10_000;
 
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
 // projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A
@@ -33,18 +35,12 @@ const VideoConferenceModelMock = {
 	setUserJoinedById: sinon.stub().resolves(),
 };
 
-const CallHistoryMock = {
-	// A conference is logged from the moment it starts and rewritten as it changes, so the write is an upsert.
-	upsertMany: sinon.stub().resolves(),
-};
-
 const UsersMock = {
 	findOneById: sinon.stub().resolves(null),
 };
 
 const VideoConfService = createService({
 	models: {
-		CallHistory: CallHistoryMock,
 		Users: UsersMock,
 		VideoConference: VideoConferenceModelMock,
 	},
@@ -74,10 +70,8 @@ describe('VideoConfService.leaveCall', () => {
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
-			CallHistoryMock.upsertMany,
 		);
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
-		CallHistoryMock.upsertMany.resolves();
 	});
 
 	afterEach(() => {
@@ -88,7 +82,7 @@ describe('VideoConfService.leaveCall', () => {
 	// history entry, not just silently mark the leaver as gone. `creator` already left earlier, so `other`
 	// is genuinely the last one still in the call — this is what makes it "the last participant leaves"
 	// rather than just "one of several leaves".
-	it('ends the call and writes one history item per member when the last participant leaves', async () => {
+	it('ends the call when the last participant leaves', async () => {
 		fixture = buildGroupCall([
 			buildMember({ _id: 'creator', leftAt: new Date('2026-01-01T00:30:00.000Z') }),
 			buildMember({ _id: 'other' }),
@@ -98,15 +92,9 @@ describe('VideoConfService.leaveCall', () => {
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(fixture.endedAt).to.be.instanceOf(Date);
-
-		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
-		const [items] = CallHistoryMock.upsertMany.firstCall.args;
-		expect(items).to.have.length(2);
-		expect(items.map((item: { uid: string }) => item.uid).sort()).to.deep.equal(['creator', 'other']);
 	});
 
-	// Someone leaving while others remain must not end the call for them, and must not write history — the
-	// call hasn't happened yet from those members' point of view.
+	// Someone leaving while others remain must not end the call for them.
 	it('marks the member as left without ending the call when others remain', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'other' })]);
 
@@ -117,14 +105,9 @@ describe('VideoConfService.leaveCall', () => {
 
 		const leaver = fixture.users.find((user) => user._id === 'other');
 		expect(leaver?.leftAt).to.be.instanceOf(Date);
-
-		expect(CallHistoryMock.upsertMany.called).to.be.false;
 	});
 
-	// This was the specific case that produced nothing: a 1:1 DM conference has no `title` and was being
-	// treated as out of scope for history, even though `shouldWriteConferenceHistory` says direct calls
-	// belong in the log the same as group ones.
-	it('writes history for a direct (1:1) conference when the last participant leaves', async () => {
+	it('ends a direct (1:1) conference when the last participant leaves', async () => {
 		fixture = buildDirectCall([
 			buildMember({ _id: 'creator', leftAt: new Date('2026-01-01T00:30:00.000Z') }),
 			buildMember({ _id: 'other' }),
@@ -133,34 +116,11 @@ describe('VideoConfService.leaveCall', () => {
 		await leaveAndSettle('other');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
-		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
-
-		const [items] = CallHistoryMock.upsertMany.firstCall.args;
-		expect(items).to.have.length(2);
-		expect(items.every((item: { type: string }) => item.type === 'video-conference')).to.be.true;
-		expect(items.some((item: { title?: string }) => 'title' in item)).to.be.false;
-	});
-
-	// A repeat `leaveCall` — or a provider resending the same "end" signal — must not collect a second
-	// history entry per member.
-	it('writes history at most once when the same member leaves twice', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'creator', leftAt: new Date('2026-01-01T00:30:00.000Z') }),
-			buildMember({ _id: 'other' }),
-		]);
-
-		// The first call is the one that ends the conference; the second is either a duplicate client
-		// action or a provider resending the same "left" signal — `leaveCall`'s own `call.endedAt` guard
-		// must catch it before anything is written a second time.
-		await leaveAndSettle('other');
-		await leaveAndSettle('other');
-
-		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
 	});
 
 	// A conference that already ended (already carries `endedAt`) must not be re-processed at all — this is
 	// the guard `leaveCall` itself applies before touching anything.
-	it('does not write history for a conference that already has endedAt', async () => {
+	it('does not re-process a conference that already has endedAt', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'other', leftAt: new Date() })], {
 			status: VideoConferenceStatus.ENDED,
 			endedAt: new Date('2026-01-01T01:00:00.000Z'),
@@ -168,7 +128,6 @@ describe('VideoConfService.leaveCall', () => {
 
 		await service.leaveCall('creator', 'call1');
 
-		expect(CallHistoryMock.upsertMany.called).to.be.false;
 		expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
 	});
 
@@ -180,12 +139,6 @@ describe('VideoConfService.leaveCall', () => {
 		await leaveAndSettle('creator');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
-		expect(CallHistoryMock.upsertMany.calledOnce).to.be.true;
-
-		const [items] = CallHistoryMock.upsertMany.firstCall.args;
-		expect(items).to.have.length(2);
-		expect(items.find((item: { uid: string }) => item.uid === 'neverJoined')).to.include({ state: 'not-answered' });
-		expect(items.find((item: { uid: string }) => item.uid === 'creator')).to.include({ state: 'ended' });
 	});
 
 	// `pagehide` fires on a reload exactly as it does on a close, so ending the moment the call empties meant
@@ -195,7 +148,7 @@ describe('VideoConfService.leaveCall', () => {
 
 		await service.leaveCall('creator', 'call1');
 
-		// The rejoin: what the client's own join does to the entry, which is all `hasActiveParticipants` reads.
+		// The rejoin: what the client's own join does to the entry, which is all isInVideoConference reads.
 		const rejoiner = fixture.users.find((user) => user._id === 'creator');
 		delete rejoiner?.leftAt;
 
@@ -203,7 +156,6 @@ describe('VideoConfService.leaveCall', () => {
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		expect(fixture.endedAt).to.be.undefined;
-		expect(CallHistoryMock.upsertMany.called).to.be.false;
 	});
 
 	it('still ends the call when nobody comes back', async () => {

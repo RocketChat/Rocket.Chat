@@ -192,7 +192,6 @@ export const videoConferenceQueryKeys = {
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
 	conference: (callId: string) => [...videoConferenceQueryKeys.all, callId] as const,
 	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
-	/** The calls running now that this user may join — read by the sidebar and the call-history page alike. */
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
 	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,

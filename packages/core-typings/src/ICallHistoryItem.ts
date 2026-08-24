@@ -4,8 +4,6 @@ import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
 export type CallHistoryItemState =
-	/** The call is still happening — it is written to history when it starts, not only when it finishes */
-	| 'ongoing'
 	/** One of the users ended the call */
 	| 'ended'
 	/** Call was not answered */
@@ -52,21 +50,4 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	contactExtension: string;
 }
 
-/**
- * A conference is room-and-many-participants shaped, unlike the 1:1-contact-shaped media call items above,
- * so it's a sibling variant on the union rather than a fit for `IMediaCallHistoryItem`.
- */
-export interface IVideoConferenceHistoryItem extends ICallHistoryItem {
-	type: 'video-conference';
-
-	/** The room the conference was started in. */
-	rid: IRoom['_id'];
-
-	/** The conference's title, if it had one. */
-	title?: string;
-
-	/** How many members actually joined the call (as opposed to being added but never joining). */
-	usersCount: number;
-}
-
-export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem | IVideoConferenceHistoryItem;
+export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;

@@ -1,11 +1,5 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type {
-	FindPaginated,
-	ICallHistoryModel,
-	InsertionModel,
-	DocumentWithProjection,
-	FindOptionsWithProjection,
-} from '@rocket.chat/model-typings';
+import type { FindPaginated, ICallHistoryModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Db, Filter, FindCursor, IndexDescription, Document } from 'mongodb';
 
@@ -18,23 +12,6 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { uid: 1, callId: 1 }, unique: true }, { key: { uid: 1, ts: -1 } }];
-	}
-
-	async upsertMany(items: InsertionModel<CallHistoryItem>[]): Promise<void> {
-		if (!items.length) {
-			return;
-		}
-
-		await this.col.bulkWrite(
-			items.map(({ uid, callId, ...fields }) => ({
-				updateOne: {
-					filter: { uid, callId },
-					update: { $set: { ...fields, _updatedAt: new Date() }, $setOnInsert: { uid, callId } },
-					upsert: true,
-				},
-			})),
-			{ ordered: false },
-		);
 	}
 
 	async findOneByIdAndUid<T extends Document = CallHistoryItem, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -105,10 +82,6 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 					{
 						external: true,
 						contactExtension: textSearch,
-					},
-					{
-						type: 'video-conference',
-						title: textSearch,
 					},
 				],
 			}),

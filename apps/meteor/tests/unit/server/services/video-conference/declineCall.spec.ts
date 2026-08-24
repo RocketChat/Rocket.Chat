@@ -26,8 +26,6 @@ const VideoConferenceModelMock = {
 	setStatusById: sinon.stub().resolves(),
 };
 
-const CallHistoryMock = { insertMany: sinon.stub().resolves({ insertedCount: 0 }) };
-
 // `declineCall` reads `Users.findOneById` only for someone with no existing `users[]` entry (a room member
 // rung who never had a membership entry created for them).
 const UsersMock = {
@@ -38,7 +36,7 @@ const broadcastStub = sinon.stub().resolves();
 
 const VideoConfService = createService({
 	broadcast: broadcastStub,
-	models: { CallHistory: CallHistoryMock, Users: UsersMock, VideoConference: VideoConferenceModelMock },
+	models: { Users: UsersMock, VideoConference: VideoConferenceModelMock },
 });
 
 // The one broadcast `declineCall` sends besides the room update: `video-conference.updated`, which is what tells
@@ -57,7 +55,6 @@ describe('VideoConfService.declineCall', () => {
 			VideoConferenceModelMock.setUserDeclinedById,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
-			CallHistoryMock.insertMany,
 			UsersMock.findOneById,
 			broadcastStub,
 		);
@@ -71,7 +68,6 @@ describe('VideoConfService.declineCall', () => {
 				(member as IVideoConferenceUser).declined = true;
 			}
 		});
-		CallHistoryMock.insertMany.resolves({ insertedCount: 0 });
 		UsersMock.findOneById.resolves({ _id: 'roomMember', username: 'roomMember.user', name: 'Room Member' });
 		broadcastStub.resolves();
 	});
@@ -97,7 +93,6 @@ describe('VideoConfService.declineCall', () => {
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		expect(VideoConferenceModelMock.setDataById.called).to.be.false;
 		expect(VideoConferenceModelMock.setStatusById.called).to.be.false;
-		expect(CallHistoryMock.insertMany.called).to.be.false;
 	});
 
 	// A user rung as a room member (never added to `users[]`) has no membership entry — one must be created so

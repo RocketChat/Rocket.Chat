@@ -59,7 +59,6 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 		Presence: PresenceMock,
 	},
 	'@rocket.chat/models': {
-		CallHistory: { upsertMany: sinon.stub().resolves() },
 		Users: UsersMock,
 		VideoConference: VideoConferenceModelMock,
 		Rooms: { findOneById: sinon.stub().resolves(null) },
