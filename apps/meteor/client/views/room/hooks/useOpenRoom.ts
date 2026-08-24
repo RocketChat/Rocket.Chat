@@ -1,6 +1,6 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
-import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
@@ -13,13 +13,14 @@ import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoo
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { mapRoomFromApi } from '../../../lib/utils/mapRoomFromApi';
 import { Rooms, Subscriptions } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
 	const hasPreviewPermission = usePermission('preview-c-room');
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
-	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
+	const getRoomByTypeAndName = useEndpoint('GET', '/v1/rooms.getByTypeAndName');
 	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
@@ -76,9 +77,14 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			let roomData: IRoom;
 			try {
-				roomData = await getRoomByTypeAndName(type, reference);
+				const { room } = await getRoomByTypeAndName({ type, name: reference });
+				roomData = mapRoomFromApi(room);
 			} catch (error) {
-				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
+				// REST surfaces the original Meteor.Error code as `errorType`; DDP used `error`
+				const errorCode =
+					error && typeof error === 'object'
+						? ('errorType' in error && error.errorType) || ('error' in error && error.error) || undefined
+						: undefined;
 
 				// "No permission" means the room exists but the user can't see it — surface the
 				// not-found/no-access screen rather than retrying it as a transient failure.

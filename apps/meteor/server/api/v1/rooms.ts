@@ -9,6 +9,7 @@ import {
 	isPrivateRoom,
 	isPublicRoom,
 	type IUser,
+	type RoomType,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -76,7 +77,7 @@ import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
 import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
 import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
-import { roomsGetMethod } from '../../publications/room';
+import { getRoomByTypeAndNameMethod, roomsGetMethod } from '../../publications/room';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -513,6 +514,44 @@ API.v1.post(
 		});
 
 		return API.v1.success({ _id, count });
+	},
+);
+
+API.v1.get(
+	'rooms.getByTypeAndName',
+	{
+		authRequired: false,
+		rateLimiterOptions: {
+			numRequestsAllowed: 60,
+			intervalTimeInMS: 60000,
+		},
+		query: ajv.compile<{ type: string; name: string }>({
+			type: 'object',
+			properties: {
+				type: { type: 'string', minLength: 1 },
+				name: { type: 'string', minLength: 1 },
+			},
+			required: ['type', 'name'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ room: IRoom }>({
+				type: 'object',
+				properties: {
+					room: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['room', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { type, name } = this.queryParams;
+		const room = await getRoomByTypeAndNameMethod(this.userId ?? null, type as RoomType, name);
+		return API.v1.success({ room });
 	},
 );
 
