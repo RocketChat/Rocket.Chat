@@ -2,6 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { assertNotOfflineLicense } from './offlineLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../settings';
@@ -10,6 +11,8 @@ import { SystemLogger } from '../logger/system';
 import { notifyOnSettingChangedById } from '../notifyListener';
 
 export async function startRegisterWorkspace(resend = false) {
+	assertNotOfflineLicense();
+
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (workspaceRegistered || process.env.TEST_MODE) {
 		await syncWorkspace();

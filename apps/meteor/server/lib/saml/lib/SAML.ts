@@ -3,7 +3,7 @@ import type { ServerResponse } from 'node:http';
 import type { IUser, IIncomingMessage, IPersonalAccessToken, IRole } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -77,7 +77,7 @@ export class SAML {
 			case 'sloRedirect':
 				return this.processSLORedirectAction(req, res, service);
 			case 'authorize':
-				return this.processAuthorizeAction(res, service, samlObject);
+				return this.processAuthorizeAction(req, res, service, samlObject);
 			case 'validate':
 				return this.processValidateAction(req, res, service, samlObject);
 			default:
@@ -247,7 +247,6 @@ export class SAML {
 		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
 			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
-
 		// sending token along with the userId
 		return {
 			userId: user._id,
@@ -328,7 +327,11 @@ export class SAML {
 			}, 5000);
 
 			try {
-				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession).toArray();
+				// limit 2: only need to know whether the match is missing, unique, or ambiguous
+				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession, {
+					projection: { _id: 1 },
+					limit: 2,
+				}).toArray();
 				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML session');
 				}
@@ -380,7 +383,8 @@ export class SAML {
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
 				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
-				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
+				// limit 2: only need to know whether the match is missing, unique, or ambiguous
+				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo, { projection: { _id: 1 }, limit: 2 }).toArray();
 				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 				}
@@ -452,15 +456,18 @@ export class SAML {
 	}
 
 	private static async processAuthorizeAction(
+		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		samlObject: ISAMLAction,
 	): Promise<void> {
 		const serviceProvider = new SAMLServiceProvider(service);
 		let url: string | undefined;
+		const requestedLoginClient = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow') ? req.query.loginClient : undefined;
+		const loginClient = SAMLUtils.isSupportedLoginClient(requestedLoginClient) ? requestedLoginClient : undefined;
 
 		try {
-			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
+			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken, loginClient);
 		} catch (err: any) {
 			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
 			url = Meteor.absoluteUrl();
@@ -493,7 +500,9 @@ export class SAML {
 		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		SAMLUtils.relayState = envelope.relayState ?? null;
+		const { provider, loginClient } = SAMLUtils.decodeAuthorizeRelayState(envelope.relayState);
+		// Keep exposing the provider as the relay state for downstream profile mapping.
+		SAMLUtils.relayState = provider ?? null;
 		serviceProvider.validateResponse(envelope, async (err, profile /* , loggedOut*/) => {
 			try {
 				if (err) {
@@ -529,7 +538,13 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
+
+				let redirectPath = SAMLUtils.getValidationActionRedirectPath(credentialToken);
+				if (loginClient) {
+					redirectPath += `&loginClient=${loginClient}`;
+				}
+
+				const url = Meteor.absoluteUrl(redirectPath);
 				redirect(url);
 			} catch (err) {
 				SAMLUtils.error({ err });

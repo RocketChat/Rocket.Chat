@@ -17,6 +17,7 @@ import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
 import { API } from '../../../../server/api';
 import type { APIClass } from '../../../../server/api/ApiClass';
 import { getUploadFormData } from '../../../../server/api/lib/getUploadFormData';
@@ -96,6 +97,13 @@ export class AppsRestApi {
 		const manager = this._manager;
 
 		const handleError = (message: string, err: any) => {
+			// Offline (air-gapped) licenses suppress marketplace requests at the source;
+			// report the real reason instead of a generic connectivity failure.
+			if (err instanceof CloudOfflineLicenseError) {
+				orchestrator.getRocketChatLogger().info({ msg: err.message });
+				return API.v1.failure({ error: err.message });
+			}
+
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!err.hasOwnProperty('response')) {
@@ -149,7 +157,7 @@ export class AppsRestApi {
 						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
 						return API.v1.success(apps);
 					} catch (err) {
-						if (err instanceof MarketplaceConnectionError) {
+						if (err instanceof MarketplaceConnectionError || err instanceof CloudOfflineLicenseError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
@@ -178,7 +186,7 @@ export class AppsRestApi {
 						return API.v1.success(categories);
 					} catch (err) {
 						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching categories from Marketplace:', err });
-						if (err instanceof MarketplaceConnectionError) {
+						if (err instanceof MarketplaceConnectionError || err instanceof CloudOfflineLicenseError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 

@@ -1,4 +1,4 @@
-import { SidebarV2Banner } from '@rocket.chat/fuselage';
+import { SidebarBanner } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
@@ -10,7 +10,7 @@ const StatusDisabledSection = ({ onDismiss }: StatusDisabledSectionProps) => {
 	const handleStatusDisabledModal = useStatusDisabledModal();
 
 	return (
-		<SidebarV2Banner
+		<SidebarBanner
 			title={t('User_status_temporarily_disabled')}
 			linkText={t('Learn_more')}
 			onClose={onDismiss}

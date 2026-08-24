@@ -29,8 +29,8 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 	}
 
 	if (
-		(room.t === 'c' && !(await hasPermissionAsync(user._id, 'leave-c'))) ||
-		(room.t === 'p' && !(await hasPermissionAsync(user._id, 'leave-p')))
+		(room.t === 'c' && !(await hasPermissionAsync(user, 'leave-c'))) ||
+		(room.t === 'p' && !(await hasPermissionAsync(user, 'leave-p')))
 	) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 	}

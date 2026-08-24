@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../i18n';
@@ -43,6 +44,10 @@ const getMessagesToSendToAdmins = async (
  * @deprecated
  */
 export const checkVersionUpdate = async () => {
+	if (License.hasOfflineLicense()) {
+		return;
+	}
+
 	logger.info('Checking for version updates');
 
 	const { versions, alerts } = await getNewUpdates();

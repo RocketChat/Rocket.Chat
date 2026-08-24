@@ -24,8 +24,7 @@ slashCommands.add({
 		if (kickedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [username],
+					username,
 					lng,
 				}),
 			});

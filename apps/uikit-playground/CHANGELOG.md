@@ -1,5 +1,43 @@
 # @rocket.chat/uikit-playground
 
+## 0.7.16-rc.0
+
+### Patch Changes
+
+- ([#41653](https://github.com/RocketChat/Rocket.Chat/pull/41653)) Bumps patch-level dependency updates: `react`, `react-dom` and `react-is` to 19.2.8, `ws` to 8.21.3, `nodemailer` to 9.0.5, `mailparser` to 3.9.15, `google-libphonenumber` to 3.2.46, `twitter-api-v2` to 1.29.1, `ip-range-check` to 0.2.1, `esbuild` to 0.28.2, `@octokit/core` to 7.0.7 and `@octokit/plugin-throttling` to 11.0.5, plus build and test tooling (`@swc/core`, `ts-jest`, `rollup`, `html-webpack-plugin`, `@vitejs/plugin-react`, `@testing-library/user-event`, and the `@types/*` packages). No behavior changes are expected.
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/ui-contexts@34.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@34.0.0-rc.0
+  - @rocket.chat/ui-avatar@30.0.0-rc.0
+  </details>
+
+## 0.7.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0
+  - @rocket.chat/ui-avatar@29.0.0
+  - @rocket.chat/ui-contexts@33.0.0
+  </details>
+
+## 0.7.15-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0-rc.0
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  - @rocket.chat/ui-avatar@29.0.0-rc.0
+  </details>
+
 ## 0.7.14
 
 ### Patch Changes

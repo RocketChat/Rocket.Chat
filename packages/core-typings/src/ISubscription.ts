@@ -66,6 +66,7 @@ export interface ISubscription extends IRocketChatRecord {
 	department?: unknown;
 
 	draft?: string;
+	threadDrafts?: Record<string, string>;
 
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';
@@ -95,6 +96,8 @@ export interface IBannedSubscription extends ISubscription {
 	status: 'BANNED';
 }
 
-export const isBannedSubscription = (subscription: ISubscription): subscription is IBannedSubscription => {
+export const isBannedSubscription = <T extends Pick<ISubscription, 'status'>>(
+	subscription: T,
+): subscription is T & { status: 'BANNED' } => {
 	return subscription?.status === 'BANNED';
 };

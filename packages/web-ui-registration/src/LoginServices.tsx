@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
 
-const servicesToBeShownOnDesktop = ['saml', 'cas', 'ldap'];
+const servicesToBeShownOnDesktop = ['cas', 'ldap'];
 
 export type LoginServicesProps = { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> };
 

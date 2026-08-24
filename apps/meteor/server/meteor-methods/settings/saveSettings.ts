@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { SettingValidationError } from '../../lib/settingValidationRules';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 
 declare module '@rocket.chat/ddp-client' {
@@ -34,11 +35,18 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await saveSettingsBulk(uid, params, {
-			username: (await Meteor.userAsync())!.username!,
-			ip: this.connection.clientAddress || '',
-			useragent: this.connection.httpHeaders['user-agent'] || '',
-		});
+		try {
+			await saveSettingsBulk(uid, params, {
+				username: (await Meteor.userAsync())!.username!,
+				ip: this.connection.clientAddress || '',
+				useragent: this.connection.httpHeaders['user-agent'] || '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				throw new Meteor.Error('error-setting-validation-failed', error.message);
+			}
+			throw error;
+		}
 
 		return true;
 	}, {}),

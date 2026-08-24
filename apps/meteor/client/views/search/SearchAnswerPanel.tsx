@@ -49,7 +49,7 @@ const SearchAnswerPanel = ({
 	}
 
 	return (
-		<Box mbe={24}>
+		<Box marginBlockEnd={24}>
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
 					<FramedIcon icon='stars' />
@@ -57,7 +57,7 @@ const SearchAnswerPanel = ({
 				</CardHeader>
 				<CardBody flexDirection='column'>
 					{provider && (
-						<Box color='hint' fontScale='c1' mbe={8}>
+						<Box color='hint' fontScale='c1' marginBlockEnd={8}>
 							{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
 						</Box>
 					)}

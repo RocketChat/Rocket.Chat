@@ -16,7 +16,9 @@ on:
       - '**.md'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  # merge_group runs group by the merge-group ref so a recreated group cancels the stale run;
+  # push/release runs group by run_id on purpose (never cancel a deploy in progress)
+  group: ${{ github.workflow }}-${{ github.head_ref || (github.event_name == 'merge_group' && github.ref) || github.run_id }}
   cancel-in-progress: true
 
 env:
@@ -41,6 +43,7 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
+      fips-skip: ${{ steps.fips.outputs.fips-skip }}
       packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       github-actions-changed: ${{ steps.diff.outputs.actions-changed }}
@@ -58,7 +61,7 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat "$GITHUB_EVENT_PATH"
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         # with:
         #   sparse-checkout: |
         #     package.json
@@ -141,6 +144,43 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> "$GITHUB_OUTPUT"
 
+      # How much of the FIPS suite to skip:
+      #   all      - build no fips images and run no fips tests
+      #   ui-suite - build the images, run the api suites, skip the expensive UI shards (default)
+      #   none     - skip nothing, the full fips suite runs
+      # Forks skip 'all': the fips base image (rocketchat/dhi-node) sits in a private DockerHub
+      # repo and secrets are unavailable to forks, so the pull could never succeed.
+      - id: fips
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REPO: ${{ github.repository }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO_IS_FORK: ${{ github.event.repository.fork }}
+          HAS_FIPS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'fips') }}
+        run: |
+          if [[ "$EVENT_NAME" == 'pull_request' ]]; then
+            if [[ "$PR_HEAD_REPO" == "$BASE_REPO" ]]; then
+              IS_FORK='false'
+            else
+              IS_FORK='true'
+            fi
+          else
+            IS_FORK="$REPO_IS_FORK"
+          fi
+
+          echo "EVENT_NAME: ${EVENT_NAME} / IS_FORK: ${IS_FORK}"
+
+          if [[ "$IS_FORK" == 'true' ]]; then
+            FIPS_SKIP='all'
+          elif [[ "$HAS_FIPS_LABEL" == 'true' ]]; then
+            FIPS_SKIP='none'
+          else
+            FIPS_SKIP='ui-suite'
+          fi
+
+          echo "FIPS_SKIP: ${FIPS_SKIP}"
+          echo "fips-skip=${FIPS_SKIP}" >> "$GITHUB_OUTPUT"
+
       - id: diff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -151,12 +191,45 @@ jobs:
             echo "actions-changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+  test-guard:
+    name: ⚙️ Test Guard
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      checks: read
+    outputs:
+      skip-tests: ${{ steps.check.outputs.skip-tests }}
+    steps:
+      # Commits only reach develop through the merge queue, where the full test
+      # suite already ran on this exact SHA — skip re-running it on the push event.
+      # Direct pushes (admin/revert) have no successful "Tests Done" check, so they
+      # still get the full suite. continue-on-error keeps this fail-open: if the
+      # API call fails, tests run.
+      - name: Check if this commit already passed tests
+        id: check
+        if: github.event_name == 'push'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # --paginate applies the jq filter per page, so emit names and count with
+          # wc -l to get a single integer across pages
+          passed=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" --paginate \
+            --jq '.check_runs[] | select(.name == "✅ Tests Done" and .conclusion == "success") | .name' | wc -l)
+
+          if [[ "$passed" -gt 0 ]]; then
+            echo "Tests already passed for ${{ github.sha }} in the merge queue, skipping test jobs"
+            echo "skip-tests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip-tests=false" >> "$GITHUB_OUTPUT"
+          fi
+
   notify-draft-services:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
+    if: github.event_name == 'release'
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: |
             package.json
@@ -195,11 +268,11 @@ jobs:
 
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions, notify-draft-services]
+    needs: [release-versions]
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: packages-cache-build
         with:
           path: |
@@ -220,7 +293,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
@@ -245,7 +318,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cache vite
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
@@ -253,7 +326,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
@@ -296,7 +369,7 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -325,10 +398,14 @@ jobs:
             [rocketchat],
           ]
         type:
-          # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+          - fips
+        exclude:
+          - arch: arm64
+            type: fips
+          # drop the whole fips leg when there is nothing downstream to consume it (fork PRs)
+          - type: ${{ needs.release-versions.outputs.fips-skip == 'all' && 'fips' || '' }}
         include:
-          # if not, build with coverage for tests
           - arch: amd64
             service: [rocketchat]
             type: coverage
@@ -337,7 +414,7 @@ jobs:
             type: coverage
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: ./.github/actions/restore-packages
 
@@ -351,6 +428,8 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
@@ -365,6 +444,8 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
@@ -380,6 +461,8 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
@@ -395,6 +478,8 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
@@ -412,17 +497,18 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -459,6 +545,9 @@ jobs:
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [[ "$service" == *"-fips" ]]; then
+              base_service="${service%-fips}"
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')-fips
             else
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
@@ -483,7 +572,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
@@ -505,7 +594,7 @@ jobs:
     env:
       ACTIONLINT_VERSION: 1.7.12
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get actionlint
         shell: bash
@@ -523,8 +612,11 @@ jobs:
           ./actionlint -color
 
 
+  # gating `checks` also skips every e2e test job (they all `need` it);
+  # test-storybook and test-unit don't, so they carry the same gate below
   checks:
-    needs: [release-versions, packages-build]
+    needs: [release-versions, packages-build, test-guard]
+    if: needs.test-guard.outputs.skip-tests != 'true'
 
     name: 🔎 Code Check
     uses: ./.github/workflows/ci-code-check.yml
@@ -534,7 +626,8 @@ jobs:
 
   test-storybook:
     name: 🔨 Test Storybook
-    needs: [packages-build, release-versions]
+    needs: [packages-build, release-versions, test-guard]
+    if: needs.test-guard.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
@@ -545,7 +638,8 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [packages-build, release-versions]
+    needs: [packages-build, release-versions, test-guard]
+    if: needs.test-guard.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -605,7 +699,7 @@ jobs:
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -657,13 +751,13 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test-api-apps-node-ee:
-    name: 🔨 Test API Apps (node-runtime - EE)
+  test-api-apps-deno-ee:
+    name: 🔨 Test API Apps (deno-runtime - EE)
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
-      type: api-apps-node
+      type: api-apps-deno
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
@@ -696,7 +790,7 @@ jobs:
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -707,13 +801,86 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-api-fips:
+    name: 🔨 Test API (FIPS)
+    if: needs.release-versions.outputs.fips-skip != 'all'
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api
+      release: ee
+      fips: true
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test-api-livechat-fips:
+    name: 🔨 Test API Livechat (FIPS)
+    if: needs.release-versions.outputs.fips-skip != 'all'
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
+      release: ee
+      fips: true
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test-ui-fips:
+    name: 🔨 Test UI (FIPS)
+    # only the 'fips' label opts a PR into the UI shards
+    if: needs.release-versions.outputs.fips-skip == 'none'
+    needs: [checks, build-gh-docker-publish, release-versions]
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: ee
+      fips: true
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -723,7 +890,7 @@ jobs:
           cache-modules: true
           install: true
 
-      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
 
       - name: Restore turbo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -737,7 +904,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -808,10 +975,10 @@ jobs:
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Use Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
@@ -837,28 +1004,32 @@ jobs:
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
           flags: e2e-api
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # tests don't re-run on the develop push, so the merge queue run (same SHA
+          # that lands on develop) provides the develop coverage baseline
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
           flags: e2e
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
 
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-federation-matrix]
-    if: always()
+    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-deno-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
         run: |
@@ -894,6 +1065,25 @@ jobs:
             exit 1
           fi
 
+          if [[ '${{ needs.test-api-apps-deno-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          # the fips jobs are gated by the release-versions 'fips-skip' output, so any of them
+          # can legitimately report 'skipped' (always on fork PRs, and test-ui-fips unless the
+          # PR carries the 'fips' label)
+          if [[ '${{ needs.test-api-fips.result }}' != 'success' && '${{ needs.test-api-fips.result }}' != 'skipped' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-livechat-fips.result }}' != 'success' && '${{ needs.test-api-livechat-fips.result }}' != 'skipped' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-fips.result }}' != 'success' && '${{ needs.test-ui-fips.result }}' != 'skipped' ]]; then
+            exit 1
+          fi
+
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
@@ -907,7 +1097,7 @@ jobs:
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: |
             package.json
@@ -962,21 +1152,22 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
       - name: Login to DockerHub
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -1042,28 +1233,39 @@ jobs:
 
             echo "Promoting $service"
 
-            if [[ "${service}" == 'rocketchat' ]]; then
-              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
+            # FIPS images publish to the same repo as their base service, distinguished by a
+            # '-fips' tag suffix (matching GHCR), not a separate '-fips' repository.
+            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            TAG_SUFFIX=''
+            if [[ "$service" == *"-fips" ]]; then
+              base_service="${service%-fips}"
+              TAG_SUFFIX='-fips'
+              SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
             else
-              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
+              base_service="$service"
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
 
-            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-            SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            if [[ "${base_service}" == 'rocketchat' ]]; then
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
+            else
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${base_service}"
+            fi
+
             DEST_REPO="docker.io/${IMAGE_NAME}"
 
-            echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"
+            echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}${TAG_SUFFIX}"
             skopeo copy --all \
               "docker://${SRC}" \
-              "docker://${DEST_REPO}:${PRIMARY}"
+              "docker://${DEST_REPO}:${PRIMARY}${TAG_SUFFIX}"
 
             # copy additional tags
             if (( ${#TAGS[@]} > 1 )); then
               for t in "${TAGS[@]:1}"; do
-                echo "Copying $SRC to ${DEST_REPO}:${t}"
+                echo "Copying $SRC to ${DEST_REPO}:${t}${TAG_SUFFIX}"
                 skopeo copy --all \
                   "docker://${SRC}" \
-                  "docker://${DEST_REPO}:${t}"
+                  "docker://${DEST_REPO}:${t}${TAG_SUFFIX}"
               done
             fi
 
@@ -1076,7 +1278,7 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: |
             package.json

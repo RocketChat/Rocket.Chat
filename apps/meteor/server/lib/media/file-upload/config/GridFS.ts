@@ -71,6 +71,8 @@ const readFromGridFS = async function (
 	const rs = await store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
+	res.setHeader('Accept-Ranges', 'bytes');
+
 	[rs, ws].forEach((stream) =>
 		stream.on('error', (err) => {
 			store.onReadError.call(store, err, fileId, file);

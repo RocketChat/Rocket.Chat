@@ -169,7 +169,7 @@ async function executeIntegrationRest(
 		return API.v1.unavailable('Service Unavailable');
 	}
 
-	if (!(await hasPermissionAsync(this.user._id, 'message-impersonate'))) {
+	if (!(await hasPermissionAsync(this.user, 'message-impersonate'))) {
 		incomingLogger.error({
 			msg: 'Error trying to execute integration',
 			integration: this.request.integration.name,

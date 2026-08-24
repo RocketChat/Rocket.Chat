@@ -808,6 +808,67 @@ test.describe('SAML', () => {
 		});
 	});
 
+	test.describe('SAML Login handoff', () => {
+		// When a native client starts the login it passes `loginClient`, and the web client must hand the SAML
+		// credential token over to the app instead of logging itself in, so that only one session is ever created.
+		const findCredentialToken = async (credentialToken: string) => {
+			const connection = await MongoClient.connect(constants.URL_MONGODB);
+			try {
+				return await connection
+					.db()
+					.collection<{ _id: string; userInfo?: { profile?: Record<string, any> } }>('rocketchat_credential_tokens')
+					.findOne({ _id: credentialToken });
+			} finally {
+				await connection.close();
+			}
+		};
+
+		test.beforeAll(async ({ api }) => {
+			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: true });
+		});
+
+		test.afterAll(async ({ api }) => {
+			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: false });
+		});
+
+		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
+			await page.goto('/home?loginClient=desktop');
+
+			await expect(page).toHaveURL(/loginClient=desktop/);
+
+			// Passing null skips the logged-in assertions, since the browser must not get a session here.
+			await doLoginStep(page, 'samluser1', null);
+
+			let credentialToken: string | null = null;
+
+			await test.step('expect to land on the SAML handoff route carrying the credential token', async () => {
+				// SAMLLoginRoute redirects to rocketchat://auth from here. The browser has no handler for that
+				// scheme, so the page stays put and we can inspect exactly what would have been handed over.
+				await expect(page).toHaveURL(/\/saml\/[^?]+\?.*loginClient=desktop/);
+
+				credentialToken = new URL(page.url()).searchParams.get('saml_idp_credentialToken');
+				expect(credentialToken).toBeTruthy();
+			});
+
+			await test.step('expect the credential to be stored server side, ready for the app to redeem', async () => {
+				const storedCredential = await findCredentialToken(credentialToken as string);
+
+				expect(storedCredential).not.toBeNull();
+				expect(storedCredential?.userInfo?.profile).toBeDefined();
+				expect(storedCredential?.userInfo?.profile?.email).toBe('samluser1@example.com');
+			});
+
+			await test.step('expect the browser to remain unauthenticated', async () => {
+				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+
+				// Reload to prove no session was persisted for this browser.
+				await page.goto('/home');
+				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+				await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+			});
+		});
+	});
+
 	test.fixme('Data Sync - Custom Field Map', async () => {
 		// Test the data sync using a custom fieldmap setting
 	});

@@ -62,6 +62,11 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 
 	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);
+
+	if (!isEditedMessage(message)) {
+		callbacks.runAsync('afterReadMessages', room, { uid: message.u._id, tmid: message.tmid });
+	}
+
 	if (!options?.skipNotifications) {
 		await notification(message, room, replies);
 	}

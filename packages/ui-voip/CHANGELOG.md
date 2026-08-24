@@ -1,5 +1,53 @@
 # @rocket.chat/ui-voip
 
+## 24.0.0-rc.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/ui-client@34.0.0-rc.0
+  - @rocket.chat/media-signaling@1.2.0-rc.0
+  - @rocket.chat/ui-contexts@34.0.0-rc.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/fuselage-ui-kit@34.0.0-rc.0
+  - @rocket.chat/ui-avatar@30.0.0-rc.0
+  </details>
+
+## 23.0.0
+
+### Patch Changes
+
+- ([#41200](https://github.com/RocketChat/Rocket.Chat/pull/41200)) Fixes an issue where the whole app remounts when VoIP availability changes
+
+- <details><summary>Updated dependencies [13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 0433f003d2bbe74fbbf4970d756df86ca44ac055, 4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
+
+  - @rocket.chat/desktop-api@1.3.0
+  - @rocket.chat/ui-client@33.0.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0
+  - @rocket.chat/ui-avatar@29.0.0
+  - @rocket.chat/ui-contexts@33.0.0
+  </details>
+
+## 23.0.0-rc.0
+
+### Patch Changes
+
+- ([#41200](https://github.com/RocketChat/Rocket.Chat/pull/41200)) Fixes an issue where the whole app remounts when VoIP availability changes
+
+- <details><summary>Updated dependencies [13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 0433f003d2bbe74fbbf4970d756df86ca44ac055, 4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
+
+  - @rocket.chat/desktop-api@1.3.0-rc.0
+  - @rocket.chat/ui-client@33.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0-rc.0
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  - @rocket.chat/ui-avatar@29.0.0-rc.0
+  </details>
+
 ## 22.0.0
 
 ### Minor Changes

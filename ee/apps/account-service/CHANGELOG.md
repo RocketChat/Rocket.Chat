@@ -1,5 +1,59 @@
 # @rocket.chat/account-service
 
+## 0.5.1-rc.0
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, 7f9592dc92567993f41d0e3510ecc9c00637a4cc, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/rest-typings@8.8.0-rc.0
+  - @rocket.chat/model-typings@2.5.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/models@2.5.0-rc.0
+  - @rocket.chat/core-services@0.16.0-rc.0
+  - @rocket.chat/tools@0.4.0-rc.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/network-broker@0.2.39-rc.0
+  </details>
+
+## 0.5.0
+
+### Minor Changes
+
+- ([#39324](https://github.com/RocketChat/Rocket.Chat/pull/39324)) Adds support for running Rocket.Chat in FIPS mode. The monolith and all microservices (ddp-streamer, account-service, authorization-service, presence-service, queue-worker, omnichannel-transcript) can now enforce FIPS-compliant cryptography via Node.js/OpenSSL FIPS, with dedicated FIPS Docker images. Running in FIPS mode requires a license including the new `fips` module, and FIPS status is now reported in server logs and statistics.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, b2b5edf5b37be3ee070290553f6aec42c39c98f6, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1, 6041285601ce6f9586f85cff72fb167642893245]:</summary>
+
+  - @rocket.chat/model-typings@2.4.0
+  - @rocket.chat/core-typings@8.7.0
+  - @rocket.chat/models@2.4.0
+  - @rocket.chat/rest-typings@8.7.0
+  - @rocket.chat/core-services@0.15.0
+  - @rocket.chat/network-broker@0.2.38
+  </details>
+
+## 0.5.0-rc.0
+
+### Minor Changes
+
+- ([#39324](https://github.com/RocketChat/Rocket.Chat/pull/39324)) Adds support for running Rocket.Chat in FIPS mode. The monolith and all microservices (ddp-streamer, account-service, authorization-service, presence-service, queue-worker, omnichannel-transcript) can now enforce FIPS-compliant cryptography via Node.js/OpenSSL FIPS, with dedicated FIPS Docker images. Running in FIPS mode requires a license including the new `fips` module, and FIPS status is now reported in server logs and statistics.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, b2b5edf5b37be3ee070290553f6aec42c39c98f6, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1, 6041285601ce6f9586f85cff72fb167642893245]:</summary>
+
+  - @rocket.chat/model-typings@2.4.0-rc.0
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/models@2.4.0-rc.0
+  - @rocket.chat/rest-typings@8.7.0-rc.0
+  - @rocket.chat/core-services@0.15.0-rc.0
+  - @rocket.chat/network-broker@0.2.38-rc.0
+  </details>
+
 ## 0.4.58
 
 ### Patch Changes

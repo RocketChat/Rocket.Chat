@@ -65,24 +65,25 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 }
 
 class OmnichannelUnitsTable extends Table {
-	constructor(page: Locator) {
-		super(page);
-	}
-
 	deleteUnitByName(name: string) {
 		return this.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}
 }
 
 export class OmnichannelUnits extends OmnichannelAdmin {
-	readonly manageUnit: OmnichannelUnitFlexTab;
+	protected readonly route = 'units';
 
-	readonly table: OmnichannelUnitsTable;
+	protected readonly title = 'Units';
+
+	readonly manageUnit: OmnichannelUnitFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.manageUnit = new OmnichannelUnitFlexTab(page);
-		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }));
+	}
+
+	override get table() {
+		return new OmnichannelUnitsTable(this.page.getByRole('table', { name: this.title }));
 	}
 
 	async createNew() {

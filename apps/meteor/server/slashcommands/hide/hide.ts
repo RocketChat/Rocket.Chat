@@ -45,8 +45,7 @@ slashCommands.add({
 			if (!roomObject) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: i18n.t('Channel_doesnt_exist', {
-						postProcess: 'sprintf',
-						sprintf: [room],
+						channelName: strippedRoom,
 						lng,
 					}),
 				});
@@ -54,8 +53,7 @@ slashCommands.add({
 			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: i18n.t('error-logged-user-not-in-room', {
-						postProcess: 'sprintf',
-						sprintf: [room],
+						roomName: room,
 						lng,
 					}),
 				});

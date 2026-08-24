@@ -15,83 +15,67 @@ describe('[Commands]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/commands.get]', () => {
-		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			void request
-				.get(api('commands.get'))
-				.set(credentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal(`must have required property 'command'`);
-				})
-				.end(done);
+		it('should return an error when call the endpoint without "command" required parameter', async () => {
+			const res = await request.get(api('commands.get')).set(credentials).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal(`must have required property 'command'`);
 		});
-		it('should return an error when call the endpoint with an invalid command', (done) => {
-			void request
+		it('should return an error when call the endpoint with an invalid command', async () => {
+			const res = await request
 				.get(api('commands.get'))
 				.set(credentials)
 				.query({
 					command: 'invalid-command',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('There is no command in the system by the name of: invalid-command');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('There is no command in the system by the name of: invalid-command');
 		});
-		it('should return success when parameters are correct', (done) => {
-			void request
+		it('should return success when parameters are correct', async () => {
+			const res = await request
 				.get(api('commands.get'))
 				.set(credentials)
 				.query({
 					command: 'help',
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('command');
-					expect(res.body.command).to.have.property('command');
-					expect(res.body.command).to.have.property('description');
-					expect(res.body.command).to.have.property('clientOnly');
-					expect(res.body.command).to.have.property('providesPreview');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('command');
+			expect(res.body.command).to.have.property('command');
+			expect(res.body.command).to.have.property('description');
+			expect(res.body.command).to.have.property('clientOnly');
+			expect(res.body.command).to.have.property('providesPreview');
 		});
 	});
 
 	describe('[/commands.list]', () => {
-		it('should return a list of commands', (done) => {
-			void request
-				.get(api('commands.list'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('commands').and.to.be.an('array');
-				})
-				.end(done);
+		it('should return a list of commands', async () => {
+			const res = await request.get(api('commands.list')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('commands').and.to.be.an('array');
 		});
-		it('should return a list of commands even requested with count and offset params', (done) => {
-			void request
+		it('should return a list of commands even requested with count and offset params', async () => {
+			const res = await request
 				.get(api('commands.list'))
 				.set(credentials)
 				.query({
 					count: 5,
 					offset: 0,
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('commands').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('commands').and.to.be.an('array');
 		});
 	});
 
@@ -117,20 +101,15 @@ describe('[Commands]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			void request
-				.post(api('commands.run'))
-				.set(credentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("must have required property 'command'");
-				})
-				.end(done);
+		it('should return an error when call the endpoint without "command" required parameter', async () => {
+			const res = await request.post(api('commands.run')).set(credentials).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'command'");
 		});
 
-		it('should coerce non-string "params" to string via ajv coercion', (done) => {
-			void request
+		it('should coerce non-string "params" to string via ajv coercion', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -138,29 +117,25 @@ describe('[Commands]', () => {
 					roomId: 'GENERAL',
 					params: true,
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return an error when call the endpoint without "roomId" required parameter', (done) => {
-			void request
+		it('should return an error when call the endpoint without "roomId" required parameter', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
 					params: 'params',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("must have required property 'roomId'");
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'roomId'");
 		});
-		it('should coerce non-string "tmid" to string via ajv coercion and fail with invalid thread', (done) => {
-			void request
+		it('should coerce non-string "tmid" to string via ajv coercion and fail with invalid thread', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -169,15 +144,13 @@ describe('[Commands]', () => {
 					roomId: 'GENERAL',
 					tmid: true,
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Invalid thread.');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('Invalid thread.');
 		});
-		it('should return an error when call the endpoint with the invalid "command" param', (done) => {
-			void request
+		it('should return an error when call the endpoint with the invalid "command" param', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -185,15 +158,13 @@ describe('[Commands]', () => {
 					params: 'params',
 					roomId: 'GENERAL',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
 		});
-		it('should return an error when call the endpoint with an invalid thread id', (done) => {
-			void request
+		it('should return an error when call the endpoint with an invalid thread id', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -202,15 +173,13 @@ describe('[Commands]', () => {
 					roomId: 'GENERAL',
 					tmid: 'invalid-thread',
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Invalid thread.');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('Invalid thread.');
 		});
-		it('should return an error when call the endpoint with a valid thread id of wrong channel', (done) => {
-			void request
+		it('should return an error when call the endpoint with a valid thread id of wrong channel', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -219,15 +188,13 @@ describe('[Commands]', () => {
 					roomId: 'GENERAL',
 					tmid: threadMessage.tmid,
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Invalid thread.');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('Invalid thread.');
 		});
-		it('should return success when parameters are correct', (done) => {
-			void request
+		it('should return success when parameters are correct', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -236,11 +203,9 @@ describe('[Commands]', () => {
 					roomId: threadMessage.rid,
 					tmid: threadMessage.tmid,
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 	});
 
@@ -529,17 +494,15 @@ describe('[Commands]', () => {
 			await Promise.all([deleteUser(user1)]);
 		});
 
-		it('should fail when trying to kick a user from a direct message room', (done) => {
-			void request
+		it('should fail when trying to kick a user from a direct message room', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'kick', roomId: directMessageRoom._id, params: user1.username })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').that.is.a('string');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').that.is.a('string');
 		});
 	});
 	describe('Command "leave"', function () {
@@ -566,17 +529,15 @@ describe('[Commands]', () => {
 			await Promise.all([deleteUser(user1), deleteUser(user2)]);
 		});
 
-		it('should fail when trying to leave a direct message room', (done) => {
-			void request
+		it('should fail when trying to leave a direct message room', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'leave', roomId: directMessageRoom._id })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').that.is.a('string');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').that.is.a('string');
 		});
 	});
 
@@ -605,18 +566,16 @@ describe('[Commands]', () => {
 			await Promise.all([deleteUser(user1), deleteUser(user2)]);
 		});
 
-		it('should fail when trying to invite a user to a direct message room', (done) => {
-			void request
+		it('should fail when trying to invite a user to a direct message room', async () => {
+			const res = await request
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'invite', roomId: directMessageRoom._id, params: 'g1' })
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').that.is.a('string');
-					expect(res.body.error).to.equal('unauthorized');
-				})
-				.end(done);
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').that.is.a('string');
+			expect(res.body.error).to.equal('unauthorized');
 		});
 	});
 });

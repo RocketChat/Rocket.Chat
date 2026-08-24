@@ -68,21 +68,11 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 
 	emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
 
-	let matchingResults = [];
+	const conflictingEmoji = await EmojiCustom.findOneByNamesOrAliases([emojiData.name, ...aliases], emojiData._id, {
+		projection: { _id: 1 },
+	});
 
-	if (emojiData._id) {
-		matchingResults = await EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).toArray();
-		for (const alias of aliases) {
-			matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).toArray());
-		}
-	} else {
-		matchingResults = await EmojiCustom.findByNameOrAlias(emojiData.name).toArray();
-		for (const alias of aliases) {
-			matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAlias(alias).toArray());
-		}
-	}
-
-	if (matchingResults.length > 0) {
+	if (conflictingEmoji) {
 		throw new Meteor.Error('Custom_Emoji_Error_Name_Or_Alias_Already_In_Use', 'The custom emoji or one of its aliases is already in use', {
 			method: 'insertOrUpdateEmoji',
 		});

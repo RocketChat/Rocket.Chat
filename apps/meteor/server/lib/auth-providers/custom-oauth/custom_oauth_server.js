@@ -18,7 +18,7 @@ import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
 import { registerAccessTokenService } from '../oauth/oauth';
 
-const logger = new Logger('CustomOAuth');
+const logger = new Logger('CustomOAuth', { redact: ['options.clientSecret'] });
 
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];

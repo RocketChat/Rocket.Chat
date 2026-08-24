@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -51,6 +52,8 @@ Meteor.startup(async () => {
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get<string>('Site_Url')}`,
 			`    Hashed Site URL: ${License.getHashedWorkspaceUrl()}`,
+			`    OpenSSL Version: ${process.versions.openssl}`,
+			`      FIPS Provider: ${crypto.getFips() ? 'Enabled' : 'Disabled'}`,
 		];
 
 		if (Info.commit?.hash) {

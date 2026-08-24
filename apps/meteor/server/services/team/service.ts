@@ -24,7 +24,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document, FindOptions, Filter } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../lib/notifyListener';
@@ -40,7 +40,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		if (!(await checkUsernameAvailability(team.name))) {
+		if (!(await checkUsernameAvailability(team.name, 'room'))) {
 			throw new Error('team-name-already-exists');
 		}
 
@@ -575,7 +575,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 
-		const teamRooms: (IRoom & {
+		const teamRooms: (Pick<IRoom, '_id' | 't'> & {
 			userCanDelete?: boolean;
 		})[] = await Rooms.findByTeamId(teamId, {
 			projection: { _id: 1, t: 1 },
@@ -783,9 +783,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const membersIds = members.map((m) => m.userId);
-		const usersToRemove = await Users.findByIds(membersIds, {
-			projection: { _id: 1, username: 1 },
-		}).toArray();
+		const usersToRemove = await Users.findByIds(membersIds).toArray();
 		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {

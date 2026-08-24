@@ -177,6 +177,7 @@ const ThreadList = () => {
 											unread={subscription?.tunread ?? []}
 											unreadUser={subscription?.tunreadUser ?? []}
 											unreadGroup={subscription?.tunreadGroup ?? []}
+											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
 											onClick={handleThreadClick}
 										/>
 									)}

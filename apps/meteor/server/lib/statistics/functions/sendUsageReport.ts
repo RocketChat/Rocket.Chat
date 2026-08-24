@@ -1,4 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -40,7 +41,9 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
 	// Even when disabled, we still generate statistics locally to avoid breaking
 	// internal processes, such as restriction checks for air-gapped workspaces.
-	const shouldSendToCollector = shouldReportStatistics();
+	// Evaluated at send time (not entry) so the verdict cannot go stale while the
+	// statistics are being generated — e.g. an offline license applied during startup.
+	const shouldSendToCollector = () => shouldReportStatistics() && !License.hasOfflineLicense();
 
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();
@@ -59,7 +62,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 				}
 
 				// if it doesn't it means the request failed, so we try sending again with the same data
-				if (shouldSendToCollector) {
+				if (shouldSendToCollector()) {
 					return sendStats(logger, last);
 				}
 
@@ -69,7 +72,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 
 		// if our latest stats has more than 24h OR the statistics.version differs from the actual version, it is time to generate a new one and send it
 		const cronStatistics = await statistics.save();
-		if (shouldSendToCollector) {
+		if (shouldSendToCollector()) {
 			return sendStats(logger, cronStatistics);
 		}
 	});

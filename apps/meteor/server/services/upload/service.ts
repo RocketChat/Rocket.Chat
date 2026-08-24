@@ -27,9 +27,9 @@ const logger = new Logger('UploadService');
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
+	async uploadFile({ buffer, details, federation }: IUploadFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {
@@ -57,7 +57,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
+	async canDeleteFile(
+		user: Pick<IUser, '_id' | 'username'>,
+		file: Pick<IUpload, '_id' | 'userId' | 'rid' | 'expiresAt' | 'uploadedAt'>,
+		msg: IMessage | null,
+	): Promise<boolean> {
 		if (msg) {
 			return canDeleteMessageAsync(user, msg);
 		}

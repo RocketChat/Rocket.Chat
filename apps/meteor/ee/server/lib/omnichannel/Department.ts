@@ -1,7 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter } from 'mongodb';
 
 export const findAllDepartmentsAvailable = async (
@@ -24,7 +24,7 @@ export const findAllDepartmentsAvailable = async (
 		query = await applyDepartmentRestrictions(query, uid);
 	}
 
-	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset, sort: { name: 1 } });
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, skip: offset, sort: { name: 1 } });
 
 	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -40,7 +40,7 @@ export const findAllDepartmentsByUnit = async (
 		{
 			ancestors: { $in: [unitId] },
 		},
-		{ limit: count, offset },
+		{ limit: count, skip: offset, sort: { name: 1, _id: 1 } },
 	);
 
 	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);

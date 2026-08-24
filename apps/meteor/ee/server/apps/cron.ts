@@ -1,6 +1,7 @@
 import type { ProxiedApp } from '@rocket.chat/apps/dist/server/ProxiedApp';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { cronJobs } from '@rocket.chat/cron';
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
@@ -75,6 +76,10 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 };
 
 const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
+	if (License.hasOfflineLicense()) {
+		return;
+	}
+
 	const token = await getWorkspaceAccessToken();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 

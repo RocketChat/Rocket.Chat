@@ -1,5 +1,5 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { EventStore } from '@rocket.chat/federation-sdk';
+import type { EventID, EventStore, PduForType } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
 	createRoom(room: IRoomFederated, owner: IUser): Promise<{ room_id: string; event_id: string }>;
@@ -34,4 +34,6 @@ export interface IFederationMatrixService {
 	canUserAccessFederation(user: IUser): Promise<boolean>;
 	notifyRoomRead(params: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void>;
 	updateUserName(user: IUser): Promise<void>;
+	joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean>;
+	saveFederationMessage(event: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void>;
 }

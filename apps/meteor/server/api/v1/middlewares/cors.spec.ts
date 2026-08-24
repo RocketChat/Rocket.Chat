@@ -113,6 +113,10 @@ describe('Cors middleware', () => {
 			_id: 'API_CORS_Origin',
 			value: '*',
 		} as any);
+		settings.set({
+			_id: 'MCP_Enabled',
+			value: true,
+		} as any);
 
 		api.use(cors(settings)).get(
 			'/test',
@@ -138,7 +142,11 @@ describe('Cors middleware', () => {
 
 		app.use(api.router);
 
-		const response = await request(app).options('/api/test').set('origin', 'http://localhost');
+		const response = await request(app)
+			.options('/api/test')
+			.set('origin', 'http://localhost')
+			.set('access-control-request-method', 'POST')
+			.set('access-control-request-headers', 'Content-Type, MCP-Protocol-Version');
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toHaveProperty('message', 'CORS test successful');
@@ -146,7 +154,7 @@ describe('Cors middleware', () => {
 		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
 		expect(response.headers).toHaveProperty(
 			'access-control-allow-headers',
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization, MCP-Protocol-Version',
 		);
 	});
 
@@ -164,6 +172,10 @@ describe('Cors middleware', () => {
 			_id: 'API_CORS_Origin',
 			value: 'http://localhost',
 		} as any);
+		settings.set({
+			_id: 'MCP_Enabled',
+			value: true,
+		} as any);
 
 		api.use(cors(settings)).get(
 			'/test',
@@ -189,7 +201,11 @@ describe('Cors middleware', () => {
 
 		app.use(api.router);
 
-		const response = await request(app).options('/api/test').set('origin', 'http://localhost');
+		const response = await request(app)
+			.options('/api/test')
+			.set('origin', 'http://localhost')
+			.set('access-control-request-method', 'POST')
+			.set('access-control-request-headers', 'Content-Type, MCP-Protocol-Version');
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toHaveProperty('message', 'CORS test successful');
@@ -197,8 +213,29 @@ describe('Cors middleware', () => {
 		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
 		expect(response.headers).toHaveProperty(
 			'access-control-allow-headers',
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization, MCP-Protocol-Version',
 		);
+	});
+
+	it('should not advertise the MCP protocol header while MCP is disabled', async () => {
+		const ajv = new Ajv();
+		const app = express();
+		const api = new Router('/api');
+		const settings = new CachedSettings();
+
+		settings.set({ _id: 'API_Enable_CORS', value: true } as any);
+		settings.set({ _id: 'API_CORS_Origin', value: '*' } as any);
+		settings.set({ _id: 'MCP_Enabled', value: false } as any);
+
+		api
+			.use(cors(settings))
+			.get('/test', { response: { 200: ajv.compile({ type: 'object' }) } }, async () => ({ statusCode: 200, body: {} }));
+		app.use(api.router);
+
+		const response = await request(app).options('/api/test').set('origin', 'http://localhost').set('access-control-request-method', 'POST');
+
+		expect(response.statusCode).toBe(200);
+		expect(response.headers['access-control-allow-headers']).not.toContain('MCP-Protocol-Version');
 	});
 
 	it('should not handle CORS if origin is not allowed', async () => {

@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'sidebarDrafts' | 'aiSearch';
+export type FeaturesAvailable = 'secondarySidebar' | 'aiSearch';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -29,20 +29,11 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		enabled: true,
 	},
 	{
-		name: 'sidebarDrafts',
-		i18n: 'Drafts_in_sidebar',
-		description: 'Drafts_in_sidebar_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/sidebar-drafts.png',
-		value: false,
-		enabled: true,
-	},
-	{
 		name: 'aiSearch',
 		i18n: 'Intelligent_Search',
 		description: 'Intelligent_Search_upsell_description',
 		group: 'AI',
-		value: true,
+		value: false,
 		enabled: true,
 	},
 ];

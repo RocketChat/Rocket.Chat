@@ -1,5 +1,15 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
+import type {
+	IBaseModel,
+	DefaultFields,
+	ResultFields,
+	FindPaginated,
+	InsertionModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	DocumentWithDriverProjection,
+	FindOneAndUpdateOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
@@ -135,15 +145,14 @@ export abstract class BaseRaw<
 		}
 
 		const projection: Record<string, any> = optionsDef?.projection;
-		const keys = Object.keys(projection);
-		const removeKeys = keys.filter((key) => projection[key] === 0);
-		if (keys.length > removeKeys.length) {
-			removeKeys.forEach((key) => delete projection[key]);
-		}
+		const entries = Object.entries(projection);
+		const inclusionEntries = entries.filter(([, value]) => value !== 0 && value !== false);
+		const isMixed = inclusionEntries.length > 0 && inclusionEntries.length < entries.length;
 
 		return {
 			...optionsDef,
-			projection,
+			// a mixed projection gets its exclusions dropped into a new object; `projection` may be owned by the caller
+			projection: isMixed ? Object.fromEntries(inclusionEntries) : projection,
 		};
 	}
 
@@ -171,7 +180,19 @@ export abstract class BaseRaw<
 		};
 	}
 
-	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
+	/*
+	 * Every finder below asserts its result. `this.col` is a `Collection<T>` and yields `WithId<T>`,
+	 * while the signatures return `DocumentWithProjection<P, O>` — a conditional type TS cannot reduce
+	 * while `P` and `O` are still type parameters, so it cannot verify the assignment either way.
+	 * Assert to the declared type rather than `any`, so a Promise/FindCursor mix-up still fails to compile.
+	 * The cursor cases need the `unknown` hop because `FindCursor` is invariant in its element type.
+	 */
+
+	public findOneAndUpdate<P extends Document = T, O extends FindOneAndUpdateOptionsWithProjection = FindOneAndUpdateOptionsWithProjection>(
+		query: Filter<T>,
+		update: UpdateFilter<T> | T,
+		options?: O,
+	): Promise<DocumentWithDriverProjection<P, O> | null> {
 		this.setUpdatedAt(update);
 
 		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in query)) {
@@ -181,56 +202,49 @@ export abstract class BaseRaw<
 			} as Partial<T> & { _id: string };
 		}
 
-		return this.col.findOneAndUpdate(query, update, options || {});
+		const result = this.col.findOneAndUpdate(query, update, (options || {}) as FindOneAndUpdateOptions);
+
+		return result as Promise<DocumentWithDriverProjection<P, O> | null>;
 	}
 
-	async findOneById(_id: T['_id'], options?: FindOptions<T>): Promise<T | null>;
-
-	async findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
-
-	async findOneById(_id: T['_id'], options?: any): Promise<T | null> {
-		const query: Filter<T> = { _id } as Filter<T>;
-		if (options) {
-			return this.findOne(query, options);
-		}
-		return this.findOne(query);
+	async findOneById<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_id: T['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ _id } as Filter<T>, options);
 	}
 
-	async findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
-
-	async findOne<P extends Document = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
-
-	async findOne<P>(query: Filter<T> | T['_id'] = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
+	async findOne<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> | T['_id'] = {},
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		if (optionsDef) {
-			return this.col.findOne(q, optionsDef);
+			return this.col.findOne(q, optionsDef) as Promise<DocumentWithProjection<P, O> | null>;
 		}
-		return this.col.findOne(q);
+		return this.col.findOne(q) as Promise<DocumentWithProjection<P, O> | null>;
 	}
 
-	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
-
-	find<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
-
-	find<P extends Document>(
+	find<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		query: Filter<T> = {},
-		options?: FindOptions<P extends T ? T : P>,
-	): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		return this.col.find(query, optionsDef);
+		return this.col.find(query, optionsDef) as unknown as FindCursor<DocumentWithProjection<P, O>>;
 	}
 
-	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
-
-	findPaginated(query: Filter<T> = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {
+	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		query: Filter<T> = {},
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
 		const totalCount = this.col.countDocuments(query);
 
 		return {
-			cursor,
+			cursor: cursor as unknown as FindCursor<DocumentWithProjection<P, O>>,
 			totalCount,
 		};
 	}
@@ -324,9 +338,13 @@ export abstract class BaseRaw<
 			} as unknown as TDeleted;
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-			});
+			await this.trash?.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash },
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		if (options) {
@@ -335,6 +353,12 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
+	/**
+	 * No projection narrowing: whether the model archives to a trash collection is a runtime detail
+	 * (a constructor argument), and the trash path has to read the whole document to archive it, so
+	 * it returns every field regardless of the projection. Narrowing here would claim a filtering
+	 * that only happens for models without a trash collection.
+	 */
 	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
 		if (!this.trash) {
 			return this.col.findOneAndDelete(filter, options || {});
@@ -352,9 +376,13 @@ export abstract class BaseRaw<
 			__collection__: this.name,
 		} as unknown as TDeleted;
 
-		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-			upsert: true,
-		});
+		await this.trash?.updateOne(
+			{ _id } as Filter<TDeleted>,
+			{ $set: trash },
+			{
+				upsert: true,
+			},
+		);
 
 		try {
 			await this.col.deleteOne({ _id } as Filter<T>);
@@ -390,13 +418,17 @@ export abstract class BaseRaw<
 				__collection__: this.name,
 			} as unknown as TDeleted;
 
-			ids.push(_id as T['_id']);
+			ids.push(_id);
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-				session: options?.session,
-			});
+			await this.trash?.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash },
+				{
+					upsert: true,
+					session: options?.session,
+				},
+			);
 
 			void options?.onTrash?.(doc);
 		}

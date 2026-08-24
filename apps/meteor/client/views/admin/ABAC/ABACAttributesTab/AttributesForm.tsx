@@ -1,17 +1,6 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	ContextualbarFooter,
-	Field,
-	FieldError,
-	FieldLabel,
-	FieldRow,
-	IconButton,
-	TextInput,
-} from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldError, FieldLabel, FieldRow, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo, Fragment, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';

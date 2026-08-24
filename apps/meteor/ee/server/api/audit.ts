@@ -1,4 +1,4 @@
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IAuditLog, IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import {
 	isServerEventsAuditSettingsProps,
@@ -15,6 +15,7 @@ import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
+import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from '../lib/audit/functions';
 
 type AuditRoomMembersParams = PaginatedRequest<{
 	roomId: string;
@@ -36,6 +37,76 @@ const auditRoomMembersSchema = {
 
 export const isAuditRoomMembersProps = ajvQuery.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
 
+type AuditAuditionsParams = { startDate: string; endDate: string };
+
+const auditAuditionsSchema = {
+	type: 'object',
+	properties: {
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+	},
+	required: ['startDate', 'endDate'],
+	additionalProperties: false,
+};
+
+const isAuditAuditionsProps = ajvQuery.compile<AuditAuditionsParams>(auditAuditionsSchema);
+
+type AuditMessagesPayload = {
+	rid?: string;
+	startDate: string;
+	endDate: string;
+	users: string[];
+	msg: string;
+	type: string;
+	visitor?: string;
+	agent?: string;
+};
+
+const auditMessagesSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+		users: { type: 'array', items: { type: 'string' } },
+		msg: { type: ['string', 'null'] },
+		type: { type: 'string' },
+		visitor: { type: ['string', 'null'] },
+		agent: { type: ['string', 'null'] },
+	},
+	required: ['startDate', 'endDate', 'users', 'msg', 'type'],
+	additionalProperties: false,
+};
+
+const isAuditMessagesProps = ajv.compile<AuditMessagesPayload>(auditMessagesSchema);
+
+type AuditOmnichannelMessagesPayload = {
+	startDate: string;
+	endDate: string;
+	users: string[];
+	msg: string;
+	type: string;
+	visitor?: string;
+	agent?: string;
+};
+
+const auditOmnichannelMessagesSchema = {
+	type: 'object',
+	properties: {
+		startDate: { type: 'string', minLength: 1 },
+		endDate: { type: 'string', minLength: 1 },
+		users: { type: 'array', items: { type: 'string' } },
+		msg: { type: ['string', 'null'] },
+		type: { type: 'string' },
+		visitor: { type: ['string', 'null'] },
+		agent: { type: ['string', 'null'] },
+	},
+	required: ['startDate', 'endDate', 'users', 'msg', 'type'],
+	additionalProperties: false,
+};
+
+const isAuditOmnichannelMessagesProps = ajv.compile<AuditOmnichannelMessagesPayload>(auditOmnichannelMessagesSchema);
+
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
@@ -43,6 +114,18 @@ declare module '@rocket.chat/rest-typings' {
 			GET: (
 				params: AuditRoomMembersParams,
 			) => PaginatedResult<{ members: Pick<IUser, '_id' | 'name' | 'username' | 'status' | '_updatedAt'>[] }>;
+		};
+
+		'/v1/audit.auditions': {
+			GET: (params: AuditAuditionsParams) => { auditions: IAuditLog[] };
+		};
+
+		'/v1/audit.messages': {
+			POST: (params: AuditMessagesPayload) => { messages: IMessage[] };
+		};
+
+		'/v1/audit.omnichannelMessages': {
+			POST: (params: AuditOmnichannelMessagesPayload) => { messages: IMessage[] };
 		};
 	}
 }
@@ -237,5 +320,181 @@ API.v1.get(
 			offset,
 			total,
 		});
+	},
+);
+
+const auditAuditionsResponseSchema = ajv.compile<{ auditions: IAuditLog[] }>({
+	type: 'object',
+	properties: {
+		auditions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string', format: 'date-time' },
+					ts: { type: 'string', format: 'date-time' },
+					results: { type: 'number' },
+					u: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string' },
+							avatarETag: { type: 'string' },
+						},
+						required: ['_id'],
+						additionalProperties: false,
+					},
+					fields: {
+						type: 'object',
+						properties: {
+							type: { type: 'string' },
+							msg: { type: ['string', 'null'] },
+							startDate: { type: ['string', 'null'], format: 'date-time' },
+							endDate: { type: ['string', 'null'], format: 'date-time' },
+							rids: { type: ['array', 'null'], items: { type: 'string' } },
+							room: { type: ['string', 'null'] },
+							users: { type: ['array', 'null'], items: { type: 'string' } },
+							visitor: { type: ['string', 'null'] },
+							agent: { type: ['string', 'null'] },
+							filters: { type: ['string', 'null'] },
+						},
+						required: ['type'],
+						additionalProperties: false,
+					},
+				},
+				required: ['_id', 'ts', 'results', 'u', 'fields'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['auditions', 'success'],
+	additionalProperties: false,
+});
+
+// `messages` items are full IMessage documents. A strict `$ref` to IMessage fails response
+// validation because its attachment union is a `oneOf` whose branches overlap on file/quote
+// attachments (AJV `passingSchemas: 0,1`), so real audit results with attachments would 400.
+// Kept relaxed until the IMessage attachment schema gains discriminators.
+const auditMessagesResponseSchema = ajv.compile<{ messages: IMessage[] }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { type: 'object' } },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+const auditErrorResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success', 'error'],
+});
+
+const parseDateOrFail = (value: string, name: string): Date => {
+	const ts = Date.parse(value);
+	if (Number.isNaN(ts)) {
+		throw new Error(`The "${name}" parameter must be a valid date.`);
+	}
+	return new Date(ts);
+};
+
+API.v1.get(
+	'audit.auditions',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit-log'],
+		query: isAuditAuditionsProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditAuditionsResponseSchema,
+			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const startDate = parseDateOrFail(this.queryParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.queryParams.endDate, 'endDate');
+
+		const auditions = await auditGetAuditionsMethod(this.userId, startDate, endDate);
+		return API.v1.success({ auditions });
+	},
+);
+
+API.v1.post(
+	'audit.messages',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+		body: isAuditMessagesProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditMessagesResponseSchema,
+			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { rid, users, msg, type, visitor, agent } = this.bodyParams;
+		const startDate = parseDateOrFail(this.bodyParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.bodyParams.endDate, 'endDate');
+
+		const messages = await auditGetMessagesMethod(this.userId, {
+			rid,
+			startDate,
+			endDate,
+			users,
+			msg,
+			type,
+			visitor,
+			agent,
+		});
+
+		return API.v1.success({ messages });
+	},
+);
+
+API.v1.post(
+	'audit.omnichannelMessages',
+	{
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+		body: isAuditOmnichannelMessagesProps,
+		license: ['auditing'],
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: auditMessagesResponseSchema,
+			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { users, msg, type, visitor, agent } = this.bodyParams;
+		const startDate = parseDateOrFail(this.bodyParams.startDate, 'startDate');
+		const endDate = parseDateOrFail(this.bodyParams.endDate, 'endDate');
+
+		const messages = await auditGetOmnichannelMessagesMethod(this.userId, {
+			startDate,
+			endDate,
+			users,
+			msg,
+			type,
+			visitor,
+			agent,
+		});
+
+		return API.v1.success({ messages });
 	},
 );

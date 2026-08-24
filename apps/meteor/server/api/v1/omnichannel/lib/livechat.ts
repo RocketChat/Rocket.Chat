@@ -52,7 +52,9 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token);
 }
 
-export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+export function findGuestWithoutActivity(
+	token: string,
+): Promise<Pick<ILivechatVisitor, '_id' | 'name' | 'username' | 'token' | 'visitorEmails' | 'department'> | null> {
 	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 

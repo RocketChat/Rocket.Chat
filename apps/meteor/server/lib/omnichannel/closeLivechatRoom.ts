@@ -35,7 +35,7 @@ export const closeLivechatRoom = async (
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
-	if (!subscription && !(await hasPermissionAsync(user._id, 'close-others-livechat-room'))) {
+	if (!subscription && !(await hasPermissionAsync(user, 'close-others-livechat-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

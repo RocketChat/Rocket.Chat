@@ -1,6 +1,7 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
+import { assertNotOfflineLicense } from './offlineLicense';
 import { saveRegistrationData } from './saveRegistrationData';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { settings } from '../../settings';
@@ -47,6 +48,8 @@ const fetchRegistrationDataPayload = async ({
 };
 
 export async function connectWorkspace(token: string) {
+	assertNotOfflineLicense();
+
 	if (!token) {
 		throw new CloudWorkspaceConnectionError('Invalid registration token');
 	}

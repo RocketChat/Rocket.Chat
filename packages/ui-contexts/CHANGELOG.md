@@ -1,5 +1,41 @@
 # @rocket.chat/ui-contexts
 
+## 34.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e6779053a5a75f90e4fd72fa42c6cb3e138078ab, 5a3fd5267bf3dcaee645b2121539a8802761a2e4, 097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 8984df841e1ecc46198e073982adabc1f069c352, 7f9592dc92567993f41d0e3510ecc9c00637a4cc]:</summary>
+
+  - @rocket.chat/i18n@4.0.0-rc.0
+  - @rocket.chat/rest-typings@8.8.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/ddp-client@1.1.2-rc.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/password-policies@0.1.1
+  </details>
+
+## 33.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 115dfe8f7e0ac788a2ef92c6ca298cf37b61b136, b2b5edf5b37be3ee070290553f6aec42c39c98f6, 376c9d862f63cb7dd4995842a23340e581056eee, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, b2b5edf5b37be3ee070290553f6aec42c39c98f6]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0
+  - @rocket.chat/rest-typings@8.7.0
+  - @rocket.chat/i18n@3.3.0
+  </details>
+
+## 33.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 115dfe8f7e0ac788a2ef92c6ca298cf37b61b136, b2b5edf5b37be3ee070290553f6aec42c39c98f6, 376c9d862f63cb7dd4995842a23340e581056eee, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, b2b5edf5b37be3ee070290553f6aec42c39c98f6]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/rest-typings@8.7.0-rc.0
+  - @rocket.chat/i18n@3.3.0-rc.0
+  </details>
+
 ## 32.0.0
 
 ### Patch Changes

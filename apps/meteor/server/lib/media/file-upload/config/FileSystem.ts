@@ -31,6 +31,7 @@ const FileSystemUploads = new FileUploadClass({
 			res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
+			res.setHeader('Accept-Ranges', 'bytes');
 
 			if (req.headers.range) {
 				const range = getFileRange(file, req);

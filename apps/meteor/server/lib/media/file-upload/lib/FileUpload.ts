@@ -40,6 +40,10 @@ import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper'
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 
 const cookie = new Cookies();
+
+// Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
+const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
+
 let maxFileSize = 0;
 
 settings.watch('FileUpload_MaxFileSize', async (value: string) => {
@@ -140,20 +144,22 @@ export const FileUpload = {
 	},
 
 	async validateFileUpload(file: IUpload, content?: Buffer | string) {
-		if (!Match.test(file.rid, String)) {
+		const isFederationUpload = Boolean(file.federation?.mxcUri);
+
+		if (!isFederationUpload && !Match.test(file.rid, String)) {
 			return false;
 		}
 
 		// livechat users can upload files but they don't have an userId
 		const user = (file.userId && (await Users.findOne(file.userId))) || undefined;
 
-		const room = await Rooms.findOneById(file.rid);
-		if (!room) {
+		const room = file.rid ? await Rooms.findOneById(file.rid) : undefined;
+		if (!isFederationUpload && !room) {
 			return false;
 		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
+		if (!isFederationUpload && room && user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
@@ -162,7 +168,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
-		if (!directMessageAllowed && room.t === 'd') {
+		if (room && !directMessageAllowed && room.t === 'd') {
 			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
@@ -326,15 +332,18 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = (
+			file.type === 'image/gif' ? sharp({ pages: Math.min(file.identify?.pages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES) }) : sharp()
+		).resize({ width, height, fit: 'inside' });
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
 		}
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, format } }) => ({
+		// pageHeight is the per-frame height; info.height is the full stacked height for animated input.
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, pageHeight, format } }) => ({
 			data,
 			width,
-			height,
+			height: pageHeight ?? height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
 			originalFileId: file?._id as string,
@@ -389,6 +398,7 @@ export const FileUpload = {
 							height,
 						}
 					: undefined,
+			pages: metadata.pages,
 		};
 
 		const shouldRotate = settings.get<boolean>('FileUpload_RotateImages');
@@ -624,7 +634,8 @@ export const FileUpload = {
 			initialSize: file.size,
 		});
 
-		return new Promise((resolve, reject) => {
+		return new Promise<Buffer>((resolve, reject) => {
+			buffer.on('error', reject);
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {

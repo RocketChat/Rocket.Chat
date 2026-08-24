@@ -1,8 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import { SDP } from './sdp';
 import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
 import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification';
 import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
+import type { ServerMediaSignalRemoteSDP } from '../../../definition/signals';
 import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
@@ -270,9 +272,21 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async waitForIceGathering(): Promise<void> {
-		if (this.stopped || this.peer.iceGatheringState === 'complete') {
+		if (this.stopped) {
 			return;
 		}
+
+		if (this.peer.iceGatheringState === 'complete') {
+			// If the peer state is 'complete', wait long enough for a macrotask to complete to ensure this state is not outdated
+			await new Promise((resolve) => {
+				setTimeout(resolve, 1);
+			});
+
+			if (this.stopped || this.peer.iceGatheringState === 'complete') {
+				return;
+			}
+		}
+
 		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering');
 		await this.initialization;
 
@@ -296,8 +310,52 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await iceGatheringData.promise;
 	}
 
-	public setRemoteIds(streams: MediaStreamIdentification[]): void {
-		this.streams.setRemoteIds(streams);
+	public setRemoteIds(signal: ServerMediaSignalRemoteSDP): void {
+		const {
+			streams,
+			sdp: { sdp },
+		} = signal;
+
+		const streamsFromSDP = sdp ? this.getRemoteIdsFromSDP(sdp) : [];
+		const allStreams = this.combineRemoteIds(streams || [], streamsFromSDP);
+
+		if (allStreams.length) {
+			this.streams.setRemoteIds(allStreams);
+		}
+	}
+
+	protected combineRemoteIds(streams1: MediaStreamIdentification[], streams2: MediaStreamIdentification[]): MediaStreamIdentification[] {
+		if (!streams2.length) {
+			return streams1;
+		}
+		if (!streams1.length) {
+			return streams2;
+		}
+
+		const result = [...streams1];
+		for (const stream of streams2) {
+			if (result.find(({ id }) => id === stream.id)) {
+				continue;
+			}
+
+			result.push(stream);
+		}
+
+		return result;
+	}
+
+	protected getRemoteIdsFromSDP(sdp: string): MediaStreamIdentification[] {
+		const contentMap = SDP.getStreamContentMapFromSDP(sdp);
+		return Object.entries(contentMap)
+			.map(([id, content]) => {
+				const tag = SDP.getStreamTagByMediaContent(content);
+				if (!tag) {
+					return null;
+				}
+
+				return { id, tag };
+			})
+			.filter((stream): stream is MediaStreamIdentification => Boolean(stream));
 	}
 
 	public getLocalStreamIds(): MediaStreamIdentification[] {
@@ -380,7 +438,16 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		acceptableDirection: RTCRtpTransceiverDirection,
 	): void {
 		const transceivers = this.getTransceivers(kind);
+		let hasAnyValidTransceiver = false;
+		let hasAnyStoppedTransceiver = false;
 		for (const transceiver of transceivers) {
+			if (transceiver.currentDirection === 'stopped') {
+				hasAnyStoppedTransceiver = true;
+				continue;
+			}
+
+			hasAnyValidTransceiver = true;
+
 			if (transceiver.direction !== desiredDirection) {
 				continue;
 			}
@@ -392,6 +459,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this.config.logger?.debug(`Changing ${kind} direction from ${transceiver.direction} to match ${transceiver.currentDirection}.`);
 				transceiver.direction = transceiver.currentDirection;
 			}
+		}
+
+		if (desiredDirection.includes('send') && !hasAnyValidTransceiver && hasAnyStoppedTransceiver) {
+			this.reactToStoppedTransceiver(kind);
+		}
+	}
+
+	private reactToStoppedTransceiver(kind: 'audio' | 'video') {
+		this.config.logger?.error(`The ${kind} transceiver has stopped`);
+		if (kind === 'video' && this.screenVideoTrack) {
+			void this.streams.screenShareLocal.setTrack(kind, null).catch((err) => {
+				this.config.logger?.error('Failed to remove track from screen share media stream', err);
+			});
 		}
 	}
 

@@ -1,5 +1,18 @@
 import { emoji } from './lib';
 
+// Escapes a plain text value into its HTML representation so it can be safely
+// reinserted via innerHTML after emoji rendering (e.g. `<` becomes `&lt;`).
+const escapeHtml = (value: string): string => {
+	const escaper = document.createElement('div');
+	escaper.textContent = value;
+	return escaper.innerHTML;
+};
+
+const renderEmojiPackages = (value: string): string =>
+	Object.entries(emoji.packages)
+		.reverse()
+		.reduce((rendered, [, emojiPackage]) => emojiPackage.render(rendered), value);
+
 /**
  * emojiParser is a function that will replace emojis
  */
@@ -12,23 +25,36 @@ export const emojiParser = (html: string) => {
 	// '<br>' to ' <br> ' for emojis such at line breaks
 	html = html.replace(/<br>/g, ' <br> ');
 
-	html = Object.entries(emoji.packages)
-		.reverse()
-		.reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
-
 	const checkEmojiOnly = document.createElement('div');
 
 	checkEmojiOnly.innerHTML = html;
 
-	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty)'));
-
-	emojis.forEach((emojiElement) => {
-		const htmlElement = emojiElement.parentElement;
-
-		if (htmlElement && htmlElement.nodeName === 'CODE') {
-			emojiElement.replaceWith(emojiElement.getAttribute('title') ?? '');
-		}
+	// Render emojis only inside text nodes so shortcodes that live in markup
+	// (e.g. a URL containing `:smile:` in an anchor's href) stay untouched.
+	// Emojis inside code blocks are intentionally left as their literal shortcode.
+	const textWalker = document.createTreeWalker(checkEmojiOnly, NodeFilter.SHOW_TEXT, {
+		acceptNode: (node) => (node.parentElement?.closest('code') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
 	});
+
+	const textNodes: Text[] = [];
+	while (textWalker.nextNode()) {
+		textNodes.push(textWalker.currentNode as Text);
+	}
+
+	textNodes.forEach((textNode) => {
+		const escaped = escapeHtml(textNode.nodeValue ?? '');
+		const rendered = renderEmojiPackages(escaped);
+
+		if (rendered === escaped) {
+			return;
+		}
+
+		const fragmentHolder = document.createElement('span');
+		fragmentHolder.innerHTML = rendered;
+		textNode.replaceWith(...Array.from(fragmentHolder.childNodes));
+	});
+
+	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty)'));
 
 	let hasText = false;
 

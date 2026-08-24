@@ -108,6 +108,7 @@ import {
 	AbacAttributesRaw,
 	ServerEventsRaw,
 	SamlUsedAssertionsRaw,
+	CronHistoryRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -245,4 +246,5 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
+	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
 }

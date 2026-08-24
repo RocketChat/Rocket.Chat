@@ -1,4 +1,8 @@
-import { formatDate, momentFormatToDateFns } from './dateFormat';
+/**
+ * @jest-environment <rootDir>/tests/environments/timezone.ts
+ * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
+ */
+import { formatDate, momentFormatToDateFns, toDate } from './dateFormat';
 
 describe('momentFormatToDateFns', () => {
 	it('maps locale tokens', () => {
@@ -139,5 +143,30 @@ describe('formatDate', () => {
 		// option is wired through.
 		expect(() => formatDate(sample, 'gggg')).not.toThrow();
 		expect(formatDate(sample, 'gggg')).toMatch(/^\d{4}$/);
+	});
+});
+
+describe('toDate', () => {
+	it('parses a bare yyyy-MM-dd string at LOCAL midnight (not UTC midnight)', () => {
+		const d = toDate('2026-07-02');
+		// Pre-fix `new Date('2026-07-02')` (UTC midnight) is the previous day / 21:00 here.
+		expect(d.getFullYear()).toBe(2026);
+		expect(d.getMonth()).toBe(6); // July (0-indexed)
+		expect(d.getDate()).toBe(2);
+		expect(d.getHours()).toBe(0);
+	});
+
+	it('keeps full ISO datetimes as instants (UTC preserved)', () => {
+		expect(toDate('2026-07-02T15:30:00.000Z').toISOString()).toBe('2026-07-02T15:30:00.000Z');
+	});
+
+	it('returns Date objects unchanged', () => {
+		const d = new Date();
+		expect(toDate(d)).toBe(d);
+	});
+
+	it('accepts epoch milliseconds', () => {
+		const ms = Date.UTC(2026, 6, 2, 12);
+		expect(toDate(ms).getTime()).toBe(ms);
 	});
 });

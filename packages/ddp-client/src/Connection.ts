@@ -22,7 +22,7 @@ type RetryOptions = {
 	retryTime: number;
 };
 
-type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
+export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
 export interface Connection
 	extends Emitter<{

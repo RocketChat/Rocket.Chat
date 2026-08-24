@@ -371,12 +371,11 @@ export const RoutingManager: Routing = {
 	async removeAllRoomSubscriptions(room, ignoreUser) {
 		const { _id: roomId } = room;
 
-		const subscriptions = await Subscriptions.findByRoomId(roomId).toArray();
-		subscriptions?.forEach(({ u }) => {
-			if (ignoreUser && ignoreUser._id === u._id) {
-				return;
+		for await (const { u } of Subscriptions.findByRoomId(roomId, { projection: { u: 1 } })) {
+			if (ignoreUser?._id === u._id) {
+				continue;
 			}
-			void removeAgentFromSubscription(roomId, u);
-		});
+			await removeAgentFromSubscription(roomId, u);
+		}
 	},
 };

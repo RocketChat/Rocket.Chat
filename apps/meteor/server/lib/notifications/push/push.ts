@@ -1,4 +1,5 @@
 import type { IPushToken, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { PushToken } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
@@ -181,6 +182,10 @@ class PushClass {
 	}
 
 	private shouldUseGateway(): boolean {
+		if (License.hasOfflineLicense()) {
+			return false;
+		}
+
 		return Boolean(!!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms'));
 	}
 
@@ -394,6 +399,13 @@ class PushClass {
 
 			if (this.shouldUseGateway()) {
 				await this.sendNotificationGateway(app, notification, countApn, countGcm);
+				continue;
+			}
+
+			// The workspace is configured to send through a push gateway, but the offline
+			// license forbids contacting it — skip quietly instead of falling back to the
+			// (unconfigured) native providers.
+			if (this.options.gateways && License.hasOfflineLicense()) {
 				continue;
 			}
 

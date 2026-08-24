@@ -65,11 +65,11 @@ const SearchPage = (): ReactElement => {
 	}, [debouncedQuery, intelligent.length, isLoading, meta?.answerGenerationConfigured, searchError, t]);
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeader title={t('Intelligent_Search')} />
-			<PageScrollableContentWithShadow p={24}>
+			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
-					<Box display='flex' flexDirection='column' mbe={16} gap={8}>
+					<Box display='flex' flexDirection='column' marginBlockEnd={16} gap={8}>
 						{debouncedQuery ? (
 							<Box display='flex' alignItems='center' fontScale='h4' gap={8} minWidth={0}>
 								<Icon name='magnifier' size='x18' />
@@ -91,27 +91,27 @@ const SearchPage = (): ReactElement => {
 						</Box>
 					</Box>
 					{hasIntelligentSearchLicense === false && (
-						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} mbe={16}>
+						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} marginBlockEnd={16}>
 							{t('Intelligent_Search_upsell_description')}
 						</Callout>
 					)}
 					{hasIntelligentSearchLicense && !aiSearchFeatureEnabled && (
-						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} mbe={16}>
+						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} marginBlockEnd={16}>
 							{t('AI_Search_feature_disabled_description')}
 						</Callout>
 					)}
 					{canUseAISearch && !intelligentSearchEnabled && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} mbe={16}>
+						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} marginBlockEnd={16}>
 							{t('Intelligent_Search_disabled_description')}
 						</Callout>
 					)}
 					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} mbe={16}>
+						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} marginBlockEnd={16}>
 							{t('Intelligent_Search_missing_configuration_description')}
 						</Callout>
 					)}
 					{searchError && (
-						<Callout type='danger' icon='warning' mbe={16}>
+						<Callout type='danger' icon='warning' marginBlockEnd={16}>
 							{t('AI_Search_request_failed')}
 						</Callout>
 					)}
@@ -126,7 +126,7 @@ const SearchPage = (): ReactElement => {
 							onGenerate={() => void answerResult.refetch()}
 						/>
 					)}
-					<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
+					<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd={12}>
 						<Box is='h2' fontScale='h4'>
 							{t('Sources')} · {intelligent.length} {t('Messages')}
 						</Box>
@@ -137,17 +137,17 @@ const SearchPage = (): ReactElement => {
 						)}
 					</Box>
 					{!debouncedQuery && (
-						<Box display='flex' justifyContent='center' color='hint' p={24}>
+						<Box display='flex' justifyContent='center' color='hint' padding={24}>
 							{t('Intelligent_Search_start_from_top_bar')}
 						</Box>
 					)}
 					{isLoading && (
-						<Box display='flex' justifyContent='center' color='hint' p={24}>
+						<Box display='flex' justifyContent='center' color='hint' padding={24}>
 							{t('Loading')}
 						</Box>
 					)}
 					{debouncedQuery && !isLoading && !searchError && intelligent.length === 0 && (
-						<Box display='flex' justifyContent='center' color='hint' p={24}>
+						<Box display='flex' justifyContent='center' color='hint' padding={24}>
 							{t('No_results_found')}
 						</Box>
 					)}

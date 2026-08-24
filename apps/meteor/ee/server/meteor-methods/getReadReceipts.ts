@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
+import { methodDeprecationLogger } from '../../../server/lib/deprecationWarningLogger';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 declare module '@rocket.chat/ddp-client' {
@@ -37,6 +38,8 @@ export const getReadReceiptsFunction = async function (messageId: IMessage['_id'
 
 Meteor.methods<ServerMethods>({
 	async getReadReceipts({ messageId }) {
+		methodDeprecationLogger.method('getReadReceipts', '9.0.0', '/v1/chat.getMessageReadReceipts');
+
 		check(messageId, String);
 
 		const uid = Meteor.userId();

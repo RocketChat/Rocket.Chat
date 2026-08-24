@@ -22,8 +22,8 @@ const updateFName = async (rid: string, displayName: string): Promise<(UpdateRes
 };
 
 const updateRoomName = async (rid: string, displayName: string, slugifiedRoomName: string) => {
-	// Check if the username is available
-	if (!(await checkUsernameAvailability(slugifiedRoomName))) {
+	// Check if the name is available
+	if (!(await checkUsernameAvailability(slugifiedRoomName, 'room'))) {
 		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
 			function: 'RocketChat.updateRoomName',
 			handle: slugifiedRoomName,

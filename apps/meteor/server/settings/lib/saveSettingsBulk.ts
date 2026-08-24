@@ -9,6 +9,7 @@ import { updateAuditedByUser } from './auditedSettingUpdates';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { checkSettingValueBounds } from '../checkSettingValueBonds';
 
@@ -111,6 +112,8 @@ export const saveSettingsBulk = async (
 			settingIds: settingsNotAllowed,
 		});
 	}
+
+	validateSettingRules(params);
 
 	const auditSettingOperation = updateAuditedByUser({
 		_id: uid,

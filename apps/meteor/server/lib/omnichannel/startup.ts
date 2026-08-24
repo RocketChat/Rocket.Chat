@@ -87,7 +87,7 @@ Meteor.startup(async () => {
 	callbacks.add(
 		'beforeJoinRoom',
 		async (user, room) => {
-			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user._id, 'view-l-room'))) {
+			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user, 'view-l-room'))) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
 				});

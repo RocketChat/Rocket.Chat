@@ -50,8 +50,10 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 	}
 
 	const prevMessage = await Messages.findOneById(mid, {
-		rid: 1,
-		u: 1,
+		projection: {
+			rid: 1,
+			u: 1,
+		},
 	});
 
 	if (!prevMessage) {

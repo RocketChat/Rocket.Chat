@@ -7,7 +7,7 @@ export type NavBarSearchInputAddonProps = {
 	appliedFilterChips: SearchFilterChip[];
 	aiSearchActive: boolean;
 	aiSearchButtonTooltip: string;
-	isDirty: boolean;
+	hasSearchText: boolean;
 	onClearText: () => void;
 	onRemoveFilter: (filterKey: string) => void;
 	onToggleAISearch: () => void;
@@ -18,7 +18,7 @@ const NavBarSearchInputAddon = ({
 	appliedFilterChips,
 	aiSearchActive,
 	aiSearchButtonTooltip,
-	isDirty,
+	hasSearchText,
 	onClearText,
 	onRemoveFilter,
 	onToggleAISearch,
@@ -45,7 +45,7 @@ const NavBarSearchInputAddon = ({
 				))}
 			</Box>
 		)}
-		{isDirty ? <IconButton mini icon='cross' aria-label={t('Clear')} onClick={onClearText} /> : <Icon name='magnifier' size='x20' />}
+		{hasSearchText ? <IconButton mini icon='cross' aria-label={t('Clear')} onClick={onClearText} /> : <Icon name='magnifier' size='x20' />}
 		<IconButton
 			mini
 			icon='stars'

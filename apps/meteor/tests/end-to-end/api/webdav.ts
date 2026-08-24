@@ -7,45 +7,33 @@ describe('[Webdav]', () => {
 	before((done) => getCredentials(done));
 
 	describe('/webdav.getMyAccounts', () => {
-		it('should return my webdav accounts', (done) => {
-			void request
-				.get(api('webdav.getMyAccounts'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('accounts').and.to.be.a('array');
-				})
-				.end(done);
+		it('should return my webdav accounts', async () => {
+			const res = await request.get(api('webdav.getMyAccounts')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('accounts').and.to.be.a('array');
 		});
 	});
 
 	describe('/webdav.removeWebdavAccount', () => {
-		it('should return an error when send an invalid request', (done) => {
-			void request
-				.post(api('webdav.removeWebdavAccount'))
-				.set(credentials)
-				.send({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+		it('should return an error when send an invalid request', async () => {
+			const res = await request.post(api('webdav.removeWebdavAccount')).set(credentials).send({}).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
-		it('should return an error when using an invalid account id', (done) => {
-			void request
+
+		it('should return an error when using an invalid account id', async () => {
+			const res = await request
 				.post(api('webdav.removeWebdavAccount'))
 				.set(credentials)
 				.send({
 					accountId: {},
 				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 	});
 });

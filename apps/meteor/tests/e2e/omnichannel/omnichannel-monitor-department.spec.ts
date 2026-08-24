@@ -89,7 +89,7 @@ test.describe.serial('OC - Monitor Role', () => {
 		const [unitA, unitB, unitC] = units.map((unit) => unit.data);
 
 		await test.step('expect to see only departmentA in the list', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
 		});
 
 		await test.step('expect to fill departments mandatory field', async () => {
@@ -130,8 +130,8 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to have departmentA and departmentB visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(newDepartmentName)).toBeVisible();
 		});
 	});
 
@@ -159,8 +159,8 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect departmentB to still be visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(newDepartmentName)).toBeVisible();
 		});
 	});
 
@@ -177,8 +177,8 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect departmentB to not be visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).not.toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(newDepartmentName)).not.toBeVisible();
 		});
 	});
 });

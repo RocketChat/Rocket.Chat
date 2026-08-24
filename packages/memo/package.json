@@ -1,0 +1,50 @@
+{
+	"name": "@rocket.chat/memo",
+	"version": "0.31.25",
+	"description": "Memoization utilities",
+	"keywords": [
+		"memoize"
+	],
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/memo"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/esm/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"prettier": "~3.3.3",
+		"ts-jest": "~29.4.11",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

@@ -18,7 +18,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 
 	set<K extends keyof SetProps<T>>(key: K, value: SetProps<T>[K]) {
 		this._set = this._set ?? new Map<Keys<T>, any>();
-		this._set.set(key as Keys<T>, value);
+		this._set.set(key, value);
 		return this;
 	}
 

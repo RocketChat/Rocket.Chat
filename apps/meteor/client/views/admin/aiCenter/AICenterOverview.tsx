@@ -14,8 +14,10 @@ const AICenterOverview = (): ReactElement => {
 	const router = useRouter();
 	const { data: hasAILicense, isPending } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
+	const mcpEnabled = useSetting('MCP_Enabled', false);
 	const searchSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'search' } });
 	const llmSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'llm-providers' } });
+	const mcpSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'mcp' } });
 	const subscriptionHref = router.buildRoutePath({ name: 'subscription' });
 
 	if (isPending) {
@@ -24,28 +26,31 @@ const AICenterOverview = (): ReactElement => {
 
 	let aiSearchStatus: ReactNode;
 	let llmProviderStatus: ReactNode;
+	let mcpStatus: ReactNode;
 	if (hasAILicense === false) {
 		aiSearchStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 		llmProviderStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
+		mcpStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 	} else if (hasAILicense) {
 		aiSearchStatus = intelligentSearchEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 		llmProviderStatus = <Tag>{t('Available')}</Tag>;
+		mcpStatus = mcpEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 	}
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeader title={t('AI_Center')} />
-			<PageScrollableContentWithShadow p={24}>
+			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full'>
 					{hasAILicense === false && (
-						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} mbe={24}>
+						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} marginBlockEnd={24}>
 							<Box>{t('AI_Center_license_required_description')}</Box>
-							<Button is='a' href={subscriptionHref} small mbs={12}>
+							<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
 								{t('View_options')}
 							</Button>
 						</Callout>
 					)}
-					<Box is='h2' fontScale='h3' mbe={16}>
+					<Box is='h2' fontScale='h3' marginBlockEnd={16}>
 						{t('Capabilities')}
 					</Box>
 					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
@@ -64,6 +69,14 @@ const AICenterOverview = (): ReactElement => {
 							status={llmProviderStatus}
 							actionLabel={t('Manage')}
 							href={llmSettingsHref}
+						/>
+						<AICenterCapabilityCard
+							icon='link'
+							title={t('MCP')}
+							description={t('AI_Center_MCP_card_description')}
+							status={mcpStatus}
+							actionLabel={t('Configure')}
+							href={mcpSettingsHref}
 						/>
 					</CardGrid>
 				</Box>

@@ -52,15 +52,11 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		});
 	}
 
-	let matchingResults = [];
+	const conflictingUserStatus = userStatusData._id
+		? await CustomUserStatus.findOneByNameExceptId(userStatusData.name, userStatusData._id, { projection: { _id: 1 } })
+		: await CustomUserStatus.findOneByName(userStatusData.name, { projection: { _id: 1 } });
 
-	if (userStatusData._id) {
-		matchingResults = await CustomUserStatus.findByNameExceptId(userStatusData.name, userStatusData._id).toArray();
-	} else {
-		matchingResults = await CustomUserStatus.findByName(userStatusData.name).toArray();
-	}
-
-	if (matchingResults.length > 0) {
+	if (conflictingUserStatus) {
 		throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', {
 			method: 'insertOrUpdateUserStatus',
 		});

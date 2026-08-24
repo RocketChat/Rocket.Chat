@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
@@ -7,6 +8,10 @@ import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
+	if (License.hasOfflineLicense()) {
+		return false;
+	}
+
 	const firstUser = (await Users.getOldest({ projection: { name: 1, emails: 1 } })) as IUser | undefined;
 	const email = firstUser?.emails?.find((address) => address)?.address;
 
@@ -15,6 +20,12 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 	}
 
 	const regInfo = await buildWorkspaceRegistrationData(email);
+
+	// Re-validated at dispatch time: an offline license applied while the
+	// registration data was being built must still suppress the request.
+	if (License.hasOfflineLicense()) {
+		return false;
+	}
 
 	try {
 		const cloudUrl = settings.get<string>('Cloud_Url');

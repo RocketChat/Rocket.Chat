@@ -26,6 +26,7 @@ export const getSettingDefaults = (
 		_updatedAt: options._updatedAt ?? new Date(),
 		...options,
 		...(options.enableQuery ? { enableQuery: JSON.stringify(options.enableQuery) } : undefined),
+		...(options.validation ? { validation: JSON.stringify(options.validation) } : undefined),
 		i18nLabel: options.i18nLabel || _id,
 		hidden: options.hidden || hiddenSettings.has(_id),
 		blocked: options.blocked || blockedSettings.has(_id),

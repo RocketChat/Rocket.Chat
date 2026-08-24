@@ -23,6 +23,7 @@ export interface IUpload extends IRocketChatRecord {
 			width: number;
 			height: number;
 		};
+		pages?: number;
 	};
 	store?: string;
 	path?: string;

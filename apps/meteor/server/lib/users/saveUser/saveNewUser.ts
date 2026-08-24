@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
 import { Accounts } from 'meteor/accounts-base';
@@ -70,7 +71,9 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	userData._id = _id;
 
-	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
+	// Offline (air-gapped) licenses suppress the default Gravatar fetch — a
+	// default-on outbound call the workspace must never initiate on its own.
+	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email && !License.hasOfflineLicense()) {
 		const gravatarUrl = Gravatar.url(userData.email, {
 			default: '404',
 			size: '200',
