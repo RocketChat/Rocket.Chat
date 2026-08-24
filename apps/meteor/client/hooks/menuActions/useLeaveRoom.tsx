@@ -1,11 +1,13 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
+import LeaveRoomWarning from '../../components/LeaveRoomWarning';
 import WarningModal from '../../components/WarningModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -30,6 +32,7 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
+	const subscription = useUserSubscription(rid);
 
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
 
@@ -52,7 +55,13 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, { roomName: name })}
+				text={
+					<LeaveRoomWarning
+						name={name}
+						warnText={warnText as TranslationKey}
+						isEncrypted={!!subscription?.encrypted}
+					/>
+				}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
