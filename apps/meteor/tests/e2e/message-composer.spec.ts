@@ -2,8 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
-import { preserveSettings } from './utils/preserveSettings';
+import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
