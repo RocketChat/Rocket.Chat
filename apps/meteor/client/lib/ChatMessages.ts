@@ -4,19 +4,19 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import { CurrentEditingMessage } from './CurrentEditingMessage';
 import { UserAction } from './UserAction';
-import type { ChatAPI, ComposerAPI, DataAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createDataAPI } from '../../../../client/lib/chats/data';
-import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
-import { processMessageUploads } from '../../../../client/lib/chats/flows/processMessageUploads';
-import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
-import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
-import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
-import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
-import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
-import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
-import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
-import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
-import { setHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import type { ChatAPI, ComposerAPI, DataAPI } from './chats/ChatAPI';
+import { createDataAPI } from './chats/data';
+import { processMessageEditing } from './chats/flows/processMessageEditing';
+import { processMessageUploads } from './chats/flows/processMessageUploads';
+import { processSetReaction } from './chats/flows/processSetReaction';
+import { processSlashCommand } from './chats/flows/processSlashCommand';
+import { processTooLongMessage } from './chats/flows/processTooLongMessage';
+import { replyBroadcast } from './chats/flows/replyBroadcast';
+import { requestMessageDeletion } from './chats/flows/requestMessageDeletion';
+import { sendMessage } from './chats/flows/sendMessage';
+import { uploadFiles } from './chats/flows/uploadFiles';
+import { ReadStateManager } from './chats/readStateManager';
+import { setHighlightMessage } from '../views/room/MessageList/providers/messageHighlightSubscription';
 
 export class ChatMessages implements ChatAPI {
 	public uid: string | undefined;

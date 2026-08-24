@@ -1,5 +1,5 @@
 import { AudioEncoder } from './AudioEncoder';
-import { settings } from '../../../../../client/lib/settings';
+import { settings } from './settings';
 
 export class AudioRecorder {
 	private audioContext: AudioContext | undefined;

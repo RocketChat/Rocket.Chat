@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 
 import { useGetMore } from './useGetMore';
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
+import { getBoundingClientRect } from '../../../../lib/scrolling';
 
 jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {
@@ -18,7 +18,7 @@ jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	},
 }));
 
-jest.mock('../../../../../app/ui/client/views/app/lib/scrolling', () => ({
+jest.mock('../../../../lib/scrolling', () => ({
 	getBoundingClientRect: jest.fn(),
 }));
 
