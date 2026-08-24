@@ -19,6 +19,7 @@ export class RoomHeader {
 
 	async openCategorySelector(): Promise<void> {
 		await this.btnSelectCategory.click();
+		await this.menuMoveTo.waitForDisplay();
 	}
 
 	async pickCategoryMenuItem(name: string): Promise<void> {

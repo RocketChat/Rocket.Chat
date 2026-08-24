@@ -163,6 +163,10 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('sidebar', async () => {
+		test.afterEach(async ({ page }) => {
+			await page.evaluate(() => localStorage.removeItem('sidebarGroups'));
+		});
+
 		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
 			// focus should be on the next item
 			await poHomeChannel.sidebar.channelsList.getByRole('link').first().focus();
