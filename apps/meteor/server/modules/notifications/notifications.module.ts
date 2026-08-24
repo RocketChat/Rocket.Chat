@@ -1,7 +1,7 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
@@ -47,6 +47,8 @@ export class NotificationsModule {
 
 	public readonly streamPresence: IStreamer<'user-presence'>;
 
+	public readonly streamVideoConference: IStreamer<'video-conference'>;
+
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
@@ -91,6 +93,7 @@ export class NotificationsModule {
 
 		this.streamUser = new this.Streamer('notify-user');
 		this.streamLocal = new this.Streamer('local');
+		this.streamVideoConference = new this.Streamer('video-conference');
 	}
 
 	configure(): void {
@@ -459,6 +462,33 @@ export class NotificationsModule {
 			}
 		});
 
+		this.streamVideoConference.allowWrite('none');
+		// Conference membership authorizes following the call — members may have no access to the room it
+		// originated in — and so does access to the room the chat lives in. That is the same pair
+		// `video-conference.info` accepts, and both halves are needed: membership alone refuses a room member
+		// who opens the conference before their join lands, and a refused subscription is never retried.
+		this.streamVideoConference.allowRead(async function (eventName) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
+				return false;
+			}
+
+			const [callId] = eventName.split('/');
+			const call = await VideoConference.findOneById(callId, { projection: { users: 1, rid: 1, discussionRid: 1 } });
+			if (!call) {
+				return false;
+			}
+
+			if (call.users.some(({ _id }) => _id === user._id)) {
+				return true;
+			}
+
+			const chatRids = [call.rid, call.discussionRid].filter((rid): rid is string => !!rid);
+			const rooms = await Rooms.findByIds(chatRids).toArray();
+
+			return (await Promise.all(rooms.map((room) => Authorization.canReadRoom(room, user)))).some(Boolean);
+		});
+
 		this.streamLocal.serverOnly = true;
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
@@ -526,6 +556,11 @@ export class NotificationsModule {
 
 	progressUpdated(progress: { rate: number } | ImporterProgress): void {
 		this.streamImporters.emit('progress', progress);
+	}
+
+	/** Tells whoever is watching this conference that it changed and is worth reading again. */
+	notifyVideoConferenceUpdated(callId: string): void {
+		this.streamVideoConference.emit(`${callId}/updated`);
 	}
 }
 

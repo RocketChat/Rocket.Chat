@@ -237,7 +237,7 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 		}).build(),
 	});
 	const unreadIndex = result.current.groupsList.indexOf('Unread');
-	const roomListUnread = result.current.roomList.filter((room) => room.unread);
+	const roomListUnread = result.current.roomList.filter((item) => item.unread);
 
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
 	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
