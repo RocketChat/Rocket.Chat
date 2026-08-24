@@ -171,15 +171,9 @@ describe('upsertThreadMessageInCache', () => {
 		const [pageParam] = data?.pageParams ?? [];
 
 		expect(data?.pages[0].itemCount).toBe(201);
+		// useThreadMessagesQuery's getNextPageParam computes offset = pageParam - count (50),
+		// so 76 (not the stale 75) produces offset 26, which includes reply-125.
 		expect(pageParam).toBe(76);
-
-		// Mirrors getNextPageParam in useThreadMessagesQuery: offset = pageParam - count.
-		const count = 50;
-		const nextOffset = pageParam > 0 ? Math.max(0, pageParam - count) : undefined;
-
-		// offset 26 fetches reply-125..reply-174, including reply-125.
-		// A stale pageParam of 75 would produce offset 25, fetching reply-126..reply-175 instead.
-		expect(nextOffset).toBe(26);
 	});
 
 	it('updates an existing message in place without shifting pageParams', () => {
