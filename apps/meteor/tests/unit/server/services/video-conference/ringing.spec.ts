@@ -1,5 +1,5 @@
 import type { IDirectVideoConference, IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
-import { isInVideoConference } from '@rocket.chat/core-typings';
+import { isInVideoConference, VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -159,6 +159,38 @@ describe('VideoConfService.ringMembers', () => {
 
 		expect(result).to.not.include('caller');
 		expect(ringedUserIds(broadcastStub)).to.not.include('caller');
+	});
+
+	// A phone that is ringing right now has nothing more to ask of it — re-ringing would just restart the
+	// sound under the callee's finger. The window is what separates "ringing" from "was rung and ignored".
+	it('does not ring a member whose phone is still ringing from the last attempt', async () => {
+		fixture = buildGroupCall([
+			buildMember({ _id: 'caller' }),
+			buildMember({ _id: 'stillRinging', joined: false, joinedAt: undefined, ringingAt: new Date() }),
+		]);
+
+		const result = await service.ringMembers('caller', 'call1');
+
+		expect(result).to.deep.equal([]);
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
+	});
+
+	// Once the window has passed, an unanswered ring is exactly what "ring again" exists for.
+	it('rings a member whose previous ring already went unanswered', async () => {
+		fixture = buildGroupCall([
+			buildMember({ _id: 'caller' }),
+			buildMember({
+				_id: 'ignoredIt',
+				joined: false,
+				joinedAt: undefined,
+				ringingAt: new Date(Date.now() - VIDEO_CONF_RINGING_WINDOW_MS - 1_000),
+			}),
+		]);
+
+		const result = await service.ringMembers('caller', 'call1');
+
+		expect(result).to.deep.equal(['ignoredIt']);
+		expect(ringedUserIds(broadcastStub)).to.deep.equal(['ignoredIt']);
 	});
 
 	// Nobody absent means nothing to do — this is also what a call with a full house looks like after
