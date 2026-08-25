@@ -984,11 +984,7 @@ describe('[Chat]', () => {
 		});
 
 		it("should fail when 'fileId' is not sent", async () => {
-			const res = await request
-				.get(api('chat.getMessageByFileId'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400);
+			const res = await request.get(api('chat.getMessageByFileId')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
 		});
