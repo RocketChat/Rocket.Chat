@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
+import { STORAGE_KEYS, getStoredItem } from '../../../lib/sdk/storage';
+import HomeSkeleton from '../../home/HomeSkeleton';
 
 /*
  * Anonymous and guest are similar in some way
@@ -21,6 +23,29 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
+
+	/**
+	 * A window that opens with a session already stored — a call popout, or any plain reload — has no user until
+	 * the login is resumed from that token. Treating "no user yet" as "not logged in" showed a login form for the
+	 * few hundred milliseconds it took, to someone who never asked for one.
+	 *
+	 * The stored token is the whole of the test, and deliberately so. It is written before the window loads and
+	 * removed only on an explicit logout or a failed resume, so it covers the resume from end to end. Asking
+	 * `isLoggingIn` as well looked like it covered the same ground more directly, but it is true of *any* login in
+	 * flight, including one someone is making at the form right now: that unmounted the form mid-attempt, so a
+	 * rejected password came back to a blank form with nothing marked invalid, and iframe login — which runs from
+	 * inside `LoginPage` — could never get as far as showing its own form at all.
+	 *
+	 * The token is read per render rather than subscribed to, so a stale one only falls through on the next
+	 * render. That is safe because every path that rejects a stored token removes it — `makeClientLoggedOut` via
+	 * Meteor's reconnect hook, and `clearStoredCredentials()` from `ensureConnectedAndAuthenticated` and
+	 * `runUserDataSync` — and the expired-token page load clears it before React even mounts.
+	 */
+	const isResumingSession = !user && !forceLogin && !!getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+
+	if (isResumingSession) {
+		return <HomeSkeleton />;
+	}
 
 	if (user) {
 		return (
