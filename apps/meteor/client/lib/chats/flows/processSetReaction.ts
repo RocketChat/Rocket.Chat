@@ -44,42 +44,40 @@ const runOptimisticSetReaction = (reaction: string, messageId: IMessage['_id']):
 		return;
 	}
 
-	if (message.reactions?.[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-		message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
-
-		if (message.reactions[reaction].usernames.length === 0) {
-			delete message.reactions[reaction];
-		}
-
-		if (!message.reactions || typeof message.reactions !== 'object' || Object.keys(message.reactions).length === 0) {
-			delete message.reactions;
-			Messages.state.update(
-				(record) => record._id === messageId,
-				({ reactions: _, ...record }) => record,
-			);
-			return;
-		}
-
-		Messages.state.update(
-			(record) => record._id === messageId,
-			(record) => ({ ...record, reactions: message.reactions }),
-		);
-		return;
-	}
-
-	if (!message.reactions) {
-		message.reactions = {};
-	}
-	if (!message.reactions[reaction]) {
-		message.reactions[reaction] = {
-			usernames: [],
-		};
-	}
-	message.reactions[reaction].usernames.push(user.username);
+	const { username } = user;
 
 	Messages.state.update(
 		(record) => record._id === messageId,
-		(record) => ({ ...record, reactions: message.reactions }),
+		(record) => {
+			const currentReactions = record.reactions ?? {};
+			const hasReacted = currentReactions[reaction]?.usernames.includes(username) ?? false;
+
+			const reactions: NonNullable<IMessage['reactions']> = {};
+
+			for (const [name, value] of Object.entries(currentReactions)) {
+				if (name !== reaction) {
+					reactions[name] = value;
+					continue;
+				}
+
+				const usernames = hasReacted ? value.usernames.filter((u) => u !== username) : [...value.usernames, username];
+
+				if (usernames.length > 0) {
+					reactions[name] = { ...value, usernames };
+				}
+			}
+
+			if (!currentReactions[reaction]) {
+				reactions[reaction] = { usernames: [username] };
+			}
+
+			if (Object.keys(reactions).length === 0) {
+				const { reactions: _, ...rest } = record;
+				return rest;
+			}
+
+			return { ...record, reactions };
+		},
 	);
 };
 
