@@ -933,20 +933,38 @@ export class AppManager {
 					return;
 				}
 
-				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
-				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
+				// Compute the update against a local copy first. The live storageItem is only
+				// mutated once persistence has been confirmed, so a failed/missing update never
+				// leaves the in-memory app out of sync with what's actually stored. Any failure
+				// for this one app (signing or persistence) is logged and skipped rather than
+				// aborting the whole batch, matching the previous best-effort semantics.
+				try {
+					const updatedMarketplaceInfo = [
+						{ ...appStorageItem.marketplaceInfo[0], subscriptionInfo: appInfo.subscriptionInfo },
+						...appStorageItem.marketplaceInfo.slice(1),
+					];
+					const signature = await this.getSignatureManager().signApp({ ...appStorageItem, marketplaceInfo: updatedMarketplaceInfo });
 
-				const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({
-					_id: appStorageItem._id,
-					marketplaceInfo: appStorageItem.marketplaceInfo,
-					signature: appStorageItem.signature,
-				});
+					const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({
+						_id: appStorageItem._id,
+						marketplaceInfo: updatedMarketplaceInfo,
+						signature,
+					});
 
-				if (!stored) {
-					throw new Error(`App with id ${appStorageItem._id} couldn't be found`);
+					if (!stored) {
+						// Missing-document policy: the app was removed/uninstalled concurrently. Log
+						// and skip it rather than retaining the unsigned-off mutation in memory.
+						console.warn(`App with id ${appStorageItem._id} couldn't be found while updating marketplace info`);
+						return;
+					}
+
+					appStorageItem.marketplaceInfo = updatedMarketplaceInfo;
+					appStorageItem.signature = signature;
+				} catch (error) {
+					console.error(`Error while updating marketplace info for App ${appStorageItem._id}:`, error);
 				}
 			}),
-		).catch(() => {});
+		);
 
 		const queue = [] as Array<Promise<void>>;
 
