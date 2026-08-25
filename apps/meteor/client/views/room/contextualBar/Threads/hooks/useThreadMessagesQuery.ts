@@ -138,6 +138,10 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		[queryClient, getThreadMessages, roomId, tmid, count],
 	);
 
+	const jumpToRecent = useCallback(async () => {
+		await queryClient.resetQueries({ queryKey: roomsQueryKeys.threadMessages(roomId, tmid) });
+	}, [queryClient, roomId, tmid]);
+
 	const query = useInfiniteQuery({
 		queryKey,
 		queryFn: async ({ pageParam: offset }) => {
@@ -201,5 +205,5 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		refetchOnWindowFocus: false,
 	});
 
-	return { ...query, loadMessageAround };
+	return { ...query, loadMessageAround, jumpToRecent };
 };
