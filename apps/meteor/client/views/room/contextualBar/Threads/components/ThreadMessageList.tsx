@@ -73,6 +73,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		hasPreviousPage,
 		isFetchingPreviousPage,
 		loadMessageAround,
+		jumpToRecent,
 	} = useThreadMessagesQuery(mainMessage._id);
 	const messages = useMemo(() => data?.messages ?? [], [data?.messages]);
 
@@ -259,7 +260,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		prevItemsLengthRef.current = items.length;
 		if (items.length > prev && uid) {
 			const lastItem = items.at(-1);
-			if (lastItem?.temp && lastItem.u._id === uid) {
+			if (lastItem?.temp && lastItem.u._id === uid && !hasNextPage) {
 				setShouldJumpToBottom(true);
 			}
 		}
@@ -287,6 +288,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		uid,
 		isFetchingPreviousPage,
 		isFetchingNextPage,
+		hasNextPage,
 	]);
 
 	useEffect(() => {
@@ -354,6 +356,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 					return;
 				}
 				if (msg.u._id === uid) {
+					if (hasNextPage) {
+						void jumpToRecent().then(() => setShouldJumpToBottom(true));
+						return;
+					}
 					setShouldJumpToBottom(true);
 				}
 			},
@@ -364,7 +370,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		return () => {
 			clientCallbacks.remove('streamNewMessage', handlerId);
 		};
-	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
+	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom, hasNextPage, jumpToRecent]);
 
 	const keepMountedMessages = useKeepMountedMessages(items);
 
