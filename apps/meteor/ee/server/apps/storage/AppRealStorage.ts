@@ -60,7 +60,7 @@ export class AppRealStorage extends AppMetadataStorage {
 	public async updatePartialAndReturnDocument(
 		{ _id, ...item }: IAppStorageItem,
 		{ unsetPermissionsGranted = false } = {},
-	): Promise<IAppStorageItem> {
+	): Promise<IAppStorageItem | null> {
 		if (!_id) {
 			throw new Error('Property _id is required to update an app storage item');
 		}
@@ -74,9 +74,7 @@ export class AppRealStorage extends AppMetadataStorage {
 			updateQuery.$unset = { permissionsGranted: 1 };
 		}
 
-		// TODO need to change method return type to IAppStorageItem | null, because findOneAndUpdate can return null if the document is not found.
-		// But for now, we are asserting that it will always return a document.
-		return this.db.findOneAndUpdate({ _id }, updateQuery, { returnDocument: 'after' }) as Promise<IAppStorageItem>;
+		return this.db.findOneAndUpdate({ _id }, updateQuery, { returnDocument: 'after' });
 	}
 
 	public async updateStatus(_id: string, status: AppStatus): Promise<boolean> {
