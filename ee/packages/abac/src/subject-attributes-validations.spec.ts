@@ -12,6 +12,10 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		removeUserFromRoom: jest.fn(),
 	},
+	Settings: {
+		// the service primes its configuration before touching the PDP
+		get: jest.fn().mockResolvedValue(undefined),
+	},
 	MeteorError: class extends Error {},
 	isMeteorError: () => false,
 }));
