@@ -1,0 +1,59 @@
+apps/meteor/server/api/v1/rooms.ts
+  s_8998b0686d0f5a::t_93c8f6d65f2d6b 1428-1448
+  s_8998b0686d0f5a::t_d3810abb7b352d 52,1765
+  s_8998b0686d0f5a::t_e5b9187f1b2df8 41,61
+  s_8998b0686d0f5a::t_a7f04eb4044663 1754-1764,1766-1803
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_8998b0686d0f5a::t_64b4a5fece75f8 5405-5409,5427
+  s_8998b0686d0f5a::t_922f90b3f8fea8 5305-5404,5410-5426,5428-5459
+apps/meteor/app/ui-utils/client/lib/RoomHistoryManager.ts
+  s_8998b0686d0f5a::t_c65624ab20f6c4 54-55,62-69
+  s_8998b0686d0f5a::t_a3fddc26f9169c 264-276,278,284-288,293
+  s_8998b0686d0f5a::t_dca951819b3d74 169-176,180,182-185
+  s_8998b0686d0f5a::t_8ee0e030b66c62 166-168
+  s_8998b0686d0f5a::t_c057d897c24691 10,13
+  s_8998b0686d0f5a::t_22aa725626d46b 332-333
+  s_8998b0686d0f5a::t_868f7f043bee10 215-216
+  s_8998b0686d0f5a::t_f9d3897dd971ca 261-263
+  s_e6f7ddc27249bc::t_cc20efb4f0f1b9 70,165
+packages/rest-typings/src/v1/rooms.ts
+  s_8998b0686d0f5a::t_74dccb63a0b403 1062-1105
+apps/meteor/server/meteor-methods/messages/loadNextMessages.ts
+  s_8998b0686d0f5a::t_558aebeb3816cc 8,20
+apps/meteor/server/meteor-methods/messages/loadHistory.ts
+  s_8998b0686d0f5a::t_e99597bfda53c5 9
+  s_8998b0686d0f5a::t_558aebeb3816cc 34
+.changeset/ddp-migrate-room-history-callers.md
+  s_8998b0686d0f5a::t_c35f6c8c717940 5
+  s_8998b0686d0f5a::t_5aa029329c1fff 1-4
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_8998b0686d0f5a::t_b43362d5fee68d 1-118,125,128-168
+  s_8998b0686d0f5a::t_76ac2a3f54458e 119-124,126-127
+.changeset/rest-rooms-history.md
+  s_8998b0686d0f5a::t_ca9ce57c4876ba 6
+  s_8998b0686d0f5a::t_eb4f5acb022387 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7590033c952f3eda18ff515b819028ecc36a2c9e",
+  "prompts": {},
+  "sessions": {
+    "s_8998b0686d0f5a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1eb4ba6-bb29-4651-a5d0-a7f88b362991",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
