@@ -20,16 +20,17 @@ Code lives in [apps/meteor/server/bridges/slack/](../../apps/meteor/server/bridg
 
 Configure the bridge in **Admin → Settings → SlackBridge**:
 
-| Setting                                                                     | Notes                                                                                  |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `SlackBridge_Enabled`                                                       | Master switch. Must be on.                                                             |
-| `SlackBridge_UseLegacy`                                                     | Chooses the connection mode — see below. Run the matrices in the mode you are testing. |
-| `SlackBridge_APIToken`                                                      | Legacy mode only (RTM).                                                                |
-| `SlackBridge_BotToken`, `SlackBridge_SigningSecret`, `SlackBridge_AppToken` | App mode only (Bolt / Socket Mode).                                                    |
-| `SlackBridge_Out_Enabled`                                                   | Required for anything to flow Rocket.Chat → Slack.                                     |
-| `SlackBridge_Out_All` / `SlackBridge_Out_Channels`                          | Which Rocket.Chat rooms are bridged out.                                               |
-| `SlackBridge_Reactions_Enabled`                                             | Gates reaction propagation in both directions.                                         |
-| `SlackBridge_FileUpload_Enabled`                                            | Gates file transfer.                                                                   |
+| Setting                                                                     | Notes                                                                                       |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `SlackBridge_Enabled`                                                       | Master switch. Must be on.                                                                  |
+| `SlackBridge_UseLegacy`                                                     | Chooses the connection mode — see below. Run the matrices in the mode you are testing.      |
+| `SlackBridge_APIToken`                                                      | Legacy mode only (RTM).                                                                     |
+| `SlackBridge_BotToken`, `SlackBridge_SigningSecret`, `SlackBridge_AppToken` | App mode only (Bolt / Socket Mode).                                                         |
+| `SlackBridge_Out_Enabled`                                                   | Required for anything to flow Rocket.Chat → Slack.                                          |
+| `SlackBridge_Out_All` / `SlackBridge_Out_Channels`                          | Which Rocket.Chat rooms are bridged out.                                                    |
+| `SlackBridge_Reactions_Enabled`                                             | Gates reaction propagation in both directions.                                              |
+| `SlackBridge_AliasFormat`                                                   | Optional, Slack → Rocket.Chat only. `%s` is the Slack username; test with `%s (via Slack)`. |
+| `SlackBridge_FileUpload_Enabled`                                            | Gates file transfer.                                                                        |
 
 Two connection modes exist and they use different Slack event plumbing, so a regression can
 appear in one and not the other. **Run the full matrix in both** when changing anything in the
@@ -60,10 +61,16 @@ failures are only visible there.
 
 ## Sending messages
 
-| #   | Origin      | Action performed on | Expected result                                                                                                                     |
-| --- | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Slack       | Slack               | Message appears in the linked Rocket.Chat room.                                                                                     |
-| 2   | Rocket.Chat | Rocket.Chat         | Message appears in the linked Slack channel, posted by rocketbot with the sender's username/avatar and the configured alias format. |
+| #   | Origin      | Action performed on | Expected result                                                                                         |
+| --- | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1   | Slack       | Slack               | Message appears in the linked Rocket.Chat room, under the alias `SlackBridge_AliasFormat` produces.     |
+| 2   | Rocket.Chat | Rocket.Chat         | Message appears in the linked Slack channel, posted by rocketbot with the sender's username and avatar. |
+
+`SlackBridge_AliasFormat` only affects case 1: `addAliasToMsg` sets `alias` on the **Rocket.Chat**
+message, so with `%s (via Slack)` a message from Slack user `alice` shows as `alice (via Slack)`.
+Case 2 carries the sender's identity through `chat.postMessage`'s `username`/`icon_url` and ignores
+the setting entirely. Set the format, run case 1 with it set and again with it empty, then **restore
+the original value** before moving on — the later matrices assume the workspace's normal setup.
 
 Repeat both on a channel without rocketbot: neither message crosses over.
 
