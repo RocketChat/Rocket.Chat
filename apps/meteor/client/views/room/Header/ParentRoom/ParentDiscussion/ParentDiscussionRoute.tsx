@@ -18,7 +18,7 @@ const ParentDiscussionRoute = ({ room }: ParentDiscussionRouteProps) => {
 	const subscription = useUserSubscription(prid);
 
 	if (subscription) {
-		return <ParentDiscussion room={subscription} />;
+		return <ParentDiscussion room={{ ...subscription, _id: subscription.rid }} />;
 	}
 
 	return <ParentDiscussionWithData rid={prid} />;
