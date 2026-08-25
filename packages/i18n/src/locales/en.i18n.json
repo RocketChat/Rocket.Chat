@@ -646,6 +646,8 @@
   "allow-external-voice-calls": "Allow External Voice Calls",
   "allow-external-voice-calls_description": "Permission to allow users to make and receive calls with users from external integrations.",
   "allow-internal-voice-calls": "Allow Internal Voice Calls",
+  "allow-screenShare-voice-calls": "Allow users to share their screen during voice calls",
+  "allow-screenShare-voice-calls_description": "Users without this permission can still watch other peer's shared screens",
   "allow-internal-voice-calls_description": "Permission to allow users to make and receive calls with other users in the workspace.",
   "Almost_done": "Almost done",
   "Alphabetical": "Alphabetical",

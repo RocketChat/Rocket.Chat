@@ -210,6 +210,7 @@ export const permissions = [
 	// New Media calls permissions
 	{ _id: 'allow-internal-voice-calls', roles: ['admin', 'user'] },
 	{ _id: 'allow-external-voice-calls', roles: ['admin', 'user'] },
+	{ _id: 'allow-screenShare-voice-calls', roles: ['admin', 'user'] },
 
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'manage-apps', roles: ['admin'] },
