@@ -146,6 +146,50 @@ describe('NatsBroker.call', () => {
 	});
 });
 
+describe('NatsBroker.call retries', () => {
+	it('should retry until a responder shows up', async () => {
+		jest.useFakeTimers();
+		const { broker, nc } = await start();
+
+		const pending = broker.call('late.arrival', []);
+
+		// first attempt runs before any responder exists
+		await jest.advanceTimersByTimeAsync(0);
+		expect(nc.requested).toEqual(['rpc.late.arrival']);
+
+		nc.endpoints.set('rpc.late.arrival', (_error, msg) => void msg.respond(new TextEncoder().encode('"here"')));
+		await jest.advanceTimersByTimeAsync(100);
+
+		await expect(pending).resolves.toBe('here');
+		expect(nc.requested).toHaveLength(2);
+
+		jest.useRealTimers();
+	});
+
+	it('should give up after a bounded number of attempts', async () => {
+		jest.useFakeTimers();
+		const { broker, nc } = await start();
+
+		const pending = broker.call('never.there', []);
+		const settled = expect(pending).rejects.toThrow('503');
+
+		await jest.advanceTimersByTimeAsync(10_000);
+		await settled;
+
+		expect(nc.requested).toHaveLength(6);
+
+		jest.useRealTimers();
+	});
+
+	it('should not retry an error raised by the service itself', async () => {
+		const { broker, nc } = await start();
+
+		await expect(broker.call('accounts.explode', [])).rejects.toThrow();
+
+		expect(nc.requested).toEqual(['rpc.accounts.explode']);
+	});
+});
+
 describe('NatsBroker discovery', () => {
 	it('should report the local node from the service metadata', async () => {
 		const { broker } = await start();

@@ -1,6 +1,6 @@
 import EJSON from 'ejson';
 import type { Msg, MsgHdrs, PublishOptions, ServiceHandler, ServiceIdentity, ServiceMsg } from 'nats';
-import { Empty, ServiceErrorCodeHeader, ServiceErrorHeader, headers } from 'nats';
+import { Empty, ErrorCode, NatsError, ServiceErrorCodeHeader, ServiceErrorHeader, headers } from 'nats';
 
 /**
  * In memory stand in for a NatsConnection, covering only what NatsBroker uses:
@@ -56,7 +56,7 @@ export class FakeNatsConnection {
 
 		const handler = this.endpoints.get(subject);
 		if (!handler) {
-			throw new Error(`503: no responders for '${subject}'`);
+			throw NatsError.errorForCode(ErrorCode.NoResponders);
 		}
 
 		return new Promise<Msg>((resolve) => {

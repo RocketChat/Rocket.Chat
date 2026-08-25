@@ -2,7 +2,7 @@ import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceCla
 import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
-import { Empty, RequestStrategy, ServiceError, connect } from 'nats';
+import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } from 'nats';
 
 import { getInstanceMethods } from './getInstanceMethods';
 import type { ServiceNodes } from './licenseEnforcement';
@@ -35,10 +35,33 @@ const NODE_ID_METADATA = 'rocketchat-node-id';
 
 const DISCOVERY_TIMEOUT = 1000;
 
+/**
+ * Unlike moleculer, nats has no registry to wait on: a request to a subject
+ * nobody is listening on fails immediately with `503`. That happens whenever a
+ * peer is booting or being rolled, so back off and try again for a short while.
+ *
+ * Only `503` is retried. It means the request reached no responder at all, so
+ * nothing ran and a second attempt cannot duplicate a side effect. Any other
+ * failure - a timeout above all - may well have been delivered.
+ */
+const NO_RESPONDERS_RETRY_DELAYS = [100, 250, 500, 1000, 2000];
+
+/** `NatsError.code` is a plain string, so the enum member has to be widened to compare against it. */
+const NO_RESPONDERS_CODE: string = ErrorCode.NoResponders;
+
 /** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
 const DISCOVERY_TTL = 1000;
 
 const lifecycleMethods = new Set(['created', 'started', 'stopped']);
+
+const delay = async (ms: number): Promise<void> =>
+	new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+
+function isNoResponders(e: unknown): boolean {
+	return e instanceof NatsError && e.code === NO_RESPONDERS_CODE;
+}
 
 const internalMethods = new Set(['$node.list', '$node.services']);
 
@@ -262,7 +285,7 @@ export class NatsBroker implements IBroker {
 
 		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
 
-		const msg = await this.nc.request(subject, encodePayload(data), { timeout: requestTimeout });
+		const msg = await this.request(this.nc, subject, encodePayload(data));
 
 		const serviceError = ServiceError.toServiceError(msg);
 		if (serviceError) {
@@ -270,6 +293,23 @@ export class NatsBroker implements IBroker {
 		}
 
 		return decodePayload(msg.data);
+	}
+
+	private async request(nc: NatsConnection, subject: string, payload: Uint8Array): Promise<Msg> {
+		for (const backoff of NO_RESPONDERS_RETRY_DELAYS) {
+			try {
+				return await nc.request(subject, payload, { timeout: requestTimeout });
+			} catch (e) {
+				if (!isNoResponders(e)) {
+					throw e;
+				}
+
+				await delay(backoff);
+			}
+		}
+
+		// last attempt, so a still missing responder surfaces to the caller
+		return nc.request(subject, payload, { timeout: requestTimeout });
 	}
 
 	/** Moleculer internals that application code still calls through the broker. */
