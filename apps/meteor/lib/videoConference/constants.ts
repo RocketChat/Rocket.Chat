@@ -20,6 +20,12 @@ export const CALL_FACES_SHOWN = 2;
  */
 export const PREFLIGHT_FACES_SHOWN = 10;
 
+/**
+ * How long a conference is kept alive after the last participant leaves, before it is ended.
+ * Long enough for a reload to land and cancel it, short enough that a call really over doesn't linger.
+ */
+export const EMPTY_CALL_GRACE_MS = 10_000;
+
 /** Whether this many recipients is a set worth ringing. See `VIDEO_CONF_RINGING_LIMIT` for why there is a cap. */
 export const shouldRingVideoConference = (recipientCount: number): boolean =>
 	recipientCount > 0 && recipientCount <= VIDEO_CONF_RINGING_LIMIT;
