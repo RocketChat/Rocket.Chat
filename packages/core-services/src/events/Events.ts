@@ -162,6 +162,14 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	/**
+	 * Something about the conference changed: its chat moved to another room, who can read that chat changed, or
+	 * its membership moved — someone joined, declined, left, or was added.
+	 *
+	 * One event for all of it because there is one answer to all of it: read the conference again. It carries the
+	 * room, who can see it, and who is in it, so nothing a subscriber needs is worth a payload of its own.
+	 */
+	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:

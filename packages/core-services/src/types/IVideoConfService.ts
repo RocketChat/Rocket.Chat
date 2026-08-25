@@ -4,7 +4,10 @@ import type {
 	IUser,
 	IVoIPVideoConference,
 	VideoConference,
+	JoinableVideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceChatAccess,
+	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
@@ -43,5 +46,23 @@ export interface IVideoConfService {
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
+	addMembers(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+		options?: { ring?: boolean },
+	): Promise<IUser['_id'][]>;
+	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
+	leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
+	/** Renews the caller's presence lease on a call, which is what stops them being treated as gone. */
+	renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
+	/** Marks everyone whose presence lease has run out as having left, and ends the calls that empties. */
+	expirePresenceLeases(now?: Date): Promise<void>;
+	ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]>;
+	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
+	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
+	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
+
+	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }
