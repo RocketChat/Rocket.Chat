@@ -45,7 +45,7 @@ class RocketChatStatisticsAdapter {
 	}
 
 	async getAmountOfConnectedExternalServers(): Promise<{ quantity: number; servers: string[] }> {
-		const externalServers = await Rooms.countDistinctFederationRoomsExcluding(settings.get('Federation_Matrix_homeserver_domain'));
+		const externalServers = await Rooms.countDistinctFederationRoomsExcluding(settings.get('Federation_Service_Domain'));
 
 		return {
 			quantity: externalServers.length,
@@ -58,8 +58,8 @@ export const getMatrixFederationStatistics = async (): Promise<IMatrixFederation
 	const statisticsService = new RocketChatStatisticsAdapter();
 
 	return {
-		enabled: settings.get('Federation_Matrix_enabled'),
-		maximumSizeOfPublicRoomsUsers: settings.get('Federation_Matrix_max_size_of_public_rooms_users'),
+		enabled: settings.get('Federation_Service_Enabled'),
+		maximumSizeOfPublicRoomsUsers: settings.get('Federation_Service_max_allowed_size_of_public_rooms_to_join'),
 		biggestRoom: await statisticsService.getBiggestRoomAvailable(),
 		smallestRoom: await statisticsService.getSmallestRoomAvailable(),
 		amountOfExternalUsers: await statisticsService.getAmountOfExternalUsers(),
