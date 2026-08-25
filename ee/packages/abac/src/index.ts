@@ -15,7 +15,7 @@ import type {
 	AbacUserIdentifiers,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy, primeOnce } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
@@ -49,6 +49,8 @@ import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttribu
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
 
+const DEFAULT_DECISION_CACHE_SECONDS = 60;
+
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -81,7 +83,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private lastSelectedStore?: IAttributeStore;
 
-	decisionCacheTimeout = 60; // seconds
+	decisionCacheTimeout?: number; // seconds
 
 	constructor() {
 		super();
@@ -260,26 +262,43 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
-	override async started(): Promise<void> {
-		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
-
-		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
+	/**
+	 * Selects the PDP and the attribute store from settings.
+	 *
+	 * Runs at boot, but the settings service lives in another process and is not
+	 * necessarily reachable yet. A failure there is not fatal - it leaves `this.pdp`
+	 * null, which the decision paths treat as a denial - so they prime again before
+	 * deciding anything. `primeOnce` does not remember a failure, so that retry is
+	 * a real one, and does nothing once it has succeeded.
+	 */
+	private primeConfig = primeOnce(async () => {
+		const [decisionCacheTimeout, abacEnabled, pdpType, attributeStore] = await Promise.all([
+			Settings.get<number>('Abac_Cache_Decision_Time_Seconds'),
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
 		]);
 
-		this.abacEnabled = abacEnabled;
-		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
-		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		// only fill in what is still unknown: a settings event that already arrived
+		// carries a newer value than the read above
+		this.decisionCacheTimeout ??= decisionCacheTimeout;
+		this.abacEnabled ??= abacEnabled;
+		this.pdpTypeSetting ??= isAbacPdpType(pdpType) ? pdpType : undefined;
+		this.attributeStoreSetting ??= isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
 
-		if (pdpType !== 'virtru') {
-			this.setPdpStrategy('local');
-			return;
+		if (this.pdpTypeSetting === 'virtru') {
+			await this.loadVirtruPdpConfig();
 		}
 
-		await this.loadVirtruPdpConfig();
-		this.setPdpStrategy('virtru');
+		// settings events arrive independently of this read, so a strategy already
+		// chosen by `ABAC_PDP_Type` is newer than what was just fetched
+		if (!this.pdp) {
+			this.setPdpStrategy(this.pdpTypeSetting ?? 'local');
+		}
+	});
+
+	override async started(): Promise<void> {
+		await this.primeConfig();
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -735,11 +754,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private shouldUseCache(userSub: { abacLastTimeChecked?: Date }): boolean {
-		return (
-			this.decisionCacheTimeout > 0 &&
-			!!userSub.abacLastTimeChecked &&
-			Date.now() - userSub.abacLastTimeChecked.getTime() < this.decisionCacheTimeout * 1000
-		);
+		const timeout = this.decisionCacheTimeout ?? DEFAULT_DECISION_CACHE_SECONDS;
+
+		return timeout > 0 && !!userSub.abacLastTimeChecked && Date.now() - userSub.abacLastTimeChecked.getTime() < timeout * 1000;
 	}
 
 	async canAccessObject(
@@ -748,6 +765,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		action: AbacAccessOperation,
 		objectType: AbacObjectType,
 	) {
+		await this.primeConfig();
+
 		// We may need this flex for phase 2, but for now only ROOM/READ is supported
 		if (objectType !== AbacObjectType.ROOM) {
 			throw new AbacUnsupportedObjectTypeError();
@@ -799,6 +818,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
+		await this.primeConfig();
+
 		if (!usernames.length || !attributes.length || !this.pdp) {
 			return;
 		}
