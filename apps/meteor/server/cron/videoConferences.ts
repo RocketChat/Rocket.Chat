@@ -25,10 +25,12 @@ async function runVideoConferences(): Promise<void> {
  * Frequent because it is what recovers a call after an outage, and cheap because the work is proportional to the
  * number of *open* calls, which is normally none.
  */
-async function runPresenceSweep(): Promise<void> {
+async function runPresenceSweep(readyForMs: number): Promise<void> {
 	// A restart cannot tell "everyone left" from "we were not here to be told" — both leave every lease expired.
 	// So a fresh process waits out one full lease, by which time anyone still in a call has renewed theirs.
-	if (!isPresenceSweepDue(process.uptime() * 1000)) {
+	// Measured from when the job was registered, not from process launch: a slow boot can eat the whole lease
+	// before any client had a chance to heartbeat.
+	if (!isPresenceSweepDue(readyForMs)) {
 		return;
 	}
 
@@ -45,5 +47,6 @@ export async function videoConferencesCron(): Promise<void> {
 	//
 	// Not run here on the way past, unlike the expiry above: at startup the guard inside it would reject it
 	// anyway, and that is exactly the point.
-	return cronJobs.add('VideoConferencePresence', '* * * * *', async () => runPresenceSweep());
+	const registeredAt = Date.now();
+	return cronJobs.add('VideoConferencePresence', '* * * * *', async () => runPresenceSweep(Date.now() - registeredAt));
 }
