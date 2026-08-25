@@ -6,9 +6,10 @@ import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useCreateCustomCategory } from './hooks/useCreateCustomCategory';
+import { useValidateCategoryName } from './validateCategoryName';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 import type { MovableRoom } from '../hooks/useCustomCategories';
-import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCustomCategories';
 
 type CreateCategoryModalProps = {
 	room?: MovableRoom;
@@ -18,7 +19,8 @@ type CreateCategoryModalProps = {
 const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { createCategory, createCategoryAndMoveRoom, validateName } = useCustomCategories();
+	const validateName = useValidateCategoryName();
+	const { createCategory, createCategoryAndMoveRoom } = useCreateCustomCategory();
 
 	const {
 		handleSubmit,
@@ -79,13 +81,7 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 								validate: (name: string) => validateName(name),
 							}}
 							render={({ field }) => (
-								<TextInput
-									autoComplete='off'
-									maxLength={MAX_CATEGORY_NAME_LENGTH}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									{...field}
-								/>
+								<TextInput autoComplete='off' error={errors.name?.message} aria-invalid={errors.name ? 'true' : 'false'} {...field} />
 							)}
 						/>
 					</FieldRow>

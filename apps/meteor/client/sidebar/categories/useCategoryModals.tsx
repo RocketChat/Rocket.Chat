@@ -7,12 +7,12 @@ import CustomCategoryUpsellModal from './CustomCategoryUpsellModal';
 import DeleteCategoryModal from './DeleteCategoryModal';
 import ManageCategoryModal from './ManageCategoryModal';
 import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
-import { useCustomCategories } from '../hooks/useCustomCategories';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import type { MovableRoom } from '../hooks/useCustomCategories';
 
 export const useCategoryModals = () => {
 	const setModal = useSetModal();
-	const { hasLicenseModule } = useCustomCategories();
+	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasLicenseModule);
 
 	return useMemo(() => {

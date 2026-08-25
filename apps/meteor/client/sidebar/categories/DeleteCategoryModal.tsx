@@ -1,11 +1,10 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useDeleteCategory } from './hooks/useDeleteCategory';
 import { useCategoryRoomIds } from './useCategoryRoomIds';
-import { useCustomCategories } from '../hooks/useCustomCategories';
 
 type DeleteCategoryModalProps = {
 	category: ISidebarCategory;
@@ -14,27 +13,17 @@ type DeleteCategoryModalProps = {
 
 const DeleteCategoryModal = ({ category, onClose }: DeleteCategoryModalProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const { deleteCategory, isPersisting } = useCustomCategories();
+	const deleteCategoryMutation = useDeleteCategory({ categoryName: category.name, settleCallback: onClose });
 	const roomIds = useCategoryRoomIds(category._id);
 
-	const handleConfirm = async () => {
-		try {
-			await deleteCategory(category._id, roomIds);
-			dispatchToastMessage({ type: 'success', message: t('Category__name__deleted', { name: category.name }) });
-			onClose();
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
-		}
-	};
+	const handleConfirm = () => deleteCategoryMutation.mutateAsync({ categoryId: category._id, roomIds });
 
 	return (
 		<GenericModal
 			variant='danger'
 			title={t('Delete_category')}
 			confirmText={t('Delete')}
-			confirmLoading={isPersisting}
-			confirmDisabled={isPersisting}
+			confirmLoading={deleteCategoryMutation.isPending}
 			onConfirm={handleConfirm}
 			onCancel={onClose}
 		>

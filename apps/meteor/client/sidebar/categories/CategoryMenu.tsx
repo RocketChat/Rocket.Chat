@@ -6,9 +6,10 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
+import { useToggleUnreads } from './hooks/useToggleUnreads';
 import { useCategoryModals } from './useCategoryModals';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
-import { useCustomCategories } from '../hooks/useCustomCategories';
 
 type CategoryMenuProps = {
 	category?: ISidebarCategory;
@@ -36,7 +37,8 @@ const CategoryMenu = ({
 	const close = () => toggleOpen(false);
 
 	const { openManage, openDelete } = useCategoryModals();
-	const { toggleShowUnreads, toggleKeepUnreadsOnTop, moveRoom } = useCustomCategories();
+	const { moveRoom } = useMoveRoomCategory();
+	const { toggleShowUnreads, toggleKeepUnreadsOnTop } = useToggleUnreads();
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
 

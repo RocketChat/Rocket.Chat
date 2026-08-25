@@ -7,9 +7,11 @@ import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
 import { useCustomCategories } from './useCustomCategories';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
+import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 
 const query = { open: { $ne: false } };
 
@@ -62,7 +64,10 @@ export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
-	const { categories: customCategories, hasLicenseModule, isShowUnreads, isKeepUnreadsOnTop } = useCustomCategories();
+	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+
+	const customCategories = useCustomCategories();
+	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
 
 	const options = useSortQueryOptions();
 
@@ -178,11 +183,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	// Group ordering is applied AFTER the debounce so that "Move up / Move down"
 	// takes effect immediately rather than waiting for the 50 ms settling period.
-	const groupsCount = groups.map((group) => (group.empty ? 0 : group.rooms.length));
+	const groupsCount = useMemo(() => groups.map((group) => (group.empty ? 0 : group.rooms.length)), [groups]);
 
 	return {
 		groups,
 		groupsCount,
-		totalCount: groupsCount.reduce((acc, count) => acc + count, 0),
+		totalCount: useMemo(() => groupsCount.reduce((acc, count) => acc + count, 0), [groupsCount]),
 	};
 };

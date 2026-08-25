@@ -7,9 +7,10 @@ import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useUpdateCategory } from './hooks/useUpdateCategory';
 import { useCategoryRoomIds } from './useCategoryRoomIds';
+import { useValidateCategoryName } from './validateCategoryName';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
-import { MAX_CATEGORY_NAME_LENGTH, useCustomCategories } from '../hooks/useCustomCategories';
 
 type ManageCategoryModalProps = {
 	category: ISidebarCategory;
@@ -19,7 +20,8 @@ type ManageCategoryModalProps = {
 const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { updateCategory, validateName } = useCustomCategories();
+	const updateCategory = useUpdateCategory();
+	const validateName = useValidateCategoryName();
 
 	const initialRoomsRef = useRef(useCategoryRoomIds(category._id));
 
@@ -84,13 +86,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 								validate: (name: string) => validateName(name, category._id),
 							}}
 							render={({ field }) => (
-								<TextInput
-									autoComplete='off'
-									maxLength={MAX_CATEGORY_NAME_LENGTH}
-									error={errors.name?.message}
-									aria-invalid={errors.name ? 'true' : 'false'}
-									{...field}
-								/>
+								<TextInput autoComplete='off' error={errors.name?.message} aria-invalid={errors.name ? 'true' : 'false'} {...field} />
 							)}
 						/>
 					</FieldRow>

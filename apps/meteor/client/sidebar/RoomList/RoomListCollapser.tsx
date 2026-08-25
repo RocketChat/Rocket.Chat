@@ -3,10 +3,10 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
-import { useCustomCategories } from '../hooks/useCustomCategories';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -22,7 +22,7 @@ type RoomListCollapserProps = {
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
-	const { hasLicenseModule } = useCustomCategories();
+	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);

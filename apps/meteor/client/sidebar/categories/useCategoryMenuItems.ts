@@ -24,8 +24,7 @@ export const useCategoryMenuItems = ({
 	isFavorite,
 	categoryId,
 }: UseCategoryMenuItemsParams): UseCategoryMenuItemsResult => {
-	const buildCategoryItems = useRoomCategoryItems();
-	const { moveToItems, removeItem } = buildCategoryItems({ rid, name, isFavorite, categoryId });
+	const { moveToItems, removeItem } = useRoomCategoryItems({ rid, name, isFavorite, categoryId });
 
 	const targetItems = moveToItems.filter((item) => item.id !== 'newCategory');
 	const newCategoryItem = moveToItems.find((item) => item.id === 'newCategory');
