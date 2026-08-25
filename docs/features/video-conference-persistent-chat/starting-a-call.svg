@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="580" viewBox="0 0 680 580" role="img" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+	<title>Starting a video call with persistent chat enabled</title>
+	<desc>The camera button in any room opens a call window at /conference/new showing a preflight screen. Nothing is created until the user confirms. Cancelling leaves no trace; confirming creates the conference, posts a message in the room, and rings the other side — the callee of a direct call, or up to ten room members.</desc>
+	<defs>
+		<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+			<path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+		</marker>
+	</defs>
+
+	<rect x="170" y="40" width="340" height="52" rx="4" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+	<text x="340" y="62" text-anchor="middle" font-size="14" font-weight="500" fill="#2C2C2A">Camera button in any room</text>
+	<text x="340" y="79" text-anchor="middle" font-size="12" fill="#5F5E5A">DM, channel, group or discussion</text>
+
+	<line x1="340" y1="92" x2="340" y2="118" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+	<rect x="170" y="120" width="340" height="52" rx="4" fill="#E6F1FB" stroke="#85B7EB" stroke-width="0.5"/>
+	<text x="340" y="142" text-anchor="middle" font-size="14" font-weight="500" fill="#042C53">Call window opens</text>
+	<text x="340" y="159" text-anchor="middle" font-size="12" fill="#185FA5">nothing has been created yet</text>
+
+	<line x1="340" y1="172" x2="340" y2="198" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+	<rect x="140" y="200" width="400" height="76" rx="4" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+	<text x="340" y="224" text-anchor="middle" font-size="14" font-weight="500" fill="#26215C">Preflight</text>
+	<text x="340" y="242" text-anchor="middle" font-size="12" fill="#534AB7">mic and camera are chosen here</text>
+	<text x="340" y="260" text-anchor="middle" font-size="12" fill="#534AB7">a room call gets a name; a DM says who you are calling</text>
+
+	<path d="M340 276 L340 292 L185 292 L185 314" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+	<path d="M340 276 L340 292 L495 292 L495 314" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+	<rect x="80" y="316" width="210" height="52" rx="4" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+	<text x="185" y="338" text-anchor="middle" font-size="14" font-weight="500" fill="#2C2C2A">Cancel</text>
+	<text x="185" y="355" text-anchor="middle" font-size="12" fill="#5F5E5A">nothing was created</text>
+
+	<rect x="390" y="316" width="210" height="52" rx="4" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+	<text x="495" y="338" text-anchor="middle" font-size="14" font-weight="500" fill="#04342C">Confirm</text>
+	<text x="495" y="355" text-anchor="middle" font-size="12" fill="#0F6E56">the call is created now</text>
+
+	<line x1="495" y1="368" x2="495" y2="394" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+	<rect x="380" y="396" width="230" height="68" rx="4" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+	<text x="495" y="420" text-anchor="middle" font-size="14" font-weight="500" fill="#04342C">You are in the call</text>
+	<text x="495" y="438" text-anchor="middle" font-size="12" fill="#0F6E56">a message appears in the room</text>
+	<text x="495" y="456" text-anchor="middle" font-size="12" fill="#0F6E56">and a history row says ongoing</text>
+
+	<path d="M495 464 L495 482 L330 482 L330 504" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+	<path d="M495 464 L495 482 L540 482 L540 504" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+	<rect x="235" y="506" width="190" height="52" rx="4" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+	<text x="330" y="528" text-anchor="middle" font-size="14" font-weight="500" fill="#4A1B0C">Direct call</text>
+	<text x="330" y="545" text-anchor="middle" font-size="12" fill="#993C1D">they ring once you arrive</text>
+
+	<rect x="445" y="506" width="190" height="52" rx="4" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+	<text x="540" y="528" text-anchor="middle" font-size="14" font-weight="500" fill="#4A1B0C">Room call</text>
+	<text x="540" y="545" text-anchor="middle" font-size="12" fill="#993C1D">rings 10 members, or none</text>
+</svg>

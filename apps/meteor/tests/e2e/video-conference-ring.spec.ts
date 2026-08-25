@@ -29,18 +29,25 @@ test.describe('video conference ringing', () => {
 		await auxContext.page.close();
 	});
 
-	test('should display call ringing in direct message', async () => {
+	test('should display call ringing in direct message', async ({ page }) => {
 		await poHomeChannel.navbar.openChat('user2');
 
 		await auxContext.poHomeChannel.navbar.openChat('user1');
 		await test.step('should user1 calls user2', async () => {
+			// The caller's own window opens on the click that asked for it, which is what gives `window.open` the user
+			// activation browsers are entitled to demand. So the caller is in the call from that moment and the room
+			// is no longer "calling": what used to be a "Calling user2" popup in the room is that window now.
+			const callWindow = page.context().waitForEvent('page');
+
 			await poHomeChannel.content.btnVideoCall.click();
 			await poHomeChannel.content.btnStartVideoCall.click();
 
-			await expect(poHomeChannel.content.getVideoConfPopup('Calling user2')).toBeVisible();
+			// Ringing runs from the caller's room page, not from that window, so the callee is rung either way.
 			await expect(auxContext.poHomeChannel.content.getVideoConfPopup('Incoming call from user1')).toBeVisible();
-
 			await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
+
+			// Closing it is the caller giving up, which is what leaves the call behind them for the step below.
+			await (await callWindow).close();
 		});
 
 		await test.step('should user1 be able to call user2 again ', async () => {
