@@ -1964,8 +1964,6 @@
   "Push_enable": "អនុញ្ញាត",
   "Push_enable_gateway": "អនុញ្ញាតឱ្យមានផ្លូវចេញចូល",
   "Push_gateway": "ផ្លូវចេញចូល",
-  "Push_gcm_api_key": "GCM កូនសោ API",
-  "Push_gcm_project_number": "លេខគម្រោង GCM",
   "Push_production": "ផលិតកម្ម",
   "Push_show_message": "បង្ហាញសារក្នុងការជូនដំណឹង",
   "Push_show_username_room": "បង្ហាញឆានែល / ក្រុម / ឈ្មោះអ្នកប្រើនៅក្នុងការជូនដំណឹង",

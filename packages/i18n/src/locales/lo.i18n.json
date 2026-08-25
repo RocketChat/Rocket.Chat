@@ -1714,8 +1714,6 @@
   "Push_enable": "ເຮັດໃຫ້ສາມາດ",
   "Push_enable_gateway": "ເຮັດໃຫ້ທາງເລືອກໃຫມ່",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "ຈໍານວນໂຄງການ GCM",
   "Push_production": "ການຜະລິດ",
   "Push_show_message": "ສະແດງໃຫ້ເຫັນຂໍ້ຄວາມໃນແຈ້ງການ",
   "Push_show_username_room": "ສະແດງໃຫ້ເຫັນຊ່ອງ / ກຸ່ມ / ຊື່ຜູ້ໃຊ້ໃນການແຈ້ງເຕືອນ",

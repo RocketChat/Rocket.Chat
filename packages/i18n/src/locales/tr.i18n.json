@@ -2017,8 +2017,6 @@
   "Push_enable": "Etkin",
   "Push_enable_gateway": "Ağ geçidi etkin",
   "Push_gateway": "Ağ geçidi",
-  "Push_gcm_api_key": "GCM API Anahtarı",
-  "Push_gcm_project_number": "GCM Proje Numarası",
   "Push_production": "Üretim",
   "Push_show_message": "Bildirimde İleti Gösterilsin",
   "Push_show_username_room": "Bildirimde göster kanal / grup / kullanıcı adı",

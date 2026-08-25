@@ -1736,8 +1736,6 @@
   "Push_enable": "Įgalinti",
   "Push_enable_gateway": "Įgalinti vartai",
   "Push_gateway": "Vartai",
-  "Push_gcm_api_key": "GCM API raktas",
-  "Push_gcm_project_number": "GCM projekto numeris",
   "Push_production": "Gamyba",
   "Push_show_message": "Rodyti pranešimą pranešimu",
   "Push_show_username_room": "Rodyti kanalą / grupę / vartotojo vardą pranešime",

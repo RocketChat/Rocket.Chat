@@ -2892,8 +2892,6 @@
   "Push_enable_gateway_Description": "**警告：**この設定を有効にしてゲートウェイを使用するには、サーバーの登録（［設定ウィザード］>［組織情報］>［サーバーの登録］）およびプライバシー規約（［設定ウィザード］>［クラウド情報］>［クラウドサービスのプライバシー条項契約］）に同意する必要があります。この設定がオンでも、サーバーが登録されていなければ**機能しません**。",
   "Push_gateway": "ゲートウェイ",
   "Push_gateway_description": "複数の行を使用して複数のゲートウェイを指定できます",
-  "Push_gcm_api_key": "GCM APIキー",
-  "Push_gcm_project_number": "GCMプロジェクト番号",
   "Push_production": "本番",
   "Push_request_content_from_server": "受信時にサーバーから完全なメッセージコンテンツをフェッチ",
   "Push_show_message": "通知でメッセージを表示",

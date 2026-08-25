@@ -1682,8 +1682,6 @@
   "Push_enable": "ทำให้สามารถ",
   "Push_enable_gateway": "เปิดใช้งานเกตเวย์",
   "Push_gateway": "ประตู",
-  "Push_gcm_api_key": "คีย์ API GCM",
-  "Push_gcm_project_number": "หมายเลขโครงการ GCM",
   "Push_production": "การผลิต",
   "Push_show_message": "แสดงข้อความในการแจ้งเตือน",
   "Push_show_username_room": "แสดงช่อง / กลุ่ม / ชื่อผู้ใช้ในการแจ้งเตือน",

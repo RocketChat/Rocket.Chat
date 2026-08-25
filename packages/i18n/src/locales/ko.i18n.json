@@ -2506,8 +2506,6 @@
   "Push_enable_gateway_Description": "**경고:** 당신의 서버를 등록(설정 마법사 > 조직 정보 > 서버 등록)하고 우리의 개인정보 보호 약관(설정 마법사 > 클라우드 정보 . 클라우드 서비스 개인정보 보호 약관 동의)을 동의하여야 이 설정을 활성화하고 우리의 게이트웨이를 사용할 수 있습니다. 만약 이 설정이 켜져있더라도, 서버가 등록되어있지 않다면 작동하지 **않습니다.**",
   "Push_gateway": "게이트웨이",
   "Push_gateway_description": "여러 개의 게이트웨이를 사용하기 위해 여러 개의 라인을 사용할 수 있음",
-  "Push_gcm_api_key": "GCM API 키",
-  "Push_gcm_project_number": "GCM 프로젝트 번호",
   "Push_production": "실서비스용",
   "Push_request_content_from_server": "수신 시 서버에서 전체 메시지 내용을 가져옵니다.",
   "Push_show_message": "알림에 메시지 표시",

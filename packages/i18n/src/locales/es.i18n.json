@@ -2972,8 +2972,6 @@
   "Push_enable_gateway_Description": "**Advertencia:** Debes aceptar el registro de tu servidor (\"Asistente de configuración\" > \"Información de organización\" > \"Registrar servidor\") y nuestros términos de privacidad (\"Asistente de configuración\" > \"Información de nube\" > \"Acuerdo sobre los términos de privacidad del servicio en la nube\") para habilitar este ajuste y usar nuestra puerta de enlace. Aunque este ajuste esté activado, **no** funcionará si el servidor no está registrado.",
   "Push_gateway": "Puerta de enlace",
   "Push_gateway_description": "Se pueden usar varias líneas para especificar varias puertas de enlace",
-  "Push_gcm_api_key": "Clave API de GCM",
-  "Push_gcm_project_number": "Numero de proyecto de GCM",
   "Push_production": "Producción",
   "Push_request_content_from_server": "Obtener todo el contenido del mensaje del servidor al recibirlo",
   "Push_show_message": "Mostrar mensaje en la notificación",

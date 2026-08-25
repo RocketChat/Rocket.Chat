@@ -1981,8 +1981,6 @@
   "Push_enable": "Habilitar",
   "Push_enable_gateway": "Habilitar Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "Chave da API GCM",
-  "Push_gcm_project_number": "Número do Projecto GCM",
   "Push_production": "Produção",
   "Push_show_message": "Mostrar mensagem na notificação",
   "Push_show_username_room": "Mostrar canal / grupo / nome de utilizador na notificação",
