@@ -47,6 +47,9 @@ export async function videoConferencesCron(): Promise<void> {
 	//
 	// Not run here on the way past, unlike the expiry above: at startup the guard inside it would reject it
 	// anyway, and that is exactly the point.
-	const registeredAt = Date.now();
-	return cronJobs.add('VideoConferencePresence', '* * * * *', async () => runPresenceSweep(Date.now() - registeredAt));
+	//
+	// Monotonic time, not the wall clock: an NTP correction or a manual clock change must not be able to age the
+	// process past the grace period in an instant — or hold it forever under it.
+	const registeredAt = performance.now();
+	return cronJobs.add('VideoConferencePresence', '* * * * *', async () => runPresenceSweep(performance.now() - registeredAt));
 }

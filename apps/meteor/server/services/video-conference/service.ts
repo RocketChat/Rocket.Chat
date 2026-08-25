@@ -55,7 +55,7 @@ import {
 	EMPTY_CALL_GRACE_MS,
 	shouldRingVideoConference,
 } from '../../../lib/videoConference/constants';
-import { isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
+import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -1340,7 +1340,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * same person a second time won't do it, since they are already a member. Returns who was rung.
 	 *
 	 * Members who already left are rung too: they were there and are not now, which is exactly the case
-	 * "call them back" is for. Anyone already in the call is never rung, whether or not they were asked for.
+	 * "call them back" is for. Anyone already in the call is never rung, whether or not they were asked for —
+	 * and neither is anyone whose phone is ringing right now: there is nothing more to ask of them.
 	 */
 	public async ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
@@ -1354,7 +1355,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const requested = userIds?.length ? new Set(userIds) : undefined;
 		const absent = call.users
-			.filter((member) => member._id !== uid && !isInVideoConference(member) && (!requested || requested.has(member._id)))
+			.filter((member) => member._id !== uid && canRingConferenceMember(member) && (!requested || requested.has(member._id)))
 			.map(({ _id }) => _id);
 
 		if (!shouldRingVideoConference(absent.length)) {
@@ -1388,9 +1389,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/** Leaves every other call this user is still counted as being in. See `addUserToCall`. */
 	private async leaveOtherCalls(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
 		// Asking the database for "still in it" rather than reading every membership and sifting in memory.
+		// The status predicate names the exact statuses the partial index is filtered on, which is what lets the
+		// planner use it; `endedAt` stays because it is the actual liveness rule (everything that ends a call sets
+		// both), so the semantics don't hang on the index's filter.
 		const others = await VideoConferenceModel.find(
 			{
 				_id: { $ne: callId },
+				status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
 				endedAt: { $exists: false },
 				users: { $elemMatch: { _id: uid, joined: { $ne: false }, leftAt: { $exists: false } } },
 			},
@@ -1419,8 +1424,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * so without this an abandoned one would be advertised as joinable for a day.
 	 */
 	public async listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]> {
+		// The status predicate matches the partial index's filter so the scan can be served by it; `endedAt` is
+		// still the liveness rule itself.
 		const running = await VideoConferenceModel.find(
-			{ endedAt: { $exists: false } },
+			{ status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] }, endedAt: { $exists: false } },
 			// `createdBy` is here because naming a direct call needs it — a call is named after a person, and for a
 			// member with no subscription that person is whoever started it.
 			{ projection: { rid: 1, discussionRid: 1, users: 1, title: 1, type: 1, createdAt: 1, createdBy: 1 }, sort: { createdAt: -1 } },
@@ -1623,9 +1630,34 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Provider-agnostic by construction — the conference window is ours whoever runs the media, so this is the one
 	 * presence signal that exists for every provider. See `lib/videoConference/presence` for why presence is a
 	 * lease rather than a reported departure.
+	 *
+	 * A renewal can also *revive* an inferred departure — the sweep gave up on this window while it was in fact
+	 * alive, and this heartbeat is the correction. The revival has to undo what the eviction did: the sweep
+	 * released their busy claim and told every watcher the roster shrank, so coming back re-claims busy (embedded
+	 * only, exactly as joining does) and announces the roster again. An ordinary renewal changes nothing anyone
+	 * can see, so it stays free of extra writes and notifications.
 	 */
 	public async renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
+		// Whether this renewal is a revival is decided by what the entry says *before* the renewal clears it: an
+		// inferred departure is exactly what `renewUserPresenceById` is allowed to undo. A read rather than asking
+		// the write to report back, because the write's matched/modified counts can't tell the two cases apart.
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>>(callId, {
+			projection: { rid: 1, users: 1, providerName: 1 },
+		});
+		const member = call?.users.find(({ _id }) => _id === uid);
+		const reviving = !!member?.leftAt && !!member.leftReason && INFERRED_LEAVE_REASONS.includes(member.leftReason);
+
 		await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
+
+		if (!call || !reviving) {
+			return;
+		}
+
+		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+			await this.claimBusyForCall(uid);
+		}
+		this.notifyConferenceUpdate(call._id);
+		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
 	/**
