@@ -9,7 +9,7 @@ import {
 import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
 import { API } from '../api';
 
-const setCategory = ajv.compile<{ roomIds: string[]; category: string | null }>({
+const isRoomsSetCategoryParamsPOST = ajv.compile<{ roomIds: string[]; category: string | null }>({
 	type: 'object',
 	properties: {
 		roomIds: {
@@ -32,7 +32,7 @@ API.experimental.post(
 	{
 		authRequired: true,
 		license: ['experimental-enterprise-features'],
-		body: setCategory,
+		body: isRoomsSetCategoryParamsPOST,
 		response: {
 			200: ajv.compile<void>({
 				type: 'object',
