@@ -13,7 +13,7 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 	const { t } = useTranslation();
 	const customCategories = useCustomCategories();
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
-	const { moveRoom, removeRoom } = useMoveRoomCategory();
+	const moveRoomCategory = useMoveRoomCategory();
 	const { openCreate } = useCategoryModals();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 
@@ -28,7 +28,7 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 							id: 'favorites',
 							icon: 'star' as const,
 							content: t('Favorites'),
-							onClick: room.isFavorite ? () => void removeRoom(room) : () => void moveRoom(room, FAVORITES_TARGET),
+							onClick: async () => moveRoomCategory.mutateAsync({ room, target: FAVORITES_TARGET }),
 							addon: room.isFavorite ? selected : undefined,
 						},
 					]
@@ -37,7 +37,7 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 				id: category._id,
 				icon: 'folder' as const,
 				content: category.name,
-				onClick: current?._id === category._id ? () => void removeRoom(room) : () => void moveRoom(room, category._id),
+				onClick: async () => moveRoomCategory.mutateAsync({ room, target: category._id }),
 				addon: current?._id === category._id ? selected : undefined,
 			})),
 			...(hasLicenseModule
@@ -51,10 +51,10 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 					id: 'removeFromCategory',
 					icon: 'cross' as const,
 					content: t('Remove_from__categoryName__', { categoryName: currentName }),
-					onClick: () => void removeRoom(room),
+					onClick: async () => moveRoomCategory.mutateAsync({ room }),
 				}
 			: undefined;
 
 		return { moveToItems, removeItem };
-	}, [room, customCategories, isFavoritesEnabled, t, hasLicenseModule, removeRoom, moveRoom, openCreate]);
+	}, [room, customCategories, isFavoritesEnabled, t, hasLicenseModule, moveRoomCategory, openCreate]);
 };

@@ -20,7 +20,7 @@ const catB = { _id: 'cat-b', name: 'Engineering', showUnreads: true };
 
 beforeEach(() => {
 	mockedUseCustomCategories.mockReturnValue([catA, catB] as any);
-	mockedUseMoveRoomCategory.mockReturnValue({ moveRoom: jest.fn(), removeRoom: jest.fn() });
+	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
 	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
 });
 

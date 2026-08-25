@@ -37,7 +37,7 @@ const CategoryMenu = ({
 	const close = () => toggleOpen(false);
 
 	const { openManage, openDelete } = useCategoryModals();
-	const { moveRoom } = useMoveRoomCategory();
+	const moveRoomCategory = useMoveRoomCategory();
 	const { toggleShowUnreads, toggleKeepUnreadsOnTop } = useToggleUnreads();
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
 	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
@@ -47,7 +47,7 @@ const CategoryMenu = ({
 			return;
 		}
 
-		await moveRoom({ rid, name, isFavorite: false }, category._id, { silent: true });
+		await moveRoomCategory.mutateAsync({ room: { rid, name, isFavorite: false }, target: category._id, silent: true });
 	};
 
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });

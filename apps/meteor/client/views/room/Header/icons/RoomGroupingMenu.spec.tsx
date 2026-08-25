@@ -36,7 +36,7 @@ beforeEach(() => {
 	mockedUseUserIsSubscribed.mockReturnValue(true);
 	mockedUseToggleFavoriteMutation.mockReturnValue({ mutate: jest.fn() } as any);
 	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
-	mockedUseMoveRoomCategory.mockReturnValue({ moveRoom: jest.fn(), removeRoom: jest.fn() });
+	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
 	mockedUseHasLicenseModule.mockReturnValue({ data: true } as any);
 });
 
