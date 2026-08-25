@@ -3,7 +3,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, resetAll } from './testHarness';
+import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
 import { PRESENCE_LEASE_MS } from '../../../../../lib/videoConference/presence';
 
 /**
@@ -85,6 +85,12 @@ describe('VideoConfService presence while in a call', () => {
 			VideoConferenceModelMock.setUserJoinedById,
 		);
 		PresenceMock.setActiveState.resolves(true);
+		// The busy claim only exists for embedded providers — they are the ones with a leave/sweep to release it.
+		providerCapabilities.current = { embedded: true };
+	});
+
+	afterEach(() => {
+		providerCapabilities.current = undefined;
 	});
 
 	// Being in a call is being busy, and saying so is what stops people ringing someone mid-conversation.
@@ -145,5 +151,40 @@ describe('VideoConfService presence while in a call', () => {
 		await service.addUser('call1', 'joiner');
 
 		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('call1', 'joiner')).to.be.true;
+	});
+
+	// A non-embedded provider (Jitsi, Meet, ...) has no leave, no heartbeat and no sweep — nothing would ever
+	// release the claim, so a single Jitsi call would leave the user stuck on Busy forever.
+	describe('for a non-embedded provider', () => {
+		beforeEach(() => {
+			providerCapabilities.current = undefined;
+		});
+
+		it('never claims busy on join, but still records the join', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'host' })]);
+
+			await service.addUser('call1', 'joiner');
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+			expect(VideoConferenceModelMock.setUserJoinedById.calledWith('call1', 'joiner')).to.be.true;
+		});
+
+		// No claim was ever made, so there is nothing to release — and releasing anyway would end a claim some
+		// other feature (a voice call) legitimately holds.
+		it('does not release anything on leave', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'other' }), buildMember({ _id: 'leaver' })]);
+
+			await service.leaveCall('leaver', 'call1');
+
+			expect(PresenceMock.endActiveState.called).to.be.false;
+		});
+
+		it('does not release anything when the call ends', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'present' })]);
+
+			await service.endCall('call1');
+
+			expect(PresenceMock.endActiveState.called).to.be.false;
+		});
 	});
 });

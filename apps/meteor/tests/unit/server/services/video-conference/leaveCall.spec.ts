@@ -3,7 +3,7 @@ import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
+import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, providerCapabilities, resetAll } from './testHarness';
 
 /** Must match the constant defined in the service. */
 const EMPTY_CALL_GRACE_MS = 10_000;
@@ -181,6 +181,9 @@ describe('VideoConfService one call at a time', () => {
 		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
 		service = new VideoConfService();
 		calls = {};
+		// Leaving other calls on join is part of the embedded lifecycle — a non-embedded join records the member
+		// and nothing else.
+		providerCapabilities.current = { embedded: true };
 		resetAll(
 			VideoConferenceModelMock.findOneById,
 			VideoConferenceModelMock.setUserLeftById,
@@ -195,6 +198,7 @@ describe('VideoConfService one call at a time', () => {
 
 	afterEach(() => {
 		clock.restore();
+		providerCapabilities.current = undefined;
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		UsersMock.findOneById.resolves(null);
 	});

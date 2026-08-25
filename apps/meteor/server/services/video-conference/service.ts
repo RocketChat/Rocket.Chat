@@ -54,6 +54,7 @@ import { isUnaskedConferenceMember } from '../../../lib/videoConference/memberSt
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
@@ -541,11 +542,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				rid: call.rid,
 				uid: call.createdBy._id,
 			});
-		}
 
-		// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
-		// else reports their departure: the call is over, so there is no leave left to arrive.
-		await Promise.all(call.users.filter(isInVideoConference).map(({ _id }) => this.releaseBusyForCall(_id)));
+			// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
+			// else reports their departure: the call is over, so there is no leave left to arrive. Only embedded joins
+			// claim busy in the first place, so only they have anything to give back.
+			await Promise.all(call.users.filter(isInVideoConference).map(({ _id }) => this.releaseBusyForCall(_id)));
+		}
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -573,8 +575,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}).toArray();
 
 		for (const subscription of subscriptions) {
-			// Skip notifying users that already joined the call
-			if (call.users.find(({ _id }) => _id === subscription.u._id)) {
+			// Skip notifying users that already joined the call. Actually joined: an embedded callee is on the
+			// roster from the moment they are called, so mere membership would swallow the 'end' that is meant
+			// to stop their ringing.
+			const member = call.users.find(({ _id }) => _id === subscription.u._id);
+			if (member && hasJoinedVideoConference(member)) {
 				continue;
 			}
 
@@ -802,10 +807,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runNewVideoConferenceEvent(callId);
 
+		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+
 		// Being called makes you a member, exactly as being added to a group conference does. Without this the
 		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
-		// and a call they missed leaves them no history entry.
-		await this.addAbsentMember(callId, calleeId);
+		// and a call they missed leaves them no history entry. Embedded only: a non-embedded callee has always
+		// entered `users` by answering, and putting them there earlier would rewrite the call history their
+		// clients build from it.
+		if (isEmbedded) {
+			await this.addAbsentMember(callId, calleeId);
+		}
 
 		await this.maybeCreateDiscussion(callId, user);
 
@@ -815,7 +826,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 		// Embedded providers (LiveKit) don't have an external URL to open —
 		// the call is rendered inline. Skip URL generation for them.
-		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
 		if (!isEmbedded) {
 			const url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(callId, url);
@@ -826,7 +836,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// Auto-follow the thread for anyone who joined between call creation and message creation.
-		await this.autoFollowCallThreadForAllParticipants(call as IDirectVideoConference);
+		await this.autoFollowCallThreadForAllParticipants(call);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
 		setTimeout(async () => {
@@ -845,6 +855,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// Ignore errors on this timeout
 			}
 		}, 40000);
+
+		// A non-embedded call rings the callee's phone now, at creation, as it always has. Embedded calls hold
+		// the push back until the caller actually enters the call — see `ringCalleeOnCallerArrival`.
+		if (!isEmbedded) {
+			await this.sendPushNotification(call, calleeId);
+		}
 
 		return {
 			type: 'direct',
@@ -911,7 +927,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// Auto-follow the thread for anyone who joined between call creation and message creation.
-		await this.autoFollowCallThreadForAllParticipants(call as IGroupVideoConference);
+		await this.autoFollowCallThreadForAllParticipants(call);
 
 		if (call.ringing && !isEmbedded) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
@@ -950,7 +966,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// Auto-follow the thread for anyone who joined between call creation and message creation.
-		await this.autoFollowCallThreadForAllParticipants(call as ILivechatVideoConference);
+		await this.autoFollowCallThreadForAllParticipants(call);
 
 		return {
 			type: 'livechat',
@@ -1188,10 +1204,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addUserToDiscussion(call.discussionRid, _id);
 		}
 
+		// The whole join-side lifecycle below only exists for embedded providers. A non-embedded call (Jitsi,
+		// Meet, ...) has no leave, no heartbeat and no sweep — nothing would ever undo what gets claimed here —
+		// so for those a join must do what it always did: record the member, and nothing else.
+		const isEmbedded = videoConfProviders.getProviderCapabilities(call.providerName)?.embedded === true;
+
 		// A user is in one call at a time, and this is where that becomes true rather than hoped for. A window that
 		// dies without reporting its departure — a crash, a killed tab — otherwise leaves its user counted as
 		// present forever, which both misreports them and keeps a finished call listed as occupied.
-		await this.leaveOtherCalls(call._id, _id);
+		if (isEmbedded) {
+			await this.leaveOtherCalls(call._id, _id);
+		}
 
 		// Already in the call — nothing to record. This asks about presence, not about having joined at some
 		// point: a member who joined and left is joined-ever but absent, and returning here would leave their
@@ -1208,8 +1231,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
 
-		// In a call is busy, for as long as it lasts.
-		await this.claimBusyForCall(_id);
+		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
+		// heartbeat sweep or by the call ending, and a non-embedded call has none of those — the claim would
+		// outrank whatever status the user sets by hand, leaving them busy forever.
+		if (isEmbedded) {
+			await this.claimBusyForCall(_id);
+		}
 
 		// When persistent chat is in "thread" mode, auto-follow the call's chat
 		// thread so the participant receives thread notifications for messages
@@ -1217,7 +1244,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			await this.ringCalleeOnCallerArrival(call, _id);
+			// The ring-on-arrival dance belongs to the embedded flow, where the caller sits on a preflight screen
+			// first; a non-embedded direct call already rang its callee (and pushed) when it was created.
+			if (isEmbedded) {
+				await this.ringCalleeOnCallerArrival(call, _id);
+			}
 			return this.updateDirectCall(call, _id);
 		}
 
@@ -1235,9 +1266,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		usernames: NonNullable<IUser['username']>[],
 		{ ring = true }: { ring?: boolean } = {},
 	): Promise<IUser['_id'][]> {
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
+		}
+
+		// A finished call is not something to add people to — and certainly not something to ring them into.
+		// Same answer `ringMembers` gives: nobody was added.
+		if (call.endedAt) {
+			return [];
 		}
 
 		const users = await Users.find<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(
@@ -1520,10 +1557,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			await this.notifyUsersOfRoom(call.rid, uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
-		}
 
-		// Out of the call, so back to whatever status they had before it.
-		await this.releaseBusyForCall(uid);
+			// Out of the call, so back to whatever status they had before it. Only embedded joins claim busy,
+			// so only they have a claim to end.
+			await this.releaseBusyForCall(uid);
+		}
 
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.
@@ -1815,6 +1853,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (resolved === 'discussion') {
+			// The same rules regular discussion creation enforces: this path calls `createRoom` directly, so
+			// nothing downstream would ask. A refusal, not a fallback to inviting — see `resolveChatAccessMode`.
+			if (
+				!settings.get<boolean>('Discussion_enabled') ||
+				!(await hasAtLeastOnePermissionAsync(uid, ['start-discussion', 'start-discussion-other-user'], rid))
+			) {
+				throw new Error('error-not-allowed');
+			}
+
 			// Moving the chat to a discussion announces the conference itself changed, which is what makes every
 			// participant's panel follow the chat to its new room.
 			return this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
@@ -1865,7 +1912,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private getPersistentChatMode(): 'thread' | 'main_room' {
-		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
+		// 'main_room' is the historical behavior — a discussion off the main room — and is what a workspace that
+		// enabled persistent chat before the mode existed must keep getting.
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
 	}
 
 	/**
@@ -1877,6 +1926,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 */
 	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
 		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
+			return;
+		}
+
+		// Same rule as `maybeCreateDiscussion`: persistent chat is only acted on for a provider that declares
+		// support for it — a Jitsi call must not start following threads because the setting is on.
+		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
 			return;
 		}
 
@@ -1895,6 +1950,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 */
 	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
 		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
+			return;
+		}
+
+		// Same rule as `maybeCreateDiscussion`: only for a provider that declares persistent chat support.
+		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
 			return;
 		}
 
