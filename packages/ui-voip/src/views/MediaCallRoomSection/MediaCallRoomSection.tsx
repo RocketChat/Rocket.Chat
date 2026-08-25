@@ -1,4 +1,6 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,10 +24,12 @@ export type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
+		id: string;
 		displayName: string;
 		avatarUrl: string;
 	};
-	containerHeight: number;
+	unreadCount?: number;
+	unreadVariant?: ComponentProps<typeof ActionToggleChat>['badgeVariant'];
 };
 
 const getSplitStyles = (showChat?: boolean) => {
@@ -42,7 +46,13 @@ const getSplitStyles = (showChat?: boolean) => {
 	};
 };
 
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({
+	showChat,
+	onToggleChat,
+	user,
+	unreadCount = 0,
+	unreadVariant = 'secondary',
+}: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -62,7 +72,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 
-	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
+	const { ref: sectionRef, borderBoxSize } = useResizeObserver<HTMLElement>();
+	const shouldWrapCards = useShouldWrapCards(showChat, borderBoxSize?.blockSize || 0);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
@@ -87,6 +98,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			flexDirection='column'
 			is='section'
 			aria-label={t('Voice_call')}
+			ref={sectionRef}
 			{...getSplitStyles(showChat)}
 		>
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
@@ -98,7 +110,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				}
 				rightSlot={
 					<ButtonGroup>
-						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+						<ActionToggleChat pressed={showChat} onClick={onToggleChat} badgeCount={unreadCount} badgeVariant={unreadVariant} />
 						<ToggleButton
 							label={t('Open_in_new_window')}
 							titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
