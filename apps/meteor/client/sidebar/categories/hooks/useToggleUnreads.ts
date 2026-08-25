@@ -3,21 +3,29 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
+import { SYSTEM_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 export const useToggleUnreads = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-
+	const sidebarSectionsOrder = useUserPreference<string[]>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
 	const persistMutation = usePersistCategoriesMutation();
 
 	const upsertGroupEntry = useCallback(
-		(id: string, patch: Partial<ISidebarCategory>) => {
+		async (id: string, patch: Partial<ISidebarCategory>) => {
 			const existing = allEntries.find((entry) => entry._id === id);
-			const next = existing
-				? allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry))
-				: [...allEntries, { _id: id, name: id, default: true, ...patch }];
-			return persistMutation.mutateAsync(next);
+			if (existing) {
+				await persistMutation.mutateAsync(allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
+				return;
+			}
+
+			const entryMap = new Map(allEntries.map((entry) => [entry._id, entry]));
+			entryMap.set(id, { _id: id, name: id, default: true, ...patch });
+			const next = Array.from(new Set([...allEntries.map((entry) => entry._id), ...sidebarSectionsOrder])).map(
+				(key) => entryMap.get(key) ?? { _id: key, name: key, default: true },
+			);
+			await persistMutation.mutateAsync(next);
 		},
-		[allEntries, persistMutation],
+		[allEntries, sidebarSectionsOrder, persistMutation],
 	);
 
 	const isShowUnreads = useCallback((id: string) => allEntries.find((entry) => entry._id === id)?.showUnreads ?? false, [allEntries]);
