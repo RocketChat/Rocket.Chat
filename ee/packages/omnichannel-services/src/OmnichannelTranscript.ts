@@ -16,7 +16,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
-import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset, primeOnce, streamToBuffer } from '@rocket.chat/tools';
 import type { TFunction, i18n } from 'i18next';
 
 import type { WorkDetailsWithSource } from './localTypes';
@@ -80,8 +80,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	override async started(): Promise<void> {
-		// TODO: cache these with mem
+	/**
+	 * Primed on first use rather than in `started()`: the settings service runs in
+	 * another process and is not necessarily reachable while this one boots. Every
+	 * field is kept current by `onSettingChanged` from then on.
+	 */
+	private primeSettings = primeOnce(async () => {
 		const [siteName, dateFormat, timeAndDateFormat, serverLanguage, reportingTimezone, defaultCustomTimezone, showSystemMessages] =
 			await Promise.all([
 				settingsService.get<string>('Site_Name'),
@@ -100,9 +104,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.reportingTimezone = reportingTimezone;
 		this.defaultCustomTimezone = defaultCustomTimezone;
 		this.showSystemMessages = showSystemMessages;
-	}
+	});
 
 	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
+		await this.primeSettings();
+
 		switch (this.reportingTimezone) {
 			case 'custom':
 				return this.defaultCustomTimezone;
@@ -330,6 +336,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
+		await this.primeSettings();
+
 		this.log.info({
 			msg: 'Processing transcript received from queue',
 			rid: details.rid,
