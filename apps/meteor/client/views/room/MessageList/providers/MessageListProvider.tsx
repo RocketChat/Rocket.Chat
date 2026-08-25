@@ -74,7 +74,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }: { message: IMessage }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
 			autoTranslate: {
@@ -83,7 +84,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				showAutoTranslate,
 			},
 			useShowStarred: hasSubscription
-				? ({ message }: { message: IMessage }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
 			useMessageDateFormatter:
 				() =>
