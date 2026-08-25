@@ -1,4 +1,25 @@
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+
 import { settingsRegistry } from '../../../server/settings';
+
+/**
+ * The registry's own callback context types are not exported, so the minimal shape this file needs is
+ * declared here. Keep in sync with `addGroupCallback` / `addSectionCallback` in
+ * `server/settings/SettingsRegistry.ts`.
+ */
+type SettingOptions = Partial<ISetting>;
+
+type SectionContext = {
+	add(id: string, value: SettingValue, options?: SettingOptions): Promise<void>;
+};
+
+type GroupContext = SectionContext & {
+	section(section: string, cb: (this: SectionContext) => Promise<void>): Promise<void>;
+};
+
+const enabled = { _id: 'Outlook_Calendar_Enabled', value: true };
+const legacyOnly = [enabled, { _id: 'Outlook_Calendar_Mode', value: 'legacy' }];
+const serverOnly = [enabled, { _id: 'Outlook_Calendar_Mode', value: 'server' }];
 
 export function addSettings(): void {
 	void settingsRegistry.addGroup('Outlook_Calendar', async function () {
@@ -14,53 +35,217 @@ export function addSettings(): void {
 					invalidValue: false,
 				});
 
-				await this.add('Outlook_Calendar_Exchange_Url', '', {
-					type: 'string',
+				/**
+				 * The two integrations write to the same `calendar_event` collection, so running both would
+				 * double up every meeting. One mode at a time, chosen by an administrator.
+				 *
+				 * Public because the client uses it to decide which controls to offer.
+				 */
+				await this.add('Outlook_Calendar_Mode', 'legacy', {
+					type: 'select',
 					public: true,
-					invalidValue: '',
-					placeholder: 'https://exchange.example.com/',
+					invalidValue: 'legacy',
+					values: [
+						{ key: 'legacy', i18nLabel: 'Outlook_Calendar_Mode_Legacy' },
+						{ key: 'server', i18nLabel: 'Outlook_Calendar_Mode_Server' },
+					],
+					enableQuery: { _id: 'Outlook_Calendar_Enabled', value: true },
 				});
 
-				await this.add('Outlook_Calendar_Outlook_Url', '', {
-					type: 'string',
-					public: true,
-					invalidValue: '',
-					placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
-				});
-
-				await this.add(
-					'Calendar_MeetingUrl_Regex',
-					'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
-					{
+				await this.section('Outlook_Calendar_Legacy', async function () {
+					await this.add('Outlook_Calendar_Exchange_Url', '', {
 						type: 'string',
 						public: true,
 						invalidValue: '',
-					},
-				);
+						placeholder: 'https://exchange.example.com/',
+						enableQuery: legacyOnly,
+					});
 
-				await this.add('Calendar_BusyStatus_Enabled', true, {
-					type: 'boolean',
-					public: true,
-					invalidValue: false,
+					await this.add('Outlook_Calendar_Outlook_Url', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
+					});
+
+					await this.add(
+						'Calendar_MeetingUrl_Regex',
+						'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
+						{
+							type: 'string',
+							public: true,
+							invalidValue: '',
+						},
+					);
+
+					await this.add('Calendar_BusyStatus_Enabled', true, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+					});
+
+					/**
+					 * const defaultMapping = {
+					 *	'rocket.chat': {
+					 *      Enabled: true,
+					 *		Exchange_Url: 'https://owa.dev.rocket.chat/',
+					 *		Outlook_Url: 'https://owa.dev.rocket.chat/owa/#path=/calendar'
+					 *	},
+					 * };
+					 */
+					await this.add('Outlook_Calendar_Url_Mapping', '{}', {
+						type: 'code',
+						multiline: true,
+						public: true,
+						code: 'application/json',
+						invalidValue: '{}',
+						enableQuery: legacyOnly,
+					});
 				});
 
-				/**
-				 * const defaultMapping = {
-				 *	'rocket.chat': {
-				 *      Enabled: true,
-				 *		Exchange_Url: 'https://owa.dev.rocket.chat/',
-				 *		Outlook_Url: 'https://owa.dev.rocket.chat/owa/#path=/calendar'
-				 *	},
-				 * };
-				 */
-				await this.add('Outlook_Calendar_Url_Mapping', '{}', {
-					type: 'code',
-					multiline: true,
-					public: true,
-					code: 'application/json',
-					invalidValue: '{}',
-				});
+				await addServerSyncSettings.call(this);
 			},
 		);
+	});
+}
+
+async function addServerSyncSettings(this: GroupContext): Promise<void> {
+	const enableQuery = serverOnly;
+	const graphOnly = [...serverOnly, { _id: 'Outlook_Calendar_Server_Sync_Provider', value: 'graph' }];
+	const ewsOnly = [...serverOnly, { _id: 'Outlook_Calendar_Server_Sync_Provider', value: 'ews' }];
+
+	await this.section('Outlook_Calendar_Server_Sync', async function () {
+		/** Never auto-detected: that would mean probing, and probing breaks the air-gap guarantee. */
+		await this.add('Outlook_Calendar_Server_Sync_Provider', 'graph', {
+			type: 'select',
+			values: [
+				{ key: 'graph', i18nLabel: 'Outlook_Calendar_Server_Sync_Provider_Graph' },
+				{ key: 'ews', i18nLabel: 'Outlook_Calendar_Server_Sync_Provider_EWS' },
+			],
+			enableQuery,
+			invalidValue: 'graph',
+		});
+
+		/** Free/busy-only covers presence without storing meeting subjects or bodies. */
+		await this.add('Outlook_Calendar_Server_Sync_Mode', 'events', {
+			type: 'select',
+			values: [
+				{ key: 'events', i18nLabel: 'Outlook_Calendar_Server_Sync_Mode_Events' },
+				{ key: 'freebusy', i18nLabel: 'Outlook_Calendar_Server_Sync_Mode_FreeBusy' },
+			],
+			enableQuery,
+			invalidValue: 'events',
+		});
+
+		/** Agenda's `processEvery` is one minute, so that is the practical floor. */
+		await this.add('Outlook_Calendar_Server_Sync_Interval', 15, {
+			type: 'int',
+			enableQuery,
+			invalidValue: '',
+		});
+
+		/**
+		 * Empty means the verified Rocket.Chat email, matching `getUserCalendar`. LDAP deployments where the
+		 * corporate SMTP address differs from the login email point this at a custom field.
+		 */
+		await this.add('Outlook_Calendar_Server_Sync_Mailbox_Field', '', {
+			type: 'string',
+			enableQuery,
+			placeholder: 'mail',
+			invalidValue: '',
+		});
+	});
+
+	await this.section('Outlook_Calendar_Server_Sync_Graph', async function () {
+		await this.add('Outlook_Calendar_Graph_Tenant_Id', '', {
+			type: 'string',
+			enableQuery: graphOnly,
+			placeholder: 'contoso.onmicrosoft.com',
+			invalidValue: '',
+		});
+
+		await this.add('Outlook_Calendar_Graph_Client_Id', '', {
+			type: 'string',
+			enableQuery: graphOnly,
+			invalidValue: '',
+		});
+
+		await this.add('Outlook_Calendar_Graph_Client_Secret', '', {
+			type: 'password',
+			secret: true,
+			autocomplete: false,
+			enableQuery: graphOnly,
+			invalidValue: '',
+		});
+
+		/** Also the air-gap allowlist: these are the only hosts the Graph provider may reach. */
+		await this.add('Outlook_Calendar_Graph_Authority_Host', 'https://login.microsoftonline.com', {
+			type: 'string',
+			enableQuery: graphOnly,
+			invalidValue: '',
+		});
+
+		await this.add('Outlook_Calendar_Graph_Host', 'https://graph.microsoft.com', {
+			type: 'string',
+			enableQuery: graphOnly,
+			invalidValue: '',
+		});
+	});
+
+	await this.section('Outlook_Calendar_Server_Sync_EWS', async function () {
+		await this.add('Outlook_Calendar_EWS_Url', '', {
+			type: 'string',
+			enableQuery: ewsOnly,
+			placeholder: 'https://exchange.example.com/EWS/Exchange.asmx',
+			invalidValue: '',
+		});
+
+		/** The service account holding `ApplicationImpersonation`, not an end user's account. */
+		await this.add('Outlook_Calendar_EWS_Username', '', {
+			type: 'string',
+			enableQuery: ewsOnly,
+			placeholder: 'CORP\\svc-rocketchat',
+			invalidValue: '',
+		});
+
+		await this.add('Outlook_Calendar_EWS_Password', '', {
+			type: 'password',
+			secret: true,
+			autocomplete: false,
+			enableQuery: ewsOnly,
+			invalidValue: '',
+		});
+
+		/**
+		 * NTLM by default: Exchange 2019 CU14 and Subscription Edition enable Extended Protection out of the
+		 * box, and Basic has no channel binding at all.
+		 */
+		await this.add('Outlook_Calendar_EWS_Auth_Method', 'ntlm', {
+			type: 'select',
+			values: [
+				{ key: 'ntlm', i18nLabel: 'Outlook_Calendar_EWS_Auth_Method_NTLM' },
+				{ key: 'basic', i18nLabel: 'Outlook_Calendar_EWS_Auth_Method_Basic' },
+			],
+			enableQuery: ewsOnly,
+			invalidValue: 'ntlm',
+		});
+
+		/**
+		 * An opt-in for a private authority, mirroring `LDAP_CA_Cert`. Deliberately not a global TLS bypass:
+		 * the legacy desktop client disables validation wholesale and that is the pattern we are not repeating.
+		 */
+		await this.add('Outlook_Calendar_EWS_CA_Cert', '', {
+			type: 'string',
+			multiline: true,
+			secret: true,
+			enableQuery: ewsOnly,
+			invalidValue: '',
+		});
+
+		await this.add('Outlook_Calendar_EWS_Reject_Unauthorized', true, {
+			type: 'boolean',
+			enableQuery: ewsOnly,
+			invalidValue: false,
+		});
 	});
 }

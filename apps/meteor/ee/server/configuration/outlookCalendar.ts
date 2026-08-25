@@ -2,6 +2,7 @@ import { Calendar } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
+import { registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
 import { addSettings } from '../settings/outlookCalendar';
 
 Meteor.startup(() =>
@@ -10,5 +11,7 @@ Meteor.startup(() =>
 
 		await Calendar.setupNextNotification();
 		await Calendar.setupNextStatusChange();
+
+		registerExchangeProviderWatchers();
 	}),
 );
