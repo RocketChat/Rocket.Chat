@@ -26,6 +26,7 @@ const OngoingCall = () => {
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -36,13 +37,13 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
 
-	const screenShareAvailable = supportedFeatures.includes('screen-share');
-	const holdAvailable = supportedFeatures.includes('hold');
-	const transferAvailable = supportedFeatures.includes('transfer');
+	const screenShareAvailable = allowedFeatures.includes('screen-share');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
 	const { localScreen, remoteScreen } = streams;
 

@@ -22,8 +22,8 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
+	const { sessionState, allowedFeatures, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
 
 	const [open, setOpen] = useState(false);
 	const [inputValue, setInputValue] = useState('');
@@ -34,8 +34,8 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const holdAvailable = supportedFeatures.includes('hold');
-	const transferAvailable = supportedFeatures.includes('transfer');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
