@@ -4,7 +4,7 @@ import EJSON from 'ejson';
 import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
 import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } from 'nats';
 
-import { getInstanceMethods } from './getInstanceMethods';
+import { getCallableMethods, LocalServiceRegistry } from './LocalServiceRegistry';
 import type { ServiceNodes } from './licenseEnforcement';
 import { startLicenseEnforcement } from './licenseEnforcement';
 
@@ -51,8 +51,6 @@ const NO_RESPONDERS_CODE: string = ErrorCode.NoResponders;
 
 /** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
 const DISCOVERY_TTL = 1000;
-
-const lifecycleMethods = new Set(['created', 'started', 'stopped']);
 
 const delay = async (ms: number): Promise<void> =>
 	new Promise((resolve) => {
@@ -150,16 +148,22 @@ export class NatsBroker implements IBroker {
 
 	private discovery?: { at: number; identities: Promise<ServiceIdentity[]> };
 
+	private readonly localRegistry?: LocalServiceRegistry;
+
 	constructor(
 		private options: ConnectionOptions,
 		nodeID: string,
 	) {
 		this.nodeID = toSubjectToken(nodeID);
+
+		// kill switch: leaving it out routes every call over nats, as if nothing were local
+		this.localRegistry = process.env.BROKER_LOCAL_ROUTING === 'false' ? undefined : new LocalServiceRegistry();
 	}
 
 	async destroyService(instance: IServiceClass): Promise<void> {
 		const registered = this.services.get(instance);
 		this.services.delete(instance);
+		this.localRegistry?.remove(instance);
 
 		if (registered) {
 			registered.stopLicenseEnforcement?.();
@@ -231,11 +235,7 @@ export class NatsBroker implements IBroker {
 		const shared = service.addGroup(`${RPC_PREFIX}.${name}`);
 		const scoped = service.addGroup(`${NODE_PREFIX}.${this.nodeID}.${name}`);
 
-		for (const method of getInstanceMethods(instance)) {
-			if (method.match(/^on[A-Z]/) || lifecycleMethods.has(method)) {
-				continue;
-			}
-
+		for (const method of getCallableMethods(instance)) {
 			const respond = async (msg: ServiceMsg): Promise<void> => {
 				try {
 					msg.respond(encodePayload(await serviceInstance[method](...decodeParams(msg.data))));
@@ -253,6 +253,8 @@ export class NatsBroker implements IBroker {
 			// instance instead of being load balanced across the queue group
 			scoped.addEndpoint(method, handler);
 		}
+
+		this.localRegistry?.add(instance);
 
 		this.services.set(instance, {
 			service,
@@ -281,6 +283,15 @@ export class NatsBroker implements IBroker {
 
 		if (internalMethods.has(method)) {
 			return this.callInternal(method);
+		}
+
+		// a service in this process answers directly, so arguments and the result keep
+		// their identity instead of being flattened by EJSON
+		if (!options?.nodeID || toSubjectToken(options.nodeID) === this.nodeID) {
+			const local = this.localRegistry?.resolve(method);
+			if (local) {
+				return local(data ?? []);
+			}
 		}
 
 		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;

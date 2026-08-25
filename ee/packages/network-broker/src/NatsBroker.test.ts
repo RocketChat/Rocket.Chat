@@ -48,11 +48,18 @@ class DeviceManagement extends ServiceClass {
 
 const running: { broker: NatsBroker; services: ServiceClass[] }[] = [];
 
-const start = async (nodeID = 'node-a') => {
+const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
 	const nc = new FakeNatsConnection();
 	(connect as jest.Mock).mockResolvedValue(nc);
 
+	const previous = process.env.BROKER_LOCAL_ROUTING;
+	process.env.BROKER_LOCAL_ROUTING = localRouting ? 'true' : 'false';
 	const broker = new NatsBroker({}, nodeID);
+	if (previous === undefined) {
+		delete process.env.BROKER_LOCAL_ROUTING;
+	} else {
+		process.env.BROKER_LOCAL_ROUTING = previous;
+	}
 	const accounts = new Accounts();
 	const deviceManagement = new DeviceManagement();
 
@@ -117,12 +124,12 @@ describe('NatsBroker.call', () => {
 		await expect(broker.call('accounts.login', [])).resolves.toBeUndefined();
 	});
 
-	it('should route to the node scoped subject when a nodeID is given', async () => {
+	it('should route to the node scoped subject when another node is targeted', async () => {
 		const { broker, nc } = await start();
 
-		await broker.call('accounts.login', [], { nodeID: 'node-a' });
+		await broker.call('accounts.login', [], { nodeID: 'node-b' }).catch(() => undefined);
 
-		expect(nc.requested).toEqual(['node.node-a.accounts.login']);
+		expect(nc.requested[0]).toBe('node.node-b.accounts.login');
 	});
 
 	it('should reject rather than hang when the method throws', async () => {
@@ -170,23 +177,87 @@ describe('NatsBroker.call retries', () => {
 		jest.useFakeTimers();
 		const { broker, nc } = await start();
 
-		const pending = broker.call('never.there', []);
-		const settled = expect(pending).rejects.toThrow('503');
+		// caught up front so the rejection is handled while the timers are driven
+		const pending = broker.call('never.there', []).catch((e: unknown) => e);
 
 		await jest.advanceTimersByTimeAsync(10_000);
-		await settled;
 
+		expect(await pending).toMatchObject({ code: '503' });
 		expect(nc.requested).toHaveLength(6);
 
 		jest.useRealTimers();
 	});
 
 	it('should not retry an error raised by the service itself', async () => {
-		const { broker, nc } = await start();
+		const { broker, nc } = await start('node-a', { localRouting: false });
 
 		await expect(broker.call('accounts.explode', [])).rejects.toThrow();
 
 		expect(nc.requested).toEqual(['rpc.accounts.explode']);
+	});
+});
+
+describe('NatsBroker local routing', () => {
+	it('should answer from the local service without touching the connection', async () => {
+		const { broker, nc } = await start();
+
+		await expect(broker.call('accounts.login', [{ resume: 'token' }])).resolves.toEqual({ token: 'ok' });
+
+		expect(loginStub).toHaveBeenCalledWith({ resume: 'token' });
+		expect(nc.requested).toEqual([]);
+	});
+
+	it('should hand the arguments over by reference', async () => {
+		const { broker } = await start();
+
+		// a cursor or a stream is what this really stands in for: EJSON would throw on it
+		const circular: Record<string, unknown> = { name: 'cursor' };
+		circular.self = circular;
+
+		await broker.call('accounts.login', [circular]);
+
+		expect(loginStub.mock.calls[0][0]).toBe(circular);
+	});
+
+	it('should return the result by reference', async () => {
+		const result = { pipe: () => undefined };
+		loginStub.mockResolvedValue(result);
+		const { broker } = await start();
+
+		await expect(broker.call('accounts.login', [])).resolves.toBe(result);
+	});
+
+	it('should answer locally when the targeted node is this one', async () => {
+		const { broker, nc } = await start();
+
+		await expect(broker.call('accounts.login', [], { nodeID: 'node-a' })).resolves.toEqual({ token: 'ok' });
+
+		expect(nc.requested).toEqual([]);
+	});
+
+	it('should go over the wire for a service this process does not run', async () => {
+		const { broker, nc } = await start();
+
+		await broker.call('elsewhere.method', []).catch(() => undefined);
+
+		expect(nc.requested[0]).toBe('rpc.elsewhere.method');
+	});
+
+	it('should go over the wire once the service is destroyed', async () => {
+		const { broker, nc, accounts } = await start();
+		await broker.destroyService(accounts);
+
+		await broker.call('accounts.login', []).catch(() => undefined);
+
+		expect(nc.requested[0]).toBe('rpc.accounts.login');
+	});
+
+	it('should go over the wire when BROKER_LOCAL_ROUTING is false', async () => {
+		const { broker, nc } = await start('node-a', { localRouting: false });
+
+		await expect(broker.call('accounts.login', [{ resume: 'token' }])).resolves.toEqual({ token: 'ok' });
+
+		expect(nc.requested).toEqual(['rpc.accounts.login']);
 	});
 });
 
