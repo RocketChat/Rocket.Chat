@@ -6,6 +6,7 @@ import BaseGroupPage from '../groups/BaseGroupPage';
 import EnterpriseGroupPage from '../groups/EnterpriseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
+import OutlookCalendarGroupPage from '../groups/OutlookCalendarGroupPage';
 import SAMLGroupPage from '../groups/SAMLGroupPage';
 
 export type SettingsGroupSelectorProps = {
@@ -26,6 +27,10 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
+	}
+
+	if (groupId === 'Outlook_Calendar') {
+		return <OutlookCalendarGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'SAML') {
