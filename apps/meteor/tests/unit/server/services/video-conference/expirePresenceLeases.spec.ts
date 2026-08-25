@@ -73,6 +73,12 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 		);
+		// `resetAll` only clears history — restore the single-call cursor for the tests that replace it.
+		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
+			async *[Symbol.asyncIterator]() {
+				yield cloneFixture(fixture);
+			},
+		}));
 	});
 
 	// The case this exists for: the workspace was down while the call carried on in the provider, so the leave
@@ -173,14 +179,38 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
 		});
 
-		// One unreachable provider, or one malformed call, must not stop the sweep for every other call.
-		it('carries on when the probe throws', async () => {
+		// A probe that fails is silence, same as a provider with no probe at all: the leases still get judged on
+		// their own evidence. Anything else lets an unreachable provider keep its crashed members present forever —
+		// the exact situation the sweep exists to clean up.
+		it('still expires the leases when the probe fails', async () => {
 			probe = sinon.stub().rejects(new Error('LiveKit is unreachable'));
-			fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
+			fixture = buildGroupCall([
+				buildMember({ _id: 'staying', lastSeenAt: at(0) }),
+				buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) }),
+			]);
 
 			await service.expirePresenceLeases(at(0));
 
-			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
+			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call1', 'gone')).to.be.true;
+			expect(VideoConferenceModelMock.setUserLeftById.calledOnce, 'a failed probe must not evict the fresh lease').to.be.true;
+		});
+
+		// And a failing probe on one call must not stop the sweep before it reaches the next one.
+		it('carries on to the next call when a probe fails', async () => {
+			probe = sinon.stub().rejects(new Error('LiveKit is unreachable'));
+			fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
+			const second = buildGroupCall([buildMember({ _id: 'gone2', lastSeenAt: at(-PRESENCE_LEASE_MS) })], { _id: 'call2' });
+			VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
+				async *[Symbol.asyncIterator]() {
+					yield cloneFixture(fixture);
+					yield cloneFixture(second);
+				},
+			}));
+
+			await service.expirePresenceLeases(at(0));
+
+			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call1', 'gone')).to.be.true;
+			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call2', 'gone2')).to.be.true;
 		});
 	});
 

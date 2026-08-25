@@ -4,9 +4,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, providerCapabilities, resetAll } from './testHarness';
-
-/** Must match the constant defined in the service. */
-const EMPTY_CALL_GRACE_MS = 10_000;
+import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/constants';
 
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
 // projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A
@@ -39,17 +37,37 @@ const UsersMock = {
 	findOneById: sinon.stub().resolves(null),
 };
 
+const broadcastStub = sinon.stub().resolves();
+
 const VideoConfService = createService({
+	broadcast: broadcastStub,
 	models: {
 		Users: UsersMock,
 		VideoConference: VideoConferenceModelMock,
+		// A room with another member in it, so a broadcast the service should NOT send room-wide has somebody
+		// it would demonstrably reach.
+		Subscriptions: {
+			findByRoomIdAndNotUserId: sinon.stub().returns({
+				toArray: sinon.stub().resolves([{ u: { _id: 'other' } }]),
+				forEach: (cb: (subscription: { u: { _id: string } }) => void) => {
+					cb({ u: { _id: 'other' } });
+					return Promise.resolve();
+				},
+			}),
+		},
 	},
 	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
-	// join is stubbed out of the way.
+	// join is stubbed out of the way. The grace period must stay the real one — it is what the suite measures.
 	overrides: {
-		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false },
+		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false, EMPTY_CALL_GRACE_MS },
 	},
 });
+
+/** Who was told 'end' through `notifyUser` — the per-user broadcast, as opposed to the room-wide channel. */
+const endNotifiedUserIds = (): string[] =>
+	broadcastStub.args
+		.filter(([channel, payload]) => channel === 'user.video-conference' && (payload as { action: string }).action === 'end')
+		.map(([, payload]) => (payload as { userId: string }).userId);
 
 describe('VideoConfService.leaveCall', () => {
 	let service: any;
@@ -70,12 +88,15 @@ describe('VideoConfService.leaveCall', () => {
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
+			broadcastStub,
 		);
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
+		providerCapabilities.current = undefined;
 	});
 
 	afterEach(() => {
 		clock.restore();
+		providerCapabilities.current = undefined;
 	});
 
 	// The reported bug: leaving the last-standing spot in a call must end it and leave every member a
@@ -167,6 +188,30 @@ describe('VideoConfService.leaveCall', () => {
 		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+	});
+
+	// One member leaving is not the call ending — a reload fires a leave too — so the room at large must not
+	// hear 'end': that would dismiss everyone else's ringing popup and silence the caller's outgoing ring while
+	// the call still runs. Only the leaver's own devices are told, so their other windows drop the call UI.
+	it('tells only the leaver about their own leave, never the room, for an embedded provider', async () => {
+		providerCapabilities.current = { embedded: true };
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'leaver' })]);
+
+		await service.leaveCall('leaver', 'call1');
+
+		expect(endNotifiedUserIds()).to.deep.equal(['leaver']);
+	});
+
+	// The room-wide 'end' belongs to the call actually ending: once the grace period confirms the call emptied,
+	// everyone still holding a popup for it is told.
+	it('tells the room once the call actually ends', async () => {
+		providerCapabilities.current = { embedded: true };
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(endNotifiedUserIds()).to.include('other');
 	});
 });
 
