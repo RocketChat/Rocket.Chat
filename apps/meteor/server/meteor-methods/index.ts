@@ -64,7 +64,6 @@ import './omnichannel/sendFileLivechatMessage';
 import './omnichannel/sendMessageLivechat';
 import './platform/OEmbedCacheCleanup';
 import './platform/banner_dismiss';
-import './platform/checkFederationConfiguration';
 import './platform/cloud';
 import './platform/fetchMyKeys';
 import './platform/getProviderUiMetadata';
