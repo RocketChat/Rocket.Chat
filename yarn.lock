@@ -9459,6 +9459,7 @@ __metadata:
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/streamer": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
     "@types/jest": "npm:~30.0.0"

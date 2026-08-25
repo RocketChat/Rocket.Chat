@@ -1,6 +1,6 @@
 import os from 'os';
 
-import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { MeteorService, api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
@@ -37,7 +37,7 @@ void (async () => {
 
 	const collections = {
 		loginServices: registerLoginServiceConfigurationPublication(server),
-		clientVersions: registerAutoupdatePublication(server),
+		clientVersions: registerAutoupdatePublication(server, () => MeteorService.getAutoUpdateClientVersions()),
 	};
 	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
