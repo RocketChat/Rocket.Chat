@@ -935,6 +935,102 @@ describe('[Chat]', () => {
 		});
 	});
 
+	describe('/chat.getMessageByFileId', () => {
+		let fileRoom: IRoom;
+		let fileId: string;
+		let fileMessageId: IMessage['_id'];
+		let otherUser: TestUser<IUser>;
+		let otherUserCredentials: Credentials;
+
+		before(async () => {
+			// private, so the access check is meaningful: any user can preview a public channel
+			fileRoom = (await createRoom({ type: 'p', name: `chat-file-message-id-${Date.now()}` })).body.group;
+
+			otherUser = await createUser();
+			otherUserCredentials = await login(otherUser.username, password);
+
+			await request
+				.post(api(`rooms.media/${fileRoom._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect(200)
+				.expect((res: Response) => {
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${fileRoom._id}/${fileId}`))
+				.set(credentials)
+				.expect(200)
+				.expect((res: Response) => {
+					fileMessageId = res.body.message._id;
+				});
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: fileRoom._id }), deleteUser(otherUser)]));
+
+		it('should return the message the file was sent in', async () => {
+			const res = await request
+				.get(api('chat.getMessageByFileId'))
+				.set(credentials)
+				.query({ fileId })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('message._id', fileMessageId);
+			expect(res.body).to.have.nested.property('message.rid', fileRoom._id);
+			expect(res.body).to.have.nested.property('message.files[0]._id', fileId);
+		});
+
+		it("should fail when 'fileId' is not sent", async () => {
+			const res = await request
+				.get(api('chat.getMessageByFileId'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it("should fail when 'fileId' is empty", async () => {
+			const res = await request
+				.get(api('chat.getMessageByFileId'))
+				.set(credentials)
+				.query({ fileId: '' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should return 404 when no message references the file', async () => {
+			const res = await request
+				.get(api('chat.getMessageByFileId'))
+				.set(credentials)
+				.query({ fileId: 'invalid-file-id' })
+				.expect('Content-Type', 'application/json')
+				.expect(404);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should not return the message to a user without access to the room', async () => {
+			const res = await request
+				.get(api('chat.getMessageByFileId'))
+				.set(otherUserCredentials)
+				.query({ fileId })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should fail when not authenticated', async () => {
+			await request.get(api('chat.getMessageByFileId')).query({ fileId }).expect(401);
+		});
+	});
+
 	describe('/chat.sendMessage', () => {
 		it("should throw an error when the required param 'rid' is not sent", async () => {
 			const res = await request
