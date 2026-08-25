@@ -21,10 +21,12 @@ const member = { _id: 'user-1', username: 'user.one', name: 'User One', avatarET
  */
 const setupModel = () => {
 	const updateOne = jest.fn().mockResolvedValue({});
+	const findOneAndUpdate = jest.fn().mockResolvedValue(null);
 	const model = new VideoConferenceRaw({ collection: () => ({}) } as never);
 	Object.defineProperty(model, 'updateOne', { value: updateOne });
+	Object.defineProperty(model, 'findOneAndUpdate', { value: findOneAndUpdate });
 
-	return { model, updateOne };
+	return { model, updateOne, findOneAndUpdate };
 };
 
 describe('VideoConferenceRaw.addMemberById', () => {
@@ -98,39 +100,61 @@ describe('VideoConferenceRaw.setUserJoinedById', () => {
 });
 
 describe('VideoConferenceRaw.renewUserPresenceById', () => {
-	it('should stamp the lease on the matching entry via arrayFilters', async () => {
-		const { model, updateOne } = setupModel();
+	it('should stamp the lease on the matching entry via arrayFilters, reading the entry as it stood before', async () => {
+		const { model, findOneAndUpdate } = setupModel();
 		const lastSeenAt = new Date('2026-08-01T10:00:00Z');
 
 		await model.renewUserPresenceById('call-1', 'user-1', lastSeenAt);
 
-		const [, update, options] = updateOne.mock.calls[0];
+		const [, update, options] = findOneAndUpdate.mock.calls[0];
 		expect(update.$set).toEqual({ 'users.$[user].lastSeenAt': lastSeenAt });
-		expect(options).toEqual({ arrayFilters: [{ 'user._id': 'user-1' }] });
+		expect(options).toMatchObject({ arrayFilters: [{ 'user._id': 'user-1' }], returnDocument: 'before' });
 	});
 
 	// A lease we gave up on while the window was in fact alive was simply wrong, and the window still talking to
 	// us is the correction — otherwise a member evicted during an outage would stay evicted for the whole call.
 	it('should undo a departure that was only inferred', async () => {
-		const { model, updateOne } = setupModel();
+		const { model, findOneAndUpdate } = setupModel();
 
 		await model.renewUserPresenceById('call-1', 'user-1');
 
-		expect(updateOne.mock.calls[0][1].$unset).toEqual({ 'users.$[user].leftAt': 1, 'users.$[user].leftReason': 1 });
+		expect(findOneAndUpdate.mock.calls[0][1].$unset).toEqual({ 'users.$[user].leftAt': 1, 'users.$[user].leftReason': 1 });
 	});
 
-	// The guard has to be in the query, because that is the only part of an update that can be conditional: a
-	// heartbeat still in flight behind someone who chose to leave must not put them back in the call.
-	it('should refuse to revive a member who reported leaving, in the query', async () => {
-		const { model, updateOne } = setupModel();
+	// The guards have to be in the query, because that is the only part of an update that can be conditional: a
+	// heartbeat still in flight behind someone who chose to leave must not put them back in the call, and the
+	// final heartbeat of a window whose lease expiry ended the call must not regenerate a member inside an ENDED
+	// conference.
+	it('should refuse a reported leave and an ended call, in the query', async () => {
+		const { model, findOneAndUpdate } = setupModel();
 
 		await model.renewUserPresenceById('call-1', 'user-1', new Date(), ['timeout']);
 
-		const [query] = updateOne.mock.calls[0];
+		const [query] = findOneAndUpdate.mock.calls[0];
 		expect(query).toEqual({
 			_id: 'call-1',
+			endedAt: { $exists: false },
 			users: { $elemMatch: { _id: 'user-1', $or: [{ leftAt: { $exists: false } }, { leftReason: { $in: ['timeout'] } }] } },
 		});
+	});
+
+	// The answer is decided in the same atomic step as the write: what the entry said *before* the renewal
+	// cleared it is the only evidence of whether anything was revived.
+	it('should report a revival from the before-document, and null when nothing matched', async () => {
+		const { model, findOneAndUpdate } = setupModel();
+
+		findOneAndUpdate.mockResolvedValueOnce({
+			rid: 'room-1',
+			providerName: 'test',
+			users: [{ _id: 'user-1', leftAt: new Date('2026-08-01T10:00:00Z'), leftReason: 'timeout' }],
+		});
+		expect(await model.renewUserPresenceById('call-1', 'user-1')).toEqual({ revived: true, rid: 'room-1', providerName: 'test' });
+
+		findOneAndUpdate.mockResolvedValueOnce({ rid: 'room-1', providerName: 'test', users: [{ _id: 'user-1' }] });
+		expect(await model.renewUserPresenceById('call-1', 'user-1')).toEqual({ revived: false, rid: 'room-1', providerName: 'test' });
+
+		findOneAndUpdate.mockResolvedValueOnce(null);
+		expect(await model.renewUserPresenceById('call-1', 'user-1')).toBeNull();
 	});
 });
 
@@ -141,7 +165,8 @@ describe('VideoConferenceRaw.renewUsersPresenceById', () => {
 
 		await model.renewUsersPresenceById('call-1', ['user-1', 'user-2'], lastSeenAt);
 
-		const [, update, options] = updateOne.mock.calls[0];
+		const [query, update, options] = updateOne.mock.calls[0];
+		expect(query).toEqual({ _id: 'call-1', endedAt: { $exists: false } });
 		expect(update).toEqual({ $set: { 'users.$[user].lastSeenAt': lastSeenAt } });
 		expect(options).toEqual({ arrayFilters: [{ 'user._id': { $in: ['user-1', 'user-2'] } }] });
 	});
