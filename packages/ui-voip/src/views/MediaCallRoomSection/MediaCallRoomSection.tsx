@@ -47,6 +47,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -60,7 +61,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const isPopout = currentViews.has('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
@@ -69,9 +70,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	useRegisterView('room');
 
-	const screenShareAvailable = supportedFeatures.includes('screen-share');
-	const holdAvailable = supportedFeatures.includes('hold');
-	const transferAvailable = supportedFeatures.includes('transfer');
+	const screenShareAvailable = allowedFeatures.includes('screen-share');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
