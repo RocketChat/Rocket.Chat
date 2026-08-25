@@ -7,8 +7,10 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
@@ -49,11 +51,22 @@ export type RoomHistoryState = {
 	firstUnread: IMessage | undefined;
 	loaded: number | undefined;
 	oldestTs?: Date;
+	cursorPrevious?: string | null;
+	cursorNext?: string | null;
 	scroll?: {
 		scrollHeight: number;
 		scrollTop: number;
 	};
 };
+
+/**
+ * `rooms.history` cursors encode a message `ts`, so one can be reconstructed from any loaded message.
+ *
+ * This is a bridge for the window `loadSurroundingMessages` still rebuilds over DDP: a jump clears the
+ * room and sets `hasMoreNext` without producing cursors, leaving paging with nothing to resume from.
+ * Remove it once `loadSurroundingMessages` moves to `aroundId` and returns cursors of its own.
+ */
+const cursorFromMessageTs = (ts: Date): string => `${ts.getTime()}`;
 
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
 
@@ -149,25 +162,27 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
-			const result = await callWithErrorHandling(
-				'loadHistory',
-				rid,
-				room.oldestTs,
-				limit,
-				ls ? String(ls) : undefined,
-				showThreadsInMainChannel,
-			);
 
-			if (!result) {
-				throw new Error('loadHistory returned nothing');
-			}
+			// `oldestTs` is the fallback for a window rebuilt by the still-DDP `loadSurroundingMessages`,
+			// which sets no cursor. A null cursor means exhausted, so it must not fall back.
+			const previous = room.cursorPrevious !== undefined ? room.cursorPrevious : room.oldestTs && cursorFromMessageTs(room.oldestTs);
+
+			const result = await sdk.rest.get('/v1/rooms.history', {
+				roomId: rid,
+				...(previous && { previous }),
+				...(ls && { lastSeen: new Date(ls).toISOString() }),
+				count: limit,
+				showThreadMessages: showThreadsInMainChannel,
+			});
 
 			this.unqueue();
 
-			const { messages = [] } = result;
+			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 			this.updateRoom(rid, {
-				unreadNotLoaded: result.unreadNotLoaded,
-				firstUnread: result.firstUnread,
+				unreadNotLoaded: result.unreadNotLoaded ?? 0,
+				firstUnread: result.firstUnread && mapMessageFromApi(result.firstUnread),
+				cursorPrevious: result.cursor.previous,
+				hasMore: result.cursor.previous !== null,
 			});
 
 			if (messages.length > 0) {
@@ -197,10 +212,8 @@ class RoomHistoryManagerClass extends Emitter {
 
 			room.loaded += visibleMessages.length;
 
-			if (messages.length < limit) {
-				this.updateRoom(rid, { hasMore: false });
-			}
-
+			// `count` bounds raw messages, so a page can be entirely system or thread messages and render
+			// as nothing. Without this the scroll stalls in rooms whose recent history is all system messages.
 			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
@@ -245,25 +258,39 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
-		if (lastMessage?.ts) {
-			const { ts } = lastMessage;
-			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
+		// `lastMessage.ts` is the fallback for a window rebuilt by the still-DDP `loadSurroundingMessages`,
+		// which sets no cursor. A null cursor means exhausted, so it must not fall back.
+		const next = room.cursorNext !== undefined ? room.cursorNext : lastMessage?.ts && cursorFromMessageTs(lastMessage.ts);
+
+		if (next) {
+			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
+
+			const result = await sdk.rest.get('/v1/rooms.history', {
+				roomId: rid,
+				next,
+				count: defaultLimit,
+				showThreadMessages: showThreadsInMainChannel,
+			});
+
+			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
+
 			await upsertMessageBulk({
-				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
+				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
 
 			this.emit('loaded-messages');
 
-			this.updateRoom(rid, { isLoading: false });
+			this.updateRoom(rid, {
+				isLoading: false,
+				cursorNext: result.cursor.next,
+				hasMoreNext: result.cursor.next !== null,
+			});
 			if (!room.loaded) {
 				room.loaded = 0;
 			}
 
-			room.loaded += result.messages.length;
-			if (result.messages.length < defaultLimit) {
-				this.updateRoom(rid, { hasMoreNext: false });
-			}
+			room.loaded += messages.length;
 		}
 		this.unqueue();
 	}
@@ -302,6 +329,8 @@ class RoomHistoryManagerClass extends Emitter {
 			isLoading: false,
 			hasMore: true,
 			hasMoreNext: false,
+			cursorPrevious: undefined,
+			cursorNext: undefined,
 		});
 	}
 
