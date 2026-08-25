@@ -26256,6 +26256,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globals@npm:~17.7.0":
+  version: 17.7.0
+  resolution: "globals@npm:17.7.0"
+  checksum: 10/79304ccc4d2ca167ea15bdb25da346aa34ce3847b18fbd6c3cad182e152505305db3c9722fd5e292c62f6db97a8fa06e0c110a1e7703d7325498e5351d08cab4
+  languageName: node
+  linkType: hard
+
 "globalthis@npm:^1.0.4":
   version: 1.0.4
   resolution: "globalthis@npm:1.0.4"
@@ -37159,6 +37166,7 @@ __metadata:
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~10.12.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
+    globals: "npm:~17.7.0"
     node-gyp: "npm:^11.0.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.11.7"

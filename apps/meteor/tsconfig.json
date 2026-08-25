@@ -41,7 +41,7 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": ["./**/*", "./.storybook/**/*", "./jest.config.ts", "./.scripts/**/*"],
+	"include": ["./**/*", "./.storybook/**/*", "./.scripts/**/*"],
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",

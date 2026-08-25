@@ -223,6 +223,7 @@
 		"@types/node": "~24.13.6",
 		"eslint": "~10.12.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
+		"globals": "~17.7.0",
 		"ts-node": "^10.9.2",
 		"turbo": "2.11.7",
 		"typescript": "~7.0.2"
