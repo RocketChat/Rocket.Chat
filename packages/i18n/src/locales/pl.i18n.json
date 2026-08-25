@@ -1661,7 +1661,6 @@
   "Federation": "Federacja",
   "Federation_Description": "Federacja umożliwia komunikowanie się ze sobą nieograniczonej liczby obszarów roboczych.",
   "Federation_Enable": "Włącz Federację",
-  "Federation_Matrix": "Federacja V2",
   "Federation_Matrix_Federated": "Sfederowany",
   "Federation_Matrix_Federated_Description": "Tworząc pokój federacyjny nie będziesz mógł włączyć szyfrowania ani rozgłaszania",
   "Federation_Matrix_Federated_Description_disabled": "Ta funkcja jest obecnie wyłączona w tym obszarze roboczym.",

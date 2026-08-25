@@ -280,7 +280,6 @@ export type EventSignatures = {
 	// Send all events from here
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
