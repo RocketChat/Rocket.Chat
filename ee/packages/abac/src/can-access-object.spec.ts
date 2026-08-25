@@ -301,6 +301,8 @@ describe('AbacService.canAccessObject (unit)', () => {
 		});
 
 		it('returns false without any DB lookup when no PDP is configured', async () => {
+			// priming selects a PDP, so stub it out to reach the guard itself
+			(service as any).primeConfig = jest.fn();
 			(service as any).pdp = undefined;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
