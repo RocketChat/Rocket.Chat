@@ -132,3 +132,11 @@ export const OngoingCallDisabledAllButScreenshare: Story = {
 		supportedFeatures: ['screen-share'],
 	},
 };
+
+export const OngoingCallNoScreenSharingPermission: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: ['screen-share', 'audio', 'hold', 'transfer'],
+		allowedFeatures: ['audio', 'hold', 'transfer'],
+	},
+};
