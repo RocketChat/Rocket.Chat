@@ -1,0 +1,22 @@
+CLAUDE.md
+  s_e6f7ddc27249bc::t_1741deb81a2f55 31
+docs/nats-broker.md
+  s_e6f7ddc27249bc::t_32fe5f76f0dc9e 1-15,19,21-145,155-162,165,167-171,180-203
+  s_e6f7ddc27249bc::t_1e38b6736497ef 16-18,20,146-154,163-164,166,172-179,204-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "3dc0e671f0e8ecbf99c86dbea21d14610e572107",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
