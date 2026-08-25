@@ -69,13 +69,17 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setUserLeftById(callId: string, uid: IUser['_id'], leftAt?: Date, reason?: VideoConferenceLeaveReason): Promise<void>;
 	setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt?: Date): Promise<void>;
 
-	/** Renews one member's presence lease, and with it any departure that was inferred rather than reported. */
+	/**
+	 * Renews one member's presence lease, and with it any departure that was inferred rather than reported.
+	 * Answers atomically with what the write found: `null` when nothing matched (ended call, unknown member,
+	 * reported leave), otherwise whether an inferred departure was revived, with the call's room and provider.
+	 */
 	renewUserPresenceById(
 		callId: string,
 		uid: IUser['_id'],
 		lastSeenAt?: Date,
 		inferredReasons?: VideoConferenceLeaveReason[],
-	): Promise<void>;
+	): Promise<{ revived: boolean; rid: IRoom['_id']; providerName: string } | null>;
 
 	/** Renews several leases at once, as a provider reporting who is in its room does. */
 	renewUsersPresenceById(callId: string, uids: IUser['_id'][], lastSeenAt?: Date): Promise<void>;
