@@ -36,7 +36,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// `createdAt` is part of the key so the `$or: [{ rid }, { discussionRid }]` listing below can be
 			// served by an index-ordered merge instead of a blocking in-memory sort of the whole room history.
 			{ key: { discussionRid: 1, createdAt: 1 }, unique: false },
-			// Listing the calls that are running (`findActiveWithMembers`, `findActiveEmbeddedInRoom`): a partial
+			// Listing the calls that are running (`findActiveWithMembers` and the service's own scans over open
+			// calls): a partial
 			// index, so it holds just the handful of conferences that are live. The hot queries match on these
 			// exact statuses, which is what makes the index eligible for them; `endedAt: { $exists: false }` alone
 			// could not anchor an index at all. `$in` in a partialFilterExpression needs MongoDB 6.0, and the
@@ -443,16 +444,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	// --- Embedded SFU (LiveKit) helpers ---
 	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
 	// is described in the IVideoConferenceParticipant type in core-typings.
-
-	public async findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null> {
-		// "active" means the call is open (not ENDED/EXPIRED/DECLINED). Embedded
-		// providers use the standard VideoConferenceStatus lifecycle.
-		return this.findOne({
-			rid,
-			providerName,
-			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
-		});
-	}
 
 	/**
 	 * Every call that is still open, with what the presence sweep needs to judge it: who is on the roster, and

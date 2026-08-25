@@ -102,8 +102,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	// that URL-based providers don't need. URL providers (Jitsi/Meet/Zoom)
 	// never call these.
 
-	findActiveEmbeddedInRoom(rid: IRoom['_id'], providerName: string): Promise<VideoConference | null>;
-
 	addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void>;
 
 	markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id'], leftAt?: Date): Promise<void>;

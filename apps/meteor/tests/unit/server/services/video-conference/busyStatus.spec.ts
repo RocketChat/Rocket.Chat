@@ -34,6 +34,7 @@ const VideoConferenceModelMock = {
 			(member as IVideoConferenceUser).leftAt = leftAt;
 		}
 	}),
+	renewUserPresenceById: sinon.stub().resolves(),
 	renewUsersPresenceById: sinon.stub().resolves(),
 	markEmbeddedParticipantLeft: sinon.stub().resolves(),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
@@ -45,10 +46,12 @@ const VideoConferenceModelMock = {
 
 const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', language: 'en' }) };
 
+const broadcastStub = sinon.stub().resolves();
+
 const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
-		api: { broadcast: sinon.stub().resolves() },
+		api: { broadcast: broadcastStub },
 		ServiceClassInternal: class {
 			onEvent() {
 				/* no-op */
@@ -83,6 +86,8 @@ describe('VideoConfService presence while in a call', () => {
 			PresenceMock.endActiveState,
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.setUserJoinedById,
+			VideoConferenceModelMock.renewUserPresenceById,
+			broadcastStub,
 		);
 		PresenceMock.setActiveState.resolves(true);
 		// The busy claim only exists for embedded providers — they are the ones with a leave/sweep to release it.
@@ -151,6 +156,55 @@ describe('VideoConfService presence while in a call', () => {
 		await service.addUser('call1', 'joiner');
 
 		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('call1', 'joiner')).to.be.true;
+	});
+
+	// The sweep can be wrong: it gave up on a window that was only throttled, released the busy claim and told
+	// everyone the roster shrank. The heartbeat that revives the member is the correction, so it has to undo
+	// both — an ordinary renewal, by contrast, changes nothing anyone can see and must stay silent.
+	describe('when a heartbeat revives an inferred departure', () => {
+		const conferenceUpdates = (): number => broadcastStub.args.filter((args: unknown[]) => args[0] === 'video-conference.updated').length;
+
+		it('re-claims busy for the revived member', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'reviver', leftAt: at(-60_000), leftReason: 'timeout' })]);
+
+			await service.renewPresence('reviver', 'call1');
+
+			expect(VideoConferenceModelMock.renewUserPresenceById.calledOnce).to.be.true;
+			expect(PresenceMock.setActiveState.calledWith('reviver')).to.be.true;
+			expect(conferenceUpdates()).to.be.greaterThan(0);
+		});
+
+		it('changes nothing visible on an ordinary renewal', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'present', lastSeenAt: at(0) })]);
+
+			await service.renewPresence('present', 'call1');
+
+			expect(VideoConferenceModelMock.renewUserPresenceById.calledOnce).to.be.true;
+			expect(PresenceMock.setActiveState.called).to.be.false;
+			expect(conferenceUpdates()).to.equal(0);
+		});
+
+		// A reported departure is the member's own word, and a stale heartbeat behind it must not carry any of
+		// the revival's side effects — the model refuses the revival itself for the same reason.
+		it('treats a renewal behind a reported leave as ordinary', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'choseToLeave', leftAt: at(-60_000) })]);
+
+			await service.renewPresence('choseToLeave', 'call1');
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+			expect(conferenceUpdates()).to.equal(0);
+		});
+
+		// The busy claim is the embedded lifecycle's; the roster correction is everyone's.
+		it('announces the revival without claiming busy for a non-embedded provider', async () => {
+			providerCapabilities.current = undefined;
+			fixture = buildGroupCall([buildMember({ _id: 'reviver', leftAt: at(-60_000), leftReason: 'timeout' })]);
+
+			await service.renewPresence('reviver', 'call1');
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+			expect(conferenceUpdates()).to.be.greaterThan(0);
+		});
 	});
 
 	// A non-embedded provider (Jitsi, Meet, ...) has no leave, no heartbeat and no sweep — nothing would ever

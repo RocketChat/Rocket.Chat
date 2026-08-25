@@ -280,6 +280,8 @@ describe('VideoConfService one call at a time', () => {
 		const [query] = VideoConferenceModelMock.find.firstCall.args;
 		expect(query).to.deep.equal({
 			_id: { $ne: 'wanted' },
+			// The statuses name what the partial index is filtered on; `endedAt` remains the liveness rule itself.
+			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
 			endedAt: { $exists: false },
 			users: { $elemMatch: { _id: 'joiner', joined: { $ne: false }, leftAt: { $exists: false } } },
 		});
