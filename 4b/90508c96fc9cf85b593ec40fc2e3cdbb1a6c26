@@ -1,0 +1,26 @@
+ee/packages/abac/src/index.ts
+  s_e6f7ddc27249bc::t_e89ff239c26ff5 914-915
+  s_e6f7ddc27249bc::t_1ebb29b03cbc9c 197-198
+  s_e6f7ddc27249bc::t_b0f849e355b82b 845,941-942,952-953,997-998
+  s_e6f7ddc27249bc::t_fdcb97bf5c91dd 839-843,846
+ee/packages/abac/src/subject-attributes-validations.spec.ts
+  s_e6f7ddc27249bc::t_59865e53ddc669 15-18
+ee/packages/abac/src/user-auto-removal.spec.ts
+  s_e6f7ddc27249bc::t_a576d7afd1e99c 26-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4b90508c96fc9cf85b593ec40fc2e3cdbb1a6c26",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
