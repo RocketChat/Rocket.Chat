@@ -11,6 +11,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAllowedFeatures } from './useAllowedFeatures';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
@@ -37,6 +38,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const { instance, audioElement, openRoomId, registerView, unregisterView, setTargetPeer, targetPeer } = useMediaCallInstance();
 
 	const sessionState = useMediaSession(instance);
+	const allowedFeatures = useAllowedFeatures(sessionState.supportedFeatures);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -222,6 +224,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const contextValue = {
 		sessionState,
+		allowedFeatures,
 		targetPeer,
 		onClickDirectMessage,
 		onMute,
