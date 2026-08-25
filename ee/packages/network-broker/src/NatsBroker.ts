@@ -1,10 +1,9 @@
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
-import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+import { LocalServiceRegistry, MeteorError, getCallableMethods, isMeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
 import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } from 'nats';
 
-import { getCallableMethods, LocalServiceRegistry } from './LocalServiceRegistry';
 import type { ServiceNodes } from './licenseEnforcement';
 import { startLicenseEnforcement } from './licenseEnforcement';
 
