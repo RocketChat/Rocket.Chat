@@ -7,7 +7,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 const setCategory = ajv.compile<{ roomIds: string[]; category: string | null }>({
@@ -28,7 +27,7 @@ const setCategory = ajv.compile<{ roomIds: string[]; category: string | null }>(
 	additionalProperties: false,
 });
 
-const roomsSetCategoryEndpoints = API.experimental.post(
+API.experimental.post(
 	'rooms.setCategory',
 	{
 		authRequired: true,
@@ -75,10 +74,3 @@ const roomsSetCategoryEndpoints = API.experimental.post(
 		return API.experimental.success();
 	},
 );
-
-type RoomsSetCategoryEndpoints = ExtractRoutesFromAPI<typeof roomsSetCategoryEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
-	interface ExperimentalEndpoints extends RoomsSetCategoryEndpoints {}
-}

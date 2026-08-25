@@ -10,19 +10,20 @@
  * shape or be removed in any release without a deprecation cycle. See
  * `docs/experimental-api-endpoints.md`.
  *
- * This interface is empty on purpose: each endpoint file augments it with the
- * routes it registers, extracted from the actual definition. For example:
+ * Declare new experimental endpoints here, following the per-resource style of
+ * the `/v1` endpoint types (e.g. `v1/calendar`). Every path key must begin with
+ * `/experimental/`. For example:
  *
  * ```ts
- * const example = API.experimental.get('example.info', { ... }, action);
- *
- * type ExampleEndpoints = ExtractRoutesFromAPI<typeof example>;
- *
- * declare module '@rocket.chat/rest-typings' {
- * 	// eslint-disable-next-line @typescript-eslint/naming-convention
- * 	interface ExperimentalEndpoints extends ExampleEndpoints {}
- * }
+ * export type ExperimentalEndpoints = {
+ * 	'/experimental/example.info': {
+ * 		GET: (params: { id: string }) => { id: string; value: number };
+ * 	};
+ * };
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
-export interface ExperimentalEndpoints {}
+export type ExperimentalEndpoints = {
+	'/experimental/rooms.setCategory': {
+		POST: (params: { roomIds: string[]; category: string | null }) => { success: true };
+	};
+};
