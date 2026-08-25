@@ -9179,7 +9179,7 @@ __metadata:
     semver: "npm:^7.6.3"
     stack-trace: "npm:0.0.10"
     ts-node: "npm:^6.2.0"
-    typescript: "npm:~7.0.2"
+    typescript: "npm:~5.9.3"
     uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
@@ -11006,7 +11006,7 @@ __metadata:
     eslint: "npm:~9.39.5"
     http-proxy-agent: "npm:^7.0.2"
     https-proxy-agent: "npm:^7.0.6"
-    jest: "npm:^29.7.0"
+    jest: "npm:~30.2.0"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
     typescript: "npm:~7.0.2"
@@ -27530,7 +27530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.6.4, jest@npm:^29.7.0":
+"jest@npm:^29.6.4":
   version: 29.7.0
   resolution: "jest@npm:29.7.0"
   dependencies:
@@ -34278,6 +34278,7 @@ __metadata:
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~10.7.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
+    globals: "npm:~17.7.0"
     node-gyp: "npm:^11.0.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.9.14"
