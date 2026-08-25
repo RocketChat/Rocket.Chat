@@ -4,6 +4,7 @@ import { useRoomRoute } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { getUserDisplayNames } from '../../../../../../lib/getUserDisplayNames';
 import ParentRoomButton from '../ParentRoomButton';
 
 export type ParentDiscussionProps = {
@@ -23,7 +24,9 @@ const ParentDiscussion = ({ loading = false, room }: ParentDiscussionProps) => {
 	const { t } = useTranslation();
 	const goToRoom = useRoomRoute();
 	const allowSpecialChars = useSetting('UI_Allow_room_names_with_special_chars', false);
-	const roomName = room.t === 'c' || room.t === 'p' ? getChannelRoomName(room, allowSpecialChars) : room.fname || room.name || '';
+	const useRealName = useSetting<boolean>('UI_Use_Real_Name', false);
+	const [userDisplayName] = getUserDisplayNames(room.fname, room.name, useRealName);
+	const roomName = room.t === 'c' || room.t === 'p' ? getChannelRoomName(room, allowSpecialChars) : userDisplayName;
 
 	const handleRedirect = (): void => {
 		goToRoom({ rid: room._id, t: room.t, name: room.name });
