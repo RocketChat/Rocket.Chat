@@ -1,0 +1,65 @@
+name: TS7 Canary
+
+# Non-blocking canary tracking readiness for the TypeScript 7 (native compiler)
+# migration. Typechecks the whole monorepo with TS7 while TS5.x still owns
+# emit. Does NOT gate merges — it exists to watch the green-package count climb.
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      deno-version:
+        required: true
+        type: string
+  workflow_dispatch:
+  # Nightly: track the green-package count over time without adding cost to PRs.
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  ts7-typecheck:
+    runs-on: ubuntu-24.04-arm
+    name: TS7 TypeCheck (canary)
+    # Canary: surface results without ever failing the pipeline.
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          # Empty when dispatched/pushed standalone: setup-node then resolves
+          # node from package.json engines.node and deno from .tool-versions.
+          node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+
+      # core-typings and ui-kit now build with ttsc, which compiles typia's
+      # native Go plugin on first run — needs a Go toolchain + a warm cache.
+      - name: Setup Go (ttsc typia plugin)
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Cache ttsc plugin build
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: '**/node_modules/.cache/ttsc'
+          key: ttsc-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ttsc-${{ runner.os }}-
+
+      # Build packages for fresh `.d.ts` (typia packages emit via ttsc, the
+      # rest via tsc); otherwise stale dist yields false typecheck errors.
+      - name: Build workspace packages
+        run: yarn turbo run build --filter='./packages/*' --filter='./ee/packages/*' --concurrency=5
+
+      - name: TS7 typecheck (non-blocking)
+        run: bash ./scripts/ts7-typecheck.sh

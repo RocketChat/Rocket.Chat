@@ -34,6 +34,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/meteor-modern-stack.md](docs/meteor-modern-stack.md) — Meteor modern build stack, file-watching caveats
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 - [docs/npm-publishing.md](docs/npm-publishing.md) — how the public packages reach npm: `release.yml`, changesets, OIDC trusted publishing, provenance
+- [docs/typescript-7-migration.md](docs/typescript-7-migration.md) — TS7 (native compiler) migration: config changes, packages pinned to TS5.9 and why, canary
 
 ### Testing
 
