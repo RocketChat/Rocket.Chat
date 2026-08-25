@@ -936,11 +936,15 @@ export class AppManager {
 				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
 				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
 
-				return this.appMetadataStorage.updatePartialAndReturnDocument({
+				const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({
 					_id: appStorageItem._id,
 					marketplaceInfo: appStorageItem.marketplaceInfo,
 					signature: appStorageItem.signature,
 				});
+
+				if (!stored) {
+					throw new Error(`App with id ${appStorageItem._id} couldn't be found`);
+				}
 			}),
 		).catch(() => {});
 
