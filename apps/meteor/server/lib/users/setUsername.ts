@@ -147,8 +147,6 @@ export const _setUsername = async function (
 	}
 
 	await onceTransactionCommitedSuccessfully(async () => {
-		// A first username means the account has just been created,
-		// so run what `insertUserDoc` skipped
 		if (!previousUsername) {
 			await joinDefaultChannels(user._id);
 			setImmediate(() => void callbacks.run('afterCreateUser', user));
