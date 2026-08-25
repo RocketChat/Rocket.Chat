@@ -1,0 +1,24 @@
+ee/packages/abac/src/index.ts
+  s_e6f7ddc27249bc::t_1691ae6bbc0c6d 18,265,267,273-276,298,768-769,821-822
+  s_e6f7ddc27249bc::t_0124c6bbdde09f 52-53,86,282-287,757-759
+  s_e6f7ddc27249bc::t_f657533e0300d3 289-296
+  s_e6f7ddc27249bc::t_211ebe5ec5f991 266,268-272,300-301
+ee/packages/abac/src/can-access-object.spec.ts
+  s_e6f7ddc27249bc::t_148d234dcece15 304-305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "816c4290585ffd9be4bdbbe943c6c4171fc45843",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
