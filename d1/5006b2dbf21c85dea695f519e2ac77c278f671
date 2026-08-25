@@ -1,0 +1,21 @@
+docs/i18n.md
+  s_3370fe1d6922c4::t_5768f315d9359e 212,222,224,226-229,232
+packages/i18n/src/scripts/check.mts
+  s_3370fe1d6922c4::t_0ada96c7135f58 588-589
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d15006b2dbf21c85dea695f519e2ac77c278f671",
+  "prompts": {},
+  "sessions": {
+    "s_3370fe1d6922c4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38168afd-3921-4353-83cb-69376d60cd2f",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
