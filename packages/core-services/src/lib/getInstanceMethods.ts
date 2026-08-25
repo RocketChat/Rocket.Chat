@@ -1,4 +1,4 @@
-import type { IServiceClass } from '@rocket.chat/core-services';
+import type { IServiceClass } from '../types/ServiceClass';
 
 export function getInstanceMethods(instance: IServiceClass) {
 	return (

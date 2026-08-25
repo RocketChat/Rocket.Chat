@@ -1,6 +1,5 @@
-import { ServiceClass } from '@rocket.chat/core-services';
-
-import { LocalServiceRegistry, getCallableMethods } from './LocalServiceRegistry';
+import { LocalServiceRegistry, getCallableMethods } from '../src/lib/LocalServiceRegistry';
+import { ServiceClass } from '../src/types/ServiceClass';
 
 class Accounts extends ServiceClass {
 	protected name = 'accounts';

@@ -1,6 +1,5 @@
-import type { IServiceClass } from '@rocket.chat/core-services';
-
 import { getInstanceMethods } from './getInstanceMethods';
+import type { IServiceClass } from '../types/ServiceClass';
 
 const lifecycleMethods = new Set(['created', 'started', 'stopped']);
 
@@ -8,22 +7,21 @@ export type LocalHandler = (args: unknown[]) => Promise<unknown>;
 
 /**
  * The methods a service answers calls on. Event handlers (`onSomething`) are
- * reached through the event subjects and the lifecycle hooks belong to the
- * broker, so neither is callable.
+ * reached through the event bus and the lifecycle hooks belong to the broker,
+ * so neither is callable.
  */
 export function getCallableMethods(instance: IServiceClass): string[] {
 	return getInstanceMethods(instance).filter((method) => !method.match(/^on[A-Z]/) && !lifecycleMethods.has(method));
 }
 
 /**
- * Tracks the services running in this process so a call to one of them can skip
- * the transport entirely.
+ * Indexes the services running in this process by `<service>.<method>`, so a
+ * broker can dispatch to the instance rather than go over its transport.
  *
- * Moleculer dispatches a call to a locally registered service straight to the
- * instance, and call sites rely on it: arguments arrive by reference, which is
- * the only reason handing a mongo cursor or a stream to `api.call` ever worked.
- * Serialising those throws, so a broker that always goes over the wire breaks
- * them - see `ee/server/configuration/abac.ts`, which passes a cursor.
+ * Call sites depend on that dispatch staying direct: arguments arrive by
+ * reference, which is the only reason handing a mongo cursor or a stream to
+ * `api.call` ever worked - see `ee/server/configuration/abac.ts`, which passes
+ * a cursor. Serialising those throws.
  */
 export class LocalServiceRegistry {
 	private services = new Map<string, { instance: IServiceClass; methods: Set<string> }>();

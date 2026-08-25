@@ -1,12 +1,11 @@
 import Stream from 'node:stream';
 
-import { asyncLocalStorage } from '@rocket.chat/core-services';
+import { asyncLocalStorage, getInstanceMethods } from '@rocket.chat/core-services';
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
-import { getInstanceMethods } from './getInstanceMethods';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
