@@ -327,10 +327,10 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		const channelsIndex = groupsList.indexOf('Channels');
 		const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groups[channelsIndex].unreadInfo;
 
-		expect(groupMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.groupMentions, 0));
-		expect(unread).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.unread, 0));
-		expect(userMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.userMentions, 0));
-		expect(tunread).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
-		expect(tunreadUser).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+		expect(groupMentions).toEqual(unreadChannels.reduce((acc, cv) => acc + cv.groupMentions, 0));
+		expect(unread).toEqual(unreadChannels.reduce((acc, cv) => acc + cv.unread, 0));
+		expect(userMentions).toEqual(unreadChannels.reduce((acc, cv) => acc + cv.userMentions, 0));
+		expect(tunread).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
+		expect(tunreadUser).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
 	});
 });
