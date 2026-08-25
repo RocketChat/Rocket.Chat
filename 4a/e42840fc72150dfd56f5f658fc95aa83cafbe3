@@ -1,0 +1,21 @@
+.github/workflows/ci-code-check.yml
+  s_3370fe1d6922c4::t_c5fca5613443da 52-55
+docs/i18n.md
+  s_3370fe1d6922c4::t_5768f315d9359e 212,222,224,226-229,232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4ae42840fc72150dfd56f5f658fc95aa83cafbe3",
+  "prompts": {},
+  "sessions": {
+    "s_3370fe1d6922c4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38168afd-3921-4353-83cb-69376d60cd2f",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

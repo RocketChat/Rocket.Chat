@@ -1,0 +1,20 @@
+.github/workflows/ci-test-e2e.yml
+  s_44337640a5cd30::t_9787e89716d887 217,227-228,232-240
+  s_44337640a5cd30::t_411f4736934df1 22-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ac7c6785e361b220d75f15742ec062dc9d110c37",
+  "prompts": {},
+  "sessions": {
+    "s_44337640a5cd30": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ca66b31-a877-423e-963a-3dd753f1b67c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

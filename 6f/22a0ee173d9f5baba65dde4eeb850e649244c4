@@ -1,0 +1,19 @@
+packages/release-action/src/createNpmFile.ts
+  s_a17a776612fabf::t_982d2add07350f 7-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "6f22a0ee173d9f5baba65dde4eeb850e649244c4",
+  "prompts": {},
+  "sessions": {
+    "s_a17a776612fabf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2b2ab6e-4018-4e00-8c6e-c07cd846ca61",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

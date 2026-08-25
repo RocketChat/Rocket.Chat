@@ -1,0 +1,37 @@
+apps/meteor/ee/server/services/.config/services/service.env
+  s_44337640a5cd30::t_351170358852c3 1-2,6
+ee/apps/account-service/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 39
+ee/apps/presence-service/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 38
+ee/apps/ddp-streamer/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 40
+ee/apps/queue-worker/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 39
+apps/meteor/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 259
+apps/meteor/ee/server/services/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 42
+ee/apps/authorization-service/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 38
+ee/apps/omnichannel-transcript/package.json
+  s_44337640a5cd30::t_c4aea49ed6e13a 45
+yarn.lock
+  s_44337640a5cd30::t_f422c2d891a7a4 9068,9211,9397,10366,10697,10853,10916,34121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "5617f4fd2b7b37b8a8dbf5fe008c7c5831111ad6",
+  "prompts": {},
+  "sessions": {
+    "s_44337640a5cd30": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ca66b31-a877-423e-963a-3dd753f1b67c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

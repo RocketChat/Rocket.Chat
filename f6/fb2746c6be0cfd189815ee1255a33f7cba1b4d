@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/src/api/.well-known/server.ts
+  h_4c386397e672f4 4-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "f6fb2746c6be0cfd189815ee1255a33f7cba1b4d",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/src/api/_matrix/rooms.ts
+  s_9eddb6fd031aba::t_8d410df7c2617a 105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b118d5e8f1f088ef27314d0347d3a8bc787f1907",
+  "prompts": {},
+  "sessions": {
+    "s_9eddb6fd031aba": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f4b1fe1-d06b-4b94-905a-c96d39fc9d8f",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

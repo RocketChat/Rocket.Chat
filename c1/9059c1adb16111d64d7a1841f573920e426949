@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/src/api/_matrix/invite.ts
+  s_7f095e341df103::t_9ca1328ac35701 165,169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c19059c1adb16111d64d7a1841f573920e426949",
+  "prompts": {},
+  "sessions": {
+    "s_7f095e341df103": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "589a7d12-8b78-48eb-a46e-a7782e755366",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

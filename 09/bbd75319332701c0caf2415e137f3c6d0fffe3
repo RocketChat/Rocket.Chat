@@ -1,0 +1,21 @@
+packages/release-action/action.yml
+  s_a17a776612fabf::t_87744881009e2b 13
+packages/release-action/package.json
+  s_a17a776612fabf::t_87744881009e2b 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "09bbd75319332701c0caf2415e137f3c6d0fffe3",
+  "prompts": {},
+  "sessions": {
+    "s_a17a776612fabf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2b2ab6e-4018-4e00-8c6e-c07cd846ca61",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

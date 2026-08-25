@@ -1,0 +1,53 @@
+ee/packages/federation-matrix/src/api/_matrix/rooms.ts
+  s_22aed45e6f0bb7::t_213664d9bffe13 185
+  s_22aed45e6f0bb7::t_eb5e817d25e5e2 152
+ee/packages/federation-matrix/src/api/_matrix/send-leave.ts
+  s_22aed45e6f0bb7::t_0d16edfc463f42 61
+ee/packages/federation-matrix/src/api/_matrix/transactions.ts
+  s_22aed45e6f0bb7::t_212aadd3b13b53 335
+  s_22aed45e6f0bb7::t_2c6c1fbe5e36fa 399
+  s_22aed45e6f0bb7::t_e99eaa814ad24a 368
+  s_22aed45e6f0bb7::t_ca63aa41f5758a 268
+  s_22aed45e6f0bb7::t_512094b56a5660 434
+ee/packages/federation-matrix/src/api/_matrix/key/server.ts
+  s_22aed45e6f0bb7::t_cd42377b084c72 36
+ee/packages/federation-matrix/src/api/_matrix/versions.ts
+  s_22aed45e6f0bb7::t_73c1101848e453 28
+ee/packages/federation-matrix/src/api/_matrix/invite.ts
+  s_22aed45e6f0bb7::t_c50884a1da18df 134
+ee/packages/federation-matrix/src/api/_matrix/media.ts
+  s_22aed45e6f0bb7::t_3281a732a2b91b 79
+  s_22aed45e6f0bb7::t_7fd1995b96af2e 134
+ee/packages/federation-matrix/src/api/_matrix/profiles.ts
+  s_22aed45e6f0bb7::t_c01077f9260e5f 371
+  s_22aed45e6f0bb7::t_03ce908a669d33 515
+  s_22aed45e6f0bb7::t_02a0f068c3942b 416
+  s_22aed45e6f0bb7::t_938e15ce51c113 558
+  s_22aed45e6f0bb7::t_7898d05d431f68 439
+  s_22aed45e6f0bb7::t_022bd93149b608 462
+ee/packages/federation-matrix/src/api/_matrix/send-join.ts
+  s_22aed45e6f0bb7::t_10bf3fcde8b5b5 120
+ee/packages/federation-matrix/src/api/_matrix/make-leave.ts
+  s_22aed45e6f0bb7::t_17d6746192d805 59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "f7cd3c8deda28a50873e837eec8e20a4d1b47cba",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_22aed45e6f0bb7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "df101c67-7eb8-4920-8e90-cf39d789dcf9",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

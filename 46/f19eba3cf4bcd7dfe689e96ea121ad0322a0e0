@@ -1,0 +1,22 @@
+apps/meteor/app/utils/rocketchat.info
+  h_4c386397e672f4 2
+packages/rest-typings/package.json
+  h_4c386397e672f4 3
+packages/core-typings/package.json
+  h_4c386397e672f4 4
+package.json
+  h_4c386397e672f4 3
+apps/meteor/package.json
+  h_4c386397e672f4 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "46f19eba3cf4bcd7dfe689e96ea121ad0322a0e0",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
