@@ -1638,26 +1638,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * can see, so it stays free of extra writes and notifications.
 	 */
 	public async renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
-		// Whether this renewal is a revival is decided by what the entry says *before* the renewal clears it: an
-		// inferred departure is exactly what `renewUserPresenceById` is allowed to undo. A read rather than asking
-		// the write to report back, because the write's matched/modified counts can't tell the two cases apart.
-		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>>(callId, {
-			projection: { rid: 1, users: 1, providerName: 1 },
-		});
-		const member = call?.users.find(({ _id }) => _id === uid);
-		const reviving = !!member?.leftAt && !!member.leftReason && INFERRED_LEAVE_REASONS.includes(member.leftReason);
+		// Whether this renewal revived anything is the model's answer, decided in the same atomic step as the
+		// write itself — a separate read would race the member reporting a leave in between, and would happily
+		// call a heartbeat against an *ended* call a revival: the final throttled heartbeat of the very window
+		// whose expiry ended the call would then re-claim busy with no release path left to ever undo it.
+		const renewal = await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
 
-		await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
-
-		if (!call || !reviving) {
+		// Nothing matched (the call ended, the member is unknown, or they reported leaving) or nothing was
+		// revived: nothing to undo, so no side effects at all.
+		if (!renewal?.revived) {
 			return;
 		}
 
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (videoConfProviders.getProviderCapabilities(renewal.providerName)?.embedded) {
 			await this.claimBusyForCall(uid);
 		}
-		this.notifyConferenceUpdate(call._id);
-		this.notifyVideoConfUpdate(call.rid, call._id);
+		this.notifyConferenceUpdate(callId);
+		this.notifyVideoConfUpdate(renewal.rid, callId);
 	}
 
 	/**

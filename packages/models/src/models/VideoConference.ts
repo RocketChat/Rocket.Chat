@@ -286,25 +286,48 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	 * A renewal also undoes a departure that was *inferred*: a lease we gave up on while the window was in fact
 	 * alive was simply wrong, and the window saying so is the correction. A departure the member reported is
 	 * never undone this way — they left, and a heartbeat still in flight behind them must not put them back in
-	 * the call. That is the condition in the query, which is why a stale renewal matches nothing at all.
+	 * the call. Neither is anything undone on a call that has ended: the final heartbeat of a window whose lease
+	 * expiry emptied the call would otherwise regenerate a member inside an ENDED conference. Both conditions
+	 * live in the query, which is why a stale renewal matches nothing at all.
+	 *
+	 * Answers with what the write found, decided in the same atomic step as the write itself: `null` when nothing
+	 * matched (the call ended, the member is unknown, or their departure was reported), and otherwise whether this
+	 * renewal *revived* an inferred departure — judged from the entry as it stood before the write, along with the
+	 * call's room and provider so the caller can react without a second, racy read.
 	 */
 	public async renewUserPresenceById(
 		callId: string,
 		uid: IUser['_id'],
 		lastSeenAt = new Date(),
 		inferredReasons: VideoConferenceLeaveReason[] = ['timeout'],
-	): Promise<void> {
-		await this.updateOne(
+	): Promise<{ revived: boolean; rid: IRoom['_id']; providerName: string } | null> {
+		const before = await this.findOneAndUpdate(
 			{
 				_id: callId,
+				endedAt: { $exists: false },
 				users: { $elemMatch: { _id: uid, $or: [{ leftAt: { $exists: false } }, { leftReason: { $in: inferredReasons } }] } },
 			},
 			{
 				$set: { 'users.$[user].lastSeenAt': lastSeenAt },
 				$unset: { 'users.$[user].leftAt': 1, 'users.$[user].leftReason': 1 },
 			},
-			{ arrayFilters: [{ 'user._id': uid }] },
+			{
+				arrayFilters: [{ 'user._id': uid }],
+				returnDocument: 'before',
+				projection: { users: 1, rid: 1, providerName: 1 },
+			},
 		);
+
+		if (!before) {
+			return null;
+		}
+
+		const member = before.users.find(({ _id }) => _id === uid);
+		return {
+			revived: !!member?.leftAt && !!member.leftReason && inferredReasons.includes(member.leftReason),
+			rid: before.rid,
+			providerName: before.providerName,
+		};
 	}
 
 	/**
@@ -317,8 +340,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			return;
 		}
 
+		// Guarded against ended calls for the same reason the single renewal is — though this one only stamps
+		// `lastSeenAt` and never revives anyone, so the guard is belt rather than braces: the sweep calls it for
+		// calls it just read as open.
 		await this.updateOne(
-			{ _id: callId },
+			{ _id: callId, endedAt: { $exists: false } },
 			{ $set: { 'users.$[user].lastSeenAt': lastSeenAt } },
 			{ arrayFilters: [{ 'user._id': { $in: uids } }] },
 		);

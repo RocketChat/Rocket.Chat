@@ -34,7 +34,22 @@ const VideoConferenceModelMock = {
 			(member as IVideoConferenceUser).leftAt = leftAt;
 		}
 	}),
-	renewUserPresenceById: sinon.stub().resolves(),
+	// Mirrors the model's atomic contract: no match (ended call, unknown member, reported leave) answers `null`;
+	// a match renews the lease and says whether it revived an inferred departure — all in one step.
+	renewUserPresenceById: sinon.stub().callsFake(async (_callId: string, uid: string) => {
+		if (fixture.endedAt) {
+			return null;
+		}
+		const member = fixture.users.find((user) => user._id === uid);
+		if (!member || (member.leftAt && member.leftReason !== 'timeout')) {
+			return null;
+		}
+		const revived = !!member.leftAt && member.leftReason === 'timeout';
+		delete member.leftAt;
+		delete member.leftReason;
+		member.lastSeenAt = new Date();
+		return { revived, rid: fixture.rid, providerName: fixture.providerName };
+	}),
 	renewUsersPresenceById: sinon.stub().resolves(),
 	markEmbeddedParticipantLeft: sinon.stub().resolves(),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
@@ -184,15 +199,34 @@ describe('VideoConfService presence while in a call', () => {
 			expect(conferenceUpdates()).to.equal(0);
 		});
 
-		// A reported departure is the member's own word, and a stale heartbeat behind it must not carry any of
-		// the revival's side effects — the model refuses the revival itself for the same reason.
-		it('treats a renewal behind a reported leave as ordinary', async () => {
+		// A reported departure is the member's own word, and a stale heartbeat racing in behind it must not carry
+		// any of the revival's side effects. The model's answer is atomic with the write, so even a leave reported
+		// between the heartbeat arriving and the write landing answers "no match" — never a revival.
+		it('does nothing when the departure was reported, however the heartbeat races it', async () => {
 			fixture = buildGroupCall([buildMember({ _id: 'choseToLeave', leftAt: at(-60_000) })]);
 
 			await service.renewPresence('choseToLeave', 'call1');
 
 			expect(PresenceMock.setActiveState.called).to.be.false;
 			expect(conferenceUpdates()).to.equal(0);
+			const member = fixture.users.find((user) => user._id === 'choseToLeave');
+			expect(member?.leftAt, 'a reported departure must never be cleared by a heartbeat').to.not.be.undefined;
+		});
+
+		// The worst shape of a late heartbeat: the lease expiry that evicted this member is what emptied and ended
+		// the call, and the busy release that came with ending it was the last one there would ever be. Reviving
+		// them now would regenerate a member inside an ENDED conference and claim busy with no release path left.
+		it('does nothing at all for a heartbeat against a call that already ended', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'tooLate', leftAt: at(-60_000), leftReason: 'timeout' })], {
+				endedAt: at(-30_000),
+			});
+
+			await service.renewPresence('tooLate', 'call1');
+
+			expect(PresenceMock.setActiveState.called).to.be.false;
+			expect(conferenceUpdates()).to.equal(0);
+			const member = fixture.users.find((user) => user._id === 'tooLate');
+			expect(member?.leftAt, 'the departure must stand — the call is over').to.not.be.undefined;
 		});
 
 		// The busy claim is the embedded lifecycle's; the roster correction is everyone's.
