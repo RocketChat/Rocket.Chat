@@ -16,6 +16,8 @@ export type ToggleButtonProps = {
 	 * problem, and colouring it as one would read as an error.
 	 */
 	dangerWhenPressed?: boolean;
+	/** Renders the larger variant used by the conference UI. The widget keeps its original size by default. */
+	large?: boolean;
 	onToggle?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
@@ -29,6 +31,7 @@ const ToggleButton = ({
 	danger = true,
 	secondary = true,
 	tiny = false,
+	large = false,
 	dangerWhenPressed = false,
 	...props
 }: ToggleButtonProps) => {
@@ -38,7 +41,13 @@ const ToggleButton = ({
 	const asDanger = dangerWhenPressed && Boolean(pressed);
 	const iconColor = !dangerWhenPressed && pressed && danger ? 'font-danger' : undefined;
 
-	const size = tiny ? { tiny: true } : { large: true };
+	const sizeOf = () => {
+		if (tiny) {
+			return { tiny: true };
+		}
+		return large ? { large: true } : { medium: true };
+	};
+	const size = sizeOf();
 
 	return (
 		<IconButton
@@ -47,17 +56,7 @@ const ToggleButton = ({
 			{...size}
 			secondary={secondary}
 			danger={asDanger}
-			icon={
-				<Icon
-					size={20}
-					color={iconColor}
-					name={iconName}
-					// `mic-off` slashes the other way from `video-off`, so side by side they read as two unrelated
-					// marks. Mirroring flips the slash without visibly changing the mic, which is symmetric about
-					// that axis.
-					{...(iconName === 'mic-off' && { style: { transform: 'scaleX(-1)' } })}
-				/>
-			}
+			icon={<Icon size={large ? 20 : 16} color={iconColor} name={iconName} />}
 			title={title}
 			aria-label={label}
 			disabled={disabled}
