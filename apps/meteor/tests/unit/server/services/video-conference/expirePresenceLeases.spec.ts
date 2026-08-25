@@ -1,4 +1,4 @@
-import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import type { IVideoConferenceUser, VideoConference, VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -49,6 +49,11 @@ const VideoConfService = createService({
 	},
 	overrides: {
 		'../../lib/videoConfPresence': { videoConfPresence: { getProbe: () => probe } },
+		'../../lib/videoConfProviders': {
+			videoConfProviders: {
+				getProviderCapabilities: () => ({ embedded: true }),
+			},
+		},
 	},
 });
 
@@ -176,6 +181,46 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			await service.expirePresenceLeases(at(0));
 
 			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
+		});
+	});
+
+	describe('non-embedded providers', () => {
+		const NonEmbeddedModelMock = {
+			findActiveWithMembers: sinon.stub().callsFake(() => ({
+				async *[Symbol.asyncIterator]() {
+					yield cloneFixture(fixture);
+				},
+			})),
+			setUserLeftById: sinon.stub().resolves(),
+			setDataById: sinon.stub().resolves(),
+			setStatusById: sinon.stub().resolves(),
+		};
+
+		const NonEmbeddedService = createService({
+			models: { VideoConference: NonEmbeddedModelMock },
+			overrides: {
+				'../../lib/videoConfProviders': {
+					videoConfProviders: {
+						getProviderCapabilities: (): VideoConferenceCapabilities => ({}),
+					},
+				},
+			},
+		});
+
+		let nonEmbeddedService: any;
+
+		beforeEach(() => {
+			nonEmbeddedService = new NonEmbeddedService();
+			resetAll(NonEmbeddedModelMock.setUserLeftById, NonEmbeddedModelMock.setDataById, NonEmbeddedModelMock.setStatusById);
+		});
+
+		it('skips calls from non-embedded providers (Jitsi, Meet, etc.)', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'jitsiUser', lastSeenAt: at(-PRESENCE_LEASE_MS * 2) })]);
+
+			await nonEmbeddedService.expirePresenceLeases(at(0));
+
+			expect(NonEmbeddedModelMock.setUserLeftById.called).to.be.false;
+			expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		});
 	});
 });

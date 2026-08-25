@@ -1603,6 +1603,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async expirePresenceLeases(now = new Date()): Promise<void> {
 		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
 			try {
+				// Presence leases only apply to embedded providers, whose call window is ours and sends heartbeats.
+				// Non-embedded providers (Jitsi, Meet, Pexip) open in an iframe/popup we don't control — no heartbeat
+				// is sent, so every lease would look expired and the sweep would end every call after 3 minutes.
+				// Those calls are cleaned up by the 24-hour TTL cron instead, exactly as they were before leases existed.
+				if (!videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+					continue;
+				}
+
 				// A provider that can say who is in its room is asked first, and its answer renews leases the same
 				// way a client's heartbeat does. Silence is not absence: `undefined` leaves the leases as they are.
 				const present = await videoConfPresence.getProbe(call.providerName)?.(call);
