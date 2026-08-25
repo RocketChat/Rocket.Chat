@@ -3710,8 +3710,6 @@
   "Push_enable_gateway_Description": "**Figyelem:** el kell fogadnia a kiszolgálója regisztrálásához (Beállítási varázsló → Szervezeti információk → Kiszolgáló regisztrálása) és az adatvédelmi feltételeket (Beállítási varázsló → Felhőinformációk → Felhőszolgáltatás adatvédelmi feltételeinek megállapodása) a beállítás engedélyezéséhez és az átjárónk használatához. Hiába van ez a beállítás bekapcsolva, akkor **sem fog** működni, ha a kiszolgáló nincs regisztrálva.",
   "Push_gateway": "Átjáró",
   "Push_gateway_description": "Több sor is használható több átjáró megadásához",
-  "Push_gcm_api_key": "GCM API-kulcs",
-  "Push_gcm_project_number": "GCM projektszám",
   "Push_Notifications": "Leküldéses értesítések",
   "Push_production": "Produktív",
   "Push_request_content_from_server": "Üzenet tartalmának elrejtése az Apple és a Google elől (és az átjáró elől is, ha engedélyezve van)",

@@ -3295,8 +3295,6 @@
   "Push_enable_gateway_Description": "**警告：** 您需要接受註冊您的伺服器（設定精靈 > 組織資訊 > 註冊伺服器）和我們的隱私條款（設定精靈 > 雲端資訊 > 雲端服務隱私條款協議）才能啟用此設定並使用我們的閘道。即使這個設定在它上面**如果伺服器沒有註冊也不會**工作。",
   "Push_gateway": "閘道",
   "Push_gateway_description": "多行可以指定多個閘道位址",
-  "Push_gcm_api_key": "GCM API 金鑰",
-  "Push_gcm_project_number": "GCM 專案編號",
   "Push_Notifications": "推送通知",
   "Push_production": "生產",
   "Push_request_content_from_server": "接收時從伺服器取得完整的郵件內容",

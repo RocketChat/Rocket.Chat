@@ -1930,8 +1930,6 @@
   "Push_enable": "umožniť",
   "Push_enable_gateway": "Povoliť bránu",
   "Push_gateway": "brána",
-  "Push_gcm_api_key": "Kľúč rozhrania GCM API",
-  "Push_gcm_project_number": "Číslo projektu GCM",
   "Push_production": "výroba",
   "Push_show_message": "Zobraziť správu v oznámení",
   "Push_show_username_room": "Zobraziť kanál / skupinu / používateľské meno v upozornení",

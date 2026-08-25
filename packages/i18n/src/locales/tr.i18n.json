@@ -2306,8 +2306,6 @@
   "Push_enable": "Etkin",
   "Push_enable_gateway": "Ağ geçidi etkin",
   "Push_gateway": "Ağ geçidi",
-  "Push_gcm_api_key": "GCM API Anahtarı",
-  "Push_gcm_project_number": "GCM Proje Numarası",
   "Push_Notifications": "Anlık Bildirimler",
   "Push_production": "Üretim",
   "Push_Setting_Requires_Restart_Alert": "Bu değerin değiştirilmesi Rocket'in yeniden başlatılmasını gerektirir.",

@@ -1923,8 +1923,6 @@
   "Push_enable": "in staat te stel",
   "Push_enable_gateway": "Aktiveer Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API sleutel",
-  "Push_gcm_project_number": "GCM Projeknommer",
   "Push_production": "produksie",
   "Push_show_message": "Wys Boodskap in Kennisgewing",
   "Push_show_username_room": "Wys kanaal / groep / gebruikersnaam in kennisgewing",

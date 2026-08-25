@@ -3554,8 +3554,6 @@
   "Push_enable_gateway_Description": "Чтобы включить эту настройку и использовать наш шлюз, вам необходимо принять условия регистрации сервера (Setup Wizard - Organization Info - Register Server) и наши условия конфиденциальности (Setup Wizard - Cloud Info - Cloud Service Privacy Terms Agreement)",
   "Push_gateway": "Шлюз",
   "Push_gateway_description": "Несколько строк могут быть использованы для указания нескольких шлюзов",
-  "Push_gcm_api_key": "Ключ GCM API",
-  "Push_gcm_project_number": "GCM Project Number",
   "Push_Notifications": "Push-уведомления",
   "Push_production": "Продакшн",
   "Push_request_content_from_server": "Получение полного содержимого сообщения с сервера при приеме",
