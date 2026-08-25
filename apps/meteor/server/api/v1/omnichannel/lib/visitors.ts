@@ -150,11 +150,10 @@ export async function findVisitorsToAutocomplete({
 }: {
 	selector: {
 		exceptions?: ILivechatVisitor['_id'][];
-		conditions?: Record<string, unknown>;
 		term: string;
 	};
 }) {
-	const { exceptions = [], conditions = {} } = selector;
+	const { exceptions = [] } = selector;
 
 	const options: FindOptions<ILivechatVisitor> = {
 		projection: {
@@ -168,7 +167,7 @@ export async function findVisitorsToAutocomplete({
 		},
 	};
 
-	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
+	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, {}, options).toArray();
 	return {
 		items,
 	};
