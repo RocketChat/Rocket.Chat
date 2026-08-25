@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
 import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
-import { fileUploadIsValidContentType } from '../../../../lib/chats/restrictions';
+import { fileUploadIsValidContentType } from '../../../../lib/utils/restrictions';
 
 export type FileUploadModalProps = {
 	onClose: () => void;
