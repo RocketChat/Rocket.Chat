@@ -180,9 +180,24 @@ not actually acyclic. `NatsBroker` does not implement it. Instead:
   hosted in the same process with it.
 - Services that read configuration at boot now do it on first use, through
   `primeOnce` (`packages/tools/src/primeOnce.ts`), which memoises the result but
-  not a failure — so a service that came up before the settings service configures
-  itself on first use rather than staying on defaults. This applies to `Account`,
-  `OmnichannelTranscript` and `AbacService`.
+  not a failure — so a service that came up before the one it reads from
+  configures itself on first use rather than staying on defaults. This applies to
+  `Account`, `OmnichannelTranscript`, `AbacService` and ddp-streamer's
+  `Autoupdate`.
+
+Two lessons from getting this wrong, both worth applying to any service that is
+adapted next:
+
+- **Prime at the chokepoint, not at the entry point you happened to look at.**
+  `AbacService` was primed on its two decision paths, which left five room
+  attribute mutators reading a null `this.pdp` and answering 400
+  `error-pdp-unavailable`. Priming inside `ensurePdpAvailable`, which all of them
+  already call, covers them in one place.
+- **Never let a boot read gate the thing the service exists to do.** ddp-streamer
+  fetched client versions and then created its socket server inside the same
+  `try`, so one 503 left the process up but not listening, and every realtime
+  feature disappeared. Bring the server up first; load configuration last and
+  non fatally.
 
 `AbacService` keeps its `started()` as an eager attempt, because selecting the PDP
 is real initialisation rather than cache priming, and primes again on the decision
