@@ -1926,8 +1926,6 @@
   "Push_enable": "Enable",
   "Push_enable_gateway": "Gateway'i aktiv edin",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API Açarı",
-  "Push_gcm_project_number": "GCM Layihə nömrəsi",
   "Push_production": "İstehsalat",
   "Push_show_message": "Bildirişdə Mesajı göstərin",
   "Push_show_username_room": "Bildirişdə Kanal / Qrup / İstifadəçi Göstər",

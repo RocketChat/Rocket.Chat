@@ -3722,8 +3722,6 @@
   "Push_enable_gateway_Description": "**Ostrzeżenie:** aby włączyć to ustawienie i korzystać z naszej bramy, należy zaakceptować warunki rejestracji serwera (Kreator konfiguracji > Informacje o organizacji > Zarejestruj serwer) oraz warunki ochrony prywatności (Kreator konfiguracji > Informacje o chmurze > Umowa o ochronie prywatności usługi w chmurze). Nawet jeśli to ustawienie jest włączone, **nie będzie** działać, jeśli serwer nie jest zarejestrowany.",
   "Push_gateway": "Brama",
   "Push_gateway_description": "Wiele linii może być użytych do określenia wielu bramek",
-  "Push_gcm_api_key": "Klucz API GCM",
-  "Push_gcm_project_number": "Identyfikator projektu GCM",
   "Push_Notifications": "Notyfikacje Push",
   "Push_production": "Serwer produkcyjny",
   "Push_request_content_from_server": "Pobieranie pełnej treści wiadomości z serwera przy odbiorze",

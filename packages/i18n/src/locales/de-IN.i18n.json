@@ -2176,8 +2176,6 @@
   "Push_enable": "Aktivieren",
   "Push_enable_gateway": "Gateway aktivieren",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM-API-Key",
-  "Push_gcm_project_number": "GCM-Projektnummer",
   "Push_production": "Produktion",
   "Push_Setting_Requires_Restart_Alert": "Änderungen an dieser Einstellung erfordern einen Neustart von Rocket.Chat",
   "Push_show_message": "Nachricht in der Benachrichtigung anzeigen",

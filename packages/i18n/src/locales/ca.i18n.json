@@ -3286,8 +3286,6 @@
   "Push_enable_gateway_Description": "** Són els ** Ha d'acceptar per registrar el seu servidor (Assistent de configuració> Informació de l'organització> Registrar servidor) i els nostres termes de privacitat (Assistent de configuració> Informació del núvol> Acord de termes de privacitat de el servei en el núvol) per habilitar aquesta configuració i usar la nostra porta d'entrada. Fins i tot si aquesta configuració està activada,  **no ** funcionarà si el servidor no està registrat.",
   "Push_gateway": "Porta d'enllaç",
   "Push_gateway_description": "Es poden utilitzar diverses línies per especificar diverses portes d'enllaç",
-  "Push_gcm_api_key": "Clau API GCM (Key)",
-  "Push_gcm_project_number": "GCM Project Number",
   "Push_Notifications": "Notificaciones push",
   "Push_production": "Producció",
   "Push_request_content_from_server": "Obtenir el contingut complet del missatge del servidor en rebre'l",

@@ -1947,8 +1947,6 @@
   "Push_enable": "Ўключыць",
   "Push_enable_gateway": "ўключыць шлюз",
   "Push_gateway": "шлюз",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Нумар праекта",
   "Push_production": "вытворчасць",
   "Push_Setting_Requires_Restart_Alert": "Змяненне гэтага значэння патрабуе перазагрузкі Rocket.Chat.",
   "Push_show_message": "Паказаць паведамленне ў абвестцы",

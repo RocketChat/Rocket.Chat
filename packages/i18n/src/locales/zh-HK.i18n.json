@@ -1944,8 +1944,6 @@
   "Push_enable": "启用",
   "Push_enable_gateway": "启用网关",
   "Push_gateway": "网关",
-  "Push_gcm_api_key": "GCM API密钥",
-  "Push_gcm_project_number": "GCM项目编号",
   "Push_production": "生产",
   "Push_show_message": "在通知中显示消息",
   "Push_show_username_room": "在通知中显示频道/组/用户名",

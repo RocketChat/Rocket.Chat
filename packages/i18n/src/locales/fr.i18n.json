@@ -3400,8 +3400,6 @@
   "Push_enable_gateway_Description": "**Avertissement :** Vous devez accepter d'enregistrer votre serveur (Assistant de configuration > Informations sur l'organisation > Enregistrer le serveur) et nos conditions de confidentialité (Assistant de configuration > Informations sur le cloud > Accord sur les conditions de confidentialité du service cloud) pour activer ce paramètre et utiliser notre passerelle. Même si ce paramètre est activé, cela ne **fonctionnera pas** si le serveur n'est pas enregistré.",
   "Push_gateway": "Passerelle",
   "Push_gateway_description": "Plusieurs lignes peuvent être utilisées pour spécifier plusieurs passerelles",
-  "Push_gcm_api_key": "Clé d'API GCM",
-  "Push_gcm_project_number": "Numéro de projet GCM",
   "Push_Notifications": "Notifications push",
   "Push_production": "Production",
   "Push_request_content_from_server": "Récupérer le contenu complet du message du serveur à la réception",
