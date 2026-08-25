@@ -1,0 +1,23 @@
+packages/tools/src/index.ts
+  s_e6f7ddc27249bc::t_194ee19c919b87 18
+packages/tools/src/primeOnce.ts
+  s_e6f7ddc27249bc::t_194ee19c919b87 1-22
+packages/tools/src/primeOnce.spec.ts
+  s_e6f7ddc27249bc::t_be93488793101b 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a9aa557e80158b875341a5153ef27f0f8571cf9b",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
