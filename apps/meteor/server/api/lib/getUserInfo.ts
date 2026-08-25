@@ -55,14 +55,19 @@ const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners'
 const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar => {
 	const calendarSettings: IUserCalendar = {};
 
+	// In server mode the exchange URL is withheld, which leaves the desktop app with no sync target and
+	// keeps the two integrations from both writing to `calendar_event`. `Enabled` stays on so meeting
+	// reminders and the notification preference keep working, since those are downstream of ingestion.
+	const isLegacyMode = settings.get<string>('Outlook_Calendar_Mode') !== 'server';
+
 	const outlook = {
 		Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
-		Exchange_Url: settings.get<string>('Outlook_Calendar_Exchange_Url'),
+		Exchange_Url: isLegacyMode ? settings.get<string>('Outlook_Calendar_Exchange_Url') : '',
 		Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
 	};
 
 	const domain = email ? email.address.split('@').pop() : undefined;
-	const outlookCalendarUrlMapping = settings.get<string>('Outlook_Calendar_Url_Mapping');
+	const outlookCalendarUrlMapping = isLegacyMode ? settings.get<string>('Outlook_Calendar_Url_Mapping') : '';
 
 	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
 		try {
