@@ -224,7 +224,7 @@ describe('CreateChannelModal', () => {
 			render(<CreateChannelModal onClose={() => null} />, {
 				wrapper: mockAppRoot()
 					.withJohnDoe()
-					.withSetting('Federation_Matrix_enabled', false)
+					.withSetting('Federation_Service_Enabled', false)
 					.withEndpoint(
 						'GET',
 						'/v1/licenses.info',
@@ -248,7 +248,7 @@ describe('CreateChannelModal', () => {
 			render(<CreateChannelModal onClose={() => null} />, {
 				wrapper: mockAppRoot()
 					.withJohnDoe()
-					.withSetting('Federation_Matrix_enabled', true)
+					.withSetting('Federation_Service_Enabled', true)
 					.withEndpoint(
 						'GET',
 						'/v1/licenses.info',
@@ -272,7 +272,7 @@ describe('CreateChannelModal', () => {
 			render(<CreateChannelModal onClose={() => null} />, {
 				wrapper: mockAppRoot()
 					.withJohnDoe()
-					.withSetting('Federation_Matrix_enabled', true)
+					.withSetting('Federation_Service_Enabled', true)
 					.withPermission('access-federation')
 					.withEndpoint(
 						'GET',
