@@ -422,10 +422,17 @@ API.v1.post(
 			200: ringResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		const { callId, users } = this.bodyParams;
+
+		// The same permission `video-conference.start` demands before ringing anyone — having access to a
+		// conference must not be a way around it.
+		if (!(await hasPermissionAsync(this.userId, 'videoconf-ring-users'))) {
+			return API.v1.forbidden('Not allowed');
+		}
 
 		const conference = await loadAccessibleConference(callId, this.userId);
 		if (!conference) {
@@ -460,7 +467,11 @@ API.v1.post(
 
 		// Registers the users as conference members — it deliberately does not put them in any room. Being a
 		// member authorizes joining the call; whether they can read the chat is surfaced separately.
-		const added = await VideoConf.addMembers(conference.userId, callId, users, { ring: ring ?? true });
+		// Adding is open to anyone with access to the conference; the ring that usually accompanies it needs the
+		// same permission `video-conference.start` demands, and degrades silently without it — same as `start`.
+		const added = await VideoConf.addMembers(conference.userId, callId, users, {
+			ring: (ring ?? true) && (await hasPermissionAsync(this.userId, 'videoconf-ring-users')),
+		});
 
 		return API.v1.success({ added });
 	},
@@ -476,6 +487,7 @@ API.v1.post(
 			200: cancelResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -487,8 +499,16 @@ API.v1.post(
 		}
 
 		// Whether this particular user may *name* the call is the service's call to make — access is only the
-		// question of whether they may be here at all.
-		await VideoConf.renameCall(conference.userId, callId, title);
+		// question of whether they may be here at all. Its refusal is an authorization answer, not a failure,
+		// so it maps to 403 rather than surfacing as an internal error.
+		try {
+			await VideoConf.renameCall(conference.userId, callId, title);
+		} catch (e) {
+			if (e instanceof Error && e.message === 'error-not-allowed') {
+				return API.v1.forbidden('Not allowed');
+			}
+			throw e;
+		}
 
 		return API.v1.success();
 	},
@@ -504,6 +524,7 @@ API.v1.post(
 			200: shareChatResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -514,9 +535,16 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const rid = await VideoConf.shareChatWithMembers(conference.userId, callId, mode);
-
-		return API.v1.success({ rid });
+		// The service refuses a mode the room can't do, and discussion creation the caller isn't permitted —
+		// authorization answers, not failures, so they map to 403 rather than surfacing as internal errors.
+		try {
+			return API.v1.success({ rid: await VideoConf.shareChatWithMembers(conference.userId, callId, mode) });
+		} catch (e) {
+			if (e instanceof Error && e.message === 'error-not-allowed') {
+				return API.v1.forbidden('Not allowed');
+			}
+			throw e;
+		}
 	},
 );
 
