@@ -158,8 +158,22 @@ export class NatsBroker implements IBroker {
 		}
 
 		await this.registerService(instance);
-		await instance.created();
-		await instance.started();
+		await this.runLifecycleHook(instance, 'created');
+		await this.runLifecycleHook(instance, 'started');
+	}
+
+	/**
+	 * Endpoints are registered before any hook runs, so a service whose `created`
+	 * or `started` throws still answers - with whatever defaults it holds. Letting
+	 * the rejection escape would instead reject `api.start()` and take down the
+	 * whole process, along with every other service hosted in it.
+	 */
+	private async runLifecycleHook(instance: IServiceClass, hook: 'created' | 'started'): Promise<void> {
+		try {
+			await instance[hook]();
+		} catch (err) {
+			console.error(`Service ${instance.getName()} failed to run ${hook}()`, err);
+		}
 	}
 
 	private async registerService(instance: IServiceClass): Promise<void> {
@@ -375,11 +389,11 @@ export class NatsBroker implements IBroker {
 		}
 
 		for (const instance of pending) {
-			await instance.created();
+			await this.runLifecycleHook(instance, 'created');
 		}
 
 		for (const instance of pending) {
-			await instance.started();
+			await this.runLifecycleHook(instance, 'started');
 		}
 
 		console.log('NatsBroker started successfully.');

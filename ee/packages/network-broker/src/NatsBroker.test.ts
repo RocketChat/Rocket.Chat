@@ -24,6 +24,18 @@ class Accounts extends ServiceClass {
 	}
 }
 
+class Broken extends ServiceClass {
+	protected name = 'broken';
+
+	async ping(): Promise<string> {
+		return 'pong';
+	}
+
+	override async started(): Promise<void> {
+		throw new Error('settings unreachable');
+	}
+}
+
 class DeviceManagement extends ServiceClass {
 	protected name = 'device-management';
 
@@ -173,6 +185,60 @@ describe('NatsBroker discovery', () => {
 
 		expect([...nc.endpoints.keys()]).toContain('node.host_example_com-1.accounts.login');
 		await expect(broker.nodeList()).resolves.toEqual([{ id: 'host_example_com-1', available: true, local: true }]);
+	});
+});
+
+describe('NatsBroker lifecycle hooks', () => {
+	it('should keep the broker up when a service fails to start', async () => {
+		const nc = new FakeNatsConnection();
+		(connect as jest.Mock).mockResolvedValue(nc);
+		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		const broker = new NatsBroker({}, 'node-a');
+		const broken = new Broken();
+		const accounts = new Accounts();
+
+		await broker.createService(broken);
+		await broker.createService(accounts);
+		running.push({ broker, services: [broken, accounts] });
+
+		await expect(broker.start()).resolves.toBeUndefined();
+		expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('broken'), expect.any(Error));
+
+		consoleError.mockRestore();
+	});
+
+	it('should still answer calls to a service that failed to start', async () => {
+		const nc = new FakeNatsConnection();
+		(connect as jest.Mock).mockResolvedValue(nc);
+		jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		const broker = new NatsBroker({}, 'node-a');
+		const broken = new Broken();
+
+		await broker.createService(broken);
+		running.push({ broker, services: [broken] });
+		await broker.start();
+
+		await expect(broker.call('broken.ping', [])).resolves.toBe('pong');
+	});
+
+	it('should not stop the remaining services from starting', async () => {
+		const nc = new FakeNatsConnection();
+		(connect as jest.Mock).mockResolvedValue(nc);
+		jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		const broker = new NatsBroker({}, 'node-a');
+		const broken = new Broken();
+		const accounts = new Accounts();
+		const started = jest.spyOn(accounts, 'started');
+
+		await broker.createService(broken);
+		await broker.createService(accounts);
+		running.push({ broker, services: [broken, accounts] });
+		await broker.start();
+
+		expect(started).toHaveBeenCalled();
 	});
 });
 
