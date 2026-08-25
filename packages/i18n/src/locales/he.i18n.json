@@ -1065,8 +1065,6 @@
   "Push_enable": "אפשר",
   "Push_enable_gateway": "הפעלת שער גישה",
   "Push_gateway": "שער גישה",
-  "Push_gcm_api_key": "מפתח API של GCM",
-  "Push_gcm_project_number": "מספר פרויקט ב-GCM",
   "Push_production": "סביבת ייצור",
   "Push_show_message": "הצג הודעה בהתראה",
   "Push_show_username_room": "ערוץ הצג / קבוצה / username בהודעה",
