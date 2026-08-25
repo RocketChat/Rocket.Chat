@@ -49,7 +49,12 @@ import { MongoInternals } from 'meteor/mongo';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { conferenceNameFor } from '../../../lib/videoConference/conferenceName';
-import { availabilityErrors, CALL_FACES_SHOWN, shouldRingVideoConference } from '../../../lib/videoConference/constants';
+import {
+	availabilityErrors,
+	CALL_FACES_SHOWN,
+	EMPTY_CALL_GRACE_MS,
+	shouldRingVideoConference,
+} from '../../../lib/videoConference/constants';
 import { isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -79,12 +84,6 @@ import { settings } from '../../settings';
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
-
-/**
- * How long a conference is kept alive after the last participant leaves, before it is ended.
- * Long enough for a reload to land and cancel it, short enough that a call really over doesn't linger.
- */
-const EMPTY_CALL_GRACE_MS = 10_000;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -1555,7 +1554,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyConferenceUpdate(callId);
 
 		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
-			await this.notifyUsersOfRoom(call.rid, uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+			// Only the leaver's own devices are told 'end', so their other windows stop showing a call they are no
+			// longer in. Never the room: one member leaving is not the call ending — a reload fires a leave too —
+			// and a room-wide 'end' from here would dismiss everyone else's ringing popup and silence the caller's
+			// outgoing ring while the call still runs. The room-wide 'end' belongs to `endCall`, which the grace
+			// period below reaches once the call has actually emptied.
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
 
 			// Out of the call, so back to whatever status they had before it. Only embedded joins claim busy,
@@ -1651,7 +1654,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 				// A provider that can say who is in its room is asked first, and its answer renews leases the same
 				// way a client's heartbeat does. Silence is not absence: `undefined` leaves the leases as they are.
-				const present = await videoConfPresence.getProbe(call.providerName)?.(call);
+				// A probe that fails is silence too — per the probe contract it should already answer `undefined`,
+				// but an unreachable provider must not stop this call's leases being judged on their own evidence.
+				const present = await videoConfPresence
+					.getProbe(call.providerName)?.(call)
+					.catch((err) => {
+						logger.warn({ msg: 'Video conference presence probe failed', callId: call._id, providerName: call.providerName, err });
+						return undefined;
+					});
 				const users = present ? call.users.map((user) => (present.includes(user._id) ? { ...user, lastSeenAt: now } : user)) : call.users;
 
 				if (present?.length) {
