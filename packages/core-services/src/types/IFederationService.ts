@@ -1,29 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
-export type FederationConfigurationStatus = {
-	appservice: {
-		error?: string;
-		ok: boolean;
-		roundTrip: {
-			durationMs: number;
-		};
-	};
-
-	externalReachability: {
-		error?: string;
-		ok: boolean;
-	};
-};
-
 interface IFederationBaseService {
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
-
-	configurationStatus(): Promise<FederationConfigurationStatus>;
-
-	markConfigurationValid(): Promise<void>;
-
-	markConfigurationInvalid(): Promise<void>;
 
 	beforeCreateRoom(room: Partial<IRoom>): Promise<void>;
 }
