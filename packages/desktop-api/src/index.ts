@@ -67,10 +67,3 @@ export interface IRocketChatDesktop {
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
 }
-
-export interface IVideoCallWindow {
-	openInMainWindow: (path: string) => void;
-	close: () => void;
-	requestScreenSharing: () => Promise<string | null>;
-	getAuthCredentials: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
-}
