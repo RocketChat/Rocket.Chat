@@ -1,9 +1,14 @@
 # SlackBridge Manual Test Plan
 
-The SlackBridge is a bi-directional bridge between one Slack workspace and one Rocket.Chat
-workspace. It has no automated end-to-end coverage: exercising it requires a real Slack
-workspace, a real bot installation, and a human watching both sides at once. This document is
-the checklist to walk through when touching the bridge.
+The SlackBridge is a bi-directional bridge between a Rocket.Chat workspace and one or more Slack
+workspaces — each token line in the SlackBridge settings gets its own connection and adapter. It
+has no automated end-to-end coverage: exercising it requires a real Slack workspace, a real bot
+installation, and a human watching both sides at once. This document is the checklist to walk
+through when touching the bridge.
+
+**Scope:** the matrices below assume a **single** bridged Slack workspace — configure exactly one
+token per setting while running them. Bridging several workspaces at once is a supported
+configuration that this plan does not cover; see [Coverage gaps](#coverage-gaps).
 
 Code lives in [apps/meteor/server/bridges/slack/](../../apps/meteor/server/bridges/slack/) —
 `SlackAdapter.ts` handles Slack → Rocket.Chat, `RocketAdapter.ts` handles Rocket.Chat → Slack
@@ -79,11 +84,24 @@ Repeat on a channel without rocketbot: edits stay local on both sides.
 
 ## Deleting messages
 
+Case 3 needs care about _who_ deletes. A Rocket.Chat-origin message is authored on Slack by
+rocketbot, and Slack offers no delete affordance for an app's message to a regular member, so
+pick one of:
+
+- Delete it from the Slack UI as a **workspace owner or admin** — they can delete any message,
+  including an app's.
+- Call `chat.delete` with the very token the bridge is configured with, so the caller is
+  rocketbot itself: `SlackBridge_APIToken` in legacy/RTM mode, `SlackBridge_BotToken` in
+  app/Socket Mode. Any other token fails with `cant_delete_message`, which is case 4's failure,
+  not case 3's.
+
+Both routes emit the same `message_deleted` event, so either is a valid way to run the case.
+
 | #   | Origin      | Action performed on | Expected result                                                                                                                             |
 | --- | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Slack       | Slack               | Deletion propagates to Rocket.Chat.                                                                                                         |
 | 2   | Rocket.Chat | Rocket.Chat         | Deletion propagates to Slack.                                                                                                               |
-| 3   | Rocket.Chat | Slack               | Deletion propagates to Rocket.Chat.                                                                                                         |
+| 3   | Rocket.Chat | Slack               | Deletion propagates to Rocket.Chat — deleted as a workspace admin or via `chat.delete` with rocketbot's own token, per the note above.      |
 | 4   | Slack       | Rocket.Chat         | **Expected failure.** The message is deleted in Rocket.Chat only; Slack keeps it, since `chat.delete` cannot remove another user's message. |
 
 Repeat on a channel without rocketbot: deletions stay local on both sides.
@@ -154,4 +172,4 @@ cover, and it is worth checking manually when relevant:
 - Private channels and DMs.
 - `SlackBridge_ExcludeBotnames` filtering.
 - The **Remove Channel Links** admin action (`SlackBridge_Remove_Channel_Links`).
-- Multiple Slack workspaces bridged at once.
+- Multiple Slack workspaces bridged at once (one token per line in each token setting).
