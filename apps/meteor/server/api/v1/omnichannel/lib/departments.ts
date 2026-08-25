@@ -25,8 +25,7 @@ type FindDepartmentByIdParams = {
 type FindDepartmentToAutocompleteParams = {
 	uid: string;
 	selector: {
-		exceptions: string[];
-		conditions: Filter<ILivechatDepartment>;
+		exceptions?: string[];
 		term: string;
 	};
 	onlyMyDepartments?: boolean;
@@ -143,7 +142,7 @@ export async function findDepartmentsToAutocomplete({
 	showArchived = false,
 }: FindDepartmentToAutocompleteParams): Promise<{ items: Pick<ILivechatDepartment, '_id' | 'name'>[] }> {
 	const { exceptions = [] } = selector;
-	let { conditions = {} } = selector;
+	let conditions: Filter<ILivechatDepartment> = {};
 
 	if (onlyMyDepartments) {
 		conditions = await applyDepartmentRestrictions(conditions, uid);
