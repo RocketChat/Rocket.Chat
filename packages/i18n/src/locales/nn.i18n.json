@@ -2006,7 +2006,6 @@
   "Federation_Matrix_losing_privileges_warning": "Du vil ikke kunne angre denne handlingen, siden du nedgraderer deg selv. Hvis du er den siste privilegerte brukeren, vil du ikke kunne gjenvinne dette privilegiet. Ønsker du fortsatt å utføre handlingen?",
   "Federation_Matrix_not_allowed_to_change_moderator": "Du har ikke lov til å endre moderator",
   "Federation_Matrix_not_allowed_to_change_owner": "Du har ikke lov til å endre eier",
-  "Federation_Matrix_serve_well_known_Description": "Betjen /.well-known/matrix/server og /.well-known/matrix/client direkte fra Rocket.Chat i stedet for revers proxy for forening",
   "Federation_Public_key": "Offentlig nøkkel",
   "Federation_Search_federated_rooms": "Søk i forente rom",
   "Federation_is_currently_disabled_on_this_workspace": "Forening er for øyeblikket deaktivert på dette arbeidsområdet",

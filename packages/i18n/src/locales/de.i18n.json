@@ -2244,7 +2244,6 @@
   "Federation_Matrix_losing_privileges_warning": "Sie können diese Aktion nicht rückgängig machen, da Sie sich selbst herabstufen. Wenn Sie der letzte Benutzer mit diesen Rechten sind, können Sie sie nicht wiedererlangen. Möchten Sie trotzdem fortfahren?",
   "Federation_Matrix_not_allowed_to_change_moderator": "Sie dürfen den Moderator nicht wechseln",
   "Federation_Matrix_not_allowed_to_change_owner": "Sie dürfen den Besitzer nicht wechseln",
-  "Federation_Matrix_serve_well_known_Description": "/.well-known/matrix/server und /.well-known/matrix/client für die Federation direkt aus Rocket.Chat heraus bereitstellen statt über einen Reverse-Proxy",
   "Federation_Public_key": "Öffentlicher Schüssel",
   "Federation_Search_federated_rooms": "Föderierte Räume durchsuchen",
   "Federation_is_currently_disabled_on_this_workspace": "Federation ist in diesem Arbeitsbereich derzeit deaktiviert",

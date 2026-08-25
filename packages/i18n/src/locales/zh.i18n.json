@@ -2169,7 +2169,6 @@
   "Federation_Matrix_losing_privileges_warning": "你正在降级自己，此操作无法撤销。如果你是最后一个有权限的用户，将无法恢复权限。仍要继续吗？",
   "Federation_Matrix_not_allowed_to_change_moderator": "无权更改版主",
   "Federation_Matrix_not_allowed_to_change_owner": "无权更改所有者",
-  "Federation_Matrix_serve_well_known_Description": "由 Rocket.Chat 直接提供 /.well-known/matrix/server 和 /.well-known/matrix/client，而非通过反向代理提供联邦服务",
   "Federation_Public_key": "公钥",
   "Federation_Search_federated_rooms": "搜索联邦房间",
   "Federation_is_currently_disabled_on_this_workspace": "此工作区当前未启用联邦",

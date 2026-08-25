@@ -2226,7 +2226,6 @@
   "Federation_Matrix_losing_privileges_warning": "Du kommer inte att kunna ångra denna åtgärd eftersom du degraderar dig själv. Om du är den sista privilegierade användaren kan du inte återfå dessa privilegier. Vill du fortsätta ändå?",
   "Federation_Matrix_not_allowed_to_change_moderator": "Du får inte ändra moderatorn",
   "Federation_Matrix_not_allowed_to_change_owner": "Du får inte byta ägare",
-  "Federation_Matrix_serve_well_known_Description": "Erbjud /.well-known/matrix/server och /.well-known/matrix/client direkt från Rocket.chat istället för omvänd proxy för federation",
   "Federation_Public_key": "Öppen nyckel",
   "Federation_Search_federated_rooms": "Sök federerade rum",
   "Federation_is_currently_disabled_on_this_workspace": "Federation är för närvarande inaktiverat på den här arbetsytan",
