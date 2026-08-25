@@ -1,6 +1,6 @@
 import { ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
-import { getLoginExpirationInDays } from '@rocket.chat/tools';
+import { getLoginExpirationInDays, primeOnce } from '@rocket.chat/tools';
 
 import { loginViaResume } from './lib/loginViaResume';
 import { removeSession } from './lib/removeSession';
@@ -8,7 +8,19 @@ import { removeSession } from './lib/removeSession';
 export class Account extends ServiceClass implements IAccount {
 	protected name = 'accounts';
 
-	private loginExpiration = 90;
+	private loginExpiration?: number;
+
+	/**
+	 * Read on first login instead of in `started()`: the settings service lives in
+	 * another process and is not necessarily reachable while this one boots, and an
+	 * expiration that quietly fell back to a default would keep sessions alive past
+	 * their configured lifetime.
+	 */
+	private primeLoginExpiration = primeOnce(async () => {
+		this.loginExpiration = getLoginExpirationInDays(await Settings.get<number>('Accounts_LoginExpiration'));
+
+		return this.loginExpiration;
+	});
 
 	constructor() {
 		super();
@@ -22,7 +34,7 @@ export class Account extends ServiceClass implements IAccount {
 
 	async login({ resume }: { resume: string }): Promise<false | ILoginResult> {
 		if (resume) {
-			return loginViaResume(resume, this.loginExpiration);
+			return loginViaResume(resume, this.loginExpiration ?? (await this.primeLoginExpiration()));
 		}
 
 		return false;
@@ -30,11 +42,5 @@ export class Account extends ServiceClass implements IAccount {
 
 	async logout({ userId, token }: { userId: string; token: string }): Promise<void> {
 		return removeSession(userId, token);
-	}
-
-	override async started(): Promise<void> {
-		const expiry = await Settings.get<number>('Accounts_LoginExpiration');
-
-		this.loginExpiration = getLoginExpirationInDays(expiry);
 	}
 }
