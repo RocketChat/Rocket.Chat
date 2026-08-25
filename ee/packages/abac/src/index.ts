@@ -194,6 +194,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async computeEffectiveStoreType(): Promise<AbacAttributeStoreType> {
+		await this.primeConfig();
+
 		const ctx: AttributeStoreSelectionContext = {
 			abacEnabled: this.abacEnabled === true,
 			pdpType: this.pdpTypeSetting,
@@ -834,7 +836,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdpType: AbacPdpType = 'local';
 
+	/**
+	 * The chokepoint for every method that needs a PDP. It primes first because an
+	 * unconfigured service has no `this.pdp` at all, and would report the PDP as
+	 * unavailable rather than as not yet configured.
+	 */
 	private async ensurePdpAvailable(): Promise<void> {
+		await this.primeConfig();
+
 		if (!(await this.pdp?.isAvailable())) {
 			throw new PdpUnavailableError();
 		}
@@ -902,6 +911,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
+		await this.primeConfig();
+
 		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length || !this.pdp) {
 			return;
 		}
@@ -927,6 +938,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async getPDPHealth(): Promise<void> {
+		await this.primeConfig();
+
 		if (!this.pdp) {
 			logger.warn({ msg: 'ABAC PDP health check: no PDP configured' });
 			throw new PdpHealthCheckError('ABAC_PDP_Health_No_PDP');
@@ -936,6 +949,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async evaluateRoomMembership(): Promise<void> {
+		await this.primeConfig();
+
 		if (!this.pdp || !(await this.pdp.isAvailable())) {
 			return;
 		}
@@ -979,6 +994,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async reevaluateUsers(identifiers: AbacUserIdentifiers): Promise<void> {
+		await this.primeConfig();
+
 		if (!this.pdp || !(await this.pdp.isAvailable())) {
 			return;
 		}
