@@ -66,8 +66,12 @@ const describeTask =
 /**
  * JavaScript objects hoist integer-like keys to the front, so a resource file cannot hold one anywhere else;
  * the expected order has to match what `JSON.parse` yields, otherwise the sorted file never lints clean.
+ * Only canonical array indices in `[0, 2 ** 32 - 2]` are hoisted; `4294967295` and above stay in place.
  */
-const isIntegerLikeKey = (key: string) => String(Number(key) >>> 0) === key;
+const isIntegerLikeKey = (key: string) => {
+	const asNumber = Number(key);
+	return Number.isInteger(asNumber) && asNumber >= 0 && asNumber <= 2 ** 32 - 2 && String(asNumber) === key;
+};
 
 const compareBaseKeys = (a: string, b: string) => {
 	const aIsIntegerLike = isIntegerLikeKey(a);
