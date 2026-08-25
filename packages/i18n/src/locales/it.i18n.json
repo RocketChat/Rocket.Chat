@@ -2427,8 +2427,6 @@
   "Push_enable": "Attivo",
   "Push_enable_gateway": "Abilita Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Numero Progetto",
   "Push_Notifications": "Notifiche Push",
   "Push_production": "Produzione",
   "Push_show_message": "Mostra messaggio di notifica",

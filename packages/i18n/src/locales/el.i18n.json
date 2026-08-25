@@ -1927,8 +1927,6 @@
   "Push_enable": "Ενεργοποίηση",
   "Push_enable_gateway": "Ενεργοποίηση Πύλη",
   "Push_gateway": "πύλη",
-  "Push_gcm_api_key": "GCM API Key",
-  "Push_gcm_project_number": "GCM Αριθμός Έργου",
   "Push_production": "Παραγωγή",
   "Push_show_message": "Εμφάνιση μηνύματος στην κοινοποίηση",
   "Push_show_username_room": "Εμφάνιση καναλιού / ομάδα / ψευδώνυμο στην κοινοποίηση",

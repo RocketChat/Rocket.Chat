@@ -3402,8 +3402,6 @@
   "Push_enable_gateway_Description": "**Waarschuwing:** Je moet akkoord gaan met het registreren van jouw server (Installatiewizard > Organisatie info > Server registreren) en onze privacyvoorwaarden (Installatiewizard > Cloud-informatie > Overeenkomst voor privacyvoorwaarden voor cloudservice) om deze instelling in te schakelen en onze gateway te gebruiken. Zelfs als deze instelling ingeschakeld is, **zal het niet** werken indien de server niet geregistreerd is.",
   "Push_gateway": "Gateway",
   "Push_gateway_description": "Meerdere lijnen kunnen worden gebruikt om meerdere gateways te specificeren",
-  "Push_gcm_api_key": "GCM API-sleutel",
-  "Push_gcm_project_number": "GCM projectnummer",
   "Push_Notifications": "Push-meldingen",
   "Push_production": "Productie",
   "Push_request_content_from_server": "Haal bij ontvangst de volledige berichtinhoud van de server op",
