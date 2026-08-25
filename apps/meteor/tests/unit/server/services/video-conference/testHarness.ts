@@ -1,7 +1,23 @@
-import type { IGroupVideoConference, IDirectVideoConference, IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import type {
+	IGroupVideoConference,
+	IDirectVideoConference,
+	IVideoConferenceUser,
+	VideoConference,
+	VideoConferenceCapabilities,
+} from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+/**
+ * What `videoConfProviders.getProviderCapabilities` answers, for every service loaded through this harness.
+ *
+ * The service gates most of its join-side lifecycle on the provider being embedded, so a spec has to be able to
+ * play both kinds. The stub reads this holder at call time: a spec flips `current` in a `beforeEach` (and back
+ * in an `afterEach`, since the loaded module is shared across files) rather than re-loading the service.
+ * `undefined` — no capabilities — is the default, and is what a non-embedded provider looks like.
+ */
+export const providerCapabilities: { current: VideoConferenceCapabilities | undefined } = { current: undefined };
 
 // The stubs below never vary between specs in this directory — they satisfy imports the service file needs
 // at load time but that no test here actually exercises. Kept in one place so a new spec doesn't have to
@@ -39,11 +55,14 @@ export const commonServiceStubs = {
 	'../../../lib/videoConference/chatAccess': { resolveChatAccessMode: () => undefined },
 	'../../database/readSecondaryPreferred': { readSecondaryPreferred: () => undefined },
 	'../../lib/authorization/canAccessRoom': { canAccessRoomIdAsync: async () => true },
+	'../../lib/authorization/hasPermission': { hasAtLeastOnePermissionAsync: async () => true },
 	'../../lib/callbacks': { callbacks: { runAsync: () => undefined, run: () => undefined } },
 	'../../lib/i18n': { i18n: { t: (s: string) => s } },
 	'../../lib/isRoomCompatibleWithVideoConfRinging': { isRoomCompatibleWithVideoConfRinging: () => true },
 	'../../lib/media/assets': { RocketChatAssets: { getURL: () => '' } },
 	'../../lib/messages/sendMessage': { sendMessage: async () => ({ _id: 'msg1' }) },
+	// Loaded for real this would drag in `server/settings` (top-level await), which tsx-in-CJS cannot transform.
+	'../../lib/messaging/threads/functions': { follow: async () => undefined },
 	'../../lib/metrics/lib/metrics': {
 		metrics: { notificationsSent: { inc: () => undefined }, notificationsSentTotal: { inc: () => undefined } },
 	},
@@ -62,7 +81,7 @@ export const commonServiceStubs = {
 			hasAnyProvider: () => false,
 			getActiveProvider: () => undefined,
 			isProviderAvailable: () => false,
-			getProviderCapabilities: () => undefined,
+			getProviderCapabilities: () => providerCapabilities.current,
 			getProviderAppId: () => undefined,
 			getProviderList: () => [],
 		},
