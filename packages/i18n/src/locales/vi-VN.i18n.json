@@ -2023,8 +2023,6 @@
   "Push_enable": "Bật",
   "Push_enable_gateway": "Bật Gateway",
   "Push_gateway": "Gateway",
-  "Push_gcm_api_key": "Khóa API GCM",
-  "Push_gcm_project_number": "Số dự án GCM",
   "Push_production": "Sản xuất",
   "Push_show_message": "Hiển thị thông báo trong thông báo",
   "Push_show_username_room": "Hiển thị Kênh / Nhóm / Tên Người dùng trong Thông báo",
