@@ -274,7 +274,9 @@ API.v1.post(
 		// they're rendered inline rather than opened as an external popup.
 		// Include rid so the client can route the join into its embedded
 		// provider context without an extra round-trip to look it up.
-		if (!url && !call.providerName) {
+		// For every other provider the url is the whole point of joining,
+		// so coming back without one is a failure.
+		if (!url && !videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			return API.v1.failure('failed-to-get-url');
 		}
 
