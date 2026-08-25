@@ -1,0 +1,19 @@
+ee/apps/account-service/src/Account.ts
+  s_e6f7ddc27249bc::t_6529570993ef60 3,11-23,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ce86a6f74e4ae7b51c0e6b0fecffd608b1cb1772",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
