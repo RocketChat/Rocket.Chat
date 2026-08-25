@@ -2,6 +2,7 @@
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
+		"rootDir": "../../..",
 		"outDir": "./dist",
 		"types": ["jest", "node"],
 
@@ -10,7 +11,6 @@
 		   copy of mongodb. Without pinning, those sources resolve `mongodb` to
 		   apps/meteor/node_modules while @rocket.chat/models resolves it to the root
 		   copy, and the two identical-but-distinct instances fail to unify. */
-		"baseUrl": ".",
 		"paths": {
 			"mongodb": ["../../../node_modules/mongodb"]
 		}

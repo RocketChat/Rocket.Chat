@@ -23,7 +23,7 @@
 		"@types/passport": "~1.0.17",
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

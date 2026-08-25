@@ -57,7 +57,7 @@
 		"eslint": "~9.39.5",
 		"react": "~19.2.8",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../../package.json"
