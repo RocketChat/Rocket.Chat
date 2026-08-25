@@ -28,6 +28,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/api-endpoint-migration.md](docs/api-endpoint-migration.md) — migrating `API.v1.addRoute()` to the validated `API.v1.get()`/`.post()`/… pattern
 - [docs/ajv-instances.md](docs/ajv-instances.md) — when to use `ajv` vs `ajvQuery` in `@rocket.chat/rest-typings`
 - [docs/apps-engine-migration.md](docs/apps-engine-migration.md) — phased extraction of apps execution into a microservice
+- [docs/nats-broker.md](docs/nats-broker.md) — NATS as the service transport: subjects, how it differs from the Moleculer broker, and the calls that only work because both ends share a process
 
 ### Build and tooling
 
