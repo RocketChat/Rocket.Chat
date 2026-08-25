@@ -1,0 +1,13 @@
+apps/meteor/tests/unit/server/lib/users/setUsername.spec.ts
+  ai_agent 31,83,269-270,281
+apps/meteor/server/lib/users/setUsername.ts
+  ai_agent 152
+apps/meteor/server/lib/callbacks.ts
+  ai_agent 100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b21a7469435cb51e708b688eacbd0c50a79b1bad",
+  "prompts": {}
+}
