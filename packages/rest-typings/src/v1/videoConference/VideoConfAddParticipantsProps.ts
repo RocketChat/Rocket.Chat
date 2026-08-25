@@ -5,6 +5,12 @@ import { ajv } from '../Ajv';
 
 export type VideoConfAddParticipantsProps = {
 	callId: string;
+	/**
+	 * The *usernames* of the people to add — not user ids. Adding someone can end with them invited into the
+	 * room the chat lives in, and that machinery speaks usernames; `video-conference.ring` speaks ids instead,
+	 * because it targets people who are already conference members. The endpoint answers with the user *ids*
+	 * of the members it actually added.
+	 */
 	users: string[];
 	/**
 	 * Whether to ring the people being added. Defaults to ringing: someone added to a call in progress is being
@@ -22,6 +28,7 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 		},
 		users: {
 			type: 'array',
+			description: 'Usernames of the people to add — not user ids. The endpoint returns the user ids of the members actually added.',
 			items: {
 				type: 'string',
 			},
