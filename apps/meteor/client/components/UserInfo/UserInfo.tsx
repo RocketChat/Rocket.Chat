@@ -144,7 +144,7 @@ const UserInfo = ({
 							text && (
 								<InfoPanelField key={label}>
 									<InfoPanelLabel>{label}</InfoPanelLabel>
-									<UserInfoCopyableText text={text} />
+									<UserInfoCopyableText text={text} withTruncatedText={false} wordBreak='break-word' />
 								</InfoPanelField>
 							),
 					)}
