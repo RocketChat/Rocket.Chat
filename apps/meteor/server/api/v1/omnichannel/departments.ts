@@ -18,7 +18,6 @@ import {
 	findArchivedDepartments,
 } from './lib/departments';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import {
 	saveDepartment,
 	archiveDepartment,
@@ -255,16 +254,12 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
-			const parsedSelector = JSON.parse(selector);
-
-			if (parsedSelector.conditions && Object.keys(parsedSelector.conditions).length > 0) {
-				apiDeprecationLogger.parameter(this.route, 'conditions', '9.0.0', this.response);
-			}
+			const { term, exceptions } = JSON.parse(selector);
 
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
 					uid: this.userId,
-					selector: parsedSelector,
+					selector: { term, exceptions },
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					showArchived: showArchived === 'true',
 				}),
