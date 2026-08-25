@@ -168,7 +168,7 @@ describe('VideoConferenceRaw.setUserLeftById', () => {
 
 		const [query, update, options] = updateOne.mock.calls[0];
 		expect(query).toEqual({ _id: 'call-1' });
-		expect(update).toEqual({ $set: { 'users.$[user].leftAt': leftAt } });
+		expect(update.$set).toEqual({ 'users.$[user].leftAt': leftAt });
 		expect(options).toEqual({ arrayFilters: [{ 'user._id': 'user-1' }] });
 	});
 
@@ -193,6 +193,38 @@ describe('VideoConferenceRaw.setUserLeftById', () => {
 
 		await model.setUserLeftById('call-1', 'user-1', new Date());
 		expect(Object.keys(updateOne.mock.calls[1][1].$set)).not.toContain('users.$[user].leftReason');
+	});
+
+	// A reported departure has to erase a leftover inferred one, or a stale heartbeat could still revive it:
+	// `renewUserPresenceById` treats an inferred reason as permission to undo the departure.
+	it('should clear a previously inferred reason when the departure is reported', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setUserLeftById('call-1', 'user-1', new Date());
+		expect(updateOne.mock.calls[0][1].$unset).toEqual({ 'users.$[user].leftReason': 1 });
+
+		await model.setUserLeftById('call-1', 'user-1', new Date(), 'timeout');
+		expect(updateOne.mock.calls[1][1]).not.toHaveProperty('$unset');
+	});
+});
+
+describe('VideoConferenceRaw.addEmbeddedParticipant', () => {
+	// Two writes ($pull then $push) let two concurrent joins interleave into a duplicate entry; a single
+	// pipeline update replaces-and-appends atomically.
+	it('should drop any prior entry and append the fresh one in one write', async () => {
+		const { model, updateOne } = setupModel();
+		const joinedAt = new Date('2026-08-01T10:00:00Z');
+
+		await model.addEmbeddedParticipant('call-1', { id: 'user-1', username: 'user.one', displayName: 'User One', joinedAt });
+
+		expect(updateOne).toHaveBeenCalledTimes(1);
+		const [query, update] = updateOne.mock.calls[0];
+		expect(query).toEqual({ _id: 'call-1' });
+		// A pipeline update, which is what makes the replace-and-append a single atomic step.
+		expect(Array.isArray(update)).toBe(true);
+		expect(update[0].$set.participants.$concatArrays[1]).toEqual({
+			$literal: [{ id: 'user-1', username: 'user.one', displayName: 'User One', joinedAt }],
+		});
 	});
 });
 

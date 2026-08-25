@@ -36,9 +36,16 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// `createdAt` is part of the key so the `$or: [{ rid }, { discussionRid }]` listing below can be
 			// served by an index-ordered merge instead of a blocking in-memory sort of the whole room history.
 			{ key: { discussionRid: 1, createdAt: 1 }, unique: false },
-			// Listing the calls that are running: a sparse index, because a conference carries `endedAt` only once
-			// it has stopped, so the index holds just the handful that are live.
-			{ key: { endedAt: 1, createdAt: -1 }, unique: false, sparse: true },
+			// Listing the calls that are running (`findActiveWithMembers`, `findActiveEmbeddedInRoom`): a partial
+			// index, so it holds just the handful of conferences that are live. The hot queries match on these
+			// exact statuses, which is what makes the index eligible for them; `endedAt: { $exists: false }` alone
+			// could not anchor an index at all. `$in` in a partialFilterExpression needs MongoDB 6.0, and the
+			// minimum supported server is 7.0.
+			{
+				key: { status: 1, createdAt: -1 },
+				unique: false,
+				partialFilterExpression: { status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] } },
+			},
 		];
 	}
 
@@ -336,7 +343,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async setUserLeftById(callId: string, uid: IUser['_id'], leftAt = new Date(), reason?: VideoConferenceLeaveReason): Promise<void> {
 		await this.updateOne(
 			{ _id: callId },
-			{ $set: { 'users.$[user].leftAt': leftAt, ...(reason && { 'users.$[user].leftReason': reason }) } },
+			{
+				$set: { 'users.$[user].leftAt': leftAt, ...(reason && { 'users.$[user].leftReason': reason }) },
+				// A reported departure must clear a leftover inferred one, or a stale heartbeat could still revive
+				// it: `renewUserPresenceById` treats an inferred reason as permission to undo the departure.
+				...(!reason && { $unset: { 'users.$[user].leftReason': 1 } }),
+			},
 			{ arrayFilters: [{ 'user._id': uid }] },
 		);
 	}
@@ -460,12 +472,27 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	public async addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void> {
-		// Pull any prior entry for this user first so a re-join doesn't
-		// leave a leftAt'd ghost in the array alongside the fresh entry.
-		await this.updateOne({ _id: callId }, { $pull: { participants: { id: participant.id } } } as any);
-		await this.updateOne({ _id: callId }, {
-			$push: { participants: { ...participant, joinedAt: participant.joinedAt ?? new Date() } },
-		} as any);
+		// One atomic update: drop any prior entry for this user (so a re-join doesn't leave a leftAt'd ghost
+		// alongside the fresh one) and append the new entry in the same write — two separate writes would let
+		// two concurrent joins interleave into a duplicate. `$literal` keeps the entry's values as data even if
+		// one happens to look like an aggregation expression.
+		await this.updateOne({ _id: callId }, [
+			{
+				$set: {
+					participants: {
+						$concatArrays: [
+							{
+								$filter: {
+									input: { $ifNull: ['$participants', []] },
+									cond: { $ne: ['$$this.id', participant.id] },
+								},
+							},
+							{ $literal: [{ ...participant, joinedAt: participant.joinedAt ?? new Date() }] },
+						],
+					},
+				},
+			},
+		] as any);
 	}
 
 	public async markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id'], leftAt = new Date()): Promise<void> {
