@@ -6599,7 +6599,6 @@
   "join-without-join-code": "Ohne Code beitreten",
   "join-without-join-code_description": "Berechtigung, Channels mit Zutrittscode auch ohne Code zu betreten",
   "joined": "beigetreten",
-  "_joined.comment": "Benutzer A und Benutzer B sind einem Videoanruf beigetreten",
   "kick-user-from-any-c-room": "Benutzer aus beliebigem öffentlichen Channel entfernen",
   "kick-user-from-any-c-room_description": "Berechtigung, einen Benutzer aus einem beliebigen öffentlichen Channel zu entfernen",
   "kick-user-from-any-p-room": "Benutzer aus beliebigem privaten Channel entfernen",
