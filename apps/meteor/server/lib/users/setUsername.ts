@@ -149,7 +149,7 @@ export const _setUsername = async function (
 	await onceTransactionCommitedSuccessfully(async () => {
 		if (!previousUsername) {
 			await joinDefaultChannels(user._id);
-			setImmediate(() => void callbacks.run('afterCreateUser', user));
+			callbacks.runAsync('afterCreateUser', user);
 		}
 
 		// If it's the first username and the user has an invite Token, then join the invite room

@@ -28,6 +28,7 @@ describe('setUsername', () => {
 		},
 		callbacks: {
 			run: sinon.stub(),
+			runAsync: sinon.stub(),
 		},
 		checkUsernameAvailability: sinon.stub(),
 		validateUsername: sinon.stub(),
@@ -79,6 +80,7 @@ describe('setUsername', () => {
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();
 		stubs.callbacks.run.reset();
+		stubs.callbacks.runAsync.reset();
 		stubs.checkUsernameAvailability.reset();
 		stubs.validateUsername.reset();
 		stubs.saveUserIdentity.reset();
@@ -262,13 +264,10 @@ describe('setUsername', () => {
 			stubs.checkUsernameAvailability.resolves(true);
 
 			await _setUsername(userId, username, mockUser);
-			await new Promise((resolve) => {
-				setImmediate(resolve);
-			});
 
 			expect(stubs.joinDefaultChannels.calledOnceWith(userId)).to.be.true;
-			expect(stubs.callbacks.run.calledWith('afterCreateUser')).to.be.true;
-			expect(stubs.callbacks.run.withArgs('afterCreateUser').firstCall.args[1]).to.include({ username });
+			expect(stubs.callbacks.runAsync.calledWith('afterCreateUser')).to.be.true;
+			expect(stubs.callbacks.runAsync.withArgs('afterCreateUser').firstCall.args[1]).to.include({ username });
 		});
 
 		it('should not join the default channels when the username is only being changed', async () => {
@@ -277,12 +276,9 @@ describe('setUsername', () => {
 			stubs.checkUsernameAvailability.resolves(true);
 
 			await _setUsername(userId, username, mockUser);
-			await new Promise((resolve) => {
-				setImmediate(resolve);
-			});
 
 			expect(stubs.joinDefaultChannels.notCalled).to.be.true;
-			expect(stubs.callbacks.run.calledWith('afterCreateUser')).to.be.false;
+			expect(stubs.callbacks.runAsync.calledWith('afterCreateUser')).to.be.false;
 		});
 
 		it('should set avatar if Accounts_SetDefaultAvatar is enabled', async () => {
