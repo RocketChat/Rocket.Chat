@@ -5,8 +5,6 @@ import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-const EMPTY: ISidebarCategory[] = [];
-
 export const SYSTEM_GROUP_KEYS = [
 	'Incoming_Calls',
 	'Incoming_Livechats',
@@ -74,7 +72,7 @@ export const filterGroupVisibility = <T>(
 			return;
 		}
 
-		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats', 'Unread'].includes(key)) {
+		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats'].includes(key)) {
 			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}
@@ -156,7 +154,7 @@ export const getRoomCategory = (
 
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
-	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', EMPTY) ?? EMPTY;
+	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
 	const sidebarSectionsOrder = useUserPreference<string[]>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
