@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -18,15 +17,14 @@ type CreateCategoryModalProps = {
 
 const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const validateName = useValidateCategoryName();
-	const { createCategory, createCategoryAndMoveRoom } = useCreateCustomCategory();
+	const createCategoryMutation = useCreateCustomCategory({ settleCallback: onClose });
 
 	const {
 		handleSubmit,
 		control,
 		setFocus,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 	} = useForm({
 		defaultValues: {
 			name: '',
@@ -38,23 +36,8 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 		setFocus('name');
 	}, [setFocus]);
 
-	const handleConfirm = async ({ name, rooms }: { name: string; rooms: string[] }) => {
-		try {
-			if (room) {
-				await createCategoryAndMoveRoom(
-					name,
-					room,
-					rooms.filter((id) => id !== room.rid),
-				);
-			} else {
-				await createCategory(name, rooms);
-				dispatchToastMessage({ type: 'success', message: t('Category_created') });
-			}
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
+	const handleConfirm = async ({ name, rooms }: { name: string; rooms: string[] }) =>
+		createCategoryMutation.mutateAsync({ name, roomIds: rooms, movedRoom: room });
 
 	return (
 		<GenericModal
@@ -62,7 +45,7 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 			variant='warning'
 			icon={null}
 			confirmText={room ? t('Create_and_move') : t('Create')}
-			confirmLoading={isSubmitting}
+			confirmLoading={createCategoryMutation.isPending}
 			onCancel={onClose}
 			annotation={room ? undefined : t('You_can_add_rooms_after')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}

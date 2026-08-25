@@ -35,10 +35,7 @@ const wrapper = mockAppRoot()
 
 beforeEach(() => {
 	mockedUseValidateCategoryName.mockReturnValue(() => undefined);
-	mockedUseCreateCustomCategory.mockReturnValue({
-		createCategory: jest.fn(),
-		createCategoryAndMoveRoom: jest.fn(),
-	} as any);
+	mockedUseCreateCustomCategory.mockReturnValue({ mutateAsync: jest.fn().mockResolvedValue(undefined), isPending: false } as any);
 });
 
 it('shows an error when submitting with an empty name', async () => {
@@ -65,16 +62,16 @@ it('shows an error when submitting a duplicate name', async () => {
 	expect(await screen.findByText('A category with this name already exists')).toBeInTheDocument();
 });
 
-it('calls createCategory and closes on valid submission', async () => {
-	const createCategory = jest.fn().mockResolvedValue({ _id: 'new-id', name: 'Design' });
+it('calls mutateAsync and closes on valid submission', async () => {
+	const mutateAsync = jest.fn().mockResolvedValue(undefined);
 	const onClose = jest.fn();
-	mockedUseCreateCustomCategory.mockReturnValue({ createCategory, createCategoryAndMoveRoom: jest.fn() } as any);
+	mockedUseCreateCustomCategory.mockReturnValue({ mutateAsync, isPending: false } as any);
 
 	render(<CreateCategoryModal onClose={onClose} />, { wrapper });
 
 	await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Design');
 	await userEvent.click(screen.getByRole('button', { name: 'Create' }));
 
-	expect(createCategory).toHaveBeenCalledWith('Design', []);
+	expect(mutateAsync).toHaveBeenCalledWith({ name: 'Design', roomIds: [], movedRoom: undefined });
 	expect(onClose).toHaveBeenCalled();
 });
