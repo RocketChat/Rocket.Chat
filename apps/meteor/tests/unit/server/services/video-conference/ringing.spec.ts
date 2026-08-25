@@ -4,7 +4,16 @@ import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, resetAll, ringedUserIds } from './testHarness';
+import {
+	buildDirectCall,
+	buildGroupCall,
+	buildMember,
+	cloneFixture,
+	createService,
+	providerCapabilities,
+	resetAll,
+	ringedUserIds,
+} from './testHarness';
 
 /**
  * Who gets rung, and when.
@@ -280,6 +289,18 @@ describe('VideoConfService.addMembers', () => {
 		expect(ringedUserIds(broadcastStub).sort()).to.deep.equal(['newUser1', 'newUser2']);
 	});
 
+	// A finished call is not something to add people to — and certainly not something to ring them into.
+	it('adds nobody and rings nobody on a conference that has already ended', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })], { endedAt: new Date('2026-01-01T01:00:00.000Z') });
+		UsersMock.find.returns({ toArray: sinon.stub().resolves([buildUser('newUser1')]) });
+
+		const result = await service.addMembers('caller', 'call1', ['newUser1.user']);
+
+		expect(result).to.deep.equal([]);
+		expect(VideoConferenceModelMock.addMemberById.called).to.be.false;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
+	});
+
 	// Nobody was actually added (every requested user was already a member) — there is nobody new to ring.
 	it('rings nobody when nobody was added', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'already' })]);
@@ -321,6 +342,12 @@ describe('VideoConfService: ringing a direct call when its caller arrives', () =
 	beforeEach(() => {
 		fixture = directCall();
 		UsersMock.findOneById.callsFake(async (uid: string) => ({ _id: uid, username: uid, name: uid, avatarETag: null }));
+		// Ring-on-arrival only exists for embedded providers, whose caller sits on a preflight screen first.
+		providerCapabilities.current = { embedded: true };
+	});
+
+	afterEach(() => {
+		providerCapabilities.current = undefined;
 	});
 
 	it('rings the callee when the caller joins', async () => {
@@ -359,5 +386,16 @@ describe('VideoConfService: ringing a direct call when its caller arrives', () =
 		await service.addUser('call1', 'creator');
 
 		expect(VideoConferenceModelMock.setUsersRingingById.called).to.be.false;
+	});
+
+	// A non-embedded direct call has no preflight — it already rang the callee when it was created, so the
+	// caller arriving in it must not ring anyone a second time.
+	it('rings nobody at all for a non-embedded provider', async () => {
+		providerCapabilities.current = undefined;
+
+		await service.addUser('call1', 'creator');
+
+		expect(VideoConferenceModelMock.setUsersRingingById.called).to.be.false;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 });
