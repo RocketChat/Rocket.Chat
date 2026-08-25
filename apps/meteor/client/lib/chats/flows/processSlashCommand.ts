@@ -54,6 +54,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	if (typeof command === 'string') {
 		if (!settings.peek('Message_AllowUnrecognizedSlashCommand')) {
+			chat.composer?.clear();
 			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
 			return true;
 		}
@@ -64,11 +65,13 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
 
 	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
+		chat.composer?.clear();
 		await warnUnrecognizedSlashCommand(chat, t('You_do_not_have_permission_to_execute_this_command', { command: escapeHTML(commandName) }));
 		return true;
 	}
 
 	if (clientOnly && chat.uid) {
+		chat.composer?.clear();
 		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
 		return true;
 	}
