@@ -56,12 +56,16 @@ API.experimental.post(
 			return API.experimental.failure('error-invalid-user');
 		}
 
-		// When assigning to a category, verify it exists in the user's preferences.
+		// When assigning to a category, verify it exists and is not a system category.
 		if (category !== null) {
-			const categories: Array<{ _id: string }> = user.settings?.preferences?.sidebarCategories ?? [];
-			const exists = categories.some((cat) => cat._id === category);
-			if (!exists) {
+			const categories: Array<{ _id: string; default?: boolean }> = user.settings?.preferences?.sidebarCategories ?? [];
+			const existingCategory = categories.find((currentCategory) => currentCategory._id === category);
+			if (!existingCategory) {
 				return API.experimental.failure('error-invalid-param', 'Category not found in user preferences.');
+			}
+
+			if (existingCategory.default) {
+				return API.experimental.failure('error-invalid-param', 'Cannot assign rooms to a system category.');
 			}
 		}
 
