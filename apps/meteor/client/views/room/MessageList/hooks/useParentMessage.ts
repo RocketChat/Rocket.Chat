@@ -25,7 +25,13 @@ const findParentMessage = (() => {
 	const get = async (tmid: IMessage['_id']) => {
 		void getMessages();
 		const messages = await pending;
-		return messages.find(({ _id }) => _id === tmid);
+		const message = messages.find(({ _id }) => _id === tmid);
+
+		if (!message) {
+			throw new Error(`Message ${tmid} not found`);
+		}
+
+		return message;
 	};
 
 	return async (tmid: IMessage['_id']) => {
