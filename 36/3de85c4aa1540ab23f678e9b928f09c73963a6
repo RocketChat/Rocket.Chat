@@ -1,0 +1,36 @@
+packages/core-services/src/index.ts
+  s_e6f7ddc27249bc::t_30859c8076043d 100-102
+packages/core-services/src/lib/LocalServiceRegistry.ts
+  s_e6f7ddc27249bc::t_85458865d58c2a 10-11,18-19,21-24
+  s_e6f7ddc27249bc::t_4adfb7d00d34c2 1,3-9,12-17,20,25-63
+  s_e6f7ddc27249bc::t_9d37f2e706961d 2
+packages/core-services/tests/LocalBroker.test.ts
+  s_e6f7ddc27249bc::t_e2d22f2211f90d 23-92
+ee/packages/network-broker/src/NatsBroker.ts
+  s_e6f7ddc27249bc::t_44de927f576703 2
+ee/packages/network-broker/src/MoleculerBroker.ts
+  s_e6f7ddc27249bc::t_a64d70994e8cc3 3
+packages/core-services/tests/LocalServiceRegistry.test.ts
+  s_e6f7ddc27249bc::t_9d37f2e706961d 2
+  s_e6f7ddc27249bc::t_4a1f965009f9a3 1,3-81
+packages/core-services/src/lib/getInstanceMethods.ts
+  s_e6f7ddc27249bc::t_4adfb7d00d34c2 1-9
+packages/core-services/src/LocalBroker.ts
+  s_e6f7ddc27249bc::t_51e0c1eaf7eefc 9,23,49,61,91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "363de85c4aa1540ab23f678e9b928f09c73963a6",
+  "prompts": {},
+  "sessions": {
+    "s_e6f7ddc27249bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "88cb1b55-670d-4709-9e80-4a39d3c0b4ed",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
