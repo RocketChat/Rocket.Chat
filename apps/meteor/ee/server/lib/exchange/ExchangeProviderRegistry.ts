@@ -1,0 +1,78 @@
+import type { IExchangeProvider } from './definition/IExchangeProvider';
+import { ExchangeError } from './errors';
+import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
+import { NtlmEwsTransport } from './ews/NtlmEwsTransport';
+import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
+import { logger } from './logger';
+import { settings } from '../../../../server/settings';
+
+const WATCHED_SETTINGS = [
+	'Outlook_Calendar_Enabled',
+	'Outlook_Calendar_Mode',
+	'Outlook_Calendar_Server_Sync_Provider',
+	'Outlook_Calendar_Graph_Tenant_Id',
+	'Outlook_Calendar_Graph_Client_Id',
+	'Outlook_Calendar_Graph_Client_Secret',
+	'Outlook_Calendar_Graph_Authority_Host',
+	'Outlook_Calendar_Graph_Host',
+	'Outlook_Calendar_EWS_Url',
+	'Outlook_Calendar_EWS_Username',
+	'Outlook_Calendar_EWS_Password',
+	'Outlook_Calendar_EWS_Auth_Method',
+	'Outlook_Calendar_EWS_CA_Cert',
+	'Outlook_Calendar_EWS_Reject_Unauthorized',
+];
+
+let current: IExchangeProvider | undefined;
+
+const buildExchangeProvider = (): IExchangeProvider | undefined => {
+	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Outlook_Calendar_Mode') !== 'server') {
+		return undefined;
+	}
+
+	const providerId = settings.get<string>('Outlook_Calendar_Server_Sync_Provider');
+
+	switch (providerId) {
+		case 'graph':
+			return new MicrosoftGraphProvider({
+				tenantId: settings.get<string>('Outlook_Calendar_Graph_Tenant_Id'),
+				clientId: settings.get<string>('Outlook_Calendar_Graph_Client_Id'),
+				clientSecret: settings.get<string>('Outlook_Calendar_Graph_Client_Secret'),
+				authorityHost: settings.get<string>('Outlook_Calendar_Graph_Authority_Host'),
+			});
+
+		case 'ews':
+			return new ExchangeEwsProvider(
+				new NtlmEwsTransport({
+					url: settings.get<string>('Outlook_Calendar_EWS_Url'),
+					username: settings.get<string>('Outlook_Calendar_EWS_Username'),
+					password: settings.get<string>('Outlook_Calendar_EWS_Password'),
+					authMethod: settings.get<string>('Outlook_Calendar_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
+					caCert: settings.get<string>('Outlook_Calendar_EWS_CA_Cert') || undefined,
+					rejectUnauthorized: settings.get<boolean>('Outlook_Calendar_EWS_Reject_Unauthorized') !== false,
+				}),
+				settings.get<string>('Outlook_Calendar_EWS_Username'),
+			);
+
+		default:
+			logger.error({ msg: 'Unknown Exchange provider configured', providerId });
+			return undefined;
+	}
+};
+
+export const getExchangeProvider = (): IExchangeProvider => {
+	if (!current) {
+		throw new ExchangeError('not-configured', 'Server-to-server Exchange sync is not configured');
+	}
+
+	return current;
+};
+
+export const isServerSyncEnabled = (): boolean => current !== undefined;
+
+export const registerExchangeProviderWatchers = (): void => {
+	settings.watchMultiple(WATCHED_SETTINGS, () => {
+		current = buildExchangeProvider();
+		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
+	});
+};
