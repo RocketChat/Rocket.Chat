@@ -144,6 +144,51 @@ describe('mutateThreadMessagesInfiniteData', () => {
 		expect(data?.pages[0].itemCount).toBe(200);
 		expect(data?.pageParams).toEqual([75]);
 	});
+
+	it('removes a message from every cached page when its id was duplicated across pages, not just the first occurrence', () => {
+		const cache: ThreadMessagesInfiniteData = {
+			pages: [
+				{ items: [createMessage('reply-058', 58), createMessage('reply-059', 59), createMessage('reply-060', 60)], itemCount: 200 },
+				{ items: [createMessage('reply-060', 60), createMessage('reply-061', 61)], itemCount: 200 },
+			],
+			pageParams: [58, 60],
+		};
+		queryClient.setQueryData(queryKey, cache);
+
+		mutateThreadMessagesInfiniteData(queryClient, queryKey, (messages) => {
+			const index = messages.findIndex((m) => m._id === 'reply-060');
+			messages.splice(index, 1);
+		});
+
+		const data = queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey);
+		const allIds = data?.pages.flatMap((page) => page.items.map((m) => m._id)) ?? [];
+
+		expect(allIds).not.toContain('reply-060');
+		expect(data?.pages[0].itemCount).toBe(199);
+	});
+
+	it('collapses a duplicated id into a single entry, keeping the most recently updated copy, even when the mutation is a no-op', () => {
+		const stale = createMessage('reply-060', 60);
+		const fresh: IThreadMessage = { ...createMessage('reply-060', 60), msg: 'edited', _updatedAt: new Date(9999).toISOString() as any };
+		const cache: ThreadMessagesInfiniteData = {
+			pages: [
+				{ items: [stale], itemCount: 200 },
+				{ items: [fresh], itemCount: 200 },
+			],
+			pageParams: [60, 60],
+		};
+		queryClient.setQueryData(queryKey, cache);
+
+		mutateThreadMessagesInfiniteData(queryClient, queryKey, () => {
+			// no-op mutation: only the dedup pass should change the cache
+		});
+
+		const data = queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey);
+		const allItems = data?.pages.flatMap((page) => page.items) ?? [];
+
+		expect(allItems).toHaveLength(1);
+		expect(allItems[0].msg).toBe('edited');
+	});
 });
 
 describe('upsertThreadMessageInCache', () => {
