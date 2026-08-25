@@ -41,8 +41,19 @@ version; the compiler is a native binary plus the `unstable/*` APIs).
   schema-consuming only).
 - Vestigial `ts-jest` devDependencies removed (all jest suites run on
   `@swc/jest` via `@rocket.chat/jest-presets`). Jest 30 loads
-  `jest.config.ts` without ts-node under Node 22, so test configs are
-  unaffected by the TS7 API removal.
+  `jest.config.ts` without ts-node under Node 22 in typeless packages
+  (Node re-parses the config as ESM by syntax detection). `apps/meteor`
+  declares `"type": "commonjs"`, which disables that fallback — its config
+  is now `jest.config.mjs` (plain ESM; jest's `.mts` loader also drops the
+  `projects` array, so `.mjs` is the reliable shape). `server-fetch` moved
+  from jest 29 (which required ts-node for TS configs) to the workspace's
+  jest 30. Meteor's mocha suites run on `tsx`, which has no TS API
+  dependency.
+- The repo-root `eslint.config.mjs` imports `globals` directly, so `globals`
+  is now a root devDependency — previously it resolved by hoisting accident,
+  and the eslint-config `hoistingLimits` change let an ancient transitive
+  copy win the root spot, crashing every lint run that used the root
+  config.
 - `scripts/ts7-typecheck.sh` + the `TS7 Canary` workflow (ported from the
   spike) now run the workspace compiler with no CLI overrides; the canary
   stays non-blocking and tracks the remaining red packages.
@@ -55,6 +66,7 @@ version; the compiler is a native binary plus the `unstable/*` APIs).
 | `@rocket.chat/eslint-config` | `typescript-eslint` peer range is `<6.1.0`; typed linting needs the JS compiler API. `installConfig.hoistingLimits: workspaces` keeps the whole lint toolchain nested beside the pinned TS so every workspace lints through it. |
 | `@rocket.chat/message-parser`, `@rocket.chat/livechat` | webpack builds load `webpack.config.ts` through ts-node, which crashes on the TS7 API. |
 | `@rocket.chat/emitter`, `@rocket.chat/mp3-encoder` | `@rollup/plugin-typescript` links the JS compiler API. |
+| `@rocket.chat/apps` | `node --test` suites load TS through ts-node (extensionless CJS-style relative imports rule out Node's native type stripping); its scripts pass `TS_NODE_COMPILER_OPTIONS` to keep ts-node off the base's `bundler` resolution. |
 
 Unpinning any of these is just a version bump once its tool supports TS7.
 
