@@ -6,6 +6,7 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
 import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
+import { canAccessConference } from '../../lib/videoConfAccess';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
@@ -464,9 +465,10 @@ export class NotificationsModule {
 
 		this.streamVideoConference.allowWrite('none');
 		// Conference membership authorizes following the call — members may have no access to the room it
-		// originated in — and so does access to the room the chat lives in. That is the same pair
-		// `video-conference.info` accepts, and both halves are needed: membership alone refuses a room member
-		// who opens the conference before their join lands, and a refused subscription is never retried.
+		// originated in — and so does access to a room the chat lives in. `canAccessConference` is the same rule
+		// the REST endpoints apply, shared so the stream and the endpoints cannot drift into different answers
+		// for the same person: membership alone would refuse a room member who opens the conference before their
+		// join lands, and a refused subscription is never retried.
 		this.streamVideoConference.allowRead(async function (eventName) {
 			const user = await getCachedUserForPublication(this);
 			if (!user) {
@@ -479,14 +481,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (call.users.some(({ _id }) => _id === user._id)) {
-				return true;
-			}
-
-			const chatRids = [call.rid, call.discussionRid].filter((rid): rid is string => !!rid);
-			const rooms = await Rooms.findByIds(chatRids).toArray();
-
-			return (await Promise.all(rooms.map((room) => Authorization.canReadRoom(room, user)))).some(Boolean);
+			return canAccessConference(call, user._id);
 		});
 
 		this.streamLocal.serverOnly = true;
