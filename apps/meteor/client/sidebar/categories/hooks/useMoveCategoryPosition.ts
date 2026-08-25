@@ -9,7 +9,7 @@ export const useMoveCategoryPosition = () => {
 	const persistMutation = usePersistCategoriesMutation();
 
 	return useCallback(
-		(currentKeys: string[], key: string, direction: 'up' | 'down') => {
+		async (currentKeys: string[], key: string, direction: 'up' | 'down') => {
 			const i = currentKeys.indexOf(key);
 			const target = direction === 'up' ? i - 1 : i + 1;
 			if (i === -1 || target < 0 || target >= currentKeys.length) return;
@@ -18,7 +18,7 @@ export const useMoveCategoryPosition = () => {
 			const hiddenEntries = allEntries.filter((e) => !currentKeys.includes(e._id));
 			const next = [...visibleEntries, ...hiddenEntries];
 			[next[i], next[target]] = [next[target], next[i]];
-			persistMutation.mutateAsync(next);
+			await persistMutation.mutateAsync(next);
 		},
 		[allEntries, persistMutation],
 	);
