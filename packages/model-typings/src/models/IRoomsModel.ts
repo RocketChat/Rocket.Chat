@@ -442,7 +442,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
-	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
 	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null>;
 	unsetAbacAttributesById(rid: IRoom['_id']): Promise<UpdateResult>;
 	unsetAllAbacAttributes(): Promise<Document | UpdateResult>;
