@@ -3,11 +3,13 @@ import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
+import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
@@ -17,7 +19,11 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
+/** Stable, so the memo below doesn't recompute on every render once the sidebar stops listing incoming calls. */
+const emptyIncomingCalls: ReturnType<typeof useVideoConfIncomingCalls> = [];
+
 const order = [
+	'Incoming_Calls',
 	'Incoming_Livechats',
 	'Open_Livechats',
 	'On_Hold_Chats',
@@ -30,10 +36,8 @@ const order = [
 	'Conversations',
 ] as const;
 
-export type SidebarListItem = SubscriptionWithRoom;
-
 type useRoomListReturnType = {
-	roomList: Array<SidebarListItem>;
+	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
 	totalCount: number;
 };
@@ -55,12 +59,20 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const inquiries = useQueuedInquiries();
 
+	const incomingCalls = useVideoConfIncomingCalls();
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
+
+	// With the call window, an incoming call is listed with the calls already running — behind the navbar button —
+	// instead of becoming a group of its own at the top of the sidebar.
+	const sidebarIncomingCalls = conferenceWindowEnabled ? emptyIncomingCalls : incomingCalls;
+
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
 	const groups = useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
 
+			const incomingCall = new Set();
 			const favorite = new Set();
 			const team = new Set();
 			const omnichannel = new Set();
@@ -81,6 +93,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 				if (!roomCategory) {
 					return;
+				}
+
+				if (sidebarIncomingCalls.find((call) => call.rid === room.rid)) {
+					return incomingCall.add(room);
 				}
 
 				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
@@ -119,6 +135,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			const groups = new Map<string, Set<any>>();
+			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
 			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
 
@@ -128,7 +145,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return counter;
 					}
 
-					acc.groupsList.push(key);
+					acc.groupsList.push(key as TranslationKey);
 
 					if (!room.unread && !room.tunread?.length && room.alert) {
 						counter.unread += 1;
@@ -149,6 +166,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,
+			sidebarIncomingCalls,
 		]),
 		50,
 	);

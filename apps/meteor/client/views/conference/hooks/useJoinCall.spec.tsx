@@ -24,6 +24,9 @@ const renderJoin = async (calls: JoinableVideoConference[]) => {
 	const { result } = renderHook(() => ({ join: useJoinCall(), loaded: useJoinableCalls().calls.length }), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			// The joinable list is only asked for where the call window is, so without the setting this hook has
+			// nothing to decide from.
+			.withSetting('VideoConf_Conference_Window_Enabled', true)
 			// Naming the call being left is the point of the confirmation, and the name only reaches the screen
 			// through this string's interpolation — the untranslated key would carry no name at all.
 			.withTranslations('en', 'core', {

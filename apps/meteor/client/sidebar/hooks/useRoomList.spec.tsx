@@ -310,7 +310,7 @@ it('should keep the Favorites category visible when it is empty', async () => {
 		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowFavorites: true, isEnterprise: true }).build(),
 	});
 	const unreadIndex = result.current.groupsList.indexOf('Unread');
-	const roomListUnread = result.current.roomList.filter((item) => item.unread);
+	const roomListUnread = result.current.roomList.filter((room) => room.unread);
 
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
 	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
@@ -334,5 +334,54 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		expect(userMentions).toEqual(unreadChannels.reduce((acc, cv) => acc + cv.userMentions, 0));
 		expect(tunread).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
 		expect(tunreadUser).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+	});
+});
+
+// The sidebar's own group for a call that is ringing. With the call window it goes away — a ringing call is
+// listed with the calls already running, behind the navbar button — so it has to still be here without it.
+describe('the Incoming calls group', () => {
+	const ringingRoom = { ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) } as SubscriptionWithRoom;
+
+	// Stable, because `useSyncExternalStore` compares snapshots by identity and a fresh array every read is an
+	// infinite render.
+	const ringingCalls = [{ callId: 'a-call', uid: 'caller', rid: ringingRoom.rid }];
+
+	const renderWithRingingCall = (conferenceWindowEnabled: boolean) =>
+		renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: mockAppRoot()
+				.wrap((children) => (
+					<VideoConfContext.Provider
+						value={
+							{
+								queryIncomingCalls: () => [() => () => undefined, () => ringingCalls],
+							} as any
+						}
+					>
+						{children}
+					</VideoConfContext.Provider>
+				))
+				.withUser(user)
+				.withSubscriptions([ringingRoom])
+				.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
+				.build(),
+		});
+
+	it('is listed for a ringing call without the call window', () => {
+		const { result } = renderWithRingingCall(false);
+
+		expect(result.current.groupsList).toContain('Incoming_Calls');
+		expect(result.current.groupsCount[result.current.groupsList.indexOf('Incoming_Calls' as never)]).toBe(1);
+	});
+
+	it('is gone once the calls are listed elsewhere', () => {
+		const { result } = renderWithRingingCall(true);
+
+		expect(result.current.groupsList).not.toContain('Incoming_Calls');
+	});
+
+	// The room itself must not go missing with the group: it belongs to whichever group it would otherwise be in.
+	it('leaves the ringing room in the list either way', () => {
+		expect(renderWithRingingCall(false).result.current.roomList).toHaveLength(1);
+		expect(renderWithRingingCall(true).result.current.roomList).toHaveLength(1);
 	});
 });
