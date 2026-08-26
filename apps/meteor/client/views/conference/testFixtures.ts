@@ -29,6 +29,9 @@ export const buildJoinableCall = (
 export const buildConferenceMember = (overrides: Partial<ConferenceMember> & Pick<ConferenceMember, '_id'>): ConferenceMember => ({
 	username: overrides._id,
 	name: `Name of ${overrides._id}`,
+	// `hasJoinedVideoConference` and `isInVideoConference` both read `joined`, so leaving it unset made the
+	// default member absent from the call — the opposite of what this says, and of what its readers assume.
+	joined: true,
 	...overrides,
 });
 

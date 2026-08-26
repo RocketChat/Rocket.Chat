@@ -38,9 +38,19 @@ it('shows the chat to a member who can read it', () => {
 });
 
 // The banner about members who can't see the chat lives above the call, not in this panel — it is about the
-// call rather than about whichever panel is open, and it must not move as panels change.
-it('does not carry the chat-access notice', () => {
+// call rather than about whichever panel is open, and it must not move as panels change. What the panel carries
+// instead is its own control in the header, which is what this pins: the banner's Review button being absent
+// would be true of a panel that offered nothing at all.
+it('offers chat access from its own header rather than carrying the notice', () => {
 	renderChat(buildAccess(['someone-else']));
 
+	expect(screen.getByRole('button', { name: '__count__participants_cannot_see_the_chat' })).toBeInTheDocument();
 	expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
+});
+
+// Nobody to tell about, nothing to offer — the header control is about other people, not about a decoration.
+it('says nothing about chat access when everyone in the call can read it', () => {
+	renderChat(buildAccess([]));
+
+	expect(screen.queryByRole('button', { name: '__count__participants_cannot_see_the_chat' })).not.toBeInTheDocument();
 });
