@@ -1,9 +1,10 @@
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { renderHook, act } from '@testing-library/react';
 
 import { useMoveCategoryPosition } from './useMoveCategoryPosition';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
@@ -13,8 +14,13 @@ jest.mock('./usePersistCategoriesMutation', () => ({
 	usePersistCategoriesMutation: jest.fn(),
 }));
 
+jest.mock('./useUserSidebarCategories', () => ({
+	useUserSidebarCategories: jest.fn(),
+}));
+
 const mockedUseUserPreference = jest.mocked(useUserPreference);
 const mockedUsePersistCategoriesMutation = jest.mocked(usePersistCategoriesMutation);
+const mockedUseUserSidebarCategories = jest.mocked(useUserSidebarCategories);
 
 const mutateAsync = jest.fn().mockResolvedValue(undefined);
 
@@ -22,11 +28,9 @@ const persistedIds = (): string[] => mutateAsync.mock.calls[0][0].map((c: { _id:
 
 beforeEach(() => {
 	mutateAsync.mockClear();
-	mockedUseUserPreference.mockImplementation((key: string, defaultValue?: unknown) => {
-		if (key === 'sidebarCategories') return defaultValue ?? [];
-		return undefined; // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
-	});
+	mockedUseUserPreference.mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
 	mockedUsePersistCategoriesMutation.mockReturnValue({ mutateAsync } as any);
+	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories: [], customCategories: [] });
 });
 
 it('moves a group down by swapping with its adjacent neighbour', async () => {
@@ -96,10 +100,7 @@ it('always places dynamic groups before static groups in the persisted result', 
 
 it('persists existing category entries with their stored metadata', async () => {
 	const stored = [{ _id: 'Favorites', name: 'Favorites', default: true, showUnreads: true }];
-	mockedUseUserPreference.mockImplementation((key: string) => {
-		if (key === 'sidebarCategories') return stored;
-		return undefined;
-	});
+	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories: stored, customCategories: [] });
 
 	const { result } = renderHook(() => useMoveCategoryPosition());
 
