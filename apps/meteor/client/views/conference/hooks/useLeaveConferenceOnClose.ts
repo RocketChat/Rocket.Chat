@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
 import { baseURI } from '../../../lib/baseURI';
@@ -18,11 +18,22 @@ import { closeCallWindow } from '../lib/callWindow';
  */
 
 export const useLeaveConferenceOnClose = (callId: string) => {
+	// Leaving is reported once per call. Choosing *leave* closes the window, and closing it fires `pagehide` —
+	// which would report the same departure a second time. The endpoint is idempotent, so the cost is a wasted
+	// request and a duplicate update broadcast to everyone still in the call, but it is still a lie about what
+	// happened.
+	const reported = useRef<string | undefined>(undefined);
+
 	const reportLeaving = useCallback(() => {
 		const credentials = APIClient.getCredentials();
 		if (!credentials) {
 			return;
 		}
+
+		if (reported.current === callId) {
+			return;
+		}
+		reported.current = callId;
 
 		return fetch(`${baseURI.replace(/\/$/, '')}/api/v1/video-conference.leave`, {
 			method: 'POST',
@@ -40,9 +51,14 @@ export const useLeaveConferenceOnClose = (callId: string) => {
 		return () => window.removeEventListener('pagehide', onPageHide);
 	}, [reportLeaving]);
 
-	/** Leaves and closes the window, for the user who chose to leave rather than just closing it. */
-	const leaveNow = useCallback(async () => {
-		await reportLeaving();
+	/**
+	 * Leaves and closes the window, for the user who chose to leave rather than just closing it.
+	 *
+	 * The report is not waited on: it goes out with `keepalive`, so the browser sees it through the window
+	 * closing, and holding the user in front of an unresponsive button until a slow server answers buys nothing.
+	 */
+	const leaveNow = useCallback(() => {
+		void reportLeaving();
 		closeCallWindow();
 	}, [reportLeaving]);
 
