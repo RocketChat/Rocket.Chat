@@ -1,10 +1,10 @@
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { renderHook, act } from '@testing-library/react';
 
 import { useMoveCategoryPosition } from './useMoveCategoryPosition';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
