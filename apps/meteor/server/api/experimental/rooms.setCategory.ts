@@ -1,3 +1,4 @@
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -56,16 +57,14 @@ API.experimental.post(
 			return API.experimental.failure('error-invalid-user');
 		}
 
-		// When assigning to a category, verify it exists and is not a system category.
 		if (category !== null) {
-			const categories: Array<{ _id: string; default?: boolean }> = user.settings?.preferences?.sidebarCategories ?? [];
-			const existingCategory = categories.find((currentCategory) => currentCategory._id === category);
-			if (!existingCategory) {
-				return API.experimental.failure('error-invalid-param', 'Category not found in user preferences.');
+			if ((SIDEBAR_SYSTEM_GROUP_KEYS as readonly string[]).includes(category)) {
+				return API.experimental.failure('error-invalid-param', 'Cannot assign rooms to a system category.');
 			}
 
-			if (existingCategory.default) {
-				return API.experimental.failure('error-invalid-param', 'Cannot assign rooms to a system category.');
+			const categories: Array<{ _id: string }> = user.settings?.preferences?.sidebarCategories ?? [];
+			if (!categories.some((cat) => cat._id === category)) {
+				return API.experimental.failure('error-invalid-param', 'Category not found in user preferences.');
 			}
 		}
 
