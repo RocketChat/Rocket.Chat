@@ -34,35 +34,27 @@ const ToggleButton = ({
 	large = false,
 	dangerWhenPressed = false,
 	...props
-}: ToggleButtonProps) => {
-	const iconName = icons[pressed ? 1 : 0];
-	const title = titles[pressed ? 1 : 0];
-	// The whole button carries it when asked; otherwise the glyph alone does, as before.
-	const asDanger = dangerWhenPressed && Boolean(pressed);
-	const iconColor = !dangerWhenPressed && pressed && danger ? 'font-danger' : undefined;
-
-	const sizeOf = () => {
-		if (tiny) {
-			return { tiny: true };
+}: ToggleButtonProps) => (
+	<IconButton
+		{...props}
+		label={label}
+		tiny={tiny}
+		large={large}
+		medium={!tiny && !large}
+		secondary={secondary}
+		danger={dangerWhenPressed && pressed}
+		icon={
+			<Icon
+				size={large ? 20 : 16}
+				color={!dangerWhenPressed && pressed && danger ? 'font-danger' : undefined}
+				name={icons[pressed ? 1 : 0]}
+			/>
 		}
-		return large ? { large: true } : { medium: true };
-	};
-	const size = sizeOf();
-
-	return (
-		<IconButton
-			{...props}
-			label={label}
-			{...size}
-			secondary={secondary}
-			danger={asDanger}
-			icon={<Icon size={large ? 20 : 16} color={iconColor} name={iconName} />}
-			title={title}
-			aria-label={label}
-			disabled={disabled}
-			onClick={onToggle}
-		/>
-	);
-};
+		title={titles[pressed ? 1 : 0]}
+		aria-label={label}
+		disabled={disabled}
+		onClick={onToggle}
+	/>
+);
 
 export default ToggleButton;
