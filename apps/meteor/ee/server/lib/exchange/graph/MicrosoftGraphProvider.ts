@@ -90,7 +90,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		this.graphHost = (config.graphHost ?? 'https://graph.microsoft.com').replace(/\/+$/, '');
 	}
 
-	/** Credentials and tenant only. Probing a mailbox needs an address and belongs to a separate action. */
 	public async testConnection(): Promise<void> {
 		await this.tokenClient.getAccessToken();
 	}
