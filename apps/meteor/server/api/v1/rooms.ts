@@ -1793,7 +1793,6 @@ export const roomEndpoints = API.v1
 
 			const result = await loadRoomHistory({
 				userId: this.userId,
-				rid: roomId,
 				next,
 				previous,
 				lastSeen: lastSeen ? new Date(lastSeen) : undefined,

@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { settings } from '../../settings/cached';
@@ -44,32 +44,26 @@ export function decodeHistoryCursor(cursor: string): Date {
  */
 export async function loadRoomHistory({
 	userId,
-	rid,
 	next,
 	previous,
 	lastSeen,
 	count = 20,
 	showThreadMessages = true,
-	room: providedRoom,
+	room,
 }: {
 	userId?: string;
-	rid: IRoom['_id'];
 	next?: string;
 	previous?: string;
 	lastSeen?: Date;
 	count?: number;
 	showThreadMessages?: boolean;
-	room?: IRoom;
+	room: IRoom;
 }): Promise<RoomHistoryResult> {
 	if (next && previous) {
 		throw new Error('error-cursor-conflict');
 	}
 
-	const room = providedRoom ?? (await Rooms.findOneById(rid, { projection: { sysMes: 1, t: 1 } }));
-
-	if (!room) {
-		throw new Error('error-invalid-room');
-	}
+	const rid = room._id;
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room, settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 
