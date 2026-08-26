@@ -2,10 +2,10 @@ import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/tools';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings';
 import type { ChatAPI } from '../ChatAPI';
 

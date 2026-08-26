@@ -6,8 +6,8 @@ import type { Serialized } from '@rocket.chat/core-typings';
 
 import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { hasAtLeastOnePermission } from '../../app/authorization/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { hasAtLeastOnePermission } from '../lib/authorization';
 import { dispatchToastMessage } from '../lib/toast';
 import type { App } from '../views/marketplace/types';
 
@@ -51,7 +51,7 @@ class AppClientOrchestrator {
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
-			return result.apps as App[];
+			return result.apps;
 		}
 		throw new Error('Invalid response from API');
 	}
@@ -74,7 +74,7 @@ class AppClientOrchestrator {
 			return { apps: [], error: 'Invalid response from API' };
 		}
 
-		const apps = (result as App[]).map((app: App) => {
+		const apps = result.map((app: App) => {
 			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
@@ -174,7 +174,7 @@ class AppClientOrchestrator {
 
 		if (Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
-			return result as Serialized<ICategory>[];
+			return result;
 		}
 		throw new Error('Failed to get categories');
 	}

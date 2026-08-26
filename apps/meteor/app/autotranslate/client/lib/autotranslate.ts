@@ -3,6 +3,7 @@ import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
 
 import { PermissionsCachedStore } from '../../../../client/cachedStores';
+import { hasPermission } from '../../../../client/lib/authorization';
 import { settings } from '../../../../client/lib/settings';
 import { getUserId, userIdStore } from '../../../../client/lib/user';
 import { Messages, Subscriptions, Users } from '../../../../client/stores';
@@ -10,7 +11,6 @@ import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
-import { hasPermission } from '../../../authorization/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';

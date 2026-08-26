@@ -1,8 +1,8 @@
-import { PermissionsCachedStore } from '../../../client/cachedStores';
-import { userIdStore } from '../../../client/lib/user';
-import { Permissions, Roles, Subscriptions, Users } from '../../../client/stores';
-import type { AuthorizationDeps } from '../lib/createAuthorizationFunctions';
-import { createAuthorizationFunctions } from '../lib/createAuthorizationFunctions';
+import type { AuthorizationDeps } from '../../../app/authorization/lib/createAuthorizationFunctions';
+import { createAuthorizationFunctions } from '../../../app/authorization/lib/createAuthorizationFunctions';
+import { PermissionsCachedStore } from '../../cachedStores';
+import { Permissions, Roles, Subscriptions, Users } from '../../stores';
+import { userIdStore } from '../user';
 
 // Bind the pure factory to live zustand store accessors. Each accessor reads
 // fresh state on every call, so non-React callers (services, lib code, startup
