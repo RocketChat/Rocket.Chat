@@ -20,6 +20,10 @@ import HomeSkeleton from '../../home/HomeSkeleton';
  */
 export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
 
+/** The connection states in which the server has stopped trying to reach us, as opposed to not having arrived yet. */
+const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean =>
+	status === 'waiting' || status === 'failed' || status === 'offline';
+
 const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
@@ -36,11 +40,14 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	 * exactly the login-form flash this exists to remove. Only the states where the connection has stopped trying
 	 * count, and once one has been seen it stands — a retry flapping between `waiting` and `connecting` must not
 	 * flap the form back into a skeleton. A resume that succeeds later brings a user with it, which wins anyway.
+	 *
+	 * Seeded from the status rather than latched from `false`, so a mount that is *already* offline picks the form
+	 * on its first render instead of showing a frame of skeleton on the way to it.
 	 */
-	const [unreachable, setUnreachable] = useState(false);
+	const [unreachable, setUnreachable] = useState(() => hasGivenUp(status));
 
 	useEffect(() => {
-		if (status === 'waiting' || status === 'failed' || status === 'offline') {
+		if (hasGivenUp(status)) {
 			setUnreachable(true);
 		}
 	}, [status]);

@@ -47,12 +47,14 @@ describe('while the session is being resumed', () => {
 
 	// The one way a stored token could strand someone: it is cleared when a server *rejects* it, so a server that
 	// never answers at all clears nothing. Once the connection stops trying, the form has to be reachable.
-	it('shows the login page once the connection has given up', async () => {
+	// Synchronously: a window that mounts with the connection already given up must pick the form on its first
+	// render, rather than showing a frame of skeleton on the way to it.
+	it.each(['waiting', 'failed', 'offline'] as const)('shows the login page when the connection has given up (%s)', (status) => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'waiting' }));
+		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status }));
 
-		expect(await screen.findByText('login-page')).toBeInTheDocument();
+		expect(screen.getByText('login-page')).toBeInTheDocument();
 		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
 	});
 
