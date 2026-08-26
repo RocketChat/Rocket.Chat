@@ -1087,7 +1087,7 @@ const chatEndpoints = API.v1
 			const { rid, type, text } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -1106,7 +1106,7 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
-			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
+			const threadQuery = { ...typeThread, rid: room._id, tcount: { $exists: true } };
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
@@ -1153,7 +1153,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -1171,7 +1171,7 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			const threadQuery = { rid, tcount: { $exists: true } };
 			return API.v1.success({
 				threads: {
 					update: await Messages.find(
@@ -1214,7 +1214,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid, aroundId } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
@@ -1243,13 +1243,13 @@ const chatEndpoints = API.v1
 					if (target?.tmid !== tmid || !target.ts) {
 						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({ tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid, _hidden: { $ne: true } },
+				{ tmid, _hidden: { $ne: true } },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,
@@ -1297,7 +1297,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -1322,8 +1322,8 @@ const chatEndpoints = API.v1
 			}
 			return API.v1.success({
 				messages: {
-					update: await Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
+					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
 		},

@@ -13,9 +13,6 @@ const channelsListPropsSchema = {
 		_id: {
 			type: 'string',
 		},
-		query: {
-			type: 'string',
-		},
 		count: {
 			type: 'number',
 		},
