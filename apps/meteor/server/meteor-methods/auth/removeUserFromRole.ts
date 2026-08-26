@@ -71,7 +71,5 @@ export const removeUserFromRole = async (userId: string, roleId: string, usernam
 	if (settings.get('UI_DisplayRoles')) {
 		void api.broadcast('user.roleUpdate', event);
 	}
-	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: userId });
-
 	return remove;
 };

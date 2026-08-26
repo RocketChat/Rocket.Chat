@@ -21,7 +21,6 @@ import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
-import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
@@ -78,8 +77,6 @@ export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceM
 
 export type { IServiceContext, IServiceClass } from './types/ServiceClass';
 export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
-
-export type { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
 
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
 
@@ -204,8 +201,6 @@ export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
 export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
-export const Federation = proxify<IFederationService>('federation');
-export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
 export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
