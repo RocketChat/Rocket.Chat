@@ -1,4 +1,5 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -7,21 +8,24 @@ import { useTranslation } from 'react-i18next';
 import type { MovableRoom } from './useCustomCategories';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useSetCategory } from './useSetCategory';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
+import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useCreateCustomCategory = ({ settleCallback }: { settleCallback?: () => void } = {}) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
+	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 
 	const setCategory = useSetCategory();
-	const persistMutation = usePersistCategoriesMutation();
+	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	return useMutation({
 		mutationFn: async ({ name, roomIds = [], movedRoom }: { name: string; roomIds?: string[]; movedRoom?: MovableRoom }) => {
 			const category: ISidebarCategory = { _id: Random.id(), name: name.trim(), showUnreads: false };
-			const insertAt = allEntries.findLastIndex((e) => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(e._id)) + 1;
-			await persistMutation.mutateAsync([...allEntries.slice(0, insertAt), category, ...allEntries.slice(insertAt)]);
+			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
+			entryMap.set(category._id, category);
+			const finalIds = withDynamicFirst([category._id, ...allEntries.map((e) => e._id)], sidebarSectionsOrder);
+			await persistCategories(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 			const allRoomIds = movedRoom ? [movedRoom.rid, ...roomIds.filter((id) => id !== movedRoom.rid)] : roomIds;
 			if (allRoomIds.length > 0) {
 				await setCategory(allRoomIds, category._id);
