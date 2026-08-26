@@ -1,0 +1,71 @@
+import { Badge, Box, Dropdown, IconButton } from '@rocket.chat/fuselage';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import OngoingCallsList from '../components/OngoingCalls/OngoingCallsList';
+import { useOngoingCallsList } from '../components/OngoingCalls/useOngoingCalls';
+import { useDropdownVisibility } from '../views/room/Header/Omnichannel/QuickActions/hooks/useDropdownVisibility';
+
+const NavBarItemOngoingCalls = () => {
+	const { t } = useTranslation();
+	const { ringing, ongoing, declined } = useOngoingCallsList();
+
+	const reference = useRef<HTMLButtonElement>(null);
+	const target = useRef(null);
+	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+
+	const isRinging = ringing.length > 0;
+	const isOffering = isRinging || ongoing.length > 0;
+
+	const ringingCount = ringing.length;
+	const prevRingingCount = useRef(0);
+
+	useEffect(() => {
+		if (ringingCount > prevRingingCount.current) {
+			toggle(true);
+		}
+
+		prevRingingCount.current = ringingCount;
+	}, [ringingCount, toggle]);
+
+	const active = ringing.length + ongoing.length;
+	const total = active + declined.length;
+
+	if (total === 0) {
+		return null;
+	}
+
+	const name = t('Ongoing_calls');
+
+	return (
+		<>
+			<Box position='relative' display='inline-flex'>
+				<IconButton
+					ref={reference}
+					small
+					secondary={isOffering}
+					danger={isRinging}
+					info={isOffering && !isRinging}
+					onClick={() => toggle()}
+					title={name}
+					aria-label={name}
+					icon='video'
+				/>
+				{active > 0 && (
+					<Badge variant='secondary' style={{ position: 'absolute', insetBlockStart: -4, insetInlineEnd: -4 }}>
+						{active}
+					</Badge>
+				)}
+			</Box>
+			{isVisible && (
+				<Dropdown reference={reference} ref={target} placement='bottom-end'>
+					<Box paddingBlock={8} width='x280' borderRadius='x8' backgroundColor='surface-light'>
+						<OngoingCallsList />
+					</Box>
+				</Dropdown>
+			)}
+		</>
+	);
+};
+
+export default NavBarItemOngoingCalls;
