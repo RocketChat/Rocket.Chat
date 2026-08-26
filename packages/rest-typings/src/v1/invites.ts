@@ -79,27 +79,9 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
 
 export type InvitesEndpoints = {
-	'/v1/removeInvite/:_id': {
-		DELETE: () => boolean;
-	};
-	'/v1/useInviteToken': {
-		POST: (params: UseInviteTokenProps) => {
-			room: {
-				rid: IRoom['_id'];
-				prid: IRoom['prid'];
-				fname: IRoom['fname'];
-				name: IRoom['name'];
-				t: IRoom['t'];
-			};
-		};
-	};
-	'/v1/validateInviteToken': {
-		POST: (params: ValidateInviteTokenProps) => { valid: boolean };
-	};
+	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
+	// weaker than this declaration (see the Omit in the meteor augmentation).
 	'/v1/findOrCreateInvite': {
 		POST: (params: FindOrCreateInviteParams) => IInvite;
-	};
-	'/v1/sendInvitationEmail': {
-		POST: (params: SendInvitationEmailParams) => { success: boolean };
 	};
 };

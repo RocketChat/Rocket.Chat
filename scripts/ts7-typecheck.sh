@@ -52,7 +52,7 @@ done
 echo ""
 echo "================ TS7 canary summary ================"
 echo "green: $green / $total_pkgs packages"
-if [ "${#FAILED[@]}" -gt 0 ]; then
+if [ "${#FAILED[@]:-0}" -gt 0 ]; then
 	printf '%s\n' "${FAILED[@]}" | sort -t= -k2 -rn
 fi
 echo "===================================================="

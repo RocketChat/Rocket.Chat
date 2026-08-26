@@ -1,4 +1,4 @@
-import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -113,45 +113,12 @@ const RolesGetUsersInRolePropsSchema = {
 
 export const isRolesGetUsersInRoleProps = ajvQuery.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
-type RoleSyncProps = {
-	updatedSince?: string;
-};
-
 export type RolesEndpoints = {
+	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
+	// weaker than this declaration (see the Omit in the meteor augmentation).
 	'/v1/roles.list': {
 		GET: () => {
 			roles: IRole[];
-		};
-	};
-	'/v1/roles.sync': {
-		GET: (params: RoleSyncProps) => {
-			roles: {
-				update: IRole[];
-				remove: RocketChatRecordDeleted<IRole>[];
-			};
-		};
-	};
-
-	'/v1/roles.addUserToRole': {
-		POST: (params: RoleAddUserToRoleProps) => {
-			role: IRole;
-		};
-	};
-
-	'/v1/roles.getUsersInRole': {
-		GET: (params: RolesGetUsersInRoleProps) => {
-			users: IUserInRole[];
-			total: number;
-		};
-	};
-
-	'/v1/roles.delete': {
-		POST: (prop: RoleDeleteProps) => void;
-	};
-
-	'/v1/roles.removeUserFromRole': {
-		POST: (props: RoleRemoveUserFromRoleProps) => {
-			role: IRole;
 		};
 	};
 };

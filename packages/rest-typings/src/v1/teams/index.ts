@@ -61,12 +61,8 @@ export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is
 export const isTeamPropsWithTeamId = <T extends TeamProps>(props: T): props is T & { teamId: string } => 'teamId' in props;
 
 export type TeamsEndpoints = {
-	'/v1/teams.list': {
-		GET: () => PaginatedResult & { teams: ITeam[] };
-	};
-	'/v1/teams.listAll': {
-		GET: () => { teams: ITeam[] } & PaginatedResult;
-	};
+	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
+	// weaker than this declaration (see the Omit in the meteor augmentation).
 	'/v1/teams.create': {
 		POST: (params: {
 			name: ITeam['name'];
@@ -103,7 +99,6 @@ export type TeamsEndpoints = {
 			team: ITeam;
 		};
 	};
-
 	'/v1/teams.convertToChannel': {
 		POST: (params: TeamsConvertToChannelProps) => void;
 	};

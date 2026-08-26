@@ -366,5 +366,7 @@ type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints {}
+	// Routes omitted here keep their stronger hand-written declaration in
+	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	interface Endpoints extends Omit<RolesEndpoints, '/v1/roles.list'> {}
 }

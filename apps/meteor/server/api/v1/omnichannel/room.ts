@@ -396,7 +396,9 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatAnalyticsEndpoints {}
+	// livechat/visitor/department.transfer stays declared in
+	// @rocket.chat/rest-typings (the ddp-client livechat SDK consumes it).
+	interface Endpoints extends Omit<LivechatAnalyticsEndpoints, '/v1/livechat/visitor/department.transfer'> {}
 }
 
 API.v1.addRoute(

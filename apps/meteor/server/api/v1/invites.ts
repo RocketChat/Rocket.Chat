@@ -18,7 +18,7 @@ import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-const removeInviteResponseSchema = ajv.compile({
+const removeInviteResponseSchema = ajv.compile<boolean>({
 	type: 'boolean',
 	enum: [true],
 });
@@ -297,5 +297,7 @@ type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends InvitesEndpoints {}
+	// Routes omitted here keep their stronger hand-written declaration in
+	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	interface Endpoints extends Omit<InvitesEndpoints, '/v1/findOrCreateInvite'> {}
 }

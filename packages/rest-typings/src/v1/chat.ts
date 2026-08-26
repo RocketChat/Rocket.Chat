@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -378,7 +378,7 @@ interface IChatUpdateEncrypted extends IChatUpdate {
 	e2eMentions?: IMessage['e2eMentions'];
 }
 
-type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
+export type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
 
 const ChatUpdateSchema = {
 	oneOf: [
@@ -929,133 +929,12 @@ const ChatGetURLPreviewSchema = {
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
 export type ChatEndpoints = {
-	'/v1/chat.sendMessage': {
-		POST: (params: ChatSendMessage) => {
-			message: IMessage;
-		};
-	};
-	'/v1/chat.getMessage': {
-		GET: (params: ChatGetMessage) => {
-			message: IMessage;
-		};
-	};
-	'/v1/chat.reportMessage': {
-		POST: (params: ChatReportMessage) => void;
-	};
-	'/v1/chat.getDiscussions': {
-		GET: (params: ChatGetDiscussions) => {
-			messages: IMessage[];
-			total: number;
-		};
-	};
-	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IThreadMainMessage[];
-			total: number;
-		};
-	};
-	'/v1/chat.syncThreadsList': {
-		GET: (params: ChatSyncThreadsList) => {
-			threads: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
-		};
-	};
-	'/v1/chat.delete': {
-		POST: (params: ChatDelete) => {
-			_id?: string;
-			ts?: string;
-			message?: Pick<IMessage, '_id' | 'rid' | 'u'>;
-		};
-	};
-	'/v1/chat.react': {
-		POST: (params: ChatReact) => void;
-	};
-	'/v1/chat.ignoreUser': {
-		GET: (params: ChatIgnoreUser) => void;
-	};
-	'/v1/chat.search': {
-		GET: (params: ChatSearch) => {
-			messages: IMessage[];
-		};
-	};
-	'/v1/chat.update': {
-		POST: (params: ChatUpdate) => {
-			message: IMessage;
-		};
-	};
+	// Every other /v1/chat.* route is declared by its migrated implementation
+	// (apps/meteor/server/api/v1/chat.ts) via ExtractRoutesFromAPI, which
+	// augments `Endpoints` with types derived from the actual handlers and
+	// validators. Only routes that have not been migrated yet stay here —
+	// remove each entry as its route moves to the validated API builder.
 	'/v1/chat.getMessageReadReceipts': {
 		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
-	};
-	'/v1/chat.getStarredMessages': {
-		GET: (params: GetStarredMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.getPinnedMessages': {
-		GET: (params: GetPinnedMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.getMentionedMessages': {
-		GET: (params: GetMentionedMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.syncMessages': {
-		GET: (params: ChatSyncMessages) => {
-			result: {
-				updated: IMessage[];
-				deleted: { _id: IMessage['_id']; _deletedAt: string }[];
-				cursor: {
-					next: string | null;
-					previous: string | null;
-				};
-			};
-		};
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
-		};
-	};
-	'/v1/chat.syncThreadMessages': {
-		GET: (params: ChatSyncThreadMessages) => {
-			messages: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
-		};
-	};
-	'/v1/chat.getThreadMessages': {
-		GET: (params: ChatGetThreadMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.getDeletedMessages': {
-		GET: (params: ChatGetDeletedMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.getURLPreview': {
-		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
 	};
 };
