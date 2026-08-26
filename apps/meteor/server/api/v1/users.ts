@@ -87,7 +87,6 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
-import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -654,13 +653,12 @@ API.v1.get(
 	},
 );
 
-// users.list accepts arbitrary query filter fields (name, username, etc.)
-// that cannot be statically defined — keeping as addRoute until params are known
+// Filtering here is limited to `email`: the raw `query` parameter was removed in 9.0.0.
+// Use `users.listByStatus` for roles, type, active/deactivated and search-term filtering.
 API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
-		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
 		query: isUsersListParamsGET,
 	},
@@ -675,15 +673,13 @@ API.v1.addRoute(
 			const canViewFullOtherUserInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+			const nonEmptyQuery = getNonEmptyQuery(canViewFullOtherUserInfo);
 
 			if ('email' in this.queryParams && this.queryParams.email) {
 				if (!canViewFullOtherUserInfo) {
@@ -696,32 +692,7 @@ API.v1.addRoute(
 				};
 			}
 
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
-			}
-
 			const hidden = await getUsersHiddenFrom(this.userId);
-
-			if (hidden && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
-			}
 
 			const actualSort = sort || { username: 1 };
 

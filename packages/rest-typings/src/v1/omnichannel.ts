@@ -472,10 +472,6 @@ const LivechatMonitorsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['text'],
 	additionalProperties: false,
@@ -678,10 +674,6 @@ const LivechatTagsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['text'],
 	additionalProperties: false,
@@ -730,10 +722,6 @@ const LivechatDepartmentSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -879,10 +867,6 @@ const LivechatDepartmentsAvailableByUnitIdSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['text'],
 	additionalProperties: false,
@@ -912,10 +896,6 @@ const LivechatDepartmentsByUnitSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['text'],
 	additionalProperties: false,
@@ -940,10 +920,6 @@ const LivechatDepartmentsByUnitIdSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['text'],
 	additionalProperties: false,
@@ -953,7 +929,6 @@ export const isLivechatDepartmentsByUnitIdProps = ajvQuery.compile<LivechatDepar
 
 type LivechatUsersManagerGETProps = PaginatedRequest<{
 	text?: string;
-	fields?: string;
 	onlyAvailable?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
@@ -990,14 +965,6 @@ const LivechatUsersManagerGETSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: [],
 	additionalProperties: false,
@@ -1022,10 +989,6 @@ const LivechatUsersManagerPOSTSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1151,10 +1114,6 @@ const LivechatCustomFieldsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1299,10 +1258,6 @@ const LivechatUsersAgentSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: [],
 	additionalProperties: false,
@@ -1328,14 +1283,6 @@ const LivechatPrioritiesPropsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -3422,7 +3369,6 @@ export const POSTLivechatBusinessHoursRemoveSuccessResponse = ajv.compile<void>(
 export const isGETLivechatTriggersParams = ajvQuery.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
 export type GETLivechatRoomsParams = PaginatedRequest<{
-	fields?: string;
 	createdAt?: string;
 	customFields?: string;
 	closedAt?: string;
@@ -3449,14 +3395,6 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -4696,7 +4634,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/department.listByIds': {
-		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
+		GET: (params: { ids: string[] }) => {
 			departments: ILivechatDepartment[];
 		};
 	};

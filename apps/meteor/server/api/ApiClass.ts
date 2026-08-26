@@ -872,8 +872,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.queryOperations = options.queryOperations;
-						this.queryFields = options.queryFields;
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');

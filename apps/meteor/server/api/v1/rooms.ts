@@ -620,13 +620,13 @@ API.v1.get(
 	async function action() {
 		const room = await findRoomByIdOrName({ params: this.queryParams });
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
 
-		const ourQuery = Object.assign(query, { prid: room._id });
+		const ourQuery = { prid: room._id };
 
 		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
 			sort: sort || { fname: 1 },
