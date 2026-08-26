@@ -22,7 +22,7 @@ export const useMoveRoomCategory = () => {
 	return useMutation({
 		mutationFn: async ({ room, target, silent = false }: MoveRoomInput) => {
 			const isInTarget = target === FAVORITES_TARGET ? room.isFavorite : room.categoryId === target;
-			const dispatchMessage = silent || !room.name;
+			const ignoreToast = silent || !room.name;
 
 			if (!target || isInTarget) {
 				if (room.isFavorite) {
@@ -30,15 +30,13 @@ export const useMoveRoomCategory = () => {
 				} else {
 					await setCategory([room.rid], null);
 				}
-				return { message: dispatchMessage ? null : t('__roomName__removed_from_category', { roomName: room.name }) };
+				return { message: ignoreToast ? null : t('__roomName__removed_from_category', { roomName: room.name }) };
 			}
 
 			if (target === FAVORITES_TARGET) {
 				await toggleFavoriteEndpoint({ roomId: room.rid, favorite: true });
 				return {
-					message: dispatchMessage
-						? null
-						: t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: t('Favorites') }),
+					message: ignoreToast ? null : t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: t('Favorites') }),
 				};
 			}
 
@@ -49,7 +47,7 @@ export const useMoveRoomCategory = () => {
 
 			await setCategory([room.rid], target);
 			return {
-				message: dispatchMessage ? null : t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
+				message: ignoreToast ? null : t('__roomName__moved_to__categoryName__', { roomName: room.name, categoryName: category.name }),
 			};
 		},
 		onSuccess: (result) => {
