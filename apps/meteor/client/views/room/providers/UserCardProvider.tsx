@@ -1,4 +1,3 @@
-import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -17,6 +16,12 @@ const HOVER_CLOSE_DELAY = 300;
 // from their trigger. The positioning engine takes px, so the offset is
 // derived from the current root font size to stay rem-based.
 const getPopoverOffset = () => 0.25 * parseFloat(window.getComputedStyle(document.documentElement).fontSize || '16');
+
+// Static trigger attributes shared by every trigger in the room. Stateful
+// attributes (aria-expanded/aria-controls) are deliberately left out: with a
+// single provider serving hundreds of triggers, they would be announced on
+// all of them whenever any one card opens.
+const cardTriggerProps = { 'aria-haspopup': 'dialog' } as const;
 
 const isPointInside = (el: Element | null, x: number, y: number): boolean => {
 	if (!el) {
@@ -59,8 +64,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	});
 
 	const state = useOverlayTriggerState({ onOpenChange: handleOpenChange });
-	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
-	delete triggerProps.onPress;
 
 	useEffect(() => clearTimers, [clearTimers]);
 
@@ -101,35 +104,32 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		openTimerRef.current = undefined;
 	});
 
-	const handleSetUserCard = useCallback(
-		(e: UIEvent, username: string) => {
-			const trigger = (e.currentTarget ?? e.target) as Element | null;
+	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
+		const trigger = (e.currentTarget ?? e.target) as Element | null;
 
-			clearTimers();
+		clearTimers();
 
-			const open = () => {
-				triggerRef.current = trigger;
-				state.open();
-				setUserCardData({
-					username,
-					rid: room._id,
-					onOpenUserInfo: () => openUserInfo(username),
-					onClose: closeUserCard,
-				});
-			};
+		const open = () => {
+			triggerRef.current = trigger;
+			state.open();
+			setUserCardData({
+				username,
+				rid: room._id,
+				onOpenUserInfo: () => openUserInfo(username),
+				onClose: closeUserCard,
+			});
+		};
 
-			if (e.type === 'click' || e.type === 'keydown') {
-				openedViaKeyboardRef.current = e.type === 'keydown';
-				open();
-				return;
-			}
+		if (e.type === 'click' || e.type === 'keydown') {
+			openedViaKeyboardRef.current = e.type === 'keydown';
+			open();
+			return;
+		}
 
-			openedViaKeyboardRef.current = false;
-			trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
-			openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
-		},
-		[clearTimers, handleTriggerLeave, closeUserCard, openUserInfo, room._id, state],
-	);
+		openedViaKeyboardRef.current = false;
+		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
+		openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
+	});
 
 	const isOpen = state.isOpen && !!userCardData;
 
@@ -180,24 +180,36 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
 		};
 
+		// The card is a non-modal popover, so react-aria only handles Escape
+		// while focus is inside it; a hover-opened card keeps focus wherever it
+		// was, so Escape is also handled at the document level (WCAG 1.4.13).
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				closeUserCard();
+			}
+		};
+
 		document.addEventListener('mousemove', handleMouseMove);
+		document.addEventListener('keydown', handleKeyDown);
 		document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
 		return () => {
 			document.removeEventListener('mousemove', handleMouseMove);
+			document.removeEventListener('keydown', handleKeyDown);
 			document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
 		};
 	}, [isOpen, closeUserCard]);
 
+	// Every entry is identity-stable, so consumers subscribed to the context
+	// (every message header, avatar and mention in the room) never re-render
+	// because a card opened or closed elsewhere.
 	const contextValue = useMemo(
 		() => ({
 			openUserCard: handleSetUserCard,
 			openUserInfo: handleOpenUserInfo,
 			closeUserCard,
-			triggerProps,
-			triggerRef,
-			state,
+			triggerProps: cardTriggerProps,
 		}),
-		[handleSetUserCard, handleOpenUserInfo, closeUserCard, state, triggerProps],
+		[handleSetUserCard, handleOpenUserInfo, closeUserCard],
 	);
 
 	return (
@@ -205,9 +217,12 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			{children}
 			{isOpen && userCardData && (
 				<Suspense fallback={null}>
-					<Popover placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
+					{/* isNonModal: a modal popover would aria-hide the rest of the page
+					    and lock scroll — hostile to a card that opens on mere hover
+					    while focus stays in the message list. */}
+					<Popover isNonModal placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
 						<Box ref={handleCardRef} tabIndex={-1}>
-							<UserCard {...userCardData} {...overlayProps} />
+							<UserCard {...userCardData} />
 						</Box>
 					</Popover>
 				</Suspense>
