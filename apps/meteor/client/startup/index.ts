@@ -4,6 +4,7 @@ import './audit';
 import './callbacks';
 import './deviceManagement';
 import './incomingMessages';
+import './livechatEnterprise';
 import './roles';
 import './routes';
 import './slashCommands';
