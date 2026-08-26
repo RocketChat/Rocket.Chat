@@ -1,5 +1,5 @@
 import type { Options } from '@rocket.chat/message-parser';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import type { RefObject } from 'react';
 
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
