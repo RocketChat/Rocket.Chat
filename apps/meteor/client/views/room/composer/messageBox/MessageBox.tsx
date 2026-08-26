@@ -21,8 +21,10 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useDraft } from './hooks/useDraft';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { handleSelectionWrapping } from './wrapSelection';
-import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -30,6 +32,7 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import { emoji } from '../../../../lib/emoji';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
@@ -46,9 +49,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useDraft } from './hooks/useDraft';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const { target } = event;

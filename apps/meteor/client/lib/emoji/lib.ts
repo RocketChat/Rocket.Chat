@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { EmojiPackages } from '../lib/rocketchat';
+import type { EmojiPackages } from '../../../app/emoji/lib/rocketchat';
 
 export const emojiEmitter = new Emitter<{ updated: void }>();
 
