@@ -101,7 +101,6 @@ export const removeRoomOwner = async (fromUserId: string, rid: string, userId: s
 	if (settings.get('UI_DisplayRoles')) {
 		void api.broadcast('user.roleUpdate', event);
 	}
-	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 	return true;
 };
 
