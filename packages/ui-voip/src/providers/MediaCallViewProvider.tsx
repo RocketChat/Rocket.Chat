@@ -66,14 +66,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 				if (!instance) {
 					return;
 				}
-				return instance.on('endedCall', () => {
-					if (sessionState.hidden) {
-						return;
-					}
+				return instance.on('droppedCall', () => {
 					callback();
 				});
 			},
-			[instance, sessionState.hidden],
+			[instance],
 		),
 	);
 

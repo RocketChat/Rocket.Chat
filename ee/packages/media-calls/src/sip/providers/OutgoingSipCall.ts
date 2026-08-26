@@ -158,7 +158,7 @@ export class OutgoingSipCall extends BaseSipCall {
 								msg: 'OutgoingSipCall.createDialog - request failed',
 								err,
 							});
-							void mediaCallDirector.hangupByServer(call, 'signaling-error');
+							this.hangupCall('signaling-error');
 							return;
 						}
 
@@ -199,7 +199,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 		if (!this.sipDialog) {
 			this.cancelAnyPendingRequest();
-			void mediaCallDirector.hangupByServer(call, hangupReason || 'signaling-error');
+			this.hangupCall(hangupReason || 'signaling-error');
 			return;
 		}
 
@@ -207,7 +207,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog.on('destroy', () => {
 			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
 			this.sipDialog = null;
-			void mediaCallDirector.hangup(call, this.agent, 'remote');
+			this.hangupCall('remote');
 		});
 
 		this.sipDialog.on('modify', async (req, res) => {
@@ -385,7 +385,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', err, callId: call._id });
 			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'signaling-error');
+				this.hangupCall('signaling-error');
 			}
 			return this.processEndedCall();
 		}
