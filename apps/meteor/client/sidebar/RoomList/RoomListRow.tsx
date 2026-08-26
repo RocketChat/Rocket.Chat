@@ -1,7 +1,6 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -24,20 +23,6 @@ export type RoomListRowProps = {
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
 	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
 
-	const acceptCall = useVideoConfAcceptCall();
-	const rejectCall = useVideoConfRejectIncomingCall();
-	const incomingCalls = useVideoConfIncomingCalls();
-	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
-
-	const videoConfActions = useMemo(
-		() =>
-			currentCall && {
-				acceptCall: (): void => acceptCall(currentCall.callId),
-				rejectCall: (): void => rejectCall(currentCall.callId),
-			},
-		[acceptCall, rejectCall, currentCall],
-	);
-
 	return (
 		<SidebarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
@@ -47,7 +32,6 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			extended={extended}
 			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
-			videoConfActions={videoConfActions}
 			userId={userId}
 		/>
 	);
