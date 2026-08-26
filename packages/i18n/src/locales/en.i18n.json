@@ -6108,10 +6108,6 @@
   "shortcut_name": "shortcut name",
   "Should_be_a_URL_of_an_image": "Should be a URL of an image.",
   "Should_exists_a_user_with_this_username": "The user must already exist.",
-  "Show__count__declined_calls": {
-    "one": "Show {{count}} declined call",
-    "other": "Show {{count}} declined calls"
-  },
   "Show_additional_fields": "Show additional fields",
   "Show_agent_email": "Show agent email",
   "Show_agent_info": "Show agent information",
