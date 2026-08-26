@@ -38,6 +38,10 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	// Everyone else is offerable — that is the point, since membership doesn't require room access.
 	// DMs expose their members on the room doc; other room types come from the members endpoint.
 	const getMembers = useEndpoint('GET', isPrivate ? '/v1/groups.members' : '/v1/channels.members');
+	// 100 is the members endpoints' own page size, and this asks for one page rather than paging the whole room.
+	// So in a room with more members than that, some of them are still offered as options. That is a redundant
+	// option rather than a wrong outcome: the server skips anyone already associated with the call, and the toast
+	// below says as much. Paging every member of a large room to tidy up a picker isn't worth the requests.
 	const membersQuery = useQuery({
 		enabled: !!room && !isDirect,
 		queryKey: ['conference', 'add-participants', 'members', rid, room?.t],

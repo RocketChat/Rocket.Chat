@@ -65,7 +65,10 @@ const Extended = ({
 				<SidebarItemRow>
 					{icon}
 					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{(timeLabel || time) && <SidebarItemTimestamp>{timeLabel ?? formatDate(time)}</SidebarItemTimestamp>}
+					{/* `timeLabel` is a node, so an empty string or a 0 is still a caller saying "put this here" — which is
+					    what `timeLabel ?? formatDate(time)` below already honours. Testing it for truth instead would fall
+					    back to the timestamp for those, and render neither. */}
+					{(timeLabel !== undefined || time) && <SidebarItemTimestamp>{timeLabel ?? formatDate(time)}</SidebarItemTimestamp>}
 				</SidebarItemRow>
 				<SidebarItemRow>
 					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>

@@ -1,37 +1,17 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import { lazy, Suspense, useMemo } from 'react';
 
+import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceThreadChat from './ConferenceThreadChat';
-import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import { narrowRoomStyle } from './panelStyles';
+import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import RoomSkeleton from '../room/RoomSkeleton';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
 const ChatProvider = lazy(() => import('../room/providers/ChatProvider'));
 const RoomNotFound = lazy(() => import('../room/RoomNotFound'));
-const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
-
-const PANEL_INLINE_PADDING = 12;
-
-const narrowRoomStyle = css`
-	& .rc-message-box.embedded {
-		padding-inline: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message {
-		padding-left: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message-system {
-		padding-left: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message-container--left {
-		margin-left: 0px;
-	}
-`;
 
 type ConferenceThreadProps = {
 	rid: string;
@@ -56,7 +36,7 @@ const ConferenceThread = ({ rid, tmid, onEscape }: ConferenceThreadProps) => {
 							</ChatProvider>
 						</RoomProvider>
 					)}
-					{isError && (error instanceof NotAuthorizedError ? <NotAuthorizedPage /> : <RoomNotFound />)}
+					{isError && (error instanceof NotSubscribedToRoomError ? <ConferenceChatNotShared /> : <RoomNotFound />)}
 				</Suspense>
 			</Box>
 		</LayoutContext.Provider>

@@ -36,8 +36,11 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 			return undefined;
 		}
 		const sub = Subscriptions.state.find((record) => record.rid === rid);
-		// Sub exists but is closed — must still call openRoom.mutateAsync, so don't shortcut.
-		if (sub?.open === false) {
+		// No subscription is not the same as an open one: shortcutting here would skip both the fallback fetch and
+		// the `NotSubscribedToRoomError` check below, and hand a cached public room to someone with no access to
+		// it — which for the conference chat panel means silently showing a chat instead of the way to share it.
+		// A closed subscription can't shortcut either, since `openRoom.mutateAsync` still has to run.
+		if (!sub || sub.open === false) {
 			return undefined;
 		}
 		return { rid };
