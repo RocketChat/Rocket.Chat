@@ -46,7 +46,6 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		<FuselageMessageHeader>
 			<MessageNameContainer
 				id={`${message._id}-displayName`}
-				aria-label={displayName}
 				role='button'
 				tabIndex={0}
 				aria-haspopup='dialog'
