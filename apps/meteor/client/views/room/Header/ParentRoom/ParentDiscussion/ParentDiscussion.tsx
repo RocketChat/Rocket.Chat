@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useRoomRoute, useUserDisplayName } from '@rocket.chat/ui-client';
-import { useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from '../ParentRoomButton';
@@ -23,10 +23,8 @@ const ParentDiscussion = ({ loading = false, room }: ParentDiscussionProps) => {
 	const { t } = useTranslation();
 	const goToRoom = useRoomRoute();
 	const allowSpecialChars = useSetting('UI_Allow_room_names_with_special_chars', false);
-	const parentRoom = useUserSubscription(room._id) ?? room;
-	const userDisplayName = useUserDisplayName({ name: parentRoom.fname, username: parentRoom.name });
-	const roomName =
-		parentRoom.t === 'c' || parentRoom.t === 'p' ? getChannelRoomName(parentRoom, allowSpecialChars) : (userDisplayName ?? '');
+	const userDisplayName = useUserDisplayName({ name: room.fname, username: room.name });
+	const roomName = room.t === 'c' || room.t === 'p' ? getChannelRoomName(room, allowSpecialChars) : (userDisplayName ?? '');
 
 	const handleRedirect = (): void => {
 		goToRoom({ rid: room._id, t: room.t, name: room.name });
