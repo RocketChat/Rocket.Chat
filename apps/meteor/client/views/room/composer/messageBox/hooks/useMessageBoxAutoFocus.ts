@@ -29,6 +29,11 @@ export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
 				return;
 			}
 
+			// Do not steal focus from a contenteditable element the user clicked into
+			if ((target as HTMLElement).tagName === 'SPAN' && (target as HTMLElement).isContentEditable) {
+				return;
+			}
+
 			if (e.ctrlKey === true || e.metaKey === true) {
 				return;
 			}
