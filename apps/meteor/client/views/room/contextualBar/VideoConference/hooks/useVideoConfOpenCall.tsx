@@ -1,6 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+import { useConferenceWindowEnabled } from '../../../../conference/hooks/useConferenceWindowEnabled';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
 // Shared window name for in-product (same-origin) conferences, so we never stack duplicate windows even if
@@ -46,11 +47,56 @@ const openCallWindow = (url: string, name: string): Window | null => {
 	return window.open(url, name);
 };
 
+/**
+ * The conference window: one window shared by every in-product conference, focused rather than reloaded when
+ * the conference it already shows is asked for again.
+ */
+const openConferenceWindow = (callUrl: string): Window | null => {
+	let target: URL | undefined;
+	try {
+		const url = new URL(callUrl, window.location.href);
+		if (url.origin === window.location.origin) {
+			target = url;
+		}
+	} catch {
+		// Not a valid/absolute URL — fall back to an unnamed window below.
+	}
+
+	// External provider URLs get a window of their own each time.
+	if (!target) {
+		return openCallWindow(callUrl, '_blank');
+	}
+
+	// The conference window is same-origin, so check what it's *actually* showing rather than the URL we last
+	// passed (which can differ in string form between the start/join paths). If it's already on this conference,
+	// focus it without reloading (empty URL = no navigation) and without passing features, which would otherwise
+	// resize and recentre a window the user may have arranged.
+	if (!isBlocked(conferenceWindow)) {
+		let showsSameConference = false;
+		try {
+			// The search too, not only the path: a conference the user is *about to start* is identified by the
+			// room in its query string, so two of those differ there and nowhere else.
+			showsSameConference = conferenceWindow?.location.pathname === target.pathname && conferenceWindow?.location.search === target.search;
+		} catch {
+			// Conference window navigated cross-origin (not our in-product conference).
+		}
+
+		if (showsSameConference) {
+			return window.open('', CONFERENCE_WINDOW_NAME) ?? conferenceWindow;
+		}
+	}
+
+	// New or different conference → open/navigate the shared window and focus it.
+	conferenceWindow = openCallWindow(callUrl, CONFERENCE_WINDOW_NAME);
+	return conferenceWindow;
+};
+
 export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 
 	const handleOpenCall = useCallback(
-		(callUrl: string, providerName?: string) => {
+		(callUrl: string, providerName?: string): Window | null | undefined => {
 			const desktopApp = window.RocketChatDesktop;
 
 			if (desktopApp?.openInternalVideoChatWindow) {
@@ -58,52 +104,19 @@ export const useVideoConfOpenCall = () => {
 				return undefined;
 			}
 
-			const open = () => {
-				let target: URL | undefined;
-				try {
-					const url = new URL(callUrl, window.location.href);
-					if (url.origin === window.location.origin) {
-						target = url;
-					}
-				} catch {
-					// Not a valid/absolute URL — fall back to an unnamed window below.
-				}
-
-				// External provider URLs get a window of their own each time.
-				if (!target) {
-					return openCallWindow(callUrl, '_blank');
-				}
-
-				// The conference window is same-origin, so check what it's *actually* showing rather than the URL
-				// we last passed (which can differ in string form between the start/join paths). If it's already
-				// on this conference, focus it without reloading (empty URL = no navigation) and without passing
-				// features, which would otherwise resize and recentre a window the user may have arranged.
-				if (!isBlocked(conferenceWindow)) {
-					let showsSameConference = false;
-					try {
-						// The search too, not only the path: a conference the user is *about to start* is identified by
-						// the room in its query string, so two of those differ there and nowhere else.
-						showsSameConference =
-							conferenceWindow?.location.pathname === target.pathname && conferenceWindow?.location.search === target.search;
-					} catch {
-						// Conference window navigated cross-origin (not our in-product conference).
-					}
-
-					if (showsSameConference) {
-						return window.open('', CONFERENCE_WINDOW_NAME) ?? conferenceWindow;
-					}
-				}
-
-				// New or different conference → open/navigate the shared window and focus it.
-				conferenceWindow = openCallWindow(callUrl, CONFERENCE_WINDOW_NAME);
-				return conferenceWindow;
-			};
+			// Without the call window a call is an ordinary new tab, exactly as it always was: no popup features
+			// for a browser to refuse, and no window shared between calls.
+			const open = conferenceWindowEnabled ? () => openConferenceWindow(callUrl) : () => window.open(callUrl);
 
 			// The window is handed back so the caller can watch it — see `useLeaveCallOnWindowClose`, which is what
 			// notices a call window disappearing before it could report its own departure.
 			const target = open();
 
-			if (!isBlocked(target)) {
+			// A plain tab is blocked only by `window.open` returning null, which is the test this has always made.
+			// A popout can also come back already closed, which is how some blockers refuse one.
+			const blocked = conferenceWindowEnabled ? isBlocked(target) : target === null;
+
+			if (!blocked) {
 				return target;
 			}
 
@@ -111,7 +124,7 @@ export const useVideoConfOpenCall = () => {
 
 			return null;
 		},
-		[setModal],
+		[conferenceWindowEnabled, setModal],
 	);
 
 	return handleOpenCall;

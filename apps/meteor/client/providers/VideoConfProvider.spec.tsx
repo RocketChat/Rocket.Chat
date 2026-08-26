@@ -36,23 +36,26 @@ const StartCallButton = () => {
 	);
 };
 
-const renderProvider = (persistentChat: boolean) =>
+const renderProvider = (conferenceWindowEnabled: boolean) =>
 	render(
 		<VideoConfProvider>
 			<StartCallButton />
 		</VideoConfProvider>,
-		{ wrapper: mockAppRoot().withJohnDoe().withSetting('VideoConf_Enable_Persistent_Chat', persistentChat).build() },
+		{ wrapper: mockAppRoot().withJohnDoe().withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled).build() },
 	);
 
 const startCall = jest.spyOn(VideoConfManager, 'startCall').mockResolvedValue(undefined);
+const setConferenceWindowEnabled = jest.spyOn(VideoConfManager, 'setConferenceWindowEnabled');
 
 beforeEach(() => {
 	openCall.mockClear();
 	startCall.mockClear();
+	setConferenceWindowEnabled.mockClear();
 });
 
 afterAll(() => {
 	startCall.mockRestore();
+	setConferenceWindowEnabled.mockRestore();
 });
 
 // The reported bug: clicking *call* created the conference — a message in the room, a ring, a call in everyone's
@@ -67,11 +70,33 @@ it('creates no conference when the call window will ask first', async () => {
 	expect(openCall).toHaveBeenCalledWith(expect.stringContaining('rid=room-1'));
 });
 
-// Without persistent chat there is no preflight to wait for, so the conference is started here as it always was.
+// Without the call window there is no preflight to wait for, so the conference is started here as it always was,
+// and nothing opens until the manager says where.
 it('starts the conference itself when there is no call window to ask', async () => {
 	renderProvider(false);
 
 	await userEvent.click(screen.getByRole('button', { name: 'call' }));
 
 	expect(startCall).toHaveBeenCalledWith('room-1', undefined);
+	expect(openCall).not.toHaveBeenCalled();
+});
+
+// The manager is the non-React half of the same gate, and it is what decides whether to ring, whether to post the
+// join and whether a decline is recorded — so what it is told has to follow the setting.
+it('tells the manager which flow it is in', async () => {
+	renderProvider(false);
+	expect(setConferenceWindowEnabled).toHaveBeenLastCalledWith(false);
+
+	renderProvider(true);
+	expect(setConferenceWindowEnabled).toHaveBeenLastCalledWith(true);
+});
+
+// A provider's own call URL is opened as it always was, with no watch on the window: the join was posted before
+// it opened, and the page there is not ours to poll.
+it('opens the provider URL the manager hands it', async () => {
+	renderProvider(false);
+
+	VideoConfManager.emit('call/join', { callId: 'call-1', url: 'https://call.example', providerName: 'test' });
+
+	expect(openCall).toHaveBeenCalledWith('https://call.example', 'test');
 });
