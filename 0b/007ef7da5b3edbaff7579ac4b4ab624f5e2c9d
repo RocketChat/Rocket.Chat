@@ -1,0 +1,28 @@
+packages/rest-typings/src/v1/emojiCustom.ts
+  s_b8df60e3773f1a::t_1382853f4c922c 24
+packages/rest-typings/src/v1/dm/im.ts
+  s_b8df60e3773f1a::t_0e18e6705564d7 64,67,70
+.changeset/ninety-beds-fry.md
+  h_a14d455b9c5e4f 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0b007ef7da5b3edbaff7579ac4b4ab624f5e2c9d",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_b8df60e3773f1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f29a2de1-bc8d-4fd9-953b-67b658a8b813",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
