@@ -11,7 +11,7 @@ const CallTimer = ({ startAt }: CallTimerProps) => {
 		return startAt.getTime();
 	});
 
-	const [ellapsedTime, setEllapsedTime] = useState(() => {
+	const [elapsedTime, setElapsedTime] = useState(() => {
 		if (!start) {
 			return 0;
 		}
@@ -20,7 +20,7 @@ const CallTimer = ({ startAt }: CallTimerProps) => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setEllapsedTime(() => {
+			setElapsedTime(() => {
 				const now = Date.now();
 				return now - start;
 			});
@@ -29,7 +29,7 @@ const CallTimer = ({ startAt }: CallTimerProps) => {
 		return () => clearInterval(interval);
 	}, [start]);
 
-	const totalSeconds = Math.floor(ellapsedTime / 1000);
+	const totalSeconds = Math.floor(elapsedTime / 1000);
 
 	const hours = Math.floor(totalSeconds / 3600);
 	const minutes = Math.floor((totalSeconds % 3600) / 60);
