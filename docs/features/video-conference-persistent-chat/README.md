@@ -4,16 +4,30 @@
 
 Persistent chat gives a video conference a Rocket.Chat room that lives alongside the call, so the conversation survives after the call ends. Instead of handing the user off to the provider's own page, joining a conference opens an in-product page at `/conference/:id` — the provider's call in an iframe, a control bar along the bottom, and the conference's chat in a collapsible panel docked to the inline end.
 
+### The setting
+
+Everything below is behind one EE setting, **`VideoConf_Conference_Window_Enabled`** (module
+`videoconference-enterprise`), **off by default**. With it off the client behaves exactly as it did before any of
+this existed: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call
+rings from the room and waits there, and nothing new is asked of the server. This document says *"with the call
+window"* / *"without the call window"* for the two states.
+
+It is deliberately independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it has always
+meant: a discussion or thread per call, created server-side. A workspace already running persistent chat sees no
+change until the call window is turned on; and the call window works with persistent chat off, where its chat
+panel simply shows the room the call was started in.
+
 The chat can run in one of two modes, controlled by `VideoConf_Persistent_Chat_Mode`:
 
 - **Thread** (default): the chat panel renders a thread started from the conference message in the original channel. No discussion room is created. Access is based on the parent channel — anyone who can read the channel can participate in the thread.
 - **Main room** (`main_room`): the chat panel shows the channel itself. A separate discussion room is created off the parent channel when needed (requires `Discussion_enabled`). The chat room is resolved from `discussionRid` when the discussion exists, otherwise the conference's `rid`. A conference's `rid` never changes; only `discussionRid` moves.
 
-Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (module `videoconference-enterprise`).
+The discussion/thread itself is gated by the EE setting `VideoConf_Enable_Persistent_Chat` (same module), which
+is what it gated before this feature and all it gates now.
 
 ## The flows at a glance
 
-Four diagrams covering a call's life. They describe the feature with persistent chat **on**; with it off none of it
+Four diagrams covering a call's life. They describe the feature with the call window **on**; with it off none of it
 applies — see [Opening a Conference](#opening-a-conference) for what happens instead.
 
 | | |
@@ -36,23 +50,24 @@ join it" against Matrix's, and lists the three things worth borrowing.
 
 ## Opening a Conference
 
-**Placing a call** (`startCall`) with persistent chat on posts *nothing*. It opens the call window at
+**Placing a call** (`startCall`) with the call window on posts *nothing*. It opens the window at
 `/conference/new?rid=…`, and the conference is created there, by the [preflight](#the-preflight-screen). Without
-persistent chat it goes through `VideoConfManager.startCall` as it always has.
+the call window it goes through `VideoConfManager.startCall` as it always has, which for a direct call means
+ringing the callee and waiting in the room — no window opens until they answer.
 
 The room's call button goes straight there. It used to open a popup to confirm and set devices first, which the
-preflight now does with the user able to see what they are joining — two confirmations for one call. The popup
-remains the only place to set devices when there is no preflight, so it is still what an unconfigured
-persistent-chat workspace gets.
+preflight now does with the user able to see what they are joining — two confirmations for one call. That popup
+remains the only place to set devices when there is no preflight, so it is still what a workspace without the
+call window gets.
 
 **Joining one that exists** (`joinCall`) emits `call/join`:
 
-- **Persistent chat enabled** — `{ callId }`, and again nothing is posted: the conference page joins for itself
+- **Call window enabled** — `{ callId }`, and again nothing is posted: the conference page joins for itself
   once its preflight is confirmed.
 - **Disabled** — `POST /v1/video-conference.join` first, then `{ url, callId, providerName }`, the pre-existing
   behavior.
 
-`VideoConfProvider` handles `call/join` by opening `/conference/:id` (absolute URL) with persistent chat on, or
+`VideoConfProvider` handles `call/join` by opening `/conference/:id` (absolute URL) with the call window on, or
 the provider URL without it, and `useVideoConfOpenCall` opens the window. On desktop,
 `openInternalVideoChatWindow` takes over.
 
@@ -79,8 +94,10 @@ Being rung into a call whose caller is still choosing a camera means answering t
 this avoids. The screen says as much before it happens ("Alice will be notified when you start the call") and the
 button is the call itself rather than a join.
 
-With persistent chat **off** there is no preflight to wait for, so nothing changes: the caller's own client rings
-the callee from the room, on the 1:1 handshake it always used.
+Without the call window there is no preflight to wait for, so nothing changes: the caller's own client rings the
+callee from the room, on the 1:1 handshake it always used. A server-originated `ring` — which the server has
+always broadcast for group calls — is ignored by the client then, exactly as it was before this work, so a group
+call does not start ringing a whole channel.
 
 ### How the call window is opened
 
@@ -98,7 +115,10 @@ Same-origin (in-product) conferences share a named window, `rocketchat-conferenc
 
 Whether it is showing this conference is decided by reading the window's actual `location.pathname`, not the URL we last passed — those differ in string form between the start and join paths.
 
-External provider URLs (persistent chat off) get their own popout each time, unnamed.
+External provider URLs get their own popout each time, unnamed.
+
+Without the call window none of this applies: `window.open(url)` with no name and no features, a plain tab, and
+`VideoConfBlockModal` if that returns `null` — the behaviour that has always been there.
 
 ## The preflight screen
 
@@ -124,14 +144,14 @@ because nothing was created; on a call that already exists it reports leaving fi
 The window has to open on the click, as above. The *join*, though, is what turns mic and camera into the
 provider's URL and what marks the user as present in the call — so it waits here instead:
 
-- `VideoConfManager.joinCall` posts nothing when persistent chat is on — it only opens the window. Posting there
+- `VideoConfManager.joinCall` posts nothing when the call window is on — it only opens the window. Posting there
   would throw away the URL it returns and count the user as present in a call they have not chosen to enter yet.
 - `useConferenceEmbedded` joins as a mutation, from the preflight's confirmation, carrying the preferences it was
   given.
 
 Devices are configured **only** here. The room's start-call and incoming-call popups used to ask, seconds before
 a window opened, and then the conference page joined with a hardcoded `{ mic: true, cam: false }` regardless —
-so the popups now leave the question alone whenever persistent chat is on. With it off there is no preflight to
+so the popups now leave the question alone whenever the call window is on. With it off there is no preflight to
 ask, so those controls stay exactly as they were.
 
 What is on offer is what the provider can be told: today the pair it takes, on or off. They sit in `CallBar`, the
@@ -705,7 +725,8 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 
 | Setting | Notes |
 |---------|-------|
-| `VideoConf_Enable_Persistent_Chat` | EE. Gates whether joining opens the in-product conference page. |
+| `VideoConf_Conference_Window_Enabled` | EE, **off by default**. The switch for everything in this document: the call window, the preflight, the ongoing-calls list, the membership-based flow. Off means the pre-existing client behaviour, unchanged. |
+| `VideoConf_Enable_Persistent_Chat` | EE. Whether each call gets a discussion or thread of its own, server-side. Unchanged by this feature, and independent of the setting above. |
 | `VideoConf_Persistent_Chat_Mode` | `thread` (default) or `main_room`. Thread opens a thread from the call message; main room shows the channel itself in the chat panel. |
 | `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name (only in discussion mode); `[date]` is substituted, or the date is prefixed when absent. Requires `Discussion_enabled`. |
 
@@ -832,6 +853,13 @@ The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**
 package-level jest. The specs sit beside what they test, so the file names say where to look; enumerating them
 here only produced a list that went stale on its own.
 
+Every gate is tested from **both** sides. The client specs that assert the new flow set
+`VideoConf_Conference_Window_Enabled` to `true` explicitly, and each carries a counterpart with it off that pins
+the pre-existing behaviour — `VideoConfManager.spec.ts` is split into two top-level describes for exactly that
+reason. The same split runs end to end: `tests/e2e/video-conference-ring.spec.ts` is the flow with the setting
+off, untouched from before the feature, and `tests/e2e/video-conference-call-window.spec.ts` turns it on in a
+`beforeAll` and back off in an `afterAll`.
+
 Two things about the arrangement are worth knowing. `apps/meteor/tests/unit/server/services/video-conference/testHarness.ts`
 is what makes the service testable at all: `createService` proxyquires it with ~25 inert module stubs (one of
 which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
@@ -893,6 +921,7 @@ git — `git show 5ab58858d7d:<path>` restores any of them intact.
 | **Handing internal links to the opener** (the desktop bridge and the `postMessage` handshake) | needs a bridge on both sides for a nicer landing | a `noopener` new tab — see [Confined Navigation](#confined-navigation) |
 | **Regrouping the room's call list** into Ongoing/Past, named after the discussion | a redesign of a list that already works, and one every workspace sees | the existing flat list, with the fix that it no longer counts members who never joined |
 | ~~**Disabling join on message blocks inside the call window**~~ | done — `videoConfJoinDisabled` on `UiKitContext`, set when `useCurrentRoutePath` starts with `/conference/` | join and call-back buttons are disabled inside the call window |
+| **The embedded-provider join path** (`call/joinEmbedded` on `VideoConfManager`, and the HS256 signing helpers in `@rocket.chat/jwt`) | no embedded provider exists to reach it — it was dead the moment it was written, and the shape it should take is the native LiveKit provider's to decide | nothing; the manager handles URL providers only, and the branch was removed rather than shipped unreachable |
 
 The end-to-end REST suite (`tests/end-to-end/apps/video-conference-membership.ts`) is held back for a different
 reason: it has never been run locally — the API suite authenticates as a fixture admin a dev workspace does not
