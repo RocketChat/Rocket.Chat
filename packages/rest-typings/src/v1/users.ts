@@ -11,8 +11,9 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
-import type { UsersPresenceParamsGET } from './users/UsersPresenceParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { UsersPresenceParamsGET } from './users/UsersPresenceParamsGET';
+import type { UsersRequestDataDownloadParamsGET } from './users/UsersRequestDataDownloadParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
@@ -180,7 +181,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.requestDataDownload': {
-		GET: (params: { fullExport?: 'true' | 'false' }) => {
+		GET: (params: UsersRequestDataDownloadParamsGET) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
 			url: string | null;
