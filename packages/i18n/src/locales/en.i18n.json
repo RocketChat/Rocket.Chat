@@ -4969,6 +4969,10 @@
   "onboarding.page.requestTrial.title": "Request a <1>30-day Trial</1>",
   "Once": "Once",
   "Ongoing_calls": "Ongoing calls",
+  "Ongoing_calls_count": {
+    "one": "{{count}} ongoing call",
+    "other": "{{count}} ongoing calls"
+  },
   "Online": "Online",
   "online": "online",
   "Only_admins_can_perform_this_setup": "Only admins can perform this setup",
