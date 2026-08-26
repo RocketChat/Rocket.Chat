@@ -2635,6 +2635,31 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it('should keep title, nationality and languages when a partial update omits them', async () => {
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: 'partial-update-nickname',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: targetUser._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.title', 'Staff Engineer');
+					expect(res.body).to.have.nested.property('user.nationality', 'Brazilian');
+					expect(res.body.user.languages).to.be.deep.equal(['Portuguese', 'English']);
+				});
+		});
+
 		it(`should return an error when trying to set a title longer than ${USER_PROFILE_FIELD_MAX_LENGTH} characters`, (done) => {
 			void request
 				.post(api('users.update'))

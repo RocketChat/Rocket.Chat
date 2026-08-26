@@ -8,6 +8,10 @@ import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from 
 export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Pick<SaveUserData, 'title' | 'nationality' | 'languages'>) => {
 	for (const field of ['title', 'nationality'] as const) {
 		const value = userData[field];
+		// absent means "don't touch" — only an explicit empty value clears the field
+		if (value === undefined) {
+			continue;
+		}
 		if (value?.trim()) {
 			if (value.length > USER_PROFILE_FIELD_MAX_LENGTH) {
 				throw new MeteorError('error-field-size-exceeded', `${field} size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters`, {
@@ -20,8 +24,12 @@ export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Pick<
 		}
 	}
 
-	const languages = userData.languages?.map((language) => language.trim()).filter(Boolean);
-	if (languages?.length) {
+	if (userData.languages === undefined) {
+		return;
+	}
+
+	const languages = userData.languages.map((language) => language.trim()).filter(Boolean);
+	if (languages.length) {
 		if (
 			languages.length > USER_PROFILE_LANGUAGES_MAX_COUNT ||
 			languages.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)
