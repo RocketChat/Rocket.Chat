@@ -39,10 +39,10 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
 			const { message } = await testConnection();
-			dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
+			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
 			const key = (await readErrorKey(error)) ?? 'Outlook_Calendar_Test_Connection_failed';
-			dispatchToastMessage({ type: 'error', message: t(key as Parameters<typeof t>[0]) });
+			dispatchToastMessage({ type: 'error', message: t(key) });
 		}
 	};
 

@@ -5,9 +5,8 @@ export type DateRange = {
 
 export type Page<T> = {
 	items: T[];
-	/** Opaque: a Graph `deltaLink` or an EWS sync state. Callers store it and hand it back, never parse it. */
+	// a Graph `deltaLink` or an EWS sync state
 	cursor?: string;
-	/** More pages ready now. With `false`, the cursor is the resume point for the next run. */
 	hasMore: boolean;
 };
 
