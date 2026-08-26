@@ -101,7 +101,7 @@ export const filterGroupVisibility = <T>(
 	return filteredGroups;
 };
 
-export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
+const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
 export const getRoomCategory = (
