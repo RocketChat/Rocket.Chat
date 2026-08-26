@@ -21,7 +21,6 @@ import { scrubForLog } from '../scrub';
  */
 
 export type NtlmEwsTransportConfig = {
-	/** Full EWS endpoint, for example `https://exchange.example.com/EWS/Exchange.asmx`. */
 	url: string;
 	username: string;
 	password: string;
@@ -71,9 +70,11 @@ export class AllowlistedAgent extends Agent {
 export class NtlmEwsTransport implements IEwsTransport {
 	private readonly config: NtlmEwsTransportConfig;
 
-	private readonly endpoint: URL;
+	private readonly endpoint: URL | undefined;
 
-	private readonly agent: Agent;
+	private readonly agent: Agent | undefined;
+
+	private readonly configError: ExchangeError | undefined;
 
 	/** Must be the certificate of the connection actually carrying the handshake, not a separate lookup. */
 	private lastPeerCertificate: Buffer | undefined;
@@ -84,21 +85,35 @@ export class NtlmEwsTransport implements IEwsTransport {
 		try {
 			this.endpoint = new URL(config.url);
 		} catch {
-			throw new ExchangeError('not-configured', 'The EWS endpoint URL is not a valid URL', { detail: config.url });
+			this.configError = new ExchangeError('not-configured', 'The EWS endpoint URL is not a valid URL', {
+				detail: config.url || 'no URL is configured',
+			});
+			return;
 		}
 
 		if (this.endpoint.protocol !== 'https:') {
-			// Channel binding is meaningless without TLS.
-			throw new ExchangeError('not-configured', 'The EWS endpoint must use HTTPS');
+			this.configError = new ExchangeError('not-configured', 'The EWS endpoint must use HTTPS');
+			return;
 		}
 
 		this.agent = new AllowlistedAgent(this.endpoint.hostname, {
-			// The three handshake messages have to share a connection.
 			keepAlive: true,
 			maxSockets: 1,
 			...(config.caCert ? { ca: config.caCert } : {}),
 			rejectUnauthorized: config.rejectUnauthorized !== false,
 		});
+	}
+
+	/**
+	 * The single point every request passes through, so a misconfigured transport reports itself as
+	 * `not-configured` instead of failing further down as something less diagnosable.
+	 */
+	private assertConfigured(): { endpoint: URL; agent: Agent } {
+		if (!this.endpoint || !this.agent) {
+			throw this.configError ?? new ExchangeError('not-configured', 'The EWS transport is not configured');
+		}
+
+		return { endpoint: this.endpoint, agent: this.agent };
 	}
 
 	/** A reused keep-alive socket is already secure; a fresh one has to wait for `secureConnect`. */
@@ -140,7 +155,6 @@ export class NtlmEwsTransport implements IEwsTransport {
 		const negotiate = await this.send('', { Authorization: createType1Message(workstation, domain) }, 'GET');
 
 		if (negotiate.status !== 401) {
-			// No challenge means NTLM is not enabled on the virtual directory at all.
 			throw new ExchangeError('authentication-failed', 'Exchange did not issue an NTLM challenge', {
 				detail: `expected 401, received ${negotiate.status}. NTLM may not be enabled on the EWS virtual directory.`,
 			});
@@ -186,12 +200,14 @@ export class NtlmEwsTransport implements IEwsTransport {
 		headers: Record<string, string>,
 		method: 'GET' | 'POST' = 'POST',
 	): Promise<{ status: number; headers: Record<string, string | string[] | undefined>; body: string }> {
+		const { endpoint, agent } = this.assertConfigured();
+
 		return new Promise((resolve, reject) => {
 			const req = request(
-				this.endpoint,
+				endpoint,
 				{
 					method,
-					agent: this.agent,
+					agent,
 					timeout: REQUEST_TIMEOUT_MS,
 					headers: {
 						'Content-Type': 'text/xml; charset=utf-8',
