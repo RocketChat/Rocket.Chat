@@ -137,7 +137,7 @@ export class SipServerSession {
 	public async sendReferRequest(
 		sipDialog: Srf.Dialog,
 		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact; conferenceAlias?: string },
-	): Promise<void> {
+	): Promise<number> {
 		const { transferredBy, transferredTo, conferenceAlias } = params;
 		if (!transferredTo && !conferenceAlias) {
 			throw new Error('Missing refer destination');
@@ -164,6 +164,8 @@ export class SipServerSession {
 		if (res.status === 202) {
 			logger.debug({ msg: 'REFER was accepted', method: 'SipServerSession.sendReferRequest', ...params });
 		}
+
+		return res.status;
 	}
 
 	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {

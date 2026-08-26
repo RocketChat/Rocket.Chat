@@ -32,6 +32,10 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected processedEscalation: boolean;
 
+	protected sentEscalationRefer: boolean;
+
+	protected confirmedEscalation: boolean;
+
 	constructor(
 		protected readonly session: SipServerSession,
 		call: IMediaCall,
@@ -42,6 +46,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.sipDialog = null;
 		this.processedTransfer = false;
 		this.processedEscalation = false;
+		this.sentEscalationRefer = false;
+		this.confirmedEscalation = false;
 	}
 
 	protected async handleDialogModify(req: SrfRequest, res: SrfResponse): Promise<void> {
@@ -253,7 +259,58 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		}
 	}
 
+	protected async checkIfEscalationReferWasSuccessful(): Promise<void> {
+		const conference = await VideoConferenceModel.findOneByMediaCallId(this.call._id, {
+			projection: { webrtcParticipantCount: 1, sipParticipantCount: 1 },
+		});
+		if (!conference) {
+			logger.debug({
+				msg: 'No conference found linked to this call',
+				method: 'checkIfEscalationReferWasSuccessful',
+				callId: this.call._id,
+				type: this.constructor.name,
+			});
+			return;
+		}
+
+		if (conference.webrtcParticipantCount && conference.webrtcParticipantCount >= 2) {
+			logger.debug({
+				msg: 'Escalation complete as both users joined via webrtc',
+				method: 'checkIfEscalationReferWasSuccessful',
+				callId: this.call._id,
+				type: this.constructor.name,
+			});
+			this.confirmedEscalation = true;
+			return;
+		}
+
+		if (conference.sipParticipantCount) {
+			logger.debug({
+				msg: 'Escalation complete as an user joined via SIP',
+				method: 'checkIfEscalationReferWasSuccessful',
+				callId: this.call._id,
+				type: this.constructor.name,
+			});
+			this.confirmedEscalation = true;
+		}
+	}
+
 	public override async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+		if (this.processedEscalation && !this.confirmedEscalation) {
+			await this.checkIfEscalationReferWasSuccessful();
+
+			if (this.sentEscalationRefer && !this.confirmedEscalation) {
+				logger.debug({
+					msg: 'Skipping updates to sip dialog while escalation is not confirmed',
+					method: 'reactToCallChanges',
+					type: this.constructor.name,
+					callId: this.call._id,
+					lastCallState: this.lastCallState,
+				});
+				return;
+			}
+		}
+
 		logger.debug({ msg: 'reactToCallChanges', type: this.constructor.name, callId: this.call._id, lastCallState: this.lastCallState });
 
 		// If we already knew this call was over, there's nothing more to reflect
@@ -420,6 +477,31 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			});
 		}
 
-		await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
+		const referStatus = await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
+
+		if (referStatus === 202) {
+			logger.debug({
+				msg: 'Remote leg accepted the REFER to the escalated conference',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+			});
+			this.sentEscalationRefer = true;
+			this.hangupCall('conference-escalation');
+		} else {
+			logger.warn({
+				msg: 'Unhandled response to escalation REFER',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+				referStatus,
+			});
+		}
 	}
 }
