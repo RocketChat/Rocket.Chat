@@ -24,18 +24,26 @@ export const useStartConference = (rid: string) => {
 
 	// The subscription, not the room: its `fname` is the name this reader knows the room by, which for a direct
 	// message is the other person rather than a room name at all.
-	const { data: subscription, isPending: isRoomPending } = useQuery({
+	const {
+		data: subscription,
+		isPending: isRoomPending,
+		error: roomError,
+	} = useQuery({
 		queryKey: ['conference', 'start', rid],
 		queryFn: async () => (await getSubscription({ roomId: rid })).subscription ?? null,
 		retry: false,
 	});
 
-	const { data: capabilities, isPending: isCapabilitiesPending } = useQuery({
+	const {
+		data: capabilities,
+		isPending: isCapabilitiesPending,
+		error: capabilitiesError,
+	} = useQuery({
 		queryKey: videoConferenceQueryKeys.capabilities(),
 		queryFn: async () => (await getCapabilities()).capabilities,
 	});
 
-	const { mutate: start, error } = useMutation({
+	const { mutate: start, error: startError } = useMutation({
 		mutationFn: async ({ state, name, ring }: { state: CallPreferences; name?: string; ring?: boolean }) => {
 			// `allowRinging` is a request, not an instruction: the server decides from the room whether ringing is
 			// the right way to announce this call at all, and this only says whether the caller wants it where it is.
@@ -55,13 +63,25 @@ export const useStartConference = (rid: string) => {
 		},
 	});
 
+	const loading = isRoomPending || isCapabilitiesPending;
+
+	// A room this user can't see, or one that isn't there, resolves to no subscription rather than to a failure —
+	// so it has to be turned into one here. Left as it was, the preflight offers to start a call in a room named
+	// with an empty string, which reads as "Meeting in " and can be confirmed.
+	const noSubscription = !loading && !roomError && !subscription;
+
 	return {
 		/** The name to offer: what this reader calls the room, which is the natural name for a call in it. */
 		name: subscription?.fname || subscription?.name || '',
 		isDirect: subscription?.t === 'd',
 		capabilities: capabilities ?? {},
-		loading: isRoomPending || isCapabilitiesPending,
-		error,
+		loading,
+		/**
+		 * Anything that stops this screen being answerable. The queries count as much as the mutation does: a
+		 * capabilities or subscription request that failed leaves the preflight with nothing to offer, and
+		 * returning empty defaults would show it anyway.
+		 */
+		error: startError ?? roomError ?? capabilitiesError ?? (noSubscription ? new Error('conference-room-unavailable') : null),
 		start,
 	};
 };

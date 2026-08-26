@@ -26,15 +26,25 @@ export type ConferenceChatAccess = VideoConferenceChatAccess & {
 	members: ConferenceMember[];
 };
 
-/** Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous. */
+/**
+ * Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous.
+ *
+ * The URL comes from whichever provider is configured, so it is not ours to trust the shape of: `new URL` throws
+ * on anything relative, and a throw here happens during render and takes the whole conference window with it.
+ * Arriving unnamed is the right way to fail at naming someone.
+ */
 const withDisplayName = (callUrl: string, displayName?: string): string => {
 	if (!displayName) {
 		return callUrl;
 	}
 
-	const url = new URL(callUrl);
-	url.searchParams.set('name', displayName);
-	return url.toString();
+	try {
+		const url = new URL(callUrl, window.location.origin);
+		url.searchParams.set('name', displayName);
+		return url.toString();
+	} catch {
+		return callUrl;
+	}
 };
 
 export const useConferenceEmbedded = (callId: string) => {

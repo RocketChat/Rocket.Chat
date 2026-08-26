@@ -66,10 +66,16 @@ export const useNotification = () => {
 					}),
 			);
 
-			// "Join" action (desktop app): join the call the same way the ongoing-call banner does.
+			// "Join" action (desktop app): join the call the same way the ongoing-call banner does. The event fires
+			// for whichever button was pressed, so it has to say which — the server names this one `join`
+			// (`video-conference/service.ts`), and a second action added later must not silently join a call.
 			const { conferenceId } = notification.payload;
 			if (conferenceId) {
-				n.addEventListener('action', () => {
+				n.addEventListener('action', (event) => {
+					if (event.action !== 'join') {
+						return;
+					}
+
 					n.close();
 					window.focus();
 					joinCall(conferenceId);

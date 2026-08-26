@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import CallDeviceToggle from './CallDeviceToggle';
 import type { CallPreferences } from './hooks/useCallPreferences';
-import { useCallPreferences, useCallRingPreference } from './hooks/useCallPreferences';
+import { useCallPreferences } from './hooks/useCallPreferences';
 import CallParticipants from '../../components/CallParticipants';
 
 type ConferencePreflightProps = {
@@ -36,8 +36,10 @@ const ConferencePreflight = ({
 	onCancel,
 }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
-	const { preferences, toggle } = useCallPreferences(capabilities);
-	const { ring, toggleRing } = useCallRingPreference();
+	// `useCallPreferences` already carries the ring habit — it calls `useCallRingPreference` itself. Calling that
+	// again here put a second `useLocalStorage` subscriber on the same key, only one of which drove this screen's
+	// state, leaving two sources of truth for one answer.
+	const { preferences, ring, toggle, toggleRing } = useCallPreferences(capabilities);
 
 	const columns = useBreakpoints().includes('md');
 

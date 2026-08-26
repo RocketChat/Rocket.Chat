@@ -35,14 +35,21 @@ type CallParticipantsProps = {
  */
 const CallParticipants = ({ people, total, size = 'x18' }: CallParticipantsProps) => {
 	const { t } = useTranslation();
-	const displayAvatars = useUserPreference<boolean>('displayAvatars');
+	// Defaulted, because the preference is `true` for everyone who hasn't said otherwise and it arrives with the
+	// user rather than with the render. Read bare, the first paint of a call would take `undefined` for "avatars
+	// off" and flash the count in words before the faces replace it.
+	const displayAvatars = useUserPreference<boolean>('displayAvatars', true);
 
 	// The whole count, as the group's label: it is what a screen reader gets instead of the faces, and "+ 3" only
 	// means something next to a total.
 	const label = t('__count__people_in_the_call', { count: total });
 
+	// `UserAvatar` renders nothing without a username, so someone who arrived without one would take a place in
+	// the row and leave it empty — a gap and a drop shadow around nothing. They are counted, not drawn.
+	const faces = people.filter(({ username }) => !!username);
+
 	// Faces switched off, or a call whose members didn't travel with it — an older server, say.
-	if (!displayAvatars || !people.length) {
+	if (!displayAvatars || !faces.length) {
 		return (
 			<Box fontScale='micro' color='hint'>
 				{t('__usersCount__joined', { count: total })}
@@ -50,19 +57,19 @@ const CallParticipants = ({ people, total, size = 'x18' }: CallParticipantsProps
 		);
 	}
 
-	const remaining = total - people.length;
+	const remaining = total - faces.length;
 
 	return (
 		<Box display='flex' alignItems='center' aria-label={label} title={label} style={{ gap: 6 }}>
 			{/* Side by side with a little air between them, rather than overlapped: there are only ever a few, and
 			    a face half behind another face is a worse picture of who is in the call. */}
 			<Box display='flex' alignItems='center' style={{ gap: 4 }}>
-				{people.map(({ _id, username }) => (
+				{faces.map(({ _id, username }) => (
 					<Box key={_id} className={facesStyles}>
-						<UserAvatar username={username ?? ''} size={size} />
+						<UserAvatar username={username as string} size={size} />
 					</Box>
 				))}
-				{people.length === 1 && <Box aria-hidden='true' width={size} height={size} borderRadius='full' backgroundColor='surface-neutral' />}
+				{faces.length === 1 && <Box aria-hidden='true' width={size} height={size} borderRadius='full' backgroundColor='surface-neutral' />}
 			</Box>
 			<Box fontScale='micro' color='hint' flexShrink={0}>
 				{remaining > 0 ? t('plus__usersCount__joined', { count: remaining }) : t('joined')}

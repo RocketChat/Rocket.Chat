@@ -14,7 +14,7 @@ export const mapVideoConfFromApi = (videoConf: Serialized<VideoConference>): Vid
 		...videoConf,
 		_updatedAt: new Date(videoConf._updatedAt),
 		createdAt: new Date(videoConf.createdAt),
-		endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
+		...(videoConf.endedAt && { endedAt: new Date(videoConf.endedAt) }),
 		users: videoConf.users.map(mapVideoConfUserFromApi),
 		...(videoConf.participants && {
 			participants: videoConf.participants.map((participant) => ({

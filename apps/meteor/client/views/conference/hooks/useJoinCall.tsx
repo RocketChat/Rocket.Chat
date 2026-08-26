@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ export const useJoinCall = () => {
 	const setModal = useSetModal();
 	const joinCall = useVideoConfJoinCall();
 	const leaveCall = useEndpoint('POST', '/v1/video-conference.leave');
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { calls } = useJoinableCalls();
 
 	return useCallback(
@@ -36,8 +37,14 @@ export const useJoinCall = () => {
 			const leaveAndJoin = async () => {
 				setModal(null);
 				// Leave first: joining is what tears down the old call's page, and by then it can no longer report
-				// its own departure.
-				await leaveCall({ callId: current.callId }).catch(() => undefined);
+				// its own departure. So a leave that failed is not something to join past — the old call would keep
+				// counting this user as present, with nothing left to correct it. Say so and stay where we are.
+				try {
+					await leaveCall({ callId: current.callId });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+					return;
+				}
 				joinCall(callId);
 			};
 
@@ -60,6 +67,6 @@ export const useJoinCall = () => {
 				</GenericModal>,
 			);
 		},
-		[calls, joinCall, leaveCall, setModal, t],
+		[calls, dispatchToastMessage, joinCall, leaveCall, setModal, t],
 	);
 };
