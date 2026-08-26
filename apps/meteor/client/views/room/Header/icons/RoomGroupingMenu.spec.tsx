@@ -12,7 +12,7 @@ import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation
 
 jest.mock('../../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: jest.fn() }));
 jest.mock('../../../../sidebar/categories/hooks/useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
-jest.mock('../../../../sidebar/categories/useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
+jest.mock('../../../../sidebar/categories/hooks/useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
 jest.mock('../../contexts/RoomContext', () => ({ useUserIsSubscribed: jest.fn() }));
 jest.mock('../../hooks/useToggleFavoriteMutation', () => ({ useToggleFavoriteMutation: jest.fn() }));
 

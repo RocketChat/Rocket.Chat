@@ -22,7 +22,7 @@ jest.mock('../../app/ui-utils/client', () => ({
 	},
 }));
 
-jest.mock('./categories/useCategoryModals', () => ({
+jest.mock('./categories/hooks/useCategoryModals', () => ({
 	useCategoryModals: () => ({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() }),
 }));
 
