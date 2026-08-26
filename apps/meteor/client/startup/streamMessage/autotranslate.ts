@@ -15,7 +15,7 @@ const applyAutoTranslateStreamHandler = () => {
 		return;
 	}
 
-	void import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
+	void import('../../lib/autotranslate').then(({ createAutoTranslateMessageStreamHandler }) => {
 		const streamMessage = createAutoTranslateMessageStreamHandler();
 		clientCallbacks.remove('streamMessage', STREAM_HANDLER_ID);
 		clientCallbacks.add('streamMessage', streamMessage, clientCallbacks.priority.HIGH - 3, STREAM_HANDLER_ID);
