@@ -58,7 +58,7 @@ API.v1.post(
 
 		return API.v1.success({
 			provider: provider.id,
-			message: 'Outlook_Calendar_Test_Connection_successful' as const,
+			message: 'Outlook_Calendar_Test_Connection_successful',
 		});
 	},
 );

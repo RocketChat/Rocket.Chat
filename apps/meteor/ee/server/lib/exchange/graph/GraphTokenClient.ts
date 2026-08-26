@@ -3,22 +3,18 @@ import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
 
 export type GraphTokenClientConfig = {
-	/** Entra ID tenant id or verified domain. */
 	tenantId: string;
 	clientId: string;
 	clientSecret: string;
-	/**
-	 * A setting rather than a constant, so national cloud endpoints can be supported later without a code
-	 * change. Defaults to the global cloud.
-	 */
+	// A setting rather than a constant, so national cloud endpoints can be supported later without a code change
 	authorityHost?: string;
-	/** Defaults to `https://graph.microsoft.com`. Kept configurable for the same reason as `authorityHost`. */
+	// Defaults to `https://graph.microsoft.com`. Kept configurable for the same reason as `authorityHost`.
 	graphHost?: string;
 };
 
 type TokenCache = {
 	accessToken: string;
-	/** Absolute epoch milliseconds, already reduced by the safety margin. */
+	// Absolute epoch milliseconds, already reduced by the safety margin.
 	expiresAt: number;
 };
 
@@ -31,9 +27,8 @@ type TokenResponse = {
 export const DEFAULT_AUTHORITY_HOST = 'https://login.microsoftonline.com';
 export const DEFAULT_GRAPH_HOST = 'https://graph.microsoft.com';
 
-/** Refresh this many seconds early so a token cannot expire midway through a request. */
+// Refresh this many seconds early so a token cannot expire midway through a request.
 const EXPIRY_SAFETY_MARGIN_SECONDS = 30;
-/** Used only when the server omits `expires_in`, which it should never do. */
 const FALLBACK_EXPIRES_IN_SECONDS = 300;
 const TOKEN_REQUEST_TIMEOUT_MS = 10000;
 
@@ -134,8 +129,6 @@ export class GraphTokenClient {
 		});
 
 		if (!response.ok) {
-			// The body carries `error` and `error_description`, which name the actual misconfiguration.
-			// Worth surfacing, and it never contains the secret we sent.
 			const detail = await response.text().catch(() => undefined);
 
 			if (response.status === 400 || response.status === 401) {
