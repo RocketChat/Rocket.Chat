@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
@@ -50,7 +50,9 @@ const VideoConfListItem = ({
 	} = videoConfData;
 
 	const displayName = useUserDisplayName({ name, username });
-	const joinedUsers = users.filter((user) => user._id !== _id);
+	// Excludes the creator, and also members who never joined: `users` is the conference's membership list, so
+	// someone added to the call is in it whether or not they ever answered.
+	const joinedUsers = users.filter((user) => user._id !== _id && hasJoinedVideoConference(user));
 
 	const hovered = css`
 		&:hover,
