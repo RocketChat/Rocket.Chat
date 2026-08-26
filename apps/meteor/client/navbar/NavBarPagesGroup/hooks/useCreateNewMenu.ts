@@ -3,7 +3,7 @@ import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateNewItems } from './useCreateNewItems';
-import { useCategoryModals } from '../../../sidebar/categories/useCategoryModals';
+import { useCategoryModals } from '../../../sidebar/categories/hooks/useCategoryModals';
 import { useOutboundMessageAccess } from '../../../views/omnichannel/components/outboundMessage/hooks';
 import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 

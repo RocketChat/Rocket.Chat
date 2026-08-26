@@ -7,9 +7,9 @@ import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryRoomIds } from './hooks/useCategoryRoomIds';
 import { useUpdateCategory } from './hooks/useUpdateCategory';
-import { useCategoryRoomIds } from './useCategoryRoomIds';
-import { useValidateCategoryName } from './validateCategoryName';
+import { useValidateCategoryName } from './hooks/useValidateCategoryName';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 
 type ManageCategoryModalProps = {

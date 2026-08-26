@@ -6,9 +6,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateCustomCategory } from './hooks/useCreateCustomCategory';
-import { useValidateCategoryName } from './validateCategoryName';
+import type { MovableRoom } from './hooks/useCustomCategories';
+import { useValidateCategoryName } from './hooks/useValidateCategoryName';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
-import type { MovableRoom } from '../hooks/useCustomCategories';
 
 type CreateCategoryModalProps = {
 	room?: MovableRoom;

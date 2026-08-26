@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event';
 
 import RoomGroupingMenu from './RoomGroupingMenu';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useCategoryModals } from '../../../../sidebar/categories/hooks/useCategoryModals';
 import { useMoveRoomCategory } from '../../../../sidebar/categories/hooks/useMoveRoomCategory';
-import { useCategoryModals } from '../../../../sidebar/categories/useCategoryModals';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 

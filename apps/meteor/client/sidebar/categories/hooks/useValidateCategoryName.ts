@@ -2,7 +2,7 @@ import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCustomCategories } from '../hooks/useCustomCategories';
+import { useCustomCategories } from './useCustomCategories';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
 

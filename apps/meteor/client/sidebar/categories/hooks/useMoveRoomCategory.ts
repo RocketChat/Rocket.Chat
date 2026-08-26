@@ -2,9 +2,9 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import type { MovableRoom } from './useCustomCategories';
+import { FAVORITES_TARGET, useCustomCategories } from './useCustomCategories';
 import { useSetCategory } from './useSetCategory';
-import type { MovableRoom } from '../../hooks/useCustomCategories';
-import { FAVORITES_TARGET, useCustomCategories } from '../../hooks/useCustomCategories';
 
 type MoveRoomInput = {
 	room: MovableRoom;

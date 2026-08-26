@@ -4,10 +4,10 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './useCategoryModals';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import type { MovableRoom } from '../hooks/useCustomCategories';
-import { FAVORITES_TARGET, useCustomCategories } from '../hooks/useCustomCategories';
-import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
+import type { MovableRoom } from './useCustomCategories';
+import { FAVORITES_TARGET, useCustomCategories } from './useCustomCategories';
+import { useMoveRoomCategory } from './useMoveRoomCategory';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const useRoomCategoryItems = (room: MovableRoom) => {
 	const { t } = useTranslation();

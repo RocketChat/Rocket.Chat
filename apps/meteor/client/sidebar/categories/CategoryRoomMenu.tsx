@@ -5,7 +5,7 @@ import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCategoryMenuItems } from './useCategoryMenuItems';
+import { useCategoryMenuItems } from './hooks/useCategoryMenuItems';
 
 type Section = { title: string; items: GenericMenuItemProps[] };
 

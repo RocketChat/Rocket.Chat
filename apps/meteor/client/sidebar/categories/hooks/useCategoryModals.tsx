@@ -2,13 +2,13 @@ import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import CreateCategoryModal from './CreateCategoryModal';
-import CustomCategoryUpsellModal from './CustomCategoryUpsellModal';
-import DeleteCategoryModal from './DeleteCategoryModal';
-import ManageCategoryModal from './ManageCategoryModal';
-import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import type { MovableRoom } from '../hooks/useCustomCategories';
+import type { MovableRoom } from './useCustomCategories';
+import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import CreateCategoryModal from '../CreateCategoryModal';
+import CustomCategoryUpsellModal from '../CustomCategoryUpsellModal';
+import DeleteCategoryModal from '../DeleteCategoryModal';
+import ManageCategoryModal from '../ManageCategoryModal';
 
 export const useCategoryModals = () => {
 	const setModal = useSetModal();

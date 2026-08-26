@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
-import { useCategoryModals } from './useCategoryModals';
+import { useCategoryModals } from './hooks/useCategoryModals';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
 
 type CategoryMenuProps = {

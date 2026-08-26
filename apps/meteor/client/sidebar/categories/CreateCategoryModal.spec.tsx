@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event';
 
 import CreateCategoryModal from './CreateCategoryModal';
 import { useCreateCustomCategory } from './hooks/useCreateCustomCategory';
-import { useValidateCategoryName } from './validateCategoryName';
+import { useValidateCategoryName } from './hooks/useValidateCategoryName';
 
-jest.mock('./validateCategoryName', () => ({
+jest.mock('./hooks/useValidateCategoryName', () => ({
 	useValidateCategoryName: jest.fn(),
 	MAX_CATEGORY_NAME_LENGTH: 30,
 }));

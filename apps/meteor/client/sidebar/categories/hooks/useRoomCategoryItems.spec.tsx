@@ -1,15 +1,15 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useCategoryModals } from './useCategoryModals';
+import { useCustomCategories } from './useCustomCategories';
+import { useMoveRoomCategory } from './useMoveRoomCategory';
 import { useRoomCategoryItems } from './useRoomCategoryItems';
-import { useCustomCategories } from '../hooks/useCustomCategories';
 
-jest.mock('../hooks/useCustomCategories', () => ({ useCustomCategories: jest.fn(), FAVORITES_TARGET: 'favorites' }));
-jest.mock('./hooks/useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
+jest.mock('./useCustomCategories', () => ({ useCustomCategories: jest.fn(), FAVORITES_TARGET: 'favorites' }));
+jest.mock('./useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
 jest.mock('./useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
-jest.mock('../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: () => ({ data: true }) }));
+jest.mock('../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: () => ({ data: true }) }));
 
 const mockedUseCustomCategories = jest.mocked(useCustomCategories);
 const mockedUseMoveRoomCategory = jest.mocked(useMoveRoomCategory);

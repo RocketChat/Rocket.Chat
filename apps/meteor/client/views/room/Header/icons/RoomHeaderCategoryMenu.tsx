@@ -4,7 +4,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useCategoryMenuItems } from '../../../../sidebar/categories/useCategoryMenuItems';
+import { useCategoryMenuItems } from '../../../../sidebar/categories/hooks/useCategoryMenuItems';
 
 const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean): 'star-filled' | 'folder' | 'star' => {
 	if (favorite) {

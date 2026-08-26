@@ -7,11 +7,11 @@ import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
-import { useCustomCategories } from './useCustomCategories';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
+import { useCustomCategories } from '../categories/hooks/useCustomCategories';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 
 const query = { open: { $ne: false } };

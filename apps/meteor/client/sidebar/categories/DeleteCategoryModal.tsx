@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryRoomIds } from './hooks/useCategoryRoomIds';
 import { useDeleteCategory } from './hooks/useDeleteCategory';
-import { useCategoryRoomIds } from './useCategoryRoomIds';
 
 type DeleteCategoryModalProps = {
 	category: ISidebarCategory;
