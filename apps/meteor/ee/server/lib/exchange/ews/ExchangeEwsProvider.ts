@@ -40,9 +40,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	/**
 	 * Whether the name resolves is beside the point: a completed round trip already proves the endpoint,
-	 * TLS and the credentials, so "not found" counts as success. Impersonation needs a target mailbox and
-	 * is a separate concern.
-	 */
+	 * TLS and the credentials, so "not found" counts as success.	 */
 	public async testConnection(): Promise<void> {
 		try {
 			parseEwsResponse(await this.transport.post(resolveNamesRequest(this.serviceAccountAddress)));
@@ -62,7 +60,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, folderId, cursor)));
 
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
-		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
+
 		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
 
 		const deletions: ExchangeEvent[] = allByTag(doc, TYPES_NS, 'Delete')
