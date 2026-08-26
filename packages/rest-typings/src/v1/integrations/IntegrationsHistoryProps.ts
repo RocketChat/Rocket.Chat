@@ -10,7 +10,6 @@ const integrationsHistorySchema = {
 		offset: { type: 'number', nullable: true },
 		count: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
-		query: { type: 'string', nullable: true },
 	},
 	required: ['id'],
 	additionalProperties: false,

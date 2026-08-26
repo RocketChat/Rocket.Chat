@@ -121,12 +121,11 @@ const customSoundsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;
 
 			const filter = {
-				...query,
 				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 

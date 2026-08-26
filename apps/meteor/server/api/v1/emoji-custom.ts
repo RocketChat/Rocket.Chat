@@ -94,7 +94,6 @@ const emojiCustomCreateEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { query } = await this.parseJsonQuery();
 			const { updatedSince, _updatedAt, _id } = this.queryParams;
 
 			const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
@@ -103,7 +102,6 @@ const emojiCustomCreateEndpoints = API.v1
 			if (updatedSinceDate) {
 				const [update, remove] = await Promise.all([
 					EmojiCustom.find({
-						...query,
 						...(_id ? { _id } : {}),
 						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
 						_updatedAt: { $gt: updatedSinceDate },
@@ -122,7 +120,6 @@ const emojiCustomCreateEndpoints = API.v1
 			return API.v1.success({
 				emojis: {
 					update: await EmojiCustom.find({
-						...query,
 						...(_id ? { _id } : {}),
 						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
 					}).toArray(),
@@ -142,7 +139,7 @@ const emojiCustomCreateEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 			const { name } = this.queryParams;
 
 			return API.v1.success(
@@ -154,7 +151,7 @@ const emojiCustomCreateEndpoints = API.v1
 									$options: 'i',
 								},
 							}
-						: query,
+						: {},
 					pagination: {
 						offset,
 						count,
