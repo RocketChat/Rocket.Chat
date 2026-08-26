@@ -1,0 +1,21 @@
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_564225550e2b30::t_13ad0cef68568e 129,136
+  s_564225550e2b30::t_f8b4eede49f993 158-160
+  s_564225550e2b30::t_f388e67c37b71c 121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "150b20c345a31072d7e4893ce27288dcae2c7686",
+  "prompts": {},
+  "sessions": {
+    "s_564225550e2b30": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d7234ff-7a9a-4ded-8861-a7d38ce628ab",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

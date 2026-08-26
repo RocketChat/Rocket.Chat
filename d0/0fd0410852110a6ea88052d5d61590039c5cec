@@ -1,0 +1,21 @@
+packages/rest-typings/src/v1/rooms.ts
+  s_564225550e2b30::t_674ed87c8fe8ed 1093-1094
+apps/meteor/server/api/v1/rooms.ts
+  s_564225550e2b30::t_907064bf723459 1769-1772
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d00fd0410852110a6ea88052d5d61590039c5cec",
+  "prompts": {},
+  "sessions": {
+    "s_564225550e2b30": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d7234ff-7a9a-4ded-8861-a7d38ce628ab",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
