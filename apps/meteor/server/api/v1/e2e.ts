@@ -528,8 +528,8 @@ const e2eEndpoints = API.v1
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	// Routes omitted here keep their stronger hand-written declaration in
 	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends Omit<E2eEndpoints, '/v1/e2e.requestSubscriptionKeys'> {}
 }
