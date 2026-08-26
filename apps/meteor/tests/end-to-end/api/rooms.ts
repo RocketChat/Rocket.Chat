@@ -5437,7 +5437,7 @@ describe('[/rooms.history]', () => {
 		expect(dmRes.body).to.have.property('success', true);
 		expect(dmRes.body.messages[0].msg).to.equal('dm message');
 
-		await deleteRoom({ type: 'p', roomId: group._id });
+		await Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteRoom({ type: 'd', roomId: dm._id })]);
 	});
 
 	// Regression: a null `attachments` on the quote attachment used to fail response validation.
