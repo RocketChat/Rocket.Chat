@@ -66,7 +66,7 @@ const dedupeThreadMessagesById = (messages: IThreadMessage[]): IThreadMessage[] 
 
 		const messageTime = new Date(message._updatedAt ?? message.ts).getTime();
 		const existingTime = new Date(existing._updatedAt ?? existing.ts).getTime();
-		if (messageTime >= existingTime) {
+		if (messageTime > existingTime) {
 			byId.set(message._id, message);
 		}
 	}
