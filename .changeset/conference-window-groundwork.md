@@ -1,13 +1,15 @@
 ---
-'@rocket.chat/fuselage-ui-kit': minor
-'@rocket.chat/mock-providers': minor
-'@rocket.chat/desktop-api': minor
-'@rocket.chat/ui-client': minor
-'@rocket.chat/ui-kit': minor
-'@rocket.chat/i18n': minor
+'@rocket.chat/fuselage-ui-kit': patch
+'@rocket.chat/mock-providers': patch
+'@rocket.chat/desktop-api': patch
+'@rocket.chat/ui-client': patch
+'@rocket.chat/ui-kit': patch
+'@rocket.chat/i18n': patch
 '@rocket.chat/meteor': patch
 ---
 
-Adds the views, hooks and shared-package plumbing behind the persistent video conference window, as groundwork for the feature that will use them.
+Groundwork for the video conference window: no user-facing change.
 
-Nothing here is mounted into the application: no new item appears in the navigation bar, the room header, the room list or the message list, and no existing screen renders anything it did not render before. The conference window itself is only reached by visiting a `/conference/...` URL directly, a route that already existed and until now rendered a placeholder. `UserAction.addStream` now reference-counts its subscribers instead of throwing when a room is already streaming, so a room can be mounted twice; `AuthenticationCheck` and `UsernameCheck` accept a `loading` placeholder so a standalone route can avoid flashing the app-shaped skeleton; and `GenericMenuItem` accepts a `textValue` so a menu item with rendered content can still be announced and matched by typeahead.
+Adds the window's views and hooks, an ongoing-calls list, and the small shared-package additions they need. None of it is mounted into the application — no item appears in the navigation bar, the room header, the room list or the message list, no existing screen renders anything new, and no new request, poll or subscription starts. The window is reachable only by visiting a `/conference/...` URL directly, a route that already existed and until now rendered a placeholder. The feature that mounts all of this arrives separately, behind a setting that is off by default.
+
+Three shared behaviours changed along the way: `UserAction.addStream` reference-counts its subscribers instead of throwing when a room is already streaming, so the same room can be mounted twice; `AuthenticationCheck` and `UsernameCheck` accept a `loading` placeholder so a standalone route need not flash the app-shaped skeleton; and `GenericMenuItem` accepts a `textValue` so a menu item with rendered content is still announced and matched by typeahead.
