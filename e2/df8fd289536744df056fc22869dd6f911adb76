@@ -1,0 +1,23 @@
+packages/peggy-loader/package.json
+  s_87ad9ebab40b1d::t_d13fb9d72cdcd5 10,12
+packages/message-parser/package.json
+  s_87ad9ebab40b1d::t_d13fb9d72cdcd5 5,7
+packages/fuselage-ui-kit/package.json
+  s_87ad9ebab40b1d::t_501d62e9b1a219 6,8,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "e2df8fd289536744df056fc22869dd6f911adb76",
+  "prompts": {},
+  "sessions": {
+    "s_87ad9ebab40b1d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bf3e025e-2f0d-482f-b0c1-31a46402cec4",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
