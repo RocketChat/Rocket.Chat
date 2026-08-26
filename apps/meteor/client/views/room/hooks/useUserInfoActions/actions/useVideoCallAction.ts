@@ -8,12 +8,13 @@ import {
 	useSetting,
 	usePermission,
 	useUserCard,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import {
-	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
 	useVideoConfLoadCapabilities,
+	useVideoConfStartCall,
 } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
@@ -28,7 +29,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 
 	const loadCapabilities = useVideoConfLoadCapabilities();
 	const dispatchWarning = useVideoConfWarning();
-	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const startCall = useVideoConfStartCall();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
@@ -36,23 +37,32 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);
 
+	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
+
 	const videoCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const action = async (): Promise<void> => {
-			if (isCalling || isRinging || !room) {
+			if (isCalling || isRinging) {
 				return;
 			}
 
 			try {
 				await loadCapabilities();
 				closeUserCard();
-				dispatchPopup({ rid: room._id });
+
+				let rid = room?._id;
+				if (!rid) {
+					const { room: newRoom } = await createDirectMessage({ usernames: user.username ?? '' });
+					rid = newRoom._id;
+				}
+
+				startCall(rid);
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
 		};
 
 		const shouldShowStartCall =
-			room && !isRoomFederated(room) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+			(!room || !isRoomFederated(room)) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
 
 		return shouldShowStartCall
 			? {
@@ -65,16 +75,18 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	}, [
 		room,
 		user._id,
+		user.username,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,
 		isCalling,
 		isRinging,
 		t,
-		dispatchPopup,
+		startCall,
 		dispatchWarning,
 		closeUserCard,
 		loadCapabilities,
+		createDirectMessage,
 	]);
 
 	return videoCallOption;

@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
 	VideoConfPopup,
@@ -17,12 +18,14 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupCallerInfo from './VideoConfPopupCallerInfo';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type IncomingPopupProps = {
 	id: string;
-	room: IRoom;
+	/** Absent when the call reaches a conference member who has no access to the room it belongs to. */
+	room?: IRoom;
 	position: number;
 	onClose: (id: string) => void;
 	onMute: (id: string) => void;
@@ -37,8 +40,15 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 
 	const { data, isPending, isSuccess } = useVideoConferenceInfo(id);
 
-	const showMic = Boolean(data?.capabilities?.mic);
-	const showCam = Boolean(data?.capabilities?.cam);
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there.
+	const preflight = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	const showMic = !preflight && Boolean(data?.capabilities?.mic);
+	const showCam = !preflight && Boolean(data?.capabilities?.cam);
+
+	// Without the room there is nothing to name the call after until the conference itself loads.
+	// Only group conferences carry a title, and `data` is still serialized here, so narrow structurally.
+	const callName = roomName ?? (data && 'title' in data ? data.title : '');
 
 	const handleJoinCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
@@ -46,7 +56,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	});
 
 	return (
-		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName })}>
+		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName: callName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{isPending && <Skeleton />}
@@ -72,7 +82,8 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 				)}
 			</VideoConfPopupHeader>
 			<VideoConfPopupContent>
-				<VideoConfPopupRoomInfo room={room} />
+				{room && <VideoConfPopupRoomInfo room={room} />}
+				{!room && data && <VideoConfPopupCallerInfo caller={data.createdBy} title={callName} />}
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
