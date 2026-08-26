@@ -31,7 +31,6 @@ export const handleFormattingShortcut = (
 	}
 
 	if (preventDefault) {
-		// Prevent Ctrl+B from creating <b></b> and Ctrl+I from creating <i></i>
 		event.preventDefault();
 	}
 
