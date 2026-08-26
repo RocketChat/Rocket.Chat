@@ -5,9 +5,13 @@ import { useLeaveCallOnWindowClose } from './useLeaveCallOnWindowClose';
 
 const leave = jest.fn(() => ({ success: true }) as any);
 
-const renderWatch = () => {
+const renderWatch = (conferenceWindowEnabled = true) => {
 	const { result, unmount } = renderHook(() => useLeaveCallOnWindowClose(), {
-		wrapper: mockAppRoot().withJohnDoe().withEndpoint('POST', '/v1/video-conference.leave', leave).build(),
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
+			.withEndpoint('POST', '/v1/video-conference.leave', leave)
+			.build(),
 	});
 
 	return { watch: result.current, unmount };
@@ -76,6 +80,19 @@ it('has nothing to watch when no window was opened', async () => {
 	const { watch } = renderWatch();
 
 	act(() => watch('the-call', null));
+	await settle(10_000);
+
+	expect(leave).not.toHaveBeenCalled();
+});
+
+// Without the call window the join was posted here and the provider's own page was never ours to poll, so there
+// is nothing to watch: no interval starts and no leave is ever reported.
+it('watches nothing without the call window', async () => {
+	const { watch } = renderWatch(false);
+	const target = fakeWindow();
+
+	act(() => watch('the-call', target));
+	(target as { closed: boolean }).closed = true;
 	await settle(10_000);
 
 	expect(leave).not.toHaveBeenCalled();

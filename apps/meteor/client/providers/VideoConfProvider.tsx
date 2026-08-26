@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
+import { useConferenceWindowEnabled } from '../views/conference/hooks/useConferenceWindowEnabled';
 import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
@@ -22,28 +23,33 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	const router = useRouter();
 	const { t } = useTranslation();
 	const logLevel = useSetting<number>('Log_Level', 0);
-	const persistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 
 	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
-	// The conference page joins for itself, after its preflight, so the manager must not do it on the way there.
-	useEffect(() => VideoConfManager.setPersistentChat(persistentChatEnabled), [persistentChatEnabled]);
+	// The manager decides whether to ring, whether to post the join and whether a decline is recorded, so it
+	// needs the setting too — the non-React half of the same gate every hook below reads.
+	useEffect(() => VideoConfManager.setConferenceWindowEnabled(conferenceWindowEnabled), [conferenceWindowEnabled]);
 
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
-				// With persistent chat on, open the in-product conference page — the provider's call embedded
-				// beside the conference's chat — instead of handing the user off to the provider's own URL.
-				const target = persistentChatEnabled
-					? handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName)
-					: handleOpenCall(url ?? '', providerName);
+				// Without the call window, the provider's own URL is opened, exactly as before.
+				if (!conferenceWindowEnabled) {
+					handleOpenCall(url ?? '', providerName);
+					return;
+				}
 
-				// Whoever posts the join — this window for a provider URL, the conference page after its preflight —
-				// the user then counts as being in the call. If that window goes away before it can report its own
-				// departure, this is what does it for them.
+				// With it, open the in-product conference page — the provider's call embedded beside the
+				// conference's chat — instead of handing the user off to the provider's own page.
+				const target = handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName);
+
+				// The conference page posts the join itself, after its preflight, so the user counts as being in the
+				// call from then on. If that window goes away before it can report its own departure, this is what
+				// does it for them.
 				watchCallWindow(callId, target);
 			}),
-		[handleOpenCall, router, persistentChatEnabled, watchCallWindow],
+		[handleOpenCall, router, conferenceWindowEnabled, watchCallWindow],
 	);
 
 	useEffect(
@@ -63,21 +69,21 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	/**
 	 * Placing a call, once the user has asked for one.
 	 *
-	 * With persistent chat on, this only opens the call window: the conference is created by the preflight in it,
-	 * because creating one posts a message in the room, rings people and writes a call into everyone's history —
-	 * none of which should happen for a call the user may still walk away from. Without it there is no preflight
-	 * to wait for, so the manager starts the conference here as it always has.
+	 * With the call window, this only opens it: the conference is created by the preflight inside, because creating
+	 * one posts a message in the room, rings people and writes a call into everyone's history — none of which
+	 * should happen for a call the user may still walk away from. Without it there is no preflight to wait for, so
+	 * the manager starts the conference here as it always has.
 	 */
 	const startCall = useCallback(
 		(rid: string, confTitle?: string) => {
-			if (!persistentChatEnabled) {
+			if (!conferenceWindowEnabled) {
 				void VideoConfManager.startCall(rid, confTitle);
 				return;
 			}
 
 			handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: NEW_CONFERENCE_ID }, search: { rid } })));
 		},
-		[handleOpenCall, persistentChatEnabled, router],
+		[handleOpenCall, conferenceWindowEnabled, router],
 	);
 
 	const contextValue = useMemo<VideoConfContextValue>(
