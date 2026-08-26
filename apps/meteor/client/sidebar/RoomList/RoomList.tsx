@@ -32,7 +32,6 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
@@ -75,15 +74,7 @@ const RoomList = () => {
 						/>
 					)}
 					{...(roomList.length > 0 && {
-						itemContent: (index) => {
-							const item = roomList[index];
-
-							if (!item) {
-								return null;
-							}
-
-							return <RoomListRow data={itemData} item={item} />;
-						},
+						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
 					})}
 					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
 				/>
