@@ -26,7 +26,7 @@ const ParentDiscussionRoute = ({ room }: ParentDiscussionRouteProps) => {
 						name: subscription.name,
 						fname: subscription.fname,
 						u: subscription.u,
-						federated: (subscription as any).federated,
+						federated: (subscription as any).federated as IRoom['federated'],
 					}
 				: undefined,
 		[subscription],
