@@ -118,7 +118,7 @@ export async function loadRoomHistory({
 
 	const [messages, unread] = await Promise.all([
 		normalizeMessagesForUser(records, userId),
-		computeUnread({ rid, lastSeen, oldest, hiddenMessageTypes, showThreadMessages }),
+		computeUnread({ rid, userId, lastSeen, oldest, hiddenMessageTypes, showThreadMessages }),
 	]);
 
 	return { messages, cursor, ...unread };
@@ -126,12 +126,14 @@ export async function loadRoomHistory({
 
 async function computeUnread({
 	rid,
+	userId,
 	lastSeen,
 	oldest,
 	hiddenMessageTypes,
 	showThreadMessages,
 }: {
 	rid: IRoom['_id'];
+	userId?: string;
 	lastSeen?: Date;
 	oldest?: IMessage;
 	hiddenMessageTypes: MessageTypesValues[];
@@ -153,5 +155,7 @@ async function computeUnread({
 		Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, lastSeen, oldest.ts, hiddenMessageTypes, showThreadMessages),
 	]);
 
-	return { firstUnread: firstUnreadRecords[0], unreadNotLoaded };
+	const [firstUnread] = await normalizeMessagesForUser(firstUnreadRecords, userId);
+
+	return { firstUnread, unreadNotLoaded };
 }
