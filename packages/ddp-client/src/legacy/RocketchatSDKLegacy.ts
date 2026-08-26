@@ -3,7 +3,7 @@
 import { RestClient } from '@rocket.chat/api-client';
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import type { ChatUpdate, OperationResult } from '@rocket.chat/rest-typings';
 
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
@@ -22,6 +22,7 @@ import type {
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
 } from './types/SDKLegacy';
+import type { ChatSendMessageResponse, ChatSyncMessagesResponse, ChatUpdateResponse } from './types/legacyChatRoutes';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -50,6 +51,17 @@ declare module '../types/SDK' {
 interface RocketchatSDKLegacy extends APILegacy, DPPLegacy {}
 
 export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLegacy {
+	/** The /v1/chat.* routes below are typed by their migrated implementations
+	 * inside the meteor app (see types/legacyChatRoutes.ts), so the standalone
+	 * `Endpoints` map no longer accepts their paths. Same client, path
+	 * constraint widened. */
+	private get untypedRest() {
+		return this.rest as unknown as {
+			get: (endpoint: string, params?: Record<string, unknown>) => Promise<unknown>;
+			post: (endpoint: string, params?: unknown) => Promise<unknown>;
+		};
+	}
+
 	private ev = new Emitter<RocketchatSdkLegacyEvents>();
 
 	get url(): string {
@@ -106,8 +118,10 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 			join: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> => {
 				return self.rest.post('/v1/channels.join', { roomId: rid });
 			},
-			load: (rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> => {
-				return self.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() });
+			load: (rid: string, lastUpdate: Date): Promise<Serialized<ChatSyncMessagesResponse>> => {
+				return self.untypedRest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() }) as Promise<
+					Serialized<ChatSyncMessagesResponse>
+				>;
 			},
 			leave: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> => {
 				return self.rest.post('/v1/channels.leave', { roomId: rid });
@@ -119,8 +133,10 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.rest.post('/v1/channels.join', { roomId: args.rid });
 	}
 
-	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> {
-		return this.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() });
+	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<ChatSyncMessagesResponse>> {
+		return this.untypedRest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() }) as Promise<
+			Serialized<ChatSyncMessagesResponse>
+		>;
 	}
 
 	leaveRoom(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> {
@@ -144,20 +160,20 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.rest.get('/v1/groups.info', args);
 	}
 
-	editMessage(args: OperationParams<'POST', '/v1/chat.update'>): Promise<Serialized<OperationResult<'POST', '/v1/chat.update'>>> {
-		return this.rest.post('/v1/chat.update', args);
+	editMessage(args: ChatUpdate): Promise<Serialized<ChatUpdateResponse>> {
+		return this.untypedRest.post('/v1/chat.update', args) as Promise<Serialized<ChatUpdateResponse>>;
 	}
 
-	setReaction(emoji: string, messageId: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.react'>>> {
-		return this.rest.post('/v1/chat.react', { emoji, messageId });
+	setReaction(emoji: string, messageId: string): Promise<void> {
+		return this.untypedRest.post('/v1/chat.react', { emoji, messageId }) as Promise<void>;
 	}
 
 	createDirectMessage(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>> {
 		return this.rest.post('/v1/im.create', { username });
 	}
 
-	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.sendMessage'>>> {
-		return this.rest.post('/v1/chat.sendMessage', {
+	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<ChatSendMessageResponse>> {
+		return this.untypedRest.post('/v1/chat.sendMessage', {
 			message:
 				typeof message === 'string'
 					? {
@@ -168,7 +184,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 							...message,
 							rid,
 						},
-		});
+		}) as Promise<Serialized<ChatSendMessageResponse>>;
 	}
 
 	resume({ token }: { token: string }): Promise<unknown> {

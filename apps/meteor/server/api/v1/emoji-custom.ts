@@ -314,5 +314,7 @@ export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends EmojiCustomCreateEndpoints {}
+	// Routes omitted here keep their stronger hand-written declaration in
+	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	interface Endpoints extends Omit<EmojiCustomCreateEndpoints, '/v1/emoji-custom.all'> {}
 }

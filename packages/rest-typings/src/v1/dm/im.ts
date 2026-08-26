@@ -1,13 +1,8 @@
-import type { IMessage, IRoom, IUser, IUploadWithUser, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, IUploadWithUser, IUser, IRoom } from '@rocket.chat/core-typings';
 
-import type { DmBlockUserProps } from './DmBlockUserProps';
 import type { DmCreateProps } from './DmCreateProps';
 import type { DmFileProps } from './DmFileProps';
-import type { DmHistoryProps } from './DmHistoryProps';
-import type { DmLeaveProps } from './DmLeaveProps';
 import type { DmMemberProps } from './DmMembersProps';
-import type { DmMessagesProps } from './DmMessagesProps';
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 type DmKickProps = {
@@ -15,39 +10,13 @@ type DmKickProps = {
 };
 
 export type ImEndpoints = {
-	'/v1/im.create': {
-		POST: (params: DmCreateProps) => {
-			room: IRoom & { rid: IRoom['_id'] };
-		};
-	};
-	'/v1/im.kick': {
-		POST: (params: DmKickProps) => void;
-	};
-	'/v1/im.leave': {
-		POST: (params: DmLeaveProps) => void;
-	};
-	'/v1/im.counters': {
-		GET: (params: { roomId: string; userId?: string }) => {
-			joined: boolean;
-			unreads: number | null;
-			unreadsFrom: string | null;
-			msgs: number | null;
-			members: number | null;
-			latest: string | null;
-			userMentions: number | null;
-		};
-	};
+	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
+	// weaker than this declaration (see the Omit in the meteor augmentation).
 	'/v1/im.files': {
 		GET: (params: DmFileProps) => PaginatedResult<{
 			files: IUploadWithUser[];
 		}>;
 	};
-	'/v1/im.history': {
-		GET: (params: DmHistoryProps) => {
-			messages: Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | '_updatedAt' | 'u'>[];
-		};
-	};
-
 	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
 			members: (Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'> & {
@@ -55,29 +24,14 @@ export type ImEndpoints = {
 			})[];
 		}>;
 	};
-	'/v1/im.messages': {
-		GET: (params: DmMessagesProps) => PaginatedResult<{
-			messages: IMessage[];
-		}>;
-	};
-	'/v1/im.messages.others': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ messages: IMessage[] }>;
-	};
-	'/v1/im.list': {
-		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
-	};
-	'/v1/im.list.everyone': {
-		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
-	};
-	'/v1/im.open': {
-		POST: (params: { roomId: string }) => void;
-	};
-	'/v1/im.setTopic': {
-		POST: (params: { roomId: string; topic?: string }) => {
-			topic?: string;
+	// Kept canonical here: the ddp-client legacy SDK consumes this route
+	// without seeing the meteor module augmentation.
+	'/v1/im.create': {
+		POST: (params: DmCreateProps) => {
+			room: IRoom & { rid: IRoom['_id'] };
 		};
 	};
-	'/v1/im.blockUser': {
-		POST: (params: DmBlockUserProps) => void;
+	'/v1/im.kick': {
+		POST: (params: DmKickProps) => void;
 	};
 };

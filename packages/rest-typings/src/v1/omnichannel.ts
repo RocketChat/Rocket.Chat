@@ -4587,6 +4587,11 @@ export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactMan
 };
 
 export type OmnichannelEndpoints = {
+	// Kept canonical here: the ddp-client livechat SDK consumes this route
+	// without seeing the meteor module augmentation.
+	'/v1/livechat/visitor/department.transfer': {
+		POST: (params: POSTLivechatVisitorDepartmentTransferParams) => { success: boolean };
+	};
 	'/v1/livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];
@@ -4937,9 +4942,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.closeByUser': {
 		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
-	};
-	'/v1/livechat/visitor/department.transfer': {
-		POST: (params: POSTLivechatVisitorDepartmentTransferParams) => { success: boolean };
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
