@@ -14,6 +14,7 @@ type MarkupInteractionContextValue = {
 	onTaskChecked?: (task: MessageParser.Task) => ((e: FormEvent) => void) | undefined;
 	resolveUserMention?: (mention: string) => MessageMention | undefined;
 	onUserMentionClick?: (mentionedUser: MessageMention) => ((e: UIEvent) => void) | undefined;
+	onUserMentionHover?: (mentionedUser: MessageMention) => ((e: UIEvent) => void) | undefined;
 	resolveChannelMention?: (mention: string) => MessageMention | undefined;
 	onChannelMentionClick?: (mentionedChannel: MessageMention) => ((e: UIEvent) => void) | undefined;
 	convertAsciiToEmoji?: boolean;
