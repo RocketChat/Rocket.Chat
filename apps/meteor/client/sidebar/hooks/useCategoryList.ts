@@ -62,6 +62,14 @@ export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: rea
 	return merged;
 };
 
+export const SIDEBAR_DYNAMIC_GROUP_KEYS: readonly string[] = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+];
+
 export const filterGroupVisibility = <T>(
 	groups: Map<string, Set<SubscriptionWithRoom>>,
 	hasLicenseModule: boolean,
@@ -78,7 +86,7 @@ export const filterGroupVisibility = <T>(
 			return;
 		}
 
-		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats', 'Unread'].includes(key)) {
+		if (!hasLicenseModule || SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key)) {
 			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}

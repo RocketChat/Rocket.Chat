@@ -13,11 +13,18 @@ import RoomListWrapper from './RoomListWrapper';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+
+const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
+	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
+	const adjacentIndex = direction === 'up' ? index - 1 : index + 1;
+	return adjacentIndex >= 0 && adjacentIndex < groups.length;
+};
 
 const RoomList = () => {
 	const { t } = useTranslation();
@@ -67,8 +74,8 @@ const RoomList = () => {
 						return (
 							<RoomListCollapser
 								group={group}
-								canMoveUp={index > 0}
-								canMoveDown={index < groups.length - 1}
+								canMoveUp={canMoveGroup(groups, index, 'up')}
+								canMoveDown={canMoveGroup(groups, index, 'down')}
 								onMoveUp={onMoveUp}
 								onMoveDown={onMoveDown}
 								onClick={() => handleClick(group.key)}

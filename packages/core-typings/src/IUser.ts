@@ -181,8 +181,6 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Conversations',
 ] as const;
 
-export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
-
 export interface ISidebarCategory {
 	_id: string;
 	name: string;

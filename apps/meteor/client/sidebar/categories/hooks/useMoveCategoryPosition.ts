@@ -1,11 +1,14 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
+import { mergeWithSectionsOrder } from '../../hooks/useCategoryList';
 
 export const useMoveCategoryPosition = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
+	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const persistMutation = usePersistCategoriesMutation();
 
 	return useCallback(
@@ -13,13 +16,14 @@ export const useMoveCategoryPosition = () => {
 			const i = currentKeys.indexOf(key);
 			const target = direction === 'up' ? i - 1 : i + 1;
 			if (i === -1 || target < 0 || target >= currentKeys.length) return;
+
+			const swappedKeys = [...currentKeys];
+			[swappedKeys[i], swappedKeys[target]] = [swappedKeys[target], swappedKeys[i]];
+
 			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
-			const visibleEntries: ISidebarCategory[] = currentKeys.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true });
-			const hiddenEntries = allEntries.filter((e) => !currentKeys.includes(e._id));
-			const next = [...visibleEntries, ...hiddenEntries];
-			[next[i], next[target]] = [next[target], next[i]];
-			await persistMutation.mutateAsync(next);
+			const finalIds = mergeWithSectionsOrder(swappedKeys, sidebarSectionsOrder);
+			await persistMutation.mutateAsync(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 		},
-		[allEntries, persistMutation],
+		[allEntries, sidebarSectionsOrder, persistMutation],
 	);
 };
