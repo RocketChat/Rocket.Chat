@@ -938,11 +938,6 @@ export class AppManager {
 					return;
 				}
 
-				// Compute the update against a local copy first. The live storageItem is only
-				// mutated once persistence has been confirmed, so a failed/missing update never
-				// leaves the in-memory app out of sync with what's actually stored. Any failure
-				// for this one app (signing or persistence) is logged and skipped rather than
-				// aborting the whole batch, matching the previous best-effort semantics.
 				try {
 					const updatedMarketplaceInfo = [
 						{ ...appStorageItem.marketplaceInfo[0], subscriptionInfo: appInfo.subscriptionInfo },
@@ -957,8 +952,6 @@ export class AppManager {
 					});
 
 					if (!stored) {
-						// Missing-document policy: the app was removed/uninstalled concurrently. Log
-						// and skip it rather than retaining the unsigned-off mutation in memory.
 						console.warn(`App with id ${appStorageItem._id} couldn't be found while updating marketplace info`);
 						return;
 					}
