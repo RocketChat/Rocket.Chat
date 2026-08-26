@@ -36,6 +36,24 @@ version; the compiler is a native binary plus the `unstable/*` APIs).
   and the 9.7.2 patch was dropped. The typia Go plugin compiles on first run
   (ttsc vendors its own Go toolchain via `@ttsc/*`; the TS7 canary workflow
   additionally sets up Go and caches the plugin build to keep cold runs fast).
+  Two typia-13 emit changes had runtime consequences for REST response
+  validation (TEST_MODE) and are normalized back to the 9.x behavior the
+  runtime was built against:
+  - typia 13 closes every object schema with `additionalProperties: false`;
+    the 9.x emit left components open, and the response schemas that compose
+    a component `$ref` with the `success` flag via
+    `allOf` + `unevaluatedProperties: false` (e.g. `GET /v1/me`) can never
+    validate against a closed subschema — the sibling `success` is
+    "additional" inside the ref'd branch. `normalizeForAjv2020`
+    (core-typings `Ajv.ts`) now strips `additionalProperties: false`
+    (schema-valued `additionalProperties` for Records is preserved); route
+    schemas keep their own closedness via `unevaluatedProperties`.
+  - typia 13 emits single-literal types as `const: 'file'` where 9.x emitted
+    `enum: ['file']`; the attachment-branch patch in
+    `apps/meteor/server/api/validation/ajv.ts` (which closes the catch-all
+    plain-file branches so the `MessageAttachment` `oneOf` stays
+    unambiguous) matched only the `enum` shape and silently stopped
+    applying. It now accepts both shapes.
 - `apps/meteor`'s `typia` dependency aligned to 13.0.2 so a single typia
   runtime/schema dialect exists in the tree (its usages are type-level and
   schema-consuming only).

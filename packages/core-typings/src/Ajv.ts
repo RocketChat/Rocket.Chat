@@ -83,7 +83,15 @@ export const schemas = typia.json.schemas<
 //   - closed tuples: `additionalItems: false` (draft-07 keyword) -> `items: false`, and
 //     pin minItems/maxItems to the tuple length so strictTuples is satisfied;
 //   - discriminator: drop the `mapping` (Ajv resolves via propertyName + oneOf; mapping is
-//     an unsupported redirection hint) and ensure `type: 'object'` for strictTypes.
+//     an unsupported redirection hint) and ensure `type: 'object'` for strictTypes;
+//   - open objects: typia 13's 3.1 emit closes object schemas with
+//     `additionalProperties: false`; the 9.x 3.0 emit these components were adopted
+//     under left them open, and the REST response schemas rely on that — they compose
+//     a component `$ref` with the `success` flag via `allOf` (+ `unevaluatedProperties`),
+//     which a closed subschema can never satisfy (the sibling `success` is "additional"
+//     inside the ref'd branch, 400-ing every such response in TEST_MODE). Dropping the
+//     `false` restores the open components; `additionalProperties` carrying a schema
+//     (Record types) is preserved.
 const normalizeForAjv2020 = (node: unknown): void => {
 	if (Array.isArray(node)) {
 		node.forEach(normalizeForAjv2020);
@@ -94,6 +102,9 @@ const normalizeForAjv2020 = (node: unknown): void => {
 	}
 	const record = node as Record<string, unknown>;
 
+	if (record.additionalProperties === false) {
+		delete record.additionalProperties;
+	}
 	if ('additionalItems' in record) {
 		if (!('items' in record)) {
 			record.items = record.additionalItems;
