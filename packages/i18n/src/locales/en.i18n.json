@@ -6583,6 +6583,8 @@
   "Theme": "Theme",
   "Theme_Appearence": "Theme Appearence",
   "Theme_dark": "Dark",
+  "Theme_dark_alpha": "Dark (Alpha)",
+  "Theme_dark_alpha_description": "A translucency-based dark theme. Interface colors are derived from the main background, so customizing it re-tints the entire workspace.",
   "Theme_dark_description": "Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.",
   "Theme_high_contrast": "High contrast",
   "Theme_high_contrast_description": "Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.",

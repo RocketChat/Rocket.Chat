@@ -17,6 +17,11 @@ export const themeItems: ThemeItem[] = [
 		description: 'Theme_dark_description',
 	},
 	{
+		id: 'dark-alpha',
+		title: 'Theme_dark_alpha',
+		description: 'Theme_dark_alpha_description',
+	},
+	{
 		id: 'high-contrast',
 		title: 'Theme_high_contrast',
 		description: 'Theme_high_contrast_description',
