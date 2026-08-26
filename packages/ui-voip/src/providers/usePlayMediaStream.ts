@@ -19,8 +19,13 @@ export const usePlayMediaStream = (
 	const actualRef = useRef<HTMLAudioElement | null>(null);
 
 	// Read by the ref callback, which cannot depend on the stream without getting a new identity for each one.
+	// Seeded on mount and kept in step after every commit, rather than written while rendering: a render that is
+	// thrown away must not leave its stream behind for an element that attaches later.
 	const streamRef = useRef(stream);
-	streamRef.current = stream;
+
+	useEffect(() => {
+		streamRef.current = stream;
+	});
 
 	const play = useCallback((node: HTMLAudioElement, next: MediaStream) => {
 		if (node.srcObject === next) {
