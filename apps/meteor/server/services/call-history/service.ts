@@ -2,6 +2,10 @@ import { ServiceClassInternal, type ICallHistoryService } from '@rocket.chat/cor
 import type { IUser, CallHistoryItem } from '@rocket.chat/core-typings';
 import { CallHistory } from '@rocket.chat/models';
 
+import type { MitelConfig } from './mitel/definition';
+import { importHistoryForUser } from './mitel/importHistoryForUser';
+import { settings } from '../../settings';
+
 export class CallHistoryService extends ServiceClassInternal implements ICallHistoryService {
 	protected name = 'call-history';
 
@@ -20,9 +24,17 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 	): Promise<{ items: CallHistoryItem[]; total: number }> {
 		const { offset, count, sort } = pagination || {};
 
+		const externalHistoryConfig = this.getExternalCallHistorySettings();
+		if (externalHistoryConfig?.host && externalHistoryConfig.username) {
+			await importHistoryForUser(uid, externalHistoryConfig);
+		}
+
+		// If external history is toggled on, only external entries may be listed
+		const type = externalHistoryConfig ? 'mitel' : 'media-call';
+
 		const { cursor, totalCount } = CallHistory.findAllByUserIdAndSearchFilters(
 			uid,
-			{ ...filters },
+			{ ...filters, type },
 			{
 				sort: sort || { ts: -1 },
 				skip: offset,
@@ -34,6 +46,19 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 		return {
 			items,
 			total,
+		};
+	}
+
+	private getExternalCallHistorySettings(): MitelConfig | null {
+		if (!settings.get('VoIP_TeamCollab_ExternalCallHistory_Enabled')) {
+			return null;
+		}
+
+		return {
+			host: settings.get('VoIP_TeamCollab_ExternalCallHistory_Host'),
+			username: settings.get('VoIP_TeamCollab_ExternalCallHistory_User'),
+			password: settings.get('VoIP_TeamCollab_ExternalCallHistory_Password'),
+			timeout: settings.get('VoIP_TeamCollab_ExternalCallHistory_Timeout'),
 		};
 	}
 }
