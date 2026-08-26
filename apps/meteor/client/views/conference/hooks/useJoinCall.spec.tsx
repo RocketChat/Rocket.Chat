@@ -24,6 +24,11 @@ const renderJoin = async (calls: JoinableVideoConference[]) => {
 	const { result } = renderHook(() => ({ join: useJoinCall(), loaded: useJoinableCalls().calls.length }), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			// Naming the call being left is the point of the confirmation, and the name only reaches the screen
+			// through this string's interpolation — the untranslated key would carry no name at all.
+			.withTranslations('en', 'core', {
+				Leave__name__to_join_this_call: 'You are in <b>{{name}}</b>. Joining this call will leave it.',
+			})
 			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
 			.withEndpoint('POST', '/v1/video-conference.leave', leave)
 			.build(),
@@ -60,6 +65,9 @@ describe('when the user is already in another call', () => {
 
 		expect(await screen.findByRole('dialog')).toBeInTheDocument();
 		expect(screen.getByText('Leave_the_call_you_are_in')).toBeInTheDocument();
+		// The call being left, by name: a dialog that only says "leave the call you are in" leaves the user to
+		// guess which one, and a broken `Trans` body would drop the name without failing anything else.
+		expect(screen.getByText('Standup')).toBeInTheDocument();
 		expect(joinCall).not.toHaveBeenCalled();
 	});
 
