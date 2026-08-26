@@ -36,7 +36,7 @@ version; the compiler is a native binary plus the `unstable/*` APIs).
   and the 9.7.2 patch was dropped. The typia Go plugin compiles on first run
   (ttsc vendors its own Go toolchain via `@ttsc/*`; the TS7 canary workflow
   additionally sets up Go and caches the plugin build to keep cold runs fast).
-  Two typia-13 emit changes had runtime consequences for REST response
+  Three typia-13 emit changes had runtime consequences for REST response
   validation (TEST_MODE) and are normalized back to the 9.x behavior the
   runtime was built against:
   - typia 13 closes every object schema with `additionalProperties: false`;
@@ -54,6 +54,14 @@ version; the compiler is a native binary plus the `unstable/*` APIs).
     plain-file branches so the `MessageAttachment` `oneOf` stays
     unambiguous) matched only the `enum` shape and silently stopped
     applying. It now accepts both shapes.
+  - typia 13 emits nullable scalars (`string | null`, e.g. `avatarETag`) as
+    `oneOf: [{type:'null'},{type:'string'}]` where 9.x used `nullable: true`
+    (which Ajv ignores). The runtime Ajv runs with `coerceTypes`, under
+    which `''` and `null` satisfy *both* branches, so oneOf's "exactly one"
+    rule fails on real data (e.g. `video-conference.list` items whose users
+    carry an empty `avatarETag`). `normalizeForAjv2020` collapses pure
+    type-only `oneOf` branches into a 2020-12 union `type` array, which
+    validates the same values and disables cross-type coercion.
 - `apps/meteor`'s `typia` dependency aligned to 13.0.2 so a single typia
   runtime/schema dialect exists in the tree (its usages are type-level and
   schema-consuming only).

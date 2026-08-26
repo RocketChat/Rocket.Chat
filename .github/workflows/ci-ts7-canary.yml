@@ -10,9 +10,6 @@ on:
       node-version:
         required: true
         type: string
-      deno-version:
-        required: true
-        type: string
   workflow_dispatch:
   # Nightly: track the green-package count over time without adding cost to PRs.
   schedule:
@@ -34,7 +31,6 @@ jobs:
           # Empty when dispatched/pushed standalone: setup-node then resolves
           # node from package.json engines.node and deno from .tool-versions.
           node-version: ${{ inputs.node-version }}
-          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

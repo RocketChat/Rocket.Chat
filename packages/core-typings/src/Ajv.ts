@@ -105,6 +105,27 @@ const normalizeForAjv2020 = (node: unknown): void => {
 	if (record.additionalProperties === false) {
 		delete record.additionalProperties;
 	}
+	if (
+		!('type' in record) &&
+		Array.isArray(record.oneOf) &&
+		record.oneOf.length > 0 &&
+		record.oneOf.every(
+			(branch: unknown) =>
+				!!branch &&
+				typeof branch === 'object' &&
+				!Array.isArray(branch) &&
+				Object.keys(branch).every((key) => key === 'type') &&
+				typeof (branch as Record<string, unknown>).type === 'string',
+		)
+	) {
+		// Nullable scalars: typia 13 emits `T | null` as `oneOf: [{type:'null'},{type:'string'}]`
+		// (9.x used `nullable: true`, which Ajv ignores). Under `coerceTypes`, `''` and `null`
+		// satisfy BOTH branches (Ajv coerces between them), so oneOf's "exactly one" fails on
+		// real data. A 2020-12 union `type` array validates the same values, and Ajv skips
+		// coercion when the data already matches one of the listed types.
+		record.type = [...new Set(record.oneOf.map((branch: { type: string }) => branch.type))];
+		delete record.oneOf;
+	}
 	if ('additionalItems' in record) {
 		if (!('items' in record)) {
 			record.items = record.additionalItems;
