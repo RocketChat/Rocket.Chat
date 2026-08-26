@@ -11,6 +11,7 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
+import type { UsersPresenceParamsGET } from './users/UsersPresenceParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
@@ -230,7 +231,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.presence': {
-		GET: (params: { from?: string; ids: string | string[] }) => UsersPresencePayload;
+		GET: (params: UsersPresenceParamsGET) => UsersPresencePayload;
 	};
 
 	'/v1/users.removePersonalAccessToken': {
