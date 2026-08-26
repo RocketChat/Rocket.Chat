@@ -71,9 +71,9 @@ const teamsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
+			const { records, total } = await Team.list(this.userId, { offset, count }, { sort });
 
 			return API.v1.success({
 				teams: records,

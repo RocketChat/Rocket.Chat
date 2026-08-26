@@ -1326,7 +1326,7 @@ describe('[Channels]', () => {
 			]);
 		});
 
-		it('should return an error if no query', () =>
+		it("should return an error if '_id' is missing", () =>
 			void request
 				.get(api('channels.online'))
 				.set(credentials)
@@ -1334,20 +1334,21 @@ describe('[Channels]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid query');
 				}));
 
-		it('should return an error if passing an empty query', () =>
-			void request
+		it("should reject the removed 'query' parameter even alongside a valid '_id'", async () => {
+			const { testUserCredentials, room } = await createUserAndChannel();
+
+			return request
 				.get(api('channels.online'))
-				.set(credentials)
-				.query('query={}')
+				.set(testUserCredentials)
+				.query({ _id: room._id, query: '{}' })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid query');
-				}));
+				});
+		});
 
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();

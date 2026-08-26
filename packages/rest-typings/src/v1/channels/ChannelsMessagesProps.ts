@@ -9,7 +9,6 @@ export type ChannelsMessagesProps = PaginatedRequest<
 		mentionIds?: string;
 		starredIds?: string;
 		pinned?: string;
-		query?: Record<string, any>;
 	},
 	'ts'
 >;
@@ -27,9 +26,6 @@ const channelsMessagesPropsSchema = {
 			type: 'string',
 		},
 		pinned: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 		count: {
