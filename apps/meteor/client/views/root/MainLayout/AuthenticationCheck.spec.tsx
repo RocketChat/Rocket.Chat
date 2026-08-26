@@ -47,15 +47,24 @@ describe('while the session is being resumed', () => {
 
 	// The one way a stored token could strand someone: it is cleared when a server *rejects* it, so a server that
 	// never answers at all clears nothing. Once the connection stops trying, the form has to be reachable.
-	// Synchronously: a window that mounts with the connection already given up must pick the form on its first
-	// render, rather than showing a frame of skeleton on the way to it.
-	it.each(['waiting', 'failed', 'offline'] as const)('shows the login page when the connection has given up (%s)', (status) => {
+	it.each(['waiting', 'failed'] as const)('shows the login page when the connection has given up (%s)', (status) => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
 		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status }));
 
 		expect(screen.getByText('login-page')).toBeInTheDocument();
 		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
+	});
+
+	// `offline` is not a give-up state, however much it reads like one: the DDP SDK starts every page load `idle`
+	// and that is reported as `offline`, so counting it would show the form on healthy reloads — the very bug.
+	it('keeps the skeleton up while the connection is merely idle', () => {
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
+
+		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'offline' }));
+
+		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
+		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
 	});
 
 	// ...but not while it is still the ordinary first connect of a page load, which is the flash this removes.

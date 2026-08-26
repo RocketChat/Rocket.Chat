@@ -20,9 +20,14 @@ import HomeSkeleton from '../../home/HomeSkeleton';
  */
 export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
 
-/** The connection states in which the server has stopped trying to reach us, as opposed to not having arrived yet. */
-const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean =>
-	status === 'waiting' || status === 'failed' || status === 'offline';
+/**
+ * The connection states that mean a server was reached for and lost, as opposed to not having answered yet.
+ *
+ * `offline` is deliberately not one of them, however much it sounds like the plainest case: the DDP SDK begins
+ * every page load `idle`, and `sdkStatusToMeteor` reports `idle` as `offline`. Counting it would give up on the
+ * connection before it had been attempted, on exactly the healthy reloads this exists to protect.
+ */
+const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean => status === 'waiting' || status === 'failed';
 
 const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const user = useUser();
@@ -36,10 +41,10 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	 * someone: the token is only cleared when a server *rejects* it, so an unreachable server — a dropped network,
 	 * a captive portal, a workspace that is down — clears nothing and would leave the skeleton up for good.
 	 *
-	 * `connecting` is not that: it is the ordinary first moment of every page load, and falling through on it is
-	 * exactly the login-form flash this exists to remove. Only the states where the connection has stopped trying
-	 * count, and once one has been seen it stands — a retry flapping between `waiting` and `connecting` must not
-	 * flap the form back into a skeleton. A resume that succeeds later brings a user with it, which wins anyway.
+	 * Which states count is the whole of the care here — see `hasGivenUp`, and note that neither `connecting` nor
+	 * `offline` is one of them. Once a state that counts has been seen it stands: a retry flapping between
+	 * `waiting` and `connecting` must not flap the form back into a skeleton. A resume that succeeds later brings
+	 * a user with it, which wins anyway.
 	 *
 	 * Seeded from the status rather than latched from `false`, so a mount that is *already* offline picks the form
 	 * on its first render instead of showing a frame of skeleton on the way to it.
