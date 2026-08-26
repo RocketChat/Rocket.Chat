@@ -632,6 +632,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return message._id;
 	}
 
+	/**
+	 * Whether this call is announced the way a call window needs: the callee becomes a member the moment they are
+	 * called, and the ring waits for the caller to actually walk in rather than firing when the call is created.
+	 *
+	 * True for a provider that renders inside Rocket.Chat, and true for *any* provider once the conference window
+	 * is enabled — the window is ours whoever runs the media, so the caller sits on its preflight either way, and
+	 * a ring sent at creation would reach a callee whose caller is still choosing a camera. Without this the two
+	 * gates disagree: the window opens for every provider, while ringing waited on a capability nothing declares
+	 * yet, so a direct call rang nobody at all.
+	 */
+	private ringsOnCallerArrival(providerName: string): boolean {
+		return (
+			videoConfProviders.getProviderCapabilities(providerName)?.embedded === true ||
+			settings.get<boolean>('VideoConf_Conference_Window_Enabled') === true
+		);
+	}
+
 	private async validateProvider(providerName: string): Promise<void> {
 		// Embedded (built-in) providers like LiveKit are registered by core
 		// only when their prerequisites are satisfied (e.g. VideoConf_LiveKit_
@@ -820,10 +837,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Being called makes you a member, exactly as being added to a group conference does. Without this the
 		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
-		// and a call they missed leaves them no history entry. Embedded only: a non-embedded callee has always
-		// entered `users` by answering, and putting them there earlier would rewrite the call history their
-		// clients build from it.
-		if (isEmbedded) {
+		// and a call they missed leaves them no history entry. Only where the ring waits for the caller: a callee
+		// who is rung at creation has always entered `users` by answering, and putting them there earlier would
+		// rewrite the call history their clients build from it.
+		if (this.ringsOnCallerArrival(providerName)) {
 			await this.addAbsentMember(callId, calleeId);
 		}
 
@@ -865,9 +882,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}, 40000);
 
-		// A non-embedded call rings the callee's phone now, at creation, as it always has. Embedded calls hold
-		// the push back until the caller actually enters the call — see `ringCalleeOnCallerArrival`.
-		if (!isEmbedded) {
+		// A call that rings at creation rings the callee's phone now, as it always has. Where the ring waits for
+		// the caller, so does the push — `ringCalleeOnCallerArrival` sends it — and pushing here as well would
+		// buzz the callee twice for one call.
+		if (!this.ringsOnCallerArrival(providerName)) {
 			await this.sendPushNotification(call, calleeId);
 		}
 
@@ -1244,9 +1262,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			// The ring-on-arrival dance belongs to the embedded flow, where the caller sits on a preflight screen
-			// first; a non-embedded direct call already rang its callee (and pushed) when it was created.
-			const rang = isEmbedded ? await this.ringCalleeOnCallerArrival(call, _id) : false;
+			// The ring-on-arrival dance belongs to the flows with a preflight screen; a call that rings at
+			// creation already rang its callee (and pushed) then.
+			const rang = this.ringsOnCallerArrival(call.providerName) ? await this.ringCalleeOnCallerArrival(call, _id) : false;
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
