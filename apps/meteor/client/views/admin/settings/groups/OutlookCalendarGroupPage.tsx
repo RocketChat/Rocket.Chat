@@ -11,6 +11,20 @@ export type OutlookCalendarGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
+const readErrorKey = async (error: unknown): Promise<string | undefined> => {
+	if (!(error instanceof Response)) {
+		return undefined;
+	}
+
+	const body: unknown = await error.json().catch(() => undefined);
+
+	if (typeof body === 'object' && body !== null && 'error' in body && typeof body.error === 'string') {
+		return body.error;
+	}
+
+	return undefined;
+};
+
 function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: OutlookCalendarGroupPageProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -27,9 +41,8 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 		} catch (error) {
-			if (error instanceof Error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
+			const key = (await readErrorKey(error)) ?? 'Outlook_Calendar_Test_Connection_failed';
+			dispatchToastMessage({ type: 'error', message: t(key as Parameters<typeof t>[0]) });
 		}
 	};
 
