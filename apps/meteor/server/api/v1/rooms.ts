@@ -1766,7 +1766,10 @@ export const roomEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, next, previous, lastSeen, count = 20, showThreadMessages = true } = this.queryParams;
+			const { roomId, next, previous, lastSeen, showThreadMessages = true } = this.queryParams;
+			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
+			// honors the API_Upper_Count_Limit cap.
+			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
 
 			const room = await Rooms.findOneById(roomId, { projection: { ...roomAccessAttributes, t: 1, sysMes: 1 } });
 

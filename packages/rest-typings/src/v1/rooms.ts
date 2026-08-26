@@ -1090,7 +1090,8 @@ const RoomsHistorySchema = {
 			nullable: true,
 		},
 		count: {
-			type: 'number',
+			type: 'integer',
+			minimum: 1,
 			nullable: true,
 		},
 		showThreadMessages: {
