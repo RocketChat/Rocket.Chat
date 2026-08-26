@@ -9,13 +9,13 @@ import { withDynamicFirst } from '../../hooks/useCategoryList';
 export const useToggleUnreads = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
-	const persistMutation = usePersistCategoriesMutation();
+	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	const upsertGroupEntry = useCallback(
 		async (id: string, patch: Partial<ISidebarCategory>) => {
 			const existing = allEntries.find((entry) => entry._id === id);
 			if (existing) {
-				await persistMutation.mutateAsync(allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
+				await persistCategories(allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
 				return;
 			}
 
@@ -27,9 +27,9 @@ export const useToggleUnreads = () => {
 				sidebarSectionsOrder,
 			);
 
-			await persistMutation.mutateAsync(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
+			await persistCategories(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
 		},
-		[allEntries, sidebarSectionsOrder, persistMutation],
+		[allEntries, sidebarSectionsOrder, persistCategories],
 	);
 
 	const isShowUnreads = useCallback((id: string) => allEntries.find((entry) => entry._id === id)?.showUnreads ?? false, [allEntries]);

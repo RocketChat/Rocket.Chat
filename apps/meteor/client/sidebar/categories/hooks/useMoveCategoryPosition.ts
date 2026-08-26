@@ -9,7 +9,7 @@ import { withDynamicFirst } from '../../hooks/useCategoryList';
 export const useMoveCategoryPosition = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
-	const persistMutation = usePersistCategoriesMutation();
+	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	return useCallback(
 		async (currentKeys: string[], key: string, direction: 'up' | 'down') => {
@@ -22,8 +22,8 @@ export const useMoveCategoryPosition = () => {
 
 			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
 			const finalIds = withDynamicFirst(swappedKeys, sidebarSectionsOrder);
-			await persistMutation.mutateAsync(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
+			await persistCategories(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 		},
-		[allEntries, sidebarSectionsOrder, persistMutation],
+		[allEntries, sidebarSectionsOrder, persistCategories],
 	);
 };
