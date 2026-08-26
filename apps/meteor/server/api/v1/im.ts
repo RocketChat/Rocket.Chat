@@ -468,7 +468,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
 
@@ -478,7 +478,6 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		}
 
 		const filter = {
-			...query,
 			rid: room._id,
 			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
@@ -655,14 +654,13 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
 			rid: room._id,
-			...query,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
 			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
@@ -809,8 +807,8 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { rid: room._id });
+		const { sort, fields } = await this.parseJsonQuery();
+		const ourQuery = { rid: room._id };
 
 		const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 			sort: sort || { ts: -1 },
@@ -887,10 +885,10 @@ const dmListEveryoneEndpointsProps = {
 const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typeof dmListEveryoneEndpointsProps, Path> =>
 	async function action() {
 		const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const { cursor, totalCount } = Rooms.findPaginated(
-			{ ...query, t: 'd' },
+			{ t: 'd' },
 			{
 				sort: sort || { name: 1 },
 				skip: offset,

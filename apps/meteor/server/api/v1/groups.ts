@@ -579,10 +579,9 @@ API.v1.get(
 		});
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const filter = {
-			...query,
 			rid: findResult.rid,
 			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
@@ -615,8 +614,6 @@ const groupsGetIntegrationsQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -626,8 +623,6 @@ const groupsGetIntegrationsQuery = ajvQuery.compile<{
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -697,12 +692,10 @@ API.v1.get(
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields: projection, query } = await this.parseJsonQuery();
+		const { sort, fields: projection } = await this.parseJsonQuery();
 
-		// query and channel filters cannot override the permission scope (mountIntegrationQueryBasedOnPermissions).
 		const ourQuery = Object.assign(
 			{},
-			query,
 			{ channel: { $in: channelsToSearch } },
 			await mountIntegrationQueryBasedOnPermissions(this.userId),
 		) as Filter<IIntegration>;
@@ -1012,8 +1005,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
+		const { sort, fields } = await this.parseJsonQuery();
+		const ourQuery = { t: 'p' as RoomType };
 
 		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },
@@ -1154,8 +1147,6 @@ const groupsMessagesQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -1167,8 +1158,6 @@ const groupsMessagesQuery = ajvQuery.compile<{
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -1209,13 +1198,12 @@ API.v1.get(
 			userId: this.userId,
 		});
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			rid: findResult.rid,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
@@ -1272,20 +1260,9 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const { query } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
-		if ((!query || Object.keys(query).length === 0) && !_id) {
-			return API.v1.failure('Invalid query');
-		}
-
-		const filter = {
-			...query,
-			...(_id ? { _id } : {}),
-			t: 'p',
-		};
-
-		const room = await Rooms.findOne(filter as Record<string, any>);
+		const room = await Rooms.findOne({ _id, t: 'p' });
 		if (!room) {
 			return API.v1.failure('Group does not exists');
 		}

@@ -494,7 +494,7 @@ API.v1.get(
 	async function action() {
 		const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const findResult = await findChannelByIdOrName({
 			params: { roomId },
@@ -505,7 +505,6 @@ API.v1.get(
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			rid: findResult._id,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
@@ -1191,10 +1190,9 @@ API.v1.get(
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const filter = {
-			...query,
 			rid: findResult._id,
 			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
@@ -1226,8 +1224,6 @@ const channelsGetIntegrationsQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -1237,8 +1233,6 @@ const channelsGetIntegrationsQuery = ajvQuery.compile<{
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -1317,11 +1311,9 @@ API.v1.get(
 
 		const params = this.queryParams;
 		const { offset, count } = await getPaginationItems(params);
-		const { sort, fields: projection, query } = await this.parseJsonQuery();
+		const { sort, fields: projection } = await this.parseJsonQuery();
 
-		// Apply the user-supplied query first, then overlay the trusted filters so a crafted `query`
-		// cannot override the permission scope (mountIntegrationQueryBasedOnPermissions) or the channel filter.
-		ourQuery = Object.assign({}, query, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
+		ourQuery = Object.assign({}, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
 
 		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
 			sort: sort || { _createdAt: 1 },
@@ -1442,13 +1434,12 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.user, 'view-c-room');
 
 		const { _id } = this.queryParams;
 
 		const ourQuery: Filter<IRoom> = {
-			...query,
 			...(_id ? { _id } : {}),
 			t: 'c',
 		};
@@ -1507,7 +1498,6 @@ const channelsListJoinedQuery = ajvQuery.compile<{
 	_id?: string;
 	roomId?: string;
 	roomName?: string;
-	query?: string;
 	count?: number;
 	offset?: number;
 	sort?: string;
@@ -1517,7 +1507,6 @@ const channelsListJoinedQuery = ajvQuery.compile<{
 		_id: { type: 'string' },
 		roomId: { type: 'string' },
 		roomName: { type: 'string' },
-		query: { type: 'string' },
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		sort: { type: 'string' },
@@ -1707,20 +1696,9 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const { query } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
-		if ((!query || Object.keys(query).length === 0) && !_id) {
-			return API.v1.failure('Invalid query');
-		}
-
-		const filter = {
-			...query,
-			...(_id ? { _id } : {}),
-			t: 'c',
-		};
-
-		const room = await Rooms.findOne(filter as Record<string, any>);
+		const room = await Rooms.findOne({ _id, t: 'c' });
 		if (!room) {
 			return API.v1.failure('Channel does not exists');
 		}
@@ -2086,8 +2064,6 @@ const channelsAnonymousReadQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -2096,8 +2072,6 @@ const channelsAnonymousReadQuery = ajvQuery.compile<{
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -2121,9 +2095,9 @@ API.v1.get(
 			checkedArchived: false,
 		});
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+		const ourQuery = { rid: findResult._id };
 
 		if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
 			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {

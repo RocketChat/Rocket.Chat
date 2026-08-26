@@ -221,7 +221,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	async list(
 		uid: string,
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
-		{ sort, query }: IQueryOptions<ITeam> = { sort: {} },
+		{ sort }: Pick<IQueryOptions<ITeam>, 'sort'> = { sort: {} },
 	): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await TeamMember.findByUserId<Pick<ITeamMember, 'teamId'>>(uid, {
 			projection: { teamId: 1 },
@@ -235,15 +235,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const { cursor, totalCount } = Team.findByIdsPaginated(
-			teamIds,
-			{
-				...(sort && { sort }),
-				limit: count,
-				skip: offset,
-			},
-			query,
-		);
+		const { cursor, totalCount } = Team.findByIdsPaginated(teamIds, {
+			...(sort && { sort }),
+			limit: count,
+			skip: offset,
+		});
 
 		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 

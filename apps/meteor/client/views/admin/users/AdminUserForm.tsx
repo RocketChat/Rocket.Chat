@@ -54,10 +54,11 @@ export type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<
-	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
-	'fields'
->;
+export type UserFormProps = UserCreateParamsPOST & {
+	avatar: AvatarObject;
+	passwordConfirmation: string;
+	freeSwitchExtension?: string;
+};
 
 const getInitialValue = ({
 	data,
@@ -177,7 +178,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
 
-		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
+		return handleCreateUser.mutateAsync(userFormData);
 	});
 
 	const nameId = useId();

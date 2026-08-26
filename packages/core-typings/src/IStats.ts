@@ -272,6 +272,5 @@ export interface IStats extends IRocketChatRecord {
 	abacTotalAttributes?: number;
 	abacTotalAttributeValues?: number;
 	abacRoomsEnrolled?: number;
-	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
 	fips?: boolean;
 }

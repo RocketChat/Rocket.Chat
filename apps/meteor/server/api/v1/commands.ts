@@ -59,8 +59,6 @@ type CommandsListParams = {
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 };
 
 const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
@@ -69,8 +67,6 @@ const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
 		offset: { type: 'number', nullable: true },
 		count: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
-		query: { type: 'string', nullable: true },
-		fields: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 });
@@ -161,13 +157,9 @@ const commandsEndpoints = API.v1
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			let commands = Object.values(slashCommands.commands);
-
-			if (query?.command) {
-				commands = commands.filter((command) => command.command === query.command);
-			}
+			const commands = Object.values(slashCommands.commands);
 
 			const totalCount = commands.length;
 

@@ -102,10 +102,6 @@ const RolesGetUsersInRolePropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['role'],
 	additionalProperties: false,
