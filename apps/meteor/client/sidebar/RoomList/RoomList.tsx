@@ -22,8 +22,8 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
 	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
-	const adjacentIndex = direction === 'up' ? index - 1 : index + 1;
-	return adjacentIndex >= 0 && adjacentIndex < groups.length;
+	if (direction === 'down') return index + 1 < groups.length;
+	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
 
 const RoomList = () => {

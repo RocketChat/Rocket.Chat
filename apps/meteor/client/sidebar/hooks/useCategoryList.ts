@@ -43,12 +43,14 @@ const filterSystemCategories = (categories: readonly string[], options: FilterSy
 	});
 };
 
-/**
- * Merges an explicit id list with a reference order, inserting any missing keys at the position
- * just before the first reference-order successor already present in the explicit list.
- * This preserves the relative position of system groups that are temporarily absent (e.g. empty
- * Omnichannel groups).
- */
+export const SIDEBAR_DYNAMIC_GROUP_KEYS: readonly string[] = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+];
+
 export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: readonly string[]): string[] => {
 	const merged = [...explicitIds];
 	for (const key of sectionsOrder) {
@@ -62,13 +64,12 @@ export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: rea
 	return merged;
 };
 
-export const SIDEBAR_DYNAMIC_GROUP_KEYS: readonly string[] = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-];
+export const withDynamicFirst = (ids: string[], sectionsOrder: readonly string[]): string[] => {
+	const dynamicInOrder = sectionsOrder.filter((k) => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(k));
+	const staticIds = ids.filter((k) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(k));
+	const staticOrder = sectionsOrder.filter((k) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(k));
+	return [...dynamicInOrder, ...mergeWithSectionsOrder(staticIds, staticOrder)];
+};
 
 export const filterGroupVisibility = <T>(
 	groups: Map<string, Set<SubscriptionWithRoom>>,

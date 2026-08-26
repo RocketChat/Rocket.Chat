@@ -4,7 +4,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { mergeWithSectionsOrder } from '../../hooks/useCategoryList';
+import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useMoveCategoryPosition = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
@@ -21,7 +21,7 @@ export const useMoveCategoryPosition = () => {
 			[swappedKeys[i], swappedKeys[target]] = [swappedKeys[target], swappedKeys[i]];
 
 			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
-			const finalIds = mergeWithSectionsOrder(swappedKeys, sidebarSectionsOrder);
+			const finalIds = withDynamicFirst(swappedKeys, sidebarSectionsOrder);
 			await persistMutation.mutateAsync(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 		},
 		[allEntries, sidebarSectionsOrder, persistMutation],

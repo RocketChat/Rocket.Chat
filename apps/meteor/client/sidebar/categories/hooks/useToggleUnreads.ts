@@ -4,7 +4,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { mergeWithSectionsOrder } from '../../hooks/useCategoryList';
+import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useToggleUnreads = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
@@ -22,7 +22,7 @@ export const useToggleUnreads = () => {
 			const entryMap = new Map(allEntries.map((entry) => [entry._id, entry]));
 			entryMap.set(id, { _id: id, name: id, default: true, ...patch });
 
-			const merged = mergeWithSectionsOrder(
+			const merged = withDynamicFirst(
 				allEntries.map((entry) => entry._id),
 				sidebarSectionsOrder,
 			);
