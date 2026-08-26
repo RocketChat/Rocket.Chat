@@ -63,7 +63,7 @@ const openExternalWindow = async (callId: string, theme: string) => {
 			} catch (error) {
 				// arround ~ 5 seconds total timeout
 				if (attempt > 9) {
-					reject(error);
+					reject(error as Error);
 					externalWindow.close();
 					return;
 				}
