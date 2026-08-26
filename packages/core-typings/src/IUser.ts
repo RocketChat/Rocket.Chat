@@ -167,6 +167,22 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
+export const SIDEBAR_SYSTEM_GROUP_KEYS = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+] as const;
+
+export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
+
 export interface ISidebarCategory {
 	_id: string;
 	name: string;

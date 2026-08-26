@@ -1,4 +1,5 @@
 import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
@@ -16,20 +17,6 @@ import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
-
-export const SYSTEM_GROUP_KEYS = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
 
 type GroupUnreadInfo = {
 	userMentions: number;
@@ -140,7 +127,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const category = customCategories.find(({ _id }) => _id === key);
 
 				const title = category ? category.name : key;
-				const translateTitle = SYSTEM_GROUP_KEYS.includes(key as any);
+				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
 				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
