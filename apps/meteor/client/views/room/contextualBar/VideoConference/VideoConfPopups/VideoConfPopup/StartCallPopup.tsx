@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -43,8 +44,11 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	const dialogLabel =
 		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
-	const showCam = !!capabilities.cam;
-	const showMic = !!capabilities.mic;
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there.
+	const preflight = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	const showCam = !preflight && !!capabilities.cam;
+	const showMic = !preflight && !!capabilities.mic;
 
 	const handleStartCall = useStableCallback(() => {
 		setPreferences(controllersConfig);

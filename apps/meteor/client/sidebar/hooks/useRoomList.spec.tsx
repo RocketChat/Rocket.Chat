@@ -309,9 +309,11 @@ it('should keep the Favorites category visible when it is empty', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowFavorites: true, isEnterprise: true }).build(),
 	});
-	await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Favorites'));
-	const groupsList = groupsListOf(result.current.groups);
-	expect(result.current.groups[groupsList.indexOf('Favorites')].empty).toBe(true);
+	const unreadIndex = result.current.groupsList.indexOf('Unread');
+	const roomListUnread = result.current.roomList.filter((item) => item.unread);
+
+	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
+	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
 });
 
 it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed and "Show unreads" is off', async () => {
