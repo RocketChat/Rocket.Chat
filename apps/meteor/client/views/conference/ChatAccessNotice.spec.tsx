@@ -11,15 +11,23 @@ const uid = 'john.doe';
 
 const buildAccess = (membersWithoutAccess: string[], joined = true) => buildChatAccess({ membersWithoutAccess, joined });
 
+// The count is the thing under test, and it only exists once interpolated — the bare key says nothing about
+// how many people it was given.
 const renderNotice = (access: ConferenceChatAccess) =>
 	render(<ChatAccessNotice callId='call-id' access={access} />, {
-		wrapper: mockAppRoot().withJohnDoe().build(),
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withTranslations('en', 'core', {
+				__count__participants_cannot_see_the_chat_one: "{{count}} person can't see the chat",
+				__count__participants_cannot_see_the_chat_other: "{{count}} people can't see the chat",
+			})
+			.build(),
 	});
 
 it('shows the count and a Review button when members are missing chat access', () => {
 	renderNotice(buildAccess(['someone-else']));
 
-	expect(screen.getByText('__count__participants_cannot_see_the_chat')).toBeInTheDocument();
+	expect(screen.getByText("1 person can't see the chat")).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Review' })).toBeInTheDocument();
 });
 
@@ -58,5 +66,7 @@ it('counts only the members who are actually in the call', () => {
 
 	renderNotice(access);
 
-	expect(screen.getByRole('button', { name: 'Review' })).toBeInTheDocument();
+	// One of the two is only invited, so the notice is about one person — counting the invited one would say two.
+	expect(screen.getByText("1 person can't see the chat")).toBeInTheDocument();
+	expect(screen.queryByText("2 people can't see the chat")).not.toBeInTheDocument();
 });

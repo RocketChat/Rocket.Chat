@@ -80,10 +80,15 @@ it('excludes the room members from the autocomplete when the room is in the stor
 
 	await typeFilter('outsider');
 
-	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
+	// The mount-time query fires immediately with no term and no exceptions, and the members list arrives on its
+	// own schedule, so "has been called" and "the last call so far" prove nothing about either. Wait for the query
+	// the test is about — the debounced term and the loaded exceptions travelling together — and read that one.
+	const selectorFor = (term: string) =>
+		autocomplete.mock.calls.map(([params]) => JSON.parse(params.selector)).find((selector) => selector.term === term);
 
-	const lastCall = autocomplete.mock.calls.at(-1);
-	expect(JSON.parse(lastCall![0].selector)).toMatchObject({ exceptions: ['member'] });
+	await waitFor(() => expect(selectorFor('outsider')).toBeDefined());
+
+	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: ['member'] });
 });
 
 // This is the regression that matters: a conference member added from outside the room has no room in
