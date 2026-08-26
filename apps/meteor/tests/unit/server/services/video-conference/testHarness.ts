@@ -24,6 +24,12 @@ export const providerCapabilities: { current: VideoConferenceCapabilities | unde
 // re-list all ~25 of them just to get the module to load; only the modules a spec actually cares about
 // (`@rocket.chat/models`, `@rocket.chat/core-services`, and anything else under test) are assembled by the
 // spec itself.
+/**
+ * Settings the service reads, per test. Mutable so a spec can turn one on without rebuilding the module — the
+ * same shape `providerCapabilities` uses for provider capabilities.
+ */
+export const settingValues: Record<string, unknown> = {};
+
 export const commonServiceStubs = {
 	'@rocket.chat/apps': { Apps: {} },
 	// Every level, not just `error`: a missing one throws where the service only meant to say something, and the
@@ -88,7 +94,7 @@ export const commonServiceStubs = {
 	},
 	'../../lib/videoConfTypes': { videoConfTypes: { isCallManagedByApp: () => false, getTypeForRoom: () => ({}) } },
 	'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: async () => undefined },
-	'../../settings': { settings: { get: () => undefined } },
+	'../../settings': { settings: { get: (key: string) => settingValues[key] } },
 };
 
 /**
