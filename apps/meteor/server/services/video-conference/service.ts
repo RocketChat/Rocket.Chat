@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Room, isMeteorError } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -1153,12 +1153,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		try {
 			await this.createDiscussionForConference(displayName, call, createdBy);
 		} catch (err) {
-			// Persistent chat is complementary to the call, so failing to create its discussion must not prevent
-			// the call from starting. This happens, for example, when the workspace enforces encryption on private
-			// rooms: the persistent chat discussion is created unencrypted, so room creation is rejected.
-			logger.error({
-				name: 'Error trying to create the persistent chat discussion for a conference',
-				err,
+			// The persistent chat discussion is always created unencrypted, so it is rejected when the workspace
+			// enforces encryption on private rooms. Those two features are incompatible by design, so skip the
+			// discussion instead of aborting the call. Any other failure is unexpected and must still surface.
+			if (!isMeteorError(err) || err.error !== 'error-encrypted-private-rooms-enforced') {
+				throw err;
+			}
+
+			logger.warn({
+				name: 'Skipped the persistent chat discussion of a conference because encryption is enforced on private rooms',
 				callId,
 				rid: call.rid,
 			});
