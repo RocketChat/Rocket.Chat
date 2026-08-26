@@ -9,12 +9,10 @@ const XML_ESCAPES: Record<string, string> = {
 	"'": '&apos;',
 };
 
-/** Every interpolated value goes through this: a single unescaped `&` produces a malformed envelope. */
 export const escapeXml = (value: string): string => value.replace(/[&<>"']/g, (char) => XML_ESCAPES[char]);
 
 /**
- * `ExchangeImpersonation` is what lets one service account read many mailboxes: Exchange evaluates the
- * request as that user, who is never prompted and has no session involved.
+ * `ExchangeImpersonation` is what lets one service account read many mailboxes
  */
 export const envelope = (body: string, impersonatedMailbox?: string): string => {
 	const impersonation = impersonatedMailbox
@@ -55,10 +53,7 @@ export const findFolderRequest = (mailbox: string, wellKnownFolder: 'calendar' |
 	);
 
 /**
- * The EWS delta query. `SyncState` is the resume token; omit it for an initial sync.
- *
- * Returns the master item of a recurring series rather than expanded occurrences, unlike `CalendarView`.
- * Whether we have to expand recurrences ourselves is still open.
+ * The EWS delta query. `syncState` is the resume token; omit it for an initial sync.
  */
 export const syncFolderItemsRequest = (mailbox: string, folderId: string, syncState?: string, maxChanges = 100): string =>
 	envelope(
@@ -100,7 +95,7 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 		mailbox,
 	);
 
-/** Free/busy-only mode: availability without subjects or bodies. */
+// Free/busy-only mode: availability without subjects or bodies.
 export const getUserAvailabilityRequest = (mailbox: string, start: Date, end: Date): string =>
 	envelope(
 		[
