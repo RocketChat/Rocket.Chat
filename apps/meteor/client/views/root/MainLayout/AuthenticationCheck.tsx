@@ -19,7 +19,12 @@ import HomeSkeleton from '../../home/HomeSkeleton';
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
  * renders the page, without creating an user (not even an anonymous user)
  */
-export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
+export type AuthenticationCheckProps = {
+	children: ReactNode;
+	guest?: boolean;
+	/** Placeholder shown while the user is resolved — see `UsernameCheck`. */
+	loading?: ReactNode;
+};
 
 /**
  * The connection states that mean a server was reached for and lost, as opposed to not having answered yet.
@@ -30,7 +35,7 @@ export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
  */
 const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean => status === 'waiting' || status === 'failed';
 
-const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
+const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
@@ -93,13 +98,15 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const isResumingSession = !user && !hasSeenUser.current && !forceLogin && !unreachable && !!loginToken;
 
 	if (isResumingSession) {
-		return <HomeSkeleton />;
+		// A route that brought its own placeholder gets it here too: the app-shaped skeleton is the wrong shape
+		// for a window that never shows the app around it.
+		return <>{loading ?? <HomeSkeleton />}</>;
 	}
 
 	if (user) {
 		return (
 			<LoggedInArea>
-				<UsernameCheck>{children}</UsernameCheck>
+				<UsernameCheck loading={loading}>{children}</UsernameCheck>
 			</LoggedInArea>
 		);
 	}
@@ -109,7 +116,7 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	}
 
 	if (!forceLogin && allowAnonymousRead) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+		return <UsernameCheck loading={loading}>{children}</UsernameCheck>;
 	}
 
 	return <LoginPage />;

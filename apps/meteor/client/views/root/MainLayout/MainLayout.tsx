@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
+import LayoutWithSidebar from './LayoutWithSidebar';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
 
@@ -15,23 +16,18 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 	useCustomScript();
 
 	const isEmbeddedLayout = useEmbeddedLayout();
+	const Layout = isEmbeddedLayout ? EmbeddedPreload : Preload;
 
-	if (isEmbeddedLayout) {
-		return (
-			<EmbeddedPreload>
-				<AuthenticationCheck>
-					<Suspense fallback={null}>{children}</Suspense>
-				</AuthenticationCheck>
-			</EmbeddedPreload>
-		);
-	}
-
+	// The navigation chrome belongs to this layout rather than to the authentication chain, so routes that
+	// only need the auth checks (the conference page) render standalone.
 	return (
-		<Preload>
+		<Layout>
 			<AuthenticationCheck>
-				<Suspense fallback={null}>{children}</Suspense>
+				<LayoutWithSidebar>
+					<Suspense fallback={null}>{children}</Suspense>
+				</LayoutWithSidebar>
 			</AuthenticationCheck>
-		</Preload>
+		</Layout>
 	);
 };
 
