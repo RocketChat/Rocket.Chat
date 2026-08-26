@@ -1,6 +1,6 @@
 # npm publishing
 
-The 15 public `@rocket.chat/*` packages under `packages/` are published to npm by
+The public `@rocket.chat/*` packages under `packages/` are published to npm by
 `.github/workflows/release.yml`, which delegates to the local `packages/release-action`.
 Everything else in the workspace is `private: true` and never published.
 
