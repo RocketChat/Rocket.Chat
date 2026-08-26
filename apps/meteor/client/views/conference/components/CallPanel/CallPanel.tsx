@@ -12,6 +12,16 @@ type CallPanelProps = {
 const PANEL_WIDTH = 400;
 
 /**
+ * Never wider than the window. `minWidth` is what makes the panel keep its width instead of being squeezed by
+ * the call beside it, and on the overlay path — chosen for viewports too narrow to split — that same floor
+ * would push the panel's own controls off the screen. The clamp leaves the split layout untouched, since it is
+ * only used above the `md` breakpoint, which is wider than the panel.
+ */
+const PANEL_INLINE_SIZE = `min(${PANEL_WIDTH}px, 100vw)`;
+
+const CLOSE_MS = 200;
+
+/**
  * A side panel for conference content (the chat, the members).
  *
  * It is the product's own contextual bar, so a panel beside the call has the same edges, background and
@@ -23,8 +33,8 @@ const PANEL_WIDTH = 400;
  */
 const CallPanel = ({ visible, overlay = false, children }: CallPanelProps) => (
 	<Contextualbar
-		width={visible ? PANEL_WIDTH : 0}
-		minWidth={visible ? PANEL_WIDTH : 0}
+		width={visible ? PANEL_INLINE_SIZE : 0}
+		minWidth={visible ? PANEL_INLINE_SIZE : 0}
 		borderBlockWidth='default'
 		borderBlockStyle='solid'
 		borderBlockColor='stroke-extra-light'
@@ -35,9 +45,17 @@ const CallPanel = ({ visible, overlay = false, children }: CallPanelProps) => (
 		// panel is chrome rather than a room, and the chat inside it paints its own room background anyway.
 		backgroundColor='surface-light'
 		overflow='hidden'
-		style={{ transition: 'width 200ms ease, min-width 200ms ease' }}
+		style={{
+			// A panel animated to zero width is still in the DOM: `overflow: hidden` hides its chat input and its
+			// close button from the eye but leaves them in the tab order and in the accessibility tree, so a
+			// keyboard or screen-reader user can reach a panel that is shut. `visibility` takes them out of both —
+			// switched at the end of the closing animation so the content doesn't vanish before it has slid away,
+			// and immediately on the way open so it is there as it arrives.
+			visibility: visible ? 'visible' : 'hidden',
+			transition: `width ${CLOSE_MS}ms ease, min-width ${CLOSE_MS}ms ease, visibility 0s linear ${visible ? 0 : CLOSE_MS}ms`,
+		}}
 	>
-		<Box display='flex' flexDirection='column' width='100%' minWidth={PANEL_WIDTH} height='100%'>
+		<Box display='flex' flexDirection='column' width='100%' minWidth={PANEL_INLINE_SIZE} height='100%'>
 			{children}
 		</Box>
 	</Contextualbar>

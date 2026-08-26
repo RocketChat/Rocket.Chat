@@ -48,11 +48,14 @@ const NavBarItemOngoingCalls = () => {
 					info={isOffering && !isRinging}
 					onClick={() => toggle()}
 					title={name}
-					aria-label={name}
+					// The badge sits beside the button rather than inside it, so a screen reader would otherwise announce
+					// the name and then a stray number. The count goes into the name and the badge is hidden from
+					// assistive technology, so it is said once.
+					aria-label={active > 0 ? t('Ongoing_calls_count', { count: active }) : name}
 					icon='video'
 				/>
 				{active > 0 && (
-					<Badge variant='secondary' style={{ position: 'absolute', insetBlockStart: -4, insetInlineEnd: -4 }}>
+					<Badge aria-hidden='true' variant='secondary' style={{ position: 'absolute', insetBlockStart: -4, insetInlineEnd: -4 }}>
 						{active}
 					</Badge>
 				)}
