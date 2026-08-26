@@ -104,8 +104,6 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		void api.broadcast('user.roleUpdate', event);
 	}
 
-	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
-
 	return true;
 };
 

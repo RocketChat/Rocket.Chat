@@ -1519,8 +1519,6 @@
   "Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings": "Deze functie is afhankelijk van de hierboven geselecteerde oproepprovider die moet worden ingeschakeld via de beheerinstellingen.<br/>Voor **Jitsi**, zorg ervoor dat Jitsi ingeschakeld is onder Beheer -> Videoconferentie ->Jitsi -> Ingeschakeld.<br/>Voor **WebRTC**, zorg ervoor dat WebRTC ingeschakeld is onder Beheer -> WebRTC -> Ingeschakeld.",
   "Features": "Functies",
   "Federation": "Federatie",
-  "Federation_Enable": "Federatie inschakelen",
-  "Federation_Public_key": "Publieke sleutel",
   "Field": "Veld",
   "Field_removed": "Veld verwijderd",
   "Field_required": "Veld vereist",

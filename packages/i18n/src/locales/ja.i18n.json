@@ -1501,8 +1501,6 @@
   "Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings": "この機能は、上記で選択した通話プロバイダー（管理設定から有効にします）によって異なります。<br/>** Jitsi **の場合は、［管理］-> ［ビデオ会議］->［Jitsi］->［有効］でJitsiが［有効］になっていることを確認してください。<br/>** WebRTC **の場合は、［管理］->［WebRTC］->［有効］でWebRTCが［有効］になっていることを確認してください。",
   "Features": "特徴",
   "Federation": "フェデレーション",
-  "Federation_Enable": "フェデレーションを有効にする",
-  "Federation_Public_key": "パブリックキー",
   "Field": "フィールド",
   "Field_removed": "フィールドが削除されました",
   "Field_required": "必要なフィールド",

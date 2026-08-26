@@ -1505,8 +1505,6 @@
   "Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings": "Aquesta funció depèn del proveïdor de trucades seleccionat anteriorment que s'habilitarà des de la configuració d'administració.  \n<br/>Per a **Jitsi**, assegureu-vos que teniu Jitsi activat a Administrador -> Videoconferència -> Jitsi -> Activat.<br/>Per a **WebRTC**, assegureu-vos que teniu WebRTC habilitat a Administrador -> WebRTC -> Activat.",
   "Features": "Característiques",
   "Federation": "Federació",
-  "Federation_Enable": "Habilitar Federació",
-  "Federation_Public_key": "Clau pública",
   "Field": "Camp",
   "Field_removed": "Camp eliminat",
   "Field_required": "Camp obligatori",

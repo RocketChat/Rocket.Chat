@@ -1517,8 +1517,6 @@
   "Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings": "Cette fonction dépend de l'activation du fournisseur d'appel sélectionné ci-dessus à partir des paramètres d'administration.<br/>Pour **Jitsi**, assurez-vous que Jitsi est activé sous Admin -> Visioconférence -> Jitsi -> Activé.<br/>Pour **WebRTC**, assurez-vous que WebRTC est activé sous Admin -> WebRTC -> Activé.",
   "Features": "Fonctionnalités",
   "Federation": "Fédération",
-  "Federation_Enable": "Activer la fédération",
-  "Federation_Public_key": "Clé publique",
   "Field": "Champ",
   "Field_removed": "Champ supprimé",
   "Field_required": "Champ requis",

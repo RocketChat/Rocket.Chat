@@ -1547,8 +1547,6 @@
   "Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings": "Esta función depende de que el proveedor de llamadas seleccionado anteriormente se haya habilitado en la configuración de administración.<br/>Para **Jitsi**, asegúrate de que se ha habilitado Jitsi en \"Administración\" > \"Videoconferencia\" > \"Jitsi\" > \"Habilitado\".<br/>Para **WebRTC**, asegúrate de que se ha habilitado WebRTC en \"Administración\" > \"WebRTC\" > \"Habilitado\".",
   "Features": "Funciones",
   "Federation": "Federación",
-  "Federation_Enable": "Habilitar federación",
-  "Federation_Public_key": "Clave pública",
   "Field": "Campo",
   "Field_removed": "Campo eliminado",
   "Field_required": "Campo obligatorio",
