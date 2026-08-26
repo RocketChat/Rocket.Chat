@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -20,6 +19,7 @@ import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
+import { useConferenceWindowEnabled } from '../../../../../conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type StartCallPopupProps = {
@@ -45,8 +45,9 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
 	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
-	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there.
-	const preflight = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there. Without that window
+	// this popup is still where mic and camera are chosen.
+	const preflight = useConferenceWindowEnabled();
 	const showCam = !preflight && !!capabilities.cam;
 	const showMic = !preflight && !!capabilities.mic;
 
