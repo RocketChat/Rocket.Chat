@@ -52,6 +52,10 @@ jobs:
         with:
           cache-modules: true
           install: true
+          # Transitional: npm attempts the OIDC exchange first and overrides this token on
+          # success, so it only takes effect when the exchange fails. That keeps releases
+          # alive while packages are registered as trusted publishers one by one. Remove
+          # once every package reports a non-null dist.attestations — see docs/npm-publishing.md.
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Node 22 bundles npm 10, trusted publishing needs >= 11.5.1
@@ -71,5 +75,5 @@ jobs:
           action: ${{ github.event_name == 'push' && 'publish-final' || github.event_name == 'schedule' && 'next' || inputs.name }}
           base-ref: ${{ github.event_name == 'schedule' && github.ref_name || github.event_name == 'workflow_dispatch' && inputs.base-ref || '' }}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # transitional, see the Setup NodeJS step
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}

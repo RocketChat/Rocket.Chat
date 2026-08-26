@@ -33,6 +33,38 @@ Two hard requirements, both handled in `release.yml`:
   `ACTIONS_ID_TOKEN_REQUEST_URL` and the OIDC exchange cannot happen.
 - **npm >= 11.5.1** (the `Setup npm` step installs it). `engines.node` is 22.x, which bundles npm 10.
 
+### How `NPM_TOKEN` interacts with the exchange
+
+`npm publish` runs the OIDC exchange *before* it reads credentials, and on success it overrides the
+`~/.npmrc` auth line with the freshly minted token. A present `NPM_TOKEN` therefore does **not**
+prevent trusted publishing — the exchange still wins whenever it succeeds.
+
+The token matters only when the exchange fails. npm's `oidc()` is written to never throw: every
+failure path (missing `id-token` permission, package not registered, exchange rejected) returns
+quietly, and `publish` then proceeds with the npmrc token — no provenance, no error, exit code 0.
+
+That makes the token a **migration aid and a hazard at the same time**:
+
+- While packages are being registered one at a time, it keeps releases from hard-failing on the
+  ones that are not registered yet.
+- Once everything is registered, it hides regressions — a broken registration keeps publishing
+  under token auth instead of failing.
+
+So `release.yml` keeps `NPM_TOKEN` only until every package publishes with provenance, then drops
+both references (the `setup-node` input and the `Release` step's `env`).
+
+### Migrating packages incrementally
+
+npm allows one trusted publisher per package, so packages move over one at a time:
+
+1. Register the package (see below). Watch for packages previously released from another repo —
+   `@rocket.chat/emitter`'s last provenance came from `RocketChat/fuselage`'s `cd.yml`, and that
+   registration has to be re-pointed here before this workflow can publish it.
+2. Let a release run. The job log is not evidence — a token fallback looks identical to success.
+3. Confirm with `npm view @rocket.chat/<name> --json dist.attestations`; non-null means the package
+   is publishing through OIDC.
+4. When all published packages are attested, remove `NPM_TOKEN` from `release.yml`.
+
 ### Why there is only one release workflow
 
 npm allows **one trusted publisher per package**, and it validates the _entry-point_ workflow
@@ -104,9 +136,9 @@ never carried provenance.
 - **`E404` / `ENEEDAUTH` on `/-/npm/v1/oidc/token/exchange/package/…`** — almost always a
   trusted-publisher mismatch: wrong repository, or the workflow filename entered with a path
   (`.github/workflows/release.yml`) instead of bare `release.yml`.
-- **`E401` despite a correct registration** — something wrote an auth line into `~/.npmrc`, which
-  takes precedence over the OIDC exchange. `createNpmFile()` skips writing when `NPM_TOKEN` is
-  unset; `.github/actions/setup-node` writes one whenever its `NPM_TOKEN` input is set.
+- **`E401` / `ENEEDAUTH` with no token configured** — the exchange failed and there was nothing to
+  fall back to. Run with `--loglevel verbose`: `oidc()` logs its reason (`Skipped because incorrect
+  permissions`, `Failed token exchange request…`) instead of throwing.
 - **422 on publish** — provenance mismatch; check the package's `repository` field.
 - **Silent fallback to token auth** — if a valid token is present npm may authenticate with it
   instead. Confirm via `dist.attestations` rather than the job log.
