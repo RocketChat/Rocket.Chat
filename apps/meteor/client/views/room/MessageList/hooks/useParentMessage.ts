@@ -3,7 +3,8 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
-import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
+import { sdk } from '../../../../lib/SDKClient';
+import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../../stores';
 
 const findParentMessage = (() => {
@@ -14,9 +15,15 @@ const findParentMessage = (() => {
 	});
 
 	const getMessages = withDebouncing({ wait: 500 })(async () => {
-		const _tmp = [...waiting];
+		const messageIds = [...waiting];
 		waiting.length = 0;
-		resolve(callWithErrorHandling('getMessages', _tmp));
+
+		resolve(
+			messageIds.length
+				? sdk.rest.post('/v1/chat.getMessages', { messageIds }).then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg)))
+				: [],
+		);
+
 		pending = new Promise<IMessage[]>((r) => {
 			resolve = r;
 		});
