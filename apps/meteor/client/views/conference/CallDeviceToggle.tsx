@@ -24,7 +24,7 @@ const ICONS = {
  */
 const CallDeviceToggle = ({ device, on, label, onToggle }: CallDeviceToggleProps) => (
 	<IconButton
-		secondary={!on}
+		secondary
 		danger={!on}
 		aria-live='assertive'
 		// The toggle is engaged when the device is on, whatever the styling does — a screen reader must not be told

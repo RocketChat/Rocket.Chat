@@ -1,6 +1,6 @@
 import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box, Icon } from '@rocket.chat/fuselage';
+import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -36,59 +36,12 @@ type ConferencePanel = 'members' | 'chat';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
-const membersIndicatorStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	padding: 4px 8px;
-	border: none;
-	border-radius: 20px;
-	background: transparent;
-	color: rgba(255, 255, 255, 0.85);
-	font-size: 14px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: background-color 80ms ease;
-	line-height: 1;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.12);
-	}
-
-	&[aria-pressed='true'] {
-		background-color: rgba(255, 255, 255, 0.2);
-	}
-`;
-
 const callHeaderTimerStyles = css`
 	display: inline-flex;
 	align-items: center;
 	min-width: 0;
 	color: rgba(255, 255, 255, 0.85);
 	font-variant-numeric: tabular-nums;
-`;
-
-const topBarActionStyles = css`
-	position: relative;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 32px;
-	height: 32px;
-	border: none;
-	border-radius: 8px;
-	background: transparent;
-	color: rgba(255, 255, 255, 0.85);
-	cursor: pointer;
-	transition: background-color 80ms ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.12);
-	}
-
-	&[aria-pressed='true'] {
-		background-color: rgba(255, 255, 255, 0.2);
-	}
 `;
 
 /**
@@ -155,42 +108,72 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	}, [someoneRinging, callSounds]);
 
 	const membersAction = (
-		<Box
-			is='button'
-			className={membersIndicatorStyles}
+		<IconButton
+			small
+			secondary
+			position='relative'
+			overflow='visible'
 			aria-label={t('__count__people_in_the_call', { count: presentCount })}
 			title={t('People')}
 			aria-pressed={activePanel === 'members'}
 			onClick={() => togglePanel('members')}
+			icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
 		>
-			<Icon name='members' size='x20' />
-			<span>{presentCount}</span>
-		</Box>
+			{presentCount > 0 && (
+				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
+					<Badge>{presentCount}</Badge>
+				</Box>
+			)}
+		</IconButton>
 	);
 
 	const chatAction = (
-		<Box
-			is='button'
-			className={topBarActionStyles}
+		<IconButton
+			small
+			secondary
+			position='relative'
+			overflow='visible'
 			aria-label={withBadgeCount(t('Chat'), unread, unreadTitle)}
 			title={t('Chat')}
 			aria-pressed={chatVisible}
 			onClick={() => togglePanel('chat')}
+			icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
 		>
-			<Icon name='balloon' size='x20' />
 			{unread > 0 && (
-				<Box position='absolute' insetBlockStart={-4} insetInlineEnd={-4} pointerEvents='none' aria-hidden='true'>
+				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
 					<Badge variant={unreadVariant} title={unreadTitle}>
 						{unread}
 					</Badge>
 				</Box>
 			)}
 			{unread === 0 && hasUnseenActivity && (
-				<Box position='absolute' insetBlockStart={-2} insetInlineEnd={-2} pointerEvents='none' aria-hidden='true'>
+				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
 					<Badge variant={unreadVariant} title={unreadTitle} />
 				</Box>
 			)}
-		</Box>
+		</IconButton>
+		// <Box
+		// 	is='button'
+		// 	className={topBarActionStyles}
+		// 	aria-label={withBadgeCount(t('Chat'), unread, unreadTitle)}
+		// 	title={t('Chat')}
+		// 	aria-pressed={chatVisible}
+		// 	onClick={() => togglePanel('chat')}
+		// >
+		// 	<Icon name='balloon' size='x20' />
+		// 	{unread > 0 && (
+		// 		<Box position='absolute' insetBlockStart={-4} insetInlineEnd={-4} pointerEvents='none' aria-hidden='true'>
+		// 			<Badge variant={unreadVariant} title={unreadTitle}>
+		// 				{unread}
+		// 			</Badge>
+		// 		</Box>
+		// 	)}
+		// 	{unread === 0 && hasUnseenActivity && (
+		// 		<Box position='absolute' insetBlockStart={-2} insetInlineEnd={-2} pointerEvents='none' aria-hidden='true'>
+		// 			<Badge variant={unreadVariant} title={unreadTitle} />
+		// 		</Box>
+		// 	)}
+		// </Box>
 	);
 
 	if (room.error) {
