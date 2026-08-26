@@ -32,19 +32,6 @@ type CurrentCallParams = {
 	providerName?: string;
 };
 
-// Emitted for embedded-SFU providers (e.g. LiveKit) — there's no URL to open,
-// the call is rendered inline by the embedded provider's React tree. Consumers
-// of this event dispatch the join into the corresponding provider context.
-type CurrentEmbeddedCallParams = {
-	callId: string;
-	rid: string;
-	providerName: string;
-	// Preflight mic/cam preferences from the start-call popup so the
-	// embedded provider can connect with the right initial track state
-	// instead of always defaulting to "mic on, cam off".
-	preferences?: { mic?: boolean; cam?: boolean };
-};
-
 type VideoConfEvents = {
 	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
@@ -80,10 +67,6 @@ type VideoConfEvents = {
 	// When join call
 	'call/join': CurrentCallParams;
 
-	// When join call for an embedded (no-URL) provider like LiveKit. Consumers
-	// route this to the provider's React context (e.g. LiveKitVideoConf).
-	'call/joinEmbedded': CurrentEmbeddedCallParams;
-
 	'error': { error: string };
 
 	'capabilities/changed': void;
@@ -108,7 +91,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private _preferences: CallPreferences;
 
-	private _persistentChat = false;
+	private _conferenceWindow = false;
 
 	private _capabilities: ProviderCapabilities;
 
@@ -152,12 +135,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	public isCalling(): boolean {
 		// Once joined, the wait belongs to the call window — the room is not "calling" any more, even though the
-		// ringing interval is still running there on the callee's behalf.
-		if (this.currentCallData?.joined) {
+		// ringing interval is still running there on the callee's behalf. Only with the call window: without one
+		// the caller has gone nowhere, and the room's outgoing popup *is* the wait.
+		if (this._conferenceWindow && this.currentCallData?.joined) {
 			return false;
 		}
 
-		return Boolean(this.currentCallHandler || this.currentCallData);
+		if (this.currentCallHandler || (this.currentCallData && !this.currentCallData.joined)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public getIncomingCalls(): DirectCallData[] {
@@ -192,17 +180,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		switch (data.type) {
 			case 'direct':
-				// The window opens on the click that asked for it — the same moment every other call type opens.
-				// Waiting for the answer to open it left `window.open` with no user activation behind it, which
-				// browsers are entitled to refuse, and left the caller staring at a spinner in the room.
-				//
-				// Who rings, and when, depends on what that window shows. With a preflight in it, the server rings
-				// the callee once the caller has actually entered the call — ringing here would ring them while the
-				// caller is still choosing a camera. Without one there is nothing to wait for, so the caller's own
-				// client does the 1:1 handshake ring, as it always has.
-				if (!this._persistentChat) {
-					this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
+				// Without the call window, a direct call is placed exactly as it always was: ring the callee and
+				// wait in the room, opening nothing until they answer.
+				if (!this._conferenceWindow) {
+					return this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
 				}
+
+				// With it, the server rings the callee once the caller has actually entered the call — ringing here
+				// would ring them while the caller is still choosing a camera on the preflight screen.
 				return this.joinCall(data.callId);
 			case 'videoconference':
 				return this.joinCall(data.callId);
@@ -233,7 +218,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.dismissIncomingCall(callId);
 
 		// Nobody is waiting to hand us a link, so there is nothing to negotiate — the conference already exists
-		// and membership is what authorizes joining it.
+		// and membership is what authorizes joining it. Only a `ring` creates such a call, and only the call
+		// window acts on a `ring`, so without it this is never taken.
 		if (!callData.handshake) {
 			void this.joinCall(callId);
 			return;
@@ -272,10 +258,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// Record the decline on the server against our own membership. The client-published `rejected` below
 		// is what drives the 1:1 flow (the caller's client is waiting on it), but it's a claim one client makes
 		// about another user's call, so it can't be trusted as the record of what happened.
-		void sdk.rest.post('/v1/video-conference.decline', { callId });
+		//
+		// Only the call window's list reads that record back, and only the new flow can produce a decline that
+		// isn't also a `rejected`. Without it, turning a call down stays a matter between the two clients.
+		if (this._conferenceWindow) {
+			void sdk.rest.post('/v1/video-conference.decline', { callId });
+		}
 
 		// Only a caller's own client is waiting to hear this; for a server-originated ring the record above is
 		// the whole story, and telling the user who added us that we "rejected" would read as ending their call.
+		// Every incoming call is a handshake unless a `ring` created it, so without the call window this is
+		// always taken.
 		if (callData.handshake) {
 			this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
 		}
@@ -414,10 +407,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	/**
 	 * Whether calls open the in-product conference page, which joins for itself once the user has said how they
-	 * want to arrive. Fed from the setting, because the manager decides whether to post the join.
+	 * want to arrive. Fed from `VideoConf_Conference_Window_Enabled` by `VideoConfProvider`, because the manager
+	 * is what decides whether to ring, whether to post the join, and whether a decline is recorded.
+	 *
+	 * With it off every flow below takes the path it took before the call window existed.
 	 */
-	public setPersistentChat(enabled: boolean): void {
-		this._persistentChat = enabled;
+	public setConferenceWindowEnabled(enabled: boolean): void {
+		this._conferenceWindow = enabled;
 	}
 
 	public async joinCall(callId: string): Promise<void> {
@@ -434,7 +430,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		// The conference page runs a preflight and joins from there, so joining here would both throw away the URL
 		// it returns and mark the user as present in a call they have not chosen to enter yet.
-		if (this._persistentChat) {
+		if (this._conferenceWindow) {
 			this.markCurrentCallJoined(callId);
 			this.emit('call/join', { callId });
 			return;
@@ -448,37 +444,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url, providerName, rid } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
+		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			console.error(`[VideoConf] Failed to join call ${callId}`, e);
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
 			return Promise.reject(e);
 		});
 
-		// Embedded providers (e.g. LiveKit) intentionally return an empty
-		// url + a rid — the call is mounted inline by their React provider
-		// instead of opened in a popup. Dispatch to that provider via a
-		// distinct event so the URL-handling code path doesn't run.
-		if (!url && providerName && rid) {
-			this.debugLog(`[VideoConf] Joining embedded ${providerName} call ${callId} in room ${rid}.`);
-			this.emit('call/joinEmbedded', {
-				callId,
-				rid,
-				providerName,
-				// Forward the same prefs the server received so the
-				// embedded provider can publish/skip mic + camera tracks
-				// according to the preflight popup's toggle state.
-				preferences: { ...this._preferences },
-			});
-			return;
-		}
-
 		if (!url) {
 			this.emitError('error-videoconf-missing-url');
 			throw new Error('Failed to get video conference URL.');
 		}
-
-		this.markCurrentCallJoined(callId);
 
 		this.debugLog(`[VideoConf] Opening ${url}.`);
 		this.emit('call/join', { url, callId, providerName });
@@ -630,7 +606,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			// A server-originated ring: the conference already exists and the server is telling us to ring for
 			// it, rather than a caller's client repeating `call` while it waits for an answer. Nothing refreshes
 			// the timeout, so it rings once and gives up — and accepting joins the call rather than negotiating.
+			//
+			// Only with the call window. The server has always broadcast `ring` for group calls and a client with
+			// no case for it ignored them; ringing a whole channel for every group call is exactly the change
+			// that has to wait for the setting.
 			case 'ring':
+				if (!this._conferenceWindow) {
+					return;
+				}
+
 				this.allowRingingAgain(params.callId);
 				return this.onDirectCall(params, false);
 			case 'canceled':

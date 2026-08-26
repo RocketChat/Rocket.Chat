@@ -1,6 +1,8 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useConferenceWindowEnabled } from '../../../../conference/hooks/useConferenceWindowEnabled';
+
 /** How often to look at the call window. Cheap, and a second's delay in ending a call nobody is in is nothing. */
 const POLL_INTERVAL = 1_000;
 
@@ -17,9 +19,13 @@ const POLL_INTERVAL = 1_000;
  *
  * Leaving twice is harmless — the server treats a leave as a statement about the member, not an event — so this
  * doesn't try to work out whether the page managed to report it first.
+ *
+ * There is nothing to watch without the call window — a provider's own page was never ours to poll, and the
+ * join it opens was already posted — so watching is a no-op then: no interval starts and no leave is reported.
  */
 export const useLeaveCallOnWindowClose = () => {
 	const leaveCall = useEndpoint('POST', '/v1/video-conference.leave');
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 	const watching = useRef<ReturnType<typeof setInterval>>(undefined);
 
 	const stop = useCallback(() => {
@@ -36,7 +42,7 @@ export const useLeaveCallOnWindowClose = () => {
 			stop();
 
 			// No window to watch: the desktop app manages its own, and a blocked popup never opened one.
-			if (!target) {
+			if (!target || !conferenceWindowEnabled) {
 				return;
 			}
 
@@ -49,6 +55,6 @@ export const useLeaveCallOnWindowClose = () => {
 				void leaveCall({ callId }).catch(() => undefined);
 			}, POLL_INTERVAL);
 		},
-		[leaveCall, stop],
+		[conferenceWindowEnabled, leaveCall, stop],
 	);
 };
