@@ -1,13 +1,14 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { SYSTEM_GROUP_KEYS } from '../../hooks/useCategoryList';
+import { mergeWithSectionsOrder } from '../../hooks/useCategoryList';
 
 export const useToggleUnreads = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-	const sidebarSectionsOrder = useUserPreference<string[]>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
+	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const persistMutation = usePersistCategoriesMutation();
 
 	const upsertGroupEntry = useCallback(
@@ -20,10 +21,13 @@ export const useToggleUnreads = () => {
 
 			const entryMap = new Map(allEntries.map((entry) => [entry._id, entry]));
 			entryMap.set(id, { _id: id, name: id, default: true, ...patch });
-			const next = Array.from(new Set([...allEntries.map((entry) => entry._id), ...sidebarSectionsOrder])).map(
-				(key) => entryMap.get(key) ?? { _id: key, name: key, default: true },
+
+			const merged = mergeWithSectionsOrder(
+				allEntries.map((entry) => entry._id),
+				sidebarSectionsOrder,
 			);
-			await persistMutation.mutateAsync(next);
+
+			await persistMutation.mutateAsync(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
 		},
 		[allEntries, sidebarSectionsOrder, persistMutation],
 	);

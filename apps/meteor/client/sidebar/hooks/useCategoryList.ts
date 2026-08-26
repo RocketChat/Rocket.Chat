@@ -1,23 +1,10 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-
-export const SYSTEM_GROUP_KEYS = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
 
 type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
@@ -56,6 +43,25 @@ const filterSystemCategories = (categories: readonly string[], options: FilterSy
 	});
 };
 
+/**
+ * Merges an explicit id list with a reference order, inserting any missing keys at the position
+ * just before the first reference-order successor already present in the explicit list.
+ * This preserves the relative position of system groups that are temporarily absent (e.g. empty
+ * Omnichannel groups).
+ */
+export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: readonly string[]): string[] => {
+	const merged = [...explicitIds];
+	for (const key of sectionsOrder) {
+		if (merged.includes(key)) continue;
+		const successorIdx = sectionsOrder
+			.slice(sectionsOrder.indexOf(key) + 1)
+			.map((k) => merged.indexOf(k))
+			.find((pos) => pos !== -1);
+		merged.splice(successorIdx ?? merged.length, 0, key);
+	}
+	return merged;
+};
+
 export const filterGroupVisibility = <T>(
 	groups: Map<string, Set<SubscriptionWithRoom>>,
 	hasLicenseModule: boolean,
@@ -72,7 +78,7 @@ export const filterGroupVisibility = <T>(
 			return;
 		}
 
-		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats'].includes(key)) {
+		if (!hasLicenseModule || ['Incoming_Calls', 'Incoming_Livechats', 'Open_Livechats', 'On_Hold_Chats', 'Unread'].includes(key)) {
 			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}
@@ -155,7 +161,7 @@ export const getRoomCategory = (
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-	const sidebarSectionsOrder = useUserPreference<string[]>('sidebarSectionsOrder') ?? SYSTEM_GROUP_KEYS;
+	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
@@ -163,15 +169,20 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 
 	const categoryList = useMemo(() => {
 		if (hasLicenseModule) {
-			const categoriesIds = Array.from(new Set(sidebarCategories.map(({ _id }) => _id).concat(sidebarSectionsOrder)));
-			return filterSystemCategories(categoriesIds, {
-				showOmnichannel,
-				inquiriesEnabled,
-				sidebarGroupByType,
-				favoritesEnabled,
-				sidebarShowUnread,
-				isDiscussionEnabled,
-			});
+			return filterSystemCategories(
+				mergeWithSectionsOrder(
+					sidebarCategories.map(({ _id }) => _id),
+					sidebarSectionsOrder,
+				),
+				{
+					showOmnichannel,
+					inquiriesEnabled,
+					sidebarGroupByType,
+					favoritesEnabled,
+					sidebarShowUnread,
+					isDiscussionEnabled,
+				},
+			);
 		}
 
 		return filterSystemCategories(sidebarSectionsOrder, {
