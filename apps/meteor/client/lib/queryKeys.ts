@@ -123,7 +123,7 @@ export const usersQueryKeys = {
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
 	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
-		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
+		[...usersQueryKeys.all, 'autocomplete', filter, federated, ...(exceptions.length ? [exceptions] : [])] as const,
 };
 
 export const teamsQueryKeys = {
@@ -190,6 +190,11 @@ export const marketplaceQueryKeys = {
 export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+	conference: (callId: string) => [...videoConferenceQueryKeys.all, callId] as const,
+	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
+	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
+	/** What the provider can be told about devices — asked before any conference exists. */
+	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
 } as const;
 
 export const messagesQueryKeys = {

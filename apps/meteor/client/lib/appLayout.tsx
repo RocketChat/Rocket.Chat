@@ -25,13 +25,15 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 		this.setCurrentValue(element);
 	}
 
-	wrap(element: ReactNode): ReactNode {
+	// `embedded` standalone views (e.g. the conference page) omit the global announcement/banner chrome so
+	// app-level banners (E2E password prompt, admin announcements) don't bleed into them.
+	wrap(element: ReactNode, { embedded = false }: { embedded?: boolean } = {}): ReactNode {
 		return (
 			<AppLayoutThemeWrapper>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
-				<CloudAnnouncementsRegion />
-				<BannerRegion />
+				{!embedded && <CloudAnnouncementsRegion />}
+				{!embedded && <BannerRegion />}
 				{element}
 				<ModalRegion />
 			</AppLayoutThemeWrapper>

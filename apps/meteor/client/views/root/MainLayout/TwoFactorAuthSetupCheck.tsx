@@ -3,7 +3,6 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
-import LayoutWithSidebar from './LayoutWithSidebar';
 import MainContent from './MainContent';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
@@ -25,7 +24,9 @@ const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => 
 		);
 	}
 
-	return <LayoutWithSidebar>{children}</LayoutWithSidebar>;
+	// The surrounding navigation chrome is applied by `MainLayout`, not here, so routes that only need
+	// the authentication checks (e.g. the conference page) render standalone.
+	return children;
 };
 
 export default TwoFactorAuthSetupCheck;
