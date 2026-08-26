@@ -1,0 +1,23 @@
+apps/meteor/app/ui-utils/client/lib/RoomHistoryManager.ts
+  s_8998b0686d0f5a::t_1c72375f8887b7 62,160,208,253
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_8998b0686d0f5a::t_4a75d407c236c8 5417,5443
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_8998b0686d0f5a::t_1c72375f8887b7 9,42-43,76,109-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2b59c7c46b19d2eac504ffb14448eca84e2f2ac9",
+  "prompts": {},
+  "sessions": {
+    "s_8998b0686d0f5a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1eb4ba6-bb29-4651-a5d0-a7f88b362991",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
