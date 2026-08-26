@@ -2,9 +2,9 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import type { MovableRoom } from './useCustomCategories';
-import { FAVORITES_TARGET, useCustomCategories } from './useCustomCategories';
 import { useSetCategory } from './useSetCategory';
+import type { MovableRoom } from './useUserSidebarCategories';
+import { FAVORITES_TARGET, useUserSidebarCategories } from './useUserSidebarCategories';
 
 type MoveRoomInput = {
 	room: MovableRoom;
@@ -17,7 +17,7 @@ export const useMoveRoomCategory = () => {
 	const toggleFavoriteEndpoint = useEndpoint('POST', '/v1/rooms.favorite');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setCategory = useSetCategory();
-	const customCategories = useCustomCategories();
+	const { customCategories } = useUserSidebarCategories();
 
 	return useMutation({
 		mutationFn: async ({ room, target, silent = false }: MoveRoomInput) => {

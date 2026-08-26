@@ -4,14 +4,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './useCategoryModals';
-import type { MovableRoom } from './useCustomCategories';
-import { FAVORITES_TARGET, useCustomCategories } from './useCustomCategories';
 import { useMoveRoomCategory } from './useMoveRoomCategory';
+import type { MovableRoom } from './useUserSidebarCategories';
+import { FAVORITES_TARGET, useUserSidebarCategories } from './useUserSidebarCategories';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const useRoomCategoryItems = (room: MovableRoom) => {
 	const { t } = useTranslation();
-	const customCategories = useCustomCategories();
+	const { customCategories } = useUserSidebarCategories();
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const moveRoomCategory = useMoveRoomCategory();
 	const { openCreate } = useCategoryModals();

@@ -2,13 +2,13 @@ import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCustomCategories } from './useCustomCategories';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 
 export const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const useValidateCategoryName = () => {
 	const { t } = useTranslation();
-	const customCategories = useCustomCategories();
+	const { customCategories } = useUserSidebarCategories();
 
 	return useCallback(
 		(name: string, excludeId?: string): string | undefined => {

@@ -2,16 +2,16 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useCategoryModals } from './useCategoryModals';
-import { useCustomCategories } from './useCustomCategories';
 import { useMoveRoomCategory } from './useMoveRoomCategory';
 import { useRoomCategoryItems } from './useRoomCategoryItems';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 
-jest.mock('./useCustomCategories', () => ({ useCustomCategories: jest.fn(), FAVORITES_TARGET: 'favorites' }));
+jest.mock('./useUserSidebarCategories', () => ({ useUserSidebarCategories: jest.fn(), FAVORITES_TARGET: 'favorites' }));
 jest.mock('./useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
 jest.mock('./useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
 jest.mock('../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: () => ({ data: true }) }));
 
-const mockedUseCustomCategories = jest.mocked(useCustomCategories);
+const mockedUseCustomCategories = jest.mocked(useUserSidebarCategories);
 const mockedUseMoveRoomCategory = jest.mocked(useMoveRoomCategory);
 const mockedUseCategoryModals = jest.mocked(useCategoryModals);
 
@@ -19,7 +19,7 @@ const catA = { _id: 'cat-a', name: 'Design', showUnreads: true };
 const catB = { _id: 'cat-b', name: 'Engineering', showUnreads: true };
 
 beforeEach(() => {
-	mockedUseCustomCategories.mockReturnValue([catA, catB] as any);
+	mockedUseCustomCategories.mockReturnValue({ customCategories: [catA, catB] } as any);
 	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
 	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
 });

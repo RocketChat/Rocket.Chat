@@ -5,9 +5,9 @@ import { useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-cont
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import type { MovableRoom } from './useCustomCategories';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useSetCategory } from './useSetCategory';
+import type { MovableRoom } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useCreateCustomCategory = ({ settleCallback }: { settleCallback?: () => void } = {}) => {

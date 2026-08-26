@@ -6,9 +6,9 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
-import { useCategoryModals } from './hooks/useCategoryModals';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
 
 type CategoryMenuProps = {
@@ -53,8 +53,8 @@ const CategoryMenu = ({
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
 
-	const handleToggleShowUnreads = () => toggleShowUnreads(category?._id ?? groupKey);
-	const handleToggleKeepUnreadsOnTop = () => toggleKeepUnreadsOnTop(category?._id ?? groupKey);
+	const handleToggleShowUnreads = async () => toggleShowUnreads(category?._id ?? groupKey);
+	const handleToggleKeepUnreadsOnTop = async () => toggleKeepUnreadsOnTop(category?._id ?? groupKey);
 
 	const orderItems: GenericMenuItemProps[] = [
 		{

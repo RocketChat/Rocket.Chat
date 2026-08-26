@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateCustomCategory } from './hooks/useCreateCustomCategory';
-import type { MovableRoom } from './hooks/useCustomCategories';
+import type { MovableRoom } from './hooks/useUserSidebarCategories';
 import { useValidateCategoryName } from './hooks/useValidateCategoryName';
 import UserAndRoomAutoCompleteMultiple from '../../components/UserAndRoomAutoCompleteMultiple';
 

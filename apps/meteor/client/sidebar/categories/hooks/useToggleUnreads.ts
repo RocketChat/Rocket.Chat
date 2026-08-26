@@ -4,39 +4,40 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useToggleUnreads = () => {
-	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
+	const { rawCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	const upsertGroupEntry = useCallback(
 		async (id: string, patch: Partial<ISidebarCategory>) => {
-			const existing = allEntries.find((entry) => entry._id === id);
+			const existing = rawCategories.find((entry) => entry._id === id);
 			if (existing) {
-				await persistCategories(allEntries.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
+				await persistCategories(rawCategories.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
 				return;
 			}
 
-			const entryMap = new Map(allEntries.map((entry) => [entry._id, entry]));
+			const entryMap = new Map(rawCategories?.map((entry) => [entry._id, entry]));
 			entryMap.set(id, { _id: id, name: id, default: true, ...patch });
 
 			const merged = withDynamicFirst(
-				allEntries.map((entry) => entry._id),
+				rawCategories.map((entry) => entry._id),
 				sidebarSectionsOrder,
 			);
 
 			await persistCategories(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
 		},
-		[allEntries, sidebarSectionsOrder, persistCategories],
+		[rawCategories, sidebarSectionsOrder, persistCategories],
 	);
 
-	const isShowUnreads = useCallback((id: string) => allEntries.find((entry) => entry._id === id)?.showUnreads ?? false, [allEntries]);
+	const isShowUnreads = useCallback((id: string) => rawCategories.find((entry) => entry._id === id)?.showUnreads ?? false, [rawCategories]);
 
 	const isKeepUnreadsOnTop = useCallback(
-		(id: string) => allEntries.find((entry) => entry._id === id)?.keepUnreadsOnTop ?? false,
-		[allEntries],
+		(id: string) => rawCategories.find((entry) => entry._id === id)?.keepUnreadsOnTop ?? false,
+		[rawCategories],
 	);
 
 	const toggleShowUnreads = useCallback(

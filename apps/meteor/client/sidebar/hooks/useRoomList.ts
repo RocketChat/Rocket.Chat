@@ -11,8 +11,8 @@ import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
-import { useCustomCategories } from '../categories/hooks/useCustomCategories';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
 const query = { open: { $ne: false } };
 
@@ -53,7 +53,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 
-	const customCategories = useCustomCategories();
+	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
 
 	const options = useSortQueryOptions();

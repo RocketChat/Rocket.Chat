@@ -1,13 +1,13 @@
-import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
 
 export const useMoveCategoryPosition = () => {
-	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
+	const { rawCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
@@ -20,10 +20,10 @@ export const useMoveCategoryPosition = () => {
 			const swappedKeys = [...currentKeys];
 			[swappedKeys[i], swappedKeys[target]] = [swappedKeys[target], swappedKeys[i]];
 
-			const entryMap = new Map(allEntries.map((e) => [e._id, e]));
+			const entryMap = new Map(rawCategories.map((e) => [e._id, e]));
 			const finalIds = withDynamicFirst(swappedKeys, sidebarSectionsOrder);
 			await persistCategories(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 		},
-		[allEntries, sidebarSectionsOrder, persistCategories],
+		[rawCategories, sidebarSectionsOrder, persistCategories],
 	);
 };

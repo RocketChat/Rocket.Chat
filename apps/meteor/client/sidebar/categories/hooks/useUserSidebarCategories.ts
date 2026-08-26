@@ -8,10 +8,13 @@ export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; ca
 
 export const FAVORITES_TARGET = 'favorites';
 
-export const useCustomCategories = () => {
+export const useUserSidebarCategories = () => {
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories');
 
-	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-
-	return useMemo(() => (hasLicenseModule ? allEntries.filter((entry) => !entry.default) : []), [hasLicenseModule, allEntries]);
+	return useMemo(() => {
+		const rawCategories = allEntries ?? [];
+		const customCategories = rawCategories.filter((entry) => !entry.default);
+		return hasLicenseModule ? { rawCategories, customCategories } : { rawCategories, customCategories: [] };
+	}, [hasLicenseModule, allEntries]);
 };
