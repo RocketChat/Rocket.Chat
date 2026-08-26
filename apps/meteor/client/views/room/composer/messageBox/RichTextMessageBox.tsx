@@ -24,12 +24,12 @@ import {
 	extractImageFilesFromClipboard,
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
-import { emoji } from '../../../../../app/emoji/client';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { emoji } from '../../../../lib/emoji';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
@@ -212,7 +212,7 @@ const RichTextMessageBox = ({
 		});
 	});
 
-	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const input = contentEditableRef.current as HTMLDivElement;
 		const mid = chat.currentEditingMessage.getMID();
 
@@ -223,20 +223,19 @@ const RichTextMessageBox = ({
 		event.preventDefault();
 		event.stopPropagation();
 
-		chat.currentEditingMessage.reset().then((reset) => {
-			// NOTE: if the message was reset (i.e. content changed), we just update the popup (to re-apply/remove the preview)
-			if (reset) {
-				popup.update();
-			} else {
-				chat.currentEditingMessage.cancel();
-				chat.currentEditingMessage.stop();
-				popup.clear();
-			}
+		// NOTE: if the message was reset (i.e. content changed), we keep the editing mode on
+		const reset = await chat.currentEditingMessage.reset();
 
-			// Sets the cursor position to the end after resetting an edited message
-			setSelectionRange(input, input.innerText.length, input.innerText.length);
-			input.focus();
-		});
+		if (!reset) {
+			await chat.currentEditingMessage.cancel();
+			await chat.currentEditingMessage.stop();
+		}
+
+		popup.clear();
+
+		// Sets the cursor position to the end after resetting an edited message
+		setSelectionRange(input, input.innerText.length, input.innerText.length);
+		input.focus();
 	};
 
 	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
