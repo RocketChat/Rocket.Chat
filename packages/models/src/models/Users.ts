@@ -1654,8 +1654,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	countFederatedExternalUsers() {
+		// federation.version filters out legacy matrix-bridge users, which carry federated: true but no federation subdoc
 		return this.countDocuments({
-			federated: true,
+			'federated': true,
+			'federation.version': { $exists: true },
 		});
 	}
 

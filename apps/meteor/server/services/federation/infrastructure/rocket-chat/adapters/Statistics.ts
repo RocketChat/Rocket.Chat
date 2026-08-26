@@ -1,6 +1,7 @@
 import type { IMatrixFederationStatistics } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
+import { db } from '../../../../../database/utils';
 import { settings } from '../../../../../settings';
 
 class RocketChatStatisticsAdapter {
@@ -45,12 +46,20 @@ class RocketChatStatisticsAdapter {
 	}
 
 	async getAmountOfConnectedExternalServers(): Promise<{ quantity: number; servers: string[] }> {
-		const externalServers = await Rooms.countDistinctFederationRoomsExcluding(settings.get('Federation_Service_Domain'));
+		const localDomain = settings.get<string>('Federation_Service_Domain');
+		// raw to avoid creating a model just for this query
+		const servers = (await db.collection('rocketchat_federation_servers').distinct('name')).filter(
+			(name): name is string => typeof name === 'string' && name !== localDomain,
+		);
 
 		return {
-			quantity: externalServers.length,
-			servers: externalServers,
+			quantity: servers.length,
+			servers,
 		};
+	}
+
+	async getAmountOfFederationEvents(): Promise<number> {
+		return db.collection('rocketchat_federation_events').estimatedDocumentCount();
 	}
 }
 
@@ -64,6 +73,7 @@ export const getMatrixFederationStatistics = async (): Promise<IMatrixFederation
 		smallestRoom: await statisticsService.getSmallestRoomAvailable(),
 		amountOfExternalUsers: await statisticsService.getAmountOfExternalUsers(),
 		amountOfFederatedRooms: await statisticsService.getAmountOfExternalRooms(),
+		amountOfFederationEvents: await statisticsService.getAmountOfFederationEvents(),
 		externalConnectedServers: await statisticsService.getAmountOfConnectedExternalServers(),
 	};
 };
