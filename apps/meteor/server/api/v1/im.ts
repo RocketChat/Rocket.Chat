@@ -1033,10 +1033,9 @@ const dmEndpoints = API.v1
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	// im.create stays declared in @rocket.chat/rest-typings (the ddp-client
-	// legacy SDK consumes it); every other route flows from this extraction.
-	// Routes omitted here keep their stronger hand-written declaration in
-	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	// legacy SDK consumes it); the other omitted routes keep their stronger
+	// hand-written declaration there until this extraction's emit matches it.
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends Omit<DmEndpoints, '/v1/im.create' | '/v1/im.files' | '/v1/im.members' | '/v1/dm.files' | '/v1/dm.members'> {}
 }

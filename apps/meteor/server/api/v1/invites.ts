@@ -296,8 +296,8 @@ const invites = API.v1
 type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	// Routes omitted here keep their stronger hand-written declaration in
 	// @rocket.chat/rest-typings until this extraction's emit matches it.
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends Omit<InvitesEndpoints, '/v1/findOrCreateInvite'> {}
 }

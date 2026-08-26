@@ -1735,9 +1735,9 @@ type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	// rooms.info and rooms.autocomplete.channelAndPrivate stay declared in
 	// @rocket.chat/rest-typings (standalone packages consume them); every other
 	// route flows from this extraction.
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends Omit<RoomEndpoints, '/v1/rooms.info' | '/v1/rooms.autocomplete.channelAndPrivate'> {}
 }
