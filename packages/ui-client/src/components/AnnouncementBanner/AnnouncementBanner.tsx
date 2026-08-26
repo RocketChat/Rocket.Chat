@@ -1,3 +1,4 @@
+import type { css as cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
@@ -5,7 +6,9 @@ import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
 export type AnnouncementBannerProps = {
 	children: ReactNode;
 	onClick?: (e: MouseEvent) => void;
-} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
+	/** Composed with the banner's own styles, so `css` output is as welcome as a plain class name. */
+	className?: string | ReturnType<typeof cssFn>;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'className'>;
 
 const AnnouncementBanner = ({ children, className, onClick, ...props }: AnnouncementBannerProps) => {
 	const announcementBar = css`

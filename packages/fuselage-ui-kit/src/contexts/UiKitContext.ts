@@ -22,6 +22,7 @@ type UiKitContextValue = {
 	values: Record<ActionId, { value: unknown } | undefined>;
 	viewId?: string;
 	rid?: string;
+	videoConfJoinDisabled?: boolean;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
