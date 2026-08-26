@@ -75,4 +75,17 @@ describe('leaving on purpose', () => {
 		expect(String((fetchMock.mock.calls[0] as unknown as [string])[0])).toContain('/api/v1/video-conference.leave');
 		expect(close).toHaveBeenCalled();
 	});
+
+	// Closing the window is what `pagehide` fires for, so the deliberate leave and the close it causes are one
+	// departure — reported twice, the server broadcasts the same update to everyone still in the call twice.
+	it('does not report the same departure again when closing fires pagehide', async () => {
+		jest.spyOn(window, 'close').mockImplementation(() => undefined);
+
+		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'));
+
+		await act(() => result.current.leaveNow());
+		hide();
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
 });
