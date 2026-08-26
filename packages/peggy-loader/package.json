@@ -7,9 +7,9 @@
 		"loader",
 		"webpack"
 	],
-	"homepage": "https://github.com/RocketChat/fuselage#readme",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
-		"url": "https://github.com/RocketChat/fuselage/issues"
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
 	"repository": {
 		"type": "git",
