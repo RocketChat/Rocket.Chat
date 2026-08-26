@@ -23,12 +23,12 @@ jest.mock('../../views/room/contexts/RoomContext', () => ({
 	useRoom: () => fakeRoom,
 }));
 
-const renderAction = (preflight: boolean) =>
+const renderAction = (conferenceWindowEnabled: boolean) =>
 	renderHook(() => useVideoCallRoomAction(), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withPermission('call-management')
-			.withSetting('VideoConf_Enable_Persistent_Chat', preflight)
+			.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
 			.build(),
 	});
 
