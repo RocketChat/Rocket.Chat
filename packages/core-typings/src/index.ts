@@ -3,7 +3,7 @@ export * from './utils';
 export * from './Apps';
 export * from './IRoom';
 export * from './IMessage';
-export * from './federation';
+export type * from './federation';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';
