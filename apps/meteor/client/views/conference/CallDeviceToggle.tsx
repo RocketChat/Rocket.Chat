@@ -33,13 +33,7 @@ const CallDeviceToggle = ({ device, on, label, onToggle }: CallDeviceToggleProps
 		title={label}
 		aria-label={label}
 		onClick={onToggle}
-		icon={
-			<Icon
-				size='x24'
-				name={on ? ICONS[device].on : ICONS[device].off}
-				{...(device === 'mic' && !on && { style: { transform: 'scaleX(-1)' } })}
-			/>
-		}
+		icon={<Icon size='x24' name={on ? ICONS[device].on : ICONS[device].off} />}
 	/>
 );
 
