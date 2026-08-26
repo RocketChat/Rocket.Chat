@@ -22,6 +22,7 @@ const isRoomsSetCategoryParamsPOST = ajv.compile<{ roomIds: string[]; category: 
 		category: {
 			type: 'string',
 			nullable: true,
+			not: { enum: [...SIDEBAR_SYSTEM_GROUP_KEYS] },
 		},
 	},
 	required: ['roomIds', 'category'],
@@ -58,10 +59,6 @@ API.experimental.post(
 		}
 
 		if (category !== null) {
-			if ((SIDEBAR_SYSTEM_GROUP_KEYS as readonly string[]).includes(category)) {
-				return API.experimental.failure('error-invalid-param', 'Cannot assign rooms to a system category.');
-			}
-
 			const categories: Array<{ _id: string }> = user.settings?.preferences?.sidebarCategories ?? [];
 			if (!categories.some((cat) => cat._id === category)) {
 				return API.experimental.failure('error-invalid-param', 'Category not found in user preferences.');
