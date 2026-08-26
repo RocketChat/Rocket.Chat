@@ -1,6 +1,7 @@
-import { useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
 import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
@@ -24,6 +25,26 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
 
+	const { status } = useConnectionStatus();
+
+	/**
+	 * A resume needs a server to answer it, and waiting on one that never will is the one way this can strand
+	 * someone: the token is only cleared when a server *rejects* it, so an unreachable server — a dropped network,
+	 * a captive portal, a workspace that is down — clears nothing and would leave the skeleton up for good.
+	 *
+	 * `connecting` is not that: it is the ordinary first moment of every page load, and falling through on it is
+	 * exactly the login-form flash this exists to remove. Only the states where the connection has stopped trying
+	 * count, and once one has been seen it stands — a retry flapping between `waiting` and `connecting` must not
+	 * flap the form back into a skeleton. A resume that succeeds later brings a user with it, which wins anyway.
+	 */
+	const [unreachable, setUnreachable] = useState(false);
+
+	useEffect(() => {
+		if (status === 'waiting' || status === 'failed' || status === 'offline') {
+			setUnreachable(true);
+		}
+	}, [status]);
+
 	/**
 	 * A window that opens with a session already stored — a call popout, or any plain reload — has no user until
 	 * the login is resumed from that token. Treating "no user yet" as "not logged in" showed a login form for the
@@ -39,9 +60,10 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	 * The token is read per render rather than subscribed to, so a stale one only falls through on the next
 	 * render. That is safe because every path that rejects a stored token removes it — `makeClientLoggedOut` via
 	 * Meteor's reconnect hook, and `clearStoredCredentials()` from `ensureConnectedAndAuthenticated` and
-	 * `runUserDataSync` — and the expired-token page load clears it before React even mounts.
+	 * `runUserDataSync` — and the expired-token page load clears it before React even mounts. Those are all
+	 * rejections, though, which is why the unreachable case above is bounded separately.
 	 */
-	const isResumingSession = !user && !forceLogin && !!getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+	const isResumingSession = !user && !forceLogin && !unreachable && !!getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 	if (isResumingSession) {
 		return <HomeSkeleton />;

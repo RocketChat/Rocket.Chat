@@ -45,6 +45,27 @@ describe('while the session is being resumed', () => {
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 	});
 
+	// The one way a stored token could strand someone: it is cleared when a server *rejects* it, so a server that
+	// never answers at all clears nothing. Once the connection stops trying, the form has to be reachable.
+	it('shows the login page once the connection has given up', async () => {
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
+
+		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'waiting' }));
+
+		expect(await screen.findByText('login-page')).toBeInTheDocument();
+		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
+	});
+
+	// ...but not while it is still the ordinary first connect of a page load, which is the flash this removes.
+	it('keeps the skeleton up while the connection is still being made', () => {
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
+
+		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'connecting' }));
+
+		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
+		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
+	});
+
 	// Someone who was logged out, or whose session the server rejected, must reach the form — otherwise a stale
 	// token in storage would leave them staring at a skeleton forever. The mocked app root has no session
 	// support, so this one supplies the context itself.
