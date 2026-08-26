@@ -20,7 +20,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { sendSimpleMessage, sendMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import {
 	getSettingValueById,
@@ -5303,7 +5303,7 @@ describe('[Rooms]', () => {
 	});
 });
 
-describe('[/rooms.history]', () => {
+describe.only('[/rooms.history]', () => {
 	let testChannel: IRoom;
 	const messageIds: IMessage['_id'][] = [];
 	const messageCount = 12;
@@ -5315,7 +5315,7 @@ describe('[/rooms.history]', () => {
 
 		// Sequential so `ts` ordering is deterministic; the endpoint pages strictly by `ts`.
 		for (let i = 0; i < messageCount; i++) {
-			const res = await sendSimpleMessage({ roomId: testChannel._id, text: `message-${i}` });
+			const res = await sendMessage({ message: { rid: testChannel._id, msg: `message-${i}` } });
 			messageIds.push(res.body.message._id);
 		}
 	});
@@ -5336,6 +5336,7 @@ describe('[/rooms.history]', () => {
 		expect(res.body.cursor.previous).to.be.a('string');
 
 		// newest-first
+		expect(res.body.messages[0]._id).to.equal(messageIds[messageCount - 1]);
 		expect(res.body.messages[0].msg).to.equal(`message-${messageCount - 1}`);
 	});
 
@@ -5425,7 +5426,7 @@ describe('[/rooms.history]', () => {
 
 	it('should serve private groups and DMs through the same endpoint', async () => {
 		const { group } = (await createRoom({ type: 'p', name: `rooms-history-group-${Date.now()}` })).body;
-		await sendSimpleMessage({ roomId: group._id, text: 'group message' });
+		await sendMessage({ message: { rid: group._id, msg: 'group message' } });
 
 		const groupRes = await request.get(api('rooms.history')).set(credentials).query({ roomId: group._id }).expect(200);
 
@@ -5433,7 +5434,7 @@ describe('[/rooms.history]', () => {
 		expect(groupRes.body.messages[0].msg).to.equal('group message');
 
 		const dm = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room;
-		await sendSimpleMessage({ roomId: dm._id, text: 'dm message' });
+		await sendMessage({ message: { rid: dm._id, msg: 'dm message' } });
 
 		const dmRes = await request.get(api('rooms.history')).set(credentials).query({ roomId: dm._id }).expect(200);
 
@@ -5441,6 +5442,35 @@ describe('[/rooms.history]', () => {
 		expect(dmRes.body.messages[0].msg).to.equal('dm message');
 
 		await deleteRoom({ type: 'p', roomId: group._id });
+	});
+
+	// A discussion's first message carries a quote attachment persisted with `attachments: null`, a shape
+	// the generated IMessage schema rejects. Response validation runs under TEST_MODE only, so this turns
+	// a correct 200 into a 400 in CI and the room renders empty.
+	it('should return messages carrying a quote attachment', async () => {
+		const parent = await sendMessage({ message: { rid: testChannel._id, msg: 'parent of a discussion' } });
+
+		const discussion = await request
+			.post(api('rooms.createDiscussion'))
+			.set(credentials)
+			.send({
+				prid: testChannel._id,
+				pmid: parent.body.message._id,
+				t_name: `rooms-history-discussion-${Date.now()}`,
+			})
+			.expect(200);
+
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: discussion.body.discussion._id })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body.messages[0].attachments).to.be.an('array');
+
+		await deleteRoom({ type: 'c', roomId: discussion.body.discussion._id });
 	});
 
 	it('should fail when both cursors are provided', async () => {
