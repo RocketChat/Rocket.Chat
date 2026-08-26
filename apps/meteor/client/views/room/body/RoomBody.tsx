@@ -12,12 +12,14 @@ import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
+import { useConferenceWindowEnabled } from '../../conference/hooks/useConferenceWindowEnabled';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import OngoingConferenceBanner from '../OngoingConferenceBanner/OngoingConferenceBanner';
 import RoomAnnouncement from '../RoomAnnouncement';
 import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useFileUpload } from './hooks/useFileUpload';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useIsAtBottomRef } from './hooks/useIsAtBottomRef';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
@@ -28,7 +30,6 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomC
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
@@ -49,6 +50,9 @@ const RoomBody = () => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+	// Without the call window there are no conference discussions to point back into a call, and asking would
+	// query `video-conference.list` once per discussion the user opens.
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(false);
 	const isAtBottom = useIsAtBottomRef(room._id);
@@ -164,7 +168,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			{!isLayoutEmbedded && isDiscussion(room) && <OngoingConferenceBanner />}
+			{!isLayoutEmbedded && conferenceWindowEnabled && isDiscussion(room) && <OngoingConferenceBanner />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
