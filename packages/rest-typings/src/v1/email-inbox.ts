@@ -4,7 +4,7 @@ import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-type EmailInboxListProps = PaginatedRequest<{ query?: string }>;
+type EmailInboxListProps = PaginatedRequest<{}>;
 
 const EmailInboxListPropsSchema = {
 	type: 'object',
@@ -18,10 +18,6 @@ const EmailInboxListPropsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

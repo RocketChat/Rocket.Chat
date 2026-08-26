@@ -21,10 +21,6 @@ const channelsGetAllUserMentionsByChannelPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: ['roomId'],
 
