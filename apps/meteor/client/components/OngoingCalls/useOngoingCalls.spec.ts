@@ -9,6 +9,7 @@ const renderList = (calls: JoinableVideoConference[]) =>
 	renderHook(() => useOngoingCallsList(), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			.withSetting('VideoConf_Conference_Window_Enabled', true)
 			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
 			.build(),
 	});
