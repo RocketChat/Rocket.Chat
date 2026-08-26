@@ -4,6 +4,7 @@ import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
 import { NtlmEwsTransport } from './ews/NtlmEwsTransport';
 import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
 import { logger } from './logger';
+import { scrubForLog } from './scrub';
 import { settings } from '../../../../server/settings';
 
 const WATCHED_SETTINGS = [
@@ -72,7 +73,14 @@ export const isServerSyncEnabled = (): boolean => current !== undefined;
 
 export const registerExchangeProviderWatchers = (): void => {
 	settings.watchMultiple(WATCHED_SETTINGS, () => {
-		current = buildExchangeProvider();
+		try {
+			current = buildExchangeProvider();
+		} catch (err) {
+			// Fail silently
+			current = undefined;
+			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err: scrubForLog(err) });
+		}
+
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
 	});
 };

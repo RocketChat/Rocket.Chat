@@ -31,13 +31,8 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	private readonly serviceAccountAddress: string;
 
-	/** Folder ids are stable per mailbox and cost a round trip to resolve. */
 	private readonly folderIdCache = new Map<string, string>();
 
-	/**
-	 * `serviceAccountAddress` is what `testConnection` resolves. Given at construction rather than as a
-	 * method parameter, which would force it onto the shared interface where Graph has no use for it.
-	 */
 	constructor(transport: IEwsTransport, serviceAccountAddress = '') {
 		this.transport = transport;
 		this.serviceAccountAddress = serviceAccountAddress;
