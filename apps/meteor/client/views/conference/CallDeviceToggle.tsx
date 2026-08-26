@@ -27,7 +27,9 @@ const CallDeviceToggle = ({ device, on, label, onToggle }: CallDeviceToggleProps
 		secondary={!on}
 		danger={!on}
 		aria-live='assertive'
-		aria-pressed={!on}
+		// The toggle is engaged when the device is on, whatever the styling does — a screen reader must not be told
+		// the mic is idle while it is live.
+		aria-pressed={on}
 		title={label}
 		aria-label={label}
 		onClick={onToggle}

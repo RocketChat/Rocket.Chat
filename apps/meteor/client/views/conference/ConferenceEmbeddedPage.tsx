@@ -91,6 +91,14 @@ const topBarActionStyles = css`
 	}
 `;
 
+/**
+ * `aria-label` overrides a button's contents, so a badge rendered inside one is never announced. The count is
+ * folded into the name instead — as the members action does — and the badge is hidden from assistive technology
+ * so it is said once rather than twice.
+ */
+const withBadgeCount = (label: string, unread: number, unreadTitle: string): string =>
+	unread > 0 && unreadTitle ? `${label}, ${unreadTitle}` : label;
+
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference, call } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
@@ -164,21 +172,21 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		<Box
 			is='button'
 			className={topBarActionStyles}
-			aria-label={t('Chat')}
+			aria-label={withBadgeCount(t('Chat'), unread, unreadTitle)}
 			title={t('Chat')}
 			aria-pressed={chatVisible}
 			onClick={() => togglePanel('chat')}
 		>
 			<Icon name='balloon' size='x20' />
 			{unread > 0 && (
-				<Box position='absolute' insetBlockStart={-4} insetInlineEnd={-4} pointerEvents='none'>
+				<Box position='absolute' insetBlockStart={-4} insetInlineEnd={-4} pointerEvents='none' aria-hidden='true'>
 					<Badge variant={unreadVariant} title={unreadTitle}>
 						{unread}
 					</Badge>
 				</Box>
 			)}
 			{unread === 0 && hasUnseenActivity && (
-				<Box position='absolute' insetBlockStart={-2} insetInlineEnd={-2} pointerEvents='none'>
+				<Box position='absolute' insetBlockStart={-2} insetInlineEnd={-2} pointerEvents='none' aria-hidden='true'>
 					<Badge variant={unreadVariant} title={unreadTitle} />
 				</Box>
 			)}
