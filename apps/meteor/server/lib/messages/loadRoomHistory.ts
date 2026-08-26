@@ -6,9 +6,7 @@ import { settings } from '../../settings/cached';
 import { getHiddenSystemMessages } from '../messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../utils/lib/normalizeMessagesForUser';
 
-// Upper bound for forward paging. `findVisibleByRoomIdBetweenTimestampsNotContainingTypes` needs a
-// closed range, and messages can carry a `ts` slightly ahead of the server clock (client-supplied
-// timestamps, federation), so `new Date()` would silently drop them.
+// The range query needs a closed upper bound; `new Date()` would drop client-stamped future `ts`.
 const FAR_FUTURE = new Date(8640000000000000);
 
 export type RoomHistoryCursor = {
@@ -41,15 +39,8 @@ export function decodeHistoryCursor(cursor: string): Date {
 /**
  * Cursor-paginated room history, ordered newest-first regardless of paging direction.
  *
- * Cursors encode a message `ts`, mirroring the `next`/`previous` contract of `chat.syncMessages`
- * (which encodes `_updatedAt` instead). `previous` walks backwards into older messages, `next`
- * walks forwards into newer ones; passing neither returns the newest page.
- *
- * `lastSeen` is the client's subscription marker and is used *only* to position the unread divider.
- * It is deliberately not a pagination bound — conflating the two silently truncates the page at the
- * last-seen marker, which is the bug that makes the per-type `*.history` endpoints unusable here.
- *
- * @param userId - undefined when the caller is reading anonymously
+ * `lastSeen` positions the unread divider only. Using it as a pagination bound instead would truncate
+ * the page at the marker, which is why the per-type `*.history` endpoints cannot serve this.
  */
 export async function loadRoomHistory({
 	userId,
@@ -82,7 +73,7 @@ export async function loadRoomHistory({
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room, settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 
-	// One extra document tells us whether a further page exists without a second round trip.
+	// One extra document reveals whether a further page exists.
 	const options: FindOptions<IMessage> = { sort: { ts: next ? 1 : -1 }, limit: count + 1 };
 
 	const records = next
@@ -108,7 +99,6 @@ export async function loadRoomHistory({
 		records.pop();
 	}
 
-	// Normalize to newest-first so callers get one ordering contract in both directions.
 	if (next) {
 		records.reverse();
 	}
@@ -116,9 +106,8 @@ export async function loadRoomHistory({
 	const newest = records[0];
 	const oldest = records[records.length - 1];
 
-	// A null cursor means "no more in that direction", matching `chat.syncMessages`. In the direction
-	// we travelled the extra document answers it; in the direction we came from more messages exist by
-	// definition — except on the first page, which starts at the newest end and so has nothing newer.
+	// Null means no more in that direction. The side we came from always has more — except the first
+	// page, which starts at the newest end.
 	const hasNewer = next ? hasMoreInPagingDirection : Boolean(previous);
 	const hasOlder = next ? true : hasMoreInPagingDirection;
 

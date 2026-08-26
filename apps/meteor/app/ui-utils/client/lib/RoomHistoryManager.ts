@@ -59,13 +59,7 @@ export type RoomHistoryState = {
 	};
 };
 
-/**
- * `rooms.history` cursors encode a message `ts`, so one can be reconstructed from any loaded message.
- *
- * This is a bridge for the window `loadSurroundingMessages` still rebuilds over DDP: a jump clears the
- * room and sets `hasMoreNext` without producing cursors, leaving paging with nothing to resume from.
- * Remove it once `loadSurroundingMessages` moves to `aroundId` and returns cursors of its own.
- */
+// Bridge until `loadSurroundingMessages` migrates: a jump rebuilds the window without cursors.
 const cursorFromMessageTs = (ts: Date): string => `${ts.getTime()}`;
 
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
@@ -163,8 +157,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
 
-			// `oldestTs` is the fallback for a window rebuilt by the still-DDP `loadSurroundingMessages`,
-			// which sets no cursor. A null cursor means exhausted, so it must not fall back.
+			// Not `??`: a null cursor means exhausted and must not fall back to a stale `oldestTs`.
 			const previous = room.cursorPrevious !== undefined ? room.cursorPrevious : room.oldestTs && cursorFromMessageTs(room.oldestTs);
 
 			const result = await sdk.rest.get('/v1/rooms.history', {
@@ -212,8 +205,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			room.loaded += visibleMessages.length;
 
-			// `count` bounds raw messages, so a page can be entirely system or thread messages and render
-			// as nothing. Without this the scroll stalls in rooms whose recent history is all system messages.
+			// `count` bounds raw messages, so a whole page can render as nothing and stall the scroll.
 			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
@@ -258,8 +250,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
-		// `lastMessage.ts` is the fallback for a window rebuilt by the still-DDP `loadSurroundingMessages`,
-		// which sets no cursor. A null cursor means exhausted, so it must not fall back.
+		// Not `??`: a null cursor means exhausted and must not fall back to the newest loaded message.
 		const next = room.cursorNext !== undefined ? room.cursorNext : lastMessage?.ts && cursorFromMessageTs(lastMessage.ts);
 
 		if (next) {

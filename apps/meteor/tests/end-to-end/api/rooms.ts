@@ -5303,7 +5303,7 @@ describe('[Rooms]', () => {
 	});
 });
 
-describe.only('[/rooms.history]', () => {
+describe('[/rooms.history]', () => {
 	let testChannel: IRoom;
 	const messageIds: IMessage['_id'][] = [];
 	const messageCount = 12;
@@ -5313,7 +5313,6 @@ describe.only('[/rooms.history]', () => {
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `rooms-history-${Date.now()}` })).body.channel;
 
-		// Sequential so `ts` ordering is deterministic; the endpoint pages strictly by `ts`.
 		for (let i = 0; i < messageCount; i++) {
 			const res = await sendMessage({ message: { rid: testChannel._id, msg: `message-${i}` } });
 			messageIds.push(res.body.message._id);
@@ -5335,7 +5334,6 @@ describe.only('[/rooms.history]', () => {
 		expect(res.body.cursor).to.have.property('next', null);
 		expect(res.body.cursor.previous).to.be.a('string');
 
-		// newest-first
 		expect(res.body.messages[0]._id).to.equal(messageIds[messageCount - 1]);
 		expect(res.body.messages[0].msg).to.equal(`message-${messageCount - 1}`);
 	});
@@ -5375,7 +5373,6 @@ describe.only('[/rooms.history]', () => {
 		const timestamps = forwards.body.messages.map((m: IMessage) => new Date(m.ts).getTime());
 		expect(timestamps).to.deep.equal([...timestamps].sort((a, b) => b - a));
 
-		// walking forward from the older page lands back on the newest page
 		expect(forwards.body.messages.map((m: IMessage) => m._id)).to.have.members(firstPage.body.messages.map((m: IMessage) => m._id));
 	});
 
@@ -5409,7 +5406,6 @@ describe.only('[/rooms.history]', () => {
 			.query({ roomId: testChannel._id, count: messageCount })
 			.expect(200);
 
-		// marker in the middle of the room's history
 		const marker = all.body.messages[Math.floor(messageCount / 2)];
 
 		const res = await request
@@ -5418,7 +5414,7 @@ describe.only('[/rooms.history]', () => {
 			.query({ roomId: testChannel._id, count: 5, lastSeen: new Date(marker.ts).toISOString() })
 			.expect(200);
 
-		// `lastSeen` positions the unread divider only — it must not bound the page like `oldest` does
+		// `lastSeen` must not bound the page the way `oldest` does
 		expect(res.body.messages).to.have.lengthOf(5);
 		expect(res.body).to.have.property('unreadNotLoaded');
 		expect(res.body.unreadNotLoaded).to.be.a('number');
@@ -5444,9 +5440,7 @@ describe.only('[/rooms.history]', () => {
 		await deleteRoom({ type: 'p', roomId: group._id });
 	});
 
-	// A discussion's first message carries a quote attachment persisted with `attachments: null`, a shape
-	// the generated IMessage schema rejects. Response validation runs under TEST_MODE only, so this turns
-	// a correct 200 into a 400 in CI and the room renders empty.
+	// Regression: a null `attachments` on the quote attachment used to fail response validation.
 	it('should return messages carrying a quote attachment', async () => {
 		const parent = await sendMessage({ message: { rid: testChannel._id, msg: 'parent of a discussion' } });
 
