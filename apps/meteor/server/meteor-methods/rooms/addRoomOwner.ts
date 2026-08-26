@@ -101,7 +101,6 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 	if (settings.get('UI_DisplayRoles')) {
 		void api.broadcast('user.roleUpdate', event);
 	}
-	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 
 	return true;
 };
