@@ -602,6 +602,64 @@ describe('Apps - Video Conferences', () => {
 				});
 			});
 
+			describe('[Persistent Chat provider with the persistent chat feature enabled and encryption forced on private rooms]', () => {
+				let callId: string | undefined;
+
+				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('Discussion_enabled', true);
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data?.callId;
+				});
+
+				after(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Force_Encryption_For_Private_Rooms', false)]);
+				});
+
+				it('should start the call even though the persistent chat discussion can not be created', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+					}
+
+					expect(callId).to.be.a('string');
+
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('rid').equal(roomId);
+							// the call must be fully started: an unencrypted persistent chat discussion can not be
+							// created while encryption is enforced on private rooms, but that must not abort the call
+							expect(res.body).to.have.a.property('url').that.is.a('string');
+							expect(res.body).to.have.a.property('status').equal(1);
+							expect(res.body).to.have.a.property('messages').that.is.an('object');
+							expect(res.body.messages).to.have.a.property('started').that.is.a('string');
+							// persistent chat is skipped
+							expect(res.body).to.not.have.a.property('discussionRid');
+						});
+				});
+			});
+
 			describe('[Persistent Chat provider with the persistent chat feature enabled and custom discussion names]', () => {
 				let callId: string | undefined;
 				let discussionRid: string | undefined;

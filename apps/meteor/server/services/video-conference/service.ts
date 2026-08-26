@@ -1150,7 +1150,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			displayName = `${date} ${name}`;
 		}
 
-		await this.createDiscussionForConference(displayName, call, createdBy);
+		try {
+			await this.createDiscussionForConference(displayName, call, createdBy);
+		} catch (err) {
+			// Persistent chat is complementary to the call, so failing to create its discussion must not prevent
+			// the call from starting. This happens, for example, when the workspace enforces encryption on private
+			// rooms: the persistent chat discussion is created unencrypted, so room creation is rejected.
+			logger.error({
+				name: 'Error trying to create the persistent chat discussion for a conference',
+				err,
+				callId,
+				rid: call.rid,
+			});
+		}
 	}
 
 	private async getRoomForDiscussion(

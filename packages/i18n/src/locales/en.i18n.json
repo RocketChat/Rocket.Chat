@@ -2998,6 +2998,7 @@
   "Force_Disable_OpLog_For_Cache": "Force Disable OpLog for Cache",
   "Force_Disable_OpLog_For_Cache_Description": "Will not use OpLog to sync cache even when it's available",
   "Force_Encryption_For_Private_Rooms": "Force end-to-end encryption on private rooms",
+  "Force_Encryption_For_Private_Rooms_Alert": "<b>Not compatible with video conference persistent chat</b><br/>Calls started in private rooms and direct messages will not create a persistent chat discussion, since those discussions are unencrypted. The calls themselves are not affected.",
   "Force_Encryption_For_Private_Rooms_Description": "When enabled, all newly created private rooms will be encrypted by default, and users will not be able to disable encryption for them.",
   "Force_Screen_Lock": "Force screen lock",
   "Force_Screen_Lock_After": "Force screen lock after",
