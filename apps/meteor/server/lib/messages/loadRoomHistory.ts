@@ -93,6 +93,11 @@ export async function loadRoomHistory({
 				showThreadMessages,
 			).toArray();
 
+	// In-memory `_id` tie-break for equal `ts`: the `{ rid, ts, _updatedAt }` index cannot back a
+	// `{ ts, _id }` sort, and without it MongoDB's order among equal timestamps is unspecified.
+	const direction = next ? 1 : -1;
+	records.sort((a, b) => (a.ts.getTime() - b.ts.getTime() || (a._id < b._id ? -1 : 1)) * direction);
+
 	const hasMoreInPagingDirection = records.length > count;
 
 	if (hasMoreInPagingDirection) {
