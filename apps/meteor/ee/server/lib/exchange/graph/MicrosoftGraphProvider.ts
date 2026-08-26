@@ -11,7 +11,7 @@ import { logger } from '../logger';
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
 
-/** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
+// Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field.
 const PREFER_UTC = 'outlook.timezone="UTC"';
 
 type GraphDateTimeTimeZone = {
@@ -107,7 +107,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		return {
 			items,
-			// `nextLink` means more pages now; `deltaLink` is the resume point for the next run.
 			cursor: nextLink ?? deltaLink,
 			hasMore: Boolean(nextLink),
 		};
