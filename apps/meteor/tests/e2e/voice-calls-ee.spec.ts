@@ -34,15 +34,10 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test('should initiate voice call from direct message', async () => {
 		const [user1, user2] = sessions;
 
-		await test.step('should open direct message with user2', async () => {
-			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
-		});
-
-		await test.step('initiate a voice call from room toolbar', async () => {
-			await user1.poHomeChannel.content.btnVoiceCall.click();
+		await test.step('establish call connection', async () => {
+			await user1.poHomeChannel.navbar.btnNewVoiceCall.click();
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
-			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
 		});
 
 		await test.step('user2 accepts the call', async () => {
@@ -59,35 +54,32 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test('should handle call controls during active call', async () => {
 		const [user1, user2] = sessions;
 		await test.step('establish call connection', async () => {
-			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
-			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user1.poHomeChannel.navbar.btnNewVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
 			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
 		await test.step('should mute/unmute microphone from user1', async () => {
-			// User1 mutes microphone
 			await user1.poHomeChannel.voiceCalls.widget.muteSelf();
 
-			// User1 unmutes microphone
 			await user1.poHomeChannel.voiceCalls.widget.unmuteSelf();
 		});
 
 		await test.step('should put call on hold from user1', async () => {
-			// User1 puts call on hold
 			await user1.poHomeChannel.voiceCalls.widget.holdSelf();
 
-			// User1 resumes call
 			await user1.poHomeChannel.voiceCalls.widget.resumeSelf();
 		});
 
 		await test.step('should access dialpad during call', async () => {
-			// User1 opens dial pad
 			await user1.poHomeChannel.voiceCalls.widget.openDialpad();
 
-			// User1 closes dial pad
 			await user1.poHomeChannel.voiceCalls.widget.closeDialpad();
+		});
+
+		await test.step('should not display screen share button', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.widget.controls.shareScreen).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.widget.controls.shareScreen).not.toBeVisible();
 		});
 
 		await test.step('should end the call from user1', async () => {
@@ -106,10 +98,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const user3 = { page: user3Context.page, poHomeChannel: new HomeChannel(user3Context.page) };
 
 		await test.step('establish call between user1 and user2', async () => {
-			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
-			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user1.poHomeChannel.navbar.btnNewVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
 			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
 		});
 
@@ -139,10 +129,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 
 		await test.step('user1 initiates call to user2', async () => {
-			await user1.poHomeChannel.navbar.openChat('user2');
-			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
-			await user1.poHomeChannel.content.btnVoiceCall.click();
-			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
+			await user1.poHomeChannel.navbar.btnNewVoiceCall.click();
+			await user1.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
 		});
 
 		await test.step('user2 declines the call', async () => {

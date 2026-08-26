@@ -111,7 +111,7 @@ export class Widget {
 
 	private readonly transferModal: TransferModal;
 
-	constructor(page: Page) {
+	constructor(private readonly page: Page) {
 		this.transferModal = new TransferModal(page, page.getByRole('dialog', { name: 'Transfer call' }));
 		this.root = page.getByRole('dialog', { name: 'Voice call', exact: false });
 		this.callControls = new VoiceCallControls(this.root.getByRole('group'));
@@ -144,7 +144,11 @@ export class Widget {
 		return timerToSeconds(text);
 	}
 
-	async initiateCall(): Promise<void> {
+	async initiateCall(username?: string): Promise<void> {
+		if (username) {
+			await this.root.getByRole('textbox', { name: 'Enter username or number' }).fill(username);
+			await this.page.getByRole('listbox').getByRole('option', { name: username }).click();
+		}
 		await this.callControls.call.click();
 		await expect(this.callControls.cancel).toBeVisible();
 	}

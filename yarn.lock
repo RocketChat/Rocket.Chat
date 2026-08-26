@@ -10329,7 +10329,7 @@ __metadata:
     i18next-http-backend: "npm:^3.0.6"
     i18next-sprintf-postprocessor: "npm:^0.2.2"
     iconv-lite: "npm:^0.6.3"
-    image-size: "npm:^1.2.1"
+    image-size: "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch"
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.1"
     is-svg: "npm:^5.1.0"
@@ -25214,7 +25214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:^1.2.1":
+"image-size@npm:1.2.1":
   version: 1.2.1
   resolution: "image-size@npm:1.2.1"
   dependencies:
@@ -25222,6 +25222,17 @@ __metadata:
   bin:
     image-size: bin/image-size.js
   checksum: 10/b290c6cc5635565b1da51991472eb6522808430dbe3415823649723dc5f5fd8263f0f98f9bdec46184274ea24fe4f3f7a297c84b647b412e14d2208703dd8a19
+  languageName: node
+  linkType: hard
+
+"image-size@patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch":
+  version: 1.2.1
+  resolution: "image-size@patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch::version=1.2.1&hash=ddb7b6"
+  dependencies:
+    queue: "npm:6.0.2"
+  bin:
+    image-size: bin/image-size.js
+  checksum: 10/29889b4eeba18c20a79dd2d7ce4734b7019a3459c73e3ef5670056a25db208f7248911edfd8e8d772b3eece979ec42110a275fa9d15258b0e592862fcad96178
   languageName: node
   linkType: hard
 
