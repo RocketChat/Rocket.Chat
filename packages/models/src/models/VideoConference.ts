@@ -6,10 +6,12 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -18,6 +20,7 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	FindOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -32,26 +35,47 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
 			{ key: { discussionRid: 1 }, unique: false },
+			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
 		];
 	}
 
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
-		// No data is lost — `providerData` is optional — but `Omit` over the `VideoConference` union collapses it into a single
-		// object type, so the explicit type argument opts out of projection inference to preserve the discriminated union.
-		return this.findPaginated<VideoConference>(
-			{ rid },
+	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>> {
+		// Match conferences started in this room (`rid`) and those whose discussion is this room
+		// (`discussionRid`), so a discussion room resolves the conference it belongs to — its members
+		// may not have access to the parent room the conference originated in.
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConferenceWithDiscussion>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
@@ -106,8 +130,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		sipAlias,
+		discussionRid,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -116,6 +143,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			...(sipAlias && { sipAlias }),
+			...(discussionRid && { discussionRid }),
 			...callDetails,
 		};
 
@@ -160,12 +189,20 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedBy,
 				endedAt: endedAt || new Date(),
 			},
+			$unset: {
+				sipAlias: true,
+			},
 		});
 	}
 
-	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void> {
+	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void> {
+		const isOver =
+			data.status !== undefined &&
+			[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(data.status);
+
 		await this.updateOneById(callId, {
 			$set: data,
+			...(isOver && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -178,10 +215,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	public async setStatusById(callId: string, status: VideoConference['status']): Promise<void> {
+		const isOver = [VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(status);
+
 		await this.updateOneById(callId, {
 			$set: {
 				status,
 			},
+			...(isOver && {
+				$unset: { sipAlias: true },
+			}),
 		});
 	}
 
@@ -301,6 +343,56 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				$unset: {
 					discussionRid: 1,
 				},
+			},
+		);
+	}
+
+	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { sipAlias } });
+	}
+
+	public async unsetSipAliasById(callId: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { sipAlias: true } });
+	}
+
+	public async findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				providerName,
+				sipAlias,
+			},
+			options || {},
+		);
+	}
+
+	public async increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				sipAlias,
+			},
+			{
+				$inc: { sipParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				_id: conferenceId,
+			},
+			{
+				$inc: { webrtcParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
 			},
 		);
 	}

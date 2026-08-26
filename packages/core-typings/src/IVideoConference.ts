@@ -79,6 +79,11 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+
+	sipAlias?: string;
+
+	sipParticipantCount?: number;
+	webrtcParticipantCount?: number;
 }
 
 export interface IDirectVideoConference extends IVideoConference {
@@ -119,6 +124,11 @@ export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConfer
 type InternalVideoConference = IVoIPVideoConference;
 
 export type VideoConference = ExternalVideoConference | InternalVideoConference;
+
+export type VideoConferenceWithDiscussion = VideoConference & {
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
+};
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
