@@ -26,10 +26,13 @@ export function encodeHistoryCursor(ts: Date): string {
 }
 
 export function decodeHistoryCursor(cursor: string): Date {
-	const timestamp = parseInt(cursor, 10);
-	const date = new Date(timestamp);
+	if (!/^\d+$/.test(cursor)) {
+		throw new Error('error-invalid-cursor');
+	}
 
-	if (Number.isNaN(timestamp) || date.toString() === 'Invalid Date') {
+	const date = new Date(parseInt(cursor, 10));
+
+	if (date.toString() === 'Invalid Date') {
 		throw new Error('error-invalid-cursor');
 	}
 
