@@ -19,12 +19,15 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
+
+const JOIN_CALL_PERMISSIONS = ['call-management', 'videoconf-join-call'];
 
 const VideoConfListItem = ({
 	videoConfData,
@@ -36,18 +39,21 @@ const VideoConfListItem = ({
 	className?: string[];
 	reload: () => void;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
 
 	const {
 		_id: callId,
+		rid,
 		createdBy: { name, username, _id },
 		users,
 		createdAt,
 		endedAt,
 		discussionRid,
 	} = videoConfData;
+
+	const canJoinCall = useAtLeastOnePermission(JOIN_CALL_PERMISSIONS, rid);
 
 	const displayName = useUserDisplayName({ name, username });
 	const joinedUsers = users.filter((user) => user._id !== _id);
@@ -89,9 +95,11 @@ const VideoConfListItem = ({
 					<Box display='flex'></Box>
 					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
-							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
-								{endedAt ? t('Call_ended') : t('Join_call')}
-							</Button>
+							{canJoinCall && (
+								<Button disabled={Boolean(endedAt)} size='small' alignItems='center' display='flex' onClick={handleJoinConference}>
+									{endedAt ? t('Call_ended') : t('Join_call')}
+								</Button>
+							)}
 							{discussionRid && (
 								<IconButton
 									small
