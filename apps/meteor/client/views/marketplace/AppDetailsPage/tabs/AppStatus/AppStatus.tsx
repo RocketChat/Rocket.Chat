@@ -55,15 +55,17 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action) {
-				if (action !== 'request') {
-					await marketplaceActions[action]({ ...app, permissionsGranted });
-				} else {
-					setEndUserRequested(true);
+			try {
+				if (action) {
+					if (action !== 'request') {
+						await marketplaceActions[action]({ ...app, permissionsGranted });
+					} else {
+						setEndUserRequested(true);
+					}
 				}
+			} finally {
+				setLoading(false);
 			}
-
-			setLoading(false);
 		},
 		[app, marketplaceActions, setLoading],
 	);
@@ -89,7 +91,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			const actionType = button?.action === 'update' ? 'update' : 'install';
 			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
-
 		appInstallationHandler();
 	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
