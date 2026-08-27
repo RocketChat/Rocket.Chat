@@ -29,6 +29,8 @@ import { useMessageListNavigation } from '../../../hooks/useMessageListNavigatio
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
 
+const MAX_AUTO_FILL_PAGES = 10;
+
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
 		return false;
@@ -93,19 +95,28 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const initialScrollDoneRef = useRef(false);
 
+	const autoFillCountRef = useRef(0);
+
 	const loadPreviousMessages = useDebouncedCallback(
 		() => {
-			if (
-				userInteractedRef.current &&
-				!isJumpingToMessageRef.current &&
-				initialScrollDoneRef.current &&
-				isAtBottom.current !== true &&
-				hasPreviousPage &&
-				!isFetchingPreviousPage
-			) {
-				isPrependRef.current = true;
-				void fetchPreviousPage();
+			if (isJumpingToMessageRef.current || !hasPreviousPage || isFetchingPreviousPage) {
+				return;
 			}
+
+			const handle = virtualizerRef.current;
+			const fitsViewport = !!handle && handle.scrollSize > 0 && handle.viewportSize > 0 && handle.scrollSize <= handle.viewportSize;
+
+			if (fitsViewport) {
+				if (autoFillCountRef.current >= MAX_AUTO_FILL_PAGES) {
+					return;
+				}
+				autoFillCountRef.current += 1;
+			} else if (!(userInteractedRef.current && initialScrollDoneRef.current && isAtBottom.current !== true)) {
+				return;
+			}
+
+			isPrependRef.current = true;
+			void fetchPreviousPage();
 		},
 		100,
 		[hasPreviousPage, isFetchingPreviousPage, fetchPreviousPage],
@@ -233,6 +244,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		userInteractedRef.current = false;
 		isJumpingToMessageRef.current = false;
 		isPrependRef.current = false;
+		autoFillCountRef.current = 0;
 	}, [mainMessage._id]);
 
 	useEffect(() => {
@@ -419,7 +431,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							</li>
 						) : null}
 						{!loading && hasPreviousPage ? (
-							<li className='load-more'>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</li>
+							<li className='load-more'>
+								{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadPreviousMessages} />}
+							</li>
 						) : null}
 						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
