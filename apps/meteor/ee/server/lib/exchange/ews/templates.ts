@@ -95,7 +95,7 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 		mailbox,
 	);
 
-// Free/busy-only mode: availability without subjects or bodies.
+/** Free/busy-only mode: availability without subjects or bodies. */
 export const getUserAvailabilityRequest = (mailbox: string, start: Date, end: Date): string =>
 	envelope(
 		[

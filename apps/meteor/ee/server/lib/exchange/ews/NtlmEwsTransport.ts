@@ -45,8 +45,6 @@ const splitDomainAndUser = (username: string): { domain: string; user: string } 
 
 /**
  * The air-gap invariant, enforced where connections are actually opened rather than where URLs are built.
- * Anything that reaches this agent for a different host is refused, including a future code path nobody
- * has written yet.
  */
 export class AllowlistedAgent extends Agent {
 	constructor(
@@ -229,7 +227,7 @@ export class NtlmEwsTransport implements IEwsTransport {
 				},
 			);
 
-			req.on('socket', (socket) => this.captureCertificateFrom(socket as TLSSocket));
+			req.on('socket', (socket: TLSSocket) => this.captureCertificateFrom(socket));
 
 			req.on('timeout', () => {
 				req.destroy();
@@ -247,8 +245,7 @@ export class NtlmEwsTransport implements IEwsTransport {
 	}
 
 	private readBody(response: { status: number; body: string }): string {
-		// SOAP faults arrive with HTTP 500, so 5xx bodies must reach the parser. Only statuses carrying no
-		// useful body become errors here.
+		// SOAP faults arrive with HTTP 500, so 5xx bodies must reach the parser.
 		if (response.status === 403) {
 			throw new ExchangeError('authorization-failed', 'Exchange refused the request', { detail: response.body.slice(0, 300) });
 		}

@@ -39,7 +39,8 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 				tenantId: settings.get<string>('Outlook_Calendar_Graph_Tenant_Id'),
 				clientId: settings.get<string>('Outlook_Calendar_Graph_Client_Id'),
 				clientSecret: settings.get<string>('Outlook_Calendar_Graph_Client_Secret'),
-				authorityHost: settings.get<string>('Outlook_Calendar_Graph_Authority_Host'),
+				authorityHost: settings.get<string>('Outlook_Calendar_Graph_Authority_Host') || undefined,
+				graphHost: settings.get<string>('Outlook_Calendar_Graph_Host') || undefined,
 			});
 
 		case 'ews':

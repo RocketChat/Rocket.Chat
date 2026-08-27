@@ -6,15 +6,15 @@ export type GraphTokenClientConfig = {
 	tenantId: string;
 	clientId: string;
 	clientSecret: string;
-	// A setting rather than a constant, so national cloud endpoints can be supported later without a code change
+	/** A setting rather than a constant, so national cloud endpoints can be supported later without a code change. */
 	authorityHost?: string;
-	// Defaults to `https://graph.microsoft.com`. Kept configurable for the same reason as `authorityHost`.
+	/** Defaults to `https://graph.microsoft.com`. Kept configurable for the same reason as `authorityHost`. */
 	graphHost?: string;
 };
 
 type TokenCache = {
 	accessToken: string;
-	// Absolute epoch milliseconds, already reduced by the safety margin.
+	/** Absolute epoch milliseconds, already reduced by the safety margin. */
 	expiresAt: number;
 };
 
@@ -27,7 +27,7 @@ type TokenResponse = {
 export const DEFAULT_AUTHORITY_HOST = 'https://login.microsoftonline.com';
 export const DEFAULT_GRAPH_HOST = 'https://graph.microsoft.com';
 
-// Refresh this many seconds early so a token cannot expire midway through a request.
+/** Refresh this many seconds early so a token cannot expire midway through a request. */
 const EXPIRY_SAFETY_MARGIN_SECONDS = 30;
 const FALLBACK_EXPIRES_IN_SECONDS = 300;
 const TOKEN_REQUEST_TIMEOUT_MS = 10000;
@@ -57,11 +57,11 @@ export class GraphTokenClient {
 	}
 
 	private get authorityHost(): string {
-		return this.config.authorityHost ?? DEFAULT_AUTHORITY_HOST;
+		return this.config.authorityHost || DEFAULT_AUTHORITY_HOST;
 	}
 
 	private get graphHost(): string {
-		return this.config.graphHost ?? DEFAULT_GRAPH_HOST;
+		return this.config.graphHost || DEFAULT_GRAPH_HOST;
 	}
 
 	/**

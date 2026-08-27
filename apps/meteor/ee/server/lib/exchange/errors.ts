@@ -1,11 +1,5 @@
 import { scrubText } from './scrub';
 
-/**
- * Typed errors so callers can tell apart "the admin configured this wrong" from "the network hiccupped"
- * from "the mailbox does not exist". Test Connection in particular has to report a diagnosable cause
- * rather than a generic failure.
- */
-
 export type ExchangeErrorCode =
 	/** Settings are missing or empty. Never reached the network. */
 	| 'not-configured'

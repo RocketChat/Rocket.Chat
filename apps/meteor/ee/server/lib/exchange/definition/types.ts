@@ -1,3 +1,14 @@
+export type ExchangeProviderId = 'graph' | 'ews';
+
+export type ExchangeProviderCapabilities = {
+	/** True for both: Graph has `deltaLink`, EWS has `SyncFolderItems`. */
+	supportsDelta: boolean;
+	/** Advertised only, nothing branches on it while polling is the only mode. */
+	supportsWebhooks: boolean;
+	/** False until contact ingestion lands. */
+	supportsContacts: boolean;
+};
+
 export type DateRange = {
 	start: Date;
 	end: Date;
@@ -5,7 +16,7 @@ export type DateRange = {
 
 export type Page<T> = {
 	items: T[];
-	// a Graph `deltaLink` or an EWS sync state
+	/** A Graph `deltaLink` or an EWS sync state. */
 	cursor?: string;
 	hasMore: boolean;
 };
