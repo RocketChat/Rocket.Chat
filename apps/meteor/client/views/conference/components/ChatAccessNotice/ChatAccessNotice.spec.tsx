@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ChatAccessNotice from './ChatAccessNotice';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
-import { buildChatAccess } from './testFixtures';
+import type { ConferenceChatAccess } from '../../hooks/useConferenceEmbedded';
+import { buildChatAccess } from '../../testFixtures';
 
 // `withJohnDoe` fixes the logged-in id, so the member without access has to be that same user to test self-exclusion.
 const uid = 'john.doe';

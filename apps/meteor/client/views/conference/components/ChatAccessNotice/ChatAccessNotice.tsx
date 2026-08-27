@@ -5,9 +5,9 @@ import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import ChatAccessModal from './ChatAccessModal';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
-import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
+import { hasConferenceChatAccess } from '../../../../../lib/videoConference/chatAccess';
+import type { ConferenceChatAccess } from '../../hooks/useConferenceEmbedded';
+import ChatAccessModal from '../ChatAccessModal/ChatAccessModal';
 
 type ChatAccessNoticeProps = {
 	callId: string;

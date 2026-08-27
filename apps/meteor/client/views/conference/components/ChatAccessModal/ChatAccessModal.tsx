@@ -16,10 +16,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import ConferenceMemberRow from './ConferenceMemberRow';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
-import { chatAccessLeadsWithDiscussion } from '../../../lib/videoConference/chatAccess';
-import { videoConferenceQueryKeys } from '../../lib/queryKeys';
+import { chatAccessLeadsWithDiscussion } from '../../../../../lib/videoConference/chatAccess';
+import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
+import type { ConferenceChatAccess } from '../../hooks/useConferenceEmbedded';
+import ConferenceMemberRow from '../ConferenceMemberRow/ConferenceMemberRow';
 
 type ChatAccessModalProps = {
 	callId: string;
