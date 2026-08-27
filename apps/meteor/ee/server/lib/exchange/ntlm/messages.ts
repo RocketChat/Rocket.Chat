@@ -35,8 +35,9 @@
  * - The client nonce now comes from `crypto.randomBytes` instead of `Math.random`, which is not a
  *   cryptographically secure source and should never have been used for one.
  * - MD4 comes from our own implementation, because Node's OpenSSL 3 no longer provides it.
- * - NTLMv1 paths dropped. Only NTLMv2 is reachable, since anything old enough to negotiate v1 is far
- *   outside what this project supports, and keeping DES-based code we never exercise is a liability.
+ * - NTLMv1 paths dropped. The client picks the algorithm, not the server, and no `LmCompatibilityLevel`
+ *   setting refuses v2, so v2 is accepted anywhere NTLM works. v1 also has no AV_PAIR list to carry a
+ *   channel binding, so supporting it and requiring Extended Protection are mutually exclusive.
  *
  */
 
@@ -149,6 +150,12 @@ export const decodeType2Message = (header: string): Type2Message => {
 	return { flags, challenge, targetName, targetInfo };
 };
 
+/**
+ * NTOWFv2. MD4 and HMAC-MD5 are the specification, not a choice: a stronger hash produces a value the
+ * domain controller does not compute, so authentication fails. Scanners flag both primitives here.
+ *
+ * MS-NLMP 3.3.2: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/5e550938-91d4-459f-b67d-75d70009e3f3
+ */
 const createNtlmHash = (password: string): Buffer => md4(Buffer.from(password, 'ucs2'));
 
 const createNtlmV2Hash = (ntlmHash: Buffer, username: string, target: string): Buffer =>

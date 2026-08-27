@@ -7,7 +7,6 @@ import { isExchangeError } from '../lib/exchange/errors';
 import { logger } from '../lib/exchange/logger';
 import { scrubForLog } from '../lib/exchange/scrub';
 
-/** Literal keys so the i18n linter can see them: an interpolated key ships untranslated without warning. */
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'not-configured': 'Outlook_Calendar_Test_Connection_not_configured',
 	'authentication-failed': 'Outlook_Calendar_Test_Connection_authentication_failed',
