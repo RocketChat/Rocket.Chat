@@ -23,6 +23,10 @@ body {
 	padding: 0;
 	font-family: var(--body-font-family);
 	font-size: var(--text-small-size);
+
+	/* opaque ground for the theme: translucent surfaces composite over this
+	   instead of the browser's default white canvas */
+	background-color: var(--rcx-color-surface-tint, #ffffff);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }

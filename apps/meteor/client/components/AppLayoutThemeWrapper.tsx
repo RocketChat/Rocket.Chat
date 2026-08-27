@@ -1,5 +1,6 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
+import { useThemeMode } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
@@ -7,6 +8,7 @@ export type AppLayoutThemeWrapperProps = { children: ReactNode };
 
 const AppLayoutThemeWrapper = ({ children }: AppLayoutThemeWrapperProps) => {
 	const dark = useDarkMode();
+	const theme = useThemeMode();
 
 	/*
 	 * Paint the root canvas so mobile browsers fill the overscroll/safe-area regions
@@ -22,7 +24,7 @@ const AppLayoutThemeWrapper = ({ children }: AppLayoutThemeWrapperProps) => {
 
 	return (
 		<>
-			<PaletteStyleTag theme={dark ? 'dark' : 'light'} tagId='app-layout-palette' />
+			<PaletteStyleTag theme={theme === 'dark-alpha' ? 'dark-alpha' : dark ? 'dark' : 'light'} tagId='app-layout-palette' />
 			{children}
 		</>
 	);
