@@ -82,6 +82,8 @@ export class BeforeSaveJumpToMessage {
 			chainLimit: number;
 			siteUrl: string;
 			useRealName: boolean;
+			fileUploadRestrictToRoomMembers: boolean;
+			fileUploadRestrictToUsersWhoCanAccessRoom: boolean;
 		};
 	}): Promise<IMessage> {
 		// Quote attachments are always rebuilt. Do not keep old ones since they may not still be linked to the message
@@ -157,9 +159,28 @@ export class BeforeSaveJumpToMessage {
 				continue;
 			}
 
+			let attachments = messageFromUrl.attachments || [];
+			if ((config.fileUploadRestrictToRoomMembers || config.fileUploadRestrictToUsersWhoCanAccessRoom) && messageFromUrl.rid !== message.rid) {
+				attachments = attachments.map((attachment) => {
+					const isFile =
+						('type' in attachment && attachment.type === 'file') ||
+						(attachment.title_link && attachment.title_link.includes('/file-upload/')) ||
+						('video_url' in attachment) ||
+						('audio_url' in attachment) ||
+						('image_url' in attachment && attachment.title_link?.includes('/file-upload/'));
+
+					if (isFile) {
+						return {
+							type: 'restricted',
+						} as any;
+					}
+					return attachment;
+				});
+			}
+
 			item.ignoreParse = true;
 
-			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
+			quotes.push(createQuoteAttachment({ ...messageFromUrl, attachments }, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
 		}
 
 		if (quotes.length > 0) {
