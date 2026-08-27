@@ -39,6 +39,10 @@ const isPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permi
 	);
 };
 
+export async function canBypassRateLimit(userId: IUser['_id'], bypassPermissions: string[] = []): Promise<boolean> {
+	return hasAtLeastOnePermissionAsync(userId, ['api-bypass-rate-limit', ...bypassPermissions]);
+}
+
 export async function checkPermissionsForInvocation(
 	userId: IUser['_id'],
 	permissionsPayload: PermissionsPayload,
