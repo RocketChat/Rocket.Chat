@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallRingPreference } from './hooks/useCallPreferences';
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
-import { Rooms } from '../../stores';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
+import { Rooms } from '../../../../stores';
+import { useCallRingPreference } from '../../hooks/useCallPreferences';
 
 type AddParticipantsModalProps = {
 	callId: string;

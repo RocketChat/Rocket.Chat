@@ -4,12 +4,12 @@ import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import CallPanelHeader from './CallPanelHeader';
-import ChatAccessModal from './ChatAccessModal';
-import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceRoom from './ConferenceRoom';
 import ConferenceStoresReady from './ConferenceStoresReady';
 import ConferenceThread from './ConferenceThread';
+import CallPanelHeader from './components/CallPanelHeader/CallPanelHeader';
+import ChatAccessModal from './components/ChatAccessModal/ChatAccessModal';
+import ConferenceChatNotShared from './components/ConferenceChatNotShared/ConferenceChatNotShared';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import NotFoundPage from '../notFound/NotFoundPage';

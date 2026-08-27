@@ -5,7 +5,7 @@ import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceToggle from './CallDeviceToggle';
+import CallDeviceToggle from './components/CallDeviceToggle/CallDeviceToggle';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
 import CallParticipants from '../../components/CallParticipants';

@@ -6,18 +6,19 @@ import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-co
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallMembersPanel from './CallMembersPanel';
-import CallTimer from './CallTimer';
-import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChat from './ConferenceChat';
-import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
 import ConferenceThreadModal from './ConferenceThreadModal';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
+import PageLoading from '../root/PageLoading';
 import CallTopBar from './components/CallBar/CallTopBar';
+import CallMembersPanel from './components/CallMembersPanel/CallMembersPanel';
 import CallPanel from './components/CallPanel/CallPanel';
+import CallTimer from './components/CallTimer/CallTimer';
+import ChatAccessNotice from './components/ChatAccessNotice/ChatAccessNotice';
+import ConferenceIframe from './components/ConferenceIframe/ConferenceIframe';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConferencePresenceLease } from './hooks/useConferencePresenceLease';
 import { useConferenceSubscription } from './hooks/useConferenceSubscription';
@@ -26,7 +27,6 @@ import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { PREFLIGHT_FACES_SHOWN } from '../../../lib/videoConference/constants';
 import { useRingingExpiry } from '../../hooks/useRingingExpiry';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
-import PageLoading from '../root/PageLoading';
 
 type ConferenceEmbeddedPageProps = {
 	callId: string;

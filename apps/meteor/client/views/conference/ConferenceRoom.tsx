@@ -3,7 +3,7 @@ import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useMemo } from 'react';
 
-import ConferenceChatNotShared from './ConferenceChatNotShared';
+import ConferenceChatNotShared from './components/ConferenceChatNotShared/ConferenceChatNotShared';
 import { narrowRoomStyle } from './panelStyles';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import RoomSkeleton from '../room/RoomSkeleton';
