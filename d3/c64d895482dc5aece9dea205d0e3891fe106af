@@ -1,0 +1,13 @@
+apps/meteor/server/api/ApiClass.ts
+  ai_agent 30
+apps/meteor/server/api/api.ts
+  ai_agent 8,25
+apps/meteor/server/api/definition.ts
+  ai_agent 102-107,121,136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d3c64d895482dc5aece9dea205d0e3891fe106af",
+  "prompts": {}
+}

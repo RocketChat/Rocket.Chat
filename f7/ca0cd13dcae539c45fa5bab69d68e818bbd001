@@ -1,0 +1,22 @@
+PR_DESCRIPTION.md
+  s_6f1d573d110e15::t_077c56a575e8b7 1-2,4,6,8-18,20-29
+  s_6f1d573d110e15::t_24368b1176aaf2 3,5,7,19,30
+.changeset/thick-seals-greet.md
+  s_6f1d573d110e15::t_02ace5b77371da 2-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f7ca0cd13dcae539c45fa5bab69d68e818bbd001",
+  "prompts": {},
+  "sessions": {
+    "s_6f1d573d110e15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd7c5b76-d578-4b6d-8622-ba48166c5461",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

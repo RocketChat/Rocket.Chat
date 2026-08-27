@@ -1,0 +1,19 @@
+.changeset/shaky-hotels-wash.md
+  s_6f1d573d110e15::t_d691d1a4157e73 2-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3a9d7f779b551fbf403096cf3d0967e59a317fb9",
+  "prompts": {},
+  "sessions": {
+    "s_6f1d573d110e15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd7c5b76-d578-4b6d-8622-ba48166c5461",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
