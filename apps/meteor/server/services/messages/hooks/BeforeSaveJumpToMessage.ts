@@ -172,7 +172,6 @@ export class BeforeSaveJumpToMessage {
 					if (isFile) {
 						return {
 							type: 'restricted',
-							text: 'You can not view this attachment because you are not a member of the original room.',
 						} as any;
 					}
 					return attachment;

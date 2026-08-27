@@ -13,8 +13,8 @@ const RestrictedAttachment = () => {
 		<AttachmentBlock color="hint">
 			<AttachmentContent>
 				<AttachmentText>
-					<Icon name="ban" size="x16" style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-					{t('Attachment_Restricted', 'You can not view this attachment because you are not a member of the original room.')}
+					<Icon name="ban" size="x16" verticalAlign="middle" marginInlineEnd={4} />
+					{t('Attachment_Restricted' as any)}
 				</AttachmentText>
 			</AttachmentContent>
 		</AttachmentBlock>
