@@ -7,6 +7,8 @@ import { sdk } from '../../../../lib/SDKClient';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../../stores';
 
+const MAX_IDS_PER_REQUEST = 100;
+
 const findParentMessage = (() => {
 	const waiting: string[] = [];
 	let resolve: (resolved: IMessage[] | PromiseLike<IMessage[]>) => void;
@@ -18,10 +20,17 @@ const findParentMessage = (() => {
 		const messageIds = [...waiting];
 		waiting.length = 0;
 
+		const batches: string[][] = [];
+		for (let i = 0; i < messageIds.length; i += MAX_IDS_PER_REQUEST) {
+			batches.push(messageIds.slice(i, i + MAX_IDS_PER_REQUEST));
+		}
+
 		resolve(
-			messageIds.length
-				? sdk.rest.post('/v1/chat.getMessages', { messageIds }).then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg)))
-				: [],
+			Promise.all(
+				batches.map((ids) =>
+					sdk.rest.post('/v1/chat.getMessages', { messageIds: ids }).then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg))),
+				),
+			).then((results) => results.flat()),
 		);
 
 		pending = new Promise<IMessage[]>((r) => {
