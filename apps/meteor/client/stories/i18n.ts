@@ -14,7 +14,7 @@ import { initReactI18next } from 'react-i18next';
  * loads resources key by key, and with a dot for both the key and namespace separator a flat key like
  * `onboarding.component.form.action.next` is read as a *path* — loading it tries to hang `component` off the
  * string already at `onboarding`, which throws. And an instance can simply be provided closer to the story than
- * the builder's own, which is what makes it win: see `storybookI18nDecorator`.
+ * the builder's own, which is what makes it win: see `RocketChatDecorator (and `withCallProviders`, for stories that build their own app root)`.
  *
  * `keySeparator` and `nsSeparator` are off precisely so those 179 dotted keys are treated as the flat names they
  * are, which is why all 7471 of them load here.
