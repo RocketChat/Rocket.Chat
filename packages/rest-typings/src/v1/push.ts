@@ -48,5 +48,3 @@ const PushGetPropsSchema = {
 };
 
 export const isPushGetProps = ajvQuery.compile<PushGetProps>(PushGetPropsSchema);
-
-export type PushEndpoints = {};

@@ -43,7 +43,3 @@ const emojiCustomListSchema = {
 };
 
 export const isEmojiCustomList = ajvQuery.compile<emojiCustomList>(emojiCustomListSchema);
-
-// All /v1/emoji-custom.* routes are typed by their migrated implementations
-// (apps/meteor/server/api/v1/emoji-custom.ts) via ExtractRoutesFromAPI.
-export type EmojiCustomEndpoints = {};
