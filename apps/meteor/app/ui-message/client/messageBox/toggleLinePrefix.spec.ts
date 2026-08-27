@@ -1,4 +1,4 @@
-import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, applyLinePrefix, continueLinePrefix } from './toggleLinePrefix';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, applyLinePrefix, bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 
 const at = (start: number, end = start) => ({ start, end });
 
@@ -173,5 +173,33 @@ describe('continueLinePrefix', () => {
 		const text = '- one\nplain';
 
 		expect(continueLinePrefix(text, text.length)).toBeUndefined();
+	});
+});
+
+describe('bareLinePrefixRange', () => {
+	it.each([
+		['a bare bullet', '- ', 2, { start: 0, end: 2 }],
+		['a bare number', '3. ', 3, { start: 0, end: 3 }],
+		['a bare bullet with padded spacing', '-   ', 4, { start: 0, end: 4 }],
+		['a bare bullet on a later line', '- one\n- ', 8, { start: 6, end: 8 }],
+		['a bare number on a later line', '1. one\n2. ', 10, { start: 7, end: 10 }],
+		['a bare bullet with text on the next line', '- \nafter', 2, { start: 0, end: 2 }],
+	])('reports %s', (_label, text, caret, expected) => {
+		expect(bareLinePrefixRange(text, caret)).toEqual(expected);
+	});
+
+	it.each([
+		['a bullet holding content', '- one', 5],
+		['a number holding content', '1. one', 6],
+		['plain text', 'hello', 5],
+		['an empty composer', '', 0],
+		['a task', '- [x] done', 10],
+		['a hyphen with no trailing space', '-', 1],
+	])('does not report %s', (_label, text, caret) => {
+		expect(bareLinePrefixRange(text, caret)).toBeUndefined();
+	});
+
+	it('does not report a marker whose content sits after the caret', () => {
+		expect(bareLinePrefixRange('- text', 2)).toBeUndefined();
 	});
 });

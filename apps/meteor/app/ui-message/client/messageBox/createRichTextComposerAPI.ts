@@ -6,7 +6,7 @@ import { createComposerAPICore, triggerEvent, type SetText } from './createCompo
 import { limitQuoteChain } from './limitQuoteChain';
 import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
-import { continueLinePrefix } from './toggleLinePrefix';
+import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
 export const createRichTextComposerAPI = (
@@ -188,7 +188,16 @@ export const createRichTextComposerAPI = (
 
 	const insertNewLine = (): void => {
 		const { selectionStart } = getSelectionRange(input);
-		const marker = continueLinePrefix(input.innerText, selectionStart);
+		const text = input.innerText;
+
+		const bare = bareLinePrefixRange(text, selectionStart);
+
+		if (bare) {
+			replaceText('', bare);
+			return;
+		}
+
+		const marker = continueLinePrefix(text, selectionStart);
 
 		core.insertText(marker ? `\n${marker}` : '\n');
 	};
