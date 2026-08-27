@@ -2,6 +2,11 @@
 	"name": "@rocket.chat/eslint-config",
 	"version": "0.8.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/eslint-config"
+	},
 	"type": "module",
 	"main": "./index.js",
 	"exports": {
