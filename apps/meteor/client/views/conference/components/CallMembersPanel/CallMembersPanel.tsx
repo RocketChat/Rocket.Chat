@@ -5,12 +5,12 @@ import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AddParticipantsModal from './AddParticipantsModal';
-import CallMemberItem from './CallMemberItem';
-import CallPanelHeader from './CallPanelHeader';
-import type { ConferenceChatAccess, ConferenceMember } from './hooks/useConferenceEmbedded';
-import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
-import { MembersListDivider } from '../room/contextualBar/RoomMembers/MembersListDivider';
+import { hasConferenceChatAccess } from '../../../../../lib/videoConference/chatAccess';
+import { MembersListDivider } from '../../../room/contextualBar/RoomMembers/MembersListDivider';
+import type { ConferenceChatAccess, ConferenceMember } from '../../hooks/useConferenceEmbedded';
+import AddParticipantsModal from '../AddParticipantsModal/AddParticipantsModal';
+import CallMemberItem from '../CallMemberItem/CallMemberItem';
+import CallPanelHeader from '../CallPanelHeader/CallPanelHeader';
 
 type CallMembersPanelProps = {
 	callId: string;

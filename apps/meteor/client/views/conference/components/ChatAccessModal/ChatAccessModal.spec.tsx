@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ChatAccessModal from './ChatAccessModal';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import type { ConferenceChatAccess } from '../../hooks/useConferenceEmbedded';
 
 const member = { _id: 'outsider-id', username: 'outsider', name: 'Outsider Person' };
 
