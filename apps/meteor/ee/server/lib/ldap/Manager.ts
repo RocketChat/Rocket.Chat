@@ -566,12 +566,11 @@ export class LDAPEEManager extends LDAPManager {
 			logger.debug({ msg: 'Some teams will be ignored from sync because they are abac managed', roomsWithAbacAttributes });
 
 			teamsToAdd = teamsToAdd.filter((teamId) => !roomsWithAbacAttributes.includes(teamId));
-			if (!teamsToAdd.length) {
-				return;
-			}
 		}
 
-		await Team.insertMemberOnTeams(user._id, teamsToAdd);
+		if (teamsToAdd.length) {
+			await Team.insertMemberOnTeams(user._id, teamsToAdd);
+		}
 		if (teamsToRemove) {
 			await Team.removeMemberFromTeams(user._id, teamsToRemove);
 		}
