@@ -4,30 +4,21 @@ import { useEffect, useState } from 'react';
 type CallTimerProps = { startAt?: Date };
 
 const CallTimer = ({ startAt }: CallTimerProps) => {
-	const [start] = useState(() => {
-		if (!startAt) {
-			return Date.now();
-		}
-		return startAt.getTime();
-	});
-
-	const [elapsedTime, setElapsedTime] = useState(() => {
-		if (!start) {
-			return 0;
-		}
-		return Date.now() - start;
-	});
+	// The moment is ticked and the elapsed time derived from it, rather than the start being captured once: the
+	// conference this reads from arrives a render later than the timer mounts, so freezing the start anchored a
+	// call that had been running for minutes at zero and left it counting from there.
+	const [now, setNow] = useState(() => Date.now());
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			setElapsedTime(() => {
-				const now = Date.now();
-				return now - start;
-			});
-		}, 1000);
+		const interval = setInterval(() => setNow(Date.now()), 1000);
 
 		return () => clearInterval(interval);
-	}, [start]);
+	}, []);
+
+	const start = startAt?.getTime();
+	// Nothing is known about the call's age until it arrives, and a clock skewed ahead of the server must not
+	// count backwards.
+	const elapsedTime = start === undefined ? 0 : Math.max(0, now - start);
 
 	const totalSeconds = Math.floor(elapsedTime / 1000);
 
