@@ -165,13 +165,15 @@ export const createRichTextComposerAPI = (
 		const textAreaTxt = input.innerText;
 		const expected = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 
-		document.execCommand?.('insertText', false, text);
-		if (input.innerText !== expected) {
-			input.innerText = expected;
-		}
-
 		const newStart = selection.start + text.length;
 		const newEnd = selection.start + text.length;
+
+		const inserted = !text.includes('\n') && document.execCommand?.('insertText', false, text);
+
+		if (!inserted || input.innerText !== expected) {
+			input.innerText = expected;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
+		}
 
 		if (selectionStart !== selectionEnd) {
 			setSelectionRange(input, selectionStart, selectionStart);

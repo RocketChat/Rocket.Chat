@@ -37,6 +37,8 @@ afterAll(() => {
 	}
 });
 
+const stripLineEnd = (text: string | null): string => (text ?? '').replace(/\n$/, '');
+
 const setupComposer = (initialValue: string, cursor: { start: number; end: number }) => {
 	const input = document.createElement('div');
 	input.contentEditable = 'true';
@@ -70,8 +72,17 @@ describe('RichText Composer API - replaceText', () => {
 
 		composer.replaceText('@john ', { start: 0, end: 2 });
 
-		expect(input.textContent).toBe('@john hello');
+		expect(stripLineEnd(input.textContent)).toBe('@john hello');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('renders multi-line markup instead of leaving it raw until the next keystroke', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 0 });
+
+		composer.replaceText('- one\n- two', { start: 0, end: 7 });
+
+		expect(composer.text).toBe('- one\n- two');
+		expect(Array.from(input.querySelectorAll('span[style]')).map((span) => span.textContent)).toEqual(['- ', '- ']);
 	});
 
 	it('places the caret after a mention inserted in the middle', () => {
@@ -79,7 +90,7 @@ describe('RichText Composer API - replaceText', () => {
 
 		composer.replaceText('@john ', { start: 3, end: 5 });
 
-		expect(input.textContent).toBe('hi @john there');
+		expect(stripLineEnd(input.textContent)).toBe('hi @john there');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 9, selectionEnd: 9 });
 	});
 });
