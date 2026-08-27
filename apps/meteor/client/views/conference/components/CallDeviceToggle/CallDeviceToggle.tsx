@@ -17,10 +17,6 @@ const ICONS = {
  * A mic or camera toggle for the preflight, in the convention every call UI uses: **off is red**, because a
  * muted mic or a dark camera is the state a user needs to notice at a glance. On is left as a ghost button —
  * nothing to report.
- *
- * `mic-off` slashes the other way from `video-off`, so beside each other they read as two unrelated marks. The
- * mic is mirrored to match, which flips its slash without visibly changing the mic itself — it is symmetric
- * about that axis.
  */
 const CallDeviceToggle = ({ device, on, label, onToggle }: CallDeviceToggleProps) => (
 	<IconButton

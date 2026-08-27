@@ -39,7 +39,9 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
 	}
 
 	try {
-		const url = new URL(callUrl, window.location.origin);
+		// No base: a provider's url is absolute, and resolving a relative one against *our* origin would hand the
+		// call window a Rocket.Chat address instead of failing at naming, which is the harmless outcome.
+		const url = new URL(callUrl);
 		url.searchParams.set('name', displayName);
 		return url.toString();
 	} catch {

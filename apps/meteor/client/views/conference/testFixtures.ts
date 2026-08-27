@@ -29,8 +29,8 @@ export const buildJoinableCall = (
 export const buildConferenceMember = (overrides: Partial<ConferenceMember> & Pick<ConferenceMember, '_id'>): ConferenceMember => ({
 	username: overrides._id,
 	name: `Name of ${overrides._id}`,
-	// `hasJoinedVideoConference` and `isInVideoConference` both read `joined`, so leaving it unset made the
-	// default member absent from the call — the opposite of what this says, and of what its readers assume.
+	// Said rather than left to the reader: an unset `joined` already reads as joined — `hasJoinedVideoConference`
+	// is `joined !== false`, for entries written before the flag existed — but a fixture should show its intent.
 	joined: true,
 	...overrides,
 });
