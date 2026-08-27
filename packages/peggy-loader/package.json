@@ -7,13 +7,13 @@
 		"loader",
 		"webpack"
 	],
-	"homepage": "https://github.com/RocketChat/fuselage#readme",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
-		"url": "https://github.com/RocketChat/fuselage/issues"
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/fuselage.git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/peggy-loader"
 	},
 	"license": "MIT",
@@ -49,8 +49,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"publishConfig": {
-		"access": "public"
 	}
 }
