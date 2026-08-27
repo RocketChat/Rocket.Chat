@@ -96,12 +96,12 @@ function ImportOperationSummary({
 
 	return (
 		<TableRow {...props}>
-			<TableCell>{type}</TableCell>
+			<TableCell style={{ wordBreak: 'break-word' }}>{type}</TableCell>
 			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
 					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
-					<TableCell>{fileName}</TableCell>
+					<TableCell style={{ wordBreak: 'break-word' }}>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
 					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
