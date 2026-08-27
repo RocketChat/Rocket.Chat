@@ -54,6 +54,26 @@ export type ThreadMessagesPage = {
 
 export type ThreadMessagesInfiniteData = InfiniteData<ThreadMessagesPage, number>;
 
+const dedupeThreadMessagesById = (messages: IThreadMessage[]): IThreadMessage[] => {
+	const byId = new Map<string, IThreadMessage>();
+
+	for (const message of messages) {
+		const existing = byId.get(message._id);
+		if (!existing) {
+			byId.set(message._id, message);
+			continue;
+		}
+
+		const messageTime = new Date(message._updatedAt ?? message.ts).getTime();
+		const existingTime = new Date(existing._updatedAt ?? existing.ts).getTime();
+		if (messageTime > existingTime) {
+			byId.set(message._id, message);
+		}
+	}
+
+	return Array.from(byId.values());
+};
+
 export const mutateThreadMessagesInfiniteData = (
 	client: QueryClient,
 	queryKey: readonly unknown[],
@@ -64,7 +84,7 @@ export const mutateThreadMessagesInfiniteData = (
 			return old;
 		}
 
-		const items = old.pages.flatMap((page) => page.items);
+		const items = dedupeThreadMessagesById(old.pages.flatMap((page) => page.items));
 		const originalPageLengths = old.pages.map((page) => page.items.length);
 		const oldTotal = old.pages.at(-1)?.itemCount ?? 0;
 		const oldIds = new Set(items.map((message) => message._id));
