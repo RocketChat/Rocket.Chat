@@ -1,0 +1,9 @@
+apps/meteor/server/api/v1/chat.ts
+  ai_agent 898
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7cb492c92a238e5555aeda5ed44a8e654a25a59b",
+  "prompts": {}
+}
