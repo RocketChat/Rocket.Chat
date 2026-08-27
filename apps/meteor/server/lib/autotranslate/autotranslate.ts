@@ -85,13 +85,7 @@ export class TranslationProviderRegistry {
 	}
 
 	static setCurrentProvider(provider: string): void {
-		if (provider === TranslationProviderRegistry[Provider]) {
-			return;
-		}
-
 		TranslationProviderRegistry[Provider] = provider;
-
-		TranslationProviderRegistry.registerCallbacks();
 	}
 
 	static setEnable(enabled: boolean): void {
@@ -106,14 +100,9 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		const provider = TranslationProviderRegistry.getActiveProvider();
-		if (!provider) {
-			return;
-		}
-
 		callbacks.add(
 			'afterSaveMessage',
-			(message, { room }) => provider.translateMessage(message, { room }),
+			async (message, { room }) => (await TranslationProviderRegistry.translateMessage(message, room)) ?? message,
 			callbacks.priority.MEDIUM,
 			'autotranslate',
 		);
