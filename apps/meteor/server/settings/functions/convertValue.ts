@@ -7,7 +7,7 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 	if (value.toLowerCase() === 'false') {
 		return false;
 	}
-	if (type === 'int') {
+	if (type === 'int' || type === 'timespan') {
 		return parseInt(value);
 	}
 	if (type === 'multiSelect') {
