@@ -1,7 +1,13 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { ChatUpdate, OperationResult } from '@rocket.chat/rest-typings';
 
-import type { ChatSendMessageResponse, ChatSyncMessagesResponse, ChatUpdateResponse } from './legacyChatRoutes';
+import type {
+	ChatSendMessageResponse,
+	ChatSyncMessagesResponse,
+	ChatUpdateResponse,
+	DmCreateResponse,
+	RoomsInfoResponse,
+} from './legacyChatRoutes';
 import type { StreamerCallbackArgs } from '../../types/streams';
 
 export interface APILegacy {
@@ -16,7 +22,7 @@ export interface APILegacy {
 	};
 
 	rooms: {
-		info(args: { roomName: string } | { roomId: string }): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>>;
+		info(args: { roomName: string } | { roomId: string }): Promise<Serialized<RoomsInfoResponse>>;
 		join(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>>;
 		load(rid: string, lastUpdate: Date): Promise<Serialized<ChatSyncMessagesResponse>>;
 		leave(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
@@ -27,10 +33,10 @@ export interface APILegacy {
 	leaveRoom(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
 
 	dm: {
-		create(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>>;
+		create(username: string): Promise<Serialized<DmCreateResponse>>;
 	};
 
-	createDirectMessage(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>>;
+	createDirectMessage(username: string): Promise<Serialized<DmCreateResponse>>;
 
 	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<ChatSendMessageResponse>>;
 

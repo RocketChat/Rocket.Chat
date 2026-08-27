@@ -1,8 +1,6 @@
-import type { IEmojiCustom, ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
+import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];
@@ -46,12 +44,6 @@ const emojiCustomListSchema = {
 
 export const isEmojiCustomList = ajvQuery.compile<emojiCustomList>(emojiCustomListSchema);
 
-export type EmojiCustomEndpoints = {
-	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
-	// weaker than this declaration (see the Omit in the meteor augmentation).
-	'/v1/emoji-custom.all': {
-		GET: (params: PaginatedRequest<{ name?: string }, 'name'>) => PaginatedResult<{
-			emojis: IEmojiCustom[];
-		}>;
-	};
-};
+// All /v1/emoji-custom.* routes are typed by their migrated implementations
+// (apps/meteor/server/api/v1/emoji-custom.ts) via ExtractRoutesFromAPI.
+export type EmojiCustomEndpoints = {};

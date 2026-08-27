@@ -11,7 +11,7 @@ import type { UsersFilters } from '../AdminUsersPage';
 
 export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 };
 
 const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps) => {

@@ -22,10 +22,6 @@ const E2eSetUserPublicAndPrivateKeysSchema = {
 
 export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile<E2eSetUserPublicAndPrivateKeysProps>(E2eSetUserPublicAndPrivateKeysSchema);
 
-export type E2eEndpoints = {
-	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
-	// weaker than this declaration (see the Omit in the meteor augmentation).
-	'/v1/e2e.requestSubscriptionKeys': {
-		POST: () => void;
-	};
-};
+// All /v1/e2e.* routes are typed by their migrated implementations
+// (apps/meteor/server/api/v1/e2e.ts) via ExtractRoutesFromAPI.
+export type E2eEndpoints = {};

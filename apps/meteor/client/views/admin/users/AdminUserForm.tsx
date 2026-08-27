@@ -50,7 +50,7 @@ export type AdminUserFormProps = {
 	onReload: () => void;
 	context: string;
 	refetchUserFormData?: () => void;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	roleError: Error | null;
 };
 

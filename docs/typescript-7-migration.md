@@ -116,24 +116,31 @@ tsconfigs. TS7 rejects the `Endpoints` interface simultaneously extending a
 legacy hand-written family type from `@rocket.chat/rest-typings` and the
 `ExtractRoutesFromAPI` augmentation the migrated implementation declares
 (error TS2320) when the two declarations differ; TS5.9 tolerated it. The
-dedup resolved this by making each route's stronger declaration the only
-one:
+dedup resolved this by making the augmentation authoritative wherever one
+exists:
 
-- Routes whose extracted types are complete now live only in the
-  augmentation — their hand-written declarations were deleted from
+- Every migrated route is typed only by its `ExtractRoutesFromAPI`
+  augmentation — the hand-written declarations were deleted from
   rest-typings (chat, dm/im, e2e, emoji-custom, invites, push, roles,
-  rooms, teams families).
-- Routes still registered via the legacy `API.v1.addRoute` (e.g. most
-  `/v1/rooms.*`, `/v1/chat.getMessageReadReceipts`, `/v1/im.kick`) keep
-  their rest-typings declarations until they are migrated.
-- Routes whose extracted emit is weaker than the hand-written type
-  (`params: never`/`undefined`, `object`-typed `$ref` responses), or that
-  standalone packages consume without seeing the meteor augmentation, stay
-  canonical in rest-typings and are `Omit`ted from the corresponding
-  augmentation, each with a comment naming the reason. Deleting such a
-  route from rest-typings (after strengthening its extraction or migrating
-  its consumers) automatically promotes the extracted type — the Omit list
-  is the remaining ratchet.
+  rooms, teams families and the omnichannel department-transfer route).
+  Standalone registrations (`API.v1.get(...)` calls outside a builder
+  chain, e.g. most `/v1/rooms.*`) are captured into named consts and
+  intersected into the family's extracted type. Where the extracted emit
+  was weaker than the old hand-written claim, the route's own schemas were
+  strengthened (typed `ajv.compile` generics, query validators); where the
+  old claim was a lie (e.g. `roles.list` never returns `_updatedAt` — the
+  projection strips it), the consumers were fixed to the truthful type.
+- Only routes still registered via the legacy `API.v1.addRoute`
+  (`/v1/rooms.media/:rid`, `/v1/rooms.mediaConfirm/:rid/:fileId`,
+  `/v1/chat.getMessageReadReceipts`, `/v1/im.kick`, ...) keep their
+  rest-typings declarations, until they are migrated.
+- Standalone packages that consume migrated routes without seeing the
+  meteor augmentation carry their own minimal local contracts mirroring
+  the server responses: `ddp-client` (legacy SDK `types/legacyChatRoutes.ts`
+  for the chat routes, `rooms.info` and `im.create`; livechat SDK
+  `types/livechatRoutes.ts` for `department.transfer`) and
+  `fuselage-ui-kit` (locally-typed `useEndpoint` wrappers for `rooms.info`
+  and `rooms.autocomplete.channelAndPrivate`).
 
 ## Follow-ups
 
@@ -142,7 +149,7 @@ one:
 - Move the typia toolchain to a released `typescript@7` binary instead of
   `@typescript/native-preview` once ttsc resolves it directly.
 - The canary is fully green — consider making it a blocking check.
-- Burn down the Omit ratchet: strengthen the weak extractions (typed response
-  schemas, query validators) and migrate the remaining legacy addRoute
-  routes, deleting each rest-typings declaration as its extraction becomes
-  authoritative.
+- Migrate the remaining legacy `API.v1.addRoute` routes, deleting each
+  rest-typings declaration as its extraction becomes authoritative, and
+  fold the standalone packages' local contracts back into a shared source
+  once the extracted route types are publishable outside the meteor app.

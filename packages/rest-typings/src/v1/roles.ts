@@ -113,12 +113,6 @@ const RolesGetUsersInRolePropsSchema = {
 
 export const isRolesGetUsersInRoleProps = ajvQuery.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
-export type RolesEndpoints = {
-	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
-	// weaker than this declaration (see the Omit in the meteor augmentation).
-	'/v1/roles.list': {
-		GET: () => {
-			roles: IRole[];
-		};
-	};
-};
+// All /v1/roles.* routes are typed by their migrated implementations
+// (apps/meteor/server/api/v1/roles.ts) via ExtractRoutesFromAPI.
+export type RolesEndpoints = {};
