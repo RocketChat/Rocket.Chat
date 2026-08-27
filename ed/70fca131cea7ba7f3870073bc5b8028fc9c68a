@@ -1,0 +1,20 @@
+apps/meteor/app/ui-message/client/findParentMessage.ts
+  s_9e3e1b313ffcd1::t_1945e385e60f4d 21-25,27-31
+  s_9e3e1b313ffcd1::t_9a39ddab72684f 8-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ed70fca131cea7ba7f3870073bc5b8028fc9c68a",
+  "prompts": {},
+  "sessions": {
+    "s_9e3e1b313ffcd1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ee9ffb4f-105f-48c7-9eb3-3075a1946f08",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}

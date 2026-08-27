@@ -1,0 +1,33 @@
+apps/meteor/server/api/v1/chat.ts
+  s_8998b0686d0f5a::t_7b9e7a2517a3e0 1475-1510
+  s_8998b0686d0f5a::t_b348a8da91eab7 14,30
+apps/meteor/app/ui-message/client/findParentMessage.ts
+  s_8998b0686d0f5a::t_5d667a44d1a5e8 3,6,16,18-24
+packages/rest-typings/src/v1/chat.ts
+  s_8998b0686d0f5a::t_4823bd8845db69 102-126
+.changeset/rest-chat-get-messages.md
+  s_8998b0686d0f5a::t_e791b1576404fc 1-6
+apps/meteor/server/meteor-methods/messages/getMessages.ts
+  s_8998b0686d0f5a::t_b7528749de3c1e 8,19
+.changeset/ddp-migrate-get-messages-caller.md
+  s_8998b0686d0f5a::t_e791b1576404fc 1-5
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_8998b0686d0f5a::t_120a85f7361d10 11,5294-5398
+  s_8998b0686d0f5a::t_a434e10cdd7552 5399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "309c587c1db4e125983a2f9f5d7e46d50d61329f",
+  "prompts": {},
+  "sessions": {
+    "s_8998b0686d0f5a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1eb4ba6-bb29-4651-a5d0-a7f88b362991",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
