@@ -1511,6 +1511,7 @@ const channelsListJoinedQuery = ajvQuery.compile<{
 	count?: number;
 	offset?: number;
 	sort?: string;
+	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -1521,6 +1522,7 @@ const channelsListJoinedQuery = ajvQuery.compile<{
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		sort: { type: 'string' },
+		fields: { type: 'string' },
 	},
 	required: [],
 	additionalProperties: false,
