@@ -6949,15 +6949,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peggyjs/from-mem@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@peggyjs/from-mem@npm:1.3.4"
-  dependencies:
-    semver: "npm:7.6.3"
-  checksum: 10/d32ce47af78eb6ccec3cb5b98f4c592bbdb634b05dd99a0fb107cfa48c17069ea0b5fb284705839de7be3a43638e05b0c9733fa83b30e3e2cf608790e42b5e31
-  languageName: node
-  linkType: hard
-
 "@pinojs/redact@npm:^0.4.0":
   version: 0.4.0
   resolution: "@pinojs/redact@npm:0.4.0"
@@ -10021,7 +10012,6 @@ __metadata:
   resolution: "@rocket.chat/message-parser@workspace:packages/message-parser"
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/peggy-loader": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.19.21"
@@ -10029,9 +10019,7 @@ __metadata:
     fast-check: "npm:^4.6.0"
     jest: "npm:~30.2.0"
     npm-run-all: "npm:^4.1.5"
-    peggy: "npm:4.1.1"
     prettier: "npm:~3.3.3"
-    prettier-plugin-pegjs: "npm:~0.5.4"
     rimraf: "npm:^6.0.1"
     tinybench: "npm:^3.0.7"
     tldts: "npm:~6.1.86"
@@ -10795,25 +10783,6 @@ __metadata:
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@rocket.chat/peggy-loader@workspace:packages/peggy-loader, @rocket.chat/peggy-loader@workspace:~":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/peggy-loader@workspace:packages/peggy-loader"
-  dependencies:
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
-    "@types/node": "npm:~22.19.21"
-    eslint: "npm:~9.39.5"
-    npm-run-all: "npm:^4.1.5"
-    peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:~5.9.3"
-    webpack: "npm:~5.104.1"
-  peerDependencies:
-    peggy: "*"
-    webpack: "*"
   languageName: unknown
   linkType: soft
 
@@ -31211,19 +31180,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"peggy@npm:4.1.1":
-  version: 4.1.1
-  resolution: "peggy@npm:4.1.1"
-  dependencies:
-    "@peggyjs/from-mem": "npm:1.3.4"
-    commander: "npm:^12.1.0"
-    source-map-generator: "npm:0.8.0"
-  bin:
-    peggy: bin/peggy.js
-  checksum: 10/a2531d6a2448addd7a38640c5f73ba1a762f5974caa33f44c8f0dff735d7a701c4befe630ad2b0ed8e46ffda1f3ea503c3844e477cb7e55b62759918a365585f
-  languageName: node
-  linkType: hard
-
 "pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
@@ -32206,16 +32162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-pegjs@npm:~0.5.4":
-  version: 0.5.4
-  resolution: "prettier-plugin-pegjs@npm:0.5.4"
-  dependencies:
-    prettier: "npm:^2.8.4"
-  checksum: 10/d299a37e4ba03aeea4ba261a8efeec43403dbec345d192c13a9f73e7dbb1625863c4a3e6f4affd1b0b22139619b6534216cead68aa3cec56517e43b831ddacd8
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^2.7.1, prettier@npm:^2.8.4":
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -35170,13 +35117,6 @@ __metadata:
   dependencies:
     atomic-sleep: "npm:^1.0.0"
   checksum: 10/161af46b3e6debc4ad3865b0db47f37289741a0b3005b8cf056f93a4e0e1a347e24ca1a2d8ccc864f7f19caa6185a766797f8382cdbfd2f3d046a0323d73a542
-  languageName: node
-  linkType: hard
-
-"source-map-generator@npm:0.8.0":
-  version: 0.8.0
-  resolution: "source-map-generator@npm:0.8.0"
-  checksum: 10/f57df2c1bf33d84fc8a74fa030d4d355b033548569977b63d6930f6b2bf37f575946c88fb89c73b42a54ff6a46bd24253f0ddfa2c2226341e25c22240d168ed1
   languageName: node
   linkType: hard
 
