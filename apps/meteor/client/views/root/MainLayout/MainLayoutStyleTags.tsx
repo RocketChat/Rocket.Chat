@@ -21,15 +21,14 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 	--rcx-color-surface-light: rgba(44, 46, 50, 0.92);
 }
 /* inputs sit at T1 (#212224, the chrome tone), never at the overlay tone;
-   the wrapper rule needs !important + specificity because the Box
-   backgroundColor prop's css-in-js rule also carries !important */
-#rocket-chat,
-.rcx-tile {
+   the doubled class beats the Box backgroundColor prop's css-in-js rule
+   (also !important) regardless of stylesheet order, and some inputs
+   (navbar search) live outside #rocket-chat */
+:root {
 	--rcx-input-colors-background-color: #212224;
 	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.36);
 }
-#rocket-chat .rcx-input-box__wrapper,
-.rcx-tile .rcx-input-box__wrapper {
+.rcx-input-box__wrapper.rcx-input-box__wrapper {
 	background-color: #212224 !important;
 }`;
 
