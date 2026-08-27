@@ -15,15 +15,22 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
 }
-/* the group bar repaints the sidebar's alpha veil, double-compositing into
-   a darker stripe — let the sidebar's own background show through */
-.rcx-sidebar-v2-collapse-group__bar {
-	--rcx-sidebar-color-surface-default: transparent;
+/* modals are large reading surfaces over unpredictable content — steadier
+   ground than the transient menus/popovers */
+.rcx-modal {
+	--rcx-color-surface-light: rgba(44, 46, 50, 0.92);
 }
-/* inputs default to surface-light (the elevated glass); tone them down */
+/* inputs sit at T1 (#212224, the chrome tone), never at the overlay tone;
+   the wrapper rule needs !important + specificity because the Box
+   backgroundColor prop's css-in-js rule also carries !important */
 #rocket-chat,
 .rcx-tile {
-	--rcx-input-colors-background-color: rgba(255, 255, 255, 0.04);
+	--rcx-input-colors-background-color: #212224;
+	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.36);
+}
+#rocket-chat .rcx-input-box__wrapper,
+.rcx-tile .rcx-input-box__wrapper {
+	background-color: #212224 !important;
 }`;
 
 export const MainLayoutStyleTags = () => {
