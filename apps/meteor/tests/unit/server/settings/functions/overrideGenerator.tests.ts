@@ -43,4 +43,27 @@ describe('overrideGenerator', () => {
 
 		expect(setting).to.be.equal(overwritten);
 	});
+
+	it('should convert timespan values to numbers', () => {
+		const overwrite = overrideGenerator(() => '31536000000');
+
+		const setting = getSettingDefaults({ _id: 'RetentionPolicy_TTL_Channels', value: 2592000000, type: 'timespan' });
+		const overwritten = overwrite(setting);
+
+		expect(overwritten).to.have.property('value').that.equals(31536000000);
+		expect(overwritten).to.have.property('processEnvValue').that.equals(31536000000);
+	});
+
+	it('should return the same object when the timespan value already matches the env stamp', () => {
+		const overwrite = overrideGenerator(() => '31536000000');
+
+		const setting = {
+			...getSettingDefaults({ _id: 'RetentionPolicy_TTL_Channels', value: 31536000000, type: 'timespan' }),
+			valueSource: 'processEnvValue' as const,
+			processEnvValue: 31536000000,
+		};
+		const overwritten = overwrite(setting);
+
+		expect(setting).to.be.equal(overwritten);
+	});
 });
