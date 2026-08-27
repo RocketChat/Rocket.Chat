@@ -3,6 +3,8 @@ import {
 	type IRoom,
 	type IRoomAbacRedaction,
 	type IMessage,
+	type ISubscription,
+	type ITeam,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
@@ -133,7 +135,7 @@ export async function findRoomByIdOrName({
 	return room;
 }
 
-API.v1.get(
+const roomsNameExistsEndpoint = API.v1.get(
 	'rooms.nameExists',
 	{
 		authRequired: true,
@@ -216,7 +218,7 @@ const roomDeleteEndpoint = API.v1.post(
 	},
 );
 
-API.v1.get(
+const roomsGetEndpoint = API.v1.get(
 	'rooms.get',
 	{
 		authRequired: true,
@@ -469,7 +471,7 @@ const roomsSaveDraftEndpoint = API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsCleanHistoryEndpoint = API.v1.post(
 	'rooms.cleanHistory',
 	{
 		authRequired: true,
@@ -516,12 +518,28 @@ API.v1.post(
 	},
 );
 
-API.v1.get(
+// Open schema (no additionalProperties: false): pagination/query helpers
+// (`fields`, `query`, ...) travel alongside the room identifier.
+const roomsInfoQuerySchema = ajvQuery.compile<{ roomId: string } | { roomName: string }>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+});
+
+const roomsInfoEndpoint = API.v1.get(
 	'rooms.info',
 	{
 		authRequired: true,
+		query: roomsInfoQuerySchema,
 		response: {
-			200: ajv.compile<{ room: IRoom | null }>({
+			200: ajv.compile<{
+				room: IRoom | null;
+				parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't'> & Partial<Pick<IRoom, 'prid' | 'u'>>;
+				team?: Pick<ITeam, 'name' | 'roomId' | 'type'>;
+			}>({
 				type: 'object',
 				properties: {
 					room: { type: ['object', 'null'] },
@@ -546,7 +564,7 @@ API.v1.get(
 
 		const discussionParent =
 			room.prid &&
-			(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+			(await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
 				projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
 			}));
 		const { team, parentRoom } = await Team.getRoomInfo(room);
@@ -560,7 +578,7 @@ API.v1.get(
 	},
 );
 
-API.v1.post(
+const roomsCreateDiscussionEndpoint = API.v1.post(
 	'rooms.createDiscussion',
 	{
 		authRequired: true,
@@ -598,7 +616,7 @@ API.v1.post(
 	},
 );
 
-API.v1.get(
+const roomsGetDiscussionsEndpoint = API.v1.get(
 	'rooms.getDiscussions',
 	{
 		authRequired: true,
@@ -648,7 +666,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsImagesEndpoint = API.v1.get(
 	'rooms.images',
 	{
 		authRequired: true,
@@ -711,7 +729,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAdminRoomsEndpoint = API.v1.get(
 	'rooms.adminRooms',
 	{
 		authRequired: true,
@@ -758,7 +776,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAutocompleteAdminRoomsEndpoint = API.v1.get(
 	'rooms.autocomplete.adminRooms',
 	{
 		authRequired: true,
@@ -789,7 +807,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAdminRoomsGetRoomEndpoint = API.v1.get(
 	'rooms.adminRooms.getRoom',
 	{
 		authRequired: true,
@@ -826,7 +844,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAutocompleteChannelAndPrivateEndpoint = API.v1.get(
 	'rooms.autocomplete.channelAndPrivate',
 	{
 		authRequired: true,
@@ -857,7 +875,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAutocompleteChannelAndPrivateWithPaginationEndpoint = API.v1.get(
 	'rooms.autocomplete.channelAndPrivate.withPagination',
 	{
 		authRequired: true,
@@ -896,7 +914,7 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsAutocompleteAvailableForTeamsEndpoint = API.v1.get(
 	'rooms.autocomplete.availableForTeams',
 	{
 		authRequired: true,
@@ -927,7 +945,7 @@ API.v1.get(
 	},
 );
 
-API.v1.post(
+const roomsSaveRoomSettingsEndpoint = API.v1.post(
 	'rooms.saveRoomSettings',
 	{
 		authRequired: true,
@@ -962,7 +980,7 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-API.v1.post(
+const roomsChangeArchivationStateEndpoint = API.v1.post(
 	'rooms.changeArchivationState',
 	{
 		authRequired: true,
@@ -986,7 +1004,7 @@ API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsExportEndpoint = API.v1.post(
 	'rooms.export',
 	{
 		authRequired: true,
@@ -1073,7 +1091,7 @@ API.v1.post(
 	},
 );
 
-API.v1.get(
+const roomsIsMemberEndpoint = API.v1.get(
 	'rooms.isMember',
 	{
 		authRequired: true,
@@ -1116,13 +1134,18 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+const roomsMembersOrderedByRoleEndpoint = API.v1.get(
 	'rooms.membersOrderedByRole',
 	{
 		authRequired: true,
 		query: isRoomsMembersOrderedByRoleProps,
 		response: {
-			200: ajv.compile<{ members: IUser[]; count: number; offset: number; total: number }>({
+			200: ajv.compile<{
+				members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
+				count: number;
+				offset: number;
+				total: number;
+			}>({
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser with role priority
@@ -1186,7 +1209,7 @@ API.v1.get(
 	},
 );
 
-API.v1.post(
+const roomsMuteUserEndpoint = API.v1.post(
 	'rooms.muteUser',
 	{
 		authRequired: true,
@@ -1210,7 +1233,7 @@ API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsUnmuteUserEndpoint = API.v1.post(
 	'rooms.unmuteUser',
 	{
 		authRequired: true,
@@ -1234,7 +1257,7 @@ API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsOpenEndpoint = API.v1.post(
 	'rooms.open',
 	{
 		authRequired: true,
@@ -1254,7 +1277,7 @@ API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsJoinEndpoint = API.v1.post(
 	'rooms.join',
 	{
 		authRequired: true,
@@ -1285,7 +1308,7 @@ API.v1.post(
 	},
 );
 
-API.v1.post(
+const roomsHideEndpoint = API.v1.post(
 	'rooms.hide',
 	{
 		authRequired: true,
@@ -1732,12 +1755,32 @@ export const roomEndpoints = API.v1
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsNameExistsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsGetEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsCleanHistoryEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsInfoEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsCreateDiscussionEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsGetDiscussionsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsImagesEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAdminRoomsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAutocompleteAdminRoomsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAdminRoomsGetRoomEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAutocompleteChannelAndPrivateEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAutocompleteChannelAndPrivateWithPaginationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsAutocompleteAvailableForTeamsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveRoomSettingsEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsChangeArchivationStateEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsExportEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsIsMemberEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsMembersOrderedByRoleEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsMuteUserEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsUnmuteUserEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsOpenEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsJoinEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsHideEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// rooms.info and rooms.autocomplete.channelAndPrivate stay declared in
-	// @rocket.chat/rest-typings (standalone packages consume them); every other
-	// route flows from this extraction.
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends Omit<RoomEndpoints, '/v1/rooms.info' | '/v1/rooms.autocomplete.channelAndPrivate'> {}
+	interface Endpoints extends RoomEndpoints {}
 }

@@ -61,44 +61,6 @@ export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is
 export const isTeamPropsWithTeamId = <T extends TeamProps>(props: T): props is T & { teamId: string } => 'teamId' in props;
 
 export type TeamsEndpoints = {
-	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
-	// weaker than this declaration (see the Omit in the meteor augmentation).
-	'/v1/teams.create': {
-		POST: (params: {
-			name: ITeam['name'];
-			type: ITeam['type'];
-			members?: IUser['_id'][];
-			room: {
-				id?: string;
-				name?: IRoom['name'];
-				members?: IUser['_id'][];
-				readOnly?: boolean;
-				extraData?: {
-					teamId?: string;
-					teamMain?: boolean;
-				} & { [key: string]: string | boolean };
-				options?: {
-					creator: string;
-					subscriptionExtra?: {
-						open: boolean;
-						ls: Date;
-						prid: IRoom['_id'];
-					};
-				} & {
-					[key: string]:
-						| string
-						| {
-								open: boolean;
-								ls: Date;
-								prid: IRoom['_id'];
-						  };
-				};
-			};
-			owner?: IUser['_id'];
-		}) => {
-			team: ITeam;
-		};
-	};
 	'/v1/teams.convertToChannel': {
 		POST: (params: TeamsConvertToChannelProps) => void;
 	};

@@ -22,7 +22,13 @@ import type {
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
 } from './types/SDKLegacy';
-import type { ChatSendMessageResponse, ChatSyncMessagesResponse, ChatUpdateResponse } from './types/legacyChatRoutes';
+import type {
+	ChatSendMessageResponse,
+	ChatSyncMessagesResponse,
+	ChatUpdateResponse,
+	DmCreateResponse,
+	RoomsInfoResponse,
+} from './types/legacyChatRoutes';
 
 declare module '../ClientStream' {
 	interface ClientStream {
@@ -112,8 +118,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					| {
 							roomName: string;
 					  },
-			): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>> => {
-				return self.rest.get('/v1/rooms.info', args);
+			): Promise<Serialized<RoomsInfoResponse>> => {
+				return self.untypedRest.get('/v1/rooms.info', args) as Promise<Serialized<RoomsInfoResponse>>;
 			},
 			join: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> => {
 				return self.rest.post('/v1/channels.join', { roomId: rid });
@@ -146,8 +152,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get dm() {
 		const self = this;
 		return {
-			create(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>> {
-				return self.rest.post('/v1/im.create', { username });
+			create(username: string): Promise<Serialized<DmCreateResponse>> {
+				return self.untypedRest.post('/v1/im.create', { username }) as Promise<Serialized<DmCreateResponse>>;
 			},
 		};
 	}
@@ -168,8 +174,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.untypedRest.post('/v1/chat.react', { emoji, messageId }) as Promise<void>;
 	}
 
-	createDirectMessage(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>> {
-		return this.rest.post('/v1/im.create', { username });
+	createDirectMessage(username: string): Promise<Serialized<DmCreateResponse>> {
+		return this.untypedRest.post('/v1/im.create', { username }) as Promise<Serialized<DmCreateResponse>>;
 	}
 
 	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<ChatSendMessageResponse>> {

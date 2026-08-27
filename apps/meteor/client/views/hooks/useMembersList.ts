@@ -23,7 +23,8 @@ const endpointsByRoomType = {
 
 export type RoomMember = Serialized<
 	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] } & {
-		subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+		// im.members can return an empty subscription object when none is found
+		subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
 	}
 >;
 
@@ -138,16 +139,18 @@ export const useMembersList = (options: MembersListOptions) => {
 
 	return useInfiniteQuery({
 		queryKey: roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
-		queryFn: async ({ pageParam }) => {
+		queryFn: async ({ pageParam }): Promise<MembersListPage> => {
 			const start = pageParam ?? 0;
 
-			return getMembers({
+			const { members, count, offset, total } = await getMembers({
 				roomId: options.rid,
 				offset: start,
 				count: options.limit,
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});
+
+			return { members, count, offset, total };
 		},
 		getNextPageParam: (lastPage) => {
 			const offset = lastPage.offset + lastPage.count;

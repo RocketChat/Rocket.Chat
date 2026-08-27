@@ -1,4 +1,4 @@
-import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
 import { ajv } from './Ajv';
@@ -78,10 +78,6 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
 
-export type InvitesEndpoints = {
-	// Type-migration pending: the ExtractRoutesFromAPI emit for this route is
-	// weaker than this declaration (see the Omit in the meteor augmentation).
-	'/v1/findOrCreateInvite': {
-		POST: (params: FindOrCreateInviteParams) => IInvite;
-	};
-};
+// All invite routes are typed by their migrated implementations
+// (apps/meteor/server/api/v1/invites.ts) via ExtractRoutesFromAPI.
+export type InvitesEndpoints = {};
