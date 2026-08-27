@@ -1,4 +1,3 @@
-
 import type { ClipboardEvent } from 'react';
 
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
