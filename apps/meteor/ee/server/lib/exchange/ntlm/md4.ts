@@ -3,10 +3,7 @@
  *
  * NTLM mandates MD4 for the password hash, and `crypto.createHash('md4')` throws on OpenSSL 3, which moved
  * it to the legacy provider. Enabling that provider would mean requiring a Node flag on every deployment.
- * Electron bundles its own OpenSSL, which is why the desktop client never hit this.
  *
- * Used only to derive the NTLM key as the protocol specifies. Confidentiality comes from TLS.
- * Correctness is pinned against the RFC 1320 vectors in the accompanying spec.
  */
 
 const rotl = (value: number, shift: number): number => ((value << shift) | (value >>> (32 - shift))) >>> 0;

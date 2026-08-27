@@ -33,7 +33,7 @@ const parseXml = (xml: string): Document => {
 
 	if (fatal || !parsed?.documentElement) {
 		throw new ExchangeError('unexpected-response', 'Exchange returned a body that is not valid XML', {
-			detail: fatal?.slice(0, 300),
+			detail: fatal,
 		});
 	}
 
@@ -64,10 +64,6 @@ const assertNoSoapFault = (doc: Document): void => {
 	throw new ExchangeError('unexpected-response', 'Exchange rejected the request', { detail: reason.slice(0, 300) });
 };
 
-/**
- * Mapped to typed errors where we recognise the code, so Test Connection can tell "wrong password" from
- * "impersonation not granted": very different things for an admin to act on.
- */
 const assertNoResponseCodeErrors = (doc: Document): void => {
 	for (const node of allByTag(doc, MESSAGES_NS, 'ResponseCode')) {
 		const code = textOf(node);
@@ -86,10 +82,6 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 	}
 };
 
-/**
- * Well formed HTML is also well formed XML, so a proxy error page with HTTP 200 would parse cleanly, match
- * nothing, and be read as "the mailbox has no events".
- */
 const assertIsSoapEnvelope = (doc: Document): void => {
 	const root = doc.documentElement;
 	const localName = root.localName ?? root.nodeName.replace(/^.*:/, '');
