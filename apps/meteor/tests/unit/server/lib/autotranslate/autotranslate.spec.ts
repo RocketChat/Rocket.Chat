@@ -71,12 +71,12 @@ describe('TranslationProviderRegistry', () => {
 		expect(providerA.translateMessage.calledOnce).to.be.true;
 	});
 
-	it('should return the message unchanged when no provider is active', async () => {
+	it('should resolve null when no provider is active, letting the callback chain keep the original message', async () => {
 		TranslationProviderRegistry.setCurrentProvider('missing');
 		TranslationProviderRegistry.setEnable(true);
 
 		const result = await getRegisteredCallback()(message, { room });
 
-		expect(result).to.equal(message);
+		expect(result).to.be.null;
 	});
 });

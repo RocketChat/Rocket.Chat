@@ -102,7 +102,7 @@ export class TranslationProviderRegistry {
 
 		callbacks.add(
 			'afterSaveMessage',
-			async (message, { room }) => (await TranslationProviderRegistry.translateMessage(message, room)) ?? message,
+			(message, { room }) => TranslationProviderRegistry.translateMessage(message, room),
 			callbacks.priority.MEDIUM,
 			'autotranslate',
 		);
