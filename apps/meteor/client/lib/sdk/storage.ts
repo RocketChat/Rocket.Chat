@@ -32,11 +32,39 @@ const getStorage = (): Storage | undefined => {
 	return getStorageForBackend(storageBackend);
 };
 
+/**
+ * A same-tab write to `localStorage` announces itself to nobody: the DOM `storage` event is only ever delivered
+ * to the *other* tabs. Anything that renders from a stored value — the session-resume gate in
+ * `AuthenticationCheck` above all — therefore has to be told, or it reads a stale value and keeps it until some
+ * unrelated state change happens to render it again. Every mutation below goes through `notify`, and
+ * `subscribeStoredItem` is what `useSyncExternalStore` consumers hook into.
+ */
+const listeners = new Set<() => void>();
+
+const notify = (): void => {
+	for (const listener of listeners) {
+		listener();
+	}
+};
+
+export const subscribeStoredItem = (listener: () => void): (() => void) => {
+	listeners.add(listener);
+	return () => {
+		listeners.delete(listener);
+	};
+};
+
 export const getStoredItem = (key: StorageKey): string | null => getStorage()?.getItem(key) ?? null;
 
-export const setStoredItem = (key: StorageKey, value: string): void => getStorage()?.setItem(key, value);
+export const setStoredItem = (key: StorageKey, value: string): void => {
+	getStorage()?.setItem(key, value);
+	notify();
+};
 
-export const removeStoredItem = (key: StorageKey): void => getStorage()?.removeItem(key);
+export const removeStoredItem = (key: StorageKey): void => {
+	getStorage()?.removeItem(key);
+	notify();
+};
 
 let storageBackend: StorageBackend = 'local';
 
@@ -50,6 +78,7 @@ export const setStorageBackend = (backend: StorageBackend): boolean => {
 	}
 
 	storageBackend = backend;
+	notify();
 	return true;
 };
 
