@@ -266,6 +266,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				chainLimit: settings.get<number>('Message_QuoteChainLimit'),
 				siteUrl: settings.get<string>('Site_Url'),
 				useRealName: settings.get<boolean>('UI_Use_Real_Name'),
+				fileUploadRestrictToRoomMembers: settings.get<boolean>('FileUpload_Restrict_to_room_members'),
+				fileUploadRestrictToUsersWhoCanAccessRoom: settings.get<boolean>('FileUpload_Restrict_to_users_who_can_access_room'),
 			},
 		});
 

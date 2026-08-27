@@ -65,6 +65,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -93,6 +95,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -122,6 +126,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -151,6 +157,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -180,6 +188,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -209,6 +219,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -238,6 +250,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -276,6 +290,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -321,6 +337,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -353,6 +371,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -383,6 +403,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -455,6 +477,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 3,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -538,6 +562,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 3,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -571,6 +597,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -613,6 +641,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 10,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -655,6 +685,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 1,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 
@@ -710,6 +742,8 @@ describe('Create attachments for message URLs', () => {
 				chainLimit: 1,
 				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
+				fileUploadRestrictToRoomMembers: false,
+				fileUploadRestrictToUsersWhoCanAccessRoom: false,
 			},
 		});
 

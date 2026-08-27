@@ -5,6 +5,7 @@ import { memo } from 'react';
 import DefaultAttachment from './DefaultAttachment';
 import FileAttachment from './FileAttachment';
 import { QuoteAttachment } from './QuoteAttachment';
+import RestrictedAttachment from './RestrictedAttachment';
 import type { AudioAttachmentSource } from './file/AudioAttachment';
 
 export type AttachmentsItemProps = {
@@ -20,6 +21,10 @@ const AttachmentsItem = ({ attachment, id, source }: AttachmentsItemProps) => {
 
 	if (isQuoteAttachment(attachment)) {
 		return <QuoteAttachment attachment={attachment} source={source} />;
+	}
+
+	if ('type' in attachment && (attachment as any).type === 'restricted') {
+		return <RestrictedAttachment />;
 	}
 
 	return <DefaultAttachment {...(attachment as any)} />;
