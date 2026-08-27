@@ -20,6 +20,25 @@ export const ORDERED_LINE_PREFIX: LinePrefix = {
 	match: new RegExp(String.raw`^${ORDERED_MARKER}`),
 };
 
+const ORDERED_LINE = new RegExp(String.raw`^(\d+)\.[ \t]+`);
+
+export const continueLinePrefix = (text: string, caret: number): string | undefined => {
+	const lineStart = caret === 0 ? 0 : text.lastIndexOf('\n', caret - 1) + 1;
+	const line = text.slice(lineStart, caret);
+
+	const ordered = ORDERED_LINE.exec(line);
+
+	if (ordered) {
+		return ORDERED_LINE_PREFIX.build(parseInt(ordered[1], 10));
+	}
+
+	if (UNORDERED_LINE_PREFIX.match.test(line)) {
+		return UNORDERED_LINE_PREFIX.build(0);
+	}
+
+	return undefined;
+};
+
 const blockRange = (text: string, start: number, end: number): { blockStart: number; blockEnd: number } => {
 	const blockStart = start === 0 ? 0 : text.lastIndexOf('\n', start - 1) + 1;
 	const nextBreak = text.indexOf('\n', end);
