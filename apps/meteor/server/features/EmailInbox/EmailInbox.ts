@@ -73,6 +73,7 @@ export async function configureEmailInboxes(): Promise<void> {
 			await imap.start();
 
 			const smtp = nodemailer.createTransport({
+				name: settings.get('SMTP_Client_Name') || emailInboxRecord.smtp.server,
 				host: emailInboxRecord.smtp.server,
 				port: emailInboxRecord.smtp.port,
 				secure: emailInboxRecord.smtp.secure,
