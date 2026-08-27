@@ -39,6 +39,20 @@ export const continueLinePrefix = (text: string, caret: number): string | undefi
 	return undefined;
 };
 
+export const bareLinePrefixRange = (text: string, caret: number): { start: number; end: number } | undefined => {
+	const start = caret === 0 ? 0 : text.lastIndexOf('\n', caret - 1) + 1;
+	const nextBreak = text.indexOf('\n', caret);
+	const end = nextBreak === -1 ? text.length : nextBreak;
+
+	const marker = ANY_LINE_PREFIX.exec(text.slice(start, end));
+
+	if (!marker || text.slice(start + marker[0].length, end).trim() !== '') {
+		return undefined;
+	}
+
+	return { start, end };
+};
+
 const blockRange = (text: string, start: number, end: number): { blockStart: number; blockEnd: number } => {
 	const blockStart = start === 0 ? 0 : text.lastIndexOf('\n', start - 1) + 1;
 	const nextBreak = text.indexOf('\n', end);

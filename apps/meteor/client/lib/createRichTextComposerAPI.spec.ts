@@ -81,7 +81,7 @@ describe('RichText Composer API - replaceText', () => {
 
 		composer.replaceText('- one\n- two', { start: 0, end: 7 });
 
-		expect(composer.text).toBe('- one\n- two');
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- two');
 		expect(Array.from(input.querySelectorAll('span[style]')).map((span) => span.textContent)).toEqual(['- ', '- ']);
 	});
 
@@ -105,11 +105,11 @@ describe('RichText Composer API - insertNewLine', () => {
 		['carries the bullet onto the new line', '- one', '- one\n- '],
 		['carries the next number onto the new line', '1. one', '1. one\n2. '],
 	])('%s', (_label, initial, expected) => {
-		const { composer } = setupComposer(initial, { start: initial.length, end: initial.length });
+		const { composer, input } = setupComposer(initial, { start: initial.length, end: initial.length });
 
 		composer.insertNewLine();
 
-		expect(composer.text).toBe(expected);
+		expect(stripLineEnd(input.innerText)).toBe(expected);
 	});
 
 	it('inserts a bare newline outside a list', () => {
@@ -129,12 +129,46 @@ describe('RichText Composer API - insertNewLine', () => {
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 8, selectionEnd: 8 });
 	});
 
-	it('continues the list from the line the caret sits on', () => {
-		const { composer } = setupComposer('intro\n- one', { start: 11, end: 11 });
+	it('leaves the list when the item holds only a marker', () => {
+		const { composer, input } = setupComposer('- one\n- ', { start: 8, end: 8 });
 
 		composer.insertNewLine();
 
-		expect(composer.text).toBe('intro\n- one\n- ');
+		expect(input.innerText).toBe('- one\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('leaves the list when a numbered item holds only a marker', () => {
+		const { composer, input } = setupComposer('1. one\n2. ', { start: 10, end: 10 });
+
+		composer.insertNewLine();
+
+		expect(input.innerText).toBe('1. one\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 7, selectionEnd: 7 });
+	});
+
+	it('empties the composer when the only line is a bare marker', () => {
+		const { composer, input } = setupComposer('- ', { start: 2, end: 2 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('');
+	});
+
+	it('continues rather than leaves when content sits after the caret', () => {
+		const { composer, input } = setupComposer('- text', { start: 2, end: 2 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- \n- text');
+	});
+
+	it('continues the list from the line the caret sits on', () => {
+		const { composer, input } = setupComposer('intro\n- one', { start: 11, end: 11 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('intro\n- one\n- ');
 	});
 });
 
