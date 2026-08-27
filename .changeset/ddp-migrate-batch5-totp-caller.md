@@ -1,5 +1,12 @@
----
-'@rocket.chat/meteor': patch
----
+# Configuration
+version: 1.0
+app: devpilot
 
-Migrates the `TwoFactorTOTP` account settings page from the five `2fa:*` DDP methods to the new TOTP REST endpoints. DDP methods stay registered for external SDK/mobile clients with deprecation logs pointing at the new routes until 9.0.0.
+# Hyperlinks
+version: 1.0
+app: devpilot
+rules:
+  - match: "^(.*)\[(.*?)\]\((.*?)\)$"
+    replace: "<a href=\"\3\">\1</a> <a href=\"\3\">[\2]</a>"
+  - match: "^(.*)\[(.*?)\]\[(.*?)\]$"
+    replace: "<a href=\"\3\">[\2]</a> \1"
