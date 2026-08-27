@@ -26,7 +26,7 @@ const AgentField = ({ agent, isSmall = false }: AgentFieldProps) => {
 	});
 
 	if (isLoading) {
-		return <FormSkeleton />;
+		return <FormSkeleton pi={24} />;
 	}
 
 	const {
