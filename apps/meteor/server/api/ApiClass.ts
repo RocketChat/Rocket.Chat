@@ -27,6 +27,7 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
+	RateLimiterOptions,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -125,12 +126,6 @@ interface IAPIDefaultFieldsToExclude {
 	settings: number;
 	inviteToken: number;
 }
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-	bypassPermissions?: string[];
-};
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),

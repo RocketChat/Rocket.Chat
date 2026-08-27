@@ -5,6 +5,7 @@ import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { APIClass } from './ApiClass';
+import type { RateLimiterOptions } from './definition';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
@@ -21,10 +22,7 @@ export type Prettify<T> = {
 	[K in keyof T]: T[K];
 } & unknown;
 
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-};
+export type { RateLimiterOptions } from './definition';
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
