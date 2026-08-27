@@ -286,12 +286,12 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		return this.appPackage.info.id;
 	}
 
-	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params'>, options = this.options): Promise<unknown> {
+	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>, options = this.options): Promise<unknown> {
 		const id = String(Math.random().toString(36)).substring(2);
 
 		const start = Date.now();
 
-		const request = jsonrpc.request(id, message.method, message.params);
+		const request = jsonrpc.request(id, message.method, message.params, message.meta);
 
 		const { promise, abort } = this.waitForResponse(request, options);
 
