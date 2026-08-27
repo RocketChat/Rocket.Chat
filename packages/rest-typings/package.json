@@ -1,6 +1,11 @@
 {
 	"name": "@rocket.chat/rest-typings",
 	"version": "8.5.3",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/rest-typings"
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
