@@ -7110,6 +7110,8 @@
   "VideoConf_Mobile_Ringing_Description": "When enabled, direct calls to mobile users will ring their device as a phone call.",
   "VideoConf_Persistent_Chat_Discussion_Name": "Persistent Chat Discussion Name",
   "VideoConf_Persistent_Chat_Discussion_Name_Description": "Use [date] tag to set where to include the date. Date will be added to the start if tag is not included.",
+  "videoconf-join-call": "Join Video Conference",
+  "videoconf-join-call_description": "Permission to join video conference calls.",
   "videoconf-ring-users": "Ring Other Users When Calling",
   "videoconf-ring-users_description": "Permission to ring other users when calling",
   "Videos": "Videos",
