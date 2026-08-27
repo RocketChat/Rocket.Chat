@@ -68,6 +68,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const incomingCalls = useVideoConfIncomingCalls();
 
 	const openedRoom = useOpenedRoom();
+	// With the call window, a ringing call is listed with the calls already running, behind the navbar button —
+	// so the sidebar keeps no group of its own for it. Reported as no incoming call rather than by dropping the
+	// group: `Incoming_Calls` is a dynamic group, so an empty one is left out, and the room stays in whichever
+	// group it would otherwise be in.
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
@@ -84,7 +89,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
-						return !!incomingCalls.find((call) => call.rid === rid);
+						return !conferenceWindowEnabled && !!incomingCalls.find((call) => call.rid === rid);
 					},
 				});
 
@@ -174,6 +179,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			hasLicenseModule,
 			collapsedGroups,
 			incomingCalls,
+			conferenceWindowEnabled,
 			queue,
 			customCategories,
 			isShowUnreads,
