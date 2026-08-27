@@ -895,6 +895,7 @@ const chatEndpoints = API.v1
 		'chat.sendMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 1000 },
 			body: isChatSendMessageProps,
 			response: {
 				200: ajv.compile<{ message: IMessage }>({
