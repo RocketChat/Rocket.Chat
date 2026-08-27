@@ -1,9 +1,9 @@
 import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 
-import { GraphTokenClient } from './GraphTokenClient';
+import { DEFAULT_GRAPH_HOST, GraphTokenClient } from './GraphTokenClient';
 import type { GraphTokenClientConfig } from './GraphTokenClient';
-import type { IExchangeProvider, ExchangeProviderCapabilities } from '../definition/IExchangeProvider';
-import type { BusyBlock, DateRange, ExchangeEvent, Page } from '../definition/types';
+import type { IExchangeProvider } from '../definition/IExchangeProvider';
+import type { BusyBlock, DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
@@ -11,7 +11,7 @@ import { logger } from '../logger';
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
 
-// Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field.
+/** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
 
 type GraphDateTimeTimeZone = {
@@ -87,7 +87,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 	constructor(config: GraphTokenClientConfig, tokenClient = new GraphTokenClient(config)) {
 		this.tokenClient = tokenClient;
-		this.graphHost = (config.graphHost ?? 'https://graph.microsoft.com').replace(/\/+$/, '');
+		this.graphHost = (config.graphHost || DEFAULT_GRAPH_HOST).replace(/\/+$/, '');
 	}
 
 	public async testConnection(): Promise<void> {
