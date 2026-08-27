@@ -38,6 +38,12 @@ const getStorage = (): Storage | undefined => {
  * `AuthenticationCheck` above all — therefore has to be told, or it reads a stale value and keeps it until some
  * unrelated state change happens to render it again. Every mutation below goes through `notify`, and
  * `subscribeStoredItem` is what `useSyncExternalStore` consumers hook into.
+ *
+ * The `storage` event is the other half of that, and covers exactly the writes `notify` cannot see: a logout in
+ * another tab takes the token out from under a window that is still resuming, and that window has no other way
+ * to hear about it. `ensureConnectedAndAuthenticated` reads the token only once it has a connection, so a token
+ * that left in the meantime makes it return without a user, without clearing anything, and without a resume to
+ * fail — leaving a gate that never re-renders sitting on a token that is no longer there.
  */
 const listeners = new Set<() => void>();
 
@@ -47,10 +53,28 @@ const notify = (): void => {
 	}
 };
 
+/**
+ * Attached with the first subscriber and dropped with the last, so imperative readers pay nothing for it. The
+ * event is not filtered by key or by storage area: `notify` is keyless anyway, and a subscriber that reads a
+ * key nobody touched re-reads an unchanged snapshot, which React discards.
+ */
+const handleStorageEvent = (): void => {
+	notify();
+};
+
 export const subscribeStoredItem = (listener: () => void): (() => void) => {
+	if (listeners.size === 0 && typeof window !== 'undefined') {
+		window.addEventListener('storage', handleStorageEvent);
+	}
+
 	listeners.add(listener);
+
 	return () => {
 		listeners.delete(listener);
+
+		if (listeners.size === 0 && typeof window !== 'undefined') {
+			window.removeEventListener('storage', handleStorageEvent);
+		}
 	};
 };
 
