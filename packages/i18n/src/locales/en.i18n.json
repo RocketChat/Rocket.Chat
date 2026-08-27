@@ -7241,6 +7241,8 @@
   "VideoConf_Persistent_Chat_Mode_Description": "Thread opens a thread from the call message in the original channel. Main room shows the channel itself in the chat panel.",
   "VideoConf_Persistent_Chat_Mode_Main_Room": "Main room",
   "VideoConf_Persistent_Chat_Mode_Thread": "Thread",
+  "videoconf-join-call": "Join Video Conference",
+  "videoconf-join-call_description": "Permission to join video conference calls.",
   "videoconf-ring-users": "Ring other users when calling",
   "videoconf-ring-users_description": "Permission to ring other users when calling",
   "Videos": "Videos",

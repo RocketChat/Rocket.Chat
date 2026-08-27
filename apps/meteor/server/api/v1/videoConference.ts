@@ -20,7 +20,7 @@ import {
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -237,6 +237,7 @@ API.v1.post(
 			200: joinResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -255,6 +256,10 @@ API.v1.post(
 
 		if (!(await Authorization.canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
+		}
+
+		if (userId && !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid))) {
+			return API.v1.forbidden('Not allowed');
 		}
 
 		let url: string | undefined;
