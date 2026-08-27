@@ -70,7 +70,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions?.[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
