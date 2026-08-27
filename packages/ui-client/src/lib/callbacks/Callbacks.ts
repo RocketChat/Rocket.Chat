@@ -13,6 +13,18 @@ export enum CallbackPriority {
 	LOW = 1000,
 }
 
+/**
+ * Callback signature for side-effect handlers (event-like).
+ * Returns void since the return value is ignored in the callback chain.
+ */
+type EventLikeCallbackSignature = (item: any, constant?: any) => void | Promise<void>;
+
+/**
+ * Callback signature for value-transforming handlers (chained).
+ * The return value is passed as input to the next callback in the chain.
+ */
+type ChainedCallbackSignature = (item: any, constant?: any) => any | Promise<any>;
+
 type Callback<H> = {
 	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: H;
@@ -26,12 +38,8 @@ type CallbackTracker<H> = (callback: Callback<H>) => () => void;
 type HookTracker<H> = (params: { hook: H; length: number }) => () => void;
 
 export class Callbacks<
-	TChainedCallbackSignatures extends {
-		[key: string]: (item: any, constant?: any) => any;
-	},
-	TEventLikeCallbackSignatures extends {
-		[key: string]: (item: any, constant?: any) => any;
-	},
+	TChainedCallbackSignatures extends Record<string, ChainedCallbackSignature>,
+	TEventLikeCallbackSignatures extends Record<string, EventLikeCallbackSignature>,
 	THook extends string = keyof TChainedCallbackSignatures & keyof TEventLikeCallbackSignatures & string,
 > {
 	private logger: Logger | undefined = undefined;
@@ -138,7 +146,7 @@ export class Callbacks<
 
 	add<TItem, TConstant, TNextItem = TItem>(
 		hook: THook,
-		callback: (item: TItem, constant?: TConstant) => TNextItem,
+		callback: (item: TItem, constant?: TConstant) => TNextItem | Promise<TNextItem>,
 		priority?: CallbackPriority,
 		id?: string,
 	): () => void;
@@ -190,9 +198,9 @@ export class Callbacks<
 	run<Hook extends keyof TChainedCallbackSignatures>(
 		hook: Hook,
 		...args: Parameters<TChainedCallbackSignatures[Hook]>
-	): Promise<ReturnType<TChainedCallbackSignatures[Hook]>>;
+	): Promise<Awaited<ReturnType<TChainedCallbackSignatures[Hook]>>>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: THook, item: TItem, constant?: TConstant): Promise<TNextItem>;
+	run<TItem, TConstant, TNextItem = TItem>(hook: THook, item: TItem, constant?: TConstant): Promise<Awaited<TNextItem>>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -222,17 +230,22 @@ export class Callbacks<
 		return runner(item, constant);
 	}
 
-	static create<F extends (item: any, constant?: any) => any | Promise<any>>(
-		hook: string,
-	): Cb<Parameters<F>[0], ReturnType<F>, Parameters<F>[1]>;
+	/**
+	 * Creates a standalone callback hook.
+	 * When `F` is a function type, `R` is the awaited (unwrapped) return type,
+	 * so `Cb.run` always returns `Promise<R>` regardless of whether `F` is sync or async.
+	 */
+	static create<F extends (item: any, constant?: any) => any>(hook: string): Cb<Parameters<F>[0], Awaited<ReturnType<F>>, Parameters<F>[1]>;
 
-	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
-		const callbacks = new Callbacks();
+	static create<I = any, R = any, C = any>(hook: string): Cb<I, R, C>;
+
+	static create<I = any, R = any, C = any>(hook: string): Cb<I, R, C> {
+		const callbacks = new Callbacks<Record<string, ChainedCallbackSignature>, Record<string, EventLikeCallbackSignature>, string>();
 
 		return {
-			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
-			remove: (id) => callbacks.remove(hook as any, id),
-			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+			add: (callback, priority, id) => callbacks.add(hook, callback, priority, id),
+			remove: (id) => callbacks.remove(hook, id),
+			run: (item, constant) => callbacks.run(hook, item, constant) as Promise<R>,
 		};
 	}
 }
@@ -243,7 +256,7 @@ export class Callbacks<
  */
 type Cb<I, R, C = undefined> = {
 	add: (
-		callback: (item: I, constant: C) => Promise<R | undefined | void> | R | undefined | void,
+		callback: (item: I, constant?: C) => Promise<R | undefined | void> | R | undefined | void,
 		priority?: CallbackPriority,
 		id?: string,
 	) => void;
