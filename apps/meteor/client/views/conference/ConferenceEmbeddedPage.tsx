@@ -49,8 +49,12 @@ const callHeaderTimerStyles = css`
  * folded into the name instead — as the members action does — and the badge is hidden from assistive technology
  * so it is said once rather than twice.
  */
-const withBadgeCount = (label: string, unread: number, unreadTitle: string): string =>
-	unread > 0 && unreadTitle ? `${label}, ${unreadTitle}` : label;
+/**
+ * The badges are `aria-hidden`, so whatever they say has to reach the button's own name — the dot included: it
+ * is drawn for activity with no count behind it, and a reader who cannot see it would otherwise be told nothing.
+ */
+const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasUnseenActivity = false): string =>
+	(unread > 0 || hasUnseenActivity) && unreadTitle ? `${label}, ${unreadTitle}` : label;
 
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference, call } = useConferenceEmbedded(callId);
@@ -133,7 +137,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 			secondary
 			position='relative'
 			overflow='visible'
-			aria-label={withBadgeCount(t('Chat'), unread, unreadTitle)}
+			aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, hasUnseenActivity)}
 			title={t('Chat')}
 			aria-pressed={chatVisible}
 			onClick={() => togglePanel('chat')}

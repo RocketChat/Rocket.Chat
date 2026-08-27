@@ -14,7 +14,18 @@ import { buildJoinableCall } from '../../views/conference/testFixtures';
 const withCalls = (calls: JoinableVideoConference[], incoming: { callId: string; dismissed: boolean }[] = []) =>
 	withCallProviders(
 		conferenceAppRoot()
-			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
+			.withEndpoint(
+				'GET',
+				'/v1/video-conference.joinable',
+				() =>
+					({
+						// A ring lasts 15 seconds, so a `ringingAt` fixed when this module loaded would quietly turn every
+						// ringing story into an ongoing one while somebody looked at it. Stamped per request instead, and
+						// the list refetches, so a ringing story stays ringing.
+						calls: calls.map((call) => (call.ringingAt ? { ...call, ringingAt: new Date() } : call)),
+						success: true,
+					}) as any,
+			)
 			.withEndpoint('POST', '/v1/video-conference.decline', () => ({ success: true }) as any)
 			// What is audibly ringing *here*. A ring the client never heard gets no Silence button, because there
 			// is nothing to silence.
