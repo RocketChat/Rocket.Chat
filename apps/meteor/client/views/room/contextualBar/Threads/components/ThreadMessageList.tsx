@@ -164,6 +164,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			return;
 		}
 		loadingWindowKeyRef.current = windowKey;
+		autoFillCountRef.current = 0;
 		loadMessageAround(msgJumpParam).catch(() => {
 			if (loadingWindowKeyRef.current === windowKey) {
 				loadingWindowKeyRef.current = undefined;
@@ -369,6 +370,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				}
 				if (msg.u._id === uid) {
 					if (hasNextPage) {
+						autoFillCountRef.current = 0;
 						void jumpToRecent().then(() => setShouldJumpToBottom(true));
 						return;
 					}
