@@ -1,8 +1,8 @@
 import type { IEwsTransport } from './IEwsTransport';
 import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
 import { findFolderRequest, getItemRequest, getUserAvailabilityRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
-import type { IExchangeProvider, ExchangeProviderCapabilities } from '../definition/IExchangeProvider';
-import type { BusyBlock, DateRange, ExchangeEvent, Page } from '../definition/types';
+import type { IExchangeProvider } from '../definition/IExchangeProvider';
+import type { BusyBlock, DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 

@@ -56,8 +56,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	const calendarSettings: IUserCalendar = {};
 
 	// In server mode the exchange URL is withheld, which leaves the desktop app with no sync target and
-	// keeps the two integrations from both writing to `calendar_event`. `Enabled` stays on so meeting
-	// reminders and the notification preference keep working, since those are downstream of ingestion.
+	// keeps the two integrations from both writing to `calendar_event`.
 	const isLegacyMode = settings.get<string>('Outlook_Calendar_Mode') !== 'server';
 
 	const outlook = {
