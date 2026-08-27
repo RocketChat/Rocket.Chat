@@ -112,7 +112,3 @@ const RolesGetUsersInRolePropsSchema = {
 };
 
 export const isRolesGetUsersInRoleProps = ajvQuery.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
-
-// All /v1/roles.* routes are typed by their migrated implementations
-// (apps/meteor/server/api/v1/roles.ts) via ExtractRoutesFromAPI.
-export type RolesEndpoints = {};

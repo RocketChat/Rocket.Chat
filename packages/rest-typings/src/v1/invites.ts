@@ -77,7 +77,3 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 };
 
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
-
-// All invite routes are typed by their migrated implementations
-// (apps/meteor/server/api/v1/invites.ts) via ExtractRoutesFromAPI.
-export type InvitesEndpoints = {};

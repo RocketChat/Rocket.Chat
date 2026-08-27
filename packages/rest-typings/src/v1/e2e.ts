@@ -21,7 +21,3 @@ const E2eSetUserPublicAndPrivateKeysSchema = {
 };
 
 export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile<E2eSetUserPublicAndPrivateKeysProps>(E2eSetUserPublicAndPrivateKeysSchema);
-
-// All /v1/e2e.* routes are typed by their migrated implementations
-// (apps/meteor/server/api/v1/e2e.ts) via ExtractRoutesFromAPI.
-export type E2eEndpoints = {};
