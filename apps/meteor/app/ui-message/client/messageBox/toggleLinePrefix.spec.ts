@@ -1,4 +1,4 @@
-import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, applyLinePrefix } from './toggleLinePrefix';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, applyLinePrefix, continueLinePrefix } from './toggleLinePrefix';
 
 const at = (start: number, end = start) => ({ start, end });
 
@@ -127,5 +127,51 @@ describe('applyLinePrefix', () => {
 				blockEnd,
 			});
 		});
+	});
+});
+
+describe('continueLinePrefix', () => {
+	it.each([
+		['a bullet', '- one', '- '],
+		['an asterisk bullet', '* one', '- '],
+		['a bullet holding only the marker', '- ', '- '],
+		['the first number', '1. one', '2. '],
+		['a later number', '9. nine', '10. '],
+		['a number the user typed out of order', '7. seven', '8. '],
+		['a number with no content', '3. ', '4. '],
+	])('continues %s', (_label, text, expected) => {
+		expect(continueLinePrefix(text, text.length)).toBe(expected);
+	});
+
+	it.each([
+		['plain text', 'hello'],
+		['an empty composer', ''],
+		['a task', '- [x] done'],
+		['an unchecked task', '- [ ] todo'],
+		['a hyphen with no trailing space', '-'],
+		['a number with no trailing space', '1.'],
+		['bold markup at the start of the line', '*bold* text'],
+	])('does not continue %s', (_label, text) => {
+		expect(continueLinePrefix(text, text.length)).toBeUndefined();
+	});
+
+	it('reads the line the caret sits on, not the first line', () => {
+		const text = 'intro\n- one';
+
+		expect(continueLinePrefix(text, text.length)).toBe('- ');
+	});
+
+	it('continues the list when the caret is mid-line', () => {
+		expect(continueLinePrefix('- one', 4)).toBe('- ');
+	});
+
+	it('does not continue when the caret sits before the marker', () => {
+		expect(continueLinePrefix('- one', 1)).toBeUndefined();
+	});
+
+	it('does not carry a list on the line above into a plain line', () => {
+		const text = '- one\nplain';
+
+		expect(continueLinePrefix(text, text.length)).toBeUndefined();
 	});
 });

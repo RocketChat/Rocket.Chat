@@ -95,6 +95,49 @@ describe('RichText Composer API - replaceText', () => {
 	});
 });
 
+describe('RichText Composer API - insertNewLine', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it.each([
+		['carries the bullet onto the new line', '- one', '- one\n- '],
+		['carries the next number onto the new line', '1. one', '1. one\n2. '],
+	])('%s', (_label, initial, expected) => {
+		const { composer } = setupComposer(initial, { start: initial.length, end: initial.length });
+
+		composer.insertNewLine();
+
+		expect(composer.text).toBe(expected);
+	});
+
+	it('inserts a bare newline outside a list', () => {
+		const { composer, input } = setupComposer('hello', { start: 5, end: 5 });
+
+		composer.insertNewLine();
+
+		expect(input.innerText).toBe('hello\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('leaves the caret after the inserted marker', () => {
+		const { composer, input } = setupComposer('- one', { start: 5, end: 5 });
+
+		composer.insertNewLine();
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 8, selectionEnd: 8 });
+	});
+
+	it('continues the list from the line the caret sits on', () => {
+		const { composer } = setupComposer('intro\n- one', { start: 11, end: 11 });
+
+		composer.insertNewLine();
+
+		expect(composer.text).toBe('intro\n- one\n- ');
+	});
+});
+
 describe('RichText Composer API - insertText', () => {
 	afterEach(() => {
 		window.getSelection()?.removeAllRanges();
