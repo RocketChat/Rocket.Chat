@@ -6,13 +6,13 @@ import {
 	type Serialized,
 } from '@rocket.chat/core-typings';
 
-import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
-import { queryClient } from '../../../../../client/lib/queryClient';
-import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
-import { settings } from '../../../../../client/lib/settings';
-import { dispatchToastMessage } from '../../../../../client/lib/toast';
-import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
-import { sdk } from '../../../../utils/client/lib/SDKClient';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { useLivechatInquiryStore } from '../../hooks/useLivechatInquiryStore';
+import { queryClient } from '../queryClient';
+import { roomsQueryKeys } from '../queryKeys';
+import { settings } from '../settings';
+import { dispatchToastMessage } from '../toast';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
 const departments = new Set();
 
@@ -46,7 +46,7 @@ const processInquiryEvent = async (args: unknown): Promise<void> => {
 
 	const { type, ...inquiry } = args as InquiryEventArgs;
 	if (type in events) {
-		await events[type](inquiry as ILivechatInquiryRecord);
+		await events[type](inquiry);
 	}
 };
 

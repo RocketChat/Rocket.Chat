@@ -1,6 +1,4 @@
-import '../app/license/client';
 import '../app/lib/client';
-import '../app/livechat-enterprise/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';

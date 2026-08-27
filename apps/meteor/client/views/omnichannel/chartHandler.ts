@@ -1,6 +1,6 @@
 import type * as chartjs from 'chart.js';
 
-import { t } from '../../../utils/lib/i18n';
+import { t } from '../../../app/utils/lib/i18n';
 
 type LineChartConfigOptions = Partial<{
 	legends: boolean;
