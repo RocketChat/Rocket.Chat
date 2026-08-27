@@ -2,6 +2,11 @@
 	"$schema": "https://www.schemastore.org/package",
 	"name": "@rocket.chat/desktop-api",
 	"version": "1.3.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/desktop-api"
+	},
 	"type": "module",
 	"exports": {
 		".": {
