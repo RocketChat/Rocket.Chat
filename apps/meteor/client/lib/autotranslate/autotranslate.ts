@@ -2,16 +2,13 @@ import type { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, Mess
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
 
-import { PermissionsCachedStore } from '../../../../client/cachedStores';
-import { settings } from '../../../../client/lib/settings';
-import { getUserId, userIdStore } from '../../../../client/lib/user';
-import { Messages, Subscriptions, Users } from '../../../../client/stores';
-import {
-	hasTranslationLanguageInAttachments,
-	hasTranslationLanguageInMessage,
-} from '../../../../client/views/room/MessageList/lib/autoTranslate';
-import { hasPermission } from '../../../authorization/client';
-import { sdk } from '../../../utils/client/lib/SDKClient';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { PermissionsCachedStore } from '../../cachedStores';
+import { Messages, Subscriptions, Users } from '../../stores';
+import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../views/room/MessageList/lib/autoTranslate';
+import { hasPermission } from '../authorization';
+import { settings } from '../settings';
+import { getUserId, userIdStore } from '../user';
 
 let userLanguage = 'en';
 let username = '';

@@ -3,8 +3,8 @@ import type { ReactNode, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
-import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
+import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../lib/emoji';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
@@ -44,7 +44,9 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 
 			const sortedFrequent = [...empty, ...frequentEmojis]
 				.map(([emojiName, count]) => {
-					return (emojiName === emoji ? [emojiName, Math.min(count + 5, 100)] : [emojiName, Math.max(count - 1, 0)]) as [string, number];
+					return emojiName === emoji
+						? ([emojiName, Math.min(count + 5, 100)] as [string, number])
+						: ([emojiName, Math.max(count - 1, 0)] as [string, number]);
 				})
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
@@ -59,7 +61,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 			addFrequentEmojis(_emoji);
 
 			const recent = recentEmojis || [];
-			const pos = recent.indexOf(_emoji as never);
+			const pos = recent.indexOf(_emoji);
 
 			if (pos !== -1) {
 				recent.splice(pos, 1);
