@@ -12,6 +12,7 @@ import './lenny';
 import './open';
 import './shrug';
 import './slackbridgeImport';
+import './status';
 import './tableflip';
 import './topic';
 import './unarchive';
