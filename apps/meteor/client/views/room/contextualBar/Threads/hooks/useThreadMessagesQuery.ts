@@ -118,7 +118,12 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 
 			await queryClient.cancelQueries({ queryKey: currentQueryKey });
 
-			const { messages, total, offset } = await getThreadMessages({
+			const {
+				messages,
+				total,
+				offset,
+				count: pageSize,
+			} = await getThreadMessages({
 				tmid,
 				aroundId: messageId,
 				count,
@@ -128,10 +133,10 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const filtered = filterThreadMessages(messages, tmid);
 			const processed = (await processMessages(filtered)) as IThreadMessage[];
 
-			const pageParam = Math.max(0, total - offset - count);
+			const pageParam = Math.max(0, total - offset - pageSize);
 
 			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
-				pages: [{ items: processed, itemCount: total }],
+				pages: [{ items: processed, itemCount: total, pageSize }],
 				pageParams: [pageParam],
 			});
 		},
@@ -152,7 +157,11 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const cachedData = offset === 0 ? queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey) : undefined;
 			const cachedMessages = cachedData?.pages.at(-1)?.items ?? [];
 
-			const { messages, total } = await getThreadMessages({
+			const {
+				messages,
+				total,
+				count: pageSize,
+			} = await getThreadMessages({
 				tmid,
 				offset,
 				count,
@@ -175,18 +184,20 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			return {
 				items: processed,
 				itemCount: total,
+				pageSize,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
-			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			const stride = lastPage.pageSize ?? count;
+			return lastPageParam > 0 && stride > 0 ? Math.max(0, lastPageParam - stride) : undefined;
 		},
 		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
-			const pageSize = Math.min(firstPage.items.length, count);
-			if (pageSize <= 0) {
+			const stride = firstPage.pageSize ?? Math.min(firstPage.items.length, count);
+			if (stride <= 0) {
 				return undefined;
 			}
-			const next = firstPageParam + pageSize;
+			const next = firstPageParam + stride;
 			return next < firstPage.itemCount ? next : undefined;
 		},
 		select: ({ pages }) => {

@@ -37,19 +37,23 @@ const newestPageIds = idsOf(allReplies.slice(TOTAL - PAGE_SIZE));
 
 type GetThreadMessagesParams = { tmid: string; offset?: number; count?: number; aroundId?: string; sort?: string };
 
-const setup = () => {
+const setup = ({ upperCountLimit = PAGE_SIZE }: { upperCountLimit?: number } = {}) => {
 	const getThreadMessages = jest.fn(({ offset = 0, count = PAGE_SIZE, aroundId }: GetThreadMessagesParams) => {
+		const limit = Math.min(count, upperCountLimit);
+
 		if (aroundId) {
 			const index = allReplies.findIndex(({ _id }) => _id === aroundId);
-			const start = Math.max(0, index - Math.floor(count / 2));
+			const start = Math.max(0, index - Math.floor(limit / 2));
+			const messages = allReplies.slice(start, start + limit);
 
-			return { messages: allReplies.slice(start, start + count), count, offset: start, total: TOTAL };
+			return { messages, count: messages.length, offset: start, total: TOTAL };
 		}
 
 		const end = TOTAL - offset;
-		const start = Math.max(0, end - count);
+		const start = Math.max(0, end - limit);
+		const messages = allReplies.slice(start, end);
 
-		return { messages: allReplies.slice(start, end), count, offset, total: TOTAL };
+		return { messages, count: messages.length, offset, total: TOTAL };
 	});
 
 	const wrapper = mockAppRoot()
@@ -88,6 +92,55 @@ describe('useThreadMessagesQuery', () => {
 
 		await waitFor(() => expect(result.current.hasNextPage).toBe(true));
 		expect(idsOf(result.current.data?.messages ?? [])).toEqual(idsOf(allReplies.slice(0, PAGE_SIZE)));
+	});
+
+	describe('when the server clamps the page size below the requested count', () => {
+		const UPPER_COUNT_LIMIT = 5;
+
+		it('still reports older replies to load', async () => {
+			const { result } = setup({ upperCountLimit: UPPER_COUNT_LIMIT });
+
+			await waitForLoaded(result);
+
+			expect(result.current.data?.messages).toHaveLength(UPPER_COUNT_LIMIT);
+			expect(result.current.hasPreviousPage).toBe(true);
+		});
+
+		it('walks back to the oldest reply without skipping any', async () => {
+			const { result } = setup({ upperCountLimit: UPPER_COUNT_LIMIT });
+
+			await waitForLoaded(result);
+
+			for (let i = 0; i < TOTAL && result.current.hasPreviousPage; i++) {
+				await act(async () => {
+					await result.current.fetchPreviousPage();
+				});
+			}
+
+			expect(idsOf(result.current.data?.messages ?? [])).toEqual(idsOf(allReplies));
+		});
+
+		it('walks forward to the newest reply without skipping any after jumping to an old reply', async () => {
+			const { result } = setup({ upperCountLimit: UPPER_COUNT_LIMIT });
+
+			await waitForLoaded(result);
+
+			await act(async () => {
+				await result.current.loadMessageAround('reply-10');
+			});
+			await waitFor(() => expect(result.current.hasNextPage).toBe(true));
+
+			const [oldestLoadedId] = idsOf(result.current.data?.messages ?? []);
+
+			for (let i = 0; i < TOTAL && result.current.hasNextPage; i++) {
+				await act(async () => {
+					await result.current.fetchNextPage();
+				});
+			}
+
+			const oldestLoadedIndex = allReplies.findIndex(({ _id }) => _id === oldestLoadedId);
+			expect(idsOf(result.current.data?.messages ?? [])).toEqual(idsOf(allReplies.slice(oldestLoadedIndex)));
+		});
 	});
 
 	describe('jumpToRecent', () => {

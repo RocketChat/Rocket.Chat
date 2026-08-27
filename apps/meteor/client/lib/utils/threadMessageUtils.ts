@@ -50,6 +50,7 @@ export const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((me
 export type ThreadMessagesPage = {
 	items: IThreadMessage[];
 	itemCount: number;
+	pageSize?: number;
 };
 
 export type ThreadMessagesInfiniteData = InfiniteData<ThreadMessagesPage, number>;
@@ -106,7 +107,7 @@ export const mutateThreadMessagesInfiniteData = (
 			const take = isLastPage ? items.length - cursor : Math.min(originalPageLengths[pageIndex], items.length - cursor);
 			const slice = items.slice(cursor, cursor + Math.max(0, take));
 			cursor += slice.length;
-			pages.push({ items: slice, itemCount: newTotal });
+			pages.push({ items: slice, itemCount: newTotal, pageSize: old.pages[pageIndex].pageSize });
 		}
 
 		return {
@@ -161,7 +162,7 @@ export const markThreadMessagesAsRead = (messages: IThreadMessage[], until?: Dat
 			return msg;
 		}
 		const { unread: _, ...rest } = msg;
-		return rest as IThreadMessage;
+		return rest;
 	});
 };
 
