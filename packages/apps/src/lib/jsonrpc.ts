@@ -21,6 +21,15 @@
  * exact instance on decode. There is therefore no separate parse/
  * categorization step - the decoder yields ready-to-use instances on both
  * sides, and callers distinguish them with `instanceof`.
+ *
+ * Every message also carries an optional `meta` bag, analogous to HTTP headers
+ * (see {@link JsonRpcMeta}).
+ *
+ * CAVEAT: `meta` does not cross the process boundary yet. Those codecs encode
+ * each message as a positional tuple, and neither of them knows about the slot,
+ * so a `meta` set on a message is dropped on encode. The two codecs are copies
+ * of each other; the slot is added once they are unified into a single
+ * definition. Until then `meta` is an in-process API only.
  */
 
 export type ID = string | number | null;
@@ -28,6 +37,23 @@ export type ID = string | number | null;
 export type Defined = string | number | boolean | object | null;
 
 export type RpcParams = object | Defined[];
+
+/**
+ * Out-of-band metadata that travels with a message, analogous to HTTP headers:
+ * the bridge carries these values and never interprets them. Use it for data
+ * that describes the message rather than the operation it requests, e.g. a
+ * trace id.
+ *
+ * The key set is open on purpose, because the properties we want are still
+ * being defined. Declare a key here once its shape settles:
+ *
+ * ```ts
+ * export type JsonRpcMeta = { traceId?: string } & { [key: string]: Defined | undefined };
+ * ```
+ */
+export type JsonRpcMeta = {
+	[key: string]: Defined | undefined;
+};
 
 const JSONRPC_VERSION = '2.0';
 
@@ -85,12 +111,18 @@ export class RequestObject {
 
 	public declare params?: RpcParams;
 
-	constructor(id: ID, method: string, params?: RpcParams) {
+	public declare meta?: JsonRpcMeta;
+
+	constructor(id: ID, method: string, params?: RpcParams, meta?: JsonRpcMeta) {
 		this.id = id;
 		this.method = method;
 
 		if (params !== undefined) {
 			this.params = params;
+		}
+
+		if (meta !== undefined) {
+			this.meta = meta;
 		}
 	}
 }
@@ -102,11 +134,17 @@ export class NotificationObject {
 
 	public declare params?: RpcParams;
 
-	constructor(method: string, params?: RpcParams) {
+	public declare meta?: JsonRpcMeta;
+
+	constructor(method: string, params?: RpcParams, meta?: JsonRpcMeta) {
 		this.method = method;
 
 		if (params !== undefined) {
 			this.params = params;
+		}
+
+		if (meta !== undefined) {
+			this.meta = meta;
 		}
 	}
 }
@@ -118,9 +156,15 @@ export class SuccessObject {
 
 	public result: Defined;
 
-	constructor(id: ID, result: Defined) {
+	public declare meta?: JsonRpcMeta;
+
+	constructor(id: ID, result: Defined, meta?: JsonRpcMeta) {
 		this.id = id;
 		this.result = result;
+
+		if (meta !== undefined) {
+			this.meta = meta;
+		}
 	}
 }
 
@@ -131,28 +175,34 @@ export class ErrorObject {
 
 	public error: JsonRpcError;
 
-	constructor(id: ID, error: JsonRpcError) {
+	public declare meta?: JsonRpcMeta;
+
+	constructor(id: ID, error: JsonRpcError, meta?: JsonRpcMeta) {
 		this.id = id;
 		this.error = error;
+
+		if (meta !== undefined) {
+			this.meta = meta;
+		}
 	}
 }
 
 export type JsonRpc = RequestObject | NotificationObject | SuccessObject | ErrorObject;
 
-export function request(id: ID, method: string, params?: RpcParams): RequestObject {
-	return new RequestObject(id, method, params);
+export function request(id: ID, method: string, params?: RpcParams, meta?: JsonRpcMeta): RequestObject {
+	return new RequestObject(id, method, params, meta);
 }
 
-export function notification(method: string, params?: RpcParams): NotificationObject {
-	return new NotificationObject(method, params);
+export function notification(method: string, params?: RpcParams, meta?: JsonRpcMeta): NotificationObject {
+	return new NotificationObject(method, params, meta);
 }
 
-export function success(id: ID, result: Defined): SuccessObject {
-	return new SuccessObject(id, result);
+export function success(id: ID, result: Defined, meta?: JsonRpcMeta): SuccessObject {
+	return new SuccessObject(id, result, meta);
 }
 
-export function error(id: ID, err: JsonRpcError): ErrorObject {
-	return new ErrorObject(id, err);
+export function error(id: ID, err: JsonRpcError, meta?: JsonRpcMeta): ErrorObject {
+	return new ErrorObject(id, err, meta);
 }
 
 const jsonrpc = {
