@@ -13,7 +13,7 @@ import ConferenceStatePage from './ConferenceStatePage';
 import ConferenceThreadModal from './ConferenceThreadModal';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import PageLoading from '../root/PageLoading';
-import CallTopBar from './components/CallBar/CallTopBar';
+import CallTopBar from './components/CallTopBar/CallTopBar';
 import CallMembersPanel from './components/CallMembersPanel/CallMembersPanel';
 import CallPanel from './components/CallPanel/CallPanel';
 import CallTimer from './components/CallTimer/CallTimer';
