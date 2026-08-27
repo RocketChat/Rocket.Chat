@@ -89,11 +89,13 @@ export async function bumpNextVersion({
 	}
 
 	core.info('create release');
+	// the release stays a draft until CI publishes all artifacts for the tag
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: prBody,
 		prerelease: newVersion.includes('-'),
+		draft: true,
 		...github.context.repo,
 	});
 }
