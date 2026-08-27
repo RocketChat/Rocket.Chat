@@ -27,4 +27,17 @@ describe('unescapeHTML', () => {
 		expect(unescapeHTML(undefined as unknown as string)).toBe('');
 		expect(unescapeHTML(5 as unknown as string)).toBe('5');
 	});
+
+	it('decodes astral (non-BMP) numeric entities', () => {
+		expect(unescapeHTML('&#128512;')).toBe('😀');
+		expect(unescapeHTML('&#x1F600;')).toBe('😀');
+		expect(unescapeHTML('smile &#128512; here')).toBe('smile 😀 here');
+	});
+
+	it('leaves out-of-range numeric entities untouched', () => {
+		// 999999999 is within the entity length limit but above U+10FFFF, so
+		// String.fromCodePoint would throw; the entity must be returned as-is.
+		expect(unescapeHTML('&#999999999;')).toBe('&#999999999;');
+		expect(unescapeHTML('&#x110000;')).toBe('&#x110000;');
+	});
 });
