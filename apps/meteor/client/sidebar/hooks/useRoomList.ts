@@ -1,8 +1,8 @@
 import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
@@ -19,25 +19,29 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-/** Stable, so the memo below doesn't recompute on every render once the sidebar stops listing incoming calls. */
-const emptyIncomingCalls: ReturnType<typeof useVideoConfIncomingCalls> = [];
+type GroupUnreadInfo = {
+	userMentions: number;
+	groupMentions: number;
+	tunread: string[];
+	tunreadUser: string[];
+	unread: number;
+};
 
-const order = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
+export type SidebarRoomListGroup = {
+	key: string;
+	title: string;
+	translateTitle: boolean;
+	category?: ISidebarCategory;
+	showUnreads: boolean;
+	keepUnreadsOnTop: boolean;
+	collapsed: boolean;
+	rooms: SubscriptionWithRoom[];
+	unreadInfo: GroupUnreadInfo;
+	empty: boolean;
+};
 
 type useRoomListReturnType = {
-	roomList: Array<SubscriptionWithRoom>;
+	groups: SidebarRoomListGroup[];
 	groupsCount: number[];
 	totalCount: number;
 };
@@ -59,12 +63,15 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const inquiries = useQueuedInquiries();
 
-	const incomingCalls = useVideoConfIncomingCalls();
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const categoryList = useCategoryList(showOmnichannel, inquiries.enabled);
 
-	// With the call window, an incoming call is listed with the calls already running — behind the navbar button —
-	// instead of becoming a group of its own at the top of the sidebar.
-	const sidebarIncomingCalls = conferenceWindowEnabled ? emptyIncomingCalls : incomingCalls;
+	const incomingCalls = useVideoConfIncomingCalls();
+
+	// With the call window, a ringing call is listed with the calls already running, behind the navbar button —
+	// so the sidebar keeps no group of its own for it. Reported as no incoming call rather than by dropping the
+	// group: `Incoming_Calls` is a dynamic group, so an empty one is left out, and the room stays in whichever
+	// group it would otherwise be in.
+	const conferenceWindowEnabled = useConferenceWindowEnabled();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
@@ -72,22 +79,16 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 		useMemo(() => {
 			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
 
-			const incomingCall = new Set();
-			const favorite = new Set();
-			const team = new Set();
-			const omnichannel = new Set();
-			const unread = new Set();
-			const channels = new Set();
-			const direct = new Set();
-			const discussion = new Set();
-			const conversation = new Set();
-			const onHold = new Set();
+			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
+			categoryList.forEach((category) => {
+				unfilteredGroups.set(category, new Set<SubscriptionWithRoom>());
+			});
 
 			rooms.forEach((room) => {
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
-						return !!incomingCalls.find((call) => call.rid === rid);
+						return !conferenceWindowEnabled && !!incomingCalls.find((call) => call.rid === rid);
 					},
 				});
 
@@ -95,47 +96,18 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return;
 				}
 
-				if (sidebarIncomingCalls.find((call) => call.rid === room.rid)) {
-					return incomingCall.add(room);
+				const targetGroup = unfilteredGroups.get(roomCategory);
+
+				if (!targetGroup) {
+					return;
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
-					return unread.add(room);
-				}
-
-				if (favoritesEnabled && room.f) {
-					return favorite.add(room);
-				}
-
-				if (sidebarGroupByType && room.teamMain) {
-					return team.add(room);
-				}
-
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
-					return discussion.add(room);
-				}
-
-				if (room.t === 'c' || room.t === 'p') {
-					channels.add(room);
-				}
-
-				if (room.t === 'l' && room.onHold) {
-					return showOmnichannel && onHold.add(room);
-				}
-
-				if (room.t === 'l') {
-					return showOmnichannel && omnichannel.add(room);
-				}
-
-				if (room.t === 'd') {
-					direct.add(room);
-				}
-
-				conversation.add(room);
+				targetGroup.add(room);
 			});
 
-			const groups = new Map<string, Set<any>>();
-			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
+			if (unfilteredGroups.has('Incoming_Livechats')) {
+				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+			}
 
 			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
 
@@ -145,7 +117,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return counter;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					counter.userMentions += room.userMentions || 0;
+					counter.groupMentions += room.groupMentions || 0;
+					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
+					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
+					counter.unread += room.unread || 0;
 
 					if (!room.unread && !room.tunread?.length && room.alert) {
 						counter.unread += 1;
@@ -154,19 +130,58 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return counter;
 				}, emptyUnreadInfo());
 
-			return { groupsCount, groupsList, roomList, groupedUnreadInfo };
+			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
+				const category = customCategories.find(({ _id }) => _id === key);
+
+				const title = category ? category.name : key;
+				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
+				const collapsed = isCollapsed(key);
+				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
+				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
+				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
+				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
+				const allRooms = [...set];
+				// When collapsed, keep unread rooms visible if "Show unreads" is enabled.
+				const unreadRooms = allRooms.filter((room) => showUnreads && isUnreadRoom(room));
+				let displayRooms = collapsed ? unreadRooms : allRooms;
+
+				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
+				// configured sort (activity / a-z) it already has from the subscription query.
+				if (keepUnreadsOnTop) {
+					displayRooms = [...displayRooms.filter(isUnreadRoom), ...displayRooms.filter((room) => !isUnreadRoom(room))];
+				}
+
+				return {
+					key,
+					title,
+					translateTitle,
+					category,
+					showUnreads,
+					keepUnreadsOnTop,
+					collapsed,
+					rooms: displayRooms,
+					// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
+					// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
+					// counters) even collapsed, so the header acts as when open and shows no badge.
+					unreadInfo: collapsed && !showUnreads ? buildUnreadInfo(set) : emptyUnreadInfo(),
+					empty: allRooms.length === 0,
+				};
+			};
+
+			const groups = filterGroupVisibility(unfilteredGroups, hasLicenseModule, makeGroup);
+
+			return groups;
 		}, [
+			categoryList,
 			rooms,
-			showOmnichannel,
-			inquiries.enabled,
-			queue,
-			sidebarShowUnread,
-			favoritesEnabled,
-			sidebarGroupByType,
-			isDiscussionEnabled,
-			sidebarOrder,
+			hasLicenseModule,
 			collapsedGroups,
-			sidebarIncomingCalls,
+			incomingCalls,
+			conferenceWindowEnabled,
+			queue,
+			customCategories,
+			isShowUnreads,
+			isKeepUnreadsOnTop,
 		]),
 		50,
 	);

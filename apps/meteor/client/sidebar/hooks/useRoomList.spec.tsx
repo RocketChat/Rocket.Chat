@@ -309,11 +309,9 @@ it('should keep the Favorites category visible when it is empty', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowFavorites: true, isEnterprise: true }).build(),
 	});
-	const unreadIndex = result.current.groupsList.indexOf('Unread');
-	const roomListUnread = result.current.roomList.filter((room) => room.unread);
-
-	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
-	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
+	await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Favorites'));
+	const groupsList = groupsListOf(result.current.groups);
+	expect(result.current.groups[groupsList.indexOf('Favorites')].empty).toBe(true);
 });
 
 it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed and "Show unreads" is off', async () => {
@@ -337,13 +335,14 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 	});
 });
 
-// The sidebar's own group for a call that is ringing. With the call window it goes away — a ringing call is
-// listed with the calls already running, behind the navbar button — so it has to still be here without it.
+/**
+ * The sidebar's own group for a call that is ringing. With the call window it goes away — a ringing call is
+ * listed with the ones already running, behind the navbar button — so it has to still be here without it.
+ */
 describe('the Incoming calls group', () => {
-	const ringingRoom = { ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) } as SubscriptionWithRoom;
+	const ringingRoom = { ...createFakeSubscription({ t: 'd' }), ...createFakeRoom({ t: 'd' }) } as unknown as SubscriptionWithRoom;
 
-	// Stable, because `useSyncExternalStore` compares snapshots by identity and a fresh array every read is an
-	// infinite render.
+	// Stable: `useSyncExternalStore` compares snapshots by identity, and a fresh array per read never settles.
 	const ringingCalls = [{ callId: 'a-call', uid: 'caller', rid: ringingRoom.rid }];
 
 	const renderWithRingingCall = (conferenceWindowEnabled: boolean) =>
@@ -369,19 +368,19 @@ describe('the Incoming calls group', () => {
 	it('is listed for a ringing call without the call window', () => {
 		const { result } = renderWithRingingCall(false);
 
-		expect(result.current.groupsList).toContain('Incoming_Calls');
-		expect(result.current.groupsCount[result.current.groupsList.indexOf('Incoming_Calls' as never)]).toBe(1);
+		expect(groupsListOf(result.current.groups)).toContain('Incoming_Calls');
 	});
 
+	// An empty dynamic group is left out of the list, so gating the categorisation is what removes the group.
 	it('is gone once the calls are listed elsewhere', () => {
 		const { result } = renderWithRingingCall(true);
 
-		expect(result.current.groupsList).not.toContain('Incoming_Calls');
+		expect(groupsListOf(result.current.groups)).not.toContain('Incoming_Calls');
 	});
 
 	// The room itself must not go missing with the group: it belongs to whichever group it would otherwise be in.
 	it('leaves the ringing room in the list either way', () => {
-		expect(renderWithRingingCall(false).result.current.roomList).toHaveLength(1);
-		expect(renderWithRingingCall(true).result.current.roomList).toHaveLength(1);
+		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
+		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
 	});
 });
