@@ -2,6 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"declaration": true,
+		"rootDir": "./src",
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["./src/**/*.spec.ts", "./jest.config.ts"]

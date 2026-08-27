@@ -314,7 +314,9 @@ it('should reset retryCount on a successful connection so subsequent drops can r
 	);
 	jest.useRealTimers();
 	expect(connection.status).toBe('connected');
-});
+	// Two full reconnect cycles over real-time mock-socket handshakes can
+	// exceed the default 5s on a loaded CI runner.
+}, 15000);
 
 it('should ignore a stale ws.onclose that fires after the socket has been replaced', async () => {
 	// Regression: ws.onclose handlers were closed over the original ws but

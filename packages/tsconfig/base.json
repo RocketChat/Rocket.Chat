@@ -1,14 +1,15 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2022",
 		"module": "commonjs",
 
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
+		"types": ["node", "jest"],
 
 		"strict": true,
 		"allowUnreachableCode": false,

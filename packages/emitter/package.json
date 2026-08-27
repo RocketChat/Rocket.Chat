@@ -41,7 +41,6 @@
 		"jest": "~30.2.0",
 		"prettier": "~3.3.3",
 		"rollup": "~4.62.3",
-		"ts-jest": "~29.4.11",
 		"typescript": "~5.9.3"
 	},
 	"publishConfig": {
