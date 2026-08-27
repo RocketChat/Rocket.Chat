@@ -4,13 +4,13 @@ import { encoder } from './codec';
 import * as jsonrpc from './jsonrpc';
 import type { RequestContext } from './requestContext';
 
-export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
+export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>;
 
-export type NotificationDescriptor = Pick<jsonrpc.NotificationObject, 'method' | 'params'>;
+export type NotificationDescriptor = Pick<jsonrpc.NotificationObject, 'method' | 'params' | 'meta'>;
 
-export type SuccessResponseDescriptor = Pick<jsonrpc.SuccessObject, 'id' | 'result'>;
+export type SuccessResponseDescriptor = Pick<jsonrpc.SuccessObject, 'id' | 'result' | 'meta'>;
 
-export type ErrorResponseDescriptor = Pick<jsonrpc.ErrorObject, 'id' | 'error'>;
+export type ErrorResponseDescriptor = Pick<jsonrpc.ErrorObject, 'id' | 'error' | 'meta'>;
 
 export type JsonRpcRequest = jsonrpc.RequestObject | jsonrpc.NotificationObject;
 export type JsonRpcResponse = jsonrpc.SuccessObject | jsonrpc.ErrorObject;
@@ -137,7 +137,7 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 }
 
 export async function errorResponse(
-	{ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor,
+	{ error: { message, code = -32000, data = {} }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
 ): Promise<void> {
 	const { logger } = req?.context || {};
@@ -146,12 +146,12 @@ export async function errorResponse(
 		data.logs = logger.getLogs();
 	}
 
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data));
+	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
 
 	await Queue.enqueue(rpc);
 }
 
-export async function successResponse({ id, result }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
+export async function successResponse({ id, result, meta }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
 	const payload = { value: result } as Record<string, unknown>;
 	const { logger } = req.context;
 
@@ -159,7 +159,7 @@ export async function successResponse({ id, result }: SuccessResponseDescriptor,
 		payload.logs = logger.getLogs();
 	}
 
-	const rpc = jsonrpc.success(id, payload);
+	const rpc = jsonrpc.success(id, payload, meta);
 
 	await Queue.enqueue(rpc);
 }
@@ -169,7 +169,12 @@ export function pongResponse(): Promise<void> {
 }
 
 export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
-	const request = jsonrpc.request(Math.random().toString(36).slice(2), requestDescriptor.method, requestDescriptor.params);
+	const request = jsonrpc.request(
+		Math.random().toString(36).slice(2),
+		requestDescriptor.method,
+		requestDescriptor.params,
+		requestDescriptor.meta,
+	);
 
 	// TODO: add timeout to this
 	const responsePromise = new Promise((resolve, reject) => {
@@ -189,8 +194,8 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 	return responsePromise as Promise<jsonrpc.SuccessObject>;
 }
 
-export function sendNotification({ method, params }: NotificationDescriptor) {
-	const request = jsonrpc.notification(method, params);
+export function sendNotification({ method, params, meta }: NotificationDescriptor) {
+	const request = jsonrpc.notification(method, params, meta);
 
 	Queue.enqueue(request);
 }
