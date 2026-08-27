@@ -1,6 +1,6 @@
 ---
-'@rocket.chat/models': patch
-'@rocket.chat/meteor': patch
+'@rocket.chat/models': major
+'@rocket.chat/meteor': major
 ---
 
-Adds migration to remove redundant statistics index after TTL index consolidation.
+Removes the redundant descending `createdAt` index from the `statistics` collection, already covered by the TTL index on the same field
