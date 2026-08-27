@@ -4,10 +4,16 @@ import { useThemeMode } from '@rocket.chat/ui-client';
 import { codeBlock } from '../lib/codeBlockStyles';
 
 // dark-alpha only: the app shell must not paint over <body>, so the body
-// background (the theme anchor) shows through the translucent surfaces
+// background (the theme anchor) shows through the translucent surfaces.
+// Elevated surfaces are translucent veils, so they blur whatever sits
+// behind them to stay legible over arbitrary content.
 const darkAlphaShell = `#rocket-chat.menu-nav {
 	/* !important to outweigh the Box backgroundColor prop's css-in-js rule */
 	background-color: transparent !important;
+}
+.rcx-tile {
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
 }`;
 
 export const MainLayoutStyleTags = () => {
