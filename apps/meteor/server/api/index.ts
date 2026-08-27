@@ -49,6 +49,7 @@ import './v1/moderation';
 import './v1/uploads';
 import './v1/twoFactorChallenges';
 import './v1/loginCode';
+import './experimental/rooms.setCategory';
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';
 
