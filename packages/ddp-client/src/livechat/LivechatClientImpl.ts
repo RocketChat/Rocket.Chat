@@ -8,6 +8,7 @@ import { ConnectionImpl } from '../Connection';
 import { DDPDispatcher } from '../DDPDispatcher';
 import { DDPSDK } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
+import type { LivechatDepartmentTransferResponse } from './types/livechatRoutes';
 import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
 import type { DDPDispatchOptions } from '../types/DDPClient';
@@ -198,17 +199,17 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	// API POST
 
-	transferChat({
-		rid,
-		department,
-	}: {
-		rid: string;
-		department: string;
-	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>> {
+	transferChat({ rid, department }: { rid: string; department: string }): Promise<LivechatDepartmentTransferResponse> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
-		return this.rest.post('/v1/livechat/visitor/department.transfer', { rid, token: this.token, department });
+		// typed by the migrated implementation inside the meteor app (see
+		// types/livechatRoutes.ts); the standalone `Endpoints` map no longer
+		// accepts this path, so the call goes through a widened view
+		return (this.rest as unknown as { post: (endpoint: string, params?: unknown) => Promise<unknown> }).post(
+			'/v1/livechat/visitor/department.transfer',
+			{ rid, token: this.token, department },
+		) as Promise<LivechatDepartmentTransferResponse>;
 	}
 
 	async grantVisitor(

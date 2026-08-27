@@ -1,20 +1,7 @@
-import type {
-	IMessage,
-	IRoom,
-	IRoomAbacRedaction,
-	IUser,
-	RoomAdminFieldsType,
-	IUpload,
-	IE2EEMessage,
-	ITeam,
-	ISubscription,
-	RequiredField,
-	MessageTypesValues,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, IE2EEMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -519,8 +506,6 @@ export type Notifications = {
 	emailNotifications?: string;
 };
 
-type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
-
 type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
 
 const RoomsMuteUnmuteUserSchema = {
@@ -891,80 +876,13 @@ const roomsInvitePropsSchema = {
 export const isRoomsInviteProps = ajv.compile<RoomsInviteProps>(roomsInvitePropsSchema);
 
 export type RoomsEndpoints = {
-	'/v1/rooms.autocomplete.channelAndPrivate': {
-		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
-			items: IRoom[];
-		};
-	};
-
-	'/v1/rooms.autocomplete.channelAndPrivate.withPagination': {
-		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => {
-			items: IRoom[];
-			total: number;
-		};
-	};
-
-	'/v1/rooms.autocomplete.availableForTeams': {
-		GET: (params: RoomsAutocompleteAvailableForTeamsProps) => {
-			items: IRoom[];
-		};
-	};
-	'/v1/rooms.autocomplete.adminRooms': {
-		GET: (params: RoomsAutocompleteAdminRoomsPayload) => {
-			items: IRoom[];
-		};
-	};
-
-	'/v1/rooms.info': {
-		GET: (params: RoomsInfoProps) => {
-			room: IRoom | undefined;
-			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
-			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
-		};
-	};
-
-	'/v1/rooms.cleanHistory': {
-		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
-	};
-
-	'/v1/rooms.createDiscussion': {
-		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom & { rid: IRoom['_id'] };
-		};
-	};
-
-	'/v1/rooms.export': {
-		POST: (params: RoomsExportProps) => {
-			missing?: string[];
-			success: boolean;
-		} | void;
-	};
-
-	'/v1/rooms.adminRooms': {
-		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction> }>;
-	};
-
-	'/v1/rooms.adminRooms.getRoom': {
-		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction;
-	};
-
-	'/v1/rooms.saveRoomSettings': {
-		POST: (params: RoomsSaveRoomSettingsProps) => {
-			success: boolean;
-			rid: string;
-		};
-	};
-
-	'/v1/rooms.changeArchivationState': {
-		POST: (params: RoomsChangeArchivationStateProps) => {
-			success: boolean;
-		};
-	};
-
+	// Routes still registered via the legacy API.v1.addRoute (not the validated
+	// builder) keep their declarations here until they are migrated. Every
+	// other /v1/rooms.* route is typed by its migrated implementation
+	// (apps/meteor/server/api/v1/rooms.ts) via ExtractRoutesFromAPI.
 	'/v1/rooms.media/:rid': {
 		POST: (params: { file: File }) => { file: { url: string } };
 	};
-
 	'/v1/rooms.mediaConfirm/:rid/:fileId': {
 		POST: (params: {
 			description?: string;
@@ -982,80 +900,5 @@ export type RoomsEndpoints = {
 		}) => {
 			message: IMessage | null;
 		};
-	};
-
-	'/v1/rooms.nameExists': {
-		GET: (params: { roomName: string }) => {
-			exists: boolean;
-		};
-	};
-
-	'/v1/rooms.get': {
-		GET: (params: { updatedSince: string }) => {
-			update: IRoom[];
-			remove: IRoom[];
-		};
-	};
-
-	'/v1/rooms.getDiscussions': {
-		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
-			discussions: IRoom[];
-		}>;
-	};
-
-	'/v1/rooms.isMember': {
-		GET: (params: RoomsIsMemberProps) => { isMember: boolean };
-	};
-
-	'/v1/rooms.muteUser': {
-		POST: (params: RoomsMuteUnmuteUser) => void;
-	};
-
-	'/v1/rooms.unmuteUser': {
-		POST: (params: RoomsMuteUnmuteUser) => void;
-	};
-
-	'/v1/rooms.banUser': {
-		POST: (params: RoomsBanUserProps) => void;
-	};
-
-	'/v1/rooms.unbanUser': {
-		POST: (params: RoomsUnbanUserProps) => void;
-	};
-
-	'/v1/rooms.bannedUsers': {
-		GET: (params: RoomsBannedUsersProps) => PaginatedResult<{
-			bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, 'username'>[];
-		}>;
-	};
-
-	'/v1/rooms.images': {
-		GET: (params: RoomsImagesProps) => PaginatedResult<{
-			files: IUpload[];
-		}>;
-	};
-
-	'/v1/rooms.open': {
-		POST: (params: RoomsOpenProps) => void;
-	};
-
-	'/v1/rooms.join': {
-		POST: (params: RoomsJoinProps) => {
-			room: IRoom;
-		};
-	};
-
-	'/v1/rooms.membersOrderedByRole': {
-		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
-			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
-		}>;
-	};
-
-	'/v1/rooms.hide': {
-		POST: (params: RoomsHideProps) => void;
-	};
-
-	'/v1/rooms.invite': {
-		POST: (params: RoomsInviteProps) => void;
 	};
 };

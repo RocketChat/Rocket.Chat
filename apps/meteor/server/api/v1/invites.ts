@@ -18,7 +18,7 @@ import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-const removeInviteResponseSchema = ajv.compile({
+const removeInviteResponseSchema = ajv.compile<boolean>({
 	type: 'boolean',
 	enum: [true],
 });
@@ -111,7 +111,7 @@ const invites = API.v1
 			authRequired: true,
 			body: isFindOrCreateInviteParams,
 			response: {
-				200: ajv.compile({
+				200: ajv.compile<IInvite>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {

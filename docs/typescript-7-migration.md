@@ -111,17 +111,36 @@ Unpinning any of these is just a version bump once its tool supports TS7.
 
 ## Canary status
 
-At the time of this migration the canary (`scripts/ts7-typecheck.sh`) is
-green for 72 of 73 workspace tsconfigs. The one red package is
-`apps/meteor`, with a single root cause repeated ~140 times: TS7 rejects the
-`Endpoints` interface simultaneously extending the legacy `ChatEndpoints`
-from `@rocket.chat/rest-typings` and the `ExtractRoutesFromAPI` augmentation
-that the migrated chat endpoints declare (error TS2320) — the two
-declarations of the `/v1/chat.*` routes are no longer considered identical.
-Resolving it means finishing the chat portion of the
-[API endpoint migration](api-endpoint-migration.md) so each route is
-declared exactly once. TS5.9 tolerated the duplicate; nothing behaves
-differently at runtime.
+The canary (`scripts/ts7-typecheck.sh`) is green for all 73 workspace
+tsconfigs. TS7 rejects the `Endpoints` interface simultaneously extending a
+legacy hand-written family type from `@rocket.chat/rest-typings` and the
+`ExtractRoutesFromAPI` augmentation the migrated implementation declares
+(error TS2320) when the two declarations differ; TS5.9 tolerated it. The
+dedup resolved this by making the augmentation authoritative wherever one
+exists:
+
+- Every migrated route is typed only by its `ExtractRoutesFromAPI`
+  augmentation — the hand-written declarations were deleted from
+  rest-typings (chat, dm/im, e2e, emoji-custom, invites, push, roles,
+  rooms, teams families and the omnichannel department-transfer route).
+  Standalone registrations (`API.v1.get(...)` calls outside a builder
+  chain, e.g. most `/v1/rooms.*`) are captured into named consts and
+  intersected into the family's extracted type. Where the extracted emit
+  was weaker than the old hand-written claim, the route's own schemas were
+  strengthened (typed `ajv.compile` generics, query validators); where the
+  old claim was a lie (e.g. `roles.list` never returns `_updatedAt` — the
+  projection strips it), the consumers were fixed to the truthful type.
+- Only routes still registered via the legacy `API.v1.addRoute`
+  (`/v1/rooms.media/:rid`, `/v1/rooms.mediaConfirm/:rid/:fileId`,
+  `/v1/chat.getMessageReadReceipts`, `/v1/im.kick`, ...) keep their
+  rest-typings declarations, until they are migrated.
+- Standalone packages that consume migrated routes without seeing the
+  meteor augmentation carry their own minimal local contracts mirroring
+  the server responses: `ddp-client` (legacy SDK `types/legacyChatRoutes.ts`
+  for the chat routes, `rooms.info` and `im.create`; livechat SDK
+  `types/livechatRoutes.ts` for `department.transfer`) and
+  `fuselage-ui-kit` (locally-typed `useEndpoint` wrappers for `rooms.info`
+  and `rooms.autocomplete.channelAndPrivate`).
 
 ## Follow-ups
 
@@ -129,5 +148,8 @@ differently at runtime.
   TS6-bridge) support and drop the pins.
 - Move the typia toolchain to a released `typescript@7` binary instead of
   `@typescript/native-preview` once ttsc resolves it directly.
-- Burn down the remaining red packages in the TS7 canary until it can become
-  a blocking check.
+- The canary is fully green — consider making it a blocking check.
+- Migrate the remaining legacy `API.v1.addRoute` routes, deleting each
+  rest-typings declaration as its extraction becomes authoritative, and
+  fold the standalone packages' local contracts back into a shared source
+  once the extracted route types are publishable outside the meteor app.

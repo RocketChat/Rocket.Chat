@@ -1,8 +1,9 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
@@ -435,7 +436,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
-const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offset: number; total: number }>({
+const dmFilesResponseSchema = ajv.compile<PaginatedResult<{ files: IUploadWithUser[] }>>({
 	type: 'object',
 	properties: {
 		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
@@ -502,7 +503,13 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		});
 	};
 
-const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; offset: number; total: number }>({
+const dmMembersResponseSchema = ajv.compile<
+	PaginatedResult<{
+		members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'freeSwitchExtension'> & {
+			subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
+		})[];
+	}>
+>({
 	type: 'object',
 	properties: {
 		members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser + subscription info

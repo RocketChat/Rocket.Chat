@@ -6,36 +6,18 @@ import { minutesToMilliseconds } from 'date-fns';
 
 import { roomsQueryKeys } from '../lib/queryKeys';
 
-type UseRoomInfoEndpointOptions<
-	TData = Serialized<{
-		room: IRoom | undefined;
-		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
-		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
-	}>,
-> = Omit<
-	UseQueryOptions<
-		Serialized<{
-			room: IRoom | undefined;
-			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
-			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
-		}>,
-		{ success: boolean; error: string },
-		TData,
-		ReturnType<typeof roomsQueryKeys.info>
-	>,
+type RoomInfoResponse = Serialized<{
+	room: IRoom | null;
+	parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't'> & Partial<Pick<IRoom, 'prid' | 'u'>>;
+	team?: Pick<ITeam, 'name' | 'roomId' | 'type'>;
+}>;
+
+type UseRoomInfoEndpointOptions<TData = RoomInfoResponse> = Omit<
+	UseQueryOptions<RoomInfoResponse, { success: boolean; error: string }, TData, ReturnType<typeof roomsQueryKeys.info>>,
 	'queryKey' | 'queryFn'
 >;
 
-export const useRoomInfoEndpoint = <
-	TData = Serialized<{
-		room: IRoom | undefined;
-		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
-		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
-	}>,
->(
-	rid: IRoom['_id'],
-	options?: UseRoomInfoEndpointOptions<TData>,
-) => {
+export const useRoomInfoEndpoint = <TData = RoomInfoResponse>(rid: IRoom['_id'], options?: UseRoomInfoEndpointOptions<TData>) => {
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const uid = useUserId();
 	return useQuery({

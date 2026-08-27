@@ -71,10 +71,8 @@ export const useE2EERoomAction = () => {
 	});
 
 	const handleToogleE2E = async () => {
-		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
-		if (!success) {
-			return;
-		}
+		// the endpoint client throws on a failed request, so reaching this point means success
+		await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 
 		imperativeModal.close();
 

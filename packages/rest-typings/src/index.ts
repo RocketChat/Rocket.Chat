@@ -15,17 +15,14 @@ import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
-import type { ImEndpoints, DmEndpoints } from './v1/dm';
-import type { E2eEndpoints } from './v1/e2e';
+import type { ImEndpoints } from './v1/dm';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
-import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { FederationEndpoints } from './v1/federation';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
 import type { InstancesEndpoints } from './v1/instances';
 import type { IntegrationsEndpoints } from './v1/integrations';
 import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
-import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MailerEndpoints } from './v1/mailer';
@@ -34,8 +31,6 @@ import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PresenceEndpoints } from './v1/presence';
-import type { PushEndpoints } from './v1/push';
-import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
@@ -46,6 +41,11 @@ import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
+// Families fully typed by their migrated implementations (via
+// ExtractRoutesFromAPI module augmentation in apps/meteor/server/api/v1)
+// have no entry here: dm, e2e, emoji-custom, invites, push, roles. Others
+// (chat, im, rooms) keep only their legacy API.v1.addRoute declarations.
+// See docs/typescript-7-migration.md.
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends AISearchEndpoints,
@@ -58,15 +58,11 @@ export interface Endpoints
 		CloudEndpoints,
 		CommandsEndpoints,
 		CustomUserStatusEndpoints,
-		DmEndpoints,
 		DirectoryEndpoint,
-		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
-		PushEndpoints,
-		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
 		UsersEndpoints,
@@ -80,8 +76,6 @@ export interface Endpoints
 		IntegrationsEndpoints,
 		IntegrationHooksEndpoints,
 		VideoConferenceEndpoints,
-		InvitesEndpoints,
-		E2eEndpoints,
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,

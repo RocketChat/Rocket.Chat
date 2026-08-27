@@ -33,7 +33,7 @@ echo "Using $(node "$TSC" --version 2>/dev/null || "$TSC" --version)"
 
 total_pkgs=0
 green=0
-declare -a FAILED
+declare -a FAILED=()
 
 for tsconfig in packages/*/tsconfig.json ee/packages/*/tsconfig.json ee/apps/*/tsconfig.json apps/*/tsconfig.json; do
 	[ -f "$tsconfig" ] || continue

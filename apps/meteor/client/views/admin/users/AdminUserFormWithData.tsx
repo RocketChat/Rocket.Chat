@@ -11,7 +11,7 @@ export type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	context: string;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	roleError: Error | null;
 };
 

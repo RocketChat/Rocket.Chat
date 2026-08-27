@@ -130,7 +130,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		const params = {
 			name,
 			members,
-			type: isPrivate ? 1 : 0,
+			type: isPrivate ? (1 as const) : (0 as const),
 			room: {
 				readOnly,
 				extraData: {
