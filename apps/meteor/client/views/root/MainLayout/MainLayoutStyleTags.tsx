@@ -14,6 +14,16 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 .rcx-tile {
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
+}
+/* the group bar repaints the sidebar's alpha veil, double-compositing into
+   a darker stripe — let the sidebar's own background show through */
+.rcx-sidebar-v2-collapse-group__bar {
+	--rcx-sidebar-color-surface-default: transparent;
+}
+/* inputs default to surface-light (the elevated glass); tone them down */
+#rocket-chat,
+.rcx-tile {
+	--rcx-input-colors-background-color: rgba(255, 255, 255, 0.04);
 }`;
 
 export const MainLayoutStyleTags = () => {
