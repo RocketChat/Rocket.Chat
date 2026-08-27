@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody, Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -130,8 +130,9 @@ function ImportHistoryPage() {
 					)}
 				</ButtonGroup>
 			</PageHeader>
-			<PageScrollableContentWithShadow>
-				<Table fixed data-qa-id='ImportTable'>
+			<PageScrollableContentWithShadow >
+				<Box overflow="auto">
+				<Table data-qa-id='ImportTable' fixed={false}>
 					<TableHead>
 						<TableRow>
 							<TableCell is='th' rowSpan={2} width='x140'>
@@ -148,7 +149,7 @@ function ImportHistoryPage() {
 									<TableCell is='th' rowSpan={2}>
 										{t('File')}
 									</TableCell>
-									<TableCell is='th' align='center' colSpan={4} width='x320'>
+									<TableCell is='th' align='center' colSpan={5} width='x320'>
 										{t('Counters')}
 									</TableCell>
 								</>
@@ -196,6 +197,7 @@ function ImportHistoryPage() {
 						)}
 					</TableBody>
 				</Table>
+				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
 	);
