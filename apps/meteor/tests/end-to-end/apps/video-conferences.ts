@@ -1008,5 +1008,96 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 		});
+
+		describe('[Join Permission]', () => {
+			let joinPermissionRoomId: string;
+			let regularUser: Awaited<ReturnType<typeof createUser>>;
+			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+			let callId: string | undefined;
+
+			before(async () => {
+				regularUser = await createUser({ username: `join.permission.user.${Date.now()}`, roles: ['user'] });
+				regularUserCredentials = await login(regularUser.username, password);
+
+				const roomRes = await createRoom({
+					type: 'c',
+					name: `join-permission-channel-${Date.now()}`,
+					username: undefined,
+					members: [regularUser.username],
+					credentials,
+				});
+				joinPermissionRoomId = roomRes.body.channel._id;
+
+				await updateSetting('VideoConf_Default_Provider', 'test');
+
+				const startRes = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId: joinPermissionRoomId,
+				});
+				callId = startRes.body.data.callId;
+			});
+
+			after(() =>
+				Promise.all([
+					...(joinPermissionRoomId ? [deleteRoom({ type: 'c', roomId: joinPermissionRoomId })] : []),
+					deleteUser(regularUser),
+					updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator', 'user']),
+				]),
+			);
+
+			it('should fail to join a call as a regular user with neither call-management nor videoconf-join-call', async () => {
+				await Promise.all([
+					updatePermission('call-management', ['admin', 'owner', 'moderator']),
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator']),
+				]);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+					});
+			});
+
+			it('should join a call as a regular user with only videoconf-join-call, but still fail to start one', async () => {
+				await updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator', 'user']);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+
+				await request
+					.post(api('video-conference.start'))
+					.set(regularUserCredentials)
+					.send({ roomId: joinPermissionRoomId })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+					});
+			});
+
+			it('should join a call as a regular user with only call-management', async () => {
+				await Promise.all([
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator']),
+					updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+				]);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+			});
+		});
 	});
 });
