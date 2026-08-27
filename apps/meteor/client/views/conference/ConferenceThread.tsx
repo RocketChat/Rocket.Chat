@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import { lazy, Suspense, useMemo } from 'react';
 
-import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceThreadChat from './ConferenceThreadChat';
+import ConferenceChatNotShared from './components/ConferenceChatNotShared/ConferenceChatNotShared';
 import { narrowRoomStyle } from './panelStyles';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import RoomSkeleton from '../room/RoomSkeleton';

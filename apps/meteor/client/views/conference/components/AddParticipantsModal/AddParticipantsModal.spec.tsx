@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import AddParticipantsModal from './AddParticipantsModal';
-import { createFakeRoom } from '../../../tests/mocks/data';
-import { Rooms } from '../../stores';
+import { createFakeRoom } from '../../../../../tests/mocks/data';
+import { Rooms } from '../../../../stores';
 
 // The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
 // at the dispatch instead of in the DOM.
