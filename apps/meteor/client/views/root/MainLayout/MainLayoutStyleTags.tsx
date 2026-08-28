@@ -33,8 +33,8 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 	   placeholder/icon/fill); the solid stroke-highlight focus border is
 	   the one load-bearing ring (5.6:1), so the 2px focus halo goes to
 	   keep a single outline. */
-	--rcx-input-colors-background-color: #101113;
-	--rcx-input-colors-disabled-background-color: #101113;
+	--rcx-input-colors-background-color: rgba(0, 0, 0, 0.35);
+	--rcx-input-colors-disabled-background-color: rgba(0, 0, 0, 0.35);
 	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.08);
 	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.16);
 	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.16);
@@ -42,12 +42,20 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 	--rcx-input-colors-focus-shadow-color: transparent;
 }
 .rcx-input-box__wrapper.rcx-input-box__wrapper {
-	background-color: #101113 !important;
+	background-color: rgba(0, 0, 0, 0.35) !important;
 }
 /* the inset sells the "cut into" depth that lets an 8% border suffice —
    part of the field recipe (fill + stroke + inset), forbidden elsewhere */
 .rcx-input-box__wrapper.rcx-input-box__wrapper:not(:focus-within) {
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+/* alpha veils are not idempotent: exactly ONE painter per region. The
+   app-level sidebar wrapper Box paints the T1 veil once; every nested
+   Fuselage element that repaints surface-sidebar goes transparent. */
+.rcx-sidebar--main.rcx-sidebar--main,
+.rcx-sidebar-v2-collapse-group__bar,
+.rcx-sidebar-v2-footer {
+	background-color: transparent !important;
 }`;
 
 export const MainLayoutStyleTags = () => {
