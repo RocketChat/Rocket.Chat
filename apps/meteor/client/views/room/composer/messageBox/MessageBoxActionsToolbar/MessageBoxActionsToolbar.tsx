@@ -13,7 +13,6 @@ import { useFileUploadAction } from './hooks/useFileUploadAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
-import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
@@ -59,7 +58,6 @@ const MessageBoxActionsToolbar = ({
 	const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(disableBasicActions);
 	const fileUploadAction = useFileUploadAction(disableBasicActions);
-	const webdavActions = useWebdavActions(disableBasicActions);
 	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
 	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
@@ -74,7 +72,6 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
-		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
 
 	const featured = [];
@@ -93,10 +90,6 @@ const MessageBoxActionsToolbar = ({
 		createNew.push(allActions.videoMessageAction);
 	} else {
 		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
-	}
-
-	if (allActions.webdavActions) {
-		createNew.push(...allActions.webdavActions);
 	}
 
 	share.push(allActions.shareLocationAction);

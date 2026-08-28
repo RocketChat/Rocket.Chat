@@ -56,7 +56,6 @@ import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
-import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';
@@ -2149,8 +2148,6 @@ API.v1.post(
 		}
 
 		await verifyEmail(user, token);
-
-		await runAfterVerifyEmail(user._id);
 
 		return API.v1.success();
 	},

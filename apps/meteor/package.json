@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/meteor",
-	"version": "8.9.0-develop",
+	"version": "9.0.0-develop",
 	"private": true,
 	"description": "The Ultimate Open Source WebChat Platform",
 	"keywords": [
@@ -52,7 +52,6 @@
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\"",
 		"test": "yarn testunit && yarn testapi",
 		"test:e2e": "playwright test",
-		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts",
 		"test:e2e:nyc": "nyc report --reporter=lcovonly",
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testapi:livechat": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.livechat.js",
@@ -69,8 +68,6 @@
 		"@aws-sdk/client-s3": "^3.862.0",
 		"@aws-sdk/lib-storage": "^3.862.0",
 		"@aws-sdk/s3-request-presigner": "^3.862.0",
-		"@babel/core": "~7.29.7",
-		"@babel/preset-env": "~7.29.7",
 		"@babel/runtime": "~7.29.7",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
@@ -316,7 +313,6 @@
 		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
 		"virtua": "^0.49.3",
-		"webdav": "^4.11.5",
 		"xml-crypto": "~6.1.2",
 		"xml-encryption": "~4.0.1",
 		"xml2js": "~0.6.2",

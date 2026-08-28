@@ -262,7 +262,7 @@ export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
-export * from './v1/federation';
+export type * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';
