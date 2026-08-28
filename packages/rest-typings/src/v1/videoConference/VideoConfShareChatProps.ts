@@ -5,8 +5,12 @@ import { ajv } from '../Ajv';
 
 export type VideoConfShareChatProps = {
 	callId: string;
-	/** When omitted the room's own rules decide; `invite` is rejected for rooms that can't take new members. */
-	mode?: VideoConferenceChatAccessMode;
+	/**
+	 * How to give the members without access to the chat: bring them into the room, or move the chat to a
+	 * discussion. Required — which of the two leads is a choice the caller makes and shows, so the endpoint
+	 * does not guess. `invite` is rejected for rooms that can't take new members.
+	 */
+	mode: VideoConferenceChatAccessMode;
 };
 
 const videoConfShareChatPropsSchema: JSONSchemaType<VideoConfShareChatProps> = {
@@ -19,10 +23,9 @@ const videoConfShareChatPropsSchema: JSONSchemaType<VideoConfShareChatProps> = {
 		mode: {
 			type: 'string',
 			enum: ['invite', 'discussion'],
-			nullable: true,
 		},
 	},
-	required: ['callId'],
+	required: ['callId', 'mode'],
 	additionalProperties: false,
 };
 

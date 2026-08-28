@@ -470,7 +470,9 @@ API.v1.post(
 		// Adding is open to anyone with access to the conference; the ring that usually accompanies it needs the
 		// same permission `video-conference.start` demands, and degrades silently without it — same as `start`.
 		const added = await VideoConf.addMembers(conference.userId, callId, users, {
-			ring: (ring ?? true) && (await hasPermissionAsync(this.userId, 'videoconf-ring-users')),
+			// Not ringing unless asked: adding someone to a call in progress is often to have them join when
+			// they can, and an unrequested ring is an interruption nobody chose.
+			ring: (ring ?? false) && (await hasPermissionAsync(this.userId, 'videoconf-ring-users')),
 		});
 
 		return API.v1.success({ added });

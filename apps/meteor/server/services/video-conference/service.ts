@@ -75,7 +75,6 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
-import { videoConfPresence } from '../../lib/videoConfPresence';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
@@ -1673,23 +1672,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					continue;
 				}
 
-				// A provider that can say who is in its room is asked first, and its answer renews leases the same
-				// way a client's heartbeat does. Silence is not absence: `undefined` leaves the leases as they are.
-				// A probe that fails is silence too — per the probe contract it should already answer `undefined`,
-				// but an unreachable provider must not stop this call's leases being judged on their own evidence.
-				const present = await videoConfPresence
-					.getProbe(call.providerName)?.(call)
-					.catch((err) => {
-						logger.warn({ msg: 'Video conference presence probe failed', callId: call._id, providerName: call.providerName, err });
-						return undefined;
-					});
-				const users = present ? call.users.map((user) => (present.includes(user._id) ? { ...user, lastSeenAt: now } : user)) : call.users;
-
-				if (present?.length) {
-					await VideoConferenceModel.renewUsersPresenceById(call._id, present, now);
-				}
-
-				const expired = expiredPresenceLeases(users, now);
+				const expired = expiredPresenceLeases(call.users, now);
 				if (!expired.length) {
 					continue;
 				}
@@ -1707,7 +1690,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 				// No second grace period: the lease *was* the grace period, and it is far longer than the one a
 				// reported departure gets. Anyone who came back renewed it and is not in `expired` at all.
-				const remaining = users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
+				const remaining = call.users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
 				if (!remaining.some(isInVideoConference)) {
 					await this.endCall(call._id);
 				}
@@ -1940,9 +1923,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private getPersistentChatMode(): 'thread' | 'main_room' {
-		// 'main_room' is the historical behavior — a discussion off the main room — and is what a workspace that
-		// enabled persistent chat before the mode existed must keep getting.
-		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
+		// Matches the setting's own default, so an unset value behaves the same as a freshly registered one.
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
 	}
 
 	/**
