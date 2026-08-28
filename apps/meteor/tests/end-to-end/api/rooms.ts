@@ -5467,6 +5467,98 @@ describe('[/rooms.history]', () => {
 		await deleteRoom({ type: 'c', roomId: discussion.body.discussion._id });
 	});
 
+	it('should build a window around `aroundId` and expose both cursors', async () => {
+		const target = messageIds[Math.floor(messageCount / 2)];
+
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: target, count: 5 })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body.messages).to.have.lengthOf(5);
+		expect(res.body.messages.map((m: IMessage) => m._id)).to.include(target);
+
+		// the only request shape that can report more in both directions at once
+		expect(res.body.cursor.previous).to.be.a('string');
+		expect(res.body.cursor.next).to.be.a('string');
+
+		const timestamps = res.body.messages.map((m: IMessage) => new Date(m.ts).getTime());
+		expect(timestamps).to.deep.equal([...timestamps].sort((a, b) => b - a));
+	});
+
+	it('should close the cursors at the edges of the room', async () => {
+		const newest = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[messageCount - 1], count: 5 })
+			.expect(200);
+
+		expect(newest.body.cursor.next).to.be.null;
+		expect(newest.body.cursor.previous).to.be.a('string');
+
+		const oldest = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[0], count: 5 })
+			.expect(200);
+
+		expect(oldest.body.cursor.previous).to.be.null;
+		expect(oldest.body.cursor.next).to.be.a('string');
+	});
+
+	it('should page in both directions from a window built by `aroundId`', async () => {
+		const around = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[Math.floor(messageCount / 2)], count: 5 })
+			.expect(200);
+
+		const windowIds = around.body.messages.map((m: IMessage) => m._id);
+
+		const [older, newer] = await Promise.all([
+			request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, previous: around.body.cursor.previous, count: 5 })
+				.expect(200),
+			request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: around.body.cursor.next, count: 5 })
+				.expect(200),
+		]);
+
+		const olderIds = older.body.messages.map((m: IMessage) => m._id);
+		const newerIds = newer.body.messages.map((m: IMessage) => m._id);
+
+		expect(olderIds.filter((id: string) => windowIds.includes(id))).to.be.empty;
+		expect(newerIds.filter((id: string) => windowIds.includes(id))).to.be.empty;
+	});
+
+	it('should fail when `aroundId` is combined with a cursor', async () => {
+		await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[0], previous: '1' })
+			.expect(400);
+	});
+
+	it('should not find a message that belongs to another room', async () => {
+		const other = (await createRoom({ type: 'c', name: `rooms-history-other-${Date.now()}` })).body.channel;
+		const stray = await sendMessage({ message: { rid: other._id, msg: 'stray message' } });
+
+		await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: stray.body.message._id })
+			.expect(404);
+
+		await deleteRoom({ type: 'c', roomId: other._id });
+	});
+
 	it('should fail when both cursors are provided', async () => {
 		const res = await request
 			.get(api('rooms.history'))

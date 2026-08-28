@@ -1769,7 +1769,7 @@ export const roomEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, next, previous, lastSeen, showThreadMessages = true } = this.queryParams;
+			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
 			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
 			// honors the API_Upper_Count_Limit cap.
 			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
@@ -1794,10 +1794,17 @@ export const roomEndpoints = API.v1
 				return API.v1.forbidden();
 			}
 
+			const around = aroundId ? await Messages.findOneById(aroundId) : undefined;
+
+			if (aroundId && around?.rid !== roomId) {
+				return API.v1.notFound();
+			}
+
 			const result = await loadRoomHistory({
 				userId: this.userId,
 				next,
 				previous,
+				around: around ?? undefined,
 				lastSeen: lastSeen ? new Date(lastSeen) : undefined,
 				count,
 				showThreadMessages,
