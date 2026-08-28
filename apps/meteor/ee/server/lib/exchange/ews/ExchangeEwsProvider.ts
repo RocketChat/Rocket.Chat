@@ -1,8 +1,8 @@
 import type { IEwsTransport } from './IEwsTransport';
 import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
-import { findFolderRequest, getItemRequest, getUserAvailabilityRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
+import { findFolderRequest, findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { BusyBlock, DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 
@@ -53,51 +53,42 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 	}
 
-	/** `window` is unused: `SyncFolderItems` syncs a folder, not a time range. The contract allows a superset. */
-	public async listEvents(mailbox: string, _window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
+	public async listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
 		const folderId = await this.resolveFolderId(mailbox, 'calendar');
 
 		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, folderId, cursor)));
 
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
-
+		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
 		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
+		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
 
-		const deletions: ExchangeEvent[] = allByTag(doc, TYPES_NS, 'Delete')
-			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
-			.filter((id): id is string => Boolean(id))
-			.map((externalId) => ({ kind: 'deleted', externalId }));
-
-		// A sync page carries ids only, so detail needs a second call.
-		const changedIds = ['Create', 'Update']
-			.flatMap((tag) => allByTag(doc, TYPES_NS, tag))
-			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
-			.filter((id): id is string => Boolean(id));
-
-		const upserts = changedIds.length ? await this.loadItems(mailbox, changedIds) : [];
+		if (!changed) {
+			return { items: [], cursor: syncState, hasMore: !includesLastItem, isCompleteForWindow: false };
+		}
 
 		return {
-			items: [...upserts, ...deletions],
+			items: await this.snapshotWindow(mailbox, folderId, window),
 			cursor: syncState,
 			hasMore: !includesLastItem,
+			isCompleteForWindow: true,
 		};
 	}
 
-	public async getFreeBusy(mailbox: string, window: DateRange): Promise<BusyBlock[]> {
-		const doc = parseEwsResponse(await this.transport.post(getUserAvailabilityRequest(mailbox, window.start, window.end)));
+	/**
+	 * The delta is a change probe, not a source of items. What it reports cannot be used directly: a changed
+	 * series arrives as its master rather than as occurrences, and an occurrence deleted from a series is not
+	 * reported at all. So once anything has moved, Exchange expands the whole window and the caller
+	 * reconciles against a complete set, which is what the desktop integration has always done.
+	 */
+	private async snapshotWindow(mailbox: string, folderId: string, window: DateRange): Promise<ExchangeEvent[]> {
+		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, folderId, window.start, window.end)));
 
-		return allByTag(doc, TYPES_NS, 'CalendarEvent')
-			.filter((node) => {
-				const status = textOf(firstByTag(node, TYPES_NS, 'BusyType'));
-				// OOF counts here: this answers "can they be reached", not "are they in a meeting".
-				return isBusyStatus(status) || status === 'OOF';
-			})
-			.map((node) => {
-				const start = parseEwsDateTime(textOf(firstByTag(node, TYPES_NS, 'StartTime')));
-				const end = parseEwsDateTime(textOf(firstByTag(node, TYPES_NS, 'EndTime')));
-				return start && end ? { start, end } : undefined;
-			})
-			.filter((block): block is BusyBlock => block !== undefined);
+		const ids = allByTag(doc, TYPES_NS, 'CalendarItem')
+			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
+			.filter((id): id is string => Boolean(id));
+
+		return ids.length ? this.loadItems(mailbox, ids) : [];
 	}
 
 	private async resolveFolderId(mailbox: string, folder: 'calendar' | 'contacts'): Promise<string> {
@@ -121,9 +112,14 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private async loadItems(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
 		const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds)));
 
-		return allByTag(doc, TYPES_NS, 'CalendarItem')
-			.map((node) => this.toExchangeEvent(node))
-			.filter((event): event is ExchangeEvent => event !== undefined);
+		return (
+			allByTag(doc, TYPES_NS, 'CalendarItem')
+				// A CalendarView returns occurrences, so a master here would be a surprise. Storing one anyway
+				// would put a single event at the first occurrence's time and call it the whole series.
+				.filter((node) => textOf(firstByTag(node, TYPES_NS, 'CalendarItemType')) !== 'RecurringMaster')
+				.map((node) => this.toExchangeEvent(node))
+				.filter((event): event is ExchangeEvent => event !== undefined)
+		);
 	}
 
 	private toExchangeEvent(node: Element): ExchangeEvent | undefined {
