@@ -329,26 +329,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		};
 	}
 
-	/**
-	 * Renews several members' leases at once — what a provider that can be asked who is in its room answers
-	 * with. Unlike a client's own heartbeat this never revives an inferred departure: the provider is reporting
-	 * a room, not a member correcting us about their own window.
-	 */
-	public async renewUsersPresenceById(callId: string, uids: IUser['_id'][], lastSeenAt = new Date()): Promise<void> {
-		if (!uids.length) {
-			return;
-		}
-
-		// Guarded against ended calls for the same reason the single renewal is — though this one only stamps
-		// `lastSeenAt` and never revives anyone, so the guard is belt rather than braces: the sweep calls it for
-		// calls it just read as open.
-		await this.updateOne(
-			{ _id: callId, endedAt: { $exists: false } },
-			{ $set: { 'users.$[user].lastSeenAt': lastSeenAt } },
-			{ arrayFilters: [{ 'user._id': { $in: uids } }] },
-		);
-	}
-
 	/** Records that we just rang these members, so every client can tell a ringing phone from a silent one. */
 	public async setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt = new Date()): Promise<void> {
 		if (!uids.length) {

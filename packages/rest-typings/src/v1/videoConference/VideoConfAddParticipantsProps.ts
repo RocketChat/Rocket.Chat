@@ -13,8 +13,9 @@ export type VideoConfAddParticipantsProps = {
 	 */
 	users: string[];
 	/**
-	 * Whether to ring the people being added. Defaults to ringing: someone added to a call in progress is being
-	 * called *now*, and the whole point of adding them is usually that they are wanted in it.
+	 * Whether to ring the people being added. **Defaults to `false`** — adding someone is often so they can
+	 * join when they can, and a ring nobody asked for is an interruption. Ringing also needs the
+	 * `videoconf-ring-users` permission, without which it is skipped silently.
 	 */
 	ring?: boolean;
 };
@@ -38,6 +39,7 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 		},
 		ring: {
 			type: 'boolean',
+			description: 'Whether to ring the people being added. Defaults to false.',
 			nullable: true,
 		},
 	},
