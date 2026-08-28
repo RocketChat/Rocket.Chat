@@ -4,7 +4,7 @@
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RocketChat/Rocket.Chat",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/livechat"
 	},
 	"license": "MIT",
@@ -28,7 +28,7 @@
 		"Firefox ESR"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "^0.33.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",

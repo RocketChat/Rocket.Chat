@@ -140,12 +140,13 @@ const userServiceKeys: IUserService[] = ['emailCode', 'email2fa', 'totp', 'resum
 const isUserServiceKey = (key: string): key is IUserService =>
 	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
 
-const isDefaultOAuthUser = (user: IUser): boolean =>
+const isDefaultOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
 
-const isCustomOAuthUser = (user: IUser): boolean => !!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
+const isCustomOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
 
-export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
+export const isOAuthUser = (user: Pick<IUser, 'services'>): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
@@ -164,6 +165,28 @@ export interface IUserSettings {
 	profile?: Record<string, unknown>;
 	preferences?: Record<string, any>;
 	calendar?: IUserCalendar;
+}
+
+export const SIDEBAR_SYSTEM_GROUP_KEYS = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+] as const;
+
+export interface ISidebarCategory {
+	_id: string;
+	name: string;
+	default?: boolean;
+	showUnreads?: boolean;
+	keepUnreadsOnTop?: boolean;
 }
 
 export interface IUser extends IRocketChatRecord {
@@ -252,7 +275,9 @@ export interface IRegisterUser extends IUser {
 	name: string;
 }
 
-export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+export const isRegisterUser = <T extends Pick<IUser, 'username' | 'name'>>(
+	user: T,
+): user is T & Required<Pick<IUser, 'username' | 'name'>> => user.username !== undefined && user.name !== undefined;
 
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 

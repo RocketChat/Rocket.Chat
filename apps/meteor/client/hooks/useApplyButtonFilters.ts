@@ -10,7 +10,7 @@ import {
 	isPublicDiscussion,
 	isPublicTeamRoom,
 } from '@rocket.chat/core-typings';
-import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
+import { AuthorizationContext, useRoleIdResolver, useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useContext } from 'react';
 
 import { useRoom } from '../views/room/contexts/RoomContext';
@@ -69,17 +69,21 @@ export const useApplyButtonAuthFilter = (): ((button: IUIActionButton, room?: IR
 
 	const { queryAllPermissions, queryAtLeastOnePermission, queryRole } = useContext(AuthorizationContext);
 
+	// An app knows the name of a custom role, not the random id the workspace gave it,
+	// so accept either form in the role filters.
+	const resolveRoleId = useRoleIdResolver();
+
 	return useCallback(
 		(button: IUIActionButton, room?: IRoom) => {
 			const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
 			const hasAllPermissionsResult = hasAllPermissions ? queryAllPermissions(hasAllPermissions)[1]() : true;
 			const hasOnePermissionResult = hasOnePermission ? queryAtLeastOnePermission(hasOnePermission)[1]() : true;
-			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(role, room?._id)[1]()) : true;
-			const hasOneRoleResult = hasOneRole ? !!uid && hasOneRole.some((role) => queryRole(role, room?._id)[1]()) : true;
+			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(resolveRoleId(role), room?._id)[1]()) : true;
+			const hasOneRoleResult = hasOneRole ? !!uid && hasOneRole.some((role) => queryRole(resolveRoleId(role), room?._id)[1]()) : true;
 
 			return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 		},
-		[queryAllPermissions, queryAtLeastOnePermission, queryRole, uid],
+		[queryAllPermissions, queryAtLeastOnePermission, queryRole, resolveRoleId, uid],
 	);
 };

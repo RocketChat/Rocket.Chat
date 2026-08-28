@@ -7,8 +7,10 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
@@ -49,11 +51,16 @@ export type RoomHistoryState = {
 	firstUnread: IMessage | undefined;
 	loaded: number | undefined;
 	oldestTs?: Date;
+	cursorPrevious?: string | null;
+	cursorNext?: string | null;
 	scroll?: {
 		scrollHeight: number;
 		scrollTop: number;
 	};
 };
+
+// Bridge until `loadSurroundingMessages` migrates: a jump rebuilds the window without cursors.
+const cursorFromMessageTs = (ts: Date): string => `${ts.getTime()}`;
 
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
 
@@ -149,25 +156,26 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
-			const result = await callWithErrorHandling(
-				'loadHistory',
-				rid,
-				room.oldestTs,
-				limit,
-				ls ? String(ls) : undefined,
-				showThreadsInMainChannel,
-			);
 
-			if (!result) {
-				throw new Error('loadHistory returned nothing');
-			}
+			// Not `??`: a null cursor means exhausted and must not fall back to a stale `oldestTs`.
+			const previous = room.cursorPrevious !== undefined ? room.cursorPrevious : room.oldestTs && cursorFromMessageTs(room.oldestTs);
+
+			const result = await sdk.rest.get('/v1/rooms.history', {
+				roomId: rid,
+				...(previous && { previous }),
+				...(ls && { lastSeen: new Date(ls).toISOString() }),
+				count: limit,
+				showThreadMessages: showThreadsInMainChannel,
+			});
 
 			this.unqueue();
 
-			const { messages = [] } = result;
+			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 			this.updateRoom(rid, {
-				unreadNotLoaded: result.unreadNotLoaded,
-				firstUnread: result.firstUnread,
+				unreadNotLoaded: result.unreadNotLoaded ?? 0,
+				firstUnread: result.firstUnread && mapMessageFromApi(result.firstUnread),
+				cursorPrevious: result.cursor.previous,
+				hasMore: result.cursor.previous !== null,
 			});
 
 			if (messages.length > 0) {
@@ -197,10 +205,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			room.loaded += visibleMessages.length;
 
-			if (messages.length < limit) {
-				this.updateRoom(rid, { hasMore: false });
-			}
-
+			// `count` bounds raw messages, so a whole page can render as nothing and stall the scroll.
 			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
@@ -245,25 +250,38 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
-		if (lastMessage?.ts) {
-			const { ts } = lastMessage;
-			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
+		// Not `??`: a null cursor means exhausted and must not fall back to the newest loaded message.
+		const next = room.cursorNext !== undefined ? room.cursorNext : lastMessage?.ts && cursorFromMessageTs(lastMessage.ts);
+
+		if (next) {
+			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
+
+			const result = await sdk.rest.get('/v1/rooms.history', {
+				roomId: rid,
+				next,
+				count: defaultLimit,
+				showThreadMessages: showThreadsInMainChannel,
+			});
+
+			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
+
 			await upsertMessageBulk({
-				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
+				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
 
 			this.emit('loaded-messages');
 
-			this.updateRoom(rid, { isLoading: false });
+			this.updateRoom(rid, {
+				isLoading: false,
+				cursorNext: result.cursor.next,
+				hasMoreNext: result.cursor.next !== null,
+			});
 			if (!room.loaded) {
 				room.loaded = 0;
 			}
 
-			room.loaded += result.messages.length;
-			if (result.messages.length < defaultLimit) {
-				this.updateRoom(rid, { hasMoreNext: false });
-			}
+			room.loaded += messages.length;
 		}
 		this.unqueue();
 	}
@@ -302,6 +320,8 @@ class RoomHistoryManagerClass extends Emitter {
 			isLoading: false,
 			hasMore: true,
 			hasMoreNext: false,
+			cursorPrevious: undefined,
+			cursorNext: undefined,
 		});
 	}
 

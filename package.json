@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "8.8.0-develop",
+	"version": "8.9.0-develop",
 	"private": true,
 	"description": "Rocket.Chat Monorepo",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
@@ -36,6 +36,7 @@
 	},
 	"resolutions": {
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
+		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"postcss-svgo/svgo": "4.0.2",
 		"@vue/compiler-sfc/postcss": "8.5.26",
 		"css-loader@npm:6.11.0/postcss": "8.5.26",
@@ -84,6 +85,7 @@
 		"follow-redirects": "^1.16.0",
 		"handlebars": "^4.7.9",
 		"lodash": "^4.18.0",
+		"mailparser/html-to-text": "10.0.1",
 		"markdown-it": "^14.2.0",
 		"markdown-it/linkify-it": "5.0.2",
 		"minimist": "1.2.6",

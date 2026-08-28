@@ -4,7 +4,10 @@ import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors 
 import { livechatLogger } from './logger';
 import { i18n } from '../../../app/utils/lib/i18n';
 
-export const validateRequiredCustomFields = (customFields: string[], livechatCustomFields: ILivechatCustomField[]) => {
+export const validateRequiredCustomFields = (
+	customFields: string[],
+	livechatCustomFields: Pick<ILivechatCustomField, '_id' | 'required'>[],
+) => {
 	const errors: string[] = [];
 	const requiredCustomFields = livechatCustomFields.filter((field) => field.required);
 
@@ -103,14 +106,14 @@ export async function setMultipleVisitorCustomFields(
 		value: string;
 		overwrite: boolean;
 	}[],
-	livechatCustomFields?: ILivechatCustomField[],
+	livechatCustomFields?: Pick<ILivechatCustomField, '_id' | 'required'>[],
 ) {
 	const keys = customFields.map((field) => field.key);
 
 	livechatCustomFields ??= await LivechatCustomField.findByScope('visitor', { projection: { _id: 1, required: 1 } }, false).toArray();
 	validateRequiredCustomFields(keys, livechatCustomFields);
 
-	const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
+	const matchingCustomFields = livechatCustomFields.filter((field) => keys.includes(field._id));
 	const validCustomFields = customFields.filter((cf) => matchingCustomFields.find((mcf) => cf.key === mcf._id));
 	if (!validCustomFields.length) {
 		return false;
