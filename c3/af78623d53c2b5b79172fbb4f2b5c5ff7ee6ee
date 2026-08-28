@@ -1,0 +1,14 @@
+ee/packages/license/src/validation/validateLicensePeriods.ts
+  h_a14d455b9c5e4f 7-8,10-12,14-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c3af78623d53c2b5b79172fbb4f2b5c5ff7ee6ee",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
