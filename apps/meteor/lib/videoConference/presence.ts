@@ -12,9 +12,7 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
  * signal this infers a departure from.
  *
  * Deliberately provider-agnostic: the renewal comes from our own conference window, which exists whoever runs the
- * media — an iframe provider renders inside our page, so our code is alive there too. Where a provider *can* be
- * asked who is in the room, its answer renews leases as well (see `videoConfPresence`), which keeps someone in
- * the call whose browser has throttled their heartbeat. Nothing here requires that integration to exist.
+ * media — an iframe provider renders inside our page, so our code is alive there too.
  */
 
 /**

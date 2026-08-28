@@ -80,9 +80,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		inferredReasons?: VideoConferenceLeaveReason[],
 	): Promise<{ revived: boolean; rid: IRoom['_id']; providerName: string } | null>;
 
-	/** Renews several leases at once, as a provider reporting who is in its room does. */
-	renewUsersPresenceById(callId: string, uids: IUser['_id'][], lastSeenAt?: Date): Promise<void>;
-
 	/** Every open call, with the roster and provider the presence sweep judges it by. */
 	findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>>;
 

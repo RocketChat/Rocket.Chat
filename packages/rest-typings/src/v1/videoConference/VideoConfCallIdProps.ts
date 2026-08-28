@@ -25,7 +25,3 @@ const videoConfCallIdPropsSchema: JSONSchemaType<VideoConfCallIdProps> = {
 };
 
 export const isVideoConfCallIdProps = ajv.compile(videoConfCallIdPropsSchema);
-
-/** The name this shape shipped under before it was shared. Kept because it is part of the published surface. */
-export type VideoConfCancelProps = VideoConfCallIdProps;
-export const isVideoConfCancelProps = isVideoConfCallIdProps;

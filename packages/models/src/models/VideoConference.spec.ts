@@ -158,32 +158,6 @@ describe('VideoConferenceRaw.renewUserPresenceById', () => {
 	});
 });
 
-describe('VideoConferenceRaw.renewUsersPresenceById', () => {
-	it('should stamp every named member at once', async () => {
-		const { model, updateOne } = setupModel();
-		const lastSeenAt = new Date('2026-08-01T10:00:00Z');
-
-		await model.renewUsersPresenceById('call-1', ['user-1', 'user-2'], lastSeenAt);
-
-		const [query, update, options] = updateOne.mock.calls[0];
-		expect(query).toEqual({ _id: 'call-1', endedAt: { $exists: false } });
-		expect(update).toEqual({ $set: { 'users.$[user].lastSeenAt': lastSeenAt } });
-		expect(options).toEqual({ arrayFilters: [{ 'user._id': { $in: ['user-1', 'user-2'] } }] });
-	});
-
-	// Unlike a member's own heartbeat, a provider reporting its room says nothing about whether an inferred
-	// departure was wrong — and an update with no ids would match every member of the call.
-	it('should leave departures alone, and do nothing at all with nobody to renew', async () => {
-		const { model, updateOne } = setupModel();
-
-		await model.renewUsersPresenceById('call-1', [], new Date());
-		expect(updateOne).not.toHaveBeenCalled();
-
-		await model.renewUsersPresenceById('call-1', ['user-1'], new Date());
-		expect(updateOne.mock.calls[0][1]).not.toHaveProperty('$unset');
-	});
-});
-
 describe('VideoConferenceRaw.setUserLeftById', () => {
 	it('should mutate the matching entry in place via arrayFilters', async () => {
 		const { model, updateOne } = setupModel();
