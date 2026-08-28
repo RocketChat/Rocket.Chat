@@ -423,6 +423,7 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Set email of external accounts as verified",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Accounts created from external services, like LDAP, OAuth, etc, will have their emails verified automatically",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
+  "Accounts_SetDefaultAvatar_Deprecation_Alert": "Gravatar support is deprecated and will be removed in a future major release.",
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",
   "Accounts_ShowFormLogin": "Show Default Login Form",
   "Accounts_StatusVisibility_Enabled": "User status hiding",
