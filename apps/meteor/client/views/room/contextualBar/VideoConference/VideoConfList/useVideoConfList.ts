@@ -20,7 +20,7 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 
 			return {
 				items: data.map(
-					({ _updatedAt, createdAt, endedAt, users, participants, ...rest }): VideoConference => ({
+					({ _updatedAt, createdAt, endedAt, users, ...rest }): VideoConference => ({
 						...rest,
 						_updatedAt: new Date(_updatedAt),
 						createdAt: new Date(createdAt),
@@ -34,13 +34,6 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 							lastSeenAt: lastSeenAt ? new Date(lastSeenAt) : undefined,
 							ringingAt: ringingAt ? new Date(ringingAt) : undefined,
 						})),
-						...(participants && {
-							participants: participants.map(({ joinedAt, leftAt, ...pRest }) => ({
-								...pRest,
-								joinedAt: joinedAt ? new Date(joinedAt) : undefined,
-								leftAt: leftAt ? new Date(leftAt) : undefined,
-							})),
-						}),
 					}),
 				),
 				itemCount: total,

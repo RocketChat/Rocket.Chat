@@ -983,19 +983,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
 		// Embedded providers (LiveKit) don't return a URL — the client mounts
-		// the call inline via the embedded provider's React tree. We still
-		// track the per-participant join time so the cleanup cron + the
-		// raise-hand queue have something to work with. Returning an empty
-		// string tells the client there's no URL to open.
+		// the call inline via the embedded provider's React tree. The join is
+		// already on the roster from `runOnUserJoinEvent` above, so returning an
+		// empty string is all that's left: it tells the client there's no URL to open.
 		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			if (user) {
-				await VideoConferenceModel.addEmbeddedParticipant(call._id, {
-					id: user._id,
-					username: user.username,
-					displayName: user.name,
-					joinedAt: new Date(),
-				});
-
 				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
 					callId: call._id,
 					rid: call.rid,
@@ -1708,9 +1700,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					// Whoever stopped renewing is not in a call any more, whatever their client failed to say — and a
 					// status left on busy by a crashed tab is exactly the kind of thing nobody thinks to fix by hand.
 					await this.releaseBusyForCall(uid);
-					// Embedded providers keep a second per-participant record, and the two disagreeing is how a
-					// call ends up counted as occupied by one half of the code and empty by the other.
-					await VideoConferenceModel.markEmbeddedParticipantLeft(call._id, uid, leftAt);
 				}
 
 				this.notifyVideoConfUpdate(call.rid, call._id);
