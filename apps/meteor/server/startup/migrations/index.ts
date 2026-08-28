@@ -51,5 +51,6 @@ import './v342';
 import './v343';
 import './v344';
 import './v345';
+import './v346';
 
 export * from './xrun';
