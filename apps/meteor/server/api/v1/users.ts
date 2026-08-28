@@ -1973,9 +1973,10 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: user.status || ('offline' as UserStatus),
+				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)

@@ -212,6 +212,19 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('[/users.getPresence]', () => {
+		it('should report the hider as offline to the viewer', async () => {
+			await request
+				.get(api('users.getPresence'))
+				.set(viewerCredentials)
+				.query({ userId: hider._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.presence).to.be.equal(UserStatus.OFFLINE);
+				});
+		});
+	});
+
 	describe('[/users.autocomplete]', () => {
 		it('should list the hider as offline to the viewer', async () => {
 			await request
