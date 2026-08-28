@@ -5539,11 +5539,14 @@ describe('[/rooms.history]', () => {
 	});
 
 	it('should fail when `aroundId` is combined with a cursor', async () => {
-		await request
+		const res = await request
 			.get(api('rooms.history'))
 			.set(credentials)
 			.query({ roomId: testChannel._id, aroundId: messageIds[0], previous: '1' })
 			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
 	});
 
 	it('should not find a message that belongs to another room', async () => {
@@ -5584,6 +5587,18 @@ describe('[/rooms.history]', () => {
 			.expect(400);
 
 		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
+	});
+
+	it('should fail when a cursor is not parseable', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, previous: 'not-a-cursor' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-invalid-cursor');
 	});
 
 	it('should fail for a room that does not exist', async () => {
