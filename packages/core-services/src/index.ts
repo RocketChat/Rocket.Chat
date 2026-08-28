@@ -62,7 +62,13 @@ import type {
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 } from './types/IUiKitCoreApp';
-import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type {
+	ICreatePendingFileParams,
+	ISendFileLivechatMessageParams,
+	ISendFileMessageParams,
+	IUploadFileParams,
+	IUploadService,
+} from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
@@ -154,6 +160,7 @@ export type {
 	VideoConferenceJoinOptions,
 	ISendFileLivechatMessageParams,
 	ISendFileMessageParams,
+	ICreatePendingFileParams,
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,

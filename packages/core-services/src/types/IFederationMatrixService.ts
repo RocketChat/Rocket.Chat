@@ -1,4 +1,4 @@
-import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
 import type { EventID, EventStore, PduForType } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
@@ -36,4 +36,5 @@ export interface IFederationMatrixService {
 	updateUserName(user: IUser): Promise<void>;
 	joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean>;
 	saveFederationMessage(event: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void>;
+	materializePendingUpload(fileId: IUpload['_id']): Promise<IUpload | null>;
 }
