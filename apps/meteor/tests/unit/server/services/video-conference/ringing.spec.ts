@@ -56,8 +56,8 @@ const UsersMock = {
 
 const broadcastStub = sinon.stub().resolves();
 
-// Deliberately NOT overriding '../../../lib/videoConference/constants' — the ringing-limit guard
-// (`shouldRingVideoConference`, capped at `VIDEO_CONF_RINGING_LIMIT`) is what two of the tests below exercise,
+// Deliberately NOT overriding '../../../lib/videoConference/constants' — the recipient-limit guard
+// (`shouldRingRecipients`, capped at `RING_RECIPIENTS_LIMIT`) is what one of the tests below exercises,
 // so it has to be the real implementation.
 const VideoConfService = createService({
 	broadcast: broadcastStub,
@@ -101,20 +101,16 @@ beforeEach(() => {
 	broadcastStub.resolves();
 });
 
-describe('VideoConfService.ringMembers', () => {
+describe('VideoConfService.ringMember', () => {
 	// The base case: a member added to the call but who never answered has no active presence, so a second
 	// ring is the only way to reach them.
-	it('rings members who were never in the call, and nobody else', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'caller' }),
-			buildMember({ _id: 'neverJoined1', joined: false, joinedAt: undefined }),
-			buildMember({ _id: 'neverJoined2', joined: false, joinedAt: undefined }),
-		]);
+	it('rings a member who was never in the call', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'neverJoined', joined: false, joinedAt: undefined })]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'neverJoined');
 
-		expect(result.sort()).to.deep.equal(['neverJoined1', 'neverJoined2']);
-		expect(ringedUserIds(broadcastStub).sort()).to.deep.equal(['neverJoined1', 'neverJoined2']);
+		expect(result).to.be.true;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal(['neverJoined']);
 	});
 
 	// "Call them back" is exactly this shape: they were on the call and aren't anymore. `isInVideoConference`
@@ -126,39 +122,31 @@ describe('VideoConfService.ringMembers', () => {
 			buildMember({ _id: 'wentQuiet', joined: true, leftAt: new Date('2026-01-01T00:15:00.000Z') }),
 		]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'wentQuiet');
 
-		expect(result).to.deep.equal(['wentQuiet']);
+		expect(result).to.be.true;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal(['wentQuiet']);
 	});
 
 	// Someone already on the call has no reason to be interrupted by a ring meant for people who aren't there.
 	it('does not ring a member who is currently in the call', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'caller' }),
-			buildMember({ _id: 'stillHere', joined: true }),
-			buildMember({ _id: 'absent', joined: false, joinedAt: undefined }),
-		]);
+		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'stillHere', joined: true })]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'stillHere');
 
-		expect(result).to.deep.equal(['absent']);
-		expect(ringedUserIds(broadcastStub)).to.not.include('stillHere');
+		expect(result).to.be.false;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
 	// The caller is the one asking for the retry, not a target of it — this has to hold even for a caller
-	// entry that would otherwise read as absent (e.g. written with `joined: false`), since nothing else in
-	// `ringMembers` special-cases the caller's own membership shape.
+	// entry that would otherwise read as absent (e.g. written with `joined: false`).
 	it('never rings the caller themselves, even if their own entry looks absent', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'caller', joined: false, joinedAt: undefined }),
-			buildMember({ _id: 'absent', joined: false, joinedAt: undefined }),
-		]);
+		fixture = buildGroupCall([buildMember({ _id: 'caller', joined: false, joinedAt: undefined })]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'caller');
 
-		expect(result).to.not.include('caller');
-		expect(ringedUserIds(broadcastStub)).to.not.include('caller');
+		expect(result).to.be.false;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
 	// A phone that is ringing right now has nothing more to ask of it — re-ringing would just restart the
@@ -169,9 +157,9 @@ describe('VideoConfService.ringMembers', () => {
 			buildMember({ _id: 'stillRinging', joined: false, joinedAt: undefined, ringingAt: new Date() }),
 		]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'stillRinging');
 
-		expect(result).to.deep.equal([]);
+		expect(result).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
@@ -187,85 +175,34 @@ describe('VideoConfService.ringMembers', () => {
 			}),
 		]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'ignoredIt');
 
-		expect(result).to.deep.equal(['ignoredIt']);
+		expect(result).to.be.true;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal(['ignoredIt']);
 	});
 
-	// Nobody absent means nothing to do — this is also what a call with a full house looks like after
-	// everyone's already answered.
-	it('returns an empty array when nobody is absent', async () => {
-		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'other', joined: true })]);
+	// Membership is what a ring targets, so someone who was never added to this call isn't ringable through
+	// it — the endpoint would otherwise be a way to make any user's phone ring.
+	it('rings nobody for a user who is not a member of the call', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'stranger');
 
-		expect(result).to.deep.equal([]);
+		expect(result).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
-	// A conference that already ended is not something you can still ring people into — `ringMembers` must
-	// bail out before even looking at who's absent.
-	it('returns an empty array and rings nobody for a conference that has already ended', async () => {
+	// A conference that already ended is not something you can still ring people into — `ringMember` must
+	// bail out before even looking at the member.
+	it('rings nobody for a conference that has already ended', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'absent', joined: false, joinedAt: undefined })], {
 			endedAt: new Date('2026-01-01T01:00:00.000Z'),
 		});
 
-		const result = await service.ringMembers('caller', 'call1');
+		const result = await service.ringMember('caller', 'call1', 'absent');
 
-		expect(result).to.deep.equal([]);
+		expect(result).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
-	});
-
-	// The cap itself is pinned on `shouldRingVideoConference` in `tests/unit/lib/videoConference`; what matters
-	// here is that this path is wired to it, and that tripping it suppresses the ring entirely rather than
-	// ringing the first ten.
-	it('rings nobody when the number of absent members exceeds the ringing limit', async () => {
-		const absentMembers: IVideoConferenceUser[] = Array.from({ length: 11 }, (_, index) =>
-			buildMember({ _id: `absent${index}`, joined: false, joinedAt: undefined }),
-		);
-		fixture = buildGroupCall([buildMember({ _id: 'caller' }), ...absentMembers]);
-
-		const result = await service.ringMembers('caller', 'call1');
-
-		expect(result).to.deep.equal([]);
-		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
-	});
-
-	// The members panel rings one person at a time, so the caller says who — everyone else absent is left alone.
-	it('rings only the members asked for', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'caller' }),
-			buildMember({ _id: 'wanted', joined: false, joinedAt: undefined }),
-			buildMember({ _id: 'other', joined: false, joinedAt: undefined }),
-		]);
-
-		const result = await service.ringMembers('caller', 'call1', ['wanted']);
-
-		expect(result).to.deep.equal(['wanted']);
-		expect(ringedUserIds(broadcastStub)).to.deep.equal(['wanted']);
-	});
-
-	// Being asked for doesn't override being present: ringing someone who is already on the call is noise.
-	it('will not ring a requested member who is in the call', async () => {
-		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'present' })]);
-
-		const result = await service.ringMembers('caller', 'call1', ['present']);
-
-		expect(result).to.deep.equal([]);
-		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
-	});
-
-	it('rings everyone absent when no member is named', async () => {
-		fixture = buildGroupCall([
-			buildMember({ _id: 'caller' }),
-			buildMember({ _id: 'one', joined: false, joinedAt: undefined }),
-			buildMember({ _id: 'two', joined: false, joinedAt: undefined }),
-		]);
-
-		const result = await service.ringMembers('caller', 'call1');
-
-		expect(result.sort()).to.deep.equal(['one', 'two']);
 	});
 });
 

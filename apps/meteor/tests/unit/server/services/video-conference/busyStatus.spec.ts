@@ -83,7 +83,7 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
 		},
 	},
-	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false, CALL_FACES_SHOWN: 2 },
+	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },
 });
 
 const ts = new Date('2026-08-02T10:00:00.000Z');

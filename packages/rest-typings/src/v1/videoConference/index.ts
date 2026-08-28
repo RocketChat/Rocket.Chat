@@ -52,9 +52,9 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfCallIdProps) => void;
 	};
 
-	/** Rings the members who aren't in the call again; returns the ids actually rung. */
+	/** Rings one member who isn't in the call again; says whether the ring actually went out. */
 	'/v1/video-conference.ring': {
-		POST: (params: VideoConfRingProps) => { rang: string[] };
+		POST: (params: VideoConfRingProps) => { rang: boolean };
 	};
 
 	'/v1/video-conference.cancel': {

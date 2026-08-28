@@ -123,14 +123,17 @@ export const isInVideoConference = (user: Pick<IVideoConferenceUser, 'joined' | 
 export const VIDEO_CONF_RINGING_WINDOW_MS = 15_000;
 
 /**
- * How many people a single call event may ring. Ringing is decided per event against the list being rung:
- * starting a call rings the room's members, so a large room rings nobody, while adding participants rings just the
- * people added — which is why an add is capped at the same number and therefore always rings.
+ * How many people one ring may reach. It bounds the *recipients of a single action*, not anything about the
+ * conference: a ring is a broadcast per recipient, so a batch has to stay small enough to be worth sending.
+ *
+ * Adding participants is the only action that rings a batch, and it is capped at this same number — which is
+ * why an add always rings rather than silently ringing part of itself. Ringing an existing member reaches one
+ * person and is not bounded by this at all.
  *
  * It lives here because both halves of that rule need it: the server deciding whether to ring, and the endpoint
  * capping the batch. They were two constants that had to be kept equal by comment.
  */
-export const VIDEO_CONF_RINGING_LIMIT = 10;
+export const RING_RECIPIENTS_LIMIT = 10;
 
 /** Whether this member's phone is ringing right now — as opposed to having been rung and done nothing. */
 export const isRingingVideoConferenceMember = (
