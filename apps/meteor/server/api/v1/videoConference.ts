@@ -194,6 +194,8 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
+		// If anonymous read is enabled, external users can join conferences, so we only check permissions if the user exists
+		// otherwise `authOrAnonRequired: true` already blocks the request if needed
 		if (userId && !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid))) {
 			return API.v1.forbidden('Not allowed');
 		}

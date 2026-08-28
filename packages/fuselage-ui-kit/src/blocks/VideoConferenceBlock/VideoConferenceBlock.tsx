@@ -1,5 +1,5 @@
 import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useAtLeastOnePermission, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCanJoinVideoconf, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -29,8 +29,6 @@ export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
 const MAX_USERS = 3;
 
-const JOIN_CALL_PERMISSIONS = ['call-management', 'videoconf-join-call'];
-
 const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const { t } = useTranslation();
 	const { callId, appId = 'videoconf-core' } = block;
@@ -52,7 +50,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	const result = useVideoConfDataStream({ rid, callId });
 
-	const canJoinCall = useAtLeastOnePermission(JOIN_CALL_PERMISSIONS, rid);
+	const canJoinCall = useCanJoinVideoconf(rid);
 
 	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
 		void action(

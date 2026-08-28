@@ -19,15 +19,13 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useCanJoinVideoconf } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
-
-const JOIN_CALL_PERMISSIONS = ['call-management', 'videoconf-join-call'];
 
 const VideoConfListItem = ({
 	videoConfData,
@@ -53,7 +51,7 @@ const VideoConfListItem = ({
 		discussionRid,
 	} = videoConfData;
 
-	const canJoinCall = useAtLeastOnePermission(JOIN_CALL_PERMISSIONS, rid);
+	const canJoinCall = useCanJoinVideoconf(rid);
 
 	const displayName = useUserDisplayName({ name, username });
 	const joinedUsers = users.filter((user) => user._id !== _id);
