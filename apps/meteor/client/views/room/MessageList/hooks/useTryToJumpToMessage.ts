@@ -3,7 +3,7 @@ import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
-import type { WindowVirtualizerHandle } from 'virtua';
+import type { VirtualizerHandle } from 'virtua';
 
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
@@ -15,7 +15,7 @@ import { clearHighlightMessage, setHighlightMessage } from '../providers/message
 
 type UseTryToJumpToMessageProps = {
 	rid: string;
-	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
+	virtualizerRef: MutableRefObject<VirtualizerHandle | null>;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	messages: { _id: string }[];
 };
@@ -77,7 +77,6 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		}
 		const messageIndex = messages.indexOf(loadedMessage);
 
-		// TODO: Calculate the offset of the page, for the message to be in the center of the page
 		virtualizerRef.current?.scrollToIndex(messageIndex, {
 			align: 'center',
 		});
