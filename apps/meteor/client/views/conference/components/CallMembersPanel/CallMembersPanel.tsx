@@ -32,7 +32,7 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 	);
 
 	const { mutate: ringMember } = useMutation({
-		mutationFn: (memberId: string) => ring({ callId, users: [memberId] }),
+		mutationFn: (memberId: string) => ring({ callId, userId: memberId }),
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
