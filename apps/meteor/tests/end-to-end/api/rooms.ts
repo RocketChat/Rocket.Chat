@@ -5559,6 +5559,23 @@ describe('[/rooms.history]', () => {
 		await deleteRoom({ type: 'c', roomId: other._id });
 	});
 
+	it('should not find a hidden message', async () => {
+		// Message_KeepHistory without Message_ShowDeletedStatus hides the deleted message instead of removing it
+		await updateSetting('Message_KeepHistory', true);
+		try {
+			const hidden = await sendMessage({ message: { rid: testChannel._id, msg: 'to be hidden' } });
+			await deleteMessage({ roomId: testChannel._id, msgId: hidden.body.message._id });
+
+			await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, aroundId: hidden.body.message._id })
+				.expect(404);
+		} finally {
+			await updateSetting('Message_KeepHistory', false);
+		}
+	});
+
 	it('should fail when both cursors are provided', async () => {
 		const res = await request
 			.get(api('rooms.history'))
