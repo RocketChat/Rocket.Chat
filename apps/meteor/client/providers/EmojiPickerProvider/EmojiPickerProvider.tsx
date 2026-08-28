@@ -1,6 +1,7 @@
-import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType } from 'react';
-import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
@@ -11,28 +12,71 @@ const DEFAULT_ITEMS_LIMIT = 90;
 
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
+const EMPTY_RECENT_EMOJIS: string[] = [];
+const EMPTY_FREQUENT_EMOJIS: [string, number][] = [];
 
 export type EmojiPickerProviderProps = { children: ReactNode };
 
 const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
-	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
-	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
+	const user = useUser();
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+	const recentEmojis = useUserPreference<string[]>('recentEmojis', EMPTY_RECENT_EMOJIS) ?? EMPTY_RECENT_EMOJIS;
+	const frequentEmojis = useUserPreference<[string, number][]>('frequentEmojis', EMPTY_FREQUENT_EMOJIS) ?? EMPTY_FREQUENT_EMOJIS;
+	const [storedRecentEmojis, setStoredRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
+	const [storedFrequentEmojis, setStoredFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
+	const migratedUsers = useRef(new Set<string>());
+
+	const setRecentEmojis = useCallback(
+		(emojis: string[]) => {
+			void saveUserPreferences({ data: { recentEmojis: emojis } });
+		},
+		[saveUserPreferences],
+	);
+
+	useEffect(() => {
+		if (!user?._id || migratedUsers.current.has(user._id)) {
+			return;
+		}
+
+		migratedUsers.current.add(user._id);
+		const preferences = user.settings?.preferences;
+		const migration: { recentEmojis?: string[]; frequentEmojis?: [string, number][] } = {};
+		const hasRecentPreference = preferences?.hasOwnProperty('recentEmojis');
+		const hasFrequentPreference = preferences?.hasOwnProperty('frequentEmojis');
+
+		if (!hasRecentPreference && storedRecentEmojis?.length) {
+			migration.recentEmojis = storedRecentEmojis.slice(0, RECENT_EMOJIS_LIMIT);
+		}
+		if (!hasFrequentPreference && storedFrequentEmojis?.length) {
+			migration.frequentEmojis = storedFrequentEmojis;
+		}
+
+		if (Object.keys(migration).length) {
+			void saveUserPreferences({ data: migration }).then(() => {
+				setStoredRecentEmojis([]);
+				setStoredFrequentEmojis([]);
+			});
+		} else {
+			if (hasRecentPreference) {
+				setStoredRecentEmojis([]);
+			}
+			if (hasFrequentPreference) {
+				setStoredFrequentEmojis([]);
+			}
+		}
+	}, [saveUserPreferences, setStoredFrequentEmojis, setStoredRecentEmojis, storedFrequentEmojis, storedRecentEmojis, user]);
 
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 	const [currentCategory, setCurrentCategory] = useState('recent');
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
-	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
-		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
-	);
-
-	const setQuickReactions = useStableCallback(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
+	const quickReactions = getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji));
 	const [sub, getSnapshot] = useMemo(() => {
-		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
-	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
+		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis]);
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
@@ -50,10 +94,9 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 				})
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
-			setFrequentEmojis(sortedFrequent);
-			_setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
+			void saveUserPreferences({ data: { frequentEmojis: sortedFrequent } });
 		},
-		[frequentEmojis, setFrequentEmojis],
+			[frequentEmojis, saveUserPreferences],
 	);
 
 	const addRecentEmoji = useCallback(

@@ -56,6 +56,8 @@ export type UsersSetPreferencesParamsPOST = {
 		mentionsWithSymbol?: boolean;
 		desktopNotificationVoiceCalls?: boolean;
 		utcOffset?: number;
+		recentEmojis?: string[];
+		frequentEmojis?: [string, number][];
 	};
 };
 
@@ -292,6 +294,21 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				utcOffset: {
 					type: 'number',
+					nullable: true,
+				},
+				recentEmojis: {
+					type: 'array',
+					items: { type: 'string' },
+					nullable: true,
+				},
+				frequentEmojis: {
+					type: 'array',
+					items: {
+						type: 'array',
+						prefixItems: [{ type: 'string' }, { type: 'number' }],
+						minItems: 2,
+						maxItems: 2,
+					},
 					nullable: true,
 				},
 			},
