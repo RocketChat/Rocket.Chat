@@ -62,7 +62,7 @@ export interface IVideoConfService {
 	ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean>;
 	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
-	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
+	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;

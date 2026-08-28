@@ -1835,22 +1835,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Gives every member who can't read the chat access to it, either by bringing them into the room — which
 	 * exposes its whole history — or by moving the chat to a discussion. Both are lossy in different ways, so
-	 * the caller chooses; without a choice, the room's own rules decide. Returns the room the chat now lives in.
+	 * the caller says which; nothing here infers one. Returns the room the chat now lives in.
 	 */
 	public async shareChatWithMembers(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
-		mode?: VideoConferenceChatAccessMode,
+		mode: VideoConferenceChatAccessMode,
 	): Promise<IRoom['_id']> {
 		const {
-			access: { rid, membersWithoutAccess, canInvite, type },
+			access: { rid, membersWithoutAccess, canInvite },
 			usernamesWithoutAccess: usernames,
 		} = await this.resolveChatAccess(uid, callId);
 		if (!membersWithoutAccess.length) {
 			return rid;
 		}
 
-		const resolved = resolveChatAccessMode({ mode, canInvite, type });
+		const resolved = resolveChatAccessMode({ mode, canInvite });
 		if (!resolved) {
 			throw new Error('error-not-allowed');
 		}
