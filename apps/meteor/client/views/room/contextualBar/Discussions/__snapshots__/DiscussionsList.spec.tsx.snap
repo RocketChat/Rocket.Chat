@@ -98,7 +98,7 @@ exports[`renders Default with stable structure 1`] = `
               >
                 <div>
                   <ul
-                    data-testid="discussions-virtual-list"
+                    data-buffer-size="25"
                     style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                   >
                     <li>

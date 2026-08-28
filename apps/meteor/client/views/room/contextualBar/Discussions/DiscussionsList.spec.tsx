@@ -1,10 +1,6 @@
 import { composeStories } from '@storybook/react';
 import { render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import * as React from 'react';
-import { Children, forwardRef, isValidElement } from 'react';
-
 import * as stories from './DiscussionsList.stories';
 
 jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
@@ -13,70 +9,11 @@ jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-const mockVirtualizerHandle = {
-	scrollToIndex: jest.fn(),
-	scrollTo: jest.fn(),
-	findItemIndex: jest.fn((offset: number) => offset),
-	scrollOffset: 0,
-	scrollSize: 1000,
-	viewportSize: 300,
-};
-
-type MockVListProps = {
-	children: ReactNode;
-	onScroll?: (offset: number) => void;
-	as?: React.ElementType;
-	item?: React.ElementType;
-	shift?: boolean;
-	style?: CSSProperties;
-	className?: string;
-};
-
-jest.mock('virtua', () => {
-	return {
-		Virtualizer: React.forwardRef(
-			(
-				{ children, onScroll, as: asRoot = 'div', item: asItem = 'div', shift: _shift, style, className }: MockVListProps,
-				ref: React.Ref<unknown>,
-			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
-				const Root = asRoot;
-				const Item = asItem;
-				const wrapped = Children.map(children, (child, index) => {
-					const key = isValidElement(child) && child.key != null ? String(child.key) : `row-${index}`;
-					return <Item key={key}>{child}</Item>;
-				});
-
-				return (
-					<Root
-						className={className}
-						data-testid='discussions-virtual-list'
-						style={style ?? { height: '100%' }}
-						onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)}
-					>
-						{wrapped}
-					</Root>
-				);
-			},
-		),
-	};
-});
+jest.mock('virtua', () => require('../../../../../tests/mocks/client/virtua'));
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	...jest.requireActual('@rocket.chat/ui-client'),
-	CustomVirtuaScrollbars: forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CustomVirtuaScrollbars(
-		{ children, ...props },
-		ref,
-	) {
-		// eslint-disable-next-line testing-library/no-node-access
-		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
-
-		return (
-			<div ref={ref} {...props}>
-				{content}
-			</div>
-		);
-	}),
+	CustomVirtuaScrollbars: require('../../../../../tests/mocks/client/CustomVirtuaScrollbars').MockCustomVirtuaScrollbars,
 }));
 
 const composed = composeStories(stories);
@@ -87,7 +24,7 @@ describe('DiscussionsList', () => {
 		const { Default } = composed;
 		render(<Default />);
 
-		const list = screen.getByTestId('discussions-virtual-list');
+		const list = screen.getByRole('list');
 		expect(list).toBeInTheDocument();
 		expect(list.tagName.toLowerCase()).toBe('ul');
 		expect(within(list).getAllByRole('listitem')).toHaveLength(10);
@@ -98,7 +35,7 @@ describe('DiscussionsList', () => {
 		const { Empty } = composed;
 		render(<Empty />);
 
-		expect(screen.queryByTestId('discussions-virtual-list')).not.toBeInTheDocument();
+		expect(screen.queryByRole('list')).not.toBeInTheDocument();
 		expect(screen.getByText('No_Discussions_found')).toBeInTheDocument();
 	});
 
@@ -106,7 +43,7 @@ describe('DiscussionsList', () => {
 		const { Loading } = composed;
 		render(<Loading />);
 
-		expect(screen.queryByTestId('discussions-virtual-list')).not.toBeInTheDocument();
+		expect(screen.queryByRole('list')).not.toBeInTheDocument();
 	});
 });
 
