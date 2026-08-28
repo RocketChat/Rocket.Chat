@@ -84,6 +84,7 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 			'<t:FieldURI FieldURI="calendar:IsCancelled"/>',
 			'<t:FieldURI FieldURI="calendar:LegacyFreeBusyStatus"/>',
 			'<t:FieldURI FieldURI="calendar:UID"/>',
+			'<t:FieldURI FieldURI="calendar:CalendarItemType"/>',
 			'<t:FieldURI FieldURI="item:ReminderMinutesBeforeStart"/>',
 			'</t:AdditionalProperties>',
 			'</m:ItemShape>',
@@ -91,29 +92,6 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 			itemIds.map((id) => `<t:ItemId Id="${escapeXml(id)}"/>`).join(''),
 			'</m:ItemIds>',
 			'</m:GetItem>',
-		].join(''),
-		mailbox,
-	);
-
-/** Free/busy-only mode: availability without subjects or bodies. */
-export const getUserAvailabilityRequest = (mailbox: string, start: Date, end: Date): string =>
-	envelope(
-		[
-			'<m:GetUserAvailabilityRequest>',
-			'<t:TimeZone><t:Bias>0</t:Bias>',
-			'<t:StandardTime><t:Bias>0</t:Bias><t:Time>00:00:00</t:Time><t:DayOrder>1</t:DayOrder><t:Month>1</t:Month><t:DayOfWeek>Sunday</t:DayOfWeek></t:StandardTime>',
-			'<t:DaylightTime><t:Bias>0</t:Bias><t:Time>00:00:00</t:Time><t:DayOrder>1</t:DayOrder><t:Month>1</t:Month><t:DayOfWeek>Sunday</t:DayOfWeek></t:DaylightTime>',
-			'</t:TimeZone>',
-			'<m:MailboxDataArray><t:MailboxData>',
-			`<t:Email><t:Address>${escapeXml(mailbox)}</t:Address></t:Email>`,
-			'<t:AttendeeType>Required</t:AttendeeType>',
-			'</t:MailboxData></m:MailboxDataArray>',
-			'<t:FreeBusyViewOptions>',
-			`<t:TimeWindow><t:StartTime>${toEwsDateTime(start)}</t:StartTime><t:EndTime>${toEwsDateTime(end)}</t:EndTime></t:TimeWindow>`,
-			'<t:MergedFreeBusyIntervalInMinutes>15</t:MergedFreeBusyIntervalInMinutes>',
-			'<t:RequestedView>DetailedMerged</t:RequestedView>',
-			'</t:FreeBusyViewOptions>',
-			'</m:GetUserAvailabilityRequest>',
 		].join(''),
 		mailbox,
 	);
@@ -126,6 +104,23 @@ export const resolveNamesRequest = (mailbox: string): string =>
 			`<m:UnresolvedEntry>${escapeXml(mailbox)}</m:UnresolvedEntry>`,
 			'</m:ResolveNames>',
 		].join(''),
+	);
+
+/**
+ * Exchange expands a recurring series into its occurrences server side, which is what keeps recurrence
+ * patterns and their originating timezones out of our code. `IdOnly` because FindItem never returns a
+ * body: detail comes from the GetItem that follows.
+ */
+export const findItemCalendarViewRequest = (mailbox: string, folderId: string, start: Date, end: Date, maxEntries = 500): string =>
+	envelope(
+		[
+			'<m:FindItem Traversal="Shallow">',
+			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape></m:ItemShape>',
+			`<m:CalendarView StartDate="${toEwsDateTime(start)}" EndDate="${toEwsDateTime(end)}" MaxEntriesReturned="${maxEntries}"/>`,
+			`<m:ParentFolderIds><t:FolderId Id="${escapeXml(folderId)}"/></m:ParentFolderIds>`,
+			'</m:FindItem>',
+		].join(''),
+		mailbox,
 	);
 
 /** EWS rejects the milliseconds `toISOString` emits in some operations. */
