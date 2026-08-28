@@ -1,10 +1,10 @@
 import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { router } from '../../../client/providers/RouterProvider';
-import { Subscriptions } from '../../../client/stores';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { slashCommands } from '../../utils/client/slashCommand';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { router } from '../../providers/RouterProvider';
+import { Subscriptions } from '../../stores';
 
 slashCommands.add({
 	command: 'open',
