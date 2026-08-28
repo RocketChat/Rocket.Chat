@@ -1,0 +1,39 @@
+packages/rest-typings/src/v1/rooms.ts
+  s_8998b0686d0f5a::t_ee01255177f5f3 1067,1088-1090
+  s_8998b0686d0f5a::t_81afff51c4707c 1091-1092
+apps/meteor/client/lib/RoomHistoryManager.ts
+  s_8998b0686d0f5a::t_189a5947f5b881 155,238,335-340,342-343,345,347,354-355,357-361
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_8998b0686d0f5a::t_f18263a0ed9aed 5470-5561
+.changeset/rest-rooms-history-around.md
+  s_8998b0686d0f5a::t_02345a2c30fd35 1-6
+apps/meteor/server/api/v1/rooms.ts
+  s_8998b0686d0f5a::t_95b2ec181af00b 1804
+  s_8998b0686d0f5a::t_ee01255177f5f3 1769,1794-1799
+apps/meteor/server/meteor-methods/messages/loadSurroundingMessages.ts
+  s_8998b0686d0f5a::t_820fbdcc774332 9,31
+.changeset/ddp-migrate-surrounding-messages-caller.md
+  s_8998b0686d0f5a::t_02345a2c30fd35 1-5
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_8998b0686d0f5a::t_10bd1fde3d6971 93,95-117,138,152-155,157,159-191,194-209
+  s_8998b0686d0f5a::t_92ef7de5f540fe 52,61,67,75-77
+  s_8998b0686d0f5a::t_24d0e34a2a094f 78-80,90-92
+  s_8998b0686d0f5a::t_1efaedcc7a7459 94
+  s_8998b0686d0f5a::t_5d5208f14f7737 81-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "1ff4ab0234b86ab899f41e48887fef36207bb624",
+  "prompts": {},
+  "sessions": {
+    "s_8998b0686d0f5a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1eb4ba6-bb29-4651-a5d0-a7f88b362991",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
