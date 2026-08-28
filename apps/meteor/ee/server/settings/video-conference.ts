@@ -33,16 +33,13 @@ export function addSettings(): Promise<void> {
 				});
 
 				const discussionsEnabled = { _id: 'Discussion_enabled', value: true };
-				// Persistent chat discussions are always created unencrypted, so they can not be used while the
-				// workspace enforces encryption on private rooms.
-				const encryptionNotEnforced = { _id: 'E2E_Force_Encryption_For_Private_Rooms', value: false };
 
 				await this.add('VideoConf_Enable_Persistent_Chat', false, {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
 					alert: 'VideoConf_Enable_Persistent_Chat_Alert',
-					enableQuery: [discussionsEnabled, encryptionNotEnforced],
+					enableQuery: [discussionsEnabled],
 				});
 
 				const persistentChatEnabled = { _id: 'VideoConf_Enable_Persistent_Chat', value: true };
