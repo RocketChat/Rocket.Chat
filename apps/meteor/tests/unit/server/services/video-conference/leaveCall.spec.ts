@@ -59,7 +59,7 @@ const VideoConfService = createService({
 	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
 	// join is stubbed out of the way. The grace period must stay the real one — it is what the suite measures.
 	overrides: {
-		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingVideoConference: () => false, EMPTY_CALL_GRACE_MS },
+		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, EMPTY_CALL_GRACE_MS },
 	},
 });
 

@@ -1,7 +1,7 @@
-import { VIDEO_CONF_RINGING_LIMIT, hasJoinedVideoConference } from '@rocket.chat/core-typings';
+import { RING_RECIPIENTS_LIMIT, hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { shouldRingVideoConference } from '../../../../lib/videoConference/constants';
+import { shouldRingRecipients } from '../../../../lib/videoConference/constants';
 import {
 	canRingConferenceMember,
 	getConferenceMemberStatus,
@@ -102,17 +102,17 @@ describe('isUnaskedConferenceMember', () => {
 	});
 });
 
-describe('shouldRingVideoConference', () => {
-	// Ringing a large room would mean a broadcast per subscriber, so past a point a call rings nobody at all.
+describe('shouldRingRecipients', () => {
+	// A ring is a broadcast per recipient, so past a point the batch is not worth sending and rings nobody.
 	it('rings a list up to the limit, and none beyond it', () => {
-		expect(shouldRingVideoConference(1)).to.be.true;
-		expect(shouldRingVideoConference(VIDEO_CONF_RINGING_LIMIT)).to.be.true;
-		expect(shouldRingVideoConference(VIDEO_CONF_RINGING_LIMIT + 1)).to.be.false;
+		expect(shouldRingRecipients(1)).to.be.true;
+		expect(shouldRingRecipients(RING_RECIPIENTS_LIMIT)).to.be.true;
+		expect(shouldRingRecipients(RING_RECIPIENTS_LIMIT + 1)).to.be.false;
 	});
 
-	// Nobody to ring is not the same as a list small enough to ring — it saves a pointless broadcast when a
-	// conference starts in an empty room, or when every user in an add was already a member.
+	// Nobody to ring is not the same as a list small enough to ring — it saves a pointless broadcast when
+	// every user in an add turned out to be a member already.
 	it('rings nobody for an empty list', () => {
-		expect(shouldRingVideoConference(0)).to.be.false;
+		expect(shouldRingRecipients(0)).to.be.false;
 	});
 });

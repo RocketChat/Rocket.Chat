@@ -1,4 +1,4 @@
-import { VIDEO_CONF_RINGING_LIMIT } from '@rocket.chat/core-typings';
+import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
 import { ajv } from '../Ajv';
@@ -35,7 +35,7 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 			},
 			minItems: 1,
 			// Adding is capped so the whole batch can always be rung, which is why it is the ringing limit itself.
-			maxItems: VIDEO_CONF_RINGING_LIMIT,
+			maxItems: RING_RECIPIENTS_LIMIT,
 		},
 		ring: {
 			type: 'boolean',

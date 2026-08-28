@@ -49,12 +49,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { conferenceNameFor } from '../../../lib/videoConference/conferenceName';
-import {
-	availabilityErrors,
-	CALL_FACES_SHOWN,
-	EMPTY_CALL_GRACE_MS,
-	shouldRingVideoConference,
-} from '../../../lib/videoConference/constants';
+import { availabilityErrors, CALL_FACES_SHOWN, EMPTY_CALL_GRACE_MS, shouldRingRecipients } from '../../../lib/videoConference/constants';
 import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -1262,7 +1257,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// A finished call is not something to add people to — and certainly not something to ring them into.
-		// Same answer `ringMembers` gives: nobody was added.
+		// Same answer `ringMember` gives: nobody was added.
 		if (call.endedAt) {
 			return [];
 		}
@@ -1293,7 +1288,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing limit —
 		// so unlike starting a call in a large room, an add can always ring. Whether it does is the adder's to
 		// say: someone added to carry on later is not someone to interrupt now.
-		if (ring && shouldRingVideoConference(added.length)) {
+		if (ring && shouldRingRecipients(added.length)) {
 			await this.ringUsers(callId, call.rid, uid, added);
 		}
 
@@ -1325,37 +1320,34 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Rings members who aren't in the call, again — all of them, or the ones asked for.
+	 * Rings one member who isn't in the call, again.
 	 *
 	 * A ring is one-shot, so the caller of a call nobody picked up needs a way to try again — and adding the
-	 * same person a second time won't do it, since they are already a member. Returns who was rung.
+	 * same person a second time won't do it, since they are already a member. One member at a time, because
+	 * that is the shape of the act: someone specific didn't pick up. Says whether the ring went out.
 	 *
-	 * Members who already left are rung too: they were there and are not now, which is exactly the case
-	 * "call them back" is for. Anyone already in the call is never rung, whether or not they were asked for —
-	 * and neither is anyone whose phone is ringing right now: there is nothing more to ask of them.
+	 * A member who already left is rung too: they were there and are not now, which is exactly the case
+	 * "call them back" is for. Someone already in the call is never rung, and neither is someone whose phone is
+	 * ringing right now: there is nothing more to ask of them. The caller can't ring themselves.
 	 */
-	public async ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]> {
+	public async ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
 		}
 
 		if (call.endedAt) {
-			return [];
+			return false;
 		}
 
-		const requested = userIds?.length ? new Set(userIds) : undefined;
-		const absent = call.users
-			.filter((member) => member._id !== uid && canRingConferenceMember(member) && (!requested || requested.has(member._id)))
-			.map(({ _id }) => _id);
-
-		if (!shouldRingVideoConference(absent.length)) {
-			return [];
+		const member = call.users.find(({ _id }) => _id === memberId);
+		if (memberId === uid || !member || !canRingConferenceMember(member)) {
+			return false;
 		}
 
-		await this.ringUsers(callId, call.rid, uid, absent);
+		await this.ringUsers(callId, call.rid, uid, [memberId]);
 
-		return absent;
+		return true;
 	}
 
 	/**
