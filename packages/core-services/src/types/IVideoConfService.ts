@@ -58,7 +58,8 @@ export interface IVideoConfService {
 	renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	/** Marks everyone whose presence lease has run out as having left, and ends the calls that empties. */
 	expirePresenceLeases(now?: Date): Promise<void>;
-	ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]>;
+	/** Rings one member who isn't in the call, again; says whether the ring went out. */
+	ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean>;
 	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;

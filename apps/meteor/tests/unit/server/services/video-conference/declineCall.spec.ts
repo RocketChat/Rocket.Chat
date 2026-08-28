@@ -5,7 +5,7 @@ import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
 
-// Mirrors `ringMembers.spec.ts`'s approach: `fixture` is the single canonical record and
+// Mirrors `ringing.spec.ts`'s approach: `fixture` is the single canonical record and
 // `VideoConference.findOneById` hands out a clone of it on every call, regardless of projection.
 let fixture: VideoConference;
 

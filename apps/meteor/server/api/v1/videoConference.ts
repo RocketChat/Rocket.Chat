@@ -112,10 +112,10 @@ const joinableResponseSchema = oneValueResponseSchema<{ calls: unknown[] }>('cal
 	description: 'Calls running now that the caller may join.',
 });
 
-const ringResponseSchema = oneValueResponseSchema<{ rang: string[] }>('rang', {
-	type: 'array',
-	items: { type: 'string' },
-	description: 'Ids of the members who were rung.',
+const ringResponseSchema = oneValueResponseSchema<{ rang: boolean }>('rang', {
+	type: 'boolean',
+	description:
+		'Whether the member was rung. False when there was nothing to do — they are in the call, their phone is already ringing, or the call has ended.',
 });
 
 const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
@@ -426,7 +426,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, users } = this.bodyParams;
+		const { callId, userId } = this.bodyParams;
 
 		// The same permission `video-conference.start` demands before ringing anyone — having access to a
 		// conference must not be a way around it.
@@ -439,7 +439,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const rang = await VideoConf.ringMembers(conference.userId, callId, users);
+		const rang = await VideoConf.ringMember(conference.userId, callId, userId);
 
 		return API.v1.success({ rang });
 	},

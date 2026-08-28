@@ -1,4 +1,4 @@
-import { VIDEO_CONF_RINGING_LIMIT } from '@rocket.chat/core-typings';
+import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 
 export const availabilityErrors = {
 	NOT_CONFIGURED: 'video-conf-provider-not-configured',
@@ -26,6 +26,5 @@ export const PREFLIGHT_FACES_SHOWN = 10;
  */
 export const EMPTY_CALL_GRACE_MS = 10_000;
 
-/** Whether this many recipients is a set worth ringing. See `VIDEO_CONF_RINGING_LIMIT` for why there is a cap. */
-export const shouldRingVideoConference = (recipientCount: number): boolean =>
-	recipientCount > 0 && recipientCount <= VIDEO_CONF_RINGING_LIMIT;
+/** Whether this many recipients is a set worth ringing. See `RING_RECIPIENTS_LIMIT` for why there is a cap. */
+export const shouldRingRecipients = (recipientCount: number): boolean => recipientCount > 0 && recipientCount <= RING_RECIPIENTS_LIMIT;
