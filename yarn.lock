@@ -9134,6 +9134,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/app-sdk@workspace:packages/app-sdk":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/app-sdk@workspace:packages/app-sdk"
+  dependencies:
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/apps-engine@workspace:^, @rocket.chat/apps-engine@workspace:packages/apps-engine":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps-engine@workspace:packages/apps-engine"
