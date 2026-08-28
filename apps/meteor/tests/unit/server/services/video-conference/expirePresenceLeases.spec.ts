@@ -31,7 +31,6 @@ const VideoConferenceModelMock = {
 		}
 	}),
 	renewUsersPresenceById: sinon.stub().resolves(),
-	markEmbeddedParticipantLeft: sinon.stub().resolves(),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
 		Object.assign(fixture, data);
 	}),
@@ -69,7 +68,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			VideoConferenceModelMock.findActiveWithMembers,
 			VideoConferenceModelMock.setUserLeftById,
 			VideoConferenceModelMock.renewUsersPresenceById,
-			VideoConferenceModelMock.markEmbeddedParticipantLeft,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 		);
@@ -95,16 +93,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		const [callId, uid, leftAt, reason] = VideoConferenceModelMock.setUserLeftById.firstCall.args;
 		expect({ callId, uid, reason }).to.deep.equal({ callId: 'call1', uid: 'gone', reason: 'timeout' });
 		expect(leftAt).to.deep.equal(at(-PRESENCE_LEASE_MS));
-	});
-
-	// Both records of who is in the call have to agree, or one half of the code counts the call as occupied while
-	// the other counts it as empty.
-	it('records the departure against the embedded participant list too', async () => {
-		fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
-
-		await service.expirePresenceLeases(at(0));
-
-		expect(VideoConferenceModelMock.markEmbeddedParticipantLeft.calledWith('call1', 'gone', at(-PRESENCE_LEASE_MS))).to.be.true;
 	});
 
 	it('leaves a member who is still renewing alone', async () => {

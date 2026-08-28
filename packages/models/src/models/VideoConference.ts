@@ -6,7 +6,6 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
-	IVideoConferenceParticipant,
 	VideoConferenceLeaveReason,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
@@ -467,10 +466,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
-	// --- Embedded SFU (LiveKit) helpers ---
-	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
-	// is described in the IVideoConferenceParticipant type in core-typings.
-
 	/**
 	 * Every call that is still open, with what the presence sweep needs to judge it: who is on the roster, and
 	 * which provider is running the media — the one that may be able to say who is in the room.
@@ -486,33 +481,5 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
 		);
-	}
-
-	public async addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void> {
-		// One atomic update: drop any prior entry for this user (so a re-join doesn't leave a leftAt'd ghost
-		// alongside the fresh one) and append the new entry in the same write — two separate writes would let
-		// two concurrent joins interleave into a duplicate. `$literal` keeps the entry's values as data even if
-		// one happens to look like an aggregation expression.
-		await this.updateOne({ _id: callId }, [
-			{
-				$set: {
-					participants: {
-						$concatArrays: [
-							{
-								$filter: {
-									input: { $ifNull: ['$participants', []] },
-									cond: { $ne: ['$$this.id', participant.id] },
-								},
-							},
-							{ $literal: [{ ...participant, joinedAt: participant.joinedAt ?? new Date() }] },
-						],
-					},
-				},
-			},
-		] as any);
-	}
-
-	public async markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id'], leftAt = new Date()): Promise<void> {
-		await this.updateOne({ '_id': callId, 'participants.id': userId }, { $set: { 'participants.$.leftAt': leftAt } } as any);
 	}
 }
