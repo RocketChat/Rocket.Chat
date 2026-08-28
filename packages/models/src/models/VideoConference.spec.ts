@@ -233,26 +233,6 @@ describe('VideoConferenceRaw.setUserLeftById', () => {
 	});
 });
 
-describe('VideoConferenceRaw.addEmbeddedParticipant', () => {
-	// Two writes ($pull then $push) let two concurrent joins interleave into a duplicate entry; a single
-	// pipeline update replaces-and-appends atomically.
-	it('should drop any prior entry and append the fresh one in one write', async () => {
-		const { model, updateOne } = setupModel();
-		const joinedAt = new Date('2026-08-01T10:00:00Z');
-
-		await model.addEmbeddedParticipant('call-1', { id: 'user-1', username: 'user.one', displayName: 'User One', joinedAt });
-
-		expect(updateOne).toHaveBeenCalledTimes(1);
-		const [query, update] = updateOne.mock.calls[0];
-		expect(query).toEqual({ _id: 'call-1' });
-		// A pipeline update, which is what makes the replace-and-append a single atomic step.
-		expect(Array.isArray(update)).toBe(true);
-		expect(update[0].$set.participants.$concatArrays[1]).toEqual({
-			$literal: [{ id: 'user-1', username: 'user.one', displayName: 'User One', joinedAt }],
-		});
-	});
-});
-
 describe('VideoConferenceRaw.setUserDeclinedById', () => {
 	it('should mutate the matching entry in place via arrayFilters', async () => {
 		const { model, updateOne } = setupModel();

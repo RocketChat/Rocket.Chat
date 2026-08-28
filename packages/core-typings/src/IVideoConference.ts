@@ -149,20 +149,6 @@ export const isRingingVideoConferenceMember = (
 	return now - user.ringingAt.getTime() < VIDEO_CONF_RINGING_WINDOW_MS;
 };
 
-/**
- * Per-participant join/leave tracking. Used by embedded-SFU providers
- * (e.g. LiveKit) where the room may persist across users joining and leaving
- * independently. URL-based providers (Jitsi/Meet/Zoom) leave this undefined
- * — they only know if the call is open at all, not who's currently in.
- */
-export type IVideoConferenceParticipant = {
-	id: IUser['_id'];
-	username?: string;
-	displayName?: string;
-	joinedAt?: Date;
-	leftAt?: Date;
-};
-
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
 	rid: string;
@@ -185,12 +171,6 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
-
-	/**
-	 * Populated by a provider that runs the call inside Rocket.Chat (LiveKit) rather than handing off to an
-	 * external URL. URL-based providers (Jitsi/Meet/Zoom) leave it undefined.
-	 */
-	participants?: IVideoConferenceParticipant[];
 }
 
 export interface IDirectVideoConference extends IVideoConference {
