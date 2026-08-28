@@ -26,10 +26,10 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
    (navbar search) live outside #rocket-chat */
 :root {
 	--rcx-input-colors-background-color: #212224;
-	/* quiet stroke ladder: resting is a hairline (the T1 fill against the T0
-	   canvas already carries the affordance), each interaction state steps
-	   up, focus keeps the primary-blue ring */
-	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.14);
+	/* quiet stroke ladder: resting shares stroke-light with the global
+	   header divider (the original Fuselage pairing), each interaction
+	   state steps up, focus keeps the primary-blue ring */
+	--rcx-input-colors-border-color: var(--rcx-color-stroke-light);
 	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.26);
 	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.32);
 	--rcx-input-colors-disabled-border-color: rgba(255, 255, 255, 0.08);
