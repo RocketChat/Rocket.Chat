@@ -1,20 +1,30 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
-import type { FindCursor, FindOptions, Filter } from 'mongodb';
+import type { FindCursor, FindOptions } from 'mongodb';
 
 import { settings } from '../settings';
+import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibility/effectiveStatus';
 
 type FindUsersParam = {
 	rid: string;
-	status?: Filter<IUser>['status'];
+	status?: UserStatus[] | 'not-offline';
+	hidden?: Set<IUser['_id']>;
 	skip?: number;
 	limit?: number;
 	filter?: string;
 	sort?: Record<string, any>;
 };
 
-export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '', sort }: FindUsersParam): FindPaginated<FindCursor<IUser>> {
+export function findUsersOfRoom({
+	rid,
+	status,
+	hidden,
+	skip = 0,
+	limit = 0,
+	filter = '',
+	sort,
+}: FindUsersParam): FindPaginated<FindCursor<IUser>> {
 	const options: FindOptions<IUser> = {
 		projection: {
 			name: 1,
@@ -26,7 +36,7 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 			federated: 1,
 		},
 		sort: {
-			statusConnection: -1,
+			...(hidden?.size ? {} : { statusConnection: -1 }),
 			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
 		...(skip > 0 && { skip }),
@@ -35,10 +45,10 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
+	const statusFilter = Array.isArray(status) ? effectiveStatusFilter(status, hidden) : status && excludingOfflineFilter(hidden);
+
 	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, searchFields, [
-		{
-			__rooms: rid,
-			...(status && { status }),
-		},
+		{ __rooms: rid },
+		...(statusFilter ? [statusFilter] : []),
 	]);
 }

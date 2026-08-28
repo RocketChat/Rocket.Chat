@@ -1739,12 +1739,12 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		return API.v1.success(
-			await findUsersToAutocomplete({
-				uid: this.userId,
-				selector,
-			}),
-		);
+		const [{ items }, hidden] = await Promise.all([
+			findUsersToAutocomplete({ uid: this.userId, selector }),
+			getUsersHiddenFrom(this.userId),
+		]);
+
+		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
 	},
 );
 
@@ -2112,6 +2112,11 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
+
+			if (hidden?.has(user._id)) {
+				return API.v1.success({ _id: user._id, status: 'offline' });
+			}
 
 			return API.v1.success({
 				_id: user._id,

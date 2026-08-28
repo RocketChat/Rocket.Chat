@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
-import type { ITeam } from '@rocket.chat/core-typings';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
@@ -32,6 +32,9 @@ import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -513,6 +516,8 @@ API.v1.get(
 
 		const canSeeAllMembers = await hasPermissionAsync(this.user, 'view-all-teams', team.roomId);
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+
 		const query: Record<string, unknown> = {};
 		if (username) {
 			query.username = new RegExp(escapeRegExp(username), 'i');
@@ -521,13 +526,15 @@ API.v1.get(
 			query.name = new RegExp(escapeRegExp(name), 'i');
 		}
 		if (status) {
-			query.status = { $in: status };
+			Object.assign(query, effectiveStatusFilter(status as UserStatus[], hidden));
 		}
 
 		const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 
 		return API.v1.success({
-			members: records,
+			members: hidden
+				? records.map((record) => (hidden.has(record.user._id) ? { ...record, user: redactStatus(record.user) } : record))
+				: records,
 			total,
 			count: records.length,
 			offset,

@@ -49,6 +49,7 @@ export default {
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/server/api/*.spec.ts',
 				'<rootDir>/server/api/lib/getUserInfo.spec.ts',
+				'<rootDir>/server/api/lib/queryFiltersStatus.spec.ts',
 				'<rootDir>/server/api/v1/middlewares/*.spec.ts',
 				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
