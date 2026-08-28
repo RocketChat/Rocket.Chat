@@ -1,3 +1,4 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
@@ -27,13 +28,13 @@ export function encodeHistoryCursor(ts: Date): string {
 
 export function decodeHistoryCursor(cursor: string): Date {
 	if (!/^\d+$/.test(cursor)) {
-		throw new Error('error-invalid-cursor');
+		throw new MeteorError('error-invalid-cursor', 'Invalid pagination cursor');
 	}
 
 	const date = new Date(parseInt(cursor, 10));
 
 	if (date.toString() === 'Invalid Date') {
-		throw new Error('error-invalid-cursor');
+		throw new MeteorError('error-invalid-cursor', 'Invalid pagination cursor');
 	}
 
 	return date;
@@ -65,7 +66,7 @@ export async function loadRoomHistory({
 	room: IRoom;
 }): Promise<RoomHistoryResult> {
 	if ([next, previous, around].filter(Boolean).length > 1) {
-		throw new Error('error-cursor-conflict');
+		throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
 	}
 
 	const rid = room._id;
