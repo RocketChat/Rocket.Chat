@@ -306,6 +306,7 @@ class RoomHistoryManagerClass extends Emitter {
 			cursorPrevious: undefined,
 			cursorNext: undefined,
 		});
+		this.emit('room-cleared', rid);
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
