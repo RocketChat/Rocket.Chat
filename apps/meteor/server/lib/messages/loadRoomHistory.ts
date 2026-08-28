@@ -170,7 +170,8 @@ async function loadAround({
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
 }): Promise<Window> {
-	const remaining = count - 1;
+	// A non-positive count would produce a Mongo `limit: 0`, which means "no limit".
+	const remaining = Math.max(count, 1) - 1;
 	const olderLimit = Math.ceil(remaining / 2);
 	const newerLimit = Math.floor(remaining / 2);
 
