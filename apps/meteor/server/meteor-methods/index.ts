@@ -6,7 +6,6 @@ import './auth/addSamlService';
 import './auth/addUserToRole';
 import './auth/checkCodesRemaining';
 import './auth/checkRegistrationSecretURL';
-import './auth/crowd';
 import './auth/disable';
 import './auth/enable';
 import './auth/logoutCleanUp';
