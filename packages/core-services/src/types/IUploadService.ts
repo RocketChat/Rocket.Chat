@@ -9,6 +9,13 @@ export interface IUploadFileParams {
 	details: IUploadDetails;
 	federation?: Required<IUpload>['federation'];
 }
+
+export interface ICreatePendingFileParams {
+	userId: string;
+	details: IUploadDetails;
+	federation: Required<IUpload>['federation'];
+}
+
 export interface ISendFileMessageParams {
 	roomId: string;
 	userId: string;
@@ -25,6 +32,8 @@ export interface ISendFileLivechatMessageParams {
 
 export interface IUploadService {
 	uploadFile(params: IUploadFileParams): Promise<IUpload>;
+	createPendingFile(params: ICreatePendingFileParams): Promise<IUpload>;
+	completePendingFile(params: { fileId: IUpload['_id']; buffer: Buffer }): Promise<IUpload | null>;
 	sendFileMessage(params: ISendFileMessageParams): Promise<boolean | undefined>;
 	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<boolean | undefined>;
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
