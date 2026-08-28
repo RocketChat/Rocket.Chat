@@ -5,17 +5,10 @@ import _ from 'underscore';
 export async function configureAccounts() {
 	const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 	Accounts.updateOrCreateUserFromExternalService = async function (serviceName, serviceData = {}, ...args /* , options*/) {
-		const services = ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter', 'apple'];
+		const services = ['github', 'gitlab', 'google'];
 
 		if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
 			return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
-		}
-
-		if (serviceName === 'meteor-developer') {
-			if (Array.isArray(serviceData.emails)) {
-				const primaryEmail = serviceData.emails.sort((a) => a.primary !== true).filter((item) => item.verified === true)[0];
-				serviceData.email = primaryEmail && primaryEmail.address;
-			}
 		}
 
 		if (serviceData.email) {
