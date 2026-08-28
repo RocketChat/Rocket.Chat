@@ -976,10 +976,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
-		// Embedded providers (LiveKit) don't return a URL — the client mounts
-		// the call inline via the embedded provider's React tree. The join is
-		// already on the roster from `runOnUserJoinEvent` above, so returning an
-		// empty string is all that's left: it tells the client there's no URL to open.
+		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
+		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
+		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike.
 		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			if (user) {
 				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
