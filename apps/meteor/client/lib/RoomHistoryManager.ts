@@ -230,15 +230,19 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		await this.queue();
+		try {
+			this.updateRoom(rid, { isLoading: true });
 
-		this.updateRoom(rid, { isLoading: true });
+			await this.queue();
 
-		const subscription = Subscriptions.state.find((record) => record.rid === rid);
+			// `clear` may have run while queued (jump to message, jump to recent):
+			// the window this cursor belonged to is gone, so there is nothing to page from.
+			const { cursorNext: next } = room;
+			if (!next) {
+				return;
+			}
 
-		const { cursorNext: next } = room;
-
-		if (next) {
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
 
 			const result = await sdk.rest.get('/v1/rooms.history', {
@@ -258,7 +262,6 @@ class RoomHistoryManagerClass extends Emitter {
 			this.emit('loaded-messages');
 
 			this.updateRoom(rid, {
-				isLoading: false,
 				cursorNext: result.cursor.next,
 				hasMoreNext: result.cursor.next !== null,
 			});
@@ -267,8 +270,10 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 
 			room.loaded += messages.length;
+		} finally {
+			this.updateRoom(rid, { isLoading: false });
+			this.unqueue();
 		}
-		this.unqueue();
 	}
 
 	public hasMore(rid: IRoom['_id']) {
