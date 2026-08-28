@@ -63,6 +63,7 @@ slashCommands.add({
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('User_doesnt_exist', {
+					interpolation: { escapeValue: false },
 					username: usernames.join(' @'),
 					lng: settings.get('Language') || 'en',
 				}),
@@ -83,6 +84,7 @@ slashCommands.add({
 			const usernameStr = user.username as string;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_is_already_in_here', {
+					interpolation: { escapeValue: false },
 					username: usernameStr,
 					lng: settings.get('Language') || 'en',
 				}),
