@@ -26,17 +26,28 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
    (navbar search) live outside #rocket-chat */
 :root {
 	--rcx-input-colors-background-color: #212224;
-	/* strokes are decorative (WCAG 1.4.11 carve-out): inputs are identified
-	   by placeholder/icon/fill, and the focus ring carries the operable
-	   duty. Resting shares stroke-light with the global header divider
-	   (the original Fuselage pairing); interaction states step up. */
-	--rcx-input-colors-border-color: var(--rcx-color-stroke-light);
-	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.28);
-	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.34);
-	--rcx-input-colors-disabled-border-color: rgba(255, 255, 255, 0.08);
+	/* fill-led fields (design memo): inputs are recessed wells cut into the
+	   surface — T-1 (#101113) is the single sanctioned tone below the
+	   anchor, reserved for form-field fills. Strokes are decorative
+	   whispers (WCAG 1.4.11 carve-out — identification comes from
+	   placeholder/icon/fill); the solid stroke-highlight focus border is
+	   the one load-bearing ring (5.6:1), so the 2px focus halo goes to
+	   keep a single outline. */
+	--rcx-input-colors-background-color: #101113;
+	--rcx-input-colors-disabled-background-color: #101113;
+	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.08);
+	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.16);
+	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.16);
+	--rcx-input-colors-disabled-border-color: transparent;
+	--rcx-input-colors-focus-shadow-color: transparent;
 }
 .rcx-input-box__wrapper.rcx-input-box__wrapper {
-	background-color: #212224 !important;
+	background-color: #101113 !important;
+}
+/* the inset sells the "cut into" depth that lets an 8% border suffice —
+   part of the field recipe (fill + stroke + inset), forbidden elsewhere */
+.rcx-input-box__wrapper.rcx-input-box__wrapper:not(:focus-within) {
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
 }`;
 
 export const MainLayoutStyleTags = () => {
