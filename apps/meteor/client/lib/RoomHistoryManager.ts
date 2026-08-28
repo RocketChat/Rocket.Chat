@@ -3,14 +3,14 @@ import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getUserId } from '../../../../client/lib/user';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
-import { Messages, Subscriptions } from '../../../../client/stores';
-import { getUserPreference } from '../../../utils/client';
-import { sdk } from '../../../utils/client/lib/SDKClient';
+import { getUserPreference } from '../../app/utils/client';
+import { Messages, Subscriptions } from '../stores';
+import { onClientMessageReceived } from './onClientMessageReceived';
+import { getUserId } from './user';
+import { callWithErrorHandling } from './utils/callWithErrorHandling';
+import { getConfig } from './utils/getConfig';
+import { mapMessageFromApi } from './utils/mapMessageFromApi';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;

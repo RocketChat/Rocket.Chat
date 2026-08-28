@@ -16,7 +16,7 @@ jest.mock('../../client/lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-jest.mock('../../app/ui-utils/client', () => ({
+jest.mock('../../client/lib/LegacyRoomManager', () => ({
 	LegacyRoomManager: {
 		close: jest.fn(),
 	},
