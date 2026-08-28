@@ -1,5 +1,11 @@
 # @rocket.chat/ui-voip
 
+## 24.0.0-rc.1
+
+### Minor Changes
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
 ## 24.0.0-rc.0
 
 ### Minor Changes

@@ -1,5 +1,27 @@
 # @rocket.chat/meteor
 
+## 8.8.0-rc.1
+
+### Minor Changes
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41454](https://github.com/RocketChat/Rocket.Chat/pull/41454)) Fixes the message list silently loading the entire room history — and downloading its attachments — in the background when a full-width contextual bar (such as the thread view on small screens) hides it
+
+- ([#41499](https://github.com/RocketChat/Rocket.Chat/pull/41499)) Fixes a reload loop when opening a link to an older message (`?msg=`): the room would flash the linked message and then keep loading until it hit the server rate limit (429) instead of settling. The room now opens positioned on the linked message, and when the linked message cannot be loaded the room settles on the most recent messages instead of retrying.
+
+- <details><summary>Updated dependencies [1c01809baea9fc6dd06f3f4b0e38ce41a6f4f5e1]:</summary>
+
+  - @rocket.chat/i18n@4.0.0-rc.1
+  - @rocket.chat/ui-voip@24.0.0-rc.1
+  - @rocket.chat/core-typings@8.8.0-rc.1
+  - @rocket.chat/rest-typings@8.8.0-rc.1
+  </details>
+
 ## 8.8.0-rc.0
 
 ### Minor Changes
