@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { SubscriptionsCachedStore } from '../../../cachedStores';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
