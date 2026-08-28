@@ -68,18 +68,6 @@ import { IS_EE } from '../../e2e/config/constants';
 		await updateEESetting('Accounts_StatusVisibility_Enabled', false);
 	});
 
-	it('should keep the hider online for everyone else', async () => {
-		await request
-			.get(api('rooms.membersOrderedByRole'))
-			.set(bystanderCredentials)
-			.query({ 'roomId': channel._id, 'status[]': UserStatus.ONLINE })
-			.expect(200)
-			.expect((res) => {
-				expect(usernamesOf(res.body.members)).to.include(hider.username);
-				expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.ONLINE);
-			});
-	});
-
 	describe('[/rooms.membersOrderedByRole]', () => {
 		it('should not return the hider when the viewer filters by online', async () => {
 			await request
@@ -90,6 +78,17 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(usernamesOf(res.body.members)).to.not.include(hider.username);
 					expect(res.body.total).to.be.equal(res.body.members.length);
+				});
+		});
+
+		it('should return the hider as online to a user they do not hide from', async () => {
+			await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(bystanderCredentials)
+				.query({ 'roomId': channel._id, 'status[]': UserStatus.ONLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.ONLINE);
 				});
 		});
 
@@ -130,6 +129,17 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.total).to.be.equal(res.body.members.length);
 				});
 		});
+
+		it('should return the hider as online to a user they do not hide from', async () => {
+			await request
+				.get(api('channels.members'))
+				.set(bystanderCredentials)
+				.query({ 'roomId': channel._id, 'status[]': UserStatus.ONLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.ONLINE);
+				});
+		});
 	});
 
 	describe('[/channels.online]', () => {
@@ -141,6 +151,17 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(200)
 				.expect((res) => {
 					expect(usernamesOf(res.body.online)).to.not.include(hider.username);
+				});
+		});
+
+		it('should return the hider to a user they do not hide from', async () => {
+			await request
+				.get(api('channels.online'))
+				.set(bystanderCredentials)
+				.query({ _id: channel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(usernamesOf(res.body.online)).to.include(hider.username);
 				});
 		});
 	});
@@ -157,6 +178,17 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.total).to.be.equal(res.body.members.length);
 				});
 		});
+
+		it('should return the hider as online to a user they do not hide from', async () => {
+			await request
+				.get(api('groups.members'))
+				.set(bystanderCredentials)
+				.query({ 'roomId': group._id, 'status[]': UserStatus.ONLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.ONLINE);
+				});
+		});
 	});
 
 	describe('[/groups.online]', () => {
@@ -170,9 +202,22 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(usernamesOf(res.body.online)).to.not.include(hider.username);
 				});
 		});
+
+		it('should return the hider to a user they do not hide from', async () => {
+			await request
+				.get(api('groups.online'))
+				.set(bystanderCredentials)
+				.query({ _id: group._id })
+				.expect(200)
+				.expect((res) => {
+					expect(usernamesOf(res.body.online)).to.include(hider.username);
+				});
+		});
 	});
 
 	describe('[/teams.members]', () => {
+		const teamUsernamesOf = (members: { user: IUser }[]) => members.map(({ user }) => user.username);
+
 		it('should not return the hider when the viewer filters by online', async () => {
 			await request
 				.get(api('teams.members'))
@@ -180,7 +225,18 @@ import { IS_EE } from '../../e2e/config/constants';
 				.query({ 'teamId': team._id, 'status[]': UserStatus.ONLINE })
 				.expect(200)
 				.expect((res) => {
-					expect(res.body.members.map(({ user }: { user: IUser }) => user.username)).to.not.include(hider.username);
+					expect(teamUsernamesOf(res.body.members)).to.not.include(hider.username);
+				});
+		});
+
+		it('should return the hider to a user they do not hide from', async () => {
+			await request
+				.get(api('teams.members'))
+				.set(bystanderCredentials)
+				.query({ 'teamId': team._id, 'status[]': UserStatus.ONLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(teamUsernamesOf(res.body.members)).to.include(hider.username);
 				});
 		});
 
@@ -210,6 +266,17 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.not.have.property('statusSource');
 				});
 		});
+
+		it('should report the real status to a user they do not hide from', async () => {
+			await request
+				.get(api('users.getStatus'))
+				.set(bystanderCredentials)
+				.query({ userId: hider._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.status).to.be.equal(UserStatus.ONLINE);
+				});
+		});
 	});
 
 	describe('[/users.getPresence]', () => {
@@ -223,17 +290,63 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.presence).to.be.equal(UserStatus.OFFLINE);
 				});
 		});
+
+		it('should report the real presence to a user they do not hide from', async () => {
+			await request
+				.get(api('users.getPresence'))
+				.set(bystanderCredentials)
+				.query({ userId: hider._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.presence).to.be.equal(UserStatus.ONLINE);
+				});
+		});
 	});
 
 	describe('[/users.autocomplete]', () => {
+		const selector = (conditions?: object) => JSON.stringify({ term: hider.username, exceptions: [], ...(conditions && { conditions }) });
+
 		it('should list the hider as offline to the viewer', async () => {
 			await request
 				.get(api('users.autocomplete'))
 				.set(viewerCredentials)
-				.query({ selector: JSON.stringify({ term: hider.username, exceptions: [] }) })
+				.query({ selector: selector() })
 				.expect(200)
 				.expect((res) => {
 					expect(statusOf(res.body.items, hider.username)).to.be.equal(UserStatus.OFFLINE);
+				});
+		});
+
+		it('should list the real status to a user they do not hide from', async () => {
+			await request
+				.get(api('users.autocomplete'))
+				.set(bystanderCredentials)
+				.query({ selector: selector() })
+				.expect(200)
+				.expect((res) => {
+					expect(statusOf(res.body.items, hider.username)).to.be.equal(UserStatus.ONLINE);
+				});
+		});
+
+		it('should not return the hider when the viewer filters by online through the selector conditions', async () => {
+			await request
+				.get(api('users.autocomplete'))
+				.set(viewerCredentials)
+				.query({ selector: selector({ status: UserStatus.ONLINE }) })
+				.expect(200)
+				.expect((res) => {
+					expect(usernamesOf(res.body.items)).to.not.include(hider.username);
+				});
+		});
+
+		it('should return the hider through the selector conditions to a user they do not hide from', async () => {
+			await request
+				.get(api('users.autocomplete'))
+				.set(bystanderCredentials)
+				.query({ selector: selector({ status: UserStatus.ONLINE }) })
+				.expect(200)
+				.expect((res) => {
+					expect(usernamesOf(res.body.items)).to.include(hider.username);
 				});
 		});
 	});

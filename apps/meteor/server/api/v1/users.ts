@@ -1739,10 +1739,13 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		const [{ items }, hidden] = await Promise.all([
-			findUsersToAutocomplete({ uid: this.userId, selector }),
-			getUsersHiddenFrom(this.userId),
-		]);
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		if (hidden && queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		}
+
+		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
 
 		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
 	},
