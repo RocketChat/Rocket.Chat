@@ -19,6 +19,11 @@ export type Page<T> = {
 	/** A Graph `deltaLink` or an EWS sync state. */
 	cursor?: string;
 	hasMore: boolean;
+	/**
+	 * True when `items` is the complete set for the window, so anything stored inside that window and
+	 * absent from it has been removed. False when `items` carries only what changed, deletions included.
+	 */
+	isCompleteForWindow: boolean;
 };
 
 export type ExchangeEventDeletion = {
@@ -42,11 +47,6 @@ export type ExchangeEventUpsert = {
 };
 
 export type ExchangeEvent = ExchangeEventUpsert | ExchangeEventDeletion;
-
-export type BusyBlock = {
-	start: Date;
-	end: Date;
-};
 
 export type ExchangeContactPhone = {
 	/** As it came from Exchange, kept for display and audit. */

@@ -3,7 +3,7 @@ import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { DEFAULT_GRAPH_HOST, GraphTokenClient } from './GraphTokenClient';
 import type { GraphTokenClientConfig } from './GraphTokenClient';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { BusyBlock, DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
@@ -39,16 +39,6 @@ type GraphDeltaResponse = {
 	'value'?: unknown;
 	'@odata.nextLink'?: unknown;
 	'@odata.deltaLink'?: unknown;
-};
-
-type GraphScheduleResponse = {
-	value?: {
-		scheduleItems?: {
-			start?: GraphDateTimeTimeZone;
-			end?: GraphDateTimeTimeZone;
-			status?: unknown;
-		}[];
-	}[];
 };
 
 /**
@@ -109,33 +99,9 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			items,
 			cursor: nextLink ?? deltaLink,
 			hasMore: Boolean(nextLink),
+			// Graph reports removals explicitly, so the caller never has to infer them from absence.
+			isCompleteForWindow: false,
 		};
-	}
-
-	public async getFreeBusy(mailbox: string, window: DateRange): Promise<BusyBlock[]> {
-		const url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}/calendar/getSchedule`;
-
-		const payload = await this.requestJson<GraphScheduleResponse>(url, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', 'Prefer': PREFER_UTC },
-			body: JSON.stringify({
-				schedules: [mailbox],
-				startTime: { dateTime: window.start.toISOString(), timeZone: 'UTC' },
-				endTime: { dateTime: window.end.toISOString(), timeZone: 'UTC' },
-				availabilityViewInterval: 15,
-			}),
-		});
-
-		const scheduleItems = payload.value?.[0]?.scheduleItems ?? [];
-
-		return scheduleItems
-			.filter((item) => isBusy(item.status) || item.status === 'oof')
-			.map((item) => {
-				const start = parseGraphDateTime(item.start);
-				const end = parseGraphDateTime(item.end);
-				return start && end ? { start, end } : undefined;
-			})
-			.filter((block): block is BusyBlock => block !== undefined);
 	}
 
 	private calendarViewDeltaUrl(mailbox: string, window: DateRange): string {
