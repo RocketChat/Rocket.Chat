@@ -55,7 +55,7 @@ Meteor.methods<ServerMethods>({
 
 		const hidden = await getUsersHiddenFrom(userId);
 
-		const { cursor } = findUsersOfRoom({
+		const { cursor } = await findUsersOfRoom({
 			rid,
 			...(!showAll && { status: 'not-offline' as const }),
 			hidden,

@@ -1,4 +1,5 @@
-import type { IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 import type { FindCursor, FindOptions } from 'mongodb';
@@ -16,7 +17,7 @@ type FindUsersParam = {
 	sort?: Record<string, any>;
 };
 
-export function findUsersOfRoom({
+export async function findUsersOfRoom({
 	rid,
 	status,
 	hidden,
@@ -24,7 +25,10 @@ export function findUsersOfRoom({
 	limit = 0,
 	filter = '',
 	sort,
-}: FindUsersParam): FindPaginated<FindCursor<IUser>> {
+}: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
+	const hiddenCanAppear = Boolean(hidden?.size) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
+	const hiddenInRoom = hiddenCanAppear && (await Users.countDocuments({ __rooms: rid, _id: { $in: [...(hidden ?? [])] } })) > 0;
+
 	const options: FindOptions<IUser> = {
 		projection: {
 			name: 1,
@@ -36,7 +40,7 @@ export function findUsersOfRoom({
 			federated: 1,
 		},
 		sort: {
-			...(hidden?.size ? {} : { statusConnection: -1 }),
+			...(hiddenInRoom ? {} : { statusConnection: -1 }),
 			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
 		...(skip > 0 && { skip }),

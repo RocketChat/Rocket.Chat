@@ -49,6 +49,7 @@ import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyLis
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -2117,16 +2118,13 @@ API.v1
 
 			const user = await getUserFromParams(this.queryParams);
 			const hidden = await getUsersHiddenFrom(this.userId);
-
-			if (hidden?.has(user._id)) {
-				return API.v1.success({ _id: user._id, status: 'offline' });
-			}
+			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
 
 			return API.v1.success({
-				_id: user._id,
-				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				...(user.statusSource && { statusSource: user.statusSource }),
-				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
+				_id: visible._id,
+				status: (visible.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(visible.statusSource && { statusSource: visible.statusSource }),
+				...(visible.statusExpiresAt && { statusExpiresAt: visible.statusExpiresAt.toISOString() }),
 			});
 		},
 	);
