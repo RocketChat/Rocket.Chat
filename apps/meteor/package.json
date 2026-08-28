@@ -303,7 +303,7 @@
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^8.5.0",
 		"swagger-ui-express": "^5.0.1",
-		"swc-plugin-coverage-instrument": "0.0.33",
+		"swc-plugin-coverage-instrument": "0.0.32",
 		"swiper": "12.1.4",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",

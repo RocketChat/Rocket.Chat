@@ -10443,7 +10443,7 @@ __metadata:
     supertest: "npm:~7.1.4"
     supports-color: "npm:~7.2.0"
     swagger-ui-express: "npm:^5.0.1"
-    swc-plugin-coverage-instrument: "npm:0.0.33"
+    swc-plugin-coverage-instrument: "npm:0.0.32"
     swiper: "npm:12.1.4"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -36181,10 +36181,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swc-plugin-coverage-instrument@npm:0.0.33":
-  version: 0.0.33
-  resolution: "swc-plugin-coverage-instrument@npm:0.0.33"
-  checksum: 10/6daac9f3cb3541a4c15e42c0ba717311f0591d31e5487a746b156b30fa4a3bff3f1e97325711e2fb1455c66914e24b6b49b3ec83cb2001cbb3d1dfda477977fb
+"swc-plugin-coverage-instrument@npm:0.0.32":
+  version: 0.0.32
+  resolution: "swc-plugin-coverage-instrument@npm:0.0.32"
+  checksum: 10/5e5929ca4dc5906d081ddc96be88059f5cbd5c65d40031847902631b2a0911e67435120fc9ba3bd8a2e657e44bd29ad31aa85282a0de4aa1cf106a4bfc579f9b
   languageName: node
   linkType: hard
 
