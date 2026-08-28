@@ -27,7 +27,9 @@ export async function findUsersOfRoom({
 	sort,
 }: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
 	const hiddenCanAppear = Boolean(hidden?.size) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
-	const hiddenInRoom = hiddenCanAppear && (await Users.countDocuments({ __rooms: rid, _id: { $in: [...(hidden ?? [])] } })) > 0;
+	const hiddenInRoom =
+		hiddenCanAppear &&
+		(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: [...(hidden ?? [])] } })) > 0;
 
 	const options: FindOptions<IUser> = {
 		projection: {
