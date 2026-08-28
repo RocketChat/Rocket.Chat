@@ -1,0 +1,18 @@
+packages/core-typings/package.json
+  h_4c386397e672f4 5-9
+packages/ddp-client/package.json
+  h_4c386397e672f4 4-8
+packages/rest-typings/package.json
+  h_4c386397e672f4 4-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "62c620ee67ccc38cc88f4404f120f7e39820b7c4",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
