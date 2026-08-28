@@ -342,6 +342,16 @@ class RoomHistoryManagerClass extends Emitter {
 		// Rebuilds the window around the target, so the store does not grow monotonically here.
 		this.clear(message.rid);
 
+		// `clear` drops the cursors and clears `isLoading`, so restore both before the upsert yields:
+		// a `getMore` landing in that window has no cursor and would page from the newest end instead.
+		this.updateRoom(message.rid, {
+			isLoading: true,
+			cursorPrevious: result.cursor.previous,
+			cursorNext: result.cursor.next,
+			hasMore: result.cursor.previous !== null,
+			hasMoreNext: result.cursor.next !== null,
+		});
+
 		const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 
 		await upsertMessageBulk({ msgs: messages.filter((msg) => msg.t !== 'command'), subscription });
@@ -353,13 +363,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 		room.loaded += messages.length;
 
-		this.updateRoom(message.rid, {
-			isLoading: false,
-			cursorPrevious: result.cursor.previous,
-			cursorNext: result.cursor.next,
-			hasMore: result.cursor.previous !== null,
-			hasMoreNext: result.cursor.next !== null,
-		});
+		this.updateRoom(message.rid, { isLoading: false });
 	}
 }
 
