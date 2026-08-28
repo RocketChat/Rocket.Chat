@@ -1,1 +1,2 @@
 import './federation';
+import './slackbridgeImport';

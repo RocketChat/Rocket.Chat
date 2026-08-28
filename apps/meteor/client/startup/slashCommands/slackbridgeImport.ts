@@ -1,5 +1,5 @@
-import { settings } from '../../../client/lib/settings';
-import { slashCommands } from '../../utils/client/slashCommand';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
+import { settings } from '../../lib/settings';
 
 settings.observe('SlackBridge_Enabled', (_key, value) => {
 	if (value) {
