@@ -56,9 +56,9 @@ const UsersMock = {
 
 const broadcastStub = sinon.stub().resolves();
 
-// Deliberately NOT overriding '../../../lib/videoConference/constants' — the recipient-limit guard
-// (`shouldRingRecipients`, capped at `RING_RECIPIENTS_LIMIT`) is what one of the tests below exercises,
-// so it has to be the real implementation.
+// Deliberately NOT overriding '../../../lib/videoConference/constants' — an add rings through
+// `shouldRingRecipients`, so stubbing it would quietly suppress the ring the add tests below assert. Where the
+// limit itself falls is pinned on the guard in tests/unit/lib/videoConference/memberStatus.spec.ts.
 const VideoConfService = createService({
 	broadcast: broadcastStub,
 	models: { VideoConference: VideoConferenceModelMock, Users: UsersMock },
