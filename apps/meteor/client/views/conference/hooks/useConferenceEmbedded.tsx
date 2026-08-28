@@ -62,7 +62,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
 	// Matches the EE setting's own default, so an unset workspace behaves the same on both sides.
-	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'main_room') as 'thread' | 'main_room';
+	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'thread') as 'thread' | 'main_room';
 
 	const {
 		data: info,
