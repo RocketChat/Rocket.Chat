@@ -1794,17 +1794,21 @@ export const roomEndpoints = API.v1
 				return API.v1.forbidden();
 			}
 
-			const around = aroundId ? await Messages.findOneById(aroundId) : undefined;
-
-			if (aroundId && around?.rid !== roomId) {
-				return API.v1.notFound();
+			let around: IMessage | undefined;
+			if (aroundId) {
+				const message = await Messages.findOneById(aroundId);
+				// Hidden messages (e.g. deleted with Message_KeepHistory) must not resurface as the anchor.
+				if (!message || message.rid !== roomId || message._hidden) {
+					return API.v1.notFound();
+				}
+				around = message;
 			}
 
 			const result = await loadRoomHistory({
 				userId: this.userId,
 				next,
 				previous,
-				around: around ?? undefined,
+				around,
 				lastSeen: lastSeen ? new Date(lastSeen) : undefined,
 				count,
 				showThreadMessages,
