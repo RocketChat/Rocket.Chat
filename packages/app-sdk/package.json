@@ -1,0 +1,24 @@
+{
+	"name": "@rocket.chat/app-sdk",
+	"version": "0.0.0",
+	"private": true,
+	"description": "PROPOSAL (RFC) — a Mastra-inspired redesign of the Rocket.Chat Apps Engine app-facing API. Illustrative types and worked examples, not a shipping implementation.",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"typecheck:examples": "tsc -p tsconfig.examples.json",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
+	},
+	"devDependencies": {
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
