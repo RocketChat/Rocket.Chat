@@ -4,6 +4,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
+import { settings } from '../../settings';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';
@@ -26,7 +27,10 @@ export class VideoConfModule implements IUiKitCoreApp {
 				throw new Error('invalid call');
 			}
 
-			if (!userId || !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid))) {
+			if (
+				!settings.get<boolean>('Accounts_AllowAnonymousRead') &&
+				(!userId || !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid)))
+			) {
 				throw new Error('not-allowed');
 			}
 
