@@ -1,5 +1,4 @@
 import type {
-	BusyBlock,
 	ContactFolder,
 	DateRange,
 	ExchangeContact,
@@ -17,13 +16,10 @@ export interface IExchangeProvider {
 	testConnection(): Promise<void>;
 
 	/**
-	 * `window` is a bound, not a filter: EWS syncs a folder, not a range, so expect a superset.
+	 * `window` bounds the range, and is what EWS expands a changed recurring series over.
 	 * `cursor` is an opaque delta token, omitted for an initial sync.
 	 */
 	listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
-
-	/** Times only, no subjects (privacy). For workspaces that want busy status without storing event content. */
-	getFreeBusy(mailbox: string, window: DateRange): Promise<BusyBlock[]>;
 
 	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
 
