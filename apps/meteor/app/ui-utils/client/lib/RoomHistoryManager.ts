@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import { differenceInMilliseconds } from 'date-fns';
 import { useCallback, useSyncExternalStore } from 'react';
 
@@ -98,7 +99,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = crypto.randomUUID();
+			const requestId = Random.id();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();
