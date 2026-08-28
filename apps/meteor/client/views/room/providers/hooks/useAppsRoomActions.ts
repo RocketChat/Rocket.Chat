@@ -3,10 +3,10 @@ import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UiKitTriggerTimeoutError } from '../../../../../app/ui-message/client/UiKitTriggerTimeoutError';
 import { Utilities } from '../../../../../ee/lib/misc/Utilities';
 import { useAppActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../hooks/useApplyButtonFilters';
+import { UiKitTriggerTimeoutError } from '../../../../lib/errors/UiKitTriggerTimeoutError';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoom } from '../../contexts/RoomContext';
 

@@ -3,9 +3,9 @@ import { imperativeModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { flushSync } from 'react-dom';
 
-import AddLinkComposerActionModal from './AddLinkComposerActionModal';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { settings } from '../../../../client/lib/settings';
+import type { ComposerAPI } from './chats/ChatAPI';
+import { settings } from './settings';
+import AddLinkComposerActionModal from '../views/composer/AddLinkComposerActionModal';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 

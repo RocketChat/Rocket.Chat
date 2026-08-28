@@ -1,6 +1,6 @@
 import { createComposerAPI } from './createComposerAPI';
 
-jest.mock('../../../../client/lib/chats/uploads', () => ({
+jest.mock('../../../../lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
 }));
 
