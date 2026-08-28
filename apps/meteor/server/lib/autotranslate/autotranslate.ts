@@ -8,8 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeHTML, isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -86,13 +85,7 @@ export class TranslationProviderRegistry {
 	}
 
 	static setCurrentProvider(provider: string): void {
-		if (provider === TranslationProviderRegistry[Provider]) {
-			return;
-		}
-
 		TranslationProviderRegistry[Provider] = provider;
-
-		TranslationProviderRegistry.registerCallbacks();
 	}
 
 	static setEnable(enabled: boolean): void {
@@ -107,14 +100,9 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		const provider = TranslationProviderRegistry.getActiveProvider();
-		if (!provider) {
-			return;
-		}
-
 		callbacks.add(
 			'afterSaveMessage',
-			(message, { room }) => provider.translateMessage(message, { room }),
+			(message, { room }) => TranslationProviderRegistry.translateMessage(message, room),
 			callbacks.priority.MEDIUM,
 			'autotranslate',
 		);

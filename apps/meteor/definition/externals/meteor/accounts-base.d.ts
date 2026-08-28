@@ -3,17 +3,6 @@ declare module 'meteor/accounts-base' {
 
 	namespace Accounts {
 		const storageLocation: Window['localStorage'];
-		function createUser(
-			options: {
-				username?: string;
-				email?: string;
-				password?: string;
-				profile?: Record<string, unknown>;
-				joinDefaultChannelsSilenced?: boolean;
-				skipEmailValidation?: boolean;
-			},
-			callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): string;
 
 		function _expireTokens(oldestValidDate?: Date, userId?: string): Promise<void>;
 
@@ -30,10 +19,6 @@ declare module 'meteor/accounts-base' {
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
 		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
-
-		function _storedLoginToken(): unknown;
-
-		function _unstoreLoginToken(): void;
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 
@@ -56,10 +41,6 @@ declare module 'meteor/accounts-base' {
 		class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
-
-		const USER_ID_KEY: string;
-
-		const LOGIN_TOKEN_KEY: string;
 
 		const _accountData: Record<string, any>;
 

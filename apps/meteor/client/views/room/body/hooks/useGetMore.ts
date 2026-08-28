@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 
 export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const msgId = useSearchParameter('msg');

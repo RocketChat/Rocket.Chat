@@ -279,7 +279,10 @@ const BackfillQuerySchema = {
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
-			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			// a string branch here would be redundant: ajvQuery coerces a single `?v=` into a
+			// one-element array, and in a `oneOf` both branches would match and fail validation
+			type: 'array',
+			items: { type: 'string' },
 			description: 'Event ID(s) to backfill from',
 		},
 	},
@@ -289,7 +292,7 @@ const BackfillQuerySchema = {
 
 const isBackfillQueryProps = ajvQuery.compile<{
 	limit: number;
-	v: string | string[];
+	v: string[];
 }>(BackfillQuerySchema);
 
 const BackfillResponseSchema = {

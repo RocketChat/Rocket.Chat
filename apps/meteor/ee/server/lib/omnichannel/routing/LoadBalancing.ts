@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import type { IRoutingManagerConfig } from '../../../../../definition/IRoutingManagerConfig';
+import type { IRoutingManagerConfig } from './IRoutingManagerConfig';
 import { RoutingManager } from '../../../../../server/lib/omnichannel/RoutingManager';
 import { settings } from '../../../../../server/settings';
 import { getChatLimitsQuery } from '../../../hooks/omnichannel/applySimultaneousChatsRestrictions';

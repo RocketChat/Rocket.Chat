@@ -163,6 +163,10 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('sidebar', async () => {
+		test.afterEach(async ({ page }) => {
+			await page.evaluate(() => localStorage.removeItem('sidebarGroups'));
+		});
+
 		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
 			// focus should be on the next item
 			await poHomeChannel.sidebar.channelsList.getByRole('link').first().focus();
@@ -175,54 +179,40 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 		});
 
-		test('should expand/collapse sidebar groups', async ({ page }) => {
-			await page.goto('/home');
-
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
-			let isExpanded: boolean;
+		test('should expand/collapse sidebar groups', async () => {
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
 			await collapser.click();
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeFalsy();
+			await expect(collapser).toHaveAttribute('aria-expanded', 'false');
 
 			await collapser.click();
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeTruthy();
+			await expect(collapser).toHaveAttribute('aria-expanded', 'true');
 		});
 
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
-			await page.goto('/home');
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
+			await collapser.focus();
+			await expect(collapser).toBeFocused();
+			await page.keyboard.press('Enter');
+			await expect(collapser).toHaveAttribute('aria-expanded', 'false');
 
-			await expect(async () => {
-				await collapser.focus();
-				await expect(collapser).toBeFocused();
-				await page.keyboard.press('Enter');
-				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-				expect(isExpanded).toBeFalsy();
-			}).toPass();
-
-			await expect(async () => {
-				await collapser.focus();
-				await expect(collapser).toBeFocused();
-				await page.keyboard.press('Space');
-				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-				expect(isExpanded).toBeTruthy();
-			}).toPass();
+			await collapser.focus();
+			await expect(collapser).toBeFocused();
+			await page.keyboard.press('Space');
+			await expect(collapser).toHaveAttribute('aria-expanded', 'true');
 		});
 
 		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
-			await page.goto('/home');
-
 			const collapser = poHomeChannel.sidebar.firstCollapser;
+			const initialState = await collapser.getAttribute('aria-expanded');
+			const expectedState = initialState === 'true' ? 'false' : 'true';
+
 			await collapser.click();
-			const isExpanded = await collapser.getAttribute('aria-expanded');
+			await expect(collapser).toHaveAttribute('aria-expanded', expectedState);
 
 			await page.reload();
-
-			const isExpandedAfterReload = await collapser.getAttribute('aria-expanded');
-			expect(isExpanded).toEqual(isExpandedAfterReload);
+			await expect(collapser).toHaveAttribute('aria-expanded', expectedState);
 		});
 
 		test('should show unread badge on collapser when group is collapsed and has unread items', async () => {

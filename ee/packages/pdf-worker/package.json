@@ -20,11 +20,11 @@
 	"dependencies": {
 		"@react-pdf/renderer": "~4.5.1",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"emojibase-data": "^16.0.3",
 		"moment": "^2.30.1",
 		"moment-timezone": "^0.5.48",
-		"react": "~19.2.7",
+		"react": "~19.2.8",
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
@@ -37,15 +37,15 @@
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
 		"@types/jest": "~30.0.0",
-		"@types/react": "~19.2.17",
-		"@types/react-dom": "~19.2.3",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.4",
 		"buffer": "~6.0.3",
 		"emojibase": "^16.0.0",
 		"eslint": "~9.39.5",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"path-browserify": "^1.0.1",
-		"react-dom": "~19.2.7",
+		"react-dom": "~19.2.8",
 		"storybook": "^9.1.20",
 		"typescript": "~5.9.3"
 	},

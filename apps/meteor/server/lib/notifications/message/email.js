@@ -1,4 +1,4 @@
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { ltrim } from '../../../../lib/utils/stringUtils';

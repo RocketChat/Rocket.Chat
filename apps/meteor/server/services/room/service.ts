@@ -326,7 +326,8 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, ...(inviter.name && { name: inviter.name }) } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
-			...(room.t === 'd' && inviter && { fname: inviter.name, name: inviter.username }),
+			// `name` is optional for users, so fall back to the username like `getNameForDMs` does
+			...(room.t === 'd' && inviter && { fname: inviter.name || inviter.username, name: inviter.username }),
 		});
 
 		if (insertedId) {

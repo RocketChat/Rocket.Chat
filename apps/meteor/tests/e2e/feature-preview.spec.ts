@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
 import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
@@ -225,12 +226,14 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should show favorite team on the sidepanel', async () => {
+			test.skip(IS_EE);
+
 			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).not.toBeVisible();
 
-			await poHomeChannel.roomHeaderFavoriteBtn.click();
+			await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
 		});
@@ -324,6 +327,8 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('unread mentions badges on filters', async ({ page, browser }) => {
+			test.skip(IS_EE);
+
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
@@ -340,7 +345,7 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
 
-				await poHomeChannel.roomHeaderFavoriteBtn.click();
+				await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			});

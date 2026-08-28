@@ -14,7 +14,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { getExtension, getMimeTypeFromFileName } from '../../../app/utils/lib/mimeTypes';
@@ -120,7 +120,7 @@ const customSoundsEndpoints = API.v1
 			authRequired: true,
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;

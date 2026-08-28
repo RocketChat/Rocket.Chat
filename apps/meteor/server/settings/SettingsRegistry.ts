@@ -34,9 +34,12 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
  * @deprecated
  * please do not use event emitter to mutate values
  */
+/** The fields the enterprise value-masking listener needs; `fetchSettings` projects exactly these. */
+export type FetchedSetting = Pick<ISetting, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules'>;
+
 export const SettingsEvents = new Emitter<{
 	'store-setting-value': [ISetting, { value: SettingValue }];
-	'fetch-settings': ISetting[];
+	'fetch-settings': FetchedSetting[];
 	'remove-setting-value': ISetting;
 }>();
 

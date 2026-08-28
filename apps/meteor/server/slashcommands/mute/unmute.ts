@@ -22,8 +22,7 @@ slashCommands.add({
 		if (unmutedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [username],
+					username,
 					lng: settings.get('Language') || 'en',
 				}),
 			});

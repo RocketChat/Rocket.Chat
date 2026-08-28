@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
@@ -25,12 +26,16 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.waitForHome();
 	});
 
+	// TODO: this should be replaced by a unit test
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
+		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
+
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		await roomHeaderFavoriteBtn.focus();
+		await expect(roomHeaderFavoriteBtn).toBeFocused();
 
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
@@ -39,11 +44,15 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true })).toBeFocused();
 	});
 
+	// TODO: this should be replaced by a unit test
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
 
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await roomHeaderFavoriteBtn.focus();
+		await expect(roomHeaderFavoriteBtn).toBeFocused();
+
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
@@ -139,8 +148,8 @@ test.describe.serial('channel-management', () => {
 
 	test('should open room info when clicking on roomName', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await page.getByRole('button', { name: targetChannel }).first().focus();
-		await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+		await poHomeChannel.getBtnOpenRoomInfo(targetChannel).focus();
+		await expect(poHomeChannel.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 		await page.keyboard.press('Space');
 		await page.getByRole('dialog').waitFor();
 

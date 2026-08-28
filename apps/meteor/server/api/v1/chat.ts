@@ -27,7 +27,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
@@ -709,7 +709,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+			const { roomId, lastUpdate, fromTs, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
 				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
@@ -725,6 +725,7 @@ const chatEndpoints = API.v1
 
 			const getMessagesQuery = {
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(fromTs && { fromTs: new Date(fromTs) }),
 				...(next && { next }),
 				...(previous && { previous }),
 				...(count && { count }),
@@ -1233,13 +1234,13 @@ const chatEndpoints = API.v1
 					if (target?.tmid !== tmid || !target.ts) {
 						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ ...query, tmid, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid },
+				{ ...query, tmid, _hidden: { $ne: true } },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,

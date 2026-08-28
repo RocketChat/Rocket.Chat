@@ -1,7 +1,7 @@
 import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { GenericModal } from '@rocket.chat/ui-client';
 import {
 	usePermission,
