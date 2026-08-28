@@ -1,12 +1,18 @@
 apps/meteor/client/lib/RoomHistoryManager.ts
   s_43869f63631212::t_7dfc051c65441b 337-343,345-346,348-356,358,360,362,364-375
   s_43869f63631212::t_aa8a8c79f8c8a2 376
+  h_4c386397e672f4 6,12
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.0",
   "base_commit_sha": "8d4f0fe91926e4173ac5f633bbdca9696b4fd4f5",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_43869f63631212": {
       "agent_id": {
