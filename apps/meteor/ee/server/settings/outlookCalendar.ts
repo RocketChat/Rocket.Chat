@@ -95,16 +95,6 @@ export function addSettings(): void {
 						invalidValue: 'graph',
 					});
 
-					await this.add('Outlook_Calendar_Server_Sync_Mode', 'events', {
-						type: 'select',
-						values: [
-							{ key: 'events', i18nLabel: 'Outlook_Calendar_Server_Sync_Mode_Events' },
-							{ key: 'freebusy', i18nLabel: 'Outlook_Calendar_Server_Sync_Mode_FreeBusy' },
-						],
-						enableQuery: serverOnly,
-						invalidValue: 'events',
-					});
-
 					await this.add('Outlook_Calendar_Server_Sync_Interval', 15, {
 						type: 'int',
 						enableQuery: serverOnly,
