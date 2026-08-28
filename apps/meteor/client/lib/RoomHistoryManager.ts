@@ -350,19 +350,25 @@ class RoomHistoryManagerClass extends Emitter {
 			// Rebuilds the window around the target, so the store does not grow monotonically here.
 			this.clear(message.rid);
 
-			// `clear` drops the cursors and clears `isLoading`, so restore both before the upsert yields:
-			// a `getMore` landing in that window has no cursor and would page from the newest end instead.
+			// `clear` drops the cursors and clears `isLoading`, so restore the previous side before the
+			// upsert yields: a `getMore` landing in that window has no cursor and would page from the
+			// newest end instead.
 			this.updateRoom(message.rid, {
 				isLoading: true,
 				cursorPrevious: result.cursor.previous,
-				cursorNext: result.cursor.next,
 				hasMore: result.cursor.previous !== null,
-				hasMoreNext: result.cursor.next !== null,
 			});
 
 			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 
 			await upsertMessageBulk({ msgs: messages.filter((msg) => msg.t !== 'command'), subscription });
+
+			// The next side only lands after the upsert: `hasMoreNext` arms jump-to-recent
+			// (useHasNewMessages), which would clear the store while the upsert is still pending.
+			this.updateRoom(message.rid, {
+				cursorNext: result.cursor.next,
+				hasMoreNext: result.cursor.next !== null,
+			});
 
 			this.emit('loaded-messages');
 
