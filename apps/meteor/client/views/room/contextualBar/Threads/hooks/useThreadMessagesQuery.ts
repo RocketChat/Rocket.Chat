@@ -128,7 +128,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const filtered = filterThreadMessages(messages, tmid);
 			const processed = (await processMessages(filtered)) as IThreadMessage[];
 
-			const pageParam = Math.max(0, total - offset - count);
+			const pageSize = Math.min(processed.length, count);
+			const pageParam = Math.max(0, total - offset - pageSize);
 
 			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
 				pages: [{ items: processed, itemCount: total }],
@@ -178,8 +179,15 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
-			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			if (lastPageParam <= 0) {
+				return undefined;
+			}
+			const pageSize = Math.min(lastPage.items.length, count);
+			if (pageSize <= 0) {
+				return undefined;
+			}
+			return Math.max(0, lastPageParam - pageSize);
 		},
 		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
 			const pageSize = Math.min(firstPage.items.length, count);
