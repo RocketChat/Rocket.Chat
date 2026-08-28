@@ -1040,6 +1040,7 @@ describe('Apps - Video Conferences', () => {
 				Promise.all([
 					...(joinPermissionRoomId ? [deleteRoom({ type: 'c', roomId: joinPermissionRoomId })] : []),
 					deleteUser(regularUser),
+					updateSetting('Accounts_AllowAnonymousRead', false),
 					updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
 					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator', 'user']),
 				]),
@@ -1096,6 +1097,47 @@ describe('Apps - Video Conferences', () => {
 					.expect(200)
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
+					});
+			});
+
+			it('should fail to join a call anonymously when Accounts_AllowAnonymousRead is disabled', async () => {
+				await Promise.all([
+					updatePermission('call-management', ['admin', 'owner', 'moderator']),
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator']),
+					updateSetting('Accounts_AllowAnonymousRead', false),
+				]);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+					});
+			});
+
+			it('should join a call anonymously with no join permission when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+			});
+
+			it('should still enforce join permissions for a logged in user without call-management or videoconf-join-call, even when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
 					});
 			});
 		});
