@@ -87,9 +87,11 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 		providerCapabilities.current = undefined;
 		// Persistent chat fully on and in thread mode, so a join has a thread to follow at all. Discussions have
 		// to be on for that, and the E2E keys stay off, since enforced encryption on private rooms switches
-		// persistent chat back off.
+		// persistent chat back off. The window belongs to thread mode rather than being incidental to it:
+		// without it `getPersistentChatMode` answers `main_room` whatever the mode setting says.
 		settingsValues = {
 			VideoConf_Enable_Persistent_Chat: true,
+			VideoConf_Conference_Window_Enabled: true,
 			VideoConf_Persistent_Chat_Mode: 'thread',
 			Discussion_enabled: true,
 		};

@@ -68,6 +68,24 @@ export function addSettings(): Promise<void> {
 					invalidValue: false,
 					i18nDescription: 'VideoConf_Conference_Window_Enabled_Description',
 				});
+
+				const conferenceWindowEnabled = { _id: 'VideoConf_Conference_Window_Enabled', value: true };
+
+				// Where a call's chat lives, and only meaningful with the window: a thread off the call message is
+				// what its chat panel is built around. Without the window the chat is the discussion persistent
+				// chat has always created, which is why this only applies while the window is on — turning the
+				// window off puts a workspace back exactly where it was, whatever it left this set to.
+				await this.add('VideoConf_Persistent_Chat_Mode', 'thread', {
+					type: 'select',
+					values: [
+						{ key: 'main_room', i18nLabel: 'VideoConf_Persistent_Chat_Mode_Main_Room' },
+						{ key: 'thread', i18nLabel: 'VideoConf_Persistent_Chat_Mode_Thread' },
+					],
+					public: true,
+					invalidValue: 'thread',
+					i18nDescription: 'VideoConf_Persistent_Chat_Mode_Description',
+					enableQuery: [persistentChatEnabled, conferenceWindowEnabled],
+				});
 			},
 		);
 	});
