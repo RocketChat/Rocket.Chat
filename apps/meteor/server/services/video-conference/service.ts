@@ -1264,9 +1264,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			// The ring-on-arrival dance belongs to the flows with a preflight screen; a call that rings at
-			// creation already rang its callee (and pushed) then.
-			const rang = this.runsInOurCallWindow(call.providerName) ? await this.ringCalleeOnCallerArrival(call, _id) : false;
+			// Asked of the call rather than of the setting: a call that rang at creation has no unasked member
+			// left for this to reach, so it answers false on its own. Reading the setting here instead would let
+			// an admin toggling it mid-call decide differently than the call's own creation did.
+			const rang = await this.ringCalleeOnCallerArrival(call, _id);
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
