@@ -4,15 +4,14 @@ import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import ConferenceRoom from './ConferenceRoom';
+import ConferenceRoomPanel from './ConferenceRoomPanel';
 import ConferenceStoresReady from './ConferenceStoresReady';
-import ConferenceThread from './ConferenceThread';
-import CallPanelHeader from './components/CallPanelHeader/CallPanelHeader';
+import CallPanelHeader from './components/CallPanelHeader';
+import NotFoundPage from '../notFound/NotFoundPage';
 import ChatAccessModal from './components/ChatAccessModal/ChatAccessModal';
-import ConferenceChatNotShared from './components/ConferenceChatNotShared/ConferenceChatNotShared';
+import ConferenceChatNotShared from './components/ConferenceChatNotShared';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
-import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 
 const roomTypeIcon = (t?: IRoom['t']): 'hash' | 'hashtag-lock' | 'at' | 'baloons' => {
@@ -81,15 +80,9 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 
 			{!shared && <ConferenceChatNotShared />}
 
-			{shared && tmid && (
+			{shared && (
 				<ConferenceStoresReady>
-					<ConferenceThread rid={rid} tmid={tmid} onEscape={onClose} />
-				</ConferenceStoresReady>
-			)}
-
-			{shared && !tmid && (
-				<ConferenceStoresReady>
-					<ConferenceRoom rid={rid} />
+					<ConferenceRoomPanel rid={rid} tmid={tmid} onEscape={onClose} />
 				</ConferenceStoresReady>
 			)}
 		</Box>
