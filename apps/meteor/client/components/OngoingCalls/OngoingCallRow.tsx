@@ -18,7 +18,7 @@ const callActions = (call: JoinableVideoConference, onDecline: ((callId: string)
 	if (call.declined) {
 		return (
 			<Box fontScale='micro' color='hint'>
-				({t('Declined_call')})
+				({t('Declined')})
 			</Box>
 		);
 	}
