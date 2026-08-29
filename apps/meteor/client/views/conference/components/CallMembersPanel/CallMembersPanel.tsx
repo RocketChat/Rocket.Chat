@@ -10,7 +10,7 @@ import { MembersListDivider } from '../../../room/contextualBar/RoomMembers/Memb
 import type { ConferenceChatAccess, ConferenceMember } from '../../hooks/useConferenceEmbedded';
 import AddParticipantsModal from '../AddParticipantsModal/AddParticipantsModal';
 import CallMemberItem from '../CallMemberItem/CallMemberItem';
-import CallPanelHeader from '../CallPanelHeader/CallPanelHeader';
+import CallPanelHeader from '../CallPanelHeader';
 
 type CallMembersPanelProps = {
 	callId: string;
