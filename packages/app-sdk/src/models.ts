@@ -79,6 +79,6 @@ export interface IUpload {
  * Opaque UIKit block. The concrete block/element union is owned by
  * `@rocket.chat/ui-kit`; the SDK treats a rendered block as an opaque value so
  * this proposal does not re-litigate the (separate, already-in-progress) Block
- * Kit redesign. See `ui.ts` and the "Deferred domains" section of PROPOSAL.md.
+ * Kit redesign. See `ui.ts` and `rfc/51-open-questions.md`.
  */
 export type UiBlock = { readonly type: string; readonly [k: string]: unknown };

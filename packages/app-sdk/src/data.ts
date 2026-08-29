@@ -1,5 +1,5 @@
 /**
- * The host data & query layer — see PROPOSAL-DATA-LAYER.md.
+ * The host data & query layer — see rfc/20-data-overview.md.
  *
  * `context.ts` gives an app one client per domain. This module says what those
  * clients *are*: how a read states the fields and relations it wants, how the
@@ -8,7 +8,7 @@
  * entity once.
  *
  * Three mechanisms, because the domain has three kinds of thing
- * (PROPOSAL-DATA-LAYER.md §3.2):
+ * (rfc/21-data-entities.md, "three kinds of thing"):
  *
  * - **Record** (User, Room, Message, Team) → an entity with a client.
  * - **View** (Discussion, Direct room, Thread) → a lens and a type guard over a
@@ -374,7 +374,7 @@ export interface DataClients {
  * 8. The wire contract
  *
  * Every read compiles to one serializable envelope. This is what makes the
- * in-process vs. out-of-process choice a packaging decision (PROPOSAL.md §14).
+ * in-process vs. out-of-process choice a packaging decision (rfc/41-platform-deployment-and-isolation.md).
  * ------------------------------------------------------------------ */
 
 export interface Principal {

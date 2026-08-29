@@ -1,11 +1,16 @@
 # Cursor (keyset / seek) pagination for the apps data layer
 
+> Part of the [Apps Engine SDK RFC](README.md).
+
 **Status:** research report
-**Companion to:** [`PROPOSAL-DATA-LAYER.md`](PROPOSAL-DATA-LAYER.md) — this substantiates the
-one-line claim in its [§5.2](PROPOSAL-DATA-LAYER.md) ("Offset paging over an active room
+**Companion to:** [the data-layer docs](20-data-overview.md) — this substantiates the
+one-line claim in its [Pattern B](22-data-prior-art.md#pattern-b--the-selection-set-shopify) ("Offset paging over an active room
 silently drops or repeats messages. A cursor does not.") and specifies the
-`{ pageSize, cursor }` paging model that [§7.2](PROPOSAL-DATA-LAYER.md),
-[§8](PROPOSAL-DATA-LAYER.md) and [§13](PROPOSAL-DATA-LAYER.md) assume.
+`{ pageSize, cursor }` paging model that [the read surface](24-data-read-surface.md#lists-are-cursors-with-a-closed-filter),
+[the wire contract](26-data-wire-contract.md) and [what it changes](32-data-impact-on-the-surface.md) assume.
+**See also:** [`31-data-query-surface.md`](31-data-query-surface.md) — argues that the index-or-refuse rule
+of [§7](#7-cost-and-the-reject-unbounded-list-rule) is right for `list` but wrong as the
+only read path, and specifies the `aggregate` op that closes the gap.
 **Scope:** the read/list path only. Writes, selection and the entity model are the
 proposal's business; this document is about *how a list turns pages*.
 
@@ -53,7 +58,7 @@ export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mon
 ```
 
 Every model extends `BaseRaw`, which holds a driver `Collection<T>` and issues driver
-calls directly ([`packages/models/src/models/BaseRaw.ts`](../models/src/models/BaseRaw.ts)):
+calls directly ([`packages/models/src/models/BaseRaw.ts`](../../models/src/models/BaseRaw.ts)):
 
 ```ts
 // BaseRaw.ts:67, :90
@@ -75,7 +80,7 @@ This matters for the report's later code: the keyset query is a plain driver
 
 The list primitive on every model is `findPaginated`, and it is textbook offset paging —
 a cursor plus a **separate full `countDocuments`** for the grand total
-([`BaseRaw.ts:237-250`](../models/src/models/BaseRaw.ts)):
+([`BaseRaw.ts:237-250`](../../models/src/models/BaseRaw.ts)):
 
 ```ts
 // BaseRaw.ts:237-250
@@ -87,11 +92,11 @@ findPaginated<…>(query: Filter<T> = {}, options?: O): FindPaginated<…> {
 ```
 
 The REST layer drives it with an `offset`/`count` pair. `getPaginationItems`
-([`apps/meteor/server/api/lib/getPaginationItems.ts`](../../apps/meteor/server/api/lib/getPaginationItems.ts))
+([`apps/meteor/server/api/lib/getPaginationItems.ts`](../../../apps/meteor/server/api/lib/getPaginationItems.ts))
 parses `offset` and clamps `count` to `API_Upper_Count_Limit` (default **100**,
 `apps/meteor/server/settings/general.ts:6`; `API_Default_Count` **50**, line 7).
 `channels.messages` is representative — and note it hands the client's raw `sort`
-straight to Mongo ([`apps/meteor/server/api/v1/channels.ts:496-542`](../../apps/meteor/server/api/v1/channels.ts)):
+straight to Mongo ([`apps/meteor/server/api/v1/channels.ts:496-542`](../../../apps/meteor/server/api/v1/channels.ts)):
 
 ```ts
 // channels.ts:496, :528-542
@@ -110,11 +115,11 @@ return API.v1.success({ messages: …, count: messages.length, offset, total });
 
 `getPaginationItems` is used by **~40** v1 endpoint files; the `{ items, count, offset,
 total }` envelope is the platform's public list contract today. This is precisely the
-pattern [§5.2](PROPOSAL-DATA-LAYER.md) and [§13](PROPOSAL-DATA-LAYER.md) replace with
+pattern [Pattern B](22-data-prior-art.md#pattern-b--the-selection-set-shopify) and [what it changes](32-data-impact-on-the-surface.md) replace with
 `{ pageSize, cursor }`.
 
 Two structural costs come with it, both of which the proposal's cost ceiling
-([§11.1](PROPOSAL-DATA-LAYER.md)) is trying to bound:
+([the cost ceiling](29-data-cost-permission-consistency.md#cost)) is trying to bound:
 
 - **`skip` is O(n).** MongoDB walks and discards the first `offset` documents on every
   page; deep offsets get linearly slower.
@@ -124,7 +129,7 @@ Two structural costs come with it, both of which the proposal's cost ceiling
 ### 2.3 The one place RC already "seeks" — and where it stops short
 
 Message history loading is *not* pure offset paging; it already uses a `ts` range as a
-seek boundary ([`apps/meteor/server/lib/messages/loadMessageHistory.ts:39-55`](../../apps/meteor/server/lib/messages/loadMessageHistory.ts)):
+seek boundary ([`apps/meteor/server/lib/messages/loadMessageHistory.ts:39-55`](../../../apps/meteor/server/lib/messages/loadMessageHistory.ts)):
 
 ```ts
 // loadMessageHistory.ts:39-55
@@ -135,7 +140,7 @@ const records = end
 ```
 
 …where the finder applies `ts: { $lt: timestamp }`
-([`packages/models/src/models/Messages.ts:857-884`](../models/src/models/Messages.ts)):
+([`packages/models/src/models/Messages.ts:857-884`](../../models/src/models/Messages.ts)):
 
 ```ts
 // Messages.ts:863-870
@@ -151,7 +156,7 @@ bound was meant to avoid. The data layer's keyset is this pattern, finished:
 
 A second precedent is worth naming: the client's incremental sync reads rooms with
 `_updatedAt: { $gt: … }` ([`Rooms.ts:findBySubscriptionUserIdUpdatedAfter`, ~line
-1238](../models/src/models/Rooms.ts)). That is a *changed-since* query, not a stable
+1238](../../models/src/models/Rooms.ts)). That is a *changed-since* query, not a stable
 paged scan — and, as [§4.4](#44-the-mutable-sort-field-hazard) shows, sorting a page by
 `_updatedAt` is the trap, not the template.
 
@@ -164,7 +169,7 @@ strings — not `ObjectId`s.** This is what forces a real sort key plus a tie-br
 it is worth pinning down exactly.
 
 The base record type declares `_id` as a string
-([`packages/core-typings/src/IRocketChatRecord.ts:7`](../core-typings/src/IRocketChatRecord.ts)):
+([`packages/core-typings/src/IRocketChatRecord.ts:7`](../../core-typings/src/IRocketChatRecord.ts)):
 
 ```ts
 // IRocketChatRecord.ts:7-14
@@ -174,7 +179,7 @@ _updatedAt: Date;   // and _updatedAt is a real, mutable Date — see §4.4
 
 The generator is `Random.id()`, which is a **17-character string over a curated,
 non-hex alphabet** — no embedded timestamp, no lexical time order
-([`packages/random/src/RandomGenerator.ts`](../random/src/RandomGenerator.ts)):
+([`packages/random/src/RandomGenerator.ts`](../../random/src/RandomGenerator.ts)):
 
 ```ts
 // RandomGenerator.ts:10, :72-76
@@ -197,7 +202,7 @@ objectMaybeIncluding({ _id: String, msg: String, … })
 
 Only when a document arrives with **no** `_id` does `BaseRaw` fall back to a Mongo
 `ObjectId`, and even then it stores the **hex string**, not the BSON type
-([`BaseRaw.ts:301-311`](../models/src/models/BaseRaw.ts)):
+([`BaseRaw.ts:301-311`](../../models/src/models/BaseRaw.ts)):
 
 ```ts
 // BaseRaw.ts:303-304
@@ -278,7 +283,7 @@ async function messagePage(
         {
             sort: { ts: -1, _id: -1 },      // total order; both keys inverted together
             limit: pageSize + 1,            // the +1 is the "has next page" probe
-            projection: /* from the selection, PROPOSAL §9.1 */ {},
+            projection: /* from the selection, see the entity declaration */ {},
         },
     ).toArray();
 
@@ -330,7 +335,7 @@ schema makes the split sharp:
   `ts`-sorted list. A backward scroll through history is therefore repeatable: a new
   message arriving at the head cannot perturb a page you already turned.
 - **`_updatedAt` is mutable by construction.** `BaseRaw` stamps it on *every* write via
-  `setUpdatedAt` ([`packages/models/src/models/setUpdatedAt.ts`](../models/src/models/setUpdatedAt.ts)),
+  `setUpdatedAt` ([`packages/models/src/models/setUpdatedAt.ts`](../../models/src/models/setUpdatedAt.ts)),
   so any edit, reaction, or read-receipt bump moves the row to the head of an
   `_updatedAt`-sorted list. The same is true of a room's `lm` (last-message time), which
   changes on every new message in the room.
@@ -364,13 +369,13 @@ offset paging — a keyset on a mutable field does not escape it.
 
 The trade the proposal accepts: **no total, no random page jump**, in exchange for a flat
 cost curve and stability under the writes that a live chat workspace produces
-constantly. For an async-iterable list ([§7.2](PROPOSAL-DATA-LAYER.md)) that trade is
+constantly. For an async-iterable list ([the read surface](24-data-read-surface.md#lists-are-cursors-with-a-closed-filter)) that trade is
 almost free — the consumer asks for "the next page", never "page 40 of 128".
 
 ### 4.6 The app-facing async iterable
 
 The keyset loop is entirely hidden behind the `AsyncIterable` that
-`Reader.list` / `RoomsClient.messages` return in [`src/data.ts`](src/data.ts). The app
+`Reader.list` / `RoomsClient.messages` return in [`src/data.ts`](../src/data.ts). The app
 writes a `for await` and never sees a token — the client requests page after page, threading
 the opaque cursor from one `DataRequest` into the next, and stops when a page comes back
 without a `nextCursor`:
@@ -390,7 +395,7 @@ async function *listMessages(
             pageSize: selection.pageSize ?? MAX_PAGE_SIZE,
             cursor,
         }, roomId);
-        assertWithinBudget(request);                       // §8: depth <= 2, size <= 100, where present
+        assertWithinBudget(request);                       // the wire contract: depth <= 2, size <= 100, where present
 
         const { items, nextCursor } = await transport.read(request) as Page<Message>;
         for (const message of items) yield message;        // one page, in the list's declared order
@@ -399,8 +404,8 @@ async function *listMessages(
 }
 ```
 
-Consumed exactly as the proposal's [§7.2](PROPOSAL-DATA-LAYER.md) and
-[`examples/data-layer.ts`](examples/data-layer.ts) show — the paging is invisible:
+Consumed exactly as the proposal's [the read surface](24-data-read-surface.md#lists-are-cursors-with-a-closed-filter) and
+[`examples/data-layer.ts`](../examples/data-layer.ts) show — the paging is invisible:
 
 ```ts
 for await (const message of ctx.rooms.messages(roomId, {
@@ -433,7 +438,7 @@ The app receives a `cursor: string` and passes it back unread — it is
 showed that `_id` has no order, so a token an app could parse would tempt apps to
 reconstruct ordering that does not exist and to hand-craft cursors. The token must also
 be **tamper-evident**, because a list cursor is produced *after* the host applied its
-read policy ([§11.2](PROPOSAL-DATA-LAYER.md)): if an app could edit the embedded filter,
+read policy ([permission](29-data-cost-permission-consistency.md#permission)): if an app could edit the embedded filter,
 it could seek into rooms the policy excluded.
 
 The payload, before encoding:
@@ -496,7 +501,7 @@ export function toSeek(p: CursorPayload): { value: unknown; id: string } {
 The `q` hash is the safety interlock. When the host answers a `list`, it canonicalizes
 the parts of the request that must not change between pages — `entity`, the closed
 `where`, the sort key, the `select`/`with` shape, and the **principal**
-([§8](PROPOSAL-DATA-LAYER.md)'s `DataRequest`) — and stores `q = sha256(canonical)` in the
+([the wire contract](26-data-wire-contract.md)'s `DataRequest`) — and stores `q = sha256(canonical)` in the
 token. On the next page it recomputes `q` from the *incoming* request and rejects the
 cursor if they differ:
 
@@ -511,8 +516,8 @@ if (cur.q !== q)              throw new CursorError('cursor does not match this 
 This is what stops "read page 1 of *my* rooms, then swap the filter to *all* rooms and
 keep paging with the old cursor". It also means the token is inert if lifted to another
 principal, because the principal is in the hash. The token rides in the envelope exactly
-where [§8](PROPOSAL-DATA-LAYER.md) put it — `DataRequest.page = { size, cursor }` — and
-nowhere else; the client in [`src/data.ts`](src/data.ts) already threads `cursor?: string`
+where [the wire contract](26-data-wire-contract.md) put it — `DataRequest.page = { size, cursor }` — and
+nowhere else; the client in [`src/data.ts`](../src/data.ts) already threads `cursor?: string`
 through `ListSelection` and `ErasedSelection` into that field.
 
 ### 5.4 Versioning
@@ -522,7 +527,7 @@ list's sort key, or change how a `Date` is serialized in `last`, every previousl
 cursor becomes a lie. Bumping `v` and rejecting old tokens with a clean
 `CursorError('stale codec')` turns that into a caught, retryable error (the app restarts
 the list from the top) instead of a silently wrong page. This mirrors the envelope's own
-`v: 1` in [§8](PROPOSAL-DATA-LAYER.md).
+`v: 1` in [the wire contract](26-data-wire-contract.md).
 
 **Signing: recommended, with a caveat.** The HMAC is cheap and it is the only thing that
 makes the `q`-binding trustworthy. The alternative — keeping cursor state server-side and
@@ -539,7 +544,7 @@ point-in-time cursor coexist with a live-updating collection.
 
 Writes emit explicit broadcasts rather than the query layer tailing the oplog inline. A
 room write calls `notifyOnRoomChanged`, which publishes on the service bus
-([`apps/meteor/server/lib/notifyListener.ts`](../../apps/meteor/server/lib/notifyListener.ts)):
+([`apps/meteor/server/lib/notifyListener.ts`](../../../apps/meteor/server/lib/notifyListener.ts)):
 
 ```ts
 // notifyListener.ts (representative)
@@ -573,7 +578,7 @@ immutable sort key:
 
 ## 7. Cost, and the "reject unbounded list" rule
 
-The proposal wants a hard cost ceiling on any list ([§11.1](PROPOSAL-DATA-LAYER.md)).
+The proposal wants a hard cost ceiling on any list ([the cost ceiling](29-data-cost-permission-consistency.md#cost)).
 Keyset pagination supplies the ceiling only in combination with the other three controls;
 each closes a specific hole:
 
@@ -584,11 +589,11 @@ each closes a specific hole:
    index serves the equality prefix + sort key**. A list whose `where` has no matching
    index (or an unindexed sort key) degrades to a collection scan *per page* — worse than
    offset, because you pay it every page. The gateway must therefore know, from the
-   entity descriptor ([§9.1](PROPOSAL-DATA-LAYER.md)), which `(filter, sort)` pairs are
+   entity descriptor ([the entity declaration](27-data-host-gateways.md#declare-the-entity-once)), which `(filter, sort)` pairs are
    index-backed, and **refuse the rest**. `assertWithinBudget` in
-   [`src/data.ts`](src/data.ts) already rejects a `list` with no `where`; the missing
+   [`src/data.ts`](../src/data.ts) already rejects a `list` with no `where`; the missing
    half is rejecting a `where`/sort combination with no backing index.
-3. **Relation fan-out stays one batched query per page.** The loader ([§9.2](PROPOSAL-DATA-LAYER.md))
+3. **Relation fan-out stays one batched query per page.** The loader ([the loader](27-data-host-gateways.md#the-loader-kills-n1))
    issues one `find({_id:{$in:[…]}})` per relation per page, so a hydrated page of 100 is
    `1 + (relations)` queries, independent of page depth.
 
@@ -608,7 +613,7 @@ The keyset layer is additive; nothing about today's offset REST endpoints has to
 - **REST stays offset; the app data layer is keyset.** The `{ items, count, offset,
   total }` endpoints backed by `findPaginated` are a separate public contract with their
   own clients. Apps consume the new `ctx` clients, which speak `{ pageSize, cursor }` end
-  to end ([§7.2](PROPOSAL-DATA-LAYER.md), [§13](PROPOSAL-DATA-LAYER.md)). The two can run
+  to end ([the read surface](24-data-read-surface.md#lists-are-cursors-with-a-closed-filter), [what it changes](32-data-impact-on-the-surface.md)). The two can run
   side by side indefinitely.
 - **Reuse the seek that already exists.** The message keyset is `loadMessageHistory`'s
   `ts` bound ([§2.3](#23-the-one-place-rc-already-seeks--and-where-it-stops-short)) with
@@ -619,16 +624,16 @@ The keyset layer is additive; nothing about today's offset REST endpoints has to
   `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS`) accepts a client-supplied Mongo `query`
   and `fields`; the deprecation notice is blunt about why —
   *"breaks the security of the API and can lead to data exposure"*
-  ([`parseJsonQuery.ts:58-60, 113-128`](../../apps/meteor/server/api/lib/parseJsonQuery.ts)),
+  ([`parseJsonQuery.ts:58-60, 113-128`](../../../apps/meteor/server/api/lib/parseJsonQuery.ts)),
   slated for removal in 9.0.0. The apps data layer must **not** reproduce this: its
-  `where` is the closed, versioned DSL ([§6, rule 5](PROPOSAL-DATA-LAYER.md)), and its
+  `where` is the closed, versioned DSL ([the recommendation, rule 5](23-data-recommendation.md)), and its
   `sort` is a fixed per-entity key, not a client-supplied Mongo sort like
   `channels.messages` accepts today.
 - **New indexes ship before the lists that need them.** Because `createIndexes` runs from
   the model constructor (`BaseRaw.ts:92, 101-119`), adding an index is a one-line change
   to `modelIndexes()` — but on a collection the size of `rocketchat_message` the *build*
   is the migration. See the write-cost caveat below.
-- **The app store speaks the same language.** [§13](PROPOSAL-DATA-LAYER.md) wants
+- **The app store speaks the same language.** [what it changes](32-data-impact-on-the-surface.md) wants
   `Collection.find` (`context.ts:248`) to learn the same closed filter + `{ pageSize,
   cursor }` paging, so an app author learns one query language. The app-private store
   documents *do* get `Random.id()`-style ids from the same `BaseRaw`, so the same
@@ -672,7 +677,7 @@ adding room/subscription sort indexes only for the lists we actually ship.
    `_id` tie-break by *extending* `{ rid: 1, ts: 1, _updatedAt: 1 }` or as a new index?
    Which room/subscription sort indexes are worth their write cost given the lists we will
    actually expose?
-4. **One codec for both stores?** [§13](PROPOSAL-DATA-LAYER.md) wants the app-private
+4. **One codec for both stores?** [what it changes](32-data-impact-on-the-surface.md) wants the app-private
    `Collection.find` to share the query/paging language. Can the platform cursor codec
    and the app-store cursor codec be literally the same function, parameterized by an
    entity/field-type resolver — or do their differing field-type maps and trust
@@ -681,7 +686,7 @@ adding room/subscription sort indexes only for the lists we actually ship.
    `(rid, ts, _id)` on `rocketchat_message` for write-cost reasons, the same-millisecond
    tie-break falls back to an in-memory sort of the tied rows. Is that acceptable given
    observed `ts` collision rates per room, or is the index mandatory?
-6. **Backward paging ergonomics.** The async-iterable in [§7.2](PROPOSAL-DATA-LAYER.md)
+6. **Backward paging ergonomics.** The async-iterable in [the read surface](24-data-read-surface.md#lists-are-cursors-with-a-closed-filter)
    naturally expresses forward paging. Do apps need first-class backward paging (scroll
    up), and if so does the iterable grow a `.reverse()`/`before` affordance, or is
    backward paging a distinct call that returns a fresh cursor?

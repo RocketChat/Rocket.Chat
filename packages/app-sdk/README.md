@@ -7,7 +7,8 @@ app-facing API** — the surface an app author writes against. The internal
 platform/runtime is intended to be *derived* from this surface, not the other
 way around.
 
-- **Read the proposal:** [PROPOSAL.md](PROPOSAL.md)
+- **Read the RFC:** [`rfc/`](rfc/README.md) — one document per scope, with an
+  index. Start at [the overview](rfc/00-overview.md).
 - **The proposed API:** [`src/`](src) — compiles standalone under strict TS.
 - **Worked examples:** [`examples/`](examples) — a full "Reminders" app plus a
   standalone-style app; both type-check against the SDK.
