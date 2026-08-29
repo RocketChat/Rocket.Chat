@@ -6,6 +6,7 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	IVideoConferenceParticipant,
 	VideoConferenceLeaveReason,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
@@ -329,6 +330,26 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		};
 	}
 
+	/**
+	 * Renews several members' leases at once — what a provider that can be asked who is in its room answers
+	 * with. Unlike a client's own heartbeat this never revives an inferred departure: the provider is reporting
+	 * a room, not a member correcting us about their own window.
+	 */
+	public async renewUsersPresenceById(callId: string, uids: IUser['_id'][], lastSeenAt = new Date()): Promise<void> {
+		if (!uids.length) {
+			return;
+		}
+
+		// Guarded against ended calls for the same reason the single renewal is — though this one only stamps
+		// `lastSeenAt` and never revives anyone, so the guard is belt rather than braces: the sweep calls it for
+		// calls it just read as open.
+		await this.updateOne(
+			{ _id: callId, endedAt: { $exists: false } },
+			{ $set: { 'users.$[user].lastSeenAt': lastSeenAt } },
+			{ arrayFilters: [{ 'user._id': { $in: uids } }] },
+		);
+	}
+
 	/** Records that we just rang these members, so every client can tell a ringing phone from a silent one. */
 	public async setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt = new Date()): Promise<void> {
 		if (!uids.length) {
@@ -446,6 +467,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	// --- Embedded SFU (LiveKit) helpers ---
+	// URL-based providers (Jitsi/Meet/Zoom) never call these. The data shape
+	// is described in the IVideoConferenceParticipant type in core-typings.
+
 	/**
 	 * Every call that is still open, with what the presence sweep needs to judge it: who is on the roster, and
 	 * which provider is running the media — the one that may be able to say who is in the room.
@@ -461,5 +486,33 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
 		);
+	}
+
+	public async addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void> {
+		// One atomic update: drop any prior entry for this user (so a re-join doesn't leave a leftAt'd ghost
+		// alongside the fresh one) and append the new entry in the same write — two separate writes would let
+		// two concurrent joins interleave into a duplicate. `$literal` keeps the entry's values as data even if
+		// one happens to look like an aggregation expression.
+		await this.updateOne({ _id: callId }, [
+			{
+				$set: {
+					participants: {
+						$concatArrays: [
+							{
+								$filter: {
+									input: { $ifNull: ['$participants', []] },
+									cond: { $ne: ['$$this.id', participant.id] },
+								},
+							},
+							{ $literal: [{ ...participant, joinedAt: participant.joinedAt ?? new Date() }] },
+						],
+					},
+				},
+			},
+		] as any);
+	}
+
+	public async markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id'], leftAt = new Date()): Promise<void> {
+		await this.updateOne({ '_id': callId, 'participants.id': userId }, { $set: { 'participants.$.leftAt': leftAt } } as any);
 	}
 }
