@@ -1,10 +1,8 @@
-import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Button, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import OngoingCallRow from './OngoingCallRow';
-import RingingCallItem from './RingingCallItem';
-import { canDeclineCall, useOngoingCalls } from './useOngoingCalls';
+import CallListItem from './CallListItem';
+import { useOngoingCalls } from './useOngoingCalls';
 
 const MAX_VISIBLE = 5;
 
@@ -26,26 +24,22 @@ const OngoingCallsList = () => {
 
 	return (
 		<Box display='flex' flexDirection='column'>
-			{visibleActive.map((item) =>
-				isRingingVideoConferenceMember({ ringingAt: item.ringingAt }) ? (
-					<RingingCallItem
-						key={item.callId}
-						call={item}
-						silenced={silencedCalls.includes(item.callId)}
-						onAccept={joinCall}
-						onReject={decline}
-						onSilence={silence}
-					/>
-				) : (
-					<OngoingCallRow key={item.callId} call={item} onJoin={joinCall} {...(canDeclineCall(item) && { onDecline: decline })} />
-				),
-			)}
+			{visibleActive.map((item) => (
+				<CallListItem
+					key={item.callId}
+					call={item}
+					silenced={silencedCalls.includes(item.callId)}
+					onJoin={joinCall}
+					onDecline={decline}
+					onSilence={silence}
+				/>
+			))}
 
 			{visibleDeclined.length > 0 && (
 				<>
 					{visibleActive.length > 0 && <Divider />}
 					{visibleDeclined.map((item) => (
-						<OngoingCallRow key={item.callId} call={item} onJoin={joinCall} />
+						<CallListItem key={item.callId} call={item} onJoin={joinCall} onDecline={decline} />
 					))}
 				</>
 			)}
