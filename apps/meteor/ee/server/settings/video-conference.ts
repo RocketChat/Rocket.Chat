@@ -52,6 +52,55 @@ export function addSettings(): Promise<void> {
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 
+				// LiveKit-as-VC-provider settings. The keys mirror the previous
+				// VoIP_TeamCollab_LiveKit_* layout (same shape, same set) so the
+				// admin UI is familiar — only the namespace moved from VoIP to
+				// Video Conference. The corresponding VoIP_* keys are removed
+				// once the refactor settles; until then both groups coexist and
+				// the bootstrap reads the new keys, falling back to the old.
+				await this.section('VideoConf_LiveKit', async function () {
+					await this.add('VideoConf_LiveKit_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VideoConf_LiveKit_Enabled_Description',
+					});
+
+					const livekitEnabled = { _id: 'VideoConf_LiveKit_Enabled', value: true };
+
+					await this.add('VideoConf_LiveKit_Mode', 'self_hosted', {
+						type: 'select',
+						values: [
+							{ key: 'self_hosted', i18nLabel: 'Self_hosted' },
+							{ key: 'cloud', i18nLabel: 'LiveKit_Cloud' },
+						],
+						public: true,
+						invalidValue: 'self_hosted',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Url', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Api_Key', '', {
+						type: 'string',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Api_Secret', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+				});
+
 				// The switch for the whole call-window experience; off means the client behaves as it did before
 				// any of it existed. Deliberately not gated on `VideoConf_Enable_Persistent_Chat`, so a workspace
 				// already running persistent chat sees no change until this is turned on. See [the feature

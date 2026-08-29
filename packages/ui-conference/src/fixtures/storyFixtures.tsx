@@ -238,7 +238,10 @@ const CALL_PREFERENCES_KEY = callPreferencesStorageKey('john.doe');
 export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean; ring?: boolean }) => () => {
 	const previous = localStorage.getItem(CALL_PREFERENCES_KEY);
 
-	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, ...preferences }));
+	localStorage.setItem(
+		CALL_PREFERENCES_KEY,
+		JSON.stringify({ mic: true, cam: false, ring: true, blurLevel: 'none', videoQuality: 'auto', ...preferences }),
+	);
 
 	return () => {
 		if (previous === null) {
