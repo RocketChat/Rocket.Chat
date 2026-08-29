@@ -7479,7 +7479,6 @@
   "Your_invite_link_will_never_expire": "Your invite link will never expire.",
   "your_message": "your message",
   "your_message_optional": "your message (optional)",
-<<<<<<< HEAD
   "Your_new_email_is_email": "Your new email address is <strong>[email]</strong>.",
   "Your_password_is_wrong": "Your password is wrong!",
   "Your_password_was_changed_by_an_admin": "Your password was changed by an admin.",
@@ -7510,6 +7509,8 @@
   "Next_Run": "Next Run",
   "No_background_jobs_found": "No background jobs found",
   "No_history_available": "No history available",
+  "Recent_History": "Recent History",
+  "Result": "Result",
   "Run_now": "Run now",
   "Background_Job_Run_now_confirm": "Are you sure you want to run the job \"{{jobName}}\" now?",
   "Background_Job_Status_running": "Running",

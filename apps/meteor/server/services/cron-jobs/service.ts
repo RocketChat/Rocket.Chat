@@ -11,9 +11,10 @@ import {
 	OmnichannelAutoTransferScheduler,
 	OmnichannelQueueInactivityScheduler,
 } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter } from 'mongodb';
 
+import { buildHistoryQuery } from './buildHistoryQuery';
 import { deriveStatus } from './deriveStatus';
 
 const resolveStatus = (job: ICronJobItem): CronJobStatus => {
@@ -99,26 +100,28 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		};
 	}
 
-	async getHistory(
-		jobName: string,
-		pagination?: { offset?: number; count?: number },
-	): Promise<{ history: ICronHistoryItem[]; count: number; offset: number; total: number }> {
-		const { cursor, totalCount } = CronHistory.findPaginated(
-			{
-				name: jobName,
-			},
-			{
-				sort: { intendedAt: -1 },
-				skip: pagination?.offset,
-				limit: pagination?.count,
-			},
-		);
+	async getHistory(pagination?: {
+		jobName?: string;
+		offset?: number;
+		count?: number;
+	}): Promise<{ history: ICronHistoryItem[]; count: number; offset: number; total: number }> {
+		const offset = pagination?.offset || 0;
+		const count = pagination?.count;
+		const query = pagination?.jobName
+			? buildHistoryQuery(pagination.jobName, [])
+			: buildHistoryQuery(undefined, await this.getActiveJobNames());
+
+		const { cursor, totalCount } = CronHistory.findPaginated(query, {
+			sort: { startedAt: -1 },
+			skip: offset,
+			limit: count,
+		});
 		const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			history,
 			count: history.length,
-			offset: pagination?.offset || 0,
+			offset,
 			total,
 		};
 	}
@@ -197,5 +200,17 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		return {
 			name: { $regex: escapeRegExp(term), $options: 'i' },
 		};
+	}
+
+	private async getActiveJobNames(): Promise<string[]> {
+		const [coreJobs, appJobs, autoCloseJobs, autoTransferJobs, queueInactivityJobs] = await Promise.all([
+			CronJobs.find({}, { projection: { name: 1 } }).toArray(),
+			AppScheduler.find({}, { projection: { name: 1 } }).toArray(),
+			OmnichannelAutoCloseScheduler.find({}, { projection: { name: 1 } }).toArray(),
+			OmnichannelAutoTransferScheduler.find({}, { projection: { name: 1 } }).toArray(),
+			OmnichannelQueueInactivityScheduler.find({}, { projection: { name: 1 } }).toArray(),
+		]);
+
+		return [...coreJobs, ...appJobs, ...autoCloseJobs, ...autoTransferJobs, ...queueInactivityJobs].map((job) => job.name);
 	}
 }
