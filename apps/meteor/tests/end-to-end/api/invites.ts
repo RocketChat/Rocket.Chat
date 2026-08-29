@@ -257,4 +257,30 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('errorType', 'invalid-invitation-id');
 		});
 	});
+
+	describe('POST [/sendInvitationEmail]', () => {
+		it('should fail if not logged in', async () => {
+			const res = await request
+				.post(api('sendInvitationEmail'))
+				.send({
+					emails: ['test@example.com'],
+				})
+				.expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
+		});
+
+		it('should fail if emails array is empty or invalid', async () => {
+			const res = await request
+				.post(api('sendInvitationEmail'))
+				.set(credentials)
+				.send({
+					emails: [],
+				})
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+	});
 });
