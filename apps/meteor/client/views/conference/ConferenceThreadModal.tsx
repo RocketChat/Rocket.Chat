@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import ConferenceThread from './ConferenceThread';
+import ConferenceRoomPanel from './ConferenceRoomPanel';
 
 type ConferenceThreadModalProps = {
 	rid: string;
@@ -35,7 +35,7 @@ const ConferenceThreadModal = ({ rid, tmid, onClose }: ConferenceThreadModalProp
 				</ModalHeader>
 				<ModalContent padding={0} overflow='hidden' display='flex' flexDirection='column' height='60vh'>
 					<Box display='flex' flexDirection='column' height='full'>
-						<ConferenceThread rid={rid} tmid={tmid} onEscape={onClose} />
+						<ConferenceRoomPanel rid={rid} tmid={tmid} onEscape={onClose} />
 					</Box>
 				</ModalContent>
 			</Modal>

@@ -1,4 +1,5 @@
 import type { VideoConferenceChatAccessMode } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Button,
@@ -10,8 +11,12 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
+	Option,
+	OptionAvatar,
+	OptionContent,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useEndpoint, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,7 +24,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { chatAccessLeadsWithDiscussion } from '../../../../../lib/videoConference/chatAccess';
 import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
 import type { ConferenceChatAccess } from '../../hooks/useConferenceEmbedded';
-import ConferenceMemberRow from '../ConferenceMemberRow/ConferenceMemberRow';
 
 type ChatAccessModalProps = {
 	callId: string;
@@ -40,6 +44,9 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
+	// Read once for the whole list rather than per member: naming someone is a setting and a pure function, not
+	// a reason for each row to be a component of its own.
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const shareChat = useEndpoint('POST', '/v1/video-conference.share-chat');
 	const queryClient = useQueryClient();
 
@@ -79,8 +86,14 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
 				<Box color='default'>{t('These_participants_cannot_see_the_chat')}</Box>
+				{/* Named from the conference's own record — there may be no shared room to look them up in. */}
 				{access.members.map((member) => (
-					<ConferenceMemberRow key={member._id} member={member} />
+					<Option key={member._id}>
+						<OptionAvatar>
+							<UserAvatar username={member.username} size='x24' />
+						</OptionAvatar>
+						<OptionContent>{getUserDisplayName(member.name, member.username, useRealName)}</OptionContent>
+					</Option>
 				))}
 
 				{access.canInvite && (
