@@ -1,3 +1,4 @@
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
@@ -5,21 +6,22 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+
+type LoginWithGoogleOptions = LoginWithExternalServiceOptions & {
+	loginUrlParameters?: {
+		include_granted_scopes?: boolean;
+		hd?: string;
+	};
+	prompt?: string;
+};
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		function loginWithGoogle(
-			options?: Meteor.LoginWithExternalServiceOptions & {
-				loginUrlParameters?: {
-					include_granted_scopes?: boolean;
-					hd?: string;
-				};
-			},
-			callback?: LoginCallback,
-		): void;
+		function loginWithGoogle(options?: LoginWithGoogleOptions, callback?: LoginCallback): void;
 	}
 }
 
@@ -27,26 +29,7 @@ const { loginWithGoogle } = Meteor;
 
 const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod(Google);
 
-const loginWithGoogleAndTOTP = (
-	options:
-		| (Meteor.LoginWithExternalServiceOptions & {
-				loginUrlParameters?: {
-					include_granted_scopes?: boolean;
-					hd?: string;
-				};
-		  })
-		| undefined,
-	code: string,
-	callback?: LoginCallback,
-) => {
-	if (Meteor.isCordova && Google.signIn) {
-		// After 20 April 2017, Google OAuth login will no longer work from
-		// a WebView, so Cordova apps must use Google Sign-In instead.
-		// https://github.com/meteor/meteor/issues/8253
-		Google.signIn(options, callback);
-		return;
-	} // Use Google's domain-specific login page if we want to restrict creation to
-
+const loginWithGoogleAndTOTP = (options: LoginWithGoogleOptions | undefined, code: string, callback?: LoginCallback) => {
 	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
 	// is a function.) Note that all this does is change Google's UI ---
 	// accounts-base/accounts_server.js still checks server-side that the server
@@ -64,17 +47,10 @@ Meteor.loginWithGoogle = (options, callback) => {
 	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
 };
 
-Google.requestCredential = wrapRequestCredentialFn(
+Google.requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithGoogleOptions>(
 	'google',
-	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
+	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
-		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
-			loginUrlParameters?: {
-				include_granted_scopes?: boolean;
-				hd?: string;
-			};
-			prompt?: string;
-		};
 
 		const scope = ['email', ...(options.requestPermissions || ['profile'])].join(' ');
 

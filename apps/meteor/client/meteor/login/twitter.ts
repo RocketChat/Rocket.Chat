@@ -5,9 +5,14 @@ import { OAuth } from 'meteor/oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+
+type LoginWithTwitterOptions = LoginWithExternalServiceOptions & {
+	[param: string]: string;
+};
 
 const { loginWithTwitter } = Meteor;
 const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
@@ -15,10 +20,10 @@ Meteor.loginWithTwitter = (options, callback) => {
 	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
 };
 
-Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
+Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, LoginWithTwitterOptions>(
 	'twitter',
 	({ loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
-		const options = requestOptions as Record<string, string>;
+		const options = requestOptions;
 		const credentialToken = Random.secret();
 
 		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${OAuth._stateParam(
@@ -26,13 +31,6 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 			credentialToken,
 			options?.redirectUrl,
 		)}`;
-
-		if (Meteor.isCordova) {
-			loginPath += '&cordova=true';
-			if (/Android/i.test(navigator.userAgent)) {
-				loginPath += '&android=true';
-			}
-		}
 
 		// Support additional, permitted parameters
 		if (options) {

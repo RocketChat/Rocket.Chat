@@ -4,25 +4,25 @@ import type { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { loginServices } from './loginServices';
+import type { LoginWithExternalServiceOptions } from '../definitions/IOAuthProvider';
 
-type RequestCredentialOptions = Meteor.LoginWithExternalServiceOptions;
-type RequestCredentialCallback = (credentialTokenOrError?: string | Error) => void;
+type RequestCredentialCallback = (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
 
-type RequestCredentialConfig<T extends Partial<OAuthConfiguration>> = {
+type RequestCredentialConfig<
+	T extends Partial<OAuthConfiguration>,
+	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
+> = {
 	config: T;
 	loginStyle: string;
-	options: RequestCredentialOptions;
+	options: TOptions;
 	credentialRequestCompleteCallback?: RequestCredentialCallback;
 };
 
-export function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
-	serviceName: string,
-	fn: (params: RequestCredentialConfig<T>) => void,
-) {
-	const wrapped = async (
-		options: RequestCredentialOptions,
-		credentialRequestCompleteCallback?: RequestCredentialCallback,
-	): Promise<void> => {
+export function wrapRequestCredentialFn<
+	T extends Partial<OAuthConfiguration>,
+	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
+>(serviceName: string, fn: (params: RequestCredentialConfig<T, TOptions>) => void) {
+	const wrapped = async (options: TOptions, credentialRequestCompleteCallback?: RequestCredentialCallback): Promise<void> => {
 		const config = await loginServices.loadLoginService<T>(serviceName);
 		if (!config) {
 			credentialRequestCompleteCallback?.(new Accounts.ConfigError());
@@ -38,15 +38,12 @@ export function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
 		});
 	};
 
-	return (
-		options?: RequestCredentialOptions | RequestCredentialCallback,
-		credentialRequestCompleteCallback?: RequestCredentialCallback,
-	) => {
+	return (options?: TOptions | RequestCredentialCallback, credentialRequestCompleteCallback?: RequestCredentialCallback) => {
 		if (!credentialRequestCompleteCallback && typeof options === 'function') {
-			void wrapped({}, options);
+			void wrapped({} as TOptions, options);
 			return;
 		}
 
-		void wrapped(options as RequestCredentialOptions, credentialRequestCompleteCallback);
+		void wrapped(options as TOptions, credentialRequestCompleteCallback);
 	};
 }

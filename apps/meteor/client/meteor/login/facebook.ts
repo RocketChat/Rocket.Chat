@@ -5,8 +5,15 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+
+type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
+	absoluteUrlOptions?: Record<string, any>;
+	params?: Record<string, any>;
+	auth_type?: string;
+};
 
 const { loginWithFacebook } = Meteor;
 const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
@@ -14,22 +21,14 @@ Meteor.loginWithFacebook = (options, callback) => {
 	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
 };
 
-Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
+Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, LoginWithFacebookOptions>(
 	'facebook',
-	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
-		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
-			absoluteUrlOptions?: Record<string, any>;
-			params?: Record<string, any>;
-			auth_type?: string;
-		};
-
+	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
 		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
 		const display = mobile ? 'touch' : 'popup';
 
 		const scope = options?.requestPermissions ? options.requestPermissions.join(',') : 'email';
-
-		const API_VERSION = Meteor.settings?.public?.packages?.['facebook-oauth']?.apiVersion || '17.0';
 
 		const loginUrlParameters: Record<string, any> = {
 			client_id: config.appId,
@@ -41,7 +40,7 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 			...(options.auth_type && { auth_type: options.auth_type }),
 		};
 
-		const loginUrl = `https://www.facebook.com/v${API_VERSION}/dialog/oauth?${Object.keys(loginUrlParameters)
+		const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?${Object.keys(loginUrlParameters)
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&')}`;
 
