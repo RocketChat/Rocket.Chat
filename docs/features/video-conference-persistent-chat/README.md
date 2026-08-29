@@ -37,9 +37,6 @@ applies — see [Opening a Conference](#opening-a-conference) for what happens i
 | [Adding people and chat access](./adding-people-and-chat-access.svg) | who can read the chat, and the two ways to fix it |
 | [Ending a call](./ending-a-call.svg) | the four ways a call stops, and what the history records |
 
-[How this compares to MatrixRTC](./matrix-comparison.md) sets our answers to "who is in this call" and "who may
-join it" against Matrix's, and lists the three things worth borrowing.
-
 <img src="./starting-a-call.svg" alt="Starting a call: the camera button opens a call window at /conference/new showing a preflight; nothing is created until the user confirms, after which the conference exists and the other side rings." width="680">
 
 <img src="./being-called.svg" alt="Being called: a ring reaches you in your call list or as a notification; accepting joins outright, declining is recorded against your own membership only, silencing stops the sound, and ignoring lets the ring lapse after 15 seconds." width="680">
@@ -154,7 +151,7 @@ a window opened, and then the conference page joined with a hardcoded `{ mic: tr
 so the popups now leave the question alone whenever the call window is on. With it off there is no preflight to
 ask, so those controls stay exactly as they were.
 
-What is on offer is what the provider can be told: today the pair it takes, on or off. They sit in `CallBar`, the
+What is on offer is what the provider can be told: the pair it takes, on or off. They sit where the call's own controls will,
 same bar the call's own controls occupy, so the control that mutes the mic doesn't move between deciding to join
 and being in the call. A native provider will put input and output selection in the same place.
 
@@ -225,25 +222,13 @@ Because it has no `MainContent` ancestor to inherit height from, `ConferenceRout
 
 ### Call chrome
 
-The conference is a column: a row holding the call and the chat panel, then `CallBar` beneath it.
+The conference is a column: a top bar carrying the call's name and its controls, then a row holding the call and the chat panel.
 
-`CallBar` is the in-call control bar pinned along the bottom — the position third-party providers put their own toolbar in, so an embedded provider and the future native conference read the same. Its actions sit at the inline end, away from wherever the provider puts its own. Today that is the members and chat toggles (the chat one carrying an unread badge while its panel is closed). When the native conference brings mic, camera and hang-up of its own they will want the centre of the bar, which is the point at which what the centre needs will be known rather than guessed at.
+`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. A provider running the call in here rather than in an iframe brings mic, camera and hang-up of its own; where those go is that provider's to decide, and is not guessed at here.
 
 `CallPanel` is the product's own `Contextualbar`, so a panel beside a call has the same edges and elevation as one beside a room; it is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
 
 The panel is docked to the inline end, so its close button sits at the far end of its header — matching every other closable surface in the product. Both panels share that header (`CallPanelHeader`, the contextual bar's own header/title/close), so two docked side by side can't disagree about where their own edges are.
-
-### Stage layout
-
-The call stage (`CallStage`) supports three layouts, cycled by a button in the control bar:
-
-- **Grid** (default) — all participants in equal-sized tiles, rows/cols computed by `useTileGridLayout` to fill the stage within a [3:4 .. 16:9] aspect band. When there are more than 9 participants, only 8 tiles are shown plus a "+N" overflow placeholder; tiles with camera enabled and the active speaker are prioritised for the visible slots, and the local participant always stays visible. To simulate many participants for testing, set `localStorage.setItem('videoconf-simulate-tiles', '20')` in the browser console before joining a call.
-- **Spotlight** — the active speaker fills the stage; the local user's self-view floats as a small PiP in the bottom-right corner. When the local user *is* the active speaker, the first remote participant is shown large instead.
-- **Sidebar** — the active speaker is large on the left, other participants are shown in a thumb column on the right (or row at the bottom on narrow stages). The number of visible thumbs is dynamically limited to what fits without scrolling: the capacity is computed from the stage size and thumb dimensions (column: 200 px wide, 16:9 aspect; row: 140 px wide, 96 px strip). When there are more participants than fit, the last slot shows a "+N" overflow placeholder (camera-on and local participant are prioritised for the visible slots). The thumb container never scrolls.
-
-Active speaker detection runs in `useActiveSpeakerId`: a single `AudioContext` with one `AnalyserNode` per participant, sampling at ~12 Hz. A 1.5 s hold prevents flickering between speakers during conversational pauses. When nobody is speaking, the fallback is the first remote participant.
-
-When a screen share is active, the existing screen-share spotlight takes over regardless of the selected layout — the screen always wins.
 
 The bar carries two counts: how many people are in the call, and what is unread in the chat while its panel is
 closed. The unread one goes through `useUnreadDisplay`, the sidebar's own rules, so a mention reads as urgent in
@@ -728,7 +713,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 | `VideoConf_Conference_Window_Enabled` | EE, **off by default**. The switch for everything in this document: the call window, the preflight, the ongoing-calls list, the membership-based flow. Off means the pre-existing client behaviour, unchanged. |
 | `VideoConf_Enable_Persistent_Chat` | EE. Whether each call gets a discussion or thread of its own, server-side. Unchanged by this feature, and independent of the setting above. |
 | `VideoConf_Persistent_Chat_Mode` | `thread` (default) or `main_room`. Thread opens a thread from the call message; main room shows the channel itself in the chat panel. |
-| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name (only in discussion mode); `[date]` is substituted, or the date is prefixed when absent. Requires `Discussion_enabled`. |
+| `VideoConf_Persistent_Chat_Discussion_Name` | Discussion name, used only in `main_room` mode, which is the mode that creates a discussion; `[date]` is substituted, or the date is prefixed when absent. Requires `Discussion_enabled`. |
 
 ## REST Endpoints
 
@@ -894,9 +879,9 @@ now on appear.
 The premise — membership without room access — was confirmed by reading a development workspace's Mongo directly,
 not only by test:
 
-- A conference on a **DM** between two users carried a third, `alice`, as a `users[]` entry with `joined: false`
-  and **no subscription to that DM**. She is authorized to join the call and cannot read its chat, which is
-  exactly the state the model exists to represent.
+- A conference on a **DM** between two users carried a third user as a `users[]` entry with `joined: false` and
+  **no subscription to that DM**. They are authorized to join the call and cannot read its chat, which is exactly
+  the state the model exists to represent.
 - Entries mixed both shapes as designed: joined members carry `joined: true` and a `joinedAt`; added members carry
   `joined: false` and no `joinedAt`. Every entry carries `ts`. Declining from the sidebar wrote `declined` and
   `declinedAt` on the decliner's entry alone, leaving the conference's own status untouched.
@@ -910,8 +895,9 @@ for the caller, `not-answered`/`inbound` for the callee — while leaving a call
 
 ## Deferred to follow-ups
 
-Eight things were built, reviewed and then held back from the first release to keep it reviewable. Each is a
-complete improvement on its own, which is what makes it a good follow-up rather than a gap. All of them are in
+Six things were built and reviewed, then held back from the first release to keep it reviewable — one has since
+landed, and is struck through below. Each is a complete improvement on its own, which is what makes it a good
+follow-up rather than a gap. All of them are in
 git — `git show 5ab58858d7d:<path>` restores any of them intact.
 
 | Deferred | Why it can wait | What ships instead |
@@ -1002,9 +988,8 @@ as the last read. A member removed from the room *during* a call still has the r
 | Stream typings | `packages/ddp-client/src/types/streams.ts` |
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
-| Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `ConferenceIframe.tsx`, `components/CallBar/`, `components/CallPanel/` |
-| Stage layout + active speaker | `packages/ui-voip/src/views/MediaCallRoomSection/CallStage.tsx`, `MediaCallRoomSection.tsx`, `providers/useActiveSpeakerId.ts` |
-| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceThread.tsx`, `ConferenceThreadChat.tsx`, `ConferenceThreadModal.tsx`, `ConferenceStoresReady.tsx`, `CallPanelHeader.tsx`, `ConferenceChatNotShared.tsx` |
+| Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `components/ConferenceIframe.tsx`, `components/CallTopBar.tsx`, `components/CallPanel.tsx` |
+| Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoomPanel.tsx`, `ConferenceThreadChat.tsx`, `ConferenceThreadModal.tsx`, `ConferenceStoresReady.tsx`, `components/CallPanelHeader.tsx`, `components/ConferenceChatNotShared.tsx` |
 | Nothing to show | `apps/meteor/client/views/conference/ConferenceStatePage.tsx`, `ConferencePageError.tsx`, `ConferenceUnauthorizedPage.tsx` |
 | Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx` |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`) |

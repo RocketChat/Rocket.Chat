@@ -4,6 +4,9 @@ import { screen, act, renderHook } from '@testing-library/react';
 
 import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
+/** What `window.open` hands back for the external path: severable, and navigable once severed. */
+const openedWindow = () => ({ closed: false, opener: {}, location: { replace: jest.fn() } }) as unknown as Window;
+
 const mountOpenCall = (conferenceWindowEnabled = false) => {
 	const { result } = renderHook(() => useVideoConfOpenCall(), {
 		wrapper: mockAppRoot().withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled).build(),
@@ -93,18 +96,21 @@ describe('with the call window, for an external provider URL', () => {
 	});
 
 	it('should open the call as a popout', async () => {
-		window.open = jest.fn(() => ({ closed: false }) as Window);
+		const target = openedWindow();
+		window.open = jest.fn(() => target);
 
 		const url = faker.internet.url();
 		mountOpenCall(true)(url);
 
 		expect(window.open).toHaveBeenCalledTimes(1);
-		expect(window.open).toHaveBeenCalledWith(url, '_blank', expect.stringContaining('popup=yes'));
+		// Opened blank and navigated, rather than opened at the provider — see the opener test below.
+		expect(window.open).toHaveBeenCalledWith('', '_blank', expect.stringContaining('popup=yes'));
+		expect(target.location.replace).toHaveBeenCalledWith(url);
 		expect(screen.queryByRole('dialog', { name: 'Open_call_in_new_tab' })).not.toBeInTheDocument();
 	});
 
 	it('should size and centre the popout within the available screen', async () => {
-		window.open = jest.fn(() => ({ closed: false }) as Window);
+		window.open = jest.fn(() => openedWindow());
 
 		mountOpenCall(true)(faker.internet.url());
 
@@ -118,26 +124,61 @@ describe('with the call window, for an external provider URL', () => {
 		expect(features).toContain(`top=${Math.round((window.screen.availHeight - height) / 2)}`);
 	});
 
-	it('should never pass noopener, which would sever the conference window from its opener', async () => {
-		window.open = jest.fn(() => ({ closed: false }) as Window);
+	// `noopener` in the features would make `window.open` return null, and the handle is what watches the window
+	// for closing — which is how leaving a call gets reported. So the severing is done by hand instead.
+	it('should never pass noopener, which would cost it the handle it needs', async () => {
+		window.open = jest.fn(() => openedWindow());
 
 		mountOpenCall(true)(faker.internet.url());
 
 		expect((window.open as jest.Mock).mock.calls[0][2]).not.toContain('noopener');
 	});
 
+	// A provider page with a live `window.opener` can navigate the tab the user came from — a login screen being
+	// the obvious thing to imitate. It is cut loose while still blank, which is while it can still be reached.
+	it('should sever an external provider window from its opener before sending it there', async () => {
+		const target = openedWindow();
+		window.open = jest.fn(() => target);
+
+		const url = faker.internet.url();
+		mountOpenCall(true)(url);
+
+		expect(target.opener).toBeNull();
+		expect(window.open).toHaveBeenCalledWith('', '_blank', expect.anything());
+		expect(target.location.replace).toHaveBeenCalledWith(url);
+	});
+
+	// A window that refuses to let go of its opener is still where the user is trying to go.
+	it('should still open the call when the opener cannot be cleared', async () => {
+		const target = { closed: false, location: { replace: jest.fn() } } as unknown as Window;
+		Object.defineProperty(target, 'opener', {
+			get: () => ({}),
+			set: () => {
+				throw new Error('SecurityError');
+			},
+		});
+		window.open = jest.fn(() => target);
+
+		const url = faker.internet.url();
+		mountOpenCall(true)(url);
+
+		expect(target.location.replace).toHaveBeenCalledWith(url);
+	});
+
 	it('should fall back to a plain tab when the popout is blocked', async () => {
+		const target = openedWindow();
 		window.open = jest
 			.fn()
 			.mockImplementationOnce(() => null)
-			.mockImplementationOnce(() => ({ closed: false }) as Window);
+			.mockImplementationOnce(() => target);
 
 		const url = faker.internet.url();
 		mountOpenCall(true)(url);
 
 		expect(window.open).toHaveBeenCalledTimes(2);
-		expect(window.open).toHaveBeenNthCalledWith(1, url, '_blank', expect.stringContaining('popup=yes'));
-		expect(window.open).toHaveBeenNthCalledWith(2, url, '_blank');
+		expect(window.open).toHaveBeenNthCalledWith(1, '', '_blank', expect.stringContaining('popup=yes'));
+		expect(window.open).toHaveBeenNthCalledWith(2, '', '_blank');
+		expect(target.location.replace).toHaveBeenCalledWith(url);
 		expect(screen.queryByRole('dialog', { name: 'Open_call_in_new_tab' })).not.toBeInTheDocument();
 	});
 
@@ -145,7 +186,7 @@ describe('with the call window, for an external provider URL', () => {
 		window.open = jest
 			.fn()
 			.mockImplementationOnce(() => ({ closed: true }) as Window)
-			.mockImplementationOnce(() => ({ closed: false }) as Window);
+			.mockImplementationOnce(() => openedWindow());
 
 		mountOpenCall(true)(faker.internet.url());
 
