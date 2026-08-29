@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 'react';
+import type { CSSProperties, ElementType, HTMLAttributes, ReactNode } from 'react';
 import { Children, createElement, forwardRef } from 'react';
 import type { CustomContainerComponentProps } from 'virtua';
 
@@ -20,10 +20,7 @@ type MockVirtualizerProps = {
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: forwardRef(function MockVirtualizer(
-			{ children, data, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps,
-			_ref: Ref<unknown>,
-		) {
+		Virtualizer({ children, data, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps) {
 			const visibleIndexes = new Set(mockVisibleIndexes ?? Array.from({ length: data?.length ?? 0 }, (_, index) => index));
 
 			const childrenToRender =
@@ -41,7 +38,7 @@ jest.mock('virtua', () => {
 				},
 				childrenToRender,
 			);
-		}),
+		},
 	};
 });
 
