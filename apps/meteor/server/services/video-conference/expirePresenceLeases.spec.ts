@@ -183,16 +183,18 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		});
 
-		// With the conference window, that same Jitsi call runs in a page of ours, which renews the lease like any
-		// other — so the sweep is the window's business rather than the provider's. Asking about the capability
-		// instead left every such call outside it, free to hold members present until the next day.
-		it('sweeps a non-embedded call once the conference window is enabled', async () => {
+		// The setting says what a call opened *now* would do, and the sweep meets calls opened before it. One
+		// created while the window was off was handed to the provider's own page and never heartbeats — yet
+		// joining stamps `lastSeenAt` whatever the provider — so sweeping on the setting would expire its members
+		// three minutes after the toggle and end a call still running in Jitsi.
+		it('still skips a non-embedded call when the conference window is enabled', async () => {
 			settingValues.VideoConf_Conference_Window_Enabled = true;
 			fixture = buildGroupCall([buildMember({ _id: 'jitsiUser', lastSeenAt: at(-PRESENCE_LEASE_MS * 2) })]);
 
 			await nonEmbeddedService.expirePresenceLeases(at(0));
 
-			expect(NonEmbeddedModelMock.setUserLeftById.calledWith('call1', 'jitsiUser')).to.be.true;
+			expect(NonEmbeddedModelMock.setUserLeftById.called).to.be.false;
+			expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 		});
 	});
 });
