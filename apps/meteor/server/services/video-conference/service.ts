@@ -1964,12 +1964,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Where a call's persistent chat lives.
 	 *
-	 * The setting that chooses is registered by the PR that introduces the call window, because that is the only
-	 * thing a mode other than `main_room` describes. Unregistered — which is every workspace until then — this
-	 * answers `main_room`, the discussion off the room that persistent chat has always created.
+	 * Only the call window gives a mode other than `main_room` anything to mean — a thread off the call message
+	 * is what its chat panel is built around. With the window off, the answer is the discussion persistent chat
+	 * has always created, whatever the setting was left at: turning the window off has to put a workspace back
+	 * exactly where it was, not leave it on a mode it can no longer see.
 	 */
 	private getPersistentChatMode(): 'thread' | 'main_room' {
-		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
+		if (!settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
+			return 'main_room';
+		}
+
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
 	}
 
 	/**

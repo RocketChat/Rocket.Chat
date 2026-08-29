@@ -69,17 +69,19 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 		},
 	},
 	'../../lib/messaging/threads/functions': { follow: followStub },
-	// Persistent chat fully on, in thread mode: what proves the *provider* gate below is the gate that held.
-	// Discussions have to be on for that, and the E2E keys stay off, since enforced encryption on private rooms
-	// switches persistent chat back off.
+	// Persistent chat fully on, in thread mode, with the window that gives thread mode its meaning: what proves
+	// the *provider* gate below is the gate that held. Discussions have to be on for that, and the E2E keys stay
+	// off, since enforced encryption on private rooms switches persistent chat back off.
 	'../../settings': {
 		settings: {
 			get: (key: string) =>
 				(
-					({ VideoConf_Enable_Persistent_Chat: true, VideoConf_Persistent_Chat_Mode: 'thread', Discussion_enabled: true }) as Record<
-						string,
-						unknown
-					>
+					({
+						VideoConf_Enable_Persistent_Chat: true,
+						VideoConf_Conference_Window_Enabled: true,
+						VideoConf_Persistent_Chat_Mode: 'thread',
+						Discussion_enabled: true,
+					}) as Record<string, unknown>
 				)[key],
 		},
 	},
