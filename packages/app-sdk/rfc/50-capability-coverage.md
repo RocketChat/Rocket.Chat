@@ -13,6 +13,7 @@ Everything the legacy app-facing surface exposes has a home. `✅` designed here
 | `IProcessor` + `scheduleOnce/Recurring` | `defineJob` + `ctx.scheduler.runAt/runEvery` | ✅ |
 | `IApi` / `IApiEndpoint` | `defineEndpoint` | ✅ |
 | Pre/Post × Prevent/Extend/Modify interfaces | `defineListener` (intent by return) | ✅ |
+| the five legacy pre-event return contracts | one `pass`/`patch`/`prevent`/`prompt` vocabulary (ADR 0002) | ◑ |
 | `ISettingsExtend` / typed reads | `defineSettings` + typed `ctx.settings` | ✅ |
 | `IPersistence` + associations | `defineStore` typed collections (+ associations) | ✅ |
 | `IRead` / `IModify` accessor trees | `ctx.*` domain clients | ✅ |

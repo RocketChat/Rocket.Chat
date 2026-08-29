@@ -53,7 +53,9 @@ apps changing a line.
 - **Schemas at every boundary.** If untrusted data enters, a schema describes
   it and the runtime validates it before your code runs.
 - **Intent by return value.** Observe = return nothing; modify = return the new
-  value; prevent = `ctx.prevent(reason)`.
+  value; prevent = `ctx.prevent(reason)`; prompt = ask the user, then proceed.
+  In-tree ADR 0002 settles that vocabulary for the legacy engine — see
+  [the event listeners](15-surface-event-listeners.md#the-outcome-vocabulary).
 - **The platform is only reachable through `ctx`.** No app imports server
   internals. This is what makes local vs. remote (microservice) execution an
   implementation detail.
