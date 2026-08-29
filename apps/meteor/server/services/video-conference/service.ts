@@ -1913,9 +1913,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled') && !encryptionEnforced;
 	}
 
+	/**
+	 * Where a call's persistent chat lives.
+	 *
+	 * The setting that chooses is registered by the PR that introduces the call window, because that is the only
+	 * thing a mode other than `main_room` describes. Unregistered — which is every workspace until then — this
+	 * answers `main_room`, the discussion off the room that persistent chat has always created.
+	 */
 	private getPersistentChatMode(): 'thread' | 'main_room' {
-		// Matches the setting's own default, so an unset value behaves the same as a freshly registered one.
-		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
 	}
 
 	/**
