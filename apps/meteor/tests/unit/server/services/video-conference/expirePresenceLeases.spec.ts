@@ -3,7 +3,7 @@ import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
+import { buildGroupCall, buildMember, cloneFixture, createService, resetAll, settingValues } from './testHarness';
 import { PRESENCE_LEASE_MS } from '../../../../../lib/videoConference/presence';
 
 const ts = new Date('2026-08-02T10:00:00.000Z');
@@ -168,6 +168,12 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			resetAll(NonEmbeddedModelMock.setUserLeftById, NonEmbeddedModelMock.setDataById, NonEmbeddedModelMock.setStatusById);
 		});
 
+		afterEach(() => {
+			delete settingValues.VideoConf_Conference_Window_Enabled;
+		});
+
+		// Handed off to the provider's own page, so nothing of ours is there to renew a lease: every one of them
+		// would look expired and the sweep would end the call after three minutes. The 24-hour TTL cron has these.
 		it('skips calls from non-embedded providers (Jitsi, Meet, etc.)', async () => {
 			fixture = buildGroupCall([buildMember({ _id: 'jitsiUser', lastSeenAt: at(-PRESENCE_LEASE_MS * 2) })]);
 
@@ -175,6 +181,18 @@ describe('VideoConfService.expirePresenceLeases', () => {
 
 			expect(NonEmbeddedModelMock.setUserLeftById.called).to.be.false;
 			expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
+		});
+
+		// With the conference window, that same Jitsi call runs in a page of ours, which renews the lease like any
+		// other — so the sweep is the window's business rather than the provider's. Asking about the capability
+		// instead left every such call outside it, free to hold members present until the next day.
+		it('sweeps a non-embedded call once the conference window is enabled', async () => {
+			settingValues.VideoConf_Conference_Window_Enabled = true;
+			fixture = buildGroupCall([buildMember({ _id: 'jitsiUser', lastSeenAt: at(-PRESENCE_LEASE_MS * 2) })]);
+
+			await nonEmbeddedService.expirePresenceLeases(at(0));
+
+			expect(NonEmbeddedModelMock.setUserLeftById.calledWith('call1', 'jitsiUser')).to.be.true;
 		});
 	});
 });

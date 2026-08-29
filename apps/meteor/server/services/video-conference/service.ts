@@ -633,16 +633,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Whether this call is announced the way a call window needs: the callee becomes a member the moment they are
-	 * called, and the ring waits for the caller to actually walk in rather than firing when the call is created.
+	 * Whether this call happens inside a window of ours, rather than being handed off to a page we don't run.
 	 *
 	 * True for a provider that renders inside Rocket.Chat, and true for *any* provider once the conference window
-	 * is enabled — the window is ours whoever runs the media, so the caller sits on its preflight either way, and
-	 * a ring sent at creation would reach a callee whose caller is still choosing a camera. Without this the two
-	 * gates disagree: the window opens for every provider, while ringing waited on a capability nothing declares
-	 * yet, so a direct call rang nobody at all.
+	 * is enabled — the window is ours whoever runs the media, and an iframed provider renders inside our page, so
+	 * our code is alive there either way.
+	 *
+	 * Two things follow, and both were gated on the capability alone until the window shipped for every provider.
+	 * The callee becomes a member when called and the ring waits for the caller to walk in, because the caller is
+	 * sitting on our preflight rather than already in the call. And presence is held by leases, because that
+	 * window renews them — so a call whose window vanished can be noticed, instead of waiting a day for the TTL.
 	 */
-	private ringsOnCallerArrival(providerName: string): boolean {
+	private runsInOurCallWindow(providerName: string): boolean {
 		return (
 			videoConfProviders.getProviderCapabilities(providerName)?.embedded === true ||
 			settings.get<boolean>('VideoConf_Conference_Window_Enabled') === true
@@ -840,7 +842,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// and a call they missed leaves them no history entry. Only where the ring waits for the caller: a callee
 		// who is rung at creation has always entered `users` by answering, and putting them there earlier would
 		// rewrite the call history their clients build from it.
-		if (this.ringsOnCallerArrival(providerName)) {
+		if (this.runsInOurCallWindow(providerName)) {
 			await this.addAbsentMember(callId, calleeId);
 		}
 
@@ -885,7 +887,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// A call that rings at creation rings the callee's phone now, as it always has. Where the ring waits for
 		// the caller, so does the push — `ringCalleeOnCallerArrival` sends it — and pushing here as well would
 		// buzz the callee twice for one call.
-		if (!this.ringsOnCallerArrival(providerName)) {
+		if (!this.runsInOurCallWindow(providerName)) {
 			await this.sendPushNotification(call, calleeId);
 		}
 
@@ -1264,7 +1266,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.type === 'direct') {
 			// The ring-on-arrival dance belongs to the flows with a preflight screen; a call that rings at
 			// creation already rang its callee (and pushed) then.
-			const rang = this.ringsOnCallerArrival(call.providerName) ? await this.ringCalleeOnCallerArrival(call, _id) : false;
+			const rang = this.runsInOurCallWindow(call.providerName) ? await this.ringCalleeOnCallerArrival(call, _id) : false;
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
@@ -1698,11 +1700,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async expirePresenceLeases(now = new Date()): Promise<void> {
 		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
 			try {
-				// Presence leases only apply to embedded providers, whose call window is ours and sends heartbeats.
-				// Non-embedded providers (Jitsi, Meet, Pexip) open in an iframe/popup we don't control — no heartbeat
-				// is sent, so every lease would look expired and the sweep would end every call after 3 minutes.
-				// Those calls are cleaned up by the 24-hour TTL cron instead, exactly as they were before leases existed.
-				if (!this.isEmbeddedProvider(call.providerName)) {
+				// Presence leases only apply to a call held in a window of ours, which is what renews them. A call
+				// handed off to the provider's own page sends no heartbeat, so every lease would look expired and
+				// the sweep would end the call after three minutes; those are cleaned up by the 24-hour TTL cron
+				// instead, exactly as they were before leases existed.
+				//
+				// Gated on the window rather than on the provider: with the conference window on, a Jitsi call runs
+				// in our page too and renews its lease like any other. Asking about the capability instead left
+				// every such call outside the sweep — free to hold members present until the next day.
+				if (!this.runsInOurCallWindow(call.providerName)) {
 					continue;
 				}
 
