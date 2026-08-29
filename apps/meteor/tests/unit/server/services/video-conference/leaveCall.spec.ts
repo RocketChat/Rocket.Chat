@@ -287,3 +287,32 @@ describe('VideoConfService one call at a time', () => {
 		});
 	});
 });
+
+// Leaving is reported more than once by design: the call window says so as it closes, and whatever opened it
+// says so again if that window vanished without managing to. The second report must change nothing — a moved
+// `leftAt` would rewrite when someone left, and the broadcast would announce a roster change that didn't happen.
+describe('VideoConfService.leaveCall reported twice', () => {
+	let service: any;
+
+	beforeEach(() => {
+		service = new VideoConfService();
+	});
+
+	it('records the departure once and says nothing the second time', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'stays' }), buildMember({ _id: 'goes' })]);
+
+		await service.leaveCall('goes', 'call1');
+
+		const leftAt = fixture.users.find(({ _id }) => _id === 'goes')?.leftAt;
+		expect(leftAt).to.be.an.instanceOf(Date);
+
+		const writes = VideoConferenceModelMock.setUserLeftById.callCount;
+		const broadcasts = broadcastStub.callCount;
+
+		await service.leaveCall('goes', 'call1');
+
+		expect(VideoConferenceModelMock.setUserLeftById.callCount, 'wrote the departure again').to.equal(writes);
+		expect(broadcastStub.callCount, 'announced the departure again').to.equal(broadcasts);
+		expect(fixture.users.find(({ _id }) => _id === 'goes')?.leftAt).to.equal(leftAt);
+	});
+});

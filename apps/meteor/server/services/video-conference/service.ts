@@ -1537,7 +1537,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		if (!call.users.some(({ _id }) => _id === uid)) {
+		// Already recorded as gone, so there is nothing to record and nobody to tell. Leaving is reported more
+		// than once by design — the call window says so as it closes, and whatever opened it says so again if
+		// that window vanished without managing to — and re-stamping would move a departure that already
+		// happened and broadcast a roster change nothing changed.
+		const member = call.users.find(({ _id }) => _id === uid);
+		if (!member || member.leftAt) {
 			return;
 		}
 
