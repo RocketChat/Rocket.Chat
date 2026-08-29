@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 
-import { decode, Decoder, encode, Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 import {
@@ -27,6 +27,56 @@ const JSONRPC_SUCCESS = 2;
 const JSONRPC_ERROR = 3;
 
 const extensionCodec = new ExtensionCodec();
+
+/**
+ * msgpack's module-level `encode()`/`decode()` build a whole `Encoder`/`Decoder`,
+ * with its 2 KiB buffer, on every call. The extensions below call them once per
+ * message, and that setup measured at ~1.4 us - enough to dominate a small bridge
+ * call, which is most of this bridge's traffic. Leasing a long-lived instance instead
+ * removes the setup and leaves only the work.
+ *
+ * The lease has to be reentrant. The nested pass walks the message's own fields, and
+ * those can reach another extension that (de)serializes in turn - a `params` object
+ * carrying secure fields, say. Handing an inner call the instance an outer call is
+ * still writing into would corrupt both, so a busy instance is never lent twice: the
+ * pool grows one slot per level of nesting and settles there.
+ *
+ * Both `Encoder#encode` and `Decoder#decode` reset their state on entry, so an
+ * instance stays usable after a call that threw.
+ */
+const nestedEncoders: Encoder[] = [];
+let nestedEncoderDepth = 0;
+
+function encodeNested(value: unknown): Uint8Array {
+	nestedEncoders[nestedEncoderDepth] ??= new Encoder({ extensionCodec });
+
+	const encoder = nestedEncoders[nestedEncoderDepth];
+
+	nestedEncoderDepth += 1;
+
+	try {
+		return encoder.encode(value);
+	} finally {
+		nestedEncoderDepth -= 1;
+	}
+}
+
+const nestedDecoders: Decoder[] = [];
+let nestedDecoderDepth = 0;
+
+function decodeNested(data: Uint8Array): unknown {
+	nestedDecoders[nestedDecoderDepth] ??= new Decoder({ extensionCodec });
+
+	const decoder = nestedDecoders[nestedDecoderDepth];
+
+	nestedDecoderDepth += 1;
+
+	try {
+		return decoder.decode(data);
+	} finally {
+		nestedDecoderDepth -= 1;
+	}
+}
 
 extensionCodec.register({
 	type: FUNCTION_DISABLER_EXT,
@@ -60,7 +110,7 @@ extensionCodec.register({
 extensionCodec.register({
 	type: SECURE_FIELDS_HANDLER_EXT,
 	encode: (_object: unknown) => null,
-	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as WithSecureFields<Record<string, unknown>>),
+	decode: (data: Uint8Array) => applySecureFields(decodeNested(data) as WithSecureFields<Record<string, unknown>>),
 });
 
 /**
@@ -74,34 +124,32 @@ extensionCodec.register({
 	type: JSONRPC_HANDLER_EXT,
 	encode: (object: unknown) => {
 		if (object instanceof RequestObject) {
-			return encode(
+			return encodeNested(
 				object.params === undefined
 					? [JSONRPC_REQUEST, object.id, object.method]
 					: [JSONRPC_REQUEST, object.id, object.method, object.params],
-				{ extensionCodec },
 			);
 		}
 
 		if (object instanceof NotificationObject) {
-			return encode(
+			return encodeNested(
 				object.params === undefined ? [JSONRPC_NOTIFICATION, object.method] : [JSONRPC_NOTIFICATION, object.method, object.params],
-				{ extensionCodec },
 			);
 		}
 
 		if (object instanceof SuccessObject) {
-			return encode([JSONRPC_SUCCESS, object.id, object.result], { extensionCodec });
+			return encodeNested([JSONRPC_SUCCESS, object.id, object.result]);
 		}
 
 		if (object instanceof ErrorObject) {
-			return encode([JSONRPC_ERROR, object.id, object.error.message, object.error.code, object.error.data], { extensionCodec });
+			return encodeNested([JSONRPC_ERROR, object.id, object.error.message, object.error.code, object.error.data]);
 		}
 
 		return null;
 	},
 
 	decode: (data: Uint8Array) => {
-		const [kind, ...rest] = decode(data, { extensionCodec }) as [number, ...unknown[]];
+		const [kind, ...rest] = decodeNested(data) as [number, ...unknown[]];
 
 		switch (kind) {
 			case JSONRPC_REQUEST:
