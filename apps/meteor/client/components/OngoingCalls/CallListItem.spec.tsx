@@ -86,6 +86,24 @@ describe('a call that is merely running', () => {
 		expect(screen.queryByRole('button', { name: 'Silence' })).not.toBeInTheDocument();
 	});
 
+	// The ring window outlives the answer: declining a second into a 15s ring leaves `ringingAt` live, and the
+	// payload carries no `declinedAt` for the window check to compare it against. The answer is what counts.
+	it('stops reading as ringing the moment it is declined, window or no window', () => {
+		renderItem(buildJoinableCall({ callId: 'refused', name: 'Design review', declined: true, ringingAt: new Date() }));
+
+		expect(screen.queryByText(/Ringing/)).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Silence' })).not.toBeInTheDocument();
+		expect(screen.getByText('(Declined)')).toBeInTheDocument();
+	});
+
+	// Same rule from the other side: answering by joining ends it too.
+	it('stops reading as ringing once joined', () => {
+		renderItem(buildJoinableCall({ callId: 'answered', name: 'Standup', joined: true, ringingAt: new Date() }));
+
+		expect(screen.queryByText(/Ringing/)).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Silence' })).not.toBeInTheDocument();
+	});
+
 	// There is nothing left to decline, so the button's place says what happened instead.
 	it('shows that a declined call was declined, with no button', () => {
 		renderItem(buildJoinableCall({ callId: 'refused', name: 'Design review', declined: true }));
