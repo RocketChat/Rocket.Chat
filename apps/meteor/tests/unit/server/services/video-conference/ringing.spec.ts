@@ -359,10 +359,11 @@ describe('VideoConfService: ringing a direct call when its caller arrives', () =
 		expect(VideoConferenceModelMock.setUsersRingingById.called).to.be.false;
 	});
 
-	// A call that rings at creation has no preflight to wait for — it already rang the callee then, so the
-	// caller arriving in it must not ring anyone a second time.
-	it('rings nobody at all for a non-embedded provider without the call window', async () => {
-		providerCapabilities.current = undefined;
+	// A call that rang at creation never put its callee in `users` — they enter by answering — so there is
+	// nobody unasked for the arrival to reach, and the question answers itself without consulting any setting.
+	// That is what makes an admin toggling the window mid-call unable to ring a callee who was already rung.
+	it('rings nobody at all for a call that rang when it was created', async () => {
+		fixture = buildDirectCall([buildMember({ _id: 'creator', joined: false, joinedAt: undefined })]);
 
 		await service.addUser('call1', 'creator');
 
@@ -370,9 +371,9 @@ describe('VideoConfService: ringing a direct call when its caller arrives', () =
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
-	// The gate the conference window needs: the window renders every provider's call inside Rocket.Chat, so the
-	// caller sits on a preflight whatever the provider is, and the ring has to wait for them either way. Reading
-	// only the provider's capability left a direct call ringing nobody at all once the window was enabled.
+	// The window renders every provider's call inside Rocket.Chat, so the caller sits on a preflight whatever the
+	// provider is, and the callee is a member waiting to be asked. Reading only the provider's capability left a
+	// direct call ringing nobody at all once the window was enabled.
 	it('rings the callee when the caller arrives, for any provider, once the call window is enabled', async () => {
 		providerCapabilities.current = undefined;
 		settingValues.VideoConf_Conference_Window_Enabled = true;
