@@ -14,7 +14,6 @@ export type UserAutoCompleteMultipleProps = {
 	value: Array<string> | undefined;
 	placeholder?: string;
 	federated?: boolean;
-	/** Usernames to leave out of the options — people it would make no sense to offer. */
 	exceptions?: string[];
 	error?: string;
 } & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange' | 'value'>;

@@ -123,7 +123,7 @@ export const usersQueryKeys = {
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
 	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
-		[...usersQueryKeys.all, 'autocomplete', filter, federated, ...(exceptions.length ? [exceptions] : [])] as const,
+		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
 };
 
 export const teamsQueryKeys = {

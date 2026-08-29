@@ -25,15 +25,22 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 		this.setCurrentValue(element);
 	}
 
-	// `embedded` standalone views (e.g. the conference page) omit the global announcement/banner chrome so
-	// app-level banners (E2E password prompt, admin announcements) don't bleed into them.
-	wrap(element: ReactNode, { embedded = false }: { embedded?: boolean } = {}): ReactNode {
+	/**
+	 * `standalone` is a route that is a complete UI of its own — the conference window — rather than the
+	 * workspace with something rendered inside it. Those omit the app-level chrome, so an admin announcement or
+	 * an E2E password prompt doesn't appear over a call.
+	 *
+	 * Deliberately not called `embedded`: that already means Rocket.Chat rendered inside someone else's page
+	 * (`layout=embedded`), which is still the workspace and still wants its banners. Embedded chats reach this
+	 * through the ordinary room route and never pass this option.
+	 */
+	wrap(element: ReactNode, { standalone = false }: { standalone?: boolean } = {}): ReactNode {
 		return (
 			<AppLayoutThemeWrapper>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
-				{!embedded && <CloudAnnouncementsRegion />}
-				{!embedded && <BannerRegion />}
+				{!standalone && <CloudAnnouncementsRegion />}
+				{!standalone && <BannerRegion />}
 				{element}
 				<ModalRegion />
 			</AppLayoutThemeWrapper>
