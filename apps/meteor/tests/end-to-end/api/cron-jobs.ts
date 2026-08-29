@@ -161,6 +161,25 @@ describe('[Cron Jobs API]', () => {
 					expect(res.body.error).to.equal('error-job-not-found');
 				});
 		});
+
+		it('should return error-job-disabled when trying to trigger a disabled job', async () => {
+			await updatePermission('manage-scheduled-jobs', ['admin']);
+			await request.post(api('cron.disable')).set(credentials).send({ jobName: 'NPS' }).expect(200);
+
+			try {
+				await request
+					.post(api('cron.trigger'))
+					.set(credentials)
+					.send({ jobName: 'NPS' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.equal('error-job-disabled');
+					});
+			} finally {
+				await request.post(api('cron.enable')).set(credentials).send({ jobName: 'NPS' }).expect(200);
+			}
+		});
 	});
 
 	describe('[/cron.enable]', () => {
