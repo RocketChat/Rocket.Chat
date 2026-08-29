@@ -50,6 +50,8 @@ const VideoConferenceModelMock = {
 		member.lastSeenAt = new Date();
 		return { revived, rid: fixture.rid, providerName: fixture.providerName };
 	}),
+	renewUsersPresenceById: sinon.stub().resolves(),
+	markEmbeddedParticipantLeft: sinon.stub().resolves(),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
 		Object.assign(fixture, data);
 	}),

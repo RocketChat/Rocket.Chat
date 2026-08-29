@@ -17,7 +17,7 @@ import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
 import ConferenceViewport from './ConferenceViewport';
-import { callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
+import { callPreferencesStorageKey } from './hooks/useCallPreferences';
 import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { buildConferenceMember } from './testFixtures';
 import { storybookI18n } from '../../stories/i18n';
@@ -127,7 +127,10 @@ const CALL_PREFERENCES_KEY = callPreferencesStorageKey('john.doe');
 export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean; ring?: boolean }) => () => {
 	const previous = localStorage.getItem(CALL_PREFERENCES_KEY);
 
-	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, ...preferences }));
+	localStorage.setItem(
+		CALL_PREFERENCES_KEY,
+		JSON.stringify({ mic: true, cam: false, ring: true, blurLevel: 'none', videoQuality: 'auto', ...preferences }),
+	);
 
 	// Put back whatever was there, so one story's camera doesn't decide the next one's.
 	return () => {

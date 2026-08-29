@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallDeviceToggle from './components/CallDeviceToggle';
-import type { CallPreferences } from './hooks/useCallDevicesInitialState';
-import { useCallDevicesInitialState } from './hooks/useCallDevicesInitialState';
+import type { CallPreferences } from './hooks/useCallPreferences';
+import { useCallDevicesInitialState } from './hooks/useCallPreferences';
 import CallParticipants from '../../components/CallParticipants';
 
 /**
