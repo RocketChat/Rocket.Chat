@@ -1232,10 +1232,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.type === 'direct') {
 			// The ring-on-arrival dance belongs to the embedded flow, where the caller sits on a preflight screen
 			// first; a non-embedded direct call already rang its callee (and pushed) when it was created.
-			if (isEmbedded) {
-				await this.ringCalleeOnCallerArrival(call, _id);
-			}
-			return this.updateDirectCall(call, _id);
+			const rang = isEmbedded ? await this.ringCalleeOnCallerArrival(call, _id) : false;
+
+			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
 
 		this.notifyVideoConfUpdate(call.rid, call._id);
@@ -1490,15 +1489,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 *
 	 * Only members who have never been rung, so rejoining doesn't ring anyone again; the call window's own
 	 * "ring again" is how a second attempt is asked for.
+	 *
+	 * Says whether it rang, because the caller arriving is also what starts the call — and starting a direct
+	 * call pushes everyone in the room. Both would reach the same phone, a moment apart, about one call.
 	 */
-	private async ringCalleeOnCallerArrival(call: IDirectVideoConference, uid: IUser['_id']): Promise<void> {
+	private async ringCalleeOnCallerArrival(call: IDirectVideoConference, uid: IUser['_id']): Promise<boolean> {
 		if (call.createdBy._id !== uid) {
-			return;
+			return false;
 		}
 
 		const absent = call.users.filter((user) => user._id !== uid && isUnaskedConferenceMember(user));
 		if (!absent.length) {
-			return;
+			return false;
 		}
 
 		await this.ringUsers(
@@ -1510,6 +1512,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// The in-product ring only reaches a client that is on screen; a direct call is also worth a push.
 		await Promise.all(absent.map(({ _id }) => this.sendPushNotification(call, _id)));
+
+		return true;
 	}
 
 	/**
@@ -1884,7 +1888,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.increaseAnonymousCount(call._id);
 	}
 
-	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id']): Promise<void> {
+	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id'], { pushed = false } = {}): Promise<void> {
 		// If it's an user that hasn't joined yet — a member who was added but never joined still counts as not
 		// having joined, so the ring must keep going for them.
 		if (call.ringing && !call.users.some(({ _id, joined }) => _id === newUserId && hasJoinedVideoConference({ joined }))) {
@@ -1904,7 +1908,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		await this.runVideoConferenceChangedEvent(call._id);
-		await this.sendAllPushNotifications(call._id);
+
+		// Unless the callee's phone has just been pushed by the ring on the caller's arrival: this is that same
+		// arrival, so the bulk push would be the second notification about one call in as many moments.
+		if (!pushed) {
+			await this.sendAllPushNotifications(call._id);
+		}
 	}
 
 	private isPersistentChatEnabled(): boolean {
