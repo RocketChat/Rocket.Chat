@@ -6,8 +6,34 @@ import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
+import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
+import { settings } from '../../../server/settings';
+import { isLiveKitFullyConfigured } from '../lib/livekit/config';
+import { registerLiveKitPresenceProbe } from '../lib/livekit/presence';
 import { addSettings } from '../settings/video-conference';
+
+/**
+ * Whether LiveKit is offered as a provider at all.
+ *
+ * Only when it is *fully* configured — enabled, with a URL, an API key and a secret — because a provider in the
+ * registry is a provider the camera button offers, and offering one that can't connect turns a misconfiguration
+ * into a call that fails at the moment someone tries to place it.
+ *
+ * Re-evaluated on every relevant setting change rather than only at startup, so filling in a missing key takes
+ * effect without a restart.
+ */
+const refreshLiveKitProviderRegistration = (): void => {
+	if (isLiveKitFullyConfigured()) {
+		videoConfProviders.registerProvider('livekit', { mic: true, cam: true, title: true, embedded: true }, CORE_PROVIDER_APP_ID);
+	} else {
+		videoConfProviders.unRegisterProvider('livekit');
+	}
+
+	// Whether LiveKit can be asked who is in a room follows the same credentials, so it is decided in the same
+	// place. The presence sweep works without it — this only lets it stop guessing where it doesn't have to.
+	registerLiveKitPresenceProbe();
+};
 
 Meteor.startup(async () => {
 	await License.onLicense('videoconference-enterprise', async () => {
@@ -44,5 +70,9 @@ Meteor.startup(async () => {
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>
 			VideoConf.addUser(callId, userId),
 		);
+
+		// Inside the EE licence gate already, and every step is idempotent.
+		refreshLiveKitProviderRegistration();
+		settings.watchByRegex(/^VideoConf_LiveKit_(Enabled|Url|Api_Key|Api_Secret)$/, () => refreshLiveKitProviderRegistration());
 	});
 });
