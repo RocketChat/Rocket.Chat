@@ -157,6 +157,13 @@ export const useVideoConfOpenCall = () => {
 				return undefined;
 			}
 
+			// Nothing openable — a call with no URL yet, or an address that isn't a web address at all. Saying the
+			// popup was blocked would be a lie with advice attached: allowing popups can't make this succeed, and
+			// the modal's retry would refuse it again. Nothing opened, so there is nothing to report either.
+			if (conferenceWindowEnabled && !asCallUrl(callUrl)) {
+				return null;
+			}
+
 			// Without the call window a call is an ordinary new tab, exactly as it always was: no popup features
 			// for a browser to refuse, and no window shared between calls.
 			const open = conferenceWindowEnabled ? () => openConferenceWindow(callUrl) : () => window.open(callUrl);
