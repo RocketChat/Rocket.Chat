@@ -127,7 +127,8 @@ export class HomeChannel {
 	}
 
 	get btnOpenRoomInfo(): Locator {
-		return this.page.getByRole('main').getByRole('button', { name: 'Room Information', exact: true });
+		// Encrypted rooms append " - Encrypted" to the accessible name (see RoomTitle.tsx), so match either form.
+		return this.page.getByRole('main').getByRole('button', { name: /^Room Information( - Encrypted)?$/ });
 	}
 
 	get roomHeaderToolbar(): Locator {
