@@ -24,3 +24,10 @@ export * from './listeners';
 export * from './ui';
 export * from './providers';
 export * from './app';
+
+/**
+ * The host data & query layer (PROPOSAL-DATA-LAYER.md). Namespaced, because it
+ * supersedes parts of `context.ts` and `models.ts` rather than extending them:
+ * `import { data } from '@rocket.chat/app-sdk'`.
+ */
+export * as data from './data';
