@@ -282,5 +282,17 @@ describe('Invites', () => {
 
 			expect(res.body).to.have.property('success', false);
 		});
+
+		it('should send invitation email when authenticated with valid email', async () => {
+			const res = await request
+				.post(api('sendInvitationEmail'))
+				.set(credentials)
+				.send({
+					emails: ['test-invite-user@example.com'],
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+		});
 	});
 });
