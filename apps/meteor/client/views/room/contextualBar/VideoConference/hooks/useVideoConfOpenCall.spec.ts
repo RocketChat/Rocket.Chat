@@ -150,18 +150,24 @@ describe('with the call window, for an external provider URL', () => {
 
 	// A `javascript:` "URL" is not somewhere to go but something to run, and the window opened for an external
 	// provider is our own blank one until it navigates — so running it there would be script in this origin.
-	it.each(['javascript:alert(document.domain)', 'data:text/html,<script>alert(1)</script>', 'file:///etc/passwd'])(
-		'should refuse to send a window to %s',
-		async (url) => {
-			const target = openedWindow();
-			window.open = jest.fn(() => target);
+	it.each([
+		'javascript:alert(document.domain)',
+		'data:text/html,<script>alert(1)</script>',
+		'file:///etc/passwd',
+		// Relative, so it has no origin of its own: read against this page it would look like an in-product
+		// conference and open the workspace at an arbitrary route in the call window.
+		'/some/workspace/route',
+		// What a call with no URL yet arrives as.
+		'',
+	])('should refuse to send a window to %s', async (url) => {
+		const target = openedWindow();
+		window.open = jest.fn(() => target);
 
-			mountOpenCall(true)(url);
+		mountOpenCall(true)(url);
 
-			expect(window.open).not.toHaveBeenCalled();
-			expect(target.location.replace).not.toHaveBeenCalled();
-		},
-	);
+		expect(window.open).not.toHaveBeenCalled();
+		expect(target.location.replace).not.toHaveBeenCalled();
+	});
 
 	// A window that refuses to let go of its opener is still where the user is trying to go.
 	it('should still open the call when the opener cannot be cleared', async () => {
