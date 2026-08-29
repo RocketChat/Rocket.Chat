@@ -156,28 +156,6 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</Box>
 			)}
 		</IconButton>
-		// <Box
-		// 	is='button'
-		// 	className={topBarActionStyles}
-		// 	aria-label={withBadgeCount(t('Chat'), unread, unreadTitle)}
-		// 	title={t('Chat')}
-		// 	aria-pressed={chatVisible}
-		// 	onClick={() => togglePanel('chat')}
-		// >
-		// 	<Icon name='balloon' size='x20' />
-		// 	{unread > 0 && (
-		// 		<Box position='absolute' insetBlockStart={-4} insetInlineEnd={-4} pointerEvents='none' aria-hidden='true'>
-		// 			<Badge variant={unreadVariant} title={unreadTitle}>
-		// 				{unread}
-		// 			</Badge>
-		// 		</Box>
-		// 	)}
-		// 	{unread === 0 && hasUnseenActivity && (
-		// 		<Box position='absolute' insetBlockStart={-2} insetInlineEnd={-2} pointerEvents='none' aria-hidden='true'>
-		// 			<Badge variant={unreadVariant} title={unreadTitle} />
-		// 		</Box>
-		// 	)}
-		// </Box>
 	);
 
 	if (room.error) {

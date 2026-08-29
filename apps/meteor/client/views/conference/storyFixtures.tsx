@@ -101,10 +101,7 @@ const CALL_PREFERENCES_KEY = 'videoconf-call-preferences';
 export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean; ring?: boolean }) => () => {
 	const previous = localStorage.getItem(CALL_PREFERENCES_KEY);
 
-	localStorage.setItem(
-		CALL_PREFERENCES_KEY,
-		JSON.stringify({ mic: true, cam: false, ring: true, blurLevel: 'none', videoQuality: 'auto', ...preferences }),
-	);
+	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, ...preferences }));
 
 	// Put back whatever was there, so one story's camera doesn't decide the next one's.
 	return () => {
