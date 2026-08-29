@@ -218,7 +218,7 @@ app shell — while it resolves the user, so `AuthenticationCheck` and `Username
 node, defaulting to `HomeSkeleton` so no existing route changes. The conference route passes `PageLoading`, which
 is also what the conference shows while joining, making startup one continuous state rather than two.
 
-Because it has no `MainContent` ancestor to inherit height from, `ConferenceRoute` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
+Because it has no `MainContent` ancestor to inherit height from, `ConferenceRoute` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { standalone: true })`, which drops the global banner and cloud-announcement regions.
 
 ### Call chrome
 
@@ -1004,7 +1004,6 @@ as the last read. A member removed from the room *during* a call still has the r
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |
-| Ongoing banner | `apps/meteor/client/views/room/OngoingConferenceBanner/OngoingConferenceBanner.tsx` |
 | Room-scoped call history | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/` |
 | Join guard | `apps/meteor/client/uikit/hooks/useMessageBlockContextValue.ts`, `packages/fuselage-ui-kit/src/blocks/VideoConferenceBlock/VideoConferenceBlock.tsx` |
 | Layout | `apps/meteor/client/views/root/MainLayout/MainLayout.tsx`, `TwoFactorAuthSetupCheck.tsx`, `client/lib/appLayout.tsx` |
