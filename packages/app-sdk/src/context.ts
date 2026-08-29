@@ -30,7 +30,7 @@
  * through `ctx` (never through module-level imports of server internals), the
  * runtime is free to hand the app a **local** `ctx` or a **remote (NATS-RPC)**
  * `ctx` with identical app code. That is the property that makes the
- * apps-runtime-as-a-microservice split (see PROPOSAL.md §"Deployment") a
+ * apps-runtime-as-a-microservice split (see rfc/41-platform-deployment-and-isolation.md) a
  * packaging decision rather than an app-code rewrite.
  */
 

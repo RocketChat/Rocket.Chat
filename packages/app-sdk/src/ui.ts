@@ -24,7 +24,7 @@
  * Block *authoring* (the `render` output) is intentionally left to
  * `@rocket.chat/ui-kit`; the tiny `blocks` helper below exists only so the
  * examples in this proposal render something concrete and type-check offline.
- * See PROPOSAL.md §"Deferred domains".
+ * See rfc/51-open-questions.md.
  */
 
 import type { AppContext, AppEnv, BaseEnv } from './context';
