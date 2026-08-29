@@ -346,6 +346,16 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { jobName } = this.bodyParams;
+			const job = await CronJobs.getJob(jobName);
+
+			if (!job) {
+				return API.v1.failure('error-job-not-found');
+			}
+
+			if (job.status === 'disabled') {
+				return API.v1.failure('error-job-disabled');
+			}
+
 			const success = await CronJobs.trigger(jobName);
 
 			if (!success) {

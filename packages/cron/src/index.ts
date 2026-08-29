@@ -237,6 +237,10 @@ export class AgendaCronJobs {
 		}
 
 		const job = jobs[0];
+		if (job.attrs.disabled) {
+			return false;
+		}
+
 		job.schedule(new Date());
 		await job.save();
 

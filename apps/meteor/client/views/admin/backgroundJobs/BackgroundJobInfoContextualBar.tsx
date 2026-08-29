@@ -163,7 +163,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 			{tab === 'system' && (
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
-						<Button disabled={isPending} onClick={handleRunNow}>
+						<Button disabled={isPending || isDisabled} onClick={handleRunNow}>
 							{t('Run_now')}
 						</Button>
 						{isDisabled ? (
