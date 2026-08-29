@@ -1264,10 +1264,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			// Asked of the call rather than of the setting: a call that rang at creation has no unasked member
-			// left for this to reach, so it answers false on its own. Reading the setting here instead would let
-			// an admin toggling it mid-call decide differently than the call's own creation did.
-			const rang = await this.ringCalleeOnCallerArrival(call, _id);
+			// Only while the call is still ringing for its caller to arrive. Asked of the call rather than of the
+			// setting, so an admin toggling the window mid-call can't decide differently than its creation did —
+			// and so someone added later with `ring: false` isn't rung by the creator turning up, which asking
+			// only "is this member unasked" would do.
+			const rang = call.status === VideoConferenceStatus.CALLING ? await this.ringCalleeOnCallerArrival(call, _id) : false;
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
@@ -1706,10 +1707,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// the sweep would end the call after three minutes; those are cleaned up by the 24-hour TTL cron
 				// instead, exactly as they were before leases existed.
 				//
-				// Gated on the window rather than on the provider: with the conference window on, a Jitsi call runs
-				// in our page too and renews its lease like any other. Asking about the capability instead left
-				// every such call outside the sweep — free to hold members present until the next day.
-				if (!this.runsInOurCallWindow(call.providerName)) {
+				// The provider's capability, deliberately, and not `runsInOurCallWindow`. The setting says what a
+				// call opened *now* would do, and the sweep meets calls opened before it: one created while the
+				// window was off was handed to the provider's own page and never heartbeats, yet joining stamps
+				// `lastSeenAt` for every provider — so reading the setting here would expire that call's members
+				// three minutes after the toggle and end a call still running in Jitsi.
+				//
+				// The cost is that a call held in our window by a URL provider stays outside the sweep, waiting on
+				// the 24-hour TTL. Closing that needs the call to carry how it was opened, rather than the sweep
+				// guessing from a setting that can have changed since.
+				if (!videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 					continue;
 				}
 
