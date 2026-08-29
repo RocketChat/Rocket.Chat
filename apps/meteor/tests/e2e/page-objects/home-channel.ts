@@ -128,7 +128,12 @@ export class HomeChannel {
 
 	get btnOpenRoomInfo(): Locator {
 		// Encrypted rooms append " - Encrypted" to the accessible name (see RoomTitle.tsx), so match either form.
-		return this.page.getByRole('main').getByRole('button', { name: /^Room Information( - Encrypted)?$/ });
+		// The room header toolbar has its own "Room Information" button (see fragments/toolbar.ts), so scope to
+		// the header title button specifically, which is the only one of the two wrapping a heading (RoomTitle renders an h1).
+		return this.page
+			.getByRole('main')
+			.getByRole('button', { name: /^Room Information( - Encrypted)?$/ })
+			.filter({ has: this.page.getByRole('heading') });
 	}
 
 	get roomHeaderToolbar(): Locator {
