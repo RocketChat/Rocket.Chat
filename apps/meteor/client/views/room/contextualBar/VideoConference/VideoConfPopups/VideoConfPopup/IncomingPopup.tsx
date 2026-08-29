@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
@@ -59,13 +60,19 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	// A popup with a room is named after the room, which is the only case there is without the call window.
 	const callName = room ? roomName : conferenceTitle;
 
+	// What the popup is announced as. A direct call carries no title, so without a room `callName` is empty and
+	// the dialog would be announced as "Incoming call from" and nothing at all — while naming the caller on
+	// screen right below it. Named the way the body names them, so the two agree about who is calling.
+	const callerName = useUserDisplayName({ name: data?.createdBy.name, username: data?.createdBy.username });
+	const announcedName = callName || callerName || '';
+
 	const handleJoinCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});
 
 	return (
-		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName: callName })}>
+		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName: announcedName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{isPending && <Skeleton />}
