@@ -36,6 +36,24 @@ const popoutFeatures = (): string => {
 const isBlocked = (target: Window | null): boolean => !target || target.closed;
 
 /**
+ * The call's address, if it is one we are willing to send a window to.
+ *
+ * Only `http:` and `https:` — a `javascript:` or `data:` "URL" is not somewhere to go but something to run, and
+ * it would run in whatever window we opened for it. The window opened for an external provider is our own blank
+ * one until it navigates, so that would be script in this origin. No provider's call has ever been either
+ * scheme, so nothing legitimate is turned away by asking.
+ */
+const asCallUrl = (candidate: string): URL | undefined => {
+	try {
+		const url = new URL(candidate, window.location.href);
+
+		return url.protocol === 'https:' || url.protocol === 'http:' ? url : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+/**
  * Opens the call as a popout, falling back to an ordinary tab when the popout is refused — some browsers
  * and extensions block popup-shaped windows while still allowing a plain one.
  */
@@ -84,20 +102,18 @@ const openExternalCallWindow = (url: string): Window | null => {
  * the conference it already shows is asked for again.
  */
 const openConferenceWindow = (callUrl: string): Window | null => {
-	let target: URL | undefined;
-	try {
-		const url = new URL(callUrl, window.location.href);
-		if (url.origin === window.location.origin) {
-			target = url;
-		}
-	} catch {
-		// Not a valid/absolute URL — fall back to an unnamed window below.
+	const url = asCallUrl(callUrl);
+	if (!url) {
+		return null;
 	}
 
-	// External provider URLs get a window of their own each time, and no way back to this one.
-	if (!target) {
+	// External provider URLs get a window of their own each time, and no way back to this one. Sent as given
+	// rather than as parsed: `URL` normalises, and the provider's address is the provider's business.
+	if (url.origin !== window.location.origin) {
 		return openExternalCallWindow(callUrl);
 	}
+
+	const target = url;
 
 	// The conference window is same-origin, so check what it's *actually* showing rather than the URL we last
 	// passed (which can differ in string form between the start/join paths). If it's already on this conference,
