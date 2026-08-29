@@ -27,7 +27,8 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime",
+		"bench:jsonrpc": "node --expose-gc --require ts-node/register/transpile-only benchmarks/jsonrpc/bench.ts"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
