@@ -1,5 +1,5 @@
 import type { IDirectVideoConference, IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
-import { isInVideoConference, VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
+import { isInVideoConference, VideoConferenceStatus, VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -304,11 +304,16 @@ describe('VideoConfService.addMembers', () => {
 // Creating the call is not asking anyone to answer it: the caller lands on the preflight first, and being rung
 // into a call whose caller is still choosing a camera means answering to an empty room.
 describe('VideoConfService: ringing a direct call when its caller arrives', () => {
+	// `CALLING` because that is what such a call is: created, and waiting for its caller to walk in. Only then
+	// does `updateDirectCall` move it to `STARTED`, which is also what stops a later arrival ringing anyone.
 	const directCall = (callee: Partial<IVideoConferenceUser> = {}): IDirectVideoConference =>
-		buildDirectCall([
-			buildMember({ _id: 'creator', joined: false, joinedAt: undefined }),
-			buildMember({ _id: 'callee', joined: false, joinedAt: undefined, ...callee }),
-		]);
+		buildDirectCall(
+			[
+				buildMember({ _id: 'creator', joined: false, joinedAt: undefined }),
+				buildMember({ _id: 'callee', joined: false, joinedAt: undefined, ...callee }),
+			],
+			{ status: VideoConferenceStatus.CALLING },
+		);
 
 	beforeEach(() => {
 		fixture = directCall();
@@ -363,7 +368,24 @@ describe('VideoConfService: ringing a direct call when its caller arrives', () =
 	// nobody unasked for the arrival to reach, and the question answers itself without consulting any setting.
 	// That is what makes an admin toggling the window mid-call unable to ring a callee who was already rung.
 	it('rings nobody at all for a call that rang when it was created', async () => {
-		fixture = buildDirectCall([buildMember({ _id: 'creator', joined: false, joinedAt: undefined })]);
+		fixture = buildDirectCall([buildMember({ _id: 'creator', joined: false, joinedAt: undefined })], {
+			status: VideoConferenceStatus.CALLING,
+		});
+
+		await service.addUser('call1', 'creator');
+
+		expect(VideoConferenceModelMock.setUsersRingingById.called).to.be.false;
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
+	});
+
+	// Someone added to a call already under way, deliberately without a ring: the creator turning up again is not
+	// a reason to ring them. Asking only whether a member is unasked can't tell the two apart — a call still
+	// waiting for its caller can, because it is the only one still `CALLING`.
+	it('rings nobody added after the call started, however unasked they are', async () => {
+		fixture = buildDirectCall(
+			[buildMember({ _id: 'creator', joined: true }), buildMember({ _id: 'addedQuietly', joined: false, joinedAt: undefined })],
+			{ status: VideoConferenceStatus.STARTED },
+		);
 
 		await service.addUser('call1', 'creator');
 
