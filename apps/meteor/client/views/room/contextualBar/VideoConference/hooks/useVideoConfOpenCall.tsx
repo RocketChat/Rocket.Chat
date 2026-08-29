@@ -36,16 +36,21 @@ const popoutFeatures = (): string => {
 const isBlocked = (target: Window | null): boolean => !target || target.closed;
 
 /**
- * The call's address, if it is one we are willing to send a window to.
+ * The call's address, if it is one we are willing to send a window to: an absolute `http:` or `https:` URL.
  *
- * Only `http:` and `https:` — a `javascript:` or `data:` "URL" is not somewhere to go but something to run, and
- * it would run in whatever window we opened for it. The window opened for an external provider is our own blank
- * one until it navigates, so that would be script in this origin. No provider's call has ever been either
- * scheme, so nothing legitimate is turned away by asking.
+ * Absolute, because a relative one has no origin of its own and would take ours — so a provider's `/room/42`,
+ * or the empty string a call with no URL yet arrives as, would be read as an in-product conference and open the
+ * workspace at some arbitrary route in the call window. Resolving it against this page is what made those look
+ * like ours; refusing them is the only honest reading, since handing one to a blank window resolves it against
+ * this origin too. Our own conference URLs are built with `absoluteUrl`, so none of them is turned away.
+ *
+ * `http:`/`https:` only, because a `javascript:` or `data:` "URL" is not somewhere to go but something to run,
+ * and it would run in whatever window we opened for it — which, until it navigates, is our own blank one.
  */
 const asCallUrl = (candidate: string): URL | undefined => {
 	try {
-		const url = new URL(candidate, window.location.href);
+		// Deliberately no base: only an absolute address parses.
+		const url = new URL(candidate);
 
 		return url.protocol === 'https:' || url.protocol === 'http:' ? url : undefined;
 	} catch {
