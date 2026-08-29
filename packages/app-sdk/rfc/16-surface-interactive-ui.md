@@ -57,3 +57,47 @@ instead of routing to a distant `executeActionButtonHandler`.
 > The *durability guarantees* of suspension (max window, behavior across app
 > updates or runtime restarts) are a runtime decision — see [the open questions](51-open-questions.md).
 
+
+---
+
+## `prompt` — a listener that asks before it allows
+
+In-tree ADR 0002 (see [the event listeners](15-surface-event-listeners.md))
+specifies a fourth listener outcome, `prompt`: ask the user, and let the action
+proceed only if they accept. It ships **specified but not implemented**, for one
+stated reason — the variant is inert without a suspend/resume path, and the
+legacy engine has none.
+
+This section is that path. `await ctx.ui.open(...)` already suspends a handler
+and resumes it with the user's answer, so a prompt is not new machinery here:
+
+```ts
+export const confirmLargeUpload = app.listener({
+  event: 'upload.beforeUploaded',
+  async handle(ctx) {
+    if (ctx.data.upload.size < TEN_MB) return;                       // observe
+    const ok = await ctx.ui.confirm({ i18n: { key: 'confirm_large_upload' } });
+    if (!ok) return ctx.prevent({ i18n: { key: 'upload_cancelled' } });
+  },
+});
+```
+
+`ctx.ui.confirm` is a proposed addition; [`src/ui.ts`](../src/ui.ts) has only
+`open` today. It is `open` with a fixed two-button surface, so the ADR's simple
+form (`{ message }` or `{ i18n }`) and its rich form (`{ title?, text?, blocks?,
+confirmLabel?, cancelLabel? }`) are one call with an optional block list.
+
+Two constraints come with it:
+
+- **Only an abortable, retryable operation may prompt.** Upload qualifies,
+  because the bytes are already staged when the confirm step runs. Message send
+  needs the client challenge and re-send plumbing that 2FA has. The
+  [capability matrix](15-surface-event-listeners.md#which-events-allow-which-outcome)
+  is the authority on which events qualify.
+- **On resume the listener chain re-runs from the top.** A handler must be safe
+  to run twice up to the point where it prompts.
+
+`prompt` also raises the stakes on the durability question
+[the open questions](51-open-questions.md) already asks about modals. A
+suspended slash command inconveniences one user; a suspended `message.beforeSent`
+sits in the send path.

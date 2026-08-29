@@ -26,6 +26,12 @@ What makes `ctx` remote-friendly:
   validation on both sides, and a natural serialization contract.
 - Suspend/resume state is **persisted** (durable continuations survive the RPC
   boundary and process restarts) — the same property Mastra relies on.
+- Every value an app returns is **plain data**. A class instance would arrive
+  stripped of its prototype and methods, so a returned outcome carries a
+  reserved marker rather than a type — see
+  [the event listeners](15-surface-event-listeners.md#the-outcome-must-survive-the-transport).
+  The same property gives the engine a non-exceptional prevention channel,
+  so blocking an action does not mean throwing across the transport.
 
 **Packaging is unchanged:** TypeScript → transpile → bundle → zip → upload.
 

@@ -66,6 +66,21 @@ What sits behind `ctx.rooms`, `ctx.messages`, `ctx.users`, … on the host.
 | 51 | [Open questions](51-open-questions.md) | the decisions this RFC does not make |
 | 52 | [Trying it](52-trying-it.md) | type-check commands and the package layout |
 
+## Related decisions in the repo
+
+This RFC is not the only place the apps engine is being re-decided. Where an
+in-tree ADR settles a question this RFC also asks, the RFC document cites it and
+records what transfers.
+
+| Where | What it settles | Read it in |
+|---|---|---|
+| `docs/adr/0001-app-accessor-logic-in-base-runtime.md` | accessor logic moves into the base runtime | on `develop` |
+| `docs/adr/0002-unified-event-result-for-pre-events.md` | one `pass`/`patch`/`prevent`/`prompt` return type for pre-events | [15](15-surface-event-listeners.md), [16](16-surface-interactive-ui.md), [40](40-platform-security-and-permissions.md), [41](41-platform-deployment-and-isolation.md), [51](51-open-questions.md) |
+| `docs/adr/0003-media-call-events-for-apps.md` | the first consumer of ADR 0002 | not yet folded in |
+
+ADRs 0002 and 0003 live on branch `feat/apps-media-call-hooks`, not on
+`develop`, so the paths above are not links.
+
 ## Conventions
 
 - One scope per document. If a discussion outgrows a document, split it and add

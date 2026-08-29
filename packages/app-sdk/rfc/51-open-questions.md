@@ -25,6 +25,13 @@ guess at:
 3. **Backward compatibility.** Do we ship a compatibility shim that runs existing
    marketplace apps unchanged on the new runtime, a codemod, or a hard major
    version break with a migration window? This shapes the whole rollout.
+   There is prior art in tree: ADR 0002 migrates one return contract without
+   breaking an app, by recognizing the new shape in a guard that runs **before**
+   every legacy branch, and mapping each legacy shape onto a new variant
+   (`return true` ≡ `prevent`, a returned entity ≡ a full `patch`). Its lesson is
+   that the guard-before-legacy ordering is a review invariant, not a style
+   preference. **Decision needed:** does that per-contract widening scale to the
+   whole surface, or does the surface change too much for it?
 
 4. **Isolation boundary & wire protocol.** In-process vs. per-app subprocess
    (today's Deno runtime) vs. shared apps-runtime service; and the exact NATS
@@ -38,6 +45,19 @@ guess at:
 6. **Streaming / AI.** Out of scope for now, but the schema-first tool model maps
    cleanly onto exposing app capabilities to Rocket.Chat's own AI features (and,
    as Mastra shows, onto MCP) if that becomes a goal.
+
+7. **The patch encoding.** `ctx.modify` sends a whole subject, and a shallow
+   `Partial<T>` cannot express append, deletion or positional intent. ADR 0002
+   keeps the door open by treating the payload as one *encoding* and branching
+   on its shape, so an op-log sibling stays additive. It also shows the op log
+   is nearly free: the legacy `MessageBuilder` is already a change recorder.
+   **Decision needed:** ship the shallow patch alone, or generate ops from the
+   authoring surface from day one?
+
+8. **Which events may prompt.** `prompt` needs an operation that can be aborted
+   and retried. Upload qualifies today; message send needs the client
+   challenge/re-send plumbing 2FA has. **Decision needed:** do we build that
+   plumbing, or does `prompt` stay upload-only in v1?
 
 ---
 
