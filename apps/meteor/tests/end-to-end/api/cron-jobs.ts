@@ -94,15 +94,18 @@ describe('[Cron Jobs API]', () => {
 			await request.get(api('cron.history')).set(credentials).query({ jobName: 'NPS' }).expect(403);
 		});
 
-		it('should return a 400 invalid-params error when jobName query parameter is missing', async () => {
+		it('should return an array of recent history when permission is granted', async () => {
 			await updatePermission('manage-scheduled-jobs', ['admin']);
 			await request
 				.get(api('cron.history'))
 				.set(credentials)
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 				});
 		});
 

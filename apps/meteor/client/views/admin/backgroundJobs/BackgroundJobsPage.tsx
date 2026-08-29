@@ -15,8 +15,9 @@ import { useTranslation } from 'react-i18next';
 
 import BackgroundJobInfoContextualBar from './BackgroundJobInfoContextualBar';
 import BackgroundJobsTable from './BackgroundJobsTable';
+import RecentHistoryTable from './RecentHistoryTable';
 
-export type BackgroundJobsTab = 'system' | 'apps' | 'omnichannel';
+export type BackgroundJobsTab = 'history' | 'system' | 'apps' | 'omnichannel';
 export type { OmnichannelJobSource };
 
 const BackgroundJobsPage = () => {
@@ -25,7 +26,7 @@ const BackgroundJobsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const [tab, setTab] = useState<BackgroundJobsTab>('system');
+	const [tab, setTab] = useState<BackgroundJobsTab>('history');
 	const [omnichannelSource, setOmnichannelSource] = useState<OmnichannelJobSource>('auto-close');
 
 	const handleClose = useCallback(() => {
@@ -47,6 +48,9 @@ const BackgroundJobsPage = () => {
 			<Page name='admin-background-jobs'>
 				<PageHeader title={t('Background_Jobs')} />
 				<Tabs>
+					<TabsItem selected={tab === 'history'} onClick={() => handleTabChange('history')}>
+						{t('Recent_History')}
+					</TabsItem>
 					<TabsItem selected={tab === 'system'} onClick={() => handleTabChange('system')}>
 						{t('System')}
 					</TabsItem>
@@ -75,10 +79,10 @@ const BackgroundJobsPage = () => {
 					</Tabs>
 				)}
 				<PageContent>
-					<BackgroundJobsTable tab={tab} omnichannelSource={omnichannelSource} />
+					{tab === 'history' ? <RecentHistoryTable /> : <BackgroundJobsTable tab={tab} omnichannelSource={omnichannelSource} />}
 				</PageContent>
 			</Page>
-			{context && (
+			{context && tab !== 'history' && (
 				<ContextualbarDialog onClose={handleClose}>
 					<ContextualbarHeader>
 						<ContextualbarTitle>{t('Job_Info')}</ContextualbarTitle>

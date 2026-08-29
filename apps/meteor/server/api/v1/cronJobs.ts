@@ -75,17 +75,16 @@ const isCronJobParams = ajvQuery.compile<{
 });
 
 const isCronJobsHistoryParams = ajvQuery.compile<{
-	jobName: string;
+	jobName?: string;
 	offset?: number;
 	count?: number;
 }>({
 	type: 'object',
 	properties: {
-		jobName: { type: 'string' },
+		jobName: { type: 'string', nullable: true },
 		offset: { type: 'number' },
 		count: { type: 'number' },
 	},
-	required: ['jobName'],
 	additionalProperties: false,
 });
 
@@ -275,7 +274,11 @@ const cronJobsEndpoints = API.v1
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { jobName } = this.queryParams;
-			const { history, total } = await CronJobs.getHistory(jobName, { offset, count });
+			const { history, total } = await CronJobs.getHistory({
+				offset,
+				count,
+				...(jobName && { jobName }),
+			});
 
 			return API.v1.success({
 				history,

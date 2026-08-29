@@ -23,7 +23,8 @@ export interface ICronJobsService extends IServiceClass {
 		searchTerm?: string;
 		status?: CronJobStatus;
 	}): Promise<PaginatedResult<{ jobs: ICronJobItem[] }>>;
-	getHistory(jobName: string, pagination?: { offset?: number; count?: number }): Promise<PaginatedResult<{ history: ICronHistoryItem[] }>>;
+	getHistory(pagination?: { jobName?: string; offset?: number; count?: number }): Promise<PaginatedResult<{ history: ICronHistoryItem[] }>>;
+
 	getJob(jobName: string): Promise<ICronJobItem | null>;
 
 	enable(jobName: string): Promise<boolean>;
