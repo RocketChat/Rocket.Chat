@@ -2,8 +2,8 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 
-import type { MessageActionContext, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { t } from '../../../../app/utils/lib/i18n';
+import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
 import { Messages } from '../../../stores';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 

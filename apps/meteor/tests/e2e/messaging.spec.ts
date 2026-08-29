@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -33,6 +34,7 @@ test.describe('Messaging', () => {
 			await channelPage.roomToolbar.waitFor();
 		});
 
+		// TODO: this should be replaced by a unit test
 		test('should navigate on messages using keyboard', async ({ page }) => {
 			await test.step('open chat and send message', async () => {
 				await channelPage.content.sendMessage('msg1');
@@ -56,8 +58,10 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('move focus to the room title', async () => {
+				const roomHeaderFavoriteBtn = channelPage.getRoomHeaderFavoriteBtn(IS_EE);
 				await page.keyboard.press('Shift+Tab');
-				await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+
+				await expect(roomHeaderFavoriteBtn).toBeFocused();
 			});
 
 			await test.step('move focus to the channel list', async () => {
@@ -141,20 +145,18 @@ test.describe('Messaging', () => {
 		});
 
 		test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
-			await page.getByRole('button', { name: targetChannel }).first().focus();
-			await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+			await channelPage.getBtnOpenRoomInfo(targetChannel).focus();
+			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 
 			await test.step('move focus to the list', async () => {
-				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(channelPage.content.lastUserMessage).toBeFocused();
 			});
 
 			await test.step('move focus to the list again', async () => {
-				await page.getByRole('button', { name: targetChannel }).first().focus();
-				await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
-				await page.keyboard.press('Tab');
+				await channelPage.getBtnOpenRoomInfo(targetChannel).focus();
+				await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(channelPage.content.lastUserMessage).toBeFocused();

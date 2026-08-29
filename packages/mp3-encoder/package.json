@@ -50,8 +50,5 @@
 		"ts-jest": "~29.4.12",
 		"typedoc": "~0.28.20",
 		"typescript": "~5.9.3"
-	},
-	"publishConfig": {
-		"access": "public"
 	}
 }

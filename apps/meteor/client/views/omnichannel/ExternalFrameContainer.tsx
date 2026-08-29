@@ -2,7 +2,7 @@ import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { encrypt, getKeyFromString } from '../../../app/livechat/client/externalFrame/crypto';
+import { encrypt, getKeyFromString } from './crypto';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useRoom } from '../room/contexts/RoomContext';
 

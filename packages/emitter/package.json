@@ -10,7 +10,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/emitter"
 	},
 	"license": "MIT",
 	"author": {
@@ -43,9 +44,6 @@
 		"rollup": "~4.62.3",
 		"ts-jest": "~29.4.11",
 		"typescript": "~5.9.3"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"volta": {
 		"extends": "../../package.json"

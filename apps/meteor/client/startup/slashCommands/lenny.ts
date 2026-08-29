@@ -1,0 +1,23 @@
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
+/*
+ * Lenny is a named function that will replace /lenny commands
+ * @param {Object} message - The message object
+ */
+
+async function LennyFace({ message, params }: SlashCommandCallbackParams<'lenny'>): Promise<void> {
+	const msg = message;
+	await sdk.rest.post('/v1/chat.sendMessage', { message: { ...msg, msg: `${params} ( ͡° ͜ʖ ͡°)` } });
+}
+
+slashCommands.add({
+	command: 'lennyface',
+	callback: LennyFace,
+	options: {
+		description: 'Slash_LennyFace_Description',
+		params: 'your_message_optional',
+		clientOnly: true,
+	},
+});

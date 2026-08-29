@@ -1059,3 +1059,48 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsInviteProps) => void;
 	};
 };
+
+export type RoomsHistoryProps = {
+	roomId: IRoom['_id'];
+	next?: string;
+	previous?: string;
+	lastSeen?: string;
+	count?: number;
+	showThreadMessages?: boolean;
+};
+
+const RoomsHistorySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		lastSeen: {
+			type: 'string',
+			format: 'iso-date-time',
+			nullable: true,
+		},
+		count: {
+			type: 'integer',
+			minimum: 1,
+			nullable: true,
+		},
+		showThreadMessages: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsHistoryProps = ajvQuery.compile<RoomsHistoryProps>(RoomsHistorySchema);

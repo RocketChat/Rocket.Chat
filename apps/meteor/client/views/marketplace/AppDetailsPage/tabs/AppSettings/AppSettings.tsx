@@ -3,7 +3,7 @@ import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import AppSetting from './AppSetting';
-import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
+import type { ISettings } from '../../../definitions/ISettings';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
 export type AppSettingsProps = { settings: ISettings };

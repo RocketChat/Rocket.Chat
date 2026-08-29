@@ -4,9 +4,9 @@ import { useState } from 'react';
 
 import { useGetMore } from './useGetMore';
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 
-jest.mock('../../../../../app/ui-utils/client', () => ({
+jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {
 		isLoading: jest.fn(),
 		isLoadingNext: jest.fn(),

@@ -4,11 +4,11 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UiKitTriggerTimeoutError } from '../../../../app/ui-message/client/UiKitTriggerTimeoutError';
-import type { MessageActionContext, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { useAppActionButtons, getIdForActionButton } from '../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../hooks/useApplyButtonFilters';
+import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
+import { UiKitTriggerTimeoutError } from '../../../lib/errors/UiKitTriggerTimeoutError';
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 
 const filterActionsByContext = (context: string | undefined, action: IUIActionButton) => {

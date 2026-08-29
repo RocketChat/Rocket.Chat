@@ -818,6 +818,7 @@ export const createAccountSettings = () =>
 
 			return this.add('Accounts_SetDefaultAvatar', true, {
 				type: 'boolean',
+				alert: 'Accounts_SetDefaultAvatar_Deprecation_Alert',
 			});
 		});
 

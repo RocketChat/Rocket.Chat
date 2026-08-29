@@ -3,8 +3,8 @@ import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useLoadMissedMessages } from './useLoadMissedMessages';
-import { upsertMessageBulk } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { upsertMessageBulk } from '../../../lib/RoomHistoryManager';
 import { Messages } from '../../../stores/Messages';
 import { Subscriptions } from '../../../stores/Subscriptions';
 
@@ -12,11 +12,11 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useConnectionStatus: jest.fn(),
 }));
 
-jest.mock('../../../../app/ui-utils/client/lib/LegacyRoomManager', () => ({
+jest.mock('../../../lib/LegacyRoomManager', () => ({
 	LegacyRoomManager: { openedRooms: { 'room-id': { rid: 'room-id' } } },
 }));
 
-jest.mock('../../../../app/ui-utils/client/lib/RoomHistoryManager', () => ({
+jest.mock('../../../lib/RoomHistoryManager', () => ({
 	upsertMessageBulk: jest.fn(),
 }));
 
