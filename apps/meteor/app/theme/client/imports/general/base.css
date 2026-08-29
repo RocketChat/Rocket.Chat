@@ -110,3 +110,12 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+/* Override fuselage's truncated-text on system message body so that
+   long text (e.g. omnichannel transfer comments) wraps instead of
+   being clipped with an ellipsis.  See #26723. */
+.rcx-message-system__body {
+	white-space: normal;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
