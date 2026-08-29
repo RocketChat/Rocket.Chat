@@ -26,7 +26,13 @@ type CallListItemProps = {
 const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: CallListItemProps) => {
 	const { t } = useTranslation();
 
-	const ringing = isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
+	// Answering ends the ringing presentation, whichever way it was answered — the same rule the list buckets
+	// by, and the reason a declined call keeps its place saying so rather than appearing to ring on.
+	//
+	// The window alone can't tell: `isRingingVideoConferenceMember` suppresses a ring the member declined by
+	// comparing `declinedAt` against `ringingAt`, and the joinable payload carries no `declinedAt` — so a call
+	// declined a second into its ring would otherwise still read as ringing here for the rest of the window.
+	const ringing = !call.declined && !call.joined && isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
 
 	// Whether *this* client is the one making the noise — a ring can be sounding on another of the user's
 	// sessions, and there is nothing to silence here if it isn't sounding here.

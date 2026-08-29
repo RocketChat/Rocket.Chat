@@ -16,7 +16,7 @@ type ConferenceThreadModalProps = {
  * Renders the thread in a locally-portalled modal instead of going through `useSetModal`.
  *
  * `useSetModal` renders inside `ModalProvider`'s portal at the app root, which is outside the conference
- * page's component tree. Components like `RoomProvider` and `ChatProvider` inside `ConferenceThread`
+ * page's component tree. Components like `RoomProvider` and `ChatProvider` inside `ConferenceRoomPanel`
  * crash when rendered there. Using `createPortal` directly keeps the React parent chain intact so all
  * context providers from the conference page remain available.
  */
