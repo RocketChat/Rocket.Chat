@@ -7,6 +7,11 @@ import { createFakeRoom } from '../../../tests/mocks/data';
 const startCall = jest.fn();
 const dispatchOutgoing = jest.fn();
 const loadCapabilities = jest.fn(() => Promise.resolve());
+const dispatchWarning = jest.fn();
+
+jest.mock('../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning', () => ({
+	useVideoConfWarning: () => dispatchWarning,
+}));
 
 jest.mock('@rocket.chat/ui-video-conf', () => ({
 	...jest.requireActual('@rocket.chat/ui-video-conf'),
@@ -35,7 +40,9 @@ const renderAction = (conferenceWindowEnabled: boolean) =>
 beforeEach(() => {
 	startCall.mockClear();
 	dispatchOutgoing.mockClear();
-	loadCapabilities.mockClear();
+	dispatchWarning.mockClear();
+	loadCapabilities.mockReset();
+	loadCapabilities.mockImplementation(() => Promise.resolve());
 });
 
 // The call window asks how to arrive before it starts anything, so a popup asking the same thing first is one
@@ -66,4 +73,18 @@ it('checks the provider first either way', async () => {
 	await act(() => result.current?.action?.());
 
 	expect(loadCapabilities).toHaveBeenCalled();
+});
+
+// The point of checking first: a provider that isn't there has to be said out loud, and nothing may open on top
+// of the answer — an empty call window is a worse way to learn the provider is misconfigured.
+it.each([true, false])('says so and opens nothing when the provider is unavailable (call window: %s)', async (windowEnabled) => {
+	loadCapabilities.mockRejectedValueOnce({ error: 'error-videoconf-provider-not-configured' });
+
+	const { result } = renderAction(windowEnabled);
+
+	await act(() => result.current?.action?.());
+
+	expect(dispatchWarning).toHaveBeenCalledWith('error-videoconf-provider-not-configured');
+	expect(startCall).not.toHaveBeenCalled();
+	expect(dispatchOutgoing).not.toHaveBeenCalled();
 });
