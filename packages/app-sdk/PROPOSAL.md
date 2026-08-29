@@ -682,6 +682,7 @@ the shim and depends on `zod`; nothing else changes.
 ```
 packages/app-sdk/
 ├── PROPOSAL.md          ← this document
+├── PROPOSAL-DATA-LAYER.md  ← companion RFC: the host data & query layer
 ├── README.md
 ├── src/                 ← the proposed app-facing API (compiles standalone)
 │   ├── app.ts           defineApp / createApp (composition root + DI seam)
@@ -696,10 +697,12 @@ packages/app-sdk/
 │   ├── providers.ts     video-conf / outbound providers
 │   ├── manifest.ts      app.json-in-code + permissions
 │   ├── models.ts        trimmed domain models (real impl reuses core-typings)
+│   ├── data.ts          host data & query layer — see PROPOSAL-DATA-LAYER.md
 │   ├── logger.ts        ctx.logger
 │   └── schema.ts        Standard Schema contract + inference helpers
 └── examples/
     ├── reminder-app/    a full app: commands, jobs, listener, endpoint, modal, lifecycle
     ├── standalone-video-conf.ts   the standalone style + provider + action button
+    ├── data-layer.ts    selection inference, views, commands, the request envelope
     └── _vendor/zod.ts   offline compile shim (delete in a real app)
 ```
