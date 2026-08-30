@@ -70,7 +70,7 @@ const tryLoginAfterPopupClosed = (
 	});
 };
 
-const credentialRequestCompleteHandler =
+export const credentialRequestCompleteHandler =
 	(callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void, totpCode?: string) =>
 	(credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => {
 		if (!credentialTokenOrError) {
@@ -87,7 +87,8 @@ const credentialRequestCompleteHandler =
 	};
 
 export const createOAuthTotpLoginMethod =
-	(provider: IOAuthProvider) => (options: Meteor.LoginWithExternalServiceOptions | undefined, code: string, callback?: LoginCallback) => {
+	<TOptions extends Meteor.LoginWithExternalServiceOptions>(provider: IOAuthProvider) =>
+	(options: TOptions | undefined, code: string, callback?: LoginCallback) => {
 		if (lastCredentialToken && lastCredentialSecret) {
 			tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
 		} else {

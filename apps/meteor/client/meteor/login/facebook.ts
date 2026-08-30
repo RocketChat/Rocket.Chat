@@ -1,10 +1,11 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { Accounts } from 'meteor/accounts-base';
 import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
@@ -15,22 +16,16 @@ type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
 	auth_type?: string;
 };
 
-const { loginWithFacebook } = Meteor;
-const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
-Meteor.loginWithFacebook = (options, callback) => {
-	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
-};
-
-Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, LoginWithFacebookOptions>(
+const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, LoginWithFacebookOptions>(
 	'facebook',
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
 		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
 		const display = mobile ? 'touch' : 'popup';
 
-		const scope = options?.requestPermissions ? options.requestPermissions.join(',') : 'email';
+		const scope = options.requestPermissions?.join(',') ?? 'email';
 
-		const loginUrlParameters: Record<string, any> = {
+		const loginUrlParameters: Record<string, string | number | boolean> = {
 			client_id: config.appId,
 			redirect_uri: OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
 			display,
@@ -53,3 +48,24 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration,
 		});
 	},
 );
+
+const loginWithFacebook = (
+	options: LoginWithFacebookOptions,
+	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+) => {
+	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
+	requestCredential(options, credentialRequestCompleteCallback);
+};
+
+const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod<LoginWithFacebookOptions>({ requestCredential });
+
+const loginWithFacebookForMeteor = (
+	options: LoginWithFacebookOptions,
+	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+) => {
+	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
+};
+
+Object.assign(Facebook, { requestCredential });
+Object.assign(Accounts._loginFuncs, { facebook: loginWithFacebookForMeteor });
+Object.assign(Meteor, { loginWithFacebook: loginWithFacebookForMeteor });

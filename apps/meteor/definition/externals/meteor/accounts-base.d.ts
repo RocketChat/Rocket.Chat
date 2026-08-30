@@ -4,6 +4,14 @@ declare module 'meteor/accounts-base' {
 	namespace Accounts {
 		const storageLocation: Window['localStorage'];
 
+		const _loginFuncs: Record<
+			string,
+			(
+				options: Meteor.LoginWithExternalServiceOptions,
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+			) => void
+		>;
+
 		function _expireTokens(oldestValidDate?: Date, userId?: string): Promise<void>;
 
 		function _bcryptRounds(): number;
