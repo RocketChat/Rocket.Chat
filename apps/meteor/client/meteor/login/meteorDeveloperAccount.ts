@@ -1,10 +1,11 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { OAuth } from 'meteor/oauth';
 import { Random } from 'meteor/random';
 
-import { createOAuthTotpLoginMethod } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
@@ -13,13 +14,7 @@ type LoginWithMeteorDeveloperAccountOptions = LoginWithExternalServiceOptions & 
 	details?: string;
 };
 
-const { loginWithMeteorDeveloperAccount } = Meteor;
-const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(MeteorDeveloperAccounts);
-Meteor.loginWithMeteorDeveloperAccount = (options, callback) => {
-	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
-};
-
-MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithMeteorDeveloperAccountOptions>(
+const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithMeteorDeveloperAccountOptions>(
 	'meteor-developer',
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
@@ -46,3 +41,24 @@ MeteorDeveloperAccounts.requestCredential = wrapRequestCredentialFn<Partial<OAut
 		});
 	},
 );
+
+const loginWithMeteorDeveloperAccount = (
+	options: LoginWithMeteorDeveloperAccountOptions,
+	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+) => {
+	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
+	requestCredential(options, credentialRequestCompleteCallback);
+};
+
+const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod<LoginWithMeteorDeveloperAccountOptions>({ requestCredential });
+
+const loginWithMeteorDeveloperAccountForMeteor = (
+	options: LoginWithMeteorDeveloperAccountOptions,
+	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+) => {
+	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
+};
+
+Object.assign(MeteorDeveloperAccounts, { requestCredential });
+Object.assign(Accounts._loginFuncs, { 'meteor-developer': loginWithMeteorDeveloperAccountForMeteor });
+Object.assign(Meteor, { loginWithMeteorDeveloperAccount: loginWithMeteorDeveloperAccountForMeteor });
