@@ -57,6 +57,25 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfRingProps) => { rang: boolean };
 	};
 
+	/**
+	 * What the client needs to reach the media server itself: where it is, a token for this user, and the room
+	 * to join. Minted per request rather than stored, because the token is short-lived and scoped to the caller.
+	 *
+	 * Answers `service` alone for a provider that isn't LiveKit — those hand off through a URL and have no
+	 * transport of ours to describe.
+	 */
+	'/v1/video-conference.livekit.transport.config': {
+		GET: (params: { callId: string }) => {
+			service: string;
+			livekit?: { serverUrl: string; token: string; roomName: string };
+		};
+	};
+
+	/** Reports the caller out of a LiveKit call. The call itself lasts until the last person leaves. */
+	'/v1/video-conference.livekit.leave': {
+		POST: (params: VideoConfCallIdProps) => void;
+	};
+
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCallIdProps) => void;
 	};
