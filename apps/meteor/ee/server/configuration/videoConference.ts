@@ -10,7 +10,6 @@ import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/vi
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { settings } from '../../../server/settings';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
-import { registerLiveKitPresenceProbe } from '../lib/livekit/presence';
 import { addSettings } from '../settings/video-conference';
 
 /**
@@ -29,10 +28,6 @@ const refreshLiveKitProviderRegistration = (): void => {
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
 	}
-
-	// Whether LiveKit can be asked who is in a room follows the same credentials, so it is decided in the same
-	// place. The presence sweep works without it — this only lets it stop guessing where it doesn't have to.
-	registerLiveKitPresenceProbe();
 };
 
 Meteor.startup(async () => {
