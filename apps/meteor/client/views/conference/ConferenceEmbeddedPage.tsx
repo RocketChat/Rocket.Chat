@@ -523,14 +523,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 			{/* The bottom bar is where a provider running the call in here puts its own controls — mic, camera,
 			    screen, hang up — so it exists only for those. An iframe provider keeps its controls inside the
-			    frame and its panel toggles in the top bar, which is the arrangement it has always had; a second,
-			    empty strip beneath the frame would say there is something down there to use. */}
-			{embedded && (
-				<CallBar centre={<Box ref={mountControlsHost} display='flex' alignItems='center' />}>
-					{membersAction}
-					{chatAction}
-				</CallBar>
-			)}
+			    frame, and a second, empty strip beneath the frame would say there is something down there to use.
+			    The panel toggles are not repeated here: they are in the top bar for both kinds of provider. */}
+			{embedded && <CallBar centre={<Box ref={mountControlsHost} display='flex' alignItems='center' />} />}
 
 			{threadTmid && room.rid && <ConferenceThreadModal rid={room.rid} tmid={threadTmid} onClose={() => setThreadTmid(null)} />}
 		</Box>

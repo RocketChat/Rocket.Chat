@@ -256,7 +256,9 @@ rather than a taste, so `AppLayoutThemeWrapper` lets it through even where a lay
 
 The conference is a column: a top bar carrying the call's name and its controls, then a row holding the call and the chat panel.
 
-`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. A provider running the call in here rather than in an iframe brings mic, camera and hang-up of its own; where those go is that provider's to decide, and is not guessed at here.
+`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. It keeps them for **both** kinds of provider: they are about this window rather than about the call, so they belong in one place regardless of who is drawing the call itself.
+
+A provider running the call in here rather than in an iframe brings mic, camera, screen and hang-up of its own. Those go in `CallBar`, the bottom strip, which the page hands the provider as a portal host (`actionsContainer`) — so there is one bar for the call rather than the provider's strip stacked above the window's. `CallBar` exists only for those controls: an iframe provider keeps its controls inside the frame and gets no bottom strip at all, because an empty one would say there is something down there to use. Nothing else goes in it — the panel toggles are in the top bar, and putting them in both showed the same two buttons twice, once above the call and once below it.
 
 `CallPanel` is the product's own `Contextualbar`, so a panel beside a call has the same edges and elevation as one beside a room; it is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
 
