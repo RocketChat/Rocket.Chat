@@ -7,7 +7,7 @@ import { OAuth } from 'meteor/oauth';
 
 import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
 
@@ -58,7 +58,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
 
 		const loginWithOAuthToken = async (options?: Meteor.LoginWithExternalServiceOptions, callback?: LoginCallback) => {
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
+			const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
 			await this.requestCredential(options, credentialRequestCompleteCallback);
 		};
 
