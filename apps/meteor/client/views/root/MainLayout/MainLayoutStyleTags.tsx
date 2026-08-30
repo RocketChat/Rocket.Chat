@@ -11,9 +11,21 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 	/* !important to outweigh the Box backgroundColor prop's css-in-js rule */
 	background-color: transparent !important;
 }
+/* vibrancy-demo tuning (quick test, user-approved live): stronger glass —
+   anchor thinner and menus as real frosted panes. TODO: if kept, move the
+   two var values into the dark-alpha tokens (tint / light). */
+:root,
+.rcx-content--main,
+.rcx-tile,
+.rcx-sidebar--main,
+.rcx-sidepanel,
+.rcx-navbar {
+	--rcx-color-surface-tint: rgba(23, 24, 26, 0.15) !important;
+	--rcx-color-surface-light: rgba(44, 46, 50, 0.55) !important;
+}
 .rcx-tile {
-	-webkit-backdrop-filter: blur(16px);
-	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(40px);
+	backdrop-filter: blur(40px);
 }
 /* modals are large reading surfaces over unpredictable content — steadier
    ground than the transient menus/popovers */
