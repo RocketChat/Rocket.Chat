@@ -486,20 +486,16 @@ Three details carry most of the weight:
   leaving is never revived this way — the guard is in `renewUserPresenceById`'s query, so a heartbeat still in
   flight behind someone who left matches nothing.
 
-This is deliberately **provider-agnostic**: the renewing window is ours whether the call renders inside it or is
-handed to an iframe, so it needs no cooperation from Pexip, Jitsi or anyone else. Where a provider *can* be asked
-who is in a room it may register a **presence probe** (`videoConfPresence`), whose answer renews the same leases
-from the server side — which matters because browsers throttle a background window's timers to roughly one a
-minute, and a call is usually something you listen to while looking at something else. LiveKit registers one; a
-provider reached by URL registers nothing and loses nothing but that. A probe returning `undefined` means "no
-answer", which is what an unreachable provider says, and it is never read as "nobody is there" — our own network
-trouble must not empty someone else's call.
+This is deliberately **provider-agnostic**, and deliberately the *only* source of presence: the renewing window is
+ours whether the call renders inside it or is handed to an iframe, so it needs no cooperation from Pexip, Jitsi,
+LiveKit or anyone else. Who is in a call is answered in one place, by evidence we own — a second source that could
+disagree with the roster is how a call ends up counted as occupied by one half of the code and empty by the other.
 
-**Known limitation.** For a provider with no probe, presence means *"still has the conference window open on this
-call"*. Hang up inside the iframe and leave the tab open and you stay listed until the window closes. Closing that
-gap needs the provider to report it (the `postMessage` bridge described in [Deferred to
-follow-ups](#deferred-to-follow-ups)) or a management API to ask — both per-provider, which is why the lease is the
-floor rather than the ceiling.
+**Known limitation.** Presence means *"still has the conference window open on this call"*. Hang up inside the
+iframe and leave the tab open and you stay listed until the window closes; a window whose timers the browser has
+throttled hard enough to miss `PRESENCE_LEASE_MS` of renewals reads as gone until it renews again. Both are the
+cost of a single source of truth, and the lease is long enough — three minutes against a thirty-second heartbeat —
+that the second needs five missed renewals in a row.
 
 ### The window that opened the call watches it
 

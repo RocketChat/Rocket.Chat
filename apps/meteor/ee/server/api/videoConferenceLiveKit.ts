@@ -1,4 +1,3 @@
-import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
@@ -9,7 +8,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
-import notifications from '../../../server/lib/notifications/core/lib/Notifications';
 import { canAccessConference } from '../../../server/lib/videoConfAccess';
 import { createLiveKitAccessToken, getLiveKitConfig, isLiveKitFullyConfigured } from '../lib/livekit';
 
@@ -22,13 +20,6 @@ const looseSuccessResponse = {
 	401: validateUnauthorizedErrorResponse,
 	403: validateForbiddenErrorResponse,
 };
-
-const callIdBodySchema = ajv.compile<{ callId: string }>({
-	type: 'object',
-	properties: { callId: { type: 'string', minLength: 1 } },
-	required: ['callId'],
-	additionalProperties: true,
-});
 
 const callIdQuerySchema = ajv.compile<{ callId: string }>({
 	type: 'object',
@@ -65,51 +56,6 @@ async function authorizeCall(
 	}
 	return { call };
 }
-
-const broadcastVideoConferenceState = (rid: string, payload: { action: 'started' | 'ended'; callId: string }) => {
-	try {
-		(notifications.notifyRoom as any)(rid, 'video-conference-state', payload);
-	} catch {
-		/* notify is best-effort */
-	}
-};
-
-// ============================================================================
-// Lifecycle
-// ============================================================================
-
-/**
- * Mark the current user as having left an active LiveKit group call. The
- * call itself stays open until the last participant leaves or it expires.
- * Called by the bridge on disconnect + on tab close via fetch keepalive.
- */
-API.v1.post(
-	'video-conference.livekit.leave',
-	{
-		authRequired: true,
-		body: callIdBodySchema,
-		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
-		response: looseSuccessResponse,
-	},
-	async function action() {
-		const { callId } = this.bodyParams;
-		const call = await VideoConferenceModel.findOneById(callId);
-		if (call?.providerName !== 'livekit') return API.v1.failure('invalid-call');
-
-		await VideoConferenceModel.markEmbeddedParticipantLeft(callId, this.userId);
-
-		// If every participant has leftAt set, end the call.
-		const updated = await VideoConferenceModel.findOneById(callId);
-		const stillIn = (updated?.participants ?? []).filter((p) => !p.leftAt);
-		if (stillIn.length === 0) {
-			await VideoConferenceModel.setEndedById(callId, undefined, new Date());
-			await VideoConferenceModel.setStatusById(callId, VideoConferenceStatus.ENDED);
-			if (updated?.rid) broadcastVideoConferenceState(updated.rid, { action: 'ended', callId });
-		}
-
-		return API.v1.success({});
-	},
-);
 
 // ============================================================================
 // Transport (LK credentials)

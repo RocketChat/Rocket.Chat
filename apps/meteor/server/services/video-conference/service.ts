@@ -70,7 +70,6 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
-import { videoConfPresence } from '../../lib/videoConfPresence';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
@@ -1033,19 +1032,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
-		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
-		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike; what is
-		// recorded here is the provider's own per-participant view of its room, which the presence probe and the
-		// raise-hand queue read.
+		// provider's React tree, so the empty string is what tells it there is nothing to open. Who is in the
+		// call is the roster's business either way: that entry is the `onJoinVideoConference` callback's doing,
+		// fired above for every provider alike.
 		if (this.isEmbeddedProvider(call.providerName)) {
-			if (user) {
-				await VideoConferenceModel.addEmbeddedParticipant(call._id, {
-					id: user._id,
-					username: user.username,
-					displayName: user.name,
-					joinedAt: new Date(),
-				});
-			}
 			return '';
 		}
 
@@ -1745,23 +1735,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					continue;
 				}
 
-				// A provider that can say who is in its room is asked first, and its answer renews leases the same
-				// way a client's heartbeat does. Silence is not absence: `undefined` leaves the leases as they are.
-				// A probe that fails is silence too — per the probe contract it should already answer `undefined`,
-				// but an unreachable provider must not stop this call's leases being judged on their own evidence.
-				const present = await videoConfPresence
-					.getProbe(call.providerName)?.(call)
-					.catch((err) => {
-						logger.warn({ msg: 'Video conference presence probe failed', callId: call._id, providerName: call.providerName, err });
-						return undefined;
-					});
-				const users = present ? call.users.map((user) => (present.includes(user._id) ? { ...user, lastSeenAt: now } : user)) : call.users;
-
-				if (present?.length) {
-					await VideoConferenceModel.renewUsersPresenceById(call._id, present, now);
-				}
-
-				const expired = expiredPresenceLeases(users, now);
+				const expired = expiredPresenceLeases(call.users, now);
 				if (!expired.length) {
 					continue;
 				}
@@ -1772,9 +1746,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					// Whoever stopped renewing is not in a call any more, whatever their client failed to say — and a
 					// status left on busy by a crashed tab is exactly the kind of thing nobody thinks to fix by hand.
 					await this.releaseBusyForCall(uid);
-					// Embedded providers keep a second per-participant record, and the two disagreeing is how a
-					// call ends up counted as occupied by one half of the code and empty by the other.
-					await VideoConferenceModel.markEmbeddedParticipantLeft(call._id, uid, leftAt);
 				}
 
 				this.notifyVideoConfUpdate(call.rid, call._id);
@@ -1782,12 +1753,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 				// No second grace period: the lease *was* the grace period, and it is far longer than the one a
 				// reported departure gets. Anyone who came back renewed it and is not in `expired` at all.
-				const remaining = users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
+				const remaining = call.users.filter(({ _id }) => !expired.some((lease) => lease.uid === _id));
 				if (!remaining.some(isInVideoConference)) {
 					await this.endCall(call._id);
 				}
 			} catch (err) {
-				// One unreachable provider or one malformed call must not stop the sweep for every other call.
+				// One malformed call must not stop the sweep for every other call.
 				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
 			}
 		}
