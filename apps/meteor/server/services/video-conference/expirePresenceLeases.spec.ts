@@ -12,10 +12,6 @@ const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);
 /** The one canonical record, as in `leaveCall.spec`: reads are copies of it and the write stubs mutate it. */
 let fixture: VideoConference;
 
-/** What the provider answers when asked who is in the room, or `undefined` for "no answer". */
-let present: string[] | undefined;
-let probe: sinon.SinonStub | undefined;
-
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
 	// A real cursor is async-iterable, which is how the sweep walks it.
@@ -30,8 +26,6 @@ const VideoConferenceModelMock = {
 			(member as IVideoConferenceUser).leftAt = leftAt;
 		}
 	}),
-	renewUsersPresenceById: sinon.stub().resolves(),
-	markEmbeddedParticipantLeft: sinon.stub().resolves(),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
 		Object.assign(fixture, data);
 	}),
@@ -48,7 +42,6 @@ const VideoConfService = createService({
 		VideoConference: VideoConferenceModelMock,
 	},
 	overrides: {
-		'../../lib/videoConfPresence': { videoConfPresence: { getProbe: () => probe } },
 		'../../lib/videoConfProviders': {
 			videoConfProviders: {
 				getProviderCapabilities: () => ({ embedded: true }),
@@ -62,14 +55,10 @@ describe('VideoConfService.expirePresenceLeases', () => {
 
 	beforeEach(() => {
 		service = new VideoConfService();
-		present = undefined;
-		probe = undefined;
 		resetAll(
 			VideoConferenceModelMock.findOneById,
 			VideoConferenceModelMock.findActiveWithMembers,
 			VideoConferenceModelMock.setUserLeftById,
-			VideoConferenceModelMock.renewUsersPresenceById,
-			VideoConferenceModelMock.markEmbeddedParticipantLeft,
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 		);
@@ -95,16 +84,6 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		const [callId, uid, leftAt, reason] = VideoConferenceModelMock.setUserLeftById.firstCall.args;
 		expect({ callId, uid, reason }).to.deep.equal({ callId: 'call1', uid: 'gone', reason: 'timeout' });
 		expect(leftAt).to.deep.equal(at(-PRESENCE_LEASE_MS));
-	});
-
-	// Both records of who is in the call have to agree, or one half of the code counts the call as occupied while
-	// the other counts it as empty.
-	it('records the departure against the embedded participant list too', async () => {
-		fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
-
-		await service.expirePresenceLeases(at(0));
-
-		expect(VideoConferenceModelMock.markEmbeddedParticipantLeft.calledWith('call1', 'gone', at(-PRESENCE_LEASE_MS))).to.be.true;
 	});
 
 	it('leaves a member who is still renewing alone', async () => {
@@ -137,81 +116,21 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 	});
 
-	describe('when the provider can say who is in the room', () => {
-		beforeEach(() => {
-			probe = sinon.stub().callsFake(async () => present);
-		});
+	// One bad call must not cost every other call its sweep: the loop catches per call, and this is what says so.
+	it('carries on to the next call when one of them fails', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
+		const second = buildGroupCall([buildMember({ _id: 'gone2', lastSeenAt: at(-PRESENCE_LEASE_MS) })], { _id: 'call2' });
+		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
+			async *[Symbol.asyncIterator]() {
+				yield cloneFixture(fixture);
+				yield cloneFixture(second);
+			},
+		}));
+		VideoConferenceModelMock.setUserLeftById.withArgs('call1').rejects(new Error('write failed'));
 
-		// Why asking the provider is worth anything at all: a window that isn't in front has its timers throttled
-		// by the browser, so the member most likely to look absent is someone listening while they work.
-		it('holds on to a member the provider can see, whatever their heartbeat did', async () => {
-			present = ['throttled'];
-			fixture = buildGroupCall([buildMember({ _id: 'throttled', lastSeenAt: at(-PRESENCE_LEASE_MS * 2) })]);
+		await service.expirePresenceLeases(at(0));
 
-			await service.expirePresenceLeases(at(0));
-
-			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
-			expect(VideoConferenceModelMock.renewUsersPresenceById.calledWith('call1', ['throttled'], at(0))).to.be.true;
-			expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
-		});
-
-		// Silence is not absence. A provider we cannot reach must not be able to empty a call — that would turn
-		// our own network trouble into everyone else's departure.
-		it('changes nothing about a lease when the provider cannot be asked', async () => {
-			present = undefined;
-			fixture = buildGroupCall([buildMember({ _id: 'staying', lastSeenAt: at(-1_000) })]);
-
-			await service.expirePresenceLeases(at(0));
-
-			expect(VideoConferenceModelMock.renewUsersPresenceById.called).to.be.false;
-			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
-		});
-
-		// An empty array is the provider stating the room is empty, unlike `undefined`. It renews nobody, so the
-		// leases decide — which they do at their own pace rather than instantly.
-		it('lets the leases decide when the provider reports an empty room', async () => {
-			present = [];
-			fixture = buildGroupCall([buildMember({ _id: 'fresh', lastSeenAt: at(-1_000) })]);
-
-			await service.expirePresenceLeases(at(0));
-
-			expect(VideoConferenceModelMock.renewUsersPresenceById.called).to.be.false;
-			expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
-		});
-
-		// A probe that fails is silence, same as a provider with no probe at all: the leases still get judged on
-		// their own evidence. Anything else lets an unreachable provider keep its crashed members present forever —
-		// the exact situation the sweep exists to clean up.
-		it('still expires the leases when the probe fails', async () => {
-			probe = sinon.stub().rejects(new Error('LiveKit is unreachable'));
-			fixture = buildGroupCall([
-				buildMember({ _id: 'staying', lastSeenAt: at(0) }),
-				buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) }),
-			]);
-
-			await service.expirePresenceLeases(at(0));
-
-			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call1', 'gone')).to.be.true;
-			expect(VideoConferenceModelMock.setUserLeftById.calledOnce, 'a failed probe must not evict the fresh lease').to.be.true;
-		});
-
-		// And a failing probe on one call must not stop the sweep before it reaches the next one.
-		it('carries on to the next call when a probe fails', async () => {
-			probe = sinon.stub().rejects(new Error('LiveKit is unreachable'));
-			fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
-			const second = buildGroupCall([buildMember({ _id: 'gone2', lastSeenAt: at(-PRESENCE_LEASE_MS) })], { _id: 'call2' });
-			VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
-				async *[Symbol.asyncIterator]() {
-					yield cloneFixture(fixture);
-					yield cloneFixture(second);
-				},
-			}));
-
-			await service.expirePresenceLeases(at(0));
-
-			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call1', 'gone')).to.be.true;
-			expect(VideoConferenceModelMock.setUserLeftById.calledWith('call2', 'gone2')).to.be.true;
-		});
+		expect(VideoConferenceModelMock.setUserLeftById.calledWith('call2', 'gone2')).to.be.true;
 	});
 
 	describe('non-embedded providers', () => {

@@ -41,8 +41,7 @@ What that integration provides:
 │   │     Context              │                                    │
 │   └──────────────────────────┘                                    │
 └─────────┬──────────────────────────────────────────────────┬───────┘
-          │ Twirp HTTPS (RoomService)                        │
-          │ HS256 JWT                                        │ wss
+          │ HS256 JWT (access tokens, minted locally)        │ wss
           ▼                                                  ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │ LiveKit (Cloud or self-hosted)                                     │
@@ -80,7 +79,7 @@ Fields the LK flow uses:
 | `type`             | `'direct'` / `'videoconference'` / `'livechat'` (existing field, untouched).         |
 | `status`           | `CALLING` / `STARTED` / `EXPIRED` / `ENDED` / `DECLINED`.                            |
 | `rid`              | Room the call belongs to. Drives "active call in room" lookup.                       |
-| `participants[]`   | Per-participant join/leave tracking: `{ identity, joinedAt, leftAt? }`.              |
+| `users[]`          | The roster, and the only record of who is in the call — see [presence leases](../video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call). LiveKit keeps no second list of its own. |
 | `messages.started` | ID of the "call ongoing" block message. Threaded replies about the call hang off it. |
 
 Notes:
@@ -135,9 +134,9 @@ The result: zero new UI surface in the room header. Users start LK calls the sam
 Self-contained module for everything that talks to LK or AWS. Files largely unchanged from the original implementation, just consumed by the VideoConf integration instead of the old MediaCalls path.
 
 - **`config.ts`** — `getLiveKitConfig()` reads all `VideoConf_LiveKit_*` settings; `isLiveKitFullyConfigured()` validates them. Cached per setting-change tick.
-- **`token.ts`** — `createLiveKitAccessToken({ identity, roomName, ttl })` for client participants; `createLiveKitApiToken()` for server→LK admin calls. Both use `signHS256` from `@rocket.chat/jwt`.
-- **`roomService.ts`** — `listRoomParticipantIdentities(roomName)` via LK's Twirp `ListParticipants`. Identities are Rocket.Chat user ids, because that is what tokens are minted with. Returns `undefined` on error, so a transient API blip reads as "no answer" rather than "nobody is there".
-- **`presence.ts`** — registers that call as a **presence probe** for the `livekit` provider, which the provider-agnostic presence sweep asks when judging a call. It is an accelerator, not a dependency: presence is held by leases every conference window renews, and LiveKit's answer renews the same leases from the server side — where a throttled background tab can't be. See [presence leases](../video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call).
+- **`token.ts`** — `createLiveKitAccessToken({ identity, roomName, ttl })` for client participants, using `signHS256` from `@rocket.chat/jwt`.
+
+There is deliberately **no server→LiveKit control path**: no admin token, no Twirp client, and nothing that asks the SFU who is in a room. Who is in a call is the roster's answer, held by [presence leases](../video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call) that the conference window renews — the same mechanism for every provider. Asking LiveKit as well meant two records that could disagree, and the disagreement is worse than the staleness it was meant to fix.
 
 ### REST APIs
 
@@ -146,7 +145,8 @@ All endpoints live in `apps/meteor/ee/server/api/videoConferenceLiveKit.ts`, rat
 | Method | Path                                                     | Purpose                                                       |
 | ------ | -------------------------------------------------------- | ------------------------------------------------------------- |
 | `GET`  | `/v1/video-conference.livekit.transport.config?callId=…` | Returns `{ serverUrl, token, roomName }` for the client.      |
-| `POST` | `/v1/video-conference.livekit.leave`                     | Marks the user left. Supports `keepalive` for `beforeunload`. |
+
+Leaving is **not** one of them: the LiveKit bridge reports a departure to `/v1/video-conference.leave`, the same endpoint every other provider uses (with `keepalive`, so it survives a tab close).
 
 ---
 
