@@ -13,11 +13,16 @@ type CallTopBarProps = {
 };
 
 /**
- * The conference window's top bar, spanning the whole window above the call and its side panels.
+ * The conference window's top bar, spanning the whole window above the call *and* its side panels — the mirror
+ * of the bottom bar below them.
  *
- * It sits up here rather than inside the call area because what it says is about the call, not about the slice
- * of the window the call happens to occupy: put in the call area it stopped at the panel's edge and shifted
- * every time a panel opened. Fixed above them, the panels hang beneath it.
+ * It exists because a call that runs inside Rocket.Chat has a header of its own, and that header is about the
+ * call rather than about the slice of the window the call happens to occupy: put inside the call area it stopped
+ * at the panel's edge and shifted every time a panel opened. Up here it is fixed, and the panels hang beneath
+ * it — which is also where every other conferencing product puts it.
+ *
+ * Only a provider that renders in here has a header to give: one handed off to an iframe keeps its own chrome
+ * inside that frame, so this bar isn't rendered at all for those.
  */
 const CallTopBar = ({ host, children }: CallTopBarProps) => {
 	const { t } = useTranslation();
