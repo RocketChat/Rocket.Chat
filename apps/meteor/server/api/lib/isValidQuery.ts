@@ -46,7 +46,8 @@ const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperation
 		if (
 			!allowedAttributes.some((allowedAttribute) => {
 				if (allowedAttribute.endsWith('.*')) {
-					return path.startsWith(allowedAttribute.replace('.*', ''));
+					const root = allowedAttribute.slice(0, -2);
+					return path === root || path.startsWith(`${root}.`);
 				}
 				if (allowedAttribute.endsWith('*') && !allowedAttribute.endsWith('.*')) {
 					return true;
