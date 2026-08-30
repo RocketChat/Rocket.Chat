@@ -92,16 +92,18 @@ const fetchTransportConfig = async (callId: string): Promise<LKCreds | null> => 
 };
 
 /**
- * Tell the server the user has left this group call. Best-effort: server-side
- * is idempotent, and the call doc only closes once participants is empty, so
- * a missed leave just delays cleanup until expiresAt.
+ * Tell the server the user has left this call — the same endpoint every provider reports a departure to, because
+ * who is in a call is the roster's business rather than the media server's.
+ *
+ * Best-effort: it is idempotent, and a lost one is survivable by design. Leaving is really inferred from the
+ * heartbeat stopping, so this only makes an immediate departure immediate rather than a lease's worth of wait.
  *
  * `keepalive` lets this complete after a page-unload tear-down (when the user
  * closes the tab); inside the running app a normal fetch is fine.
  */
 const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
 	try {
-		void fetch('/api/v1/video-conference.livekit.leave', {
+		void fetch('/api/v1/video-conference.leave', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', ...headersOf() },
 			body: JSON.stringify({ callId }),
@@ -793,10 +795,9 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 		leaveCall();
 	}, [leaveCall, callId]);
 
-	// Tab close / refresh / browser kill: fire the leave REST with keepalive so
-	// the server clears this user from participants[] before the connection
-	// dies. Without this the call doc stays "active" until expiresAt (8h) and
-	// the room header keeps showing "Join Call" for everyone else.
+	// Tab close / refresh / browser kill: fire the leave REST with keepalive so the server marks this user gone
+	// before the connection dies. Without it the departure waits on the presence lease expiring, and the room
+	// header goes on offering the call to everyone else in the meantime.
 	useEffect(() => {
 		if (!callId) return;
 		const handler = () => requestLeaveGroup(callId, { keepalive: true });

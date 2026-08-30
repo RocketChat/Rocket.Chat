@@ -484,9 +484,6 @@ With the `udp_port: 7882` mux, only **two ports** need forwarding beyond what th
 proxy already handles: 7881/TCP and 7882/UDP. If you use the port range instead of the mux,
 forward the entire range.
 
-Rocket.Chat needs outbound HTTPS to the LiveKit server — it makes Twirp RPC calls
-(`ListParticipants`) to query who is connected to a room.
-
 ### Firewall rules for participants
 
 Browsers need:

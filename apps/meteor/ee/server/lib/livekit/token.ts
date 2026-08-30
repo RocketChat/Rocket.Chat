@@ -49,21 +49,3 @@ export async function createLiveKitAccessToken(input: AccessTokenInput): Promise
 		},
 	);
 }
-
-// Token used by the server itself to call LiveKit's HTTP API (RoomService).
-export async function createLiveKitApiToken(grant: VideoGrant): Promise<string> {
-	const cfg = getLiveKitConfig();
-	if (!cfg.apiKey || !cfg.apiSecret) {
-		throw new Error('LiveKit API credentials are not configured');
-	}
-	return signHS256(
-		{ video: grant },
-		{
-			secret: cfg.apiSecret,
-			issuer: cfg.apiKey,
-			subject: cfg.apiKey,
-			expiresIn: '10m',
-			notBefore: 0,
-		},
-	);
-}

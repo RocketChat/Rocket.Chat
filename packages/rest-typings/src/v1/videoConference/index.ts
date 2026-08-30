@@ -71,11 +71,6 @@ export type VideoConferenceEndpoints = {
 		};
 	};
 
-	/** Reports the caller out of a LiveKit call. The call itself lasts until the last person leaves. */
-	'/v1/video-conference.livekit.leave': {
-		POST: (params: VideoConfCallIdProps) => void;
-	};
-
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCallIdProps) => void;
 	};
