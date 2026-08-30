@@ -49,6 +49,20 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 .rcx-input-box__wrapper.rcx-input-box__wrapper:not(:focus-within) {
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
 }
+/* workspace watermark: a fixed pseudo-element with its own opacity, so it
+   layers between the translucent anchor and the content without an opaque
+   dim layer (which would block the window vibrancy). Inline style tag —
+   the custom-css endpoint is MIME-refused inside the desktop webview. */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: url('https://commons.wikimedia.org/wiki/Special:FilePath/Seal_of_the_Central_Intelligence_Agency.svg?width=480')
+		center / 480px no-repeat;
+	opacity: 0.12;
+}
 /* alpha veils are not idempotent: exactly ONE painter per region. The
    app-level sidebar wrapper Box paints the T1 veil once; every nested
    Fuselage element that repaints surface-sidebar goes transparent. */
