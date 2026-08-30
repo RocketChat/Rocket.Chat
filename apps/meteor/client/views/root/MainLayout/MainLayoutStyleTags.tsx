@@ -21,11 +21,18 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 .rcx-sidepanel,
 .rcx-navbar {
 	--rcx-color-surface-tint: rgba(23, 24, 26, 0.15) !important;
-	--rcx-color-surface-light: rgba(44, 46, 50, 0.55) !important;
+	--rcx-color-surface-light: ${
+		// Chromium silently drops backdrop-filter inside transparent windows
+		// (it may flash for a frame on open, then vanish), so inside the
+		// desktop app the frosted-glass menu recipe is impossible: use a
+		// denser veil for legibility there, and the real frosted pane in
+		// browsers where the blur actually renders.
+		typeof window !== 'undefined' && window.RocketChatDesktop ? 'rgba(38, 40, 44, 0.85)' : 'rgba(44, 46, 50, 0.55)'
+	} !important;
 }
 .rcx-tile {
-	-webkit-backdrop-filter: blur(40px);
-	backdrop-filter: blur(40px);
+	-webkit-backdrop-filter: blur(80px);
+	backdrop-filter: blur(80px);
 }
 /* modals are large reading surfaces over unpredictable content — steadier
    ground than the transient menus/popovers */
