@@ -3,7 +3,6 @@ import type {
 	ILivechatVideoConference,
 	IRoom,
 	IUser,
-	IVideoConferenceParticipant,
 	VideoConference,
 	VideoConferenceLeaveReason,
 	VideoConferenceStatus,
@@ -81,9 +80,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		inferredReasons?: VideoConferenceLeaveReason[],
 	): Promise<{ revived: boolean; rid: IRoom['_id']; providerName: string } | null>;
 
-	/** Renews several leases at once, as a provider reporting who is in its room does. */
-	renewUsersPresenceById(callId: string, uids: IUser['_id'][], lastSeenAt?: Date): Promise<void>;
-
 	/** Every open call, with the roster and provider the presence sweep judges it by. */
 	findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>>;
 
@@ -100,13 +96,4 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
-
-	// --- Embedded SFU (LiveKit) helpers ---
-	// These mirror the per-participant bookkeeping
-	// that URL-based providers don't need. URL providers (Jitsi/Meet/Zoom)
-	// never call these.
-
-	addEmbeddedParticipant(callId: VideoConference['_id'], participant: IVideoConferenceParticipant): Promise<void>;
-
-	markEmbeddedParticipantLeft(callId: VideoConference['_id'], userId: IUser['_id'], leftAt?: Date): Promise<void>;
 }
