@@ -34,7 +34,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		launchLogin({
 			loginService: 'meteor-developer',
 			loginStyle,
-			loginUrl: loginUrl.toString(),
+			loginUrl,
 			credentialRequestCompleteCallback,
 			credentialToken,
 			popupOptions: { width: 497, height: 749 },

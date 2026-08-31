@@ -40,7 +40,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 		launchLogin({
 			loginService: 'facebook',
 			loginStyle,
-			loginUrl: loginUrl.toString(),
+			loginUrl,
 			credentialRequestCompleteCallback,
 			credentialToken,
 		});

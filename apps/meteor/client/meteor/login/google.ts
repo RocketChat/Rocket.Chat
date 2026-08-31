@@ -54,7 +54,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		launchLogin({
 			loginService: 'google',
 			loginStyle,
-			loginUrl: loginUrl.toString(),
+			loginUrl,
 			credentialRequestCompleteCallback,
 			credentialToken,
 			popupOptions: { height: 600 },

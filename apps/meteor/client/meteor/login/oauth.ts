@@ -231,34 +231,41 @@ const saveDataForRedirect = (loginService: string, credentialToken: string) => {
 	Reload._migrate(null, { immediateMigration: true });
 };
 
-export function launchLogin(options: {
+export function launchLogin({
+	loginService,
+	loginStyle,
+	loginUrl,
+	popupOptions,
+	credentialToken,
+	credentialRequestCompleteCallback,
+}: {
 	loginService: string;
 	loginStyle: string;
-	loginUrl: string;
-	credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void;
-	credentialToken: string;
+	loginUrl: URL;
 	popupOptions?: {
 		width?: number;
 		height?: number;
 	};
+	credentialToken: string;
+	credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void;
 }): void {
 	// Settings might not be loaded yet; in that case, just skip the proxying
 	const proxiedServices = settings.peek<string>('Accounts_OAuth_Proxy_services')?.replace(/\s/g, '').split(',') ?? [];
 	const proxyHost = settings.peek<string>('Accounts_OAuth_Proxy_host');
 
-	if (proxyHost && proxiedServices.includes(options.loginService)) {
-		const redirectUri = options.loginUrl.match(/(&redirect_uri=)([^&]+|$)/)?.[2];
-		options.loginUrl = options.loginUrl.replace(/(&redirect_uri=)([^&]+|$)/, `$1${encodeURIComponent(proxyHost)}/oauth_redirect`);
-		options.loginUrl = options.loginUrl.replace(/(&state=)([^&]+|$)/, `$1${redirectUri}!$2`);
-		options.loginUrl = `${proxyHost}/redirect/${encodeURIComponent(options.loginUrl)}`;
+	if (proxyHost && proxiedServices.includes(loginService)) {
+		const redirectUri = loginUrl.searchParams.get('redirect_uri');
+		loginUrl.searchParams.set('redirect_uri', `${proxyHost}/oauth_redirect`);
+		loginUrl.searchParams.set('state', `${redirectUri}!${loginUrl.searchParams.get('state')}`);
+		loginUrl = new URL(`${proxyHost}/redirect/${encodeURIComponent(loginUrl.toString())}`);
 	}
 
-	if (!options.loginService) throw new Error('loginService required');
-	if (options.loginStyle === 'popup') {
-		showPopup(options.loginUrl, options.credentialRequestCompleteCallback.bind(null, options.credentialToken), options.popupOptions);
-	} else if (options.loginStyle === 'redirect') {
-		saveDataForRedirect(options.loginService, options.credentialToken);
-		window.location.href = options.loginUrl;
+	if (!loginService) throw new Error('loginService required');
+	if (loginStyle === 'popup') {
+		showPopup(loginUrl.toString(), credentialRequestCompleteCallback.bind(null, credentialToken), popupOptions);
+	} else if (loginStyle === 'redirect') {
+		saveDataForRedirect(loginService, credentialToken);
+		window.location.href = loginUrl.toString();
 	} else {
 		throw new Error('invalid login style');
 	}

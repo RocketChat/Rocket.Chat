@@ -88,13 +88,12 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		const credentialToken = Random.secret();
 		const loginStyle = OAuth._loginStyle(this.name, config);
 
-		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
-
-		const loginUrl =
-			`${this.authorizePath}${separator}client_id=${config.clientId}&redirect_uri=${encodeURIComponent(
-				redirectUri(this.name, config),
-			)}&response_type=${encodeURIComponent(this.responseType)}` +
-			`&state=${encodeURIComponent(stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(this.scope)}`;
+		const loginUrl = new URL(this.authorizePath);
+		loginUrl.searchParams.append('client_id', config.clientId);
+		loginUrl.searchParams.append('redirect_uri', redirectUri(this.name, config));
+		loginUrl.searchParams.append('response_type', this.responseType);
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
+		loginUrl.searchParams.append('scope', this.scope);
 
 		launchLogin({
 			loginService: this.name,

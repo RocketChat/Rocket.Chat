@@ -35,7 +35,7 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 		launchLogin({
 			loginService: 'twitter',
 			loginStyle,
-			loginUrl: loginUrl.toString(),
+			loginUrl,
 			credentialRequestCompleteCallback,
 			credentialToken,
 		});
