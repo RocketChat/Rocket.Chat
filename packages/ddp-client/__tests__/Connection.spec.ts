@@ -165,7 +165,7 @@ it('should be idempotent if reconnect is called while already connected', async 
 
 it('should be idempotent if connect is called while already connected', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	await handleConnection(server, connection.connect());
 
