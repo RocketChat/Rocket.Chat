@@ -1,4 +1,5 @@
 import type { IExchangeProvider } from './definition/IExchangeProvider';
+import type { DateRange } from './definition/types';
 import { ExchangeError } from './errors';
 import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
 import { NtlmEwsTransport } from './ews/NtlmEwsTransport';
@@ -68,6 +69,18 @@ export const getExchangeProvider = (): IExchangeProvider => {
 	}
 
 	return current;
+};
+
+const DEFAULT_SYNC_WINDOW_HOURS = 48;
+const MIN_SYNC_WINDOW_HOURS = 1;
+// 30 days. Wider than this, a daily series expands past the item cap `CalendarView` requests
+const MAX_SYNC_WINDOW_HOURS = 720;
+
+export const getSyncWindow = (from: Date = new Date()): DateRange => {
+	const configured = Math.trunc(settings.get<number>('Outlook_Calendar_Server_Sync_Window_Hours')) || DEFAULT_SYNC_WINDOW_HOURS;
+	const hours = Math.min(Math.max(configured, MIN_SYNC_WINDOW_HOURS), MAX_SYNC_WINDOW_HOURS);
+
+	return { start: from, end: new Date(from.getTime() + hours * 60 * 60 * 1000) };
 };
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
