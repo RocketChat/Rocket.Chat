@@ -7,7 +7,7 @@ import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
-import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 type LoginWithGoogleOptions = LoginWithExternalServiceOptions & {
@@ -22,6 +22,15 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	'google',
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
+
+		// Use Google's domain-specific login page if we want to restrict creation to
+		// a particular email domain. (Don't use it if restrictCreationByEmailDomain
+		// is a function.) Note that all this does is change Google's UI ---
+		// accounts-base/accounts_server.js still checks server-side that the server
+		// has the proper email address after the OAuth conversation.
+		if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
+			options = { ...options, loginUrlParameters: { ...options.loginUrlParameters, hd: Accounts._options.restrictCreationByEmailDomain } };
+		}
 
 		const scope = ['email', ...(options.requestPermissions || ['profile'])].join(' ');
 
@@ -60,36 +69,11 @@ const loginWithGoogle = (
 	options: LoginWithGoogleOptions,
 	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
 ) => {
-	// Use Google's domain-specific login page if we want to restrict creation to
-	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
-	// is a function.) Note that all this does is change Google's UI ---
-	// accounts-base/accounts_server.js still checks server-side that the server
-	// has the proper email address after the OAuth conversation.
-	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
-		options = { ...options };
-		options.loginUrlParameters = { ...options.loginUrlParameters };
-		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
-	}
 	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
 	requestCredential(options, credentialRequestCompleteCallback);
 };
 
-const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod<LoginWithGoogleOptions>({ requestCredential });
-
-const loginWithGoogleAndTOTP = (options: LoginWithGoogleOptions, code: string, callback?: LoginCallback) => {
-	// Use Google's domain-specific login page if we want to restrict creation to
-	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
-	// is a function.) Note that all this does is change Google's UI ---
-	// accounts-base/accounts_server.js still checks server-side that the server
-	// has the proper email address after the OAuth conversation.
-	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
-		options = Object.assign({}, options || {});
-		options.loginUrlParameters = Object.assign({}, options.loginUrlParameters || {});
-		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
-	}
-
-	innerLoginWithGoogleAndTOTP(options, code, callback);
-};
+const loginWithGoogleAndTOTP = createOAuthTotpLoginMethod<LoginWithGoogleOptions>({ requestCredential });
 
 const loginWithGoogleForMeteor = (
 	options: LoginWithGoogleOptions,
