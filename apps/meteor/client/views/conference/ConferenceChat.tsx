@@ -57,7 +57,10 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 	const headerLabel = tmid ? t('Thread') : t('Chat');
 	const title = roomName ? (
 		<>
-			{tmid ? t('Thread_in') : t('Chat_in')} <Icon name={roomTypeIcon(roomType)} size='x16' /> {roomName}
+			{/* Labelled as a whole, because the icon between the words otherwise lands in the middle of the name. */}
+			<Box is='span' aria-label={`${tmid ? t('Thread_in') : t('Chat_in')} ${roomName}`}>
+				{tmid ? t('Thread_in') : t('Chat_in')} <Icon name={roomTypeIcon(roomType)} size='x16' /> {roomName}
+			</Box>
 		</>
 	) : (
 		headerLabel

@@ -95,7 +95,15 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 				<FieldRow>
 					{/* The product's own way of picking people, the same as adding them to a room — this used to be
 					    hand-rolled here, down to the chips and the remove buttons. */}
-					<UserAutoCompleteMultiple value={selected} onChange={setSelected} exceptions={memberUsernames} placeholder={t('Choose_users')} />
+					<UserAutoCompleteMultiple
+						value={selected}
+						onChange={setSelected}
+						exceptions={memberUsernames}
+						placeholder={t('Choose_users')}
+						// A placeholder is not a name: it is gone the moment anything is typed, and it names the field
+						// only for whoever can see it.
+						aria-label={t('Add_people')}
+					/>
 				</FieldRow>
 			</Field>
 			{/* Under the names, because it is a question about the people just chosen. */}
