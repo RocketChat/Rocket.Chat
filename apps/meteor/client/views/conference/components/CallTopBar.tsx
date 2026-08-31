@@ -1,5 +1,6 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type CallTopBarProps = {
 	/**
@@ -18,21 +19,29 @@ type CallTopBarProps = {
  * of the window the call happens to occupy: put in the call area it stopped at the panel's edge and shifted
  * every time a panel opened. Fixed above them, the panels hang beneath it.
  */
-const CallTopBar = ({ host, children }: CallTopBarProps) => (
-	<Box
-		is='header'
-		display='flex'
-		alignItems='center'
-		justifyContent='space-between'
-		flexShrink={0}
-		width='100%'
-		minHeight={48}
-		paddingInline={12}
-		style={{ gap: 8 }}
-	>
-		{host}
-		<ButtonGroup style={{ gap: 8 }}>{children}</ButtonGroup>
-	</Box>
-);
+const CallTopBar = ({ host, children }: CallTopBarProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<Box
+			is='header'
+			// Named, because a header is a landmark and this window can hold a second one: a modal brings a header
+			// of its own, and two unnamed banners in a page are two things neither a person nor a test can tell
+			// apart.
+			aria-label={t('Call')}
+			display='flex'
+			alignItems='center'
+			justifyContent='space-between'
+			flexShrink={0}
+			width='100%'
+			minHeight={48}
+			paddingInline={12}
+			style={{ gap: 8 }}
+		>
+			{host}
+			<ButtonGroup style={{ gap: 8 }}>{children}</ButtonGroup>
+		</Box>
+	);
+};
 
 export default CallTopBar;
