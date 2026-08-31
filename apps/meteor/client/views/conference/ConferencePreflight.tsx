@@ -116,7 +116,9 @@ const ConferencePreflight = ({
 
 	const detailsColumn = (
 		<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
-			<Box fontScale='h2' color='default' textAlign='center'>
+			{/* An `h2` rather than a `div` at heading size: it is the screen's heading, and this is the only thing
+			    that lets anyone — or anything — find it as one. */}
+			<Box is='h2' fontScale='h2' color='default' textAlign='center'>
 				{heading}
 			</Box>
 

@@ -31,7 +31,9 @@ const CallTimer = ({ startAt }: CallTimerProps) => {
 	const secondsStr = seconds.toString().padStart(2, '0');
 
 	return (
-		<Box is='time' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
+		// `role='timer'` because that is what it is: a live region counting up. A bare `<time>` had no role and no
+		// name, so nothing could refer to it — neither assistive technology nor a test.
+		<Box is='time' role='timer' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
 			{hoursStr !== '00' ? `${hours}:` : ''}
 			{minutesStr}:{secondsStr}
 		</Box>
