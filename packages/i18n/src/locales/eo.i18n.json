@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Postuli Pasvorton Konfirmon",
   "Accounts_SearchFields": "Kampoj por Konsideri en Serĉo",
   "Accounts_SetDefaultAvatar": "Ŝanĝu Defaŭlta Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Provas determini defaŭlta avataro bazita sur OAuth-Konto aŭ Gravataro",
   "Accounts_ShowFormLogin": "Montri Form-Based Based Login",
   "Accounts_TwoFactorAuthentication_Enabled": "Ebligu Du Faktran Aŭtentigon",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimuma Delta",

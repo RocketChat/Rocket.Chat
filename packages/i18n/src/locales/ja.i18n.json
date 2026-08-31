@@ -221,7 +221,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "外部アカウントのメールを確認済みに設定する",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "LDAPやOAthなどの外部サービスから作成されたアカウントでは、メールが自動的に確認されます",
   "Accounts_SetDefaultAvatar": "デフォルトアバターの設定",
-  "Accounts_SetDefaultAvatar_Description": "OAuthアカウントまたはGravatarに基づいてデフォルトアバターの判別を試みます",
   "Accounts_ShowFormLogin": "デフォルトのログインフォームを表示",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "メールによる2要素認証に新規ユーザーを自動オプトインする",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "新規ユーザーは、デフォルトでメールによる2要素認証が有効になっています。これらはプロフィールページで無効にすることができます。",

@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Angen Cadarnhad Cyfrinair",
   "Accounts_SearchFields": "Meysydd i'w hystyried wrth chwilio",
   "Accounts_SetDefaultAvatar": "Gosod Avatar Diofyn",
-  "Accounts_SetDefaultAvatar_Description": "Yn ceisio penderfynu ar avatar diofyn yn seiliedig ar OAuth Account neu Gravatar",
   "Accounts_ShowFormLogin": "Dangos Ffurflen Mewngofnodi Diofyn",
   "Accounts_TwoFactorAuthentication_Enabled": "Galluogi Dau Ffactor Dilysu",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta Uchafswm",

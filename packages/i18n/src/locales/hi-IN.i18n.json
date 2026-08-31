@@ -248,7 +248,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "बाहरी खातों के ईमेल को सत्यापित के रूप में सेट करें",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "एलडीएपी, ओएथ आदि जैसी बाहरी सेवाओं से बनाए गए खातों के ईमेल स्वचालित रूप से सत्यापित हो जाएंगे",
   "Accounts_SetDefaultAvatar": "डिफ़ॉल्ट अवतार सेट करें",
-  "Accounts_SetDefaultAvatar_Description": "OAuth खाते या Gravatar के आधार पर डिफ़ॉल्ट अवतार निर्धारित करने का प्रयास करता है",
   "Accounts_ShowFormLogin": "डिफ़ॉल्ट लॉगिन फॉर्म दिखाएँ",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "ईमेल के माध्यम से टू फैक्टर के लिए नए उपयोगकर्ताओं को ऑटो ऑप्ट इन करें",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "नए उपयोगकर्ताओं के पास ईमेल के माध्यम से दो कारक प्रमाणीकरण डिफ़ॉल्ट रूप से सक्षम होगा। वे इसे अपने प्रोफ़ाइल पृष्ठ में अक्षम कर सकेंगे.",

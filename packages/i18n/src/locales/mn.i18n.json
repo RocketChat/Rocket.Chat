@@ -170,7 +170,6 @@
   "Accounts_RequirePasswordConfirmation": "Нууц үг баталгаажуулах шаардлагатай",
   "Accounts_SearchFields": "Хайлт хийх талаархи талбарууд",
   "Accounts_SetDefaultAvatar": "Default Хуудсыг тохируулж болно",
-  "Accounts_SetDefaultAvatar_Description": "OAuth Данс эсвэл Gravatar дээр суурилсан default avatar-г тодорхойлохыг оролддог",
   "Accounts_ShowFormLogin": "Маягт дээр суурилсан Нэвтрэхийг харуулах",
   "Accounts_TwoFactorAuthentication_Enabled": "Хоёр хүчин зүйлийг баталгаажуулах боломжтой болгох",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Хамгийн их Дельта",

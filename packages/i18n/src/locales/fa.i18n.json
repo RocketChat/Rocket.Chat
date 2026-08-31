@@ -203,7 +203,6 @@
   "Accounts_Send_Email_When_Activating": "ارسال ایمیل به کاربر هنگام فعال بودن",
   "Accounts_Send_Email_When_Deactivating": "ارسال ایمیل به کابر هنگام غیر فعال کردن کابر",
   "Accounts_SetDefaultAvatar": "تنظیم تصویر پیش‌فرض",
-  "Accounts_SetDefaultAvatar_Description": "تلاش می کند تصویر پیش‌فرض را با OAuth یا Gravatar به دست بیاورد",
   "Accounts_ShowFormLogin": "نمایش فرم ورود به سیستم پیش فرض",
   "Accounts_TwoFactorAuthentication_Enabled": "فعال کردن تایید هویت دومرحله ای با TOTP",
   "Accounts_TwoFactorAuthentication_MaxDelta": "حداکثر دلتا",
