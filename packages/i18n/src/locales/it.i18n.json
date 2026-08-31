@@ -219,7 +219,6 @@
   "Accounts_Send_Email_When_Activating": "Invia mail all'utente quando quando è attivato",
   "Accounts_Send_Email_When_Deactivating": "Invia mail all'utente quando quando è inattivato",
   "Accounts_SetDefaultAvatar": "Imposta avatar predefinito",
-  "Accounts_SetDefaultAvatar_Description": "Prova a determinare l'avatar predefinito in base all'account OAuth o a Gravatar",
   "Accounts_ShowFormLogin": "Mostra la maschera di accesso predefinita",
   "Accounts_TwoFactorAuthentication_Enabled": "Abilita l'autenticazione a due fattori",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta massimo",

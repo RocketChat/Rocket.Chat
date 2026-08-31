@@ -180,7 +180,6 @@
   "Accounts_Send_Email_When_Activating": "Eine E-Mail an den Benutzer senden, wenn dieser aktiviert wurde. ",
   "Accounts_Send_Email_When_Deactivating": "Eine E-Mail an den Benutzer senden, wenn dieser deaktiviert wurde. ",
   "Accounts_SetDefaultAvatar": "Standard-Avatar setzen",
-  "Accounts_SetDefaultAvatar_Description": "Versuche Standard-Avatar über OAuth oder Gravatar zu bestimmen",
   "Accounts_ShowFormLogin": "Standard Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivieren die Zwei-Faktor-Authentifizierung",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",

@@ -184,7 +184,6 @@
   "Accounts_Send_Email_When_Activating": "用户激活时向用户发送电子邮件",
   "Accounts_Send_Email_When_Deactivating": "用户停用时向用户发送电子邮件",
   "Accounts_SetDefaultAvatar": "设置默认头像",
-  "Accounts_SetDefaultAvatar_Description": "尝试根据OAuth帐户或Gravatar确定默认头像",
   "Accounts_ShowFormLogin": "显示基于表单的登录",
   "Accounts_TwoFactorAuthentication_Enabled": "启用双因素身份验证",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大Delta",

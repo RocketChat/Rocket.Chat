@@ -254,7 +254,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Ustaw adresy e-mail zewnętrznych kont jako zweryfikowane",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Konta utworzone przez zewnętrzne usługi, takie jak LDAP, OAuth itp., będą miały automatycznie weryfikowane adresy e-mail.",
   "Accounts_SetDefaultAvatar": "Ustaw domyślny awatar",
-  "Accounts_SetDefaultAvatar_Description": "Próbuje ustalić domyślny awatar na podstawie konta OAuth lub Gravatar",
   "Accounts_ShowFormLogin": "Pokaż domyślny formularz logowania",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Uruchom automatycznie uwierzytelnianie dwuskładnikowe nowych użytkowników za pomocą poczty e-mail",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Nowi użytkownicy będą mieć domyślnie włączone uwierzytelnianie dwuskładnikowe za pomocą poczty e-mail. Mogą je wyłączyć na stronie swojego profilu.",
