@@ -1,0 +1,21 @@
+apps/meteor/CHANGELOG.md
+  h_4c386397e672f4 210-231
+packages/core-typings/CHANGELOG.md
+  h_4c386397e672f4 23-24
+docker-compose-ci.yml
+  h_4c386397e672f4 233
+packages/rest-typings/CHANGELOG.md
+  h_4c386397e672f4 51-56
+  h_4c386397e672f4 57-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "10300a25dcc6b6909f00132390f9f96ceef74000",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
