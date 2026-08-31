@@ -8,7 +8,10 @@
  */
 export const deviceName = (label: string): string =>
 	label
-		.replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '')
+		// The whitespace either side of the vendor pair is left to `trim` rather than matched here. A `\s*` on both
+		// sides of the group made the match quadratic in runs of whitespace — a device label is not attacker-chosen,
+		// but it comes from outside and the anchored form costs nothing.
+		.replace(/\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '')
 		.replace(/^Default\s+-\s+/i, '')
 		.trim();
 
