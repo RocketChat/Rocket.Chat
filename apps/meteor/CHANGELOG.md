@@ -207,6 +207,28 @@
   - @rocket.chat/ui-avatar@30.0.0-rc.0
   </details>
 
+## 8.7.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41818](https://github.com/RocketChat/Rocket.Chat/pull/41818) by [@dionisio-bot](https://github.com/dionisio-bot)) Adds per-client rate limiting to the unauthenticated sendForgotPasswordEmail method, matching the REST users.forgotPassword endpoint
+
+- ([#41820](https://github.com/RocketChat/Rocket.Chat/pull/41820) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41846](https://github.com/RocketChat/Rocket.Chat/pull/41846)) Fixes an issue where a `MultiSelect` option checkbox remained checked after the option was deselected
+
+- ([#41819](https://github.com/RocketChat/Rocket.Chat/pull/41819) by [@dionisio-bot](https://github.com/dionisio-bot)) Replace http with serverFetch in downloadPublicImportFile to add SSRF protection
+
+- ([#41817](https://github.com/RocketChat/Rocket.Chat/pull/41817) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes special characters not being escaped in the visitor name shown in the Omnichannel queue side panel's message preview
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.7.1
+  - @rocket.chat/rest-typings@8.7.1
+  </details>
+
 ## 8.7.0
 
 ### Minor Changes
