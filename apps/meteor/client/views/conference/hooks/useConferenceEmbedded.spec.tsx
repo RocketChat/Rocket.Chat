@@ -74,6 +74,47 @@ it('reads the conference again when it changes', async () => {
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(0));
 });
 
+// The stream is the window's only word on what the call is doing, and the server refuses a subscription it
+// can't authorise rather than queueing it — a refusal that is never retried. So *when* the window subscribes
+// is the whole of whether it ever hears anything.
+describe('watching the conference', () => {
+	const renderFor = (initialCallId: string) => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		return {
+			streamRef,
+			...renderHook(({ id }: { id: string }) => useConferenceEmbedded(id), {
+				initialProps: { id: initialCallId },
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withStream('video-conference', streamRef)
+					.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+					.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+					.build(),
+			}),
+		};
+	};
+
+	// `new` is the id the window carries before the call exists. The server looks the conference up by it, finds
+	// nothing, and refuses — and nothing asks again, so the window would watch nothing for as long as it is open.
+	it('asks about nothing while the call does not exist yet', async () => {
+		const { result, streamRef } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has('new/updated')).toBe(false);
+	});
+
+	it('starts watching as soon as the call is real', async () => {
+		const { result, streamRef, rerender } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+
+		rerender({ id: callId });
+
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+	});
+});
+
 it('follows the chat to a discussion the conference moved into', async () => {
 	const streamRef: StreamControllerRef<'video-conference'> = {};
 	let discussionRid: string | undefined;

@@ -535,6 +535,17 @@ waiting on the round trip.
 
 The stream's `allowRead` accepts **conference membership or access to the chat's room**, the same pair `video-conference.info` accepts. Both halves matter: members may have no access to the room the call originated in, and membership alone would refuse a room member who opens the conference before their join lands — a refused subscription is never retried.
 
+That last clause is what shapes the subscriber. `useConferenceEmbedded` runs in a window that opens on
+`/conference/new`, before the conference exists, so `new` is a call id it can be handed; `allowRead` looks the
+conference up by that id, finds nothing, and refuses. Nothing on either side reports a refusal, and nothing asks
+again, so a window that subscribes too early watches nothing for as long as it stays open. Two rules keep that
+from happening:
+
+- it subscribes only for a **real** call id, and subscribes as soon as it has one;
+- it subscribes **per connection**, and re-reads the conference whenever a connection is (re-)established —
+  a subscription that was refused or lost with the socket is not permanent, and whatever moved while this window
+  was away was announced to nobody here.
+
 ## Access Control
 
 Every conference endpoint authorizes through one `canAccessConference` check, which accepts, in order:
