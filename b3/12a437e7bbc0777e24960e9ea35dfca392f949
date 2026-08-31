@@ -1,0 +1,19 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_0916648fed0b58::t_2d13424595bd74 5493-5499,5501-5506,5508-5509,5511-5521
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "b312a437e7bbc0777e24960e9ea35dfca392f949",
+  "prompts": {},
+  "sessions": {
+    "s_0916648fed0b58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c852748e-0469-4644-8ca3-49b590175345",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
