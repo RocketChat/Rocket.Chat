@@ -1,7 +1,6 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 
 import { createOAuthLoginFunctionForMeteor, launchLogin, redirectUri, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
@@ -12,9 +11,7 @@ type LoginWithMeteorDeveloperAccountOptions = LoginWithExternalServiceOptions & 
 
 const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithMeteorDeveloperAccountOptions>(
 	'meteor-developer',
-	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
-		const credentialToken = Random.secret();
-
+	({ config, loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
 		const loginUrl = new URL('https://www.meteor.com/oauth2/authorize');
 		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
 		loginUrl.searchParams.append('response_type', 'code');

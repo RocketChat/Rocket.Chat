@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
@@ -115,35 +116,35 @@ type RequestCredentialConfig<
 	loginStyle: string;
 	options: TOptions;
 	credentialRequestCompleteCallback: RequestCredentialCallback;
+	credentialToken: string;
 };
 
 type RequestCredentialCallback = (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
 
 export function wrapRequestCredentialFn<
-	T extends Partial<OAuthConfiguration>,
+	TConfig extends Partial<OAuthConfiguration>,
 	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
->(serviceName: string, fn: (params: RequestCredentialConfig<T, TOptions>) => void) {
-	return (options: TOptions, credentialRequestCompleteCallback: RequestCredentialCallback) => {
-		loginServices.loadLoginService<T>(serviceName).then(
-			(config) => {
-				if (!config) {
-					credentialRequestCompleteCallback?.(new Accounts.ConfigError());
-					return;
-				}
+>(serviceName: string, fn: (params: RequestCredentialConfig<TConfig, TOptions>) => void) {
+	return async (options: TOptions, credentialRequestCompleteCallback: RequestCredentialCallback) => {
+		try {
+			const config = await loginServices.loadLoginService<TConfig>(serviceName);
+			if (!config) throw new Accounts.ConfigError();
 
-				const loginStyle = getLoginStyle(config, options);
+			const credentialToken = Random.secret();
+			const loginStyle = getLoginStyle(config, options);
 
-				fn({
-					config,
-					loginStyle,
-					options,
-					credentialRequestCompleteCallback,
-				});
-			},
-			() => {
-				credentialRequestCompleteCallback?.(new Accounts.ConfigError());
-			},
-		);
+			fn({
+				config,
+				loginStyle,
+				options,
+				credentialRequestCompleteCallback,
+				credentialToken,
+			});
+		} catch (error) {
+			credentialRequestCompleteCallback?.(
+				error instanceof Accounts.ConfigError ? error : new Accounts.ConfigError(undefined, { cause: error }),
+			);
+		}
 	};
 }
 

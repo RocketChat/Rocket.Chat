@@ -1,5 +1,4 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,9 +15,7 @@ const validParamsAuthenticate = ['force_login', 'screen_name'] as const;
 
 const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, LoginWithTwitterOptions>(
 	'twitter',
-	({ loginStyle, options, credentialRequestCompleteCallback }) => {
-		const credentialToken = Random.secret();
-
+	({ loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
 		const loginUrl = new URL(absoluteUrl('_oauth/twitter/'));
 		loginUrl.searchParams.append('requestTokenAndRedirect', 'true');
 		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options?.redirectUrl));

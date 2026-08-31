@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { CustomOAuthError } from './CustomOAuthError';
-import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
+import type { IOAuthProvider, LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { launchLogin, getLoginStyle, redirectUri, stateParam, createOAuthLoginFunctionForMeteor } from '../../meteor/login/oauth';
 import { loginServices } from '../loginServices';
 
@@ -57,38 +57,39 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 	}
 
 	async requestCredential(
-		options: Meteor.LoginWithExternalServiceOptions = {},
+		options: LoginWithExternalServiceOptions = {},
 		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
 	) {
-		const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
-		if (!config) {
-			if (credentialRequestCompleteCallback) {
-				credentialRequestCompleteCallback(new Accounts.ConfigError());
-			}
-			return;
+		try {
+			const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
+			if (!config) throw new Accounts.ConfigError();
+
+			const credentialToken = Random.secret();
+			const loginStyle = getLoginStyle(config);
+
+			const loginUrl = new URL(this.authorizePath);
+			loginUrl.searchParams.append('client_id', config.clientId);
+			loginUrl.searchParams.append('redirect_uri', redirectUri(this.name, config));
+			loginUrl.searchParams.append('response_type', this.responseType);
+			loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
+			loginUrl.searchParams.append('scope', this.scope);
+
+			launchLogin({
+				loginService: this.name,
+				loginStyle,
+				loginUrl,
+				credentialRequestCompleteCallback,
+				credentialToken,
+				popupOptions: {
+					width: 900,
+					height: 450,
+				},
+			});
+		} catch (error) {
+			credentialRequestCompleteCallback?.(
+				error instanceof Accounts.ConfigError ? error : new Accounts.ConfigError(undefined, { cause: error }),
+			);
 		}
-
-		const credentialToken = Random.secret();
-		const loginStyle = getLoginStyle(config);
-
-		const loginUrl = new URL(this.authorizePath);
-		loginUrl.searchParams.append('client_id', config.clientId);
-		loginUrl.searchParams.append('redirect_uri', redirectUri(this.name, config));
-		loginUrl.searchParams.append('response_type', this.responseType);
-		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
-		loginUrl.searchParams.append('scope', this.scope);
-
-		launchLogin({
-			loginService: this.name,
-			loginStyle,
-			loginUrl,
-			credentialRequestCompleteCallback,
-			credentialToken,
-			popupOptions: {
-				width: 900,
-				height: 450,
-			},
-		});
 	}
 
 	static configureOAuthService<TServiceName extends string = string>(

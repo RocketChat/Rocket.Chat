@@ -1,5 +1,4 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,9 +15,7 @@ type LoginWithGoogleOptions = LoginWithExternalServiceOptions & {
 
 const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithGoogleOptions>(
 	'google',
-	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
-		const credentialToken = Random.secret();
-
+	({ config, loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
 		const loginUrl = new URL('https://accounts.google.com/o/oauth2/auth');
 		if (options.loginUrlParameters) {
 			for (const [key, value] of Object.entries(options.loginUrlParameters)) {

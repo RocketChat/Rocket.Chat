@@ -1,5 +1,4 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -15,9 +14,7 @@ type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
 
 const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, LoginWithFacebookOptions>(
 	'facebook',
-	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
-		const credentialToken = Random.secret();
-
+	({ config, loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
 		const loginUrl = new URL('https://www.facebook.com/v17.0/dialog/oauth');
 		loginUrl.searchParams.append('client_id', config.appId);
 		loginUrl.searchParams.append('redirect_uri', redirectUri('facebook', config, options.params, options.absoluteUrlOptions));
