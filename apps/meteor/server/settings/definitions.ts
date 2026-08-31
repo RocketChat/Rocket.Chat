@@ -4,7 +4,6 @@ import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
 import { createBotsSettings } from './bots';
 import { createCasSettings } from './cas';
-import { createCrowdSettings } from './crowd';
 import { createEmojiSettings } from './custom-emoji';
 import { createSoundsSettings } from './custom-sounds';
 import { createDiscussionsSettings } from './discussions';
@@ -42,7 +41,6 @@ await Promise.all([
 	createAssetsSettings(),
 	createBotsSettings(),
 	createCasSettings(),
-	createCrowdSettings(),
 	createEmojiSettings(),
 	createSoundsSettings(),
 	createDiscussionsSettings(),
