@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Kërko konfirmimin e fjalëkalimit",
   "Accounts_SearchFields": "Fushat që duhet të shqyrtohen në kërkim",
   "Accounts_SetDefaultAvatar": "Vendos Default Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Përpiqet për të përcaktuar avatarin e parazgjedhur bazuar në llogarinë OAuth ose Gravatar",
   "Accounts_ShowFormLogin": "Tregojnë formë të bazuar Login",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivizo Authentication Dy Factor",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maksimale",

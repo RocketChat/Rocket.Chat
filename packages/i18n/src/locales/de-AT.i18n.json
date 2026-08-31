@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Passwortbestätigung erforderlich",
   "Accounts_SearchFields": "Zu berücksichtigende Felder in der Suche",
   "Accounts_SetDefaultAvatar": "Setze Standard-Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Versucht, den Standardavatar basierend auf OAuth Account oder Gravatar zu bestimmen",
   "Accounts_ShowFormLogin": "Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktivieren Sie die Zwei-Faktor-Authentifizierung",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",

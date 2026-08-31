@@ -236,7 +236,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "외부 계정의 이메일을 확인 된 것으로 설정",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "LDAP, OAth 등과 같은 외부 서비스에서 생성 된 계정은 이메일을 자동으로 확인합니다.",
   "Accounts_SetDefaultAvatar": "기본 아바타 설정",
-  "Accounts_SetDefaultAvatar_Description": "OAuth 계정이나 Gravatar 를 바탕으로 기본 아바타 설정을 시도합니다.",
   "Accounts_ShowFormLogin": "기본 로그인 폼 표시",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "이메일을 통해 새로운 사용자에게 2단계 인증(2FA) 자동 선택",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "신규 사용자는 기본적으로 이메일을 통한 2단계 인증(2FA)이 활성화됩니다. 프로필 페이지에서 사용 중지 할 수 있습니다.",

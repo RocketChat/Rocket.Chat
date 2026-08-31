@@ -206,7 +206,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Nastavit email účtů z externích služeb jako ověřený",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Emaily účtů ze služeb jako LDAP, OAuth, atd. budou automaticky ověřené",
   "Accounts_SetDefaultAvatar": "Nastavit výchozí avatar",
-  "Accounts_SetDefaultAvatar_Description": "Pokusí se určit výchozí avatar na základě OAuth účtu nebo gravataru",
   "Accounts_ShowFormLogin": "Zobrazit výchozí formulář přihlášení",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Automaticky zapnout dvoufázové ověření novým uživatelům",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Nový uživatelé mají dvoufázové ověření zapnuté vždy, ale mohou si je vypnout v nastavení",

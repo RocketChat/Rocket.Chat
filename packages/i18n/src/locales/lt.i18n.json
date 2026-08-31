@@ -196,7 +196,6 @@
   "Accounts_Send_Email_When_Activating": "Siųsti naudotojui el. laišką, kai naudotojas aktyvuojamas",
   "Accounts_Send_Email_When_Deactivating": "Siųsti naudotojui el. laišką, kai naudotojas deaktyvuojamas",
   "Accounts_SetDefaultAvatar": "Nustatyti numatytąjį įvaizdį",
-  "Accounts_SetDefaultAvatar_Description": "Bando nustatyti numatytąją piktogramą, pagrįstą \"OAuth\" sąskaita arba \"Gravatar\"",
   "Accounts_ShowFormLogin": "Rodyti prisijungimą pagal formą",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Įgalinti dviejų veiksnių autentiškumo patvirtinimą el. paštu",
   "Accounts_TwoFactorAuthentication_Enabled": "Įgalinti dviejų veiksnių autentifikavimą",
