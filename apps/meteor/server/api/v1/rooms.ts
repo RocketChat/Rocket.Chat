@@ -1770,6 +1770,13 @@ export const roomEndpoints = API.v1
 		},
 		async function action() {
 			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
+
+			// Malformed request shape must be rejected before any data resolution, so the response
+			// does not flip to 404 when `aroundId` happens to point at a missing message.
+			if ([next, previous, aroundId].filter(Boolean).length > 1) {
+				throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
+			}
+
 			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
 			// honors the API_Upper_Count_Limit cap.
 			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
