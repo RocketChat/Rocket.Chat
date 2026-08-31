@@ -2,10 +2,10 @@ import type { IExtras, IRoomActivity, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 
-import { sdk } from '../../../../client/lib/SDKClient';
-import { settings } from '../../../../client/lib/settings';
-import { getUser, getUserId } from '../../../../client/lib/user';
-import { Users } from '../../../../client/stores';
+import { sdk } from './SDKClient';
+import { settings } from './settings';
+import { getUser, getUserId } from './user';
+import { Users } from '../stores';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;

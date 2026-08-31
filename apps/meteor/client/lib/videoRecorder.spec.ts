@@ -1,5 +1,5 @@
 import { VideoRecorder } from './videoRecorder';
-import { createDeferredPromise } from '../../../../../tests/mocks/utils/createDeferredMockFn';
+import { createDeferredPromise } from '../../tests/mocks/utils/createDeferredMockFn';
 
 describe('VideoRecorder', () => {
 	let mockStream: MediaStream;

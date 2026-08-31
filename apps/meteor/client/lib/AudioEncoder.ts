@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { absoluteUrl } from '../../../../../client/lib/absoluteUrl';
+import { absoluteUrl } from './absoluteUrl';
 
 export class AudioEncoder extends Emitter {
 	private worker: Worker;

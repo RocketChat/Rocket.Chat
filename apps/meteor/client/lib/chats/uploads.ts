@@ -6,9 +6,9 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
-import { USER_ACTIVITIES, UserAction } from '../../../app/ui/client/lib/UserAction';
 import { i18n } from '../../../app/utils/lib/i18n';
 import { sdk } from '../SDKClient';
+import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { settings } from '../settings';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 

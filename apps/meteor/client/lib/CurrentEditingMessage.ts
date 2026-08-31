@@ -1,5 +1,5 @@
-import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
-import { clearHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import type { ChatAPI } from './chats/ChatAPI';
+import { clearHighlightMessage } from '../views/room/MessageList/providers/messageHighlightSubscription';
 
 export class CurrentEditingMessage {
 	private lock = false;
