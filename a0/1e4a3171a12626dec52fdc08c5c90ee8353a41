@@ -1,9 +1,16 @@
+apps/meteor/client/views/room/MessageList/hooks/useParentMessage.ts
+  h_4c386397e672f4 10-11,23-26,29-33
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.0",
   "base_commit_sha": "a01e4a3171a12626dec52fdc08c5c90ee8353a41",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_9e3e1b313ffcd1": {
       "agent_id": {
