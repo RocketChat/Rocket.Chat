@@ -85,9 +85,9 @@ along that line first.
 ### What is automated so far
 
 `tests/e2e/video-conference-call-window.spec.ts` covers thirteen of the `e2e` cases: **7** (in its own
-flag-off describe), **9**, **10**, **11**, **12**, **13**, **15** (with **16**'s negative folded in), **17**
-(with **47** folded in), **18**, **27**/**30**/**52** in one layout journey, **34** with **46**, **35**/**36**/**37**,
-and **63**. Everything else in the set is still a manual pass, and three things are worth knowing about why:
+flag-off describe), **9**, **10**, **11**, **12**, **13**, **15** (with **16**'s negative folded in), **17**,
+**18**, **27**/**30** in one layout journey, **34** with **46**, **35**/**36**/**37**, and **63**. Everything
+else in the set is still a manual pass, and three things are worth knowing about why:
 
 - **Absence is asserted by name, not by emptiness.** A call row is an `<a>` with no `href` — no role, no
   accessible name, no `data-qa` — so a conference started in a channel is given a unique name at its preflight
@@ -98,6 +98,30 @@ and **63**. Everything else in the set is still a manual pass, and three things 
   duration, and a suite that waits out three of them buys little for what it costs.
 - **Group ringing is not reachable as written.** Cases **21** and **22** both assume a channel call rings —
   see below.
+
+### Bugs the automation found, and the cases parked on them
+
+Two cases are right and the code is not. Both are `test.fixme` in
+`tests/e2e/video-conference-call-window.spec.ts` with the evidence in the comment above them, so un-fixme-ing
+them is the check that the fix landed. Until then the steps they cover need a manual pass, and a run of the set
+will find them failing.
+
+- **The call window never learns what anyone else does to the call.** `useConferenceEmbedded` reads membership
+  from `video-conference.info` and refreshes it only from the `video-conference/<callId>/updated` stream. That
+  stream does not reach the conference window: in CI run 33428535519 a callee joined and the caller's window sat
+  on `Ringing` for five seconds without issuing a single request, and in the same run a decline that the server
+  wrote and the caller's *main app page* read back 1.4s later over `notify-room` never moved the caller's call
+  window. So the event fires and the user is reachable; the window's own subscription is what does not work.
+  Parks case **17** step 3, case **18** steps 2 and 4, and case **47** step 2 — anything asking one participant's
+  window about another participant's move, which is most of what the People panel is for.
+- **With persistent chat off the chat panel is a thread, not the room.** Case **52** step 2 is what
+  `ee/server/settings/video-conference.ts` promises and what the server does — `autoFollowCallThread` and
+  `maybeCreateDiscussion` both refuse unless persistent chat is on *and* the provider declares `persistentChat`.
+  `useConferenceEmbedded` checks neither: it reads `VideoConf_Persistent_Chat_Mode` alone, whose stored default
+  is `thread` (its `enableQuery` greys the admin field without changing the value), and passes
+  `tmid = messages.started` to the panel. The panel comes up headed `Thread in <room>`, on a thread the server
+  subscribed nobody to, against a provider reporting `capabilities.persistentChat: false` in the very response
+  the window read.
 
 ### Cases the code does not agree with
 
@@ -115,10 +139,19 @@ Found while automating, and worth reconciling in the CSV rather than in the test
   lands straight in the call. What does hold, and is what the automated case asserts, is that the window comes
   back on the same `/conference/<callId>` and that no second conference was created.
 - **A direct call's window is titled after everyone on it.** `useConferenceEmbedded`'s `currentName` joins the
-  names of `info.users`, and with the flag on the callee is a member from the moment the call is created
-  (`startDirect` → `addAbsentMember`). So the callee's join preflight reads *Join conference with user1, user2*,
-  not *Join conference with user1* as case **17** step 1 has it. The *list* row is a different name from a
-  different place — `conferenceNameFor` with the reader's own subscription — and there it really is `user1`.
+  names of `info.users`, and with the flag on and the ring left checked the callee is a member from the moment
+  the call is created (`startDirect` → `addAbsentMember`). So the callee's join preflight reads *Join conference
+  with user1, user2*, not *Join conference with user1* as case **17** step 1 has it. The *list* row is a
+  different name from a different place — `conferenceNameFor` with the reader's own subscription — and there it
+  really is `user1`.
+- **Unchecking *Ring people* does not make a quiet direct call — it makes a group one.** Both ringing types
+  registered in `ee/server/configuration/videoConference.ts` require `allowRinging`, so with the box unchecked
+  `videoConfTypes.getTypeForRoom` falls through to the default `{ type: 'videoconference' }` even in a two-person
+  DM. `startDirect` — the only thing that puts a callee on the roster before they answer — never runs, and
+  `canRing` (`info.type === 'direct'`) is false, so the caller cannot ring that person from inside the call
+  either. Case **13** step 4 used to expect the callee under *Not in the call* with a phone button; it has been
+  corrected to what the code does. Whether the *product* should behave this way is worth a decision: a caller who
+  chose not to ring loses the ring-back the members panel exists to offer.
 
 ## Keeping it current
 

@@ -153,6 +153,18 @@ export class ConferenceWindow {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
+	/**
+	 * The composer inside the chat panel, named after the room it posts to.
+	 *
+	 * Which room's chat the panel is showing, asked of the thing that would actually send a message there. The
+	 * panel's *title* is a separate claim, and one the code and the setting currently disagree about — see the
+	 * fixme'd case in `video-conference-call-window.spec.ts` — so anything that only needs "the chat for this
+	 * room took the slot" asks here instead.
+	 */
+	getChatComposer(room: string): Locator {
+		return this.page.getByRole('textbox', { name: `Message #${room}`, exact: true });
+	}
+
 	get btnAddPeople(): Locator {
 		return this.page.getByRole('button', { name: 'Add people', exact: true });
 	}
@@ -168,6 +180,15 @@ export class ConferenceWindow {
 	/** The members the People panel lists, as the list it is. */
 	get listMembers(): Locator {
 		return this.page.getByRole('list', { name: 'Members', exact: true });
+	}
+
+	/**
+	 * The member rows themselves, and only those: the `In call` / `Not in the call` dividers are plain boxes
+	 * inside the same list, so counting the list's children would count them too. Exists so a roster can be
+	 * asserted by what is on it rather than by what is missing from it.
+	 */
+	get memberRows(): Locator {
+		return this.listMembers.getByRole('listitem');
 	}
 
 	/**
