@@ -199,7 +199,6 @@
   "Accounts_Send_Email_When_Activating": "ផ្ញើអ៊ីមែលទៅអ្នកប្រើនៅពេលអ្នកប្រើត្រូវបានធ្វើឱ្យសកម្ម",
   "Accounts_Send_Email_When_Deactivating": "ផ្ញើអ៊ីមែលទៅអ្នកប្រើនៅពេលអ្នកប្រើត្រូវបានធ្វើឱ្យអសកម្ម",
   "Accounts_SetDefaultAvatar": "កំណត់រូបតំណាងលំនាំដើម",
-  "Accounts_SetDefaultAvatar_Description": "ព្យាយាមកំណត់រូបតំណាងលំនាំដើមដោយផ្អែកលើ OAuth Account ឬ Gravatar",
   "Accounts_ShowFormLogin": "ការចូលជាទម្រង់ដែលមានមូលដ្ឋានបង្ហាញ",
   "Accounts_TwoFactorAuthentication_Enabled": "បើកការផ្ទៀងផ្ទាត់ភាពត្រឹមត្រូវពីរ",
   "Accounts_TwoFactorAuthentication_MaxDelta": "ដែនដីសណ្តរអតិបរមា",

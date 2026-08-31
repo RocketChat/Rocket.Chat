@@ -221,7 +221,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "將外部帳號的電子郵件設定為已驗證",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "從外部服務（例如LDAP，OAuth等）建立的帳號將自動驗證其電子郵件",
   "Accounts_SetDefaultAvatar": "設定預設大頭貼",
-  "Accounts_SetDefaultAvatar_Description": "嘗試根據OAuth帳號或Gravatar確定預設大頭貼",
   "Accounts_ShowFormLogin": "顯示表單形式的登入畫面",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "透過電子郵件自動為新使用者選擇2步驟",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "預設情況下，新使用者將啟用透過電子郵件的2步驟驗證。他們將能夠在其個人資料頁面中將其停用。",
