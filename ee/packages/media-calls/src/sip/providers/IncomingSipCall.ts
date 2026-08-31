@@ -252,8 +252,8 @@ export class IncomingSipCall extends BaseSipCall {
 
 		logger.debug('IncomingSipCall.processNegotiations');
 		if (localNegotiation.isFirst) {
-			return this.createDialog(localNegotiation.answer.sdp).catch(() => {
-				logger.error('Failed to create incoming call dialog.');
+			return this.createDialog(localNegotiation.answer.sdp).catch((err) => {
+				logger.error({ msg: 'Failed to create incoming call dialog.', err });
 				this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
 			});
 		}
@@ -311,6 +311,13 @@ export class IncomingSipCall extends BaseSipCall {
 			}
 
 			try {
+				logger.debug({
+					msg: 'Sending error code to pending invite',
+					method: 'IncomingSipCall.cancelPendingInvites',
+					errorCode,
+					negotiationId: localNegotiation.id,
+					isFirst: localNegotiation.isFirst,
+				});
 				localNegotiation.res.send(errorCode);
 			} catch {
 				//
