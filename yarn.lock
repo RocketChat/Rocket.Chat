@@ -10259,7 +10259,6 @@ __metadata:
     ajv-formats: "npm:~3.0.1"
     archiver: "npm:^7.0.1"
     asterisk-manager: "npm:^0.2.0"
-    atlassian-crowd-patched: "npm:^0.5.1"
     autoprefixer: "npm:^10.5.4"
     babel-loader: "npm:~10.0.0"
     babel-plugin-array-includes: "npm:^2.0.3"
@@ -17462,13 +17461,6 @@ __metadata:
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
   checksum: 10/3ce727cbc78f69d6a4722517a58ee926c8c21083633b1d3fdf66fd688f6c127a53a592141bd4866f9b63240a86e9d8e974b13919450bd17fa33c2d22c4558ad8
-  languageName: node
-  linkType: hard
-
-"atlassian-crowd-patched@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "atlassian-crowd-patched@npm:0.5.1"
-  checksum: 10/dd3a4ff94e9271cdb9d106dd79f5e9b7b1882cbc1394a116449e202693330c6045b5eaf25792008cae6b3f626523efb1e39f50d68e0c3405a339a2e28941d302
   languageName: node
   linkType: hard
 

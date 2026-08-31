@@ -25,7 +25,7 @@ const FETCH_URL = `${apiUrl}/__meteor__/dynamic-import/fetch`;
 
 const BODIES = [
 	'{"client":{"components":{"AppLayoutThemeWrapper.tsx":1}}}',
-	'{"client":{"meteor":{"login":{"index.ts":1,"cas.ts":1,"crowd.ts":1,"facebook.ts":1,"oauth.ts":1,"LoginCancelledError.ts":1,"google.ts":1,"ldap.ts":1,"meteorDeveloperAccount.ts":1,"password.ts":1,"saml.ts":1,"twitter.ts":1}},"lib":{"2fa":{"overrideLoginMethod.ts":1},"wrapRequestCredentialFn.ts":1,"loginServices.ts":1}},"node_modules":{"@rocket.chat":{"string-helpers":{"package.json":1,"dist":{"esm":{"index.js":1}}}}}}',
+	'{"client":{"meteor":{"login":{"index.ts":1,"cas.ts":1,"facebook.ts":1,"oauth.ts":1,"LoginCancelledError.ts":1,"google.ts":1,"ldap.ts":1,"meteorDeveloperAccount.ts":1,"password.ts":1,"saml.ts":1,"twitter.ts":1}},"lib":{"2fa":{"overrideLoginMethod.ts":1},"wrapRequestCredentialFn.ts":1,"loginServices.ts":1}},"node_modules":{"@rocket.chat":{"string-helpers":{"package.json":1,"dist":{"esm":{"index.js":1}}}}}}',
 ];
 
 const TOTAL_REQUESTS = 30000;

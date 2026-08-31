@@ -2601,14 +2601,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query);
 	}
 
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		options?: O,
-	): FindCursor<DocumentWithProjection<T, O>> {
-		const query = { crowd: true };
-
-		return this.find<T, O>(query, options);
-	}
-
 	async getLastLogin(options: FindOptions<IUser> = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		const user = await this.findOne({}, options);
