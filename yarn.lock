@@ -10198,7 +10198,6 @@ __metadata:
     "@types/express-session": "npm:^1.19.0"
     "@types/fast-redact": "npm:^3.0.4"
     "@types/google-libphonenumber": "npm:^7.4.31"
-    "@types/gravatar": "npm:^1.8.6"
     "@types/he": "npm:^1.2.3"
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
     "@types/imap": "npm:^0.8.43"
@@ -10316,7 +10315,6 @@ __metadata:
     filesize: "npm:9.0.11"
     generate-password: "npm:^1.7.1"
     google-libphonenumber: "npm:^3.2.46"
-    gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
     hono: "npm:4.12.34"
@@ -14611,13 +14609,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/gravatar@npm:^1.8.6":
-  version: 1.8.6
-  resolution: "@types/gravatar@npm:1.8.6"
-  checksum: 10/b690f2816321358e8528fe0b731e5c50905ed2c4859327156a87b717a59b45363a2f2c1398c3a9015fa45b17d71d86b1e828fd3df542d13ba946745d9a26094e
-  languageName: node
-  linkType: hard
-
 "@types/hast@npm:^3.0.4":
   version: 3.0.4
   resolution: "@types/hast@npm:3.0.4"
@@ -18139,13 +18130,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"blueimp-md5@npm:^2.16.0":
-  version: 2.19.0
-  resolution: "blueimp-md5@npm:2.19.0"
-  checksum: 10/84dc5f86e0d890e50c067a52b85654ec02e56d019c6af88f5a2810b1353adfd37b09ae34f540ef5cd1f19fe0023cb69d0dd68877123044cc49fbf6e7ff4c9a18
-  languageName: node
-  linkType: hard
-
 "bn.js@npm:>=5":
   version: 5.2.3
   resolution: "bn.js@npm:5.2.3"
@@ -21409,13 +21393,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"email-validator@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "email-validator@npm:2.0.4"
-  checksum: 10/8444077b052686ca272e42f43aeea7cb2935147890f3ed48869f6029d21f6914500bee23b2346348ed88659119ebad223c11c998843b30a3bcec2fa0abaffda3
-  languageName: node
-  linkType: hard
-
 "emailreplyparser@npm:^0.0.5":
   version: 0.0.5
   resolution: "emailreplyparser@npm:0.0.5"
@@ -24308,20 +24285,6 @@ __metadata:
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: 10/bf152d0ed1dc159239db1ba1f74fdbc40cb02f626770dcd5815c427ce0688c2635a06ed69af364396da4636d0408fcf7d4afdf7881724c3307e46aff30ca49e2
-  languageName: node
-  linkType: hard
-
-"gravatar@npm:^1.8.2":
-  version: 1.8.2
-  resolution: "gravatar@npm:1.8.2"
-  dependencies:
-    blueimp-md5: "npm:^2.16.0"
-    email-validator: "npm:^2.0.4"
-    querystring: "npm:0.2.0"
-    yargs: "npm:^15.4.1"
-  bin:
-    gravatar: cli.js
-  checksum: 10/24dbbec0eaaca2040072497a080a22ab4c3bc472ed1a01718b18f20471f0fabfd5582aa834354369bc8b6eabc9bf69dbf12f616664a5ee52bf27b736dac2498e
   languageName: node
   linkType: hard
 
@@ -32577,13 +32540,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"querystring@npm:0.2.0":
-  version: 0.2.0
-  resolution: "querystring@npm:0.2.0"
-  checksum: 10/37b91720be8c8de87b49d1a68f0ceafbbeda6efe6334ce7aad080b0b4111f933a40650b8a6669c1bc629cd8bb37c67cb7b5a42ec0758662efbce44b8faa1766d
-  languageName: node
-  linkType: hard
-
 "querystring@npm:^0.2.0":
   version: 0.2.1
   resolution: "querystring@npm:0.2.1"
@@ -38955,7 +38911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^15.0.2, yargs@npm:^15.4.1":
+"yargs@npm:^15.0.2":
   version: 15.4.1
   resolution: "yargs@npm:15.4.1"
   dependencies:
