@@ -1,6 +1,7 @@
 export * from './home-content';
 export * from './home-omnichannel-content';
 export * from './navbar';
+export * from './ongoing-calls';
 export * from './sidebar';
 export * from './sidepanel';
 export * from './modals';
