@@ -1,0 +1,877 @@
+id,title,description,preconditions,postconditions,tags,priority,severity,type,behavior,automation,status,is_flaky,layer,steps_type,steps_actions,steps_result,steps_data,milestone_id,milestone,suite_id,suite_parent_id,suite,suite_without_cases,parameters,is_muted
+,,,,,,,,,,,,,,,,,,,,1,,VideoConf Call Window and Persistent Chat,1,,
+,,,,,,,,,,,,,,,,,,,,2,1,Flag OFF - pre-existing behaviour,1,,
+,,,,,,,,,,,,,,,,,,,,3,1,Flag ON - placing a call,1,,
+,,,,,,,,,,,,,,,,,,,,4,1,Flag ON - being called,1,,
+,,,,,,,,,,,,,,,,,,,,5,1,Flag ON - the preflight,1,,
+,,,,,,,,,,,,,,,,,,,,6,1,Flag ON - the call window,1,,
+,,,,,,,,,,,,,,,,,,,,7,1,Flag ON - participants and chat access,1,,
+,,,,,,,,,,,,,,,,,,,,8,1,Flag ON - the ongoing-calls list,1,,
+,,,,,,,,,,,,,,,,,,,,9,1,Flag ON - leaving and ending a call,1,,
+,,,,,,,,,,,,,,,,,,,,10,1,Persistent chat modes,1,,
+,,,,,,,,,,,,,,,,,,,,11,1,Provider matrix,1,,
+,,,,,,,,,,,,,,,,,,,,12,1,Permissions and access,1,,
+,,,,,,,,,,,,,,,,,,,,13,1,Security,1,,
+,,,,,,,,,,,,,,,,,,,,14,1,Edge cases (human pass),1,,
+1,Room call button opens the start-call popup with the device controls,"With the call window off the room popup is still the only place mic and camera are chosen, so it must keep both controls and must not open any window on the click.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists and both have it open.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,popups,automation-candidate",high,major,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the direct message with user2 and click the camera (Video call) button in the room header.
+2. Toggle the camera control on and the microphone control off.
+3. Press Escape.
+","1. A ""Start a call"" popup opens over the room, naming user2. It carries a camera toggle and a microphone toggle in its header and a ""Start call"" button. No new browser window or tab has opened.
+2. Both controls change state in place; the popup stays open and nothing is sent yet.
+3. The popup closes. No conference message was posted in the room and no call appears in the room's call history (kebab > Video conferences).
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+2,"A direct call rings from the room: caller waits, callee is popped","The pre-existing 1:1 handshake, driven entirely by the caller's own client. This is the flow the setting must leave untouched.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists and both have it open.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,ringing,automation-candidate",high,critical,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click the room header camera button and confirm with ""Start call"".
+2. Look at user2's browser.
+3. As user2, click Accept.
+4. Look at the direct message in either browser.
+","1. The popup is replaced by a ""Calling user2"" popup in user1's room, with a Cancel action. A dial tone plays. No window opens for user1.
+2. An ""Incoming call from"" popup covers user2's screen naming user1, with Accept, Decline and a ""Mute and dismiss"" cross. A ring tone plays.
+3. Both popups close. A new browser tab opens for user1 and for user2 at the provider's own page (a jitsi URL, not a /conference/ URL on the workspace).
+4. A video-conference message block is present, naming the call and offering ""Join call"".
+","1. 
+2. 
+3. 
+4. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+3,Declining a direct call turns it down and offers to call again,"Mirrors tests/e2e/video-conference-ring.spec.ts, which is unchanged from develop on this branch.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists and both have it open.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,ringing,automation-candidate",high,major,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, start a direct call to user2 and wait for both popups.
+2. As user2, click Decline.
+3. As user1, click ""Call again"" on that message block.
+","1. user1 sees ""Calling user2""; user2 sees ""Incoming call from user1"".
+2. user2's popup closes and the ring stops. user1's ""Calling user2"" popup closes too, and the room's conference message block now offers ""Call again"".
+3. The ""Start a call with user2"" popup opens again, exactly as the header button opens it.
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+4,The sidebar lists the ringing room under Incoming Calls with accept and reject actions,The Incoming Calls sidebar group and its two row actions are pre-existing behaviour that the flag must not remove while it is off.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists and both have it open.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,sidebar,automation-candidate",high,major,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, make sure the sidebar is expanded, then have user1 place a direct call to user2.
+2. Hover the row and click the green phone action.
+3. Close that tab, then have user1 place a second direct call and click the red phone-off action on the sidebar row instead.
+","1. An ""Incoming Calls"" group appears at the top of user2's sidebar containing the row for the direct message with user1. The row shows a green phone action and a red phone-off action.
+2. The call is accepted: the ring stops, the incoming popup closes, and the provider's page opens in a new tab for user2.
+3. The ring stops for user2, user1's ""Calling user2"" popup closes, and the ""Incoming Calls"" group disappears from user2's sidebar.
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+5,Mute and dismiss silences an incoming call without answering it,The dismiss cross on the incoming popup is the only way to quieten a ring with the flag off.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists and both have it open.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,popups,automation-candidate",medium,normal,regression,positive,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2.
+2. As user2, click the cross (""Mute and dismiss"") in the popup footer.
+3. Wait for the caller side to give up (about 40 seconds from the start of the call).
+","1. user2 sees the incoming popup and hears the ring tone.
+2. The popup closes and the ring tone stops for user2. user1 still sees ""Calling user2"" and still hears the dial tone - the call was not declined.
+3. user1's ""Calling user2"" popup closes on its own and the room's conference message block offers ""Call again"".
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+6,A call in a channel posts a joinable message and rings nobody,"Group conferences are announced by a message, not by a ring, with the flag off - the server has always broadcast a ring event for them and no client acted on it.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3 as members; all three are looking at the app.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,ringing,automation-candidate",high,major,regression,negative,to-be-automated,actual,no,e2e,classic,"1. As user1, open #qa-calls and click the room header camera button, then confirm with ""Start call"".
+2. Look at user2 and user3.
+3. As user2, click ""Join call"" on the message block.
+","1. A new tab opens for user1 at the provider's page. A video-conference message block is posted in #qa-calls offering ""Join call"".
+2. Neither hears a ring tone, neither gets an incoming-call popup, and neither sidebar grows an ""Incoming Calls"" group. The channel row shows the new message as usual.
+3. The provider's page opens in a new tab for user2 and the block's participant count grows.
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+7,No ongoing-calls navbar button and no joinable polling,"The ongoing-calls list is the flag's own surface. With the flag off it must not exist, and in particular the client must not poll GET /v1/video-conference.joinable, which a workspace with the flag off has no way to act on.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2. Browser devtools available.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,negative,automation-candidate",high,major,regression,negative,to-be-automated,actual,no,e2e,classic,"1. As user1, look at the top navigation bar with no call running.
+2. Open devtools > Network, filter on ""joinable"", and leave the app idle for 60 seconds.
+3. Have user2 start a direct call to user1 and let it ring, then check the navbar and the network filter again.
+","1. There is no video/camera icon button in the navbar controls section (only the omnichannel, admin and user-menu entries the workspace normally shows).
+2. No request to /api/v1/video-conference.joinable is made at all.
+3. Still no navbar video button and still no request to video-conference.joinable. The ring is announced by the incoming popup and the sidebar group only.
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+8,The user-card video call action needs an existing room,"With the flag off, calling from a user card means calling in a room, because the popup it opens has to name one. So the action is offered only where a room already exists.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user3 as members. user1 has NO direct message with user3.",Nothing to restore: the settings are at their defaults. Close any call window still open.,"videoconf,conference-window,flag-off,user-card,automation-candidate",low,minor,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open #qa-calls, click user3's avatar in a message to open their user card, and open its kebab menu.
+2. Click ""Video call"".
+3. Press Escape and check the sidebar.
+","1. A ""Video call"" entry is listed (a direct message with user3 does not exist yet, but the channel is the room the call would be placed in).
+2. The ""Start a call"" popup opens naming the room the call is placed in, with the mic and camera controls. No window opens and no direct message is created.
+3. No new direct message with user3 appears - nothing was created.
+","1. 
+2. 
+3. 
+",,,2,1,Flag OFF - pre-existing behaviour,,,no
+9,The room call button opens the call window and the room asks nothing,"The window has to open on the click that asked for it, inside the browser's user-activation window, and the preflight inside it replaces both room popups. Covered by tests/e2e/video-conference-call-window.spec.ts.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,automation-candidate",high,critical,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the direct message with user2 and click the room header camera button.
+2. Look at the room in the main window.
+3. Look at the call window.
+4. Look at the direct message in the main window.
+","1. A separate browser window opens, roughly 1280x800 and centred, at a URL of the form /conference/new?rid=<the dm id>.
+2. No ""Start a call with user2"" popup and no ""Calling user2"" popup appear - the room asks nothing.
+3. It shows the preflight: no navbar and no sidebar, a heading ""Start conference with user2"", a camera tile, device toggles, a ""Call user2"" button and a Cancel button.
+4. No conference message has been posted and the room's call history is unchanged - nothing exists yet.
+","1. 
+2. 
+3. 
+4. 
+",,,3,1,Flag ON - placing a call,,,no
+10,Cancelling the start preflight leaves no trace,"Clicking call used to create the conference - a message, a ring and a row in everyone's history - for a call the user might still walk away from. Cancelling before confirming must create nothing.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click the room header camera button to open the call window on its preflight.
+2. Click Cancel in the call window.
+3. In the main window, inspect the direct message and its call history (kebab > Video conferences).
+","1. The call window shows ""Start conference with user2"".
+2. The call window closes and the main app is back in the foreground.
+3. No conference message was posted, no call is listed, and user2 was never rung.
+","1. 
+2. 
+3. 
+",,,3,1,Flag ON - placing a call,,,no
+11,Confirming the preflight creates the conference and settles the window on it,"Confirming posts start then join, hands the join result to the conference page and replaces the URL, so a reload lands on the call rather than starting a second one.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,automation-candidate",high,critical,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the call window from the direct message and click ""Call user2"".
+2. Look at the direct message in the main window.
+3. Reload the call window (F5).
+","1. The button shows a loading state, then the call window's URL changes to /conference/<callId> and the call itself is shown: a top bar with a timer and the provider's call filling the window.
+2. A video-conference message block has been posted, and the call appears in the room's call history.
+3. It comes back on the same /conference/<callId>, showing the call. A second conference was NOT created - the room still has exactly one conference message.
+","1. 
+2. 
+3. 
+",,,3,1,Flag ON - placing a call,,,no
+12,A group conference is named on the way in,"A group conference is named at the preflight; the field is prefilled with ""Meeting in <room>"" and the name is what the sidebar list and the provider are told to call it.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3 as members.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,naming,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open #qa-calls and click the room header camera button.
+2. Check the preflight for a ringing control.
+3. Replace the field contents with ""Sprint sync"" and click ""Start call"".
+4. As user2, open the navbar ongoing-calls (video) button.
+","1. The call window opens on the preflight with the heading ""Start a new conference"" and a text field above the camera tile prefilled with ""Meeting in qa-calls"".
+2. There is no ""Ring people"" checkbox: a channel announces a call rather than ringing it, so there is nothing for the switch to change.
+3. The call opens. The top bar of the call window shows the timer, a separator and ""Sprint sync"".
+4. The dropdown lists one row named ""Sprint sync"".
+","1. 
+2. 
+3. 
+4. 
+",,,3,1,Flag ON - placing a call,,,no
+13,The Ring people choice on a direct call is honoured,The ring is a request the caller makes at the preflight: with it unchecked the callee is registered as a member but never rung.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the call window from the direct message with user2.
+2. Uncheck ""Ring people"".
+3. Click ""Call user2"".
+4. As user1, open the People panel in the call window (the members button in the top bar).
+5. As user2, open the navbar video button.
+","1. The preflight shows a ""Ring people"" checkbox, checked, and the line ""user2 will be notified when you start the call"".
+2. The ""user2 will be notified when you start the call"" line disappears.
+3. user1 lands in the call. user2 hears no ring tone and gets no desktop notification, and user2's navbar video button does not turn red.
+4. user2 is listed under ""Not in the call"" with the status ""Waiting for answer"" and a phone button to ring them.
+5. The dropdown lists the call as an ordinary running call, joinable by clicking the row.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,3,1,Flag ON - placing a call,,,no
+14,Calling from a user card creates the direct message it needs,"With the call window a call placed from a card is about the person, not the room, so a direct room is created for one that does not exist yet rather than hiding the entry.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user3 as members. user1 has NO direct message with user3.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,user-card,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open #qa-calls, open user3's user card and choose ""Video call"" from its menu.
+2. Look at the main window's sidebar.
+3. Click Cancel in the call window.
+","1. The user card closes and a call window opens at /conference/new?rid=<a new direct room id>, showing ""Start conference with user3"".
+2. A direct message with user3 now exists, with no messages in it.
+3. The window closes. The direct message stays (it was created on the way to the call) but it holds no conference message.
+","1. 
+2. 
+3. 
+",,,3,1,Flag ON - placing a call,,,no
+15,"The callee is rung when the caller arrives, not when they click",Being rung into a call whose caller is still choosing a camera means answering to an empty room. The ring waits for the caller to actually enter the call.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,automation-candidate",high,critical,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click the room header camera button in the direct message with user2 and stop at the preflight without confirming. Watch user2 for 15 seconds.
+2. As user1, click ""Call user2"".
+3. As user1, open the People panel in the call window.
+","1. user2 hears nothing, sees no navbar video button appear and gets no notification.
+2. Within a second or two user2 hears the ring tone and a red video button appears in user2's navbar with its dropdown already open, listing the call with ""Ringing..."" in the timestamp corner.
+3. user2 is listed under ""Not in the call"" with the status ""Ringing"" and no phone button (there is nothing more to ask of a phone already ringing).
+","1. 
+2. 
+3. 
+",,,4,1,Flag ON - being called,,,no
+16,"A ringing call is listed, not popped",An incoming call must no longer take over the callee's screen: it is a row in the ongoing-calls list and the rest of the app stays usable.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,sidebar,automation-candidate",high,major,functional,negative,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2 and enter it, so user2 is ringing.
+2. Look at user2's screen.
+3. Check user2's sidebar.
+","1. user2 hears the ring tone.
+2. There is no incoming-call popup and no backdrop over the app: user2 can still click around the sidebar and type in a room. The only announcement is the red navbar video button and its dropdown.
+3. There is no ""Incoming Calls"" group - the ringing room sits in whichever group it normally belongs to (Direct Messages / Conversations), with no accept or reject actions on its row.
+","1. 
+2. 
+3. 
+",,,4,1,Flag ON - being called,,,no
+17,Clicking a ringing row answers it through the join preflight,"The row click is deliberately not a bare join: the preflight describes the call and chooses the devices, so a mis-click costs a window rather than putting someone into a call with their camera on.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,automation-candidate",high,critical,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2 and enter it. As user2, open the navbar video dropdown and click the body of the ringing row (not one of its buttons).
+2. Click ""Join call"".
+3. As user1, look at the People panel.
+4. As user2, open the navbar video dropdown again.
+","1. A call window opens for user2 at /conference/<callId> showing the preflight, headed ""Join conference with user1"", with a ""Join call"" button. The ring tone stops.
+2. user2 lands in the call - top bar with timer, the provider's call in the window.
+3. user2 has moved to the ""In call"" section with no status line, and the members badge on the top bar reads 2.
+4. The call is still listed, as an ordinary running call, and the row offers no decline action.
+","1. 
+2. 
+3. 
+4. 
+",,,4,1,Flag ON - being called,,,no
+18,Declining from the row records the decline without ending the call,"A decline is recorded against the decliner's own membership only. It must never end the call for anyone else, and the row keeps its place as the way back in.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,decline,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2 and enter it. As user2, click the cross (Decline) on the ringing row.
+2. As user1, look at the People panel in the call window.
+3. As user2, click the body of the declined row.
+4. Click ""Join call"".
+","1. The ring stops. The row stays in the list, no longer presented as ringing, with ""(Declined)"" where its actions were.
+2. user2 is listed under ""Not in the call"" with the status ""Declined"" and a phone button to call them back. The call itself is still running and user1 is still in it.
+3. The call window opens on the join preflight - declining does not bar joining afterwards.
+4. user2 joins the call. user1's People panel moves user2 to ""In call"".
+","1. 
+2. 
+3. 
+4. 
+",,,4,1,Flag ON - being called,,,no
+19,Silencing a ring stops the sound and leaves the call alone,"Silencing is not answering: it stops this client making noise and leaves the call exactly where it is, so the user can decide in their own time.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,silence,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2 and enter it. As user2, open the navbar video dropdown.
+2. Click the bell-off (Silence) button.
+3. As user1, look at the People panel.
+4. As user2, click the row body and confirm with ""Join call"".
+","1. The ringing row carries three controls: a bell-off (Silence) button, a cross (Decline) button, and the row itself.
+2. The ring tone stops immediately. The row is still presented as ringing (""Ringing..."" in the timestamp corner) and the Silence button is replaced by a static bell-off icon titled ""Incoming call silenced"".
+3. user2 still reads ""Ringing"" - nothing was reported to the caller.
+4. user2 joins the call normally.
+","1. 
+2. 
+3. 
+4. 
+",,,4,1,Flag ON - being called,,,no
+20,A ring left unanswered lapses after 15 seconds,"Nothing announces that a ring ended, so both the list and the members panel have to wake themselves when the 15-second window is up.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,timing,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Have user1 place a direct call to user2 and enter it. As user2, open the navbar video dropdown and do nothing.
+2. Wait about 15 seconds without touching anything.
+3. As user1, look at the People panel.
+4. As user1, click that phone button.
+","1. The row reads ""Ringing..."" and the navbar button is red.
+2. Without any interaction the row stops reading ""Ringing..."", its Silence button disappears and the navbar button stops being red - the call is still listed, it just is not asking any more.
+3. user2's status has changed from ""Ringing"" to ""Waiting for answer"", and a phone button has appeared on their row.
+4. user2 rings again: the tone plays, the navbar button turns red and the row reads ""Ringing..."" once more.
+","1. 
+2. 
+3. 
+4. 
+",,,4,1,Flag ON - being called,,,no
+21,"A group conference now rings the room, up to ten people","The server had long broadcast a ring for group conferences that no client handled. With the call window on the client acts on it, so group conferences that had silently not rung will ring - intended, but a visible change beyond ring-on-add.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with exactly three members: user1, user2, user3. All three are looking at the app.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,group,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, start a conference in #qa-calls from the header camera button and confirm the preflight.
+2. Look at user2 and user3.
+3. Wait 15 seconds without answering on either side.
+4. As user2, click the row and confirm ""Join call"".
+","1. user1 lands in the call.
+2. Both hear a ring tone and both get a red navbar video button whose dropdown opens itself, listing the conference as ringing.
+3. Both rows stop reading ""Ringing..."" and stay listed as an ordinary running call. Nothing rings again - a server ring is one-shot.
+4. user2 joins the conference; user1's members badge grows to 2.
+","1. 
+2. 
+3. 
+4. 
+",,,4,1,Flag ON - being called,,,no
+22,A conference in a room with more than ten other members rings nobody,"Ringing is capped at RING_RECIPIENTS_LIMIT (10) recipients per action, so a conference started in a busy room rings nobody at all - which is exactly why the ongoing-calls list exists.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-big whose membership is user1 plus at least 11 other users, one of which is user2 and is looking at the app.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ringing,limits,automation-candidate",medium,normal,functional,negative,to-be-automated,actual,no,e2e,classic,"1. As user1, start a conference in #qa-big and confirm the preflight.
+2. Look at user2.
+3. As user2, open the navbar video dropdown.
+","1. user1 lands in the call and the conference message is posted in #qa-big.
+2. No ring tone, no desktop notification, and no red navbar button.
+3. The conference is listed as a running call and can be joined from the row - the list is the route in when the ring never happened.
+","1. 
+2. 
+3. 
+",,,4,1,Flag ON - being called,,,no
+23,"Devices are chosen only at the preflight, and remembered","The room popups used to ask about mic and camera seconds before a window opened and the conference then joined with hardcoded values. The preflight is now the only place they are set, and the answer is a habit rather than a per-call decision.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2. user1's browser has no videoconf-call-preferences entry in localStorage (clear it first).",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,devices,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the call window from the direct message with user2.
+2. Click the camera toggle.
+3. Click Cancel, then click the room header camera button again.
+4. Confirm the call, then close the call window and inspect localStorage for the key videoconf-call-preferences.
+","1. The camera tile shows a crossed-out camera icon and the words ""Your camera is turned off"". Below it a microphone toggle reads ""Mic on"" and a camera toggle reads ""Cam off"" - joining muted and unseen is the default.
+2. The tile switches to a camera icon and ""Your camera will be on"", plus the line ""Which devices are used is chosen in the call"". No browser camera permission prompt appears and no self-view is shown.
+3. The new preflight opens with the camera already on - the choice was remembered.
+4. It holds an object with mic, cam and ring flags matching the choices just made.
+","1. 
+2. 
+3. 
+4. 
+",,,5,1,Flag ON - the preflight,,,no
+24,Joining an existing call shows who is already in it,"The join preflight is a different screen from the start preflight: it says ""Join"", not ""Start"", and it shows the faces of the people already there.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it named ""Sprint sync"" and is in the call; user3 has joined it too.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, open the navbar video dropdown and click the ""Sprint sync"" row.
+2. Look under the heading.
+3. Check for a name field.
+4. Click ""Join call"".
+","1. The call window opens headed ""Join the conference"", with a ""Join call"" confirm button and a Cancel button.
+2. A ""People in the call"" label with the avatars of user1 and user3 beneath it.
+3. There is none: user2 did not create this conference, so it is not theirs to name.
+4. user2 lands in the call; the members badge in the top bar reads 3.
+","1. 
+2. 
+3. 
+4. 
+",,,5,1,Flag ON - the preflight,,,no
+25,The creator can rename a running group conference from the preflight,"The same field goes to POST /v1/video-conference.rename for a conference that already exists, and only the creator gets it. Renaming is never worth failing a join over.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. user1 has started a conference in it named ""Meeting in qa-calls"" and then closed the call window (so the call is still running because user2 is in it).",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,naming,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the navbar video dropdown and click the conference row.
+2. Replace the name with ""Renamed by owner"" and click ""Join call"".
+3. As user2 (already in the call), look at the top bar.
+4. As user2, leave and reopen the join preflight for the same conference.
+","1. The call window opens on the join preflight with a name field prefilled with the call's current name.
+2. user1 joins the call and its top bar reads ""Renamed by owner"".
+3. It also reads ""Renamed by owner"" - the change reached everyone.
+4. user2 gets no name field: only the creator may name the call.
+","1. 
+2. 
+3. 
+4. 
+",,,5,1,Flag ON - the preflight,,,no
+26,The preflight for a call that has already ended says so,"A call reached from a stale list row, or one that ends while the user is still deciding, must land on a ""Call ended"" state rather than an empty call.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. A conference has been started in it and then ended (everyone left and the 10-second grace period elapsed). user1 knows its callId.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,preflight,lifecycle,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, open /conference/<callId> for the ended conference in a new window.
+2. Click Close.
+3. Repeat with user2 sitting on the join preflight of a live conference, and have the last participant leave so the call ends.
+","1. The window shows a state page with a phone-off icon, the title ""Call ended"" and a single Close button - not a preflight and not an error page.
+2. The window closes (or, where the browser refuses to close it, lands on /home).
+3. The preflight is replaced by the ""Call ended"" state page without a reload, driven by the real-time conference update.
+","1. 
+2. 
+3. 
+",,,5,1,Flag ON - the preflight,,,no
+27,"The call window is standalone, with the provider framed and a bar of our own","The conference renders without the app's navigation chrome, and the bar carrying the call's name and our own controls sits above both the call and its panels.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,automation-candidate",high,major,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. Look at the call window.
+2. Look at the top bar from the inline start.
+3. Look at the top bar's inline end.
+4. Hover the middle of the call area for a few seconds.
+","1. No navbar, no sidebar and no global banner: the window is a top bar plus the call filling the rest. The provider's page is rendered inside the window (an iframe), not in a tab of its own.
+2. A running timer counting up from the moment the conference was created, then a faint separator, then the call's name.
+3. Exactly two controls: a members (people) button and a chat (balloon) button.
+4. No tooltip floats over the call - the frame is named with aria-label rather than title precisely so this does not happen.
+","1. 
+2. 
+3. 
+4. 
+",,,6,1,Flag ON - the call window,,,no
+28,The members badge counts who is in the call and the panel splits them in two,"The members count is who is here now, and the panel answers two different questions with two sections.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,members,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, look at the members button in the top bar.
+2. Add user3 to the conference from the People panel (Add people), leaving Ring people checked, and have user3 ignore the ring.
+3. Open the People panel.
+4. Have user3 join the call.
+","1. It carries a neutral (not red) badge reading 1.
+2. The badge still reads 1: user3 is a member but is not in the call.
+3. It shows an ""In call"" section containing user1, and a ""Not in the call"" section containing user3 with a status line under their name. A section nobody is in is not rendered at all.
+4. user3 moves into ""In call"", their status line disappears, and the badge reads 2.
+","1. 
+2. 
+3. 
+4. 
+",,,6,1,Flag ON - the call window,,,no
+29,The chat badge shows what is unread while the panel is closed,"Knowing what is unread is the page's business, since the badge exists exactly when the panel is not mounted. It uses the sidebar's own unread rules, so a mention reads as urgent in both places.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,chat,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, make sure no panel is open in the call window. Have user2 post two ordinary messages in #qa-calls.
+2. Have user2 post a message mentioning @user1.
+3. Click the chat button to open the chat panel.
+4. Close the panel and have user2 post again.
+","1. A badge appears on the chat button reading 2.
+2. The badge changes to the mention (urgent/danger) variant.
+3. The panel opens showing #qa-calls, the messages are marked read, and the badge disappears from the button.
+4. The badge comes back with the new count.
+","1. 
+2. 
+3. 
+4. 
+",,,6,1,Flag ON - the call window,,,no
+30,Only one side panel is open at a time,"Two side panels beside a call would leave the call a sliver, so the two share one slot.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Open the People panel from the top bar.
+2. Click the chat button.
+3. Click the chat button again.
+4. Close the panel using the cross in its own header instead.
+","1. The panel slides in from the inline end; the call area narrows and the top bar stays full width and does not move.
+2. The People panel is replaced by the chat panel in the same slot - they are never both open.
+3. The chat panel closes and the call area takes the width back.
+4. The panel closes the same way; the cross sits at the far inline end of the panel header.
+","1. 
+2. 
+3. 
+4. 
+",,,6,1,Flag ON - the call window,,,no
+31,Member statuses and the ring-back button follow what happened last,"A membership entry accumulates, so the label is the last thing that happened: in the call beats everything, left beats an earlier decline, and ringing is offered only when there is something to ask.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference and is in it.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,members,ringing,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. From the People panel, add user2 and user3 with Ring people checked. Immediately open the panel.
+2. Wait 15 seconds without either of them answering.
+3. Have user2 decline from their ongoing-calls row.
+4. Have user3 join the call and then close their call window.
+5. Click the phone button on user3's row.
+","1. Both are under ""Not in the call"" reading ""Ringing"", and neither row has a phone button.
+2. Both rows change to ""Waiting for answer"" and each grows a phone button.
+3. user2's row reads ""Declined"" and keeps its phone button - calling them back is exactly this case.
+4. user3's row moves to ""Not in the call"" reading ""Left"", with a phone button. It does not read ""Declined"" or ""Waiting for answer"".
+5. user3 hears a ring tone and their row changes to ""Ringing"" with the phone button gone.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,6,1,Flag ON - the call window,,,no
+32,The call window stays on the conference whatever the chat links to,"The chat panel is a full room UI, so a link, mention or room reference would navigate the window away and tear down the call. Everything that would leave opens in a new tab instead.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2, and a second channel #qa-other that user1 is a member of. user1 has started a conference in #qa-calls and is in it. A message in #qa-calls contains a link to https://rocket.chat, a #qa-other channel reference and an @user2 mention.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,navigation,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Open the chat panel in the call window and click the https://rocket.chat link.
+2. Click the #qa-other channel reference.
+3. Click the @user2 mention.
+4. Ctrl/Cmd-click the https://rocket.chat link.
+","1. A new browser tab opens at rocket.chat. The call window is still on /conference/<callId> and the call is still running.
+2. A new tab opens at the workspace showing #qa-other. The call window is untouched.
+3. A new tab opens at the direct message with user2. The call window is untouched.
+4. The modified click behaves as the browser normally would (background tab); the call window is still on the conference.
+","1. 
+2. 
+3. 
+4. 
+",,,6,1,Flag ON - the call window,,,no
+33,Joining another call from inside a call is disabled,"Joining another conference from inside a conference would replace the call the user is in, so the message block's own actions are disabled on the conference route.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. There is an older, ended conference message in #qa-calls as well as the one for the running call. user1 has started a conference and is in it.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,automation-candidate",medium,normal,functional,negative,to-be-automated,actual,no,e2e,classic,"1. Open the chat panel in the call window and scroll to the running call's own conference message block.
+2. Scroll to the older, ended conference message block.
+3. Open #qa-calls in the main app window instead.
+","1. Its ""Join call"" button is disabled and cannot be clicked.
+2. Its ""Call again"" button is disabled too.
+3. The same message blocks there have their buttons enabled - the guard is scoped to the conference route.
+","1. 
+2. 
+3. 
+",,,6,1,Flag ON - the call window,,,no
+34,"One call window, reused rather than stacked","In-product conferences share a named window, so repeated joins reuse it: the same conference is focused without reloading, a different one navigates it. The opener link is deliberately kept for a same-origin conference - it is what lets the main app report the leave if the call window disappears before it can.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls and a second channel #qa-other, both with user1 and user2. user2 has a conference running in each, and user1 is in neither. Devtools available in the call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,call-window,window-reuse,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the navbar video dropdown and click the #qa-calls conference row, then confirm ""Join call"".
+2. In the call window's console, evaluate window.name and window.opener === null.
+3. In the main window, open the navbar dropdown and click the same #qa-calls row again.
+4. Now click the #qa-other conference row and confirm the ""Leave ... to join this call"" prompt.
+5. Count the browser windows.
+","1. One call window opens and user1 is in the #qa-calls call. Note its size and position, and move it to a corner of the screen.
+2. window.name is ""rocketchat-conference"" and window.opener === null is false - a same-origin conference shares one named window and keeps its opener link.
+3. The existing call window is brought to the front. It is NOT reloaded (the timer keeps running and the provider call does not reconnect) and it is NOT resized or recentred.
+4. The same window is navigated to the #qa-other conference. No second call window is opened.
+5. Exactly two: the main app and one call window.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,6,1,Flag ON - the call window,,,no
+35,Adding participants offers everyone who is not already in the room,"Adding someone to a conference makes them a member of the conference and puts them in no room, so everyone outside the room is offerable - which is the point.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 and user2 as its only members. user3 is not a member. user1 has started a conference in qa-private and is in the call.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,participants,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Open the People panel and click ""Add people"".
+2. Type ""user2"" in the picker.
+3. Type ""user3"" in the picker.
+4. Click Add.
+","1. An ""Add people"" modal opens with a user picker, a ""Ring people"" checkbox (checked) and an Add button that is disabled while nothing is selected.
+2. user2 is NOT offered as an option - they are already in the room and could already join.
+3. user3 is offered, and selecting them enables the Add button.
+4. A success toast ""Users added"" appears, the modal closes, and user3 appears in the People panel under ""Not in the call"" reading ""Ringing"".
+","1. 
+2. 
+3. 
+4. 
+",,,7,1,Flag ON - participants and chat access,,,no
+36,"An add always rings, unless the adder says not to","Adding is capped at ten per action - the same number the server rings by - which is what guarantees an add rings, and the ring is a request the adder makes.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 only. user2 and user3 are not members and are both looking at the app. user1 has started a conference in qa-private and is in the call.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,participants,ringing,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Add user2 from the People panel with ""Ring people"" checked.
+2. Click the desktop notification.
+3. Add user3 with ""Ring people"" unchecked.
+4. Select user2 again in the Add people modal and click Add.
+","1. user2 hears a ring tone, gets a red navbar video button whose dropdown opens itself, and also gets a desktop notification about the call. The notification names the call but not the room.
+2. The browser focuses the app window (where the ring is). It does not try to navigate to the room behind the call, which user2 cannot open.
+3. user3 hears nothing, gets no notification and gets no red navbar button - but the conference is listed in their navbar video dropdown as a running call.
+4. An informational toast reads ""Selected users are already in the call"" - nothing was re-rung and user2's existing membership was not overwritten.
+","1. 
+2. 
+3. 
+4. 
+",,,7,1,Flag ON - participants and chat access,,,no
+37,Adding someone changes no room,Membership authorises joining the call and nothing else: the conference's rooms are untouched and no discussion is created.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 only; user3 is not a member. user1 has started a conference in qa-private and is in the call.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,participants,membership,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Add user3 to the conference from the People panel.
+2. As user1, open qa-private in the main app and check its members list (kebab > Members).
+3. Check user3's own sidebar.
+4. As user3, join the call from the navbar video dropdown.
+","1. A success toast appears and user3 becomes a member of the conference.
+2. user3 is not a member of the room.
+3. No new room, and no discussion, has appeared for them.
+4. user3 joins the call successfully - membership alone was enough.
+","1. 
+2. 
+3. 
+4. 
+",,,7,1,Flag ON - participants and chat access,,,no
+38,The chat-access notice appears once an outside member is actually in the call,"A banner about someone who has not turned up asks everyone else to fix a situation that has not happened, so the notice counts only members who have joined - and hides itself from the members it is about.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 and user2. user3 is not a member. user1 has started a conference in qa-private; user1 and user2 are both in the call.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,chat-access,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Add user3 to the conference and have them ignore the ring.
+2. Have user3 join the call.
+3. Look at user3's own call window.
+4. As user3, open the chat panel.
+5. As user1, dismiss the banner with its cross and open the chat panel.
+","1. No banner appears above the call for user1 or user2 - user3 is only invited so far.
+2. A banner appears above the call and above both panels for user1 and user2, reading that 1 participant cannot see the chat, with a Review button and a dismiss cross.
+3. user3 sees no banner: it offers to share the chat with them, so it is not theirs to act on.
+4. Instead of an error or a missing-page message, the panel shows a balloon-off state reading ""Chat not shared with you"" with an explanation.
+5. The banner is gone, and the chat panel header carries a red balloon-exclamation button whose tooltip says 1 participant cannot see the chat.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,7,1,Flag ON - participants and chat access,,,no
+39,"Add to room gives the outside members access, history and all","The invite remedy exposes the room's whole history, so it is offered as a choice with its consequence spelled out and it leads only where the history is already open.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2 and some earlier message history. user3 is not a member. user1 has started a conference in #qa-calls, is in the call, and has added user3, who has joined.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,chat-access,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click Review on the chat-access banner.
+2. Look at which button is emphasised in the footer.
+3. Click ""Add to room"".
+4. As user3, open the chat panel in the call window.
+5. Check #qa-calls members in the main app.
+","1. A ""Chat access"" modal opens listing user3 by avatar and name, with an ""Add to room"" section and a ""Create discussion"" section, each naming #qa-calls in bold.
+2. For a public channel, ""Add to room"" is the primary (emphasised) action and sits last in the footer.
+3. The modal closes. The banner disappears for user1 and user2 without a reload.
+4. The panel now shows #qa-calls itself, including the messages posted before user3 was added, with a working composer.
+5. user3 is now a member of the channel.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,7,1,Flag ON - participants and chat access,,,no
+40,Create discussion moves the chat instead of opening the room,"Exposing a private room's history is the bigger step, so a private room or DM leads with the discussion - and a DM, which cannot take new members, offers only that.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 with some message history. Discussion_enabled is On. user1 has started a direct call to user2, both are in the call, and user3 - who has no access to the DM - has been added and has joined.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,chat-access,discussion,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click Review on the chat-access banner.
+2. Click ""Create discussion"".
+3. Open the chat panel in user1's call window.
+4. As user3, open the chat panel.
+5. In the main app, look at the conference message block in the DM.
+","1. The ""Chat access"" modal lists user3 and shows only a ""Create discussion"" section - there is no ""Add to room"" section or button, because a DM cannot take new members.
+2. The modal closes and the banner disappears for user1 and user2.
+3. The panel header now names a discussion room rather than the DM, and the DM's earlier history is not in it.
+4. user3 now sees the discussion and can post in it.
+5. It now offers a ""Join discussion"" action pointing at the new room.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,7,1,Flag ON - participants and chat access,,,no
+41,The navbar button appears only when there is a call to offer,"The list exists because a ring is one-shot and capped. The button that carries it counts what is being offered, and is absent when nothing is.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. No conference is running.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, look at the navbar controls with no call running anywhere.
+2. Have user2 start a conference in #qa-calls and stay in it.
+3. Open the dropdown.
+4. Have user2 close their call window, and wait for the call to end (about 10 seconds) plus one poll interval.
+","1. There is no video button in the navbar.
+2. Within 20 seconds a video button appears in user1's navbar carrying a badge reading 1.
+3. One row: a camera icon, the call's name, when it started in the timestamp corner, and a line reading how many people have joined.
+4. The row disappears and the navbar button goes with it.
+","1. 
+2. 
+3. 
+4. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+42,A ringing call turns the button red and opens the dropdown itself,"A ringing call the user has to go looking for is a missed call, so the button announces itself.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,ringing,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, close the navbar dropdown if it is open, then have user1 place a direct call to user2 and enter it.
+2. Close the dropdown and wait for the ring to lapse (15 seconds).
+3. Have user1 ring user2 again from the People panel.
+","1. user2's navbar video button turns red and its dropdown opens by itself, with the ringing row at the top.
+2. The button stops being red. It stays in the navbar because the call is still running, and the badge still counts it.
+3. The button turns red again and the dropdown opens itself again.
+","1. 
+2. 
+3. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+43,Declined calls sit behind a toggle and are not counted at the reader,"Someone who already turned a call down should not be counted at again, but the call stays reachable.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3, plus a second channel #qa-other with the same members. user1 has a conference running in each and is in both at different times so both stay occupied.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,decline,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, decline the #qa-calls conference from its row and keep the #qa-other one.
+2. Open the dropdown.
+3. Click the declined row.
+","1. The badge on the navbar button counts only the call still being offered (1), not the declined one.
+2. The running #qa-other call is listed above a divider; the declined #qa-calls call is listed below it with ""(Declined)"" where its actions were.
+3. The call window opens on the join preflight for that conference - a declined call keeps its place as the way back in.
+","1. 
+2. 
+3. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+44,A call the reader has joined stays listed and stops asking,"Leaving a call is easy to do by accident, so a joined call keeps its row - but the way out of a call you are in is to leave it, so the row offers no decline.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. user2 has a conference running in it.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, join the conference from the navbar dropdown and confirm ""Join call"".
+2. Back in the main window, open the navbar dropdown.
+3. Click the row.
+","1. The call window shows the call, with the timer running and a members badge reading 2.
+2. The call is still listed. Its row shows no decline cross and no silence button - only the row itself, which reopens the call window.
+3. The existing call window is focused rather than reloaded; user1 is not asked to leave anything.
+","1. 
+2. 
+3. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+45,The list offers only live calls in rooms the reader belongs to,"Calls nobody is in are left out, and room membership - not room access - is what puts a call in the list: a call in a public channel the reader never joined has no business there.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-open that user2 is a member of and user1 is NOT (but can read, being public). A public channel #qa-calls with both.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,access,automation-candidate",medium,normal,functional,negative,to-be-automated,actual,no,api,classic,"1. As user2, start a conference in #qa-open and stay in it. As user1, wait one poll interval (20s) and open the navbar.
+2. As user1, open #qa-open and click ""Join call"" on its conference message block, then leave the call again by closing the window.
+3. Have user2 start a conference in #qa-calls but leave the call immediately without anyone else joining, then wait for it to end.
+","1. user1 gets no video button for that call: they are neither a member of the conference nor a member of its room.
+2. user1 could still join through the room - the endpoints authorise on the broader rule - and after joining the call appears in their navbar dropdown, because membership of the conference now puts it there.
+3. The call is not listed for user1 at any point after it empties - a call nobody is in is not offered.
+","1. 
+2. 
+3. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+46,"Joining a second call leaves the first, and says so first","The call window is shared, so joining a second call already replaces the first one's page - but replacing a page is not leaving a call. Without an explicit leave the abandoned call keeps counting its participant.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Two public channels #qa-calls and #qa-other, both with user1 and user2. user2 has a conference running in each. user1 has joined the #qa-calls one.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,leaving,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, open the navbar dropdown and click the #qa-other row.
+2. Click Cancel.
+3. Click the #qa-other row again and this time click Join.
+4. As user2, look at the #qa-calls call's People panel.
+","1. A warning modal appears titled ""Leave the call you are in"", naming the #qa-calls call in bold, with Cancel and Join.
+2. The modal closes, nothing is joined and nothing is left: user1 is still in the #qa-calls call.
+3. The shared call window is navigated to the #qa-other conference and user1 joins it.
+4. user1 is listed under ""Not in the call"" reading ""Left"" - the leave was reported explicitly rather than left to the page being replaced.
+","1. 
+2. 
+3. 
+4. 
+",,,8,1,Flag ON - the ongoing-calls list,,,no
+47,Closing the call window is how a call is left,"A conference has no natural end when the provider does not report one, so closing the window is the signal - reported on pagehide by the window itself.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2, both in a conference started by user1.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,leaving,automation-candidate",high,critical,smoke,positive,to-be-automated,actual,no,e2e,classic,"1. As user2, close the call window with the browser's own close control.
+2. As user1, look at the People panel in the call window.
+3. As user1, check the call is still running.
+4. As user2, rejoin from the navbar dropdown.
+","1. The window closes and the main app is in the foreground.
+2. Within a second or two user2 moves from ""In call"" to ""Not in the call"" reading ""Left"", and the members badge drops to 1.
+3. The timer is still counting, the provider's call is still up, and the call is still listed in the navbar dropdown for anyone who can reach it - one member leaving is not the call ending.
+4. user2 is back in the ""In call"" section; their ""Left"" mark is cleared.
+","1. 
+2. 
+3. 
+4. 
+",,,9,1,Flag ON - leaving and ending a call,,,no
+48,The call ends about ten seconds after the last person leaves,"Ending is a consequence of the call being empty, and the grace period is what makes a reload survivable.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,leaving,lifecycle,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As the only participant, close the call window and immediately start a stopwatch.
+2. Watch the conference message block in #qa-calls in the main app.
+3. Open the navbar video dropdown.
+4. Check the room's call history (kebab > Video conferences).
+","1. The call window closes and the main app comes to the foreground.
+2. For about ten seconds it still offers ""Join call"". After the grace period it stops offering to join and reads as an ended call.
+3. The call is no longer listed (and the button is gone if nothing else is running).
+4. The call is listed as ended, with a duration consistent with how long the window was open.
+","1. 
+2. 
+3. 
+4. 
+",,,9,1,Flag ON - leaving and ending a call,,,no
+49,Reloading the call window does not end the call,"A reload fires the same pagehide as a close, so the call empties for a moment while its only participant is on their way back in. The ten-second grace period is what covers that.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1, user2 and user3. user1 has started a conference in it and is in the call, in its call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,leaving,lifecycle,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As the only participant in the call, reload the call window (F5).
+2. Wait 30 seconds, then check the conference message block in #qa-calls.
+3. Check the navbar video dropdown from a second user's session.
+","1. The window comes back on /conference/<callId> and lands straight in the call - it does not ask the preflight questions again.
+2. It still offers ""Join call"": the call was never ended.
+3. The call is still listed as running, with the reloading user counted among the people in it.
+","1. 
+2. 
+3. 
+",,,9,1,Flag ON - leaving and ending a call,,,no
+50,A call window closed while it is still loading still reports the leave,"The user counts as being in the call from the moment the join is posted, which for a call reached from the list is before the window has even loaded. So the window that opened the call watches it.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. user2 has a conference running in it and is in the call. Throttle user1's network (devtools > Network > Slow 3G) so the call window takes several seconds to load.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,leaving,multi-window,manual-only",medium,major,functional,positive,is-not-automated,actual,no,unknown,classic,"1. As user1, join the conference from the navbar dropdown and confirm ""Join call"", then close the call window as soon as it appears, while it is still loading.
+2. As user2, watch the People panel for up to a few seconds.
+3. Repeat with the main app window closed instead of the call window.
+","1. The call window closes before the conference page has finished rendering.
+2. user1 is recorded as having left (""Left"" under ""Not in the call""), even though their window never finished loading and could not report anything itself.
+3. The call window keeps running and the call is not left - closing the main app is not the call window closing, and the call is meant to outlive it.
+","1. 
+2. 
+3. 
+",,,9,1,Flag ON - leaving and ending a call,,,no
+51,Cancel on a join preflight reports leaving before closing,"Cancel leaves no trace on the start screen, because nothing was created - but on a call that already exists it has to report leaving first.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. user2 has a conference running in it and is in the call.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,leaving,preflight,automation-candidate",medium,normal,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, click the conference row in the navbar dropdown to open the join preflight.
+2. Click Cancel.
+3. As user2, look at the People panel.
+","1. The call window shows ""Join the conference"" with Join call and Cancel.
+2. The window closes without user1 ever entering the call.
+3. The members badge still reads 1 and user1 is not shown as being in the call - and the call is certainly not ended.
+","1. 
+2. 
+3. 
+",,,9,1,Flag ON - leaving and ending a call,,,no
+52,With persistent chat off the chat panel is simply the room the call started in,The call window is deliberately independent of VideoConf_Enable_Persistent_Chat: with persistent chat off its chat panel shows the room the call was started in.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Settings: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,persistent-chat,automation-candidate",high,major,functional,negative,to-be-automated,actual,no,e2e,classic,"1. As user1, check Admin > Settings > Video Conference.
+2. Start a conference in #qa-calls and open the chat panel in the call window.
+3. Post a message in the panel and look at #qa-calls in the main app.
+4. Check #qa-calls for a new discussion, and the conference record for a discussionRid.
+","1. VideoConf_Persistent_Chat_Mode is present but disabled (greyed out) - it only means something once persistent chat is on as well.
+2. The panel header reads ""Chat in # qa-calls"" and the panel shows the channel itself, with its existing history and a working composer.
+3. The message is an ordinary channel message - not a thread reply, and no discussion was created.
+4. There is no discussion and no discussionRid.
+","1. 
+2. 
+3. 
+4. 
+",,,10,1,Persistent chat modes,,,no
+53,Thread mode puts the chat in a thread off the conference message,"Thread is the default mode: the panel renders a thread started from the conference message in the original channel, and no discussion room is created.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Settings: VideoConf_Enable_Persistent_Chat = On, Discussion_enabled = On, VideoConf_Persistent_Chat_Mode = thread. {PC_CAP} A public channel #qa-calls with user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,persistent-chat,thread,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, start a conference in #qa-calls and open the chat panel in the call window.
+2. Post ""hello from the call"" in the panel and look at #qa-calls in the main app.
+3. Have user2 join the call, then check user2's thread following state on the conference message in the main app (kebab on the message > Following).
+4. Have user1 post another thread reply.
+5. Have user2 leave and rejoin the call.
+","1. The panel header reads ""Thread in # qa-calls"" and shows a thread message list scoped to the conference message, with a composer.
+2. The message appears as a reply in the thread under the conference message, not as a channel message. No discussion room was created off #qa-calls.
+3. user2 is following the thread without having asked to - joining the call auto-followed them.
+4. user2 gets a thread notification for it.
+5. They are still following the thread exactly once - no duplicate subscription.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,10,1,Persistent chat modes,,,no
+54,Main room mode creates a discussion and shows it in the panel,"In main_room mode a separate discussion room is created off the parent channel, and the chat room is resolved from discussionRid once it exists.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Settings: VideoConf_Enable_Persistent_Chat = On, Discussion_enabled = On, VideoConf_Persistent_Chat_Mode = main_room, VideoConf_Persistent_Chat_Discussion_Name = ""Video Call Chat"". {PC_CAP} A public channel #qa-calls with user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,persistent-chat,main-room,discussion,automation-candidate",high,critical,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, start a conference in #qa-calls.
+2. Open the chat panel in the call window.
+3. Post a message in the panel.
+4. Look at the conference message block in #qa-calls.
+5. Set VideoConf_Persistent_Chat_Discussion_Name to ""[date] Call chat"" and start a second conference.
+","1. A discussion is created off #qa-calls named with today's date and ""Video Call Chat"" (the date is prefixed because the name carries no [date] placeholder).
+2. The panel header names the discussion, not #qa-calls, and the panel shows the discussion room with a composer.
+3. It lands in the discussion. #qa-calls itself gets no new message beyond the conference block and the discussion-created system message.
+4. It offers ""Join discussion"", pointing at the new room.
+5. The second discussion is named with the date substituted into the placeholder rather than prefixed.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,10,1,Persistent chat modes,,,no
+55,A workspace already running persistent chat sees no change until it opts in,"The one thing this feature must not do is change what workspaces already running persistent chat see. With the window off, the server answers main_room whatever the mode setting was left at.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = Off (the default). Settings: VideoConf_Enable_Persistent_Chat = On, Discussion_enabled = On. The active provider app declares the persistentChat capability (the bundled Jitsi app v2.1.1 does NOT - see the README). Verify with GET /api/v1/video-conference.capabilities before starting. A public channel #qa-calls with user1 and user2.",Set VideoConf_Conference_Window_Enabled to Off and VideoConf_Enable_Persistent_Chat back to its original value.,"videoconf,conference-window,persistent-chat,flag-off,automation-candidate",high,critical,regression,positive,to-be-automated,actual,no,e2e,classic,"1. As an admin, look at VideoConf_Persistent_Chat_Mode in Admin > Settings > Video Conference.
+2. Start a conference in #qa-calls from the room popup as user1.
+3. Turn VideoConf_Conference_Window_Enabled On, set the mode to thread, then turn the window back Off and start another conference.
+","1. It is disabled: it needs the conference window on as well, so a workspace with the window off cannot even set it.
+2. The provider's page opens in a new tab, exactly as before, and a discussion is created off #qa-calls - the main_room behaviour persistent chat has always had.
+3. A discussion is created again, not a thread: with the window off the server falls back to main_room whatever the mode is left at, so turning the window off puts the workspace back exactly where it was.
+","1. 
+2. 
+3. 
+",,,10,1,Persistent chat modes,,,no
+56,Persistent chat is only acted on for a provider that declares it,"A Jitsi call must not start following threads or creating discussions just because the setting is on. With the bundled Jitsi app (which declares only mic, cam and title) the chat panel falls back to the room the call was started in.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Settings: VideoConf_Enable_Persistent_Chat = On, Discussion_enabled = On, VideoConf_Persistent_Chat_Mode = thread. The active provider is the bundled Jitsi app v2.1.1. A public channel #qa-calls with user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,persistent-chat,provider,automation-candidate",high,major,functional,negative,to-be-automated,actual,no,api,classic,"1. Check GET /api/v1/video-conference.capabilities for the active provider.
+2. As user1, start a conference in #qa-calls and open the chat panel.
+3. Switch VideoConf_Persistent_Chat_Mode to main_room and start another conference.
+","1. The capabilities object carries mic, cam and title, and does NOT carry persistentChat.
+2. The panel shows #qa-calls itself (header ""Chat in # qa-calls""), not a thread - no thread was started and nobody was auto-followed.
+3. Still no discussion is created off #qa-calls, and the panel still shows the channel.
+","1. 
+2. 
+3. 
+",,,10,1,Persistent chat modes,,,no
+57,A URL provider runs the whole flow inside the call window,"A provider reached by URL is the only kind of provider reachable on this branch. Its page is embedded in an iframe, so it must be allowed to be framed and it gets the permissions the call needs.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. The active provider is a self-hosted Jitsi (not the public meet.jit.si, which disconnects embedded calls after five minutes) or Google Meet. A direct message between user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,provider,media,manual-only",high,critical,integration,positive,is-not-automated,actual,no,unknown,classic,"1. As user1, place a direct call to user2 and enter it.
+2. Check the frame in devtools > Elements.
+3. Check the URL the frame was given.
+4. Have user2 answer and confirm the join.
+","1. The call window shows the provider's own call UI inside the window, with working audio/video controls of the provider's own.
+2. The provider page is in an iframe whose allow attribute grants camera, microphone, display-capture, fullscreen, autoplay and speaker-selection, with referrerPolicy strict-origin-when-cross-origin.
+3. It carries a name query parameter with user1's display name, so they arrive named rather than anonymous.
+4. Both are in the same provider room and can see and hear each other.
+","1. 
+2. 
+3. 
+4. 
+",,,11,1,Provider matrix,,,no
+58,A provider page that refuses framing leaves the call area blank,"Rocket.Chat's own CSP allows frame-src *, so a blank call area means the provider refused - a known limitation of embedding, worth being able to recognise rather than mistake for a product bug.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. The active provider is configured with a URL that sends a restrictive X-Frame-Options or frame-ancestors header (for example a provider instance behind a proxy that sets X-Frame-Options: DENY). A direct message between user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,provider,known-limitation,manual-only",low,minor,functional,negative,is-not-automated,actual,no,unknown,classic,"1. As user1, place a direct call to user2 and enter it.
+2. Look at the call area and the browser console.
+3. Close the window.
+","1. The call window opens with our top bar, timer and panel buttons all present and working.
+2. The call area is blank and the console carries a framing refusal from the browser. Nothing about the workspace is broken: the panels, the members list and the chat still work.
+3. The leave is reported and the call ends normally after the grace period.
+","1. 
+2. 
+3. 
+",,,11,1,Provider matrix,,,no
+59,A conference member with no access to the call's room reaches their own call,This is the whole point of the membership model: a users[] entry authorises joining the call without granting any room access. The third person in a DM call is the case it exists for.,"Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2. user3 has no access to it. user1 has placed a direct call to user2 and both are in it.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,access,membership,automation-candidate",high,blocker,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, add user3 to the conference from the People panel.
+2. As user3, join the call from the navbar dropdown and confirm ""Join call"".
+3. As user3, check the sidebar and try to open the DM.
+4. As user3, open the chat panel in the call window.
+5. As user3, open the People panel.
+","1. user3 is rung and appears in the People panel.
+2. user3 enters the call successfully - no room membership was needed and none was granted.
+3. The DM is not in user3's sidebar and is not reachable.
+4. It shows ""Chat not shared with you"" with an explanation, rather than a missing-page or permission error.
+5. user3 sees themselves in ""In call"" with a balloon-off icon beside their name titled ""No chat access"". The Add people button is not offered to them.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,12,1,Permissions and access,,,no
+60,A stranger gets nothing useful from a conference id,"Every endpoint authorises through one check and answers both failures the same vague way, so a call id cannot be used to learn that a call is real.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 and user2 only. user1 has a conference running in it. user3 is not a member of the group and not a member of the conference. You have the conference's callId.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,access,security,automation-candidate",high,critical,security,negative,to-be-automated,actual,no,api,classic,"1. As user3, open /conference/<callId> in a browser window.
+2. As user3, call GET /api/v1/video-conference.info?callId=<callId>.
+3. As user3, call GET /api/v1/video-conference.info with a callId made up at random.
+4. As user3, call POST /api/v1/video-conference.join with the real callId.
+","1. A ""Call not found"" state page is shown - not a preflight, not a members list, and nothing that confirms the call exists.
+2. The response is a failure reading invalid-params - the same answer a callId that does not exist at all would give.
+3. The same invalid-params failure, indistinguishable from the previous step.
+4. It fails with invalid-params; user3 does not appear in the conference's users list.
+","1. 
+2. 
+3. 
+4. 
+",,,12,1,Permissions and access,,,no
+61,"The conference page needs a real account, and the wrong account can swap itself out","Guests cannot be members of the conference's room, so the embedded page requires a real account - and a window logged in as the wrong person logs out without navigating away, so re-login returns to the same conference.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 and user2. user1 has a conference running in it. A third browser profile is signed in as user3, who has no access.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,access,auth,automation-candidate",medium,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. Open /conference/<callId> in a private window with nobody signed in.
+2. Sign in as user3 in that window.
+3. Click Logout.
+4. Sign in as user2 in the same window.
+","1. The login form is shown (the conference is not served to a guest). It does not flash and then disappear.
+2. The window stays on /conference/<callId> and shows a ""You are not authorized to view this page"" state, saying which account is signed in, with a Logout action.
+3. The window logs out but stays on the /conference/<callId> URL rather than navigating to the workspace home.
+4. The window lands back on the same conference, on its join preflight - not on /home.
+","1. 
+2. 
+3. 
+4. 
+",,,12,1,Permissions and access,,,no
+62,Ringing needs the videoconf-ring-users permission; everything else does not,"Having access to a conference must not be a way around the permission that gates ringing. Starting a call and adding people still work, they just do not ring.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Admin > Permissions: videoconf-ring-users has been removed from the user role. user1 and user2 both hold only the user role. A direct message between user1 and user2, and a public channel #qa-calls with user1, user2 and user3.",Restore the videoconf-ring-users permission on the user role and set VideoConf_Conference_Window_Enabled back to Off.,"videoconf,conference-window,flag-on,access,permissions,automation-candidate",medium,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, place a direct call to user2 and enter it.
+2. As user2, open the navbar video dropdown.
+3. As user1, open the People panel and click the phone (ring) button on user2's row.
+4. As user1, add user3 to the conference with ""Ring people"" checked.
+5. Restore videoconf-ring-users on the user role and ring user2 again.
+","1. user1 lands in the call and the conference message is posted, but user2 hears no ring and gets no notification - the ring degrades silently.
+2. The call is listed as a running call and can be joined - the list is the route in.
+3. The ring is refused with an error toast, and POST /api/v1/video-conference.ring answers 403 ""Not allowed"".
+4. user3 is added successfully (a success toast, and they appear in the panel) but is not rung.
+5. The ring goes out: user2 hears the tone and their navbar button turns red.
+","1. 
+2. 
+3. 
+4. 
+5. 
+",,,12,1,Permissions and access,,,no
+63,A script URL handed to the conference route opens nothing,"The provider URL is opened in a window of ours. A javascript: or data: ""URL"" is not somewhere to go but something to run, and it would run in whatever window was opened for it - which, until it navigates, is our own blank one. So only an absolute http(s) address is accepted.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Signed in as user1. Browser popups allowed for the workspace origin.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,security,url-validation,automation-candidate",high,critical,security,negative,to-be-automated,actual,no,e2e,classic,"1. Navigate the main app window to /conference/x?callUrl=javascript:alert(document.domain)%26
+2. Repeat with /conference/x?callUrl=data:text/html,<script>alert(1)</script>%26
+3. Repeat with /conference/x?callUrl=/admin/settings%26 (a relative address).
+4. Check the browser console.
+","1. No new window or tab opens, no alert fires, and no ""popup blocked"" modal appears - claiming the popup was blocked would be a lie with advice attached.
+2. Again nothing opens and no script runs.
+3. Nothing opens. In particular no window opens showing the workspace at /admin/settings - a relative address has no origin of its own and must not be read as an in-product conference.
+4. No uncaught error; the app stays usable.
+","1. 
+2. 
+3. 
+4. 
+",,,13,1,Security,,,no
+64,An external provider window keeps no handle on the workspace,"A provider page has no business reaching back into the workspace: with a live window.opener it could navigate the tab the user came from to a page of its choosing, and a login screen is the obvious one to imitate.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Signed in as user1. Browser popups allowed. Devtools available in the opened window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,security,opener,automation-candidate",high,critical,security,positive,to-be-automated,actual,no,e2e,classic,"1. Navigate the main app window to /conference/x?callUrl=https://example.com%26
+2. In the opened window's console, evaluate window.opener.
+3. In the same console, evaluate window.name.
+4. Open a second external call the same way.
+","1. A separate window opens at example.com and the main window returns to /home.
+2. It is null - the window was cut loose before being sent to the provider.
+3. It is empty: an external provider window is unnamed, so each external call gets a window of its own rather than sharing ours.
+4. A second, separate window opens rather than the first one being navigated.
+","1. 
+2. 
+3. 
+4. 
+",,,13,1,Security,,,no
+65,A conference whose record carries no usable URL does not open a window,"A call arriving with an empty or non-web address is nothing openable. Saying the popup was blocked would be misleading, because allowing popups cannot make it succeed.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Direct database access to the videoconference collection (a development workspace). A direct message between user1 and user2, and a conference in it that user1 can join.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,security,url-validation,manual-only",medium,major,security,negative,is-not-automated,actual,no,unknown,classic,"1. Start a conference and note its callId, then in Mongo set that conference's url field to the empty string.
+2. As user1, open the call window for that conference and confirm the join.
+3. Click Close.
+4. Set the url to a relative value such as /room/42 and repeat.
+","1. The update reports one document modified, and re-reading the record shows url as the empty string.
+2. The window shows a warning state page with the unexpected-error title and a single Close button, rather than a blank frame or a broken page.
+3. The window reports leaving and closes.
+4. The frame is not pointed at the workspace: nothing navigates the call window to a workspace route, and the user is not shown the app inside the call area.
+","1. 
+2. 
+3. 
+4. 
+",,,13,1,Security,,,no
+66,"A blocked popup asks the user to allow it, and the retry works","The window is opened on the click that asked for it precisely so browsers do not refuse it - but a blocker or an extension can still refuse both the popout and the plain tab, and then the user has to be asked to click again.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. Browser popups BLOCKED for the workspace origin (Chrome: site settings > Pop-ups and redirects > Block). A direct message between user1 and user2.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,edge-case,popup-blocker,manual-only",medium,major,functional,positive,is-not-automated,actual,no,unknown,classic,"1. As user1, click the room header camera button.
+2. Allow popups for the site in the browser's own prompt or site settings, then use the modal's confirm action.
+3. Repeat the block, then join a running call from the navbar dropdown instead.
+","1. No call window opens. A modal appears asking the user to allow the popup, with a way to try again.
+2. The call window opens on the preflight for the same call.
+3. The same modal appears. Note that the join has already been posted for this path, so if the user never allows the popup they are counted as joined with no window - the known gap the next join or the expiry cron closes.
+","1. 
+2. 
+3. 
+",,,14,1,Edge cases (human pass),,,no
+67,"Real audio: the ring, the dial tone and silencing them","Sound is the one part of this feature nothing automated can check. The ring still sounds even though the popup is gone, and the caller's dial tone has to stop when the other side answers.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A direct message between user1 and user2 exists.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,edge-case,audio,manual-only",medium,normal,functional,positive,is-not-automated,actual,no,unknown,classic,"1. With sound on in both browsers, have user1 place a direct call to user2 and enter the call.
+2. As user2, click Silence on the ringing row.
+3. Wait for the 15-second ring window to lapse.
+4. As user1, ring user2 again from the People panel and have user2 join.
+","1. user2 hears a repeating ring tone. user1, in the call window, hears a dial tone while user2 is still ringing.
+2. user2's ring tone stops at once. user1's dial tone keeps playing - silencing told nobody anything.
+3. user1's dial tone stops on its own when user2 stops reading as ringing.
+4. The ring tone plays again for user2 and stops on joining; user1's dial tone stops as soon as user2 is in the call.
+","1. 
+2. 
+3. 
+4. 
+",,,14,1,Edge cases (human pass),,,no
+68,Losing access to the chat's room mid-call,"The chat panel decides between the room and the not-shared explanation from a descriptor that is only as fresh as the last read, so a member removed during a call gets a not-found fallback until it is read again. Rare and self-correcting, but worth recognising.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A private group qa-private with user1 (owner) and user2. user1 has started a conference in it and both are in the call with the chat panel open.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,edge-case,chat-access,manual-only",low,minor,functional,negative,is-not-automated,actual,no,unknown,classic,"1. As user1, in the main app, remove user2 from qa-private while user2 stays in the call with the chat panel open.
+2. Look at user2's chat panel.
+3. Have anything move on the conference (someone joins, leaves, or is added) so the conference is read again.
+4. Check that the call itself was unaffected throughout.
+","1. user2 is removed from the room.
+2. It shows a not-found fallback rather than an explanation - the descriptor it decided from is stale.
+3. user2's panel settles on the ""Chat not shared with you"" explanation, and user1 gets the chat-access banner offering to fix it.
+4. user2 stayed in the call the whole time - room membership is not what authorises being there.
+","1. 
+2. 
+3. 
+4. 
+",,,14,1,Edge cases (human pass),,,no
+69,"Two windows for the same call, and the call surviving the app","The call window is shared and is meant to outlive the main app, which is hard to assert anywhere but by hand.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. user2 has a conference running in it.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,edge-case,multi-window,manual-only",medium,normal,functional,positive,is-not-automated,actual,no,unknown,classic,"1. As user1, join the conference so a call window is open, then paste the same /conference/<callId> URL into a brand-new browser window opened by hand.
+2. Close one of the two windows and watch the other.
+3. Close the main app window entirely, leaving the call window open.
+4. Reopen the app and check the call.
+","1. The hand-opened window loads the conference independently (it is not the named shared window). user1 is in the call in both - and the same person is counted once in the members list.
+2. The remaining window keeps the call. Note that closing one reports a leave, so user1 may briefly drop out of the members list until the other window's next heartbeat.
+3. The call keeps running and the call window is unaffected - the watch on it is dropped rather than fired, because the main app going away is not the call window closing.
+4. The call is still listed and user1 is still counted as being in it.
+","1. 
+2. 
+3. 
+4. 
+",,,14,1,Edge cases (human pass),,,no
+70,A killed call window with a URL provider stays listed until the expiry cron,"Presence leases are swept only for a provider that runs the call in our window and reports its own room. For a URL provider the sweep deliberately stays away, so a crashed tab leaves a ghost until the 24-hour expiry - a known limitation worth confirming rather than filing as a bug.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. The active provider is the bundled Jitsi app (no embedded capability). A public channel #qa-calls with user1 and user2. Both are in a conference. Ability to kill the browser process holding user2's call window.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,edge-case,presence,known-limitation,manual-only",low,minor,functional,negative,is-not-automated,actual,no,unknown,classic,"1. As user2, confirm the call window is sending heartbeats (devtools > Network, filter ""heartbeat"").
+2. Kill user2's browser process outright (not a graceful close), so no leave is reported.
+3. As user1, watch the People panel for five minutes.
+4. Have user2 rejoin the call from a fresh browser.
+","1. A POST to /api/v1/video-conference.heartbeat goes out roughly every 30 seconds.
+2. The window is gone and no video-conference.leave request was made.
+3. user2 is still listed under ""In call"": the presence sweep skips calls held by a non-embedded provider, so nothing evicts them. This is expected on this branch.
+4. They are counted once, in the call - the join reconciles their membership.
+","1. 
+2. 
+3. 
+4. 
+",,,14,1,Edge cases (human pass),,,no
