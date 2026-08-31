@@ -44,6 +44,10 @@ export const bareLinePrefixRange = (text: string, caret: number): { start: numbe
 	const nextBreak = text.indexOf('\n', caret);
 	const end = nextBreak === -1 ? text.length : nextBreak;
 
+	if (caret !== end) {
+		return undefined;
+	}
+
 	const marker = ANY_LINE_PREFIX.exec(text.slice(start, end));
 
 	if (!marker || text.slice(start + marker[0].length, end).trim() !== '') {

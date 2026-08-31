@@ -195,6 +195,8 @@ describe('bareLinePrefixRange', () => {
 		['an empty composer', '', 0],
 		['a task', '- [x] done', 10],
 		['a hyphen with no trailing space', '-', 1],
+		['a bare bullet with the caret before the marker', '- ', 0],
+		['a bare bullet with the caret inside the marker', '- ', 1],
 	])('does not report %s', (_label, text, caret) => {
 		expect(bareLinePrefixRange(text, caret)).toBeUndefined();
 	});
