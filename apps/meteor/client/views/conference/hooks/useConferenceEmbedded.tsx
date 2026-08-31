@@ -1,4 +1,5 @@
 import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -225,7 +226,11 @@ export const useConferenceEmbedded = (callId: string) => {
 			 * themselves is not an event in the call's history.
 			 */
 			departure: departureFor({
-				joined: !!data,
+				// The server's answer as well as this window's own: a reload loses the local join but not the
+				// membership it recorded, and a window that reported nothing on its way out would leave the call
+				// carrying someone who is gone until their lease ran out — a day, for a provider with no leases.
+				// `isInVideoConference` and not `joined`, so a membership they already left is not read as active.
+				joined: !!data || !!(ownMember && isInVideoConference(ownMember)),
 				isDirect: info?.type === 'direct',
 				isCreator: info?.createdBy._id === uid,
 				wasRung: !!ownMember?.ringingAt,
@@ -237,7 +242,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			 */
 			embedded: data ? data.url === '' : false,
 			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */
-			joined: !!data,
+			joined: !!data || !!(ownMember && isInVideoConference(ownMember)),
 			loading: isPending,
 			error,
 			join,

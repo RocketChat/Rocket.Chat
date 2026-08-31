@@ -218,3 +218,59 @@ describe('naming on the way in', () => {
 		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example/?name=john.doe'));
 	});
 });
+
+// What this window owes the call when it goes. The rule itself is pinned in `useLeaveConferenceOnClose.spec`;
+// what matters here is which facts it is fed, because the obvious source — this window's own join — is not the
+// only one that counts.
+describe('how a departure from this window should be reported', () => {
+	const self = { _id: 'john.doe', username: 'john.doe', name: 'John Doe', ts: '2026-08-01T10:00:00.000Z' };
+
+	const renderWith = (users: Record<string, unknown>[], type = 'videoconference', createdBy = 'someone-else') =>
+		renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => ({
+					...buildInfo([]),
+					type,
+					createdBy: { _id: createdBy, username: createdBy, name: createdBy },
+					users,
+				}))
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+	// The case that makes the server's answer necessary: a reload loses this window's join but not the membership
+	// it recorded. Reporting nothing here leaves the call carrying someone who is gone.
+	it('is leaving when the server already has this user in the call, reload or no reload', async () => {
+		const { result } = renderWith([{ ...self, joined: true }]);
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('leave'));
+	});
+
+	// A membership they already left is history, not presence — so this is not a leave to report again.
+	it('is not leaving on a membership this user already left', async () => {
+		const { result } = renderWith([{ ...self, joined: true, leftAt: '2026-08-01T10:30:00.000Z' }]);
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.conference.departure).not.toBe('leave');
+	});
+
+	it('is declining for a member who was rung and has not joined', async () => {
+		const { result } = renderWith([{ ...self, joined: false, ringingAt: new Date().toISOString() }]);
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('decline'));
+	});
+
+	it('is cancelling for the user placing a direct call', async () => {
+		const { result } = renderWith([{ ...self, joined: false }], 'direct', 'john.doe');
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('cancel'));
+	});
+
+	it('is nothing for a member who was never asked and never arrived', async () => {
+		const { result } = renderWith([{ ...self, joined: false }]);
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.conference.departure).toBe('none');
+	});
+});

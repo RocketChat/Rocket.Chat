@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ChatAccessModal from './ChatAccessModal';
@@ -19,8 +19,8 @@ const buildAccess = (overrides: Partial<ConferenceChatAccess> = {}): ConferenceC
 
 const shareChat = jest.fn(() => ({ rid: 'room-id', success: true }));
 
-const renderModal = (access: ConferenceChatAccess) =>
-	render(<ChatAccessModal callId='call-id' access={access} onClose={jest.fn()} />, {
+const renderModal = (access: ConferenceChatAccess, onClose: () => void = jest.fn()) =>
+	render(<ChatAccessModal callId='call-id' access={access} onClose={onClose} />, {
 		wrapper: mockAppRoot()
 			.withEndpoint('POST', '/v1/video-conference.share-chat', shareChat as any)
 			.build(),
@@ -75,8 +75,9 @@ it('takes only one of the two actions, however fast the second is clicked', asyn
 				release = resolve;
 			}) as never,
 	);
+	const onClose = jest.fn();
 
-	renderModal(buildAccess());
+	renderModal(buildAccess(), onClose);
 
 	await userEvent.click(screen.getByRole('button', { name: 'Add_to_room' }));
 	await waitFor(() => expect(screen.getByRole('button', { name: 'Create_discussion' })).toBeDisabled());
@@ -86,5 +87,12 @@ it('takes only one of the two actions, however fast the second is clicked', asyn
 	expect(shareChat).toHaveBeenCalledTimes(1);
 	expect(shareChat).toHaveBeenCalledWith({ callId: 'call-id', mode: 'invite' });
 
-	release({ rid: 'room-id', success: true });
+	// Settled inside `act`, so the state the mutation lands in belongs to this test rather than leaking into the
+	// next one: the request that was allowed through finishes, and finishing it is what closes the modal.
+	await act(async () => {
+		release({ rid: 'room-id', success: true });
+	});
+
+	expect(shareChat).toHaveBeenCalledTimes(1);
+	expect(onClose).toHaveBeenCalled();
 });
