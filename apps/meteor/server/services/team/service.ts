@@ -177,21 +177,22 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				projection: { _id: 1 },
 			}).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
-			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIds.includes(teamId));
+			const publicTeamIdsSet = new Set(publicTeamIds);
+			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIdsSet.has(teamId));
 
 			const privateTeams = await TeamMember.findByUserIdAndTeamIds(callerId, privateTeamIds, {
 				projection: { teamId: 1 },
 			}).toArray();
-			const visibleTeamIds = privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds);
-			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.includes(teamId));
+			const visibleTeamIds = new Set(privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds));
+			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.has(teamId));
 		}
 
-		const ownedTeams = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
+		const ownedTeams = new Set(unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId));
 
 		const results = await Team.findByIds(teamIds).toArray();
 		return results.map((team) => ({
 			...team,
-			isOwner: ownedTeams.includes(team._id),
+			isOwner: ownedTeams.has(team._id),
 		}));
 	}
 
