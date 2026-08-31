@@ -12,12 +12,19 @@ apps/meteor/server/meteor-methods/messages/getMessages.ts
 apps/meteor/tests/end-to-end/api/chat.ts
   s_8998b0686d0f5a::t_120a85f7361d10 11,5294-5398
   s_8998b0686d0f5a::t_a434e10cdd7552 5399
+apps/meteor/client/views/room/MessageList/hooks/useParentMessage.ts
+  h_4c386397e672f4 6-7,18,20,22-24,26
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.6.24",
   "base_commit_sha": "9e8fde60850ca448d97ee85027aafa1f0f6446b0",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_8998b0686d0f5a": {
       "agent_id": {
