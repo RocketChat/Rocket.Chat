@@ -35,13 +35,11 @@ export class ConferenceWindow {
 
 	// ---------------------------------------------------------------------------------------------------------
 	// Preflight
-	//
-	// Its heading is a `Box` with `fontScale='h2'`, i.e. a `div` — not a heading element — so it is addressable
-	// by text only.
 	// ---------------------------------------------------------------------------------------------------------
 
+	/** The screen's own heading, and the only `h2` on it. */
 	getPreflightHeading(text: string | RegExp): Locator {
-		return this.page.getByText(text);
+		return this.page.getByRole('heading', { level: 2, name: text });
 	}
 
 	get inputCallName(): Locator {
@@ -98,19 +96,22 @@ export class ConferenceWindow {
 	// ---------------------------------------------------------------------------------------------------------
 
 	/**
-	 * The window's own bar above the call and its panels. `CallTopBar` renders a `<header>`, and so does the
-	 * chat-access notice above it, so this is `.first()` rather than an unqualified `banner`.
+	 * The window's own bar above the call and its panels: `CallTopBar` renders a `<header>`, and it is the only
+	 * one in the window. The chat-access notice above it is a `status`, not a second banner, and the room header
+	 * inside the chat panel is suppressed by the embedded layout.
 	 */
 	get topBar(): Locator {
-		return this.page.getByRole('banner').last();
+		return this.page.getByRole('banner');
+	}
+
+	/** How long the call has been running — a live region counting up, which is what `timer` says. */
+	get timer(): Locator {
+		return this.topBar.getByRole('timer');
 	}
 
 	/**
 	 * The members button, whose accessible name carries the count of who is in the call — the badge that draws
-	 * it is `aria-hidden`, so the name is the only place the number is readable.
-	 *
-	 * Note its `title` is `People` while its `aria-label` is the count, and the label wins: addressing it by
-	 * `People` would not match.
+	 * it is `aria-hidden`, so the name is the only place the number is readable. Its `title` says the same.
 	 */
 	get btnMembers(): Locator {
 		return this.page.getByRole('button', { name: /\d+ (person|people) in the call/ });
@@ -137,6 +138,14 @@ export class ConferenceWindow {
 		return this.page.getByRole('heading', { level: 5 });
 	}
 
+	/**
+	 * The panel title addressed by what it says. The chat's title has an icon between its words, so its own name
+	 * is the label on the span around them — `Chat in <room>` — rather than the text as it happens to be laid out.
+	 */
+	getPanelTitle(name: string | RegExp): Locator {
+		return this.page.getByRole('heading', { level: 5, name });
+	}
+
 	get btnClosePanel(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
@@ -153,24 +162,28 @@ export class ConferenceWindow {
 		return this.page.getByText('Not in the call', { exact: true });
 	}
 
+	/** The members the People panel lists, as the list it is. */
+	get listMembers(): Locator {
+		return this.page.getByRole('list', { name: 'Members', exact: true });
+	}
+
 	/**
 	 * A member's status line in the People panel: `Ringing`, `Waiting for answer`, `Declined` or `Left`. A
 	 * member who is in the call has no status line at all.
 	 *
-	 * Fuselage's `Option` renders an `<li>` with no role inside a `div`, so a member row has no role of its own
-	 * and the name and the status are two text nodes in it. With a handful of members that is enough to assert
-	 * on separately; naming a row is not possible.
+	 * A member's name and their status are two text nodes in one row, so they are asserted on separately —
+	 * scoped to the list, which is what keeps them from matching the same words elsewhere in the window.
 	 */
 	getMemberStatus(status: 'Ringing' | 'Waiting for answer' | 'Declined' | 'Left'): Locator {
-		return this.page.getByText(status, { exact: true });
+		return this.listMembers.getByText(status, { exact: true });
 	}
 
 	getBtnRingMember(name: string): Locator {
-		return this.page.getByRole('button', { name: `Ring ${name}`, exact: true });
+		return this.listMembers.getByRole('button', { name: `Ring ${name}`, exact: true });
 	}
 
 	getMember(name: string): Locator {
-		return this.page.getByText(name, { exact: true });
+		return this.listMembers.getByText(name, { exact: true });
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -181,9 +194,9 @@ export class ConferenceWindow {
 		return this.page.getByRole('dialog', { name: 'Add people' });
 	}
 
-	/** No `aria-label` and no `data-qa`: only its placeholder names it, and it is the modal's only combobox. */
+	/** Labelled rather than named by its placeholder, which the first keystroke takes away. */
 	get inputAddPeople(): Locator {
-		return this.dialogAddPeople.getByRole('combobox');
+		return this.dialogAddPeople.getByRole('combobox', { name: 'Add people', exact: true });
 	}
 
 	get btnConfirmAddPeople(): Locator {

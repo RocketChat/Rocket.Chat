@@ -19,45 +19,51 @@ export class OngoingCalls {
 	}
 
 	/**
-	 * Fuselage's own `data-testid` is the only handle the dropdown has — it carries no role, no accessible name
-	 * and no `data-qa` of its own.
+	 * What the button opens: a region named after the list it holds, which is what makes the calls in it a group
+	 * to scope to rather than loose rows somewhere on the page.
 	 */
-	get dropdown(): Locator {
-		return this.root.getByTestId('dropdown');
+	get regionOngoingCalls(): Locator {
+		return this.root.getByRole('region', { name: 'Ongoing calls', exact: true });
 	}
 
 	/**
 	 * One call in the list, addressed by the name it is listed under.
 	 *
-	 * The row is an `<a>` with no `href`, so it has neither a `link` role nor an accessible name; its title text
-	 * is all there is to hold on to. Clicking the text reaches the row's own handler, which is what answers or
-	 * joins the call — the handler ignores clicks that landed on one of the row's buttons.
+	 * The row is a link to the call — `/conference/<callId>` — named from its own contents, so the name it is
+	 * listed under is part of that accessible name and enough to pick the row out of the list. Clicking it
+	 * reaches the row's own handler, which is what answers or joins the call and what prevents the navigation;
+	 * the handler ignores clicks that landed on one of the row's buttons.
 	 */
 	getCall(name: string): Locator {
-		return this.dropdown.getByText(name, { exact: true });
+		return this.regionOngoingCalls.getByRole('link', { name });
 	}
 
-	/** A call listed anywhere on the page, whether or not the dropdown happens to be open. */
+	/**
+	 * A call listed anywhere on the page, whether or not the dropdown happens to be open.
+	 *
+	 * Deliberately still a text lookup rather than the row's `link` role: this exists for `toHaveCount(0)`, and
+	 * "the name appears nowhere at all" is a stronger thing to prove than "no row is named that".
+	 */
 	findCallAnywhere(name: string): Locator {
 		return this.root.getByText(name, { exact: true });
 	}
 
 	/** The ringing mark a row shows in its timestamp corner. Scope a test to a single listed call before using it. */
 	get textRinging(): Locator {
-		return this.dropdown.getByText('Ringing');
+		return this.regionOngoingCalls.getByText('Ringing');
 	}
 
 	/** What a declined row says where its actions were. */
 	get textDeclined(): Locator {
-		return this.dropdown.getByText('(Declined)', { exact: true });
+		return this.regionOngoingCalls.getByText('(Declined)', { exact: true });
 	}
 
 	get btnDecline(): Locator {
-		return this.dropdown.getByRole('button', { name: 'Decline', exact: true });
+		return this.regionOngoingCalls.getByRole('button', { name: 'Decline', exact: true });
 	}
 
 	get btnSilence(): Locator {
-		return this.dropdown.getByRole('button', { name: 'Silence', exact: true });
+		return this.regionOngoingCalls.getByRole('button', { name: 'Silence', exact: true });
 	}
 
 	/**
@@ -71,11 +77,11 @@ export class OngoingCalls {
 	async ensureOpen(): Promise<void> {
 		await this.btnOngoingCalls.waitFor();
 
-		if (await this.dropdown.isVisible()) {
+		if (await this.regionOngoingCalls.isVisible()) {
 			return;
 		}
 
 		await this.btnOngoingCalls.click();
-		await this.dropdown.waitFor();
+		await this.regionOngoingCalls.waitFor();
 	}
 }
