@@ -173,7 +173,6 @@
   "Accounts_RequirePasswordConfirmation": "Vyžadovať potvrdenie hesla",
   "Accounts_SearchFields": "Polia, ktoré je potrebné zvážiť vo vyhľadávaní",
   "Accounts_SetDefaultAvatar": "Nastaviť predvolený profilový obrázok",
-  "Accounts_SetDefaultAvatar_Description": "Snaží sa určiť predvolený profilový obrázok na základe účtu OAuth alebo Gravatar",
   "Accounts_ShowFormLogin": "Zobraziť prednastavený formulár prihlásenia",
   "Accounts_TwoFactorAuthentication_Enabled": "Povoliť dvoj-faktorovú autentifikáciu",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximálna Delta",

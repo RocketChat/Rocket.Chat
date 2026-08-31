@@ -221,7 +221,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Establir el correu electrònic dels comptes externs com a verificat",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Els correus electrònics de comptes creats des de serveis externs, com LDAP, OAuth, etc., es marcaran com verificats automàticament.",
   "Accounts_SetDefaultAvatar": "Avatar per defecte",
-  "Accounts_SetDefaultAvatar_Description": "Prova de determinar l'avatar per defecte basant-se en el compte d'OAuth o bé Gravatar",
   "Accounts_ShowFormLogin": "Mostra formulari d'inici de sessió per defecte",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Establir segon factor d'autenticació via correu electrònic per defecte per a nous usuaris",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "els nous usuaris tindran activat per defecte el segon factor d'autenticació per correu electrònic. Podran desactivar-lo en la seva pàgina de perfil.",

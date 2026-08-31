@@ -201,7 +201,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Đặt email của tài khoản bên ngoài như đã được xác minh",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Tài khoản được tạo từ các dịch vụ bên ngoài, như LDAP, OAuth, v.v., sẽ tự động xác minh email",
   "Accounts_SetDefaultAvatar": "Lấy Avatar mặc định",
-  "Accounts_SetDefaultAvatar_Description": "Cố gắng lấy avatar mặc định dựa trên tài khoản OAuth hoặc Gravatar",
   "Accounts_ShowFormLogin": "Hiện form-based đăng nhập",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Tự động chọn người dùng mới cho Hai yếu tố qua Email",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Người dùng mới sẽ có Xác thực hai yếu tố qua Email được bật theo mặc định. Họ sẽ có thể vô hiệu hóa nó trong trang hồ sơ của họ.",

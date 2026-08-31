@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "கடவுச்சொல் உறுதிப்படுத்தல் தேவை",
   "Accounts_SearchFields": "தேடலில் கவனம் செலுத்துவதற்கான புலங்கள்",
   "Accounts_SetDefaultAvatar": "Default Avatar ஐ அமை",
-  "Accounts_SetDefaultAvatar_Description": "OAuth கணக்கு அல்லது Gravatar அடிப்படையில் இயல்புநிலை சின்னத்தை தீர்மானிக்க முயற்சிக்கிறது",
   "Accounts_ShowFormLogin": "காட்டு-சார்ந்த தேதி",
   "Accounts_TwoFactorAuthentication_Enabled": "இரு காரணி அங்கீகாரத்தை இயக்கவும்",
   "Accounts_TwoFactorAuthentication_MaxDelta": "அதிகபட்ச டெல்டா",

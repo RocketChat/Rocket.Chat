@@ -272,7 +272,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Sett epostadresser for eksterne kontoer som bekreftet",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Kontoer opprettet fra eksterne tjenester, som LDAP, OAuth, osv., vil få epostadressene verifisert automatisk",
   "Accounts_SetDefaultAvatar": "Angi Standard Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Trenger å bestemme standard avatar basert på OAuth-konto eller Gravatar",
   "Accounts_ShowFormLogin": "Vis skjemabasert pålogging",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Automatisk aktiver tofaktor via e-post for nye brukere",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Nye brukere vil ha tofaktorautentisering via e-post aktivert som standard. De vil kunne deaktivere det på profilsiden.",

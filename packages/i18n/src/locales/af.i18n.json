@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Vereis wagwoord bevestiging",
   "Accounts_SearchFields": "Gebiede om in die soektog te oorweeg",
   "Accounts_SetDefaultAvatar": "Stel Standaard Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Probeer om standaard avatar gebaseer op OAuth-rekening of Gravatar te bepaal",
   "Accounts_ShowFormLogin": "Wys vormgebaseerde inskrywing",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktiveer twee faktore verifikasie",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum Delta",
