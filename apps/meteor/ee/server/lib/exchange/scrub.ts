@@ -19,7 +19,6 @@ const PATTERNS: [RegExp, string][] = [
 export const scrubText = (value: string): string =>
 	PATTERNS.reduce((acc, [pattern, replacement]) => acc.replace(pattern, replacement), value);
 
-// Produces something safe to hand a logger or exception message.
 export const scrubForLog = (value: unknown, depth = 0): unknown => {
 	if (depth > 4) {
 		return '[truncated]';
