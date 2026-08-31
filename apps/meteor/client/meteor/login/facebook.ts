@@ -5,12 +5,13 @@ import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, redirectUri, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import type { AbsoluteUrlOptions } from '../../lib/absoluteUrl';
 
 type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
-	absoluteUrlOptions?: Record<string, any>;
+	absoluteUrlOptions?: AbsoluteUrlOptions;
 	params?: Record<string, any>;
 	auth_type?: string;
 };
@@ -22,7 +23,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 
 		const loginUrl = new URL('https://www.facebook.com/v17.0/dialog/oauth');
 		loginUrl.searchParams.append('client_id', config.appId);
-		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions));
+		loginUrl.searchParams.append('redirect_uri', redirectUri('facebook', config, options.params, options.absoluteUrlOptions));
 		loginUrl.searchParams.append(
 			'display',
 			/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) ? 'touch' : 'popup',
