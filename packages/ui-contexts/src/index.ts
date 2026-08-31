@@ -32,7 +32,7 @@ export { useAtLeastOnePermission } from './hooks/useAtLeastOnePermission';
 export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEmbedMedia';
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
-export { useCanJoinVideoconf } from './hooks/useCanJoinVideoconf';
+export { useVideoconfPermissions } from './hooks/useVideoconfPermissions';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';

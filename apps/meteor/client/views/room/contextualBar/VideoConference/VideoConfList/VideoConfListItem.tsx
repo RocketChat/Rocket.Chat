@@ -19,7 +19,7 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useCanJoinVideoconf } from '@rocket.chat/ui-contexts';
+import { useVideoconfPermissions } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
@@ -51,7 +51,7 @@ const VideoConfListItem = ({
 		discussionRid,
 	} = videoConfData;
 
-	const canJoinCall = useCanJoinVideoconf(rid);
+	const { canJoinConference } = useVideoconfPermissions(rid);
 
 	const displayName = useUserDisplayName({ name, username });
 	const joinedUsers = users.filter((user) => user._id !== _id);
@@ -67,7 +67,7 @@ const VideoConfListItem = ({
 	`;
 
 	const handleJoinConference = useStableCallback((): void => {
-		joinCall(callId);
+		void joinCall(callId);
 		return reload();
 	});
 
@@ -92,22 +92,24 @@ const VideoConfListItem = ({
 					<MessageBody clamp={2} />
 					<Box display='flex'></Box>
 					<MessageBlock flexDirection='row' alignItems='center'>
-						<ButtonGroup>
-							{canJoinCall && (
-								<Button disabled={Boolean(endedAt)} size='small' alignItems='center' display='flex' onClick={handleJoinConference}>
-									{endedAt ? t('Call_ended') : t('Join_call')}
-								</Button>
-							)}
-							{discussionRid && (
-								<IconButton
-									small
-									icon='discussion'
-									data-drid={discussionRid}
-									title={t('Join_discussion')}
-									onClick={() => goToRoom(discussionRid)}
-								/>
-							)}
-						</ButtonGroup>
+						{(canJoinConference || discussionRid) && (
+							<ButtonGroup>
+								{canJoinConference && (
+									<Button disabled={Boolean(endedAt)} size='small' alignItems='center' display='flex' onClick={handleJoinConference}>
+										{endedAt ? t('Call_ended') : t('Join_call')}
+									</Button>
+								)}
+								{discussionRid && (
+									<IconButton
+										small
+										icon='discussion'
+										data-drid={discussionRid}
+										title={t('Join_discussion')}
+										onClick={() => goToRoom(discussionRid)}
+									/>
+								)}
+							</ButtonGroup>
+						)}
 						{joinedUsers.length > 0 && (
 							<Box marginInlineStart={8} fontScale='c1' display='flex' alignItems='center'>
 								<AvatarStack>
@@ -132,9 +134,14 @@ const VideoConfListItem = ({
 								</Box>
 							</Box>
 						)}
-						{joinedUsers.length === 0 && !endedAt && (
+						{joinedUsers.length === 0 && !endedAt && canJoinConference && (
 							<Box marginInlineStart={8} fontScale='c1'>
 								{t('Be_the_first_to_join')}
+							</Box>
+						)}
+						{!canJoinConference && (
+							<Box marginInlineStart={joinedUsers.length > 0 || discussionRid ? 8 : 0} fontScale='c1'>
+								{t('Videoconf_cannot_join_conference')}
 							</Box>
 						)}
 					</MessageBlock>

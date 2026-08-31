@@ -1,5 +1,5 @@
 import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useCanJoinVideoconf, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useVideoconfPermissions, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -50,7 +50,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	const result = useVideoConfDataStream({ rid, callId });
 
-	const canJoinCall = useCanJoinVideoconf(rid);
+	const { canJoinConference, canManageConference } = useVideoconfPermissions(rid);
 
 	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
 		void action(
@@ -134,12 +134,28 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				})
 			: t('__usernames__joined', { usernames: joinedNamesOrUsernames });
 
-	const actions = (
-		<VideoConfMessageActions>
-			{data.discussionRid && <VideoConfMessageAction icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
-			<VideoConfMessageAction icon='info' onClick={openCallInfo} />
-		</VideoConfMessageActions>
-	);
+	const actions =
+		data.discussionRid || canJoinConference ? (
+			<VideoConfMessageActions>
+				{data.discussionRid && <VideoConfMessageAction icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
+				{canJoinConference && <VideoConfMessageAction icon='info' onClick={openCallInfo} />}
+			</VideoConfMessageActions>
+		) : null;
+
+	const endedFooter = [
+		data.type === 'direct' && canManageConference && (
+			<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
+		),
+		data.type !== 'direct' && data.users.length > 0 && (
+			<>
+				<VideoConfMessageUserStack users={data.users} />
+				<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
+			</>
+		),
+		[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
+			<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
+		),
+	].filter(Boolean);
 
 	if ('endedAt' in data) {
 		return (
@@ -151,27 +167,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 					</VideoConfMessageContent>
 					{actions}
 				</VideoConfMessageRow>
-				<VideoConfMessageFooter>
-					{data.type === 'direct' && (
-						<>
-							<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
-							{[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
-								<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
-							)}
-						</>
-					)}
-					{data.type !== 'direct' &&
-						(data.users.length ? (
-							<>
-								<VideoConfMessageUserStack users={data.users} />
-								<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
-							</>
-						) : (
-							[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
-								<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
-							)
-						))}
-				</VideoConfMessageFooter>
+				{endedFooter.length > 0 && <VideoConfMessageFooter>{endedFooter}</VideoConfMessageFooter>}
 			</VideoConfMessage>
 		);
 	}
@@ -203,16 +199,20 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				{canJoinCall && (
-					<VideoConfMessageButton primary onClick={joinHandler}>
-						{t('Join')}
-					</VideoConfMessageButton>
-				)}
-				{Boolean(data.users.length) && (
+				{canJoinConference ? (
 					<>
-						<VideoConfMessageUserStack users={data.users} />
-						<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
+						<VideoConfMessageButton primary onClick={joinHandler}>
+							{t('Join')}
+						</VideoConfMessageButton>
+						{Boolean(data.users.length) && (
+							<>
+								<VideoConfMessageUserStack users={data.users} />
+								<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
+							</>
+						)}
 					</>
+				) : (
+					<VideoConfMessageFooterText>{t('Videoconf_cannot_join_conference')}</VideoConfMessageFooterText>
 				)}
 			</VideoConfMessageFooter>
 		</VideoConfMessage>
