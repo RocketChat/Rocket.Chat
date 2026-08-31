@@ -11,7 +11,6 @@ import './lib/autotranslate';
 import './lib/bot-helpers';
 import './lib/rooms/settings';
 import './lib/cloud';
-import './lib/auth-providers/crowd/crowd';
 import './lib/auth-providers/custom-oauth/custom_oauth_server';
 import './lib/media/custom-sounds/startup/custom-sounds';
 import './lib/auth-providers/dolphin';
