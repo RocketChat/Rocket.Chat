@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Memerlukan Password Confirmation",
   "Accounts_SearchFields": "Bidang yang Harus Dipertimbangkan dalam Pencarian",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Mencoba untuk menentukan avatar default berdasarkan Akun OAuth atau Gravatar",
   "Accounts_ShowFormLogin": "berbasis bentuk acara Login",
   "Accounts_TwoFactorAuthentication_Enabled": "Aktifkan Dua Faktor Otentikasi",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maksimum",

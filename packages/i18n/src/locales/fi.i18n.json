@@ -237,7 +237,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Aseta ulkoisten tilien sähköpostiosoitteet vahvistetuiksi",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Ulkoisista palveluista (kuten LDAP ja OAuth) luotujen tilien sähköposti vahvistetaan automaattisesti",
   "Accounts_SetDefaultAvatar": "Aseta oletus-avatar",
-  "Accounts_SetDefaultAvatar_Description": "Yrittää määrittää oletusavatarin OAuth-tilin tai Gravatarin perusteella",
   "Accounts_ShowFormLogin": "Näytä oletusarvoinen kirjautumislomake",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Ota automaattisesti käyttöön kaksivaiheinen tunnistautuminen sähköpostitse uusille käyttäjille ",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Uusilla käyttäjillä on oletusarvoisesti käytössä kaksivaiheinen tunnistautuminen sähköpostitse. He voivat poistaa sen käytöstä profiilisivullaan.",

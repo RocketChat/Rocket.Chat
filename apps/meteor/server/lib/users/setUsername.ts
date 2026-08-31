@@ -130,19 +130,11 @@ export const _setUsername = async function (
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = await getAvatarSuggestionForUser(user);
-		let avatarData;
-		let serviceName = 'gravatar';
+		const [serviceName] = Object.keys(avatarSuggestions);
 
-		for (const service of Object.keys(avatarSuggestions)) {
-			avatarData = avatarSuggestions[service];
-			if (service !== 'gravatar') {
-				serviceName = service;
-				break;
-			}
-		}
-
-		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater, session);
+		if (serviceName) {
+			const { blob, contentType } = avatarSuggestions[serviceName];
+			await setUserAvatar(user, blob, contentType, serviceName, undefined, updater, session);
 		}
 	}
 

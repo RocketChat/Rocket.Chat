@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Solicitați confirmarea parolei",
   "Accounts_SearchFields": "Domenii de luat în considerare în căutarea",
   "Accounts_SetDefaultAvatar": "Setați Avatar implicit",
-  "Accounts_SetDefaultAvatar_Description": "Încercați să stabiliți un avatar implicit, bazat pe contul OAuth sau pe Gravatar",
   "Accounts_ShowFormLogin": "Arată formularul pentru autentificare",
   "Accounts_TwoFactorAuthentication_Enabled": "Activați autentificarea cu doi factori",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maximă",

@@ -52,7 +52,9 @@ test.describe.serial('settings-account-profile', () => {
 			});
 
 			test('should change avatar image from url', async () => {
-				await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
+				await poAccountProfile.inputAvatarLink.fill(
+					'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png',
+				);
 				await poAccountProfile.btnSetAvatarLink.click();
 
 				await poAccountProfile.btnSubmit.click();
