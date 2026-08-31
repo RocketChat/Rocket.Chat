@@ -7096,6 +7096,7 @@
   "video-conf-provider-not-configured": "**Conference call not enabled**: A workspace admin needs to enable the conference calls feature first.",
   "Videocall_declined": "Video Call Declined.",
   "Videocall_enabled": "Video Call Enabled",
+  "Videoconf_cannot_join_conference": "You're unable to join",
   "VideoConf_Default_Provider": "Default Provider",
   "VideoConf_Default_Provider_Description": "If you have multiple provider apps installed, select which one should be used for new conference calls.",
   "VideoConf_Enable_Channels": "Enable in public channels",

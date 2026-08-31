@@ -203,10 +203,12 @@ test.describe('video conference - join button visibility', () => {
 
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toHaveText(/You're unable to join/i);
 			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeHidden();
 
 			await poHomeChannel.roomToolbar.openCalls();
 			await expect(poHomeChannel.content.videoConfCallsPanel).toBeVisible();
+			await expect(poHomeChannel.content.videoConfCallsPanel).toHaveText(/You're unable to join/i);
 			await expect(poHomeChannel.content.btnJoinCallInCallsPanel).toBeHidden();
 		});
 
