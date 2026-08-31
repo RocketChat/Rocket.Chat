@@ -25,6 +25,19 @@ The chat can run in one of two modes, controlled by `VideoConf_Persistent_Chat_M
 The discussion/thread itself is gated by the EE setting `VideoConf_Enable_Persistent_Chat` (same module), which
 is what it gated before this feature and all it gates now.
 
+So the mode alone never says where a call's chat lives — it only says which of the two the workspace *wants*. It
+takes three answers, and the call window has to read all three the way the server does, since the mode's
+registered default is `thread` and reading it on its own puts the panel over a thread the server never made:
+
+| | thread | main room |
+| --- | --- | --- |
+| `VideoConf_Enable_Persistent_Chat` off | the room | the room |
+| provider without the `persistentChat` capability | the room | the room |
+| both, and the mode agrees | thread off the call message | the discussion, once it exists |
+
+`autoFollowCallThread` and `maybeCreateDiscussion` are where the server applies exactly that;
+`useConferenceEmbedded` reads `capabilities.persistentChat` off the conference it already fetched.
+
 ## The flows at a glance
 
 Four diagrams covering a call's life. They describe the feature with the call window **on**; with it off none of it

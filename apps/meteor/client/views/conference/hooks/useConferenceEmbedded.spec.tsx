@@ -144,9 +144,14 @@ it('follows the chat to a discussion in thread mode too', async () => {
 	const { result } = renderHook(() => useConferenceEmbedded(callId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			.withSetting('VideoConf_Enable_Persistent_Chat', true)
 			.withSetting('VideoConf_Persistent_Chat_Mode', 'thread')
 			.withStream('video-conference', streamRef)
-			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
+			.withEndpoint(
+				'GET',
+				'/v1/video-conference.info',
+				() => ({ ...buildInfo([]), capabilities: { persistentChat: true }, discussionRid }) as any,
+			)
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
 			.build(),
 	});
@@ -159,6 +164,63 @@ it('follows the chat to a discussion in thread mode too', async () => {
 
 	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
 	expect(result.current.room.tmid).toBeUndefined();
+});
+
+// Where the call's chat lives is the server's answer, and it takes three things to be a thread: persistent chat
+// on, the mode set to `thread`, and a provider that says it supports persistent chat (`autoFollowCallThread`
+// checks all three). The mode's registered default is `thread`, so reading it alone put every call's chat in a
+// thread nobody was subscribed to — the panel titled "Thread in <room>" over a conversation held in the room.
+describe('where the chat lives', () => {
+	const renderWithChatSettings = ({
+		enabled,
+		mode,
+		providerSupport,
+	}: {
+		enabled: boolean;
+		mode: 'thread' | 'main_room';
+		providerSupport: boolean;
+	}) =>
+		renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('VideoConf_Enable_Persistent_Chat', enabled)
+				.withSetting('VideoConf_Persistent_Chat_Mode', mode)
+				.withEndpoint(
+					'GET',
+					'/v1/video-conference.info',
+					() => ({ ...buildInfo([]), capabilities: { persistentChat: providerSupport } }) as any,
+				)
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+	it('is the call message thread when the server would put it there', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBe('some-msg-id');
+	});
+
+	it('is the room while persistent chat is off, whatever the mode says', async () => {
+		const { result } = renderWithChatSettings({ enabled: false, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	it('is the room for a provider that does not do persistent chat', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: false });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	it('is the room in main_room mode', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'main_room', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
 });
 
 // Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices

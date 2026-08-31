@@ -1,4 +1,4 @@
-import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import type { IVideoConferenceUser, VideoConferenceCapabilities, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import {
@@ -60,6 +60,22 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
 	}
 };
 
+/**
+ * Whether the call's chat lives in a thread off the call message, rather than in the room itself.
+ *
+ * The mode alone doesn't say. Its registered default is `thread`, so reading it on its own put the chat in a
+ * thread on every workspace with the call window on — including workspaces where the server would never make
+ * one. The server takes three answers before it will: persistent chat enabled, the mode, and a provider that
+ * declares it supports persistent chat (`autoFollowCallThread` refuses on any of them, as `maybeCreateDiscussion`
+ * does for the other mode). Answering differently here means a panel titled "Thread in …" over a thread nobody
+ * is subscribed to, in a call whose chat is the room's.
+ */
+const chatLivesInAThread = (
+	isPersistentChatEnabled: boolean,
+	chatMode: 'thread' | 'main_room',
+	capabilities: VideoConferenceCapabilities | undefined,
+): boolean => isPersistentChatEnabled && chatMode === 'thread' && !!capabilities?.persistentChat;
+
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
@@ -76,6 +92,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	// The fallback is only reached where the setting isn't registered, which is a workspace without the call
 	// window — and there the server answers `main_room` too. Once the window is on, the registered value wins.
 	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'main_room') as 'thread' | 'main_room';
+	const isPersistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
 
 	const {
 		data: info,
@@ -166,6 +183,8 @@ export const useConferenceEmbedded = (callId: string) => {
 		return { ...info.chatAccess, members: members.filter(({ _id }) => missing.has(_id)) };
 	}, [info, members]);
 
+	const isThreadedChat = chatLivesInAThread(isPersistentChatEnabled, chatMode, info?.capabilities);
+
 	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
 	// choices into the provider's URL — and what marks them as present. So this waits to be asked, rather than
 	// running as soon as the window opens.
@@ -238,7 +257,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,
-			tmid: !info?.discussionRid && chatMode === 'thread' ? info?.messages.started : undefined,
+			tmid: !info?.discussionRid && isThreadedChat ? info?.messages.started : undefined,
 			name: info?.chatAccess.name,
 			type: info?.chatAccess.type,
 			loading: isInfoPending,
