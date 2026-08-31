@@ -31,7 +31,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -82,21 +82,27 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				<ToggleButton
-					label={t('Hold')}
-					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-					titles={[t('Hold'), t('Resume')]}
-					pressed={held}
-					onToggle={onHold}
-				/>
-				<ToggleButton
-					label={t('Share_screen')}
-					icons={['desktop-arrow-up', 'desktop-cross']}
-					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
-					pressed={localScreen?.active ?? false}
-					onToggle={onToggleScreenSharing}
-				/>
-				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				{supportedFeatures.includes('hold') && (
+					<ToggleButton
+						label={t('Hold')}
+						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+						titles={[t('Hold'), t('Resume')]}
+						pressed={held}
+						onToggle={onHold}
+					/>
+				)}
+				{supportedFeatures.includes('screen-share') && (
+					<ToggleButton
+						label={t('Share_screen')}
+						icons={['desktop-arrow-up', 'desktop-cross']}
+						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
+						pressed={localScreen?.active ?? false}
+						onToggle={onToggleScreenSharing}
+					/>
+				)}
+				{supportedFeatures.includes('transfer') && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				)}
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
 		</Box>

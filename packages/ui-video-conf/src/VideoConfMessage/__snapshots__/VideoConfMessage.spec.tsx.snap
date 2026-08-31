@@ -96,7 +96,7 @@ exports[`renders CallEnded without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -105,11 +105,11 @@ exports[`renders CallEnded without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1796ep8"
+                    class="rcx-box rcx-box--full rcx-css-1gl6eu2"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1bt40rp"
+                      class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-568yc1"
                     >
                       
                     </i>
@@ -139,7 +139,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1gj3xb"
@@ -266,7 +266,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -275,11 +275,11 @@ exports[`renders CallEndedDM without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1796ep8"
+                    class="rcx-box rcx-box--full rcx-css-1gl6eu2"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1bt40rp"
+                      class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-568yc1"
                     >
                       
                     </i>
@@ -309,7 +309,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1gj3xb"
@@ -436,7 +436,7 @@ exports[`renders CallOngoing without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -445,7 +445,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-ehzwm6"
+                    class="rcx-box rcx-box--full rcx-css-ehyzbd"
                   >
                     <i
                       aria-hidden="true"
@@ -479,7 +479,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1gj3xb"
@@ -616,7 +616,7 @@ exports[`renders CallingDM without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -625,11 +625,11 @@ exports[`renders CallingDM without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-f0uvnc"
+                    class="rcx-box rcx-box--full rcx-css-1xqpvsb"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-phone-in rcx-icon rcx-css-mskjgr"
+                      class="rcx-box rcx-box--full rcx-icon--name-phone-in rcx-icon rcx-css-2mjsik"
                     >
                       
                     </i>
@@ -659,7 +659,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1gj3xb"
@@ -786,7 +786,7 @@ exports[`renders Loading without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -796,7 +796,7 @@ exports[`renders Loading without crashing 1`] = `
                 />
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <span
                   class="rcx-skeleton rcx-skeleton--text rcx-css-el6yni"
@@ -907,7 +907,7 @@ exports[`renders NoAvatars without crashing 1`] = `
             class="rcx-message-body"
           >
             <div
-              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1fp4v6y"
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-170vvmf"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
@@ -916,7 +916,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-ehzwm6"
+                    class="rcx-box rcx-box--full rcx-css-ehyzbd"
                   >
                     <i
                       aria-hidden="true"
@@ -950,7 +950,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-194k0rt"
+                class="rcx-box rcx-box--full rcx-css-1aqp1io"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1gj3xb"

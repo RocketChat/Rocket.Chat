@@ -1,10 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { runOptimisticSendMessage } from '../../../../app/lib/client/methods/sendMessage';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
-import { Messages } from '../../../stores';
+import { Messages, Rooms } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
@@ -14,6 +13,51 @@ import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { onClientMessageReceived } from '../../onClientMessageReceived';
+import { settings } from '../../settings';
+import { getUserId, getUser } from '../../user';
+import { upsertThreadMessageInCache } from '../../utils/threadMessageUtils';
+
+const runOptimisticSendMessage = async (message: Partial<IMessage> & { rid: IMessage['rid']; msg: IMessage['msg'] }): Promise<void> => {
+	const uid = getUserId();
+	if (!uid || trim(message.msg) === '') {
+		return;
+	}
+	const messageAlreadyExists = message._id && Messages.state.get(message._id);
+	if (messageAlreadyExists) {
+		dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
+		return;
+	}
+	const user = getUser();
+	if (!user?.username) {
+		return;
+	}
+
+	const room = Rooms.state.get(message.rid);
+	if (room?.federated) {
+		return;
+	}
+
+	const optimistic: IMessage = {
+		...(message as IMessage),
+		ts: new Date(),
+		u: {
+			_id: uid,
+			username: user.username,
+			name: user.name || '',
+		},
+		temp: true,
+		...(settings.peek('Message_Read_Receipt_Enabled') ? { unread: true } : {}),
+	};
+
+	const processed = await onClientMessageReceived(optimistic);
+	Messages.state.store(processed);
+
+	if (processed.tmid) {
+		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
+	}
+};
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
 	const mid = chat.currentEditingMessage.getMID();

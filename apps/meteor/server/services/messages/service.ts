@@ -196,7 +196,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, msgs: 1, lm: 1 } }),
+			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, msgs: 1, lm: 1, sysMes: 1 } }),
 		]);
 
 		if (!insertedId) {

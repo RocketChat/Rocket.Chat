@@ -8,11 +8,11 @@ exports[`renders Skeleton without crashing 1`] = `
     >
       <div
         aria-label="Loading"
-        class="rcx-css-7i5d8i"
+        class="rcx-css-4z2gcx"
         role="dialog"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-ng2zpy"
+          class="rcx-box rcx-box--full rcx-css-th6bpk"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-135wgx"
@@ -57,11 +57,11 @@ exports[`renders StartCall without crashing 1`] = `
     >
       <div
         aria-label="Start Call"
-        class="rcx-css-7i5d8i"
+        class="rcx-css-4z2gcx"
         role="dialog"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-ng2zpy"
+          class="rcx-box rcx-box--full rcx-css-th6bpk"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-135wgx"

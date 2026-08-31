@@ -6,6 +6,7 @@ import BaseGroupPage from '../groups/BaseGroupPage';
 import EnterpriseGroupPage from '../groups/EnterpriseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
+import SAMLGroupPage from '../groups/SAMLGroupPage';
 
 export type SettingsGroupSelectorProps = {
 	groupId: ISetting['_id'];
@@ -25,6 +26,10 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
+	}
+
+	if (groupId === 'SAML') {
+		return <SAMLGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'Assets') {

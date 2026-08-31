@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMessageActionAppsActionButtons } from './useMessageActionAppsActionButtons';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 
 type MessageActionSection = {
 	id: string;

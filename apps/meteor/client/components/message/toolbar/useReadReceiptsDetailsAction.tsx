@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import ReadReceiptsModal from '../../../views/room/modals/ReadReceiptsModal';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 

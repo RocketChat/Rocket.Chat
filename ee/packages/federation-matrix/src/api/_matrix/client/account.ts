@@ -5,6 +5,7 @@ import type { ClientRouter } from './_shared';
 import { isMatrixErrorProps, license, tags } from './_shared';
 import { createOrUpdateFederatedUser } from '../../../helpers/createOrUpdateFederatedUser';
 import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../../helpers/parseXmppUserId';
+import { validateFederatedUsername } from '../../../helpers/validateFederatedUsername';
 import { logger } from '../../logger';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
@@ -93,7 +94,18 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					// The spec defines `username` as the desired localpart; normalize either form to the
 					// fully-qualified MXID, which is what gets stored and what `user_id` must carry.
 					const withSigil = body.username.startsWith('@') ? body.username : `@${body.username}`;
-					const userId = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
+					const userId: string = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
+
+					if (!validateFederatedUsername(userId)) {
+						logger.warn({ msg: 'Malformed user id during AS registration', username: body.username });
+						return {
+							statusCode: 400,
+							body: {
+								errcode: 'M_INVALID_USERNAME',
+								error: 'Could not derive a username from the provided user id',
+							},
+						};
+					}
 
 					if (isReservedByAnotherAppService(userId)) {
 						return {
@@ -145,6 +157,17 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				}
 
 				const username = `@${decodedUsername.resource}:${serverName}`;
+
+				if (!validateFederatedUsername(username)) {
+					logger.warn({ msg: 'Malformed user id derived from XMPP user id during AS registration', username: body.username });
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_INVALID_USERNAME',
+							error: 'Could not derive a username from the provided XMPP user id',
+						},
+					};
+				}
 
 				if (isReservedByAnotherAppService(username)) {
 					return {

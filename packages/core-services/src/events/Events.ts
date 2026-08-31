@@ -157,6 +157,7 @@ export type EventSignatures = {
 			rid: IRoom['_id'];
 		};
 	}): void;
+	'presence.invalidateVisibility'(data: { targets?: IUser['_id'][]; viewers?: IUser['_id'][] }): void;
 	'presence.status'(data: {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;

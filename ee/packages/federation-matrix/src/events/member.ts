@@ -1,5 +1,5 @@
 import { Room, Upload } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRegisterUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -7,9 +7,9 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import debounce from 'lodash.debounce';
 import mem from 'mem';
 
-import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
+import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -71,40 +71,6 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 		await Upload.setUserAvatar(user, buffer, contentType, 'rest');
 	} catch (error) {
 		logger.error({ err: error, user: user.username, msg: `Error downloading/setting avatar for user` });
-	}
-}
-
-async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
-	try {
-		const serverName = federationSDK.getConfig('serverName');
-		const [username, userServerName, isLocal] = getUsernameServername(userId, serverName);
-
-		const user = await Users.findOneByUsername(username);
-		if (user) {
-			return user;
-		}
-
-		const as = federationSDK.getAppServiceForUser(userId);
-		if (as) {
-			const user = await Users.findOneByUsername(userId);
-			if (!user) {
-				throw new Error('AppService user not found for creating user');
-			}
-			return user;
-		}
-
-		if (isLocal) {
-			throw new Error(`Local user ${username} not found for Matrix ID: ${userId}`);
-		}
-
-		return createOrUpdateFederatedUser({
-			username: userId,
-			name: userId,
-			origin: userServerName,
-		});
-	} catch (err) {
-		logger.error({ msg: 'Error getting or creating federated user', err, userId });
-		throw new Error(`Error getting or creating federated user ${userId}`);
 	}
 }
 
@@ -200,18 +166,7 @@ async function handleInvite({
 	unsigned,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const inviterUser = await getOrCreateFederatedUser(senderId);
-	if (!inviterUser) {
-		throw new Error(`Failed to get or create inviter user: ${senderId}`);
-	}
-
-	if (!isRegisterUser(inviterUser)) {
-		throw new Error('Inviter user is not registered');
-	}
-
 	const inviteeUser = await getOrCreateFederatedUser(userId);
-	if (!inviteeUser) {
-		throw new Error(`Failed to get or create invitee user: ${userId}`);
-	}
 
 	const strippedState = unsigned.invite_room_state;
 
@@ -298,9 +253,6 @@ async function handleJoin({
 	content,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
-	if (!joiningUser?.username) {
-		throw new Error(`Failed to get or create joining user: ${userId}`);
-	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
@@ -343,7 +295,7 @@ async function handleJoin({
 		await Room.updateDirectMessageRoomName(
 			room,
 			[subscription._id],
-			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name || joiningUser.username, username: joiningUser.username }],
+			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name, username: joiningUser.username }],
 		);
 	}
 

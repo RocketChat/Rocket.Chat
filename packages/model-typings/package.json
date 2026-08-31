@@ -8,7 +8,8 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix ."
 	},

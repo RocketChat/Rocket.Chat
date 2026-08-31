@@ -8,12 +8,12 @@ exports[`renders Default without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1w42s7k rc-message-box__textarea js-input-message rcx-css-h223mg"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
         placeholder="Text"
         rows="1"
       />
       <div
-        class="rcx-box rcx-box--full rcx-css-1uhyw54"
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
       >
         <div
           aria-orientation="horizontal"
@@ -33,7 +33,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -132,7 +132,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -213,12 +213,12 @@ exports[`renders Expandable without crashing 1`] = `
         </button>
       </div>
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1w42s7k rc-message-box__textarea js-input-message rcx-css-h223mg"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
         placeholder="Type a message..."
         rows="1"
       />
       <div
-        class="rcx-box rcx-box--full rcx-css-1uhyw54"
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
       >
         <div
           aria-orientation="horizontal"
@@ -238,7 +238,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -337,7 +337,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -409,7 +409,7 @@ exports[`renders Loading without crashing 1`] = `
         />
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-7c9oxc"
+        class="rcx-box rcx-box--full rcx-css-s4nhe0"
       />
     </div>
   </div>
@@ -437,7 +437,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <hr
-        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
       />
       <button
         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -536,7 +536,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <hr
-        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
       />
       <button
         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -599,7 +599,7 @@ exports[`renders WithFiles without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1w42s7k rc-message-box__textarea js-input-message rcx-css-h223mg"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
         placeholder="Text"
         rows="1"
       />
@@ -610,20 +610,20 @@ exports[`renders WithFiles without crashing 1`] = `
       >
         <div
           aria-label="antique-pocket-clock-500x500.zip"
-          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-xbmpos rcx-css-1aenn11"
+          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1mnd8rh rcx-css-1q87xeh"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1g6dumc"
+            class="rcx-box rcx-box--full rcx-css-bhy0bx"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1kaan90"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-189cut"
             >
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-zcz2ka"
+              class="rcx-box rcx-box--full rcx-css-vvzg4g"
             >
               zip
             </div>
@@ -632,14 +632,14 @@ exports[`renders WithFiles without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-zzbv2p"
+              class="rcx-box rcx-box--full rcx-css-vnzm2c"
               role="button"
               tabindex="0"
             >
               antique-pocket-clock-500x500.zip
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1so2vt1"
+              class="rcx-box rcx-box--full rcx-css-igh12u"
             >
               58.33 KB - application/zip
             </div>
@@ -663,20 +663,20 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-wcoqg0 rcx-css-1aenn11"
+          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-1q87xeh"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1g6dumc"
+            class="rcx-box rcx-box--full rcx-css-bhy0bx"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1kaan90"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-189cut"
             >
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-zcz2ka"
+              class="rcx-box rcx-box--full rcx-css-vvzg4g"
             >
               png
             </div>
@@ -685,14 +685,14 @@ exports[`renders WithFiles without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-15qm1ck"
+              class="rcx-box rcx-box--full rcx-css-a32rw7"
               role="button"
               tabindex="0"
             >
               file.png
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1x1hkfk"
+              class="rcx-box rcx-box--full rcx-css-11quacw"
             >
               2 MB
             </div>
@@ -700,22 +700,22 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-wcoqg0 rcx-css-x8aexd"
+          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-1hx773r"
           readonly=""
           role="group"
           title="Something went wrong"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1g6dumc"
+            class="rcx-box rcx-box--full rcx-css-bhy0bx"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1kaan90"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-189cut"
             >
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-zcz2ka"
+              class="rcx-box rcx-box--full rcx-css-vvzg4g"
             >
               png
             </div>
@@ -724,14 +724,14 @@ exports[`renders WithFiles without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-zzbv2p"
+              class="rcx-box rcx-box--full rcx-css-vnzm2c"
               role="button"
               tabindex="0"
             >
               file.png
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-cow7ru"
+              class="rcx-box rcx-box--full rcx-css-1yma3on"
             >
               Upload_failed
             </div>
@@ -755,7 +755,7 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-1uhyw54"
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
       >
         <div
           aria-orientation="horizontal"
@@ -775,7 +775,7 @@ exports[`renders WithFiles without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -874,7 +874,7 @@ exports[`renders WithFiles without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -978,7 +978,7 @@ exports[`renders WithHints without crashing 1`] = `
         </span>
       </span>
       <div
-        class="rcx-box rcx-box--full rcx-css-13t1bpv"
+        class="rcx-box rcx-box--full rcx-css-1dp5kdc"
       >
         <strong>
           esc
@@ -995,12 +995,12 @@ exports[`renders WithHints without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1w42s7k rc-message-box__textarea js-input-message rcx-css-h223mg"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
         placeholder="Text"
         rows="1"
       />
       <div
-        class="rcx-box rcx-box--full rcx-css-1uhyw54"
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
       >
         <div
           aria-orientation="horizontal"
@@ -1020,7 +1020,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -1119,7 +1119,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -1201,12 +1201,12 @@ exports[`renders WithSubmit without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1w42s7k rc-message-box__textarea js-input-message rcx-css-h223mg"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
         placeholder="Text"
         rows="1"
       />
       <div
-        class="rcx-box rcx-box--full rcx-css-1uhyw54"
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
       >
         <div
           aria-orientation="horizontal"
@@ -1226,7 +1226,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -1325,7 +1325,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1f1xcc6"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
           />
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"

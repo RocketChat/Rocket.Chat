@@ -39,7 +39,7 @@
 		"adm-zip": "^0.6.0",
 		"astring": "1.8.6",
 		"debug": "^4.3.7",
-		"esbuild": "~0.28.1",
+		"esbuild": "~0.28.2",
 		"jose": "^4.15.9",
 		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",

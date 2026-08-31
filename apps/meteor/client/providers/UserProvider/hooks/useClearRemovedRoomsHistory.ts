@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 
 export const useClearRemovedRoomsHistory = (userId: IUser['_id'] | undefined) => {
 	const subscribeToNotifyUser = useStream('notify-user');

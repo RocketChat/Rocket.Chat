@@ -85,10 +85,12 @@ type ChatGetMessage = {
 
 const ChatGetMessageSchema = {
 	type: 'object',
+	description: 'Fetch a single message by its `msgId`.',
 	properties: {
 		msgId: {
 			type: 'string',
 			minLength: 1,
+			description: 'The message id.',
 		},
 	},
 	required: ['msgId'],
@@ -782,6 +784,8 @@ const ChatPostMessageSchema = {
 	oneOf: [
 		{
 			type: 'object',
+			description:
+				'Post a message to a room by its id. Provide `roomId`; optionally provide `text` or attachments, and `tmid` to reply in a thread.',
 			properties: {
 				roomId: {
 					oneOf: [
@@ -793,22 +797,27 @@ const ChatPostMessageSchema = {
 							},
 						},
 					],
+					description: 'The room id (or array of room ids) to post to.',
 				},
 				text: {
 					type: 'string',
 					nullable: true,
+					description: 'The text content of the message.',
 				},
 				alias: {
 					type: 'string',
 					nullable: true,
+					description: "A name to display as the message author instead of the sender's username.",
 				},
 				emoji: {
 					type: 'string',
 					nullable: true,
+					description: 'Emoji to display as the message avatar (e.g. ":smile:").',
 				},
 				avatar: {
 					type: 'string',
 					nullable: true,
+					description: 'URL of an image to display as the message avatar.',
 				},
 				attachments: {
 					type: 'array',
@@ -816,16 +825,20 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
+					description: 'Rich-content attachments for the message.',
 				},
 				tmid: {
 					type: 'string',
+					description: 'Thread parent message id. Only valid together with `roomId`.',
 				},
 				customFields: {
 					type: 'object',
 					nullable: true,
+					description: 'Custom fields to store on the message.',
 				},
 				parseUrls: {
 					type: 'boolean',
+					description: 'Whether URLs in the message should be parsed for previews.',
 				},
 			},
 			required: ['roomId'],
@@ -833,6 +846,8 @@ const ChatPostMessageSchema = {
 		},
 		{
 			type: 'object',
+			description:
+				'Post a message to a channel by its name (e.g. "#general"). Provide `channel`; optionally provide `text` or attachments.',
 			properties: {
 				channel: {
 					oneOf: [
@@ -844,22 +859,27 @@ const ChatPostMessageSchema = {
 							},
 						},
 					],
+					description: 'The channel name (e.g. "general" or "#general") to post to.',
 				},
 				text: {
 					type: 'string',
 					nullable: true,
+					description: 'The text content of the message.',
 				},
 				alias: {
 					type: 'string',
 					nullable: true,
+					description: "A name to display as the message author instead of the sender's username.",
 				},
 				emoji: {
 					type: 'string',
 					nullable: true,
+					description: 'Emoji to display as the message avatar (e.g. ":smile:").',
 				},
 				avatar: {
 					type: 'string',
 					nullable: true,
+					description: 'URL of an image to display as the message avatar.',
 				},
 				attachments: {
 					type: 'array',
@@ -867,13 +887,16 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
+					description: 'Rich-content attachments for the message.',
 				},
 				customFields: {
 					type: 'object',
 					nullable: true,
+					description: 'Custom fields to store on the message.',
 				},
 				parseUrls: {
 					type: 'boolean',
+					description: 'Whether URLs in the message should be parsed for previews.',
 				},
 			},
 			required: ['channel'],

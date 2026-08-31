@@ -4,7 +4,7 @@ exports[`renders Default with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -15,12 +15,12 @@ exports[`renders Default with stable structure 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -53,7 +53,7 @@ exports[`renders Default with stable structure 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-mcmi1a"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -104,7 +104,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-0"
                           tabindex="0"
                         >
@@ -202,7 +202,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-1"
                           tabindex="0"
                         >
@@ -300,7 +300,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-2"
                           tabindex="0"
                         >
@@ -398,7 +398,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-3"
                           tabindex="0"
                         >
@@ -496,7 +496,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-4"
                           tabindex="0"
                         >
@@ -594,7 +594,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-5"
                           tabindex="0"
                         >
@@ -692,7 +692,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-6"
                           tabindex="0"
                         >
@@ -790,7 +790,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-7"
                           tabindex="0"
                         >
@@ -888,7 +888,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-8"
                           tabindex="0"
                         >
@@ -986,7 +986,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-g76xmq rcx-css-mg522s"
+                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-9"
                           tabindex="0"
                         >
@@ -1101,7 +1101,7 @@ exports[`renders Default with stable structure 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-7rbsbd"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -1131,7 +1131,7 @@ exports[`renders Empty with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -1142,12 +1142,12 @@ exports[`renders Empty with stable structure 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -1180,7 +1180,7 @@ exports[`renders Empty with stable structure 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-mcmi1a"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -1255,7 +1255,7 @@ exports[`renders Empty with stable structure 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-7rbsbd"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
@@ -1285,7 +1285,7 @@ exports[`renders Loading with stable structure 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1m1kji5"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -1296,12 +1296,12 @@ exports[`renders Loading with stable structure 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1vnezmv"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1e5pfjk"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -1334,7 +1334,7 @@ exports[`renders Loading with stable structure 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-mcmi1a"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -1399,7 +1399,7 @@ exports[`renders Loading with stable structure 1`] = `
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-7rbsbd"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div

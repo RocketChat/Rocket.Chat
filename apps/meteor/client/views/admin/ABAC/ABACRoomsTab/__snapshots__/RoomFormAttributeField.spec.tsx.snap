@@ -15,14 +15,14 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           <div
             aria-invalid="false"
             aria-required="false"
-            class="rcx-box rcx-box--full rcx-select rcx-css-1hx4au7"
+            class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1hx4au7"
             name="attributes.0.key"
           >
             <div
               class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
             >
               <span
-                class="rcx-box rcx-box--full rcx-select__item rcx-css-ug26x0"
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-1rqlrtn"
               >
                 ABAC_Search_Attribute
               </span>
@@ -48,7 +48,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-box rcx-box--full rcx-select rcx-css-1te28na"
+            class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1te28na"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1sr8su7"
