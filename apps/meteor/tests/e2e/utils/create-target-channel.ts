@@ -64,7 +64,11 @@ export async function deletePrivateRoomsByName(
 	const userApi = await api.login(credentials);
 
 	try {
-		await Promise.all(roomNames.map((roomName) => userApi.post(`${BASE_API_URL}/groups.delete`, { data: { roomName } })));
+		const responses = await Promise.all(roomNames.map((roomName) => userApi.post(`${BASE_API_URL}/groups.delete`, { data: { roomName } })));
+
+		if (responses.some((response) => !response.ok())) {
+			throw new Error('Failed to delete one or more E2EE test rooms');
+		}
 	} finally {
 		await userApi.dispose();
 	}

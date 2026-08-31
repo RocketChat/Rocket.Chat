@@ -148,12 +148,12 @@ test.describe('E2EE Encrypted Channels', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.navbar.createNew('Channel', channelName);
+		createE2EEChannel.store(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
-		createE2EEChannel.store(channelName, createdChannels);
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
@@ -246,11 +246,11 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		// Create private channel
 		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });
+		createE2EEChannel.store(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
-		createE2EEChannel.store(channelName, createdChannels);
 
 		// Send Unencrypted Messages
 		await poHomeChannel.content.sendMessage('first unencrypted message');
