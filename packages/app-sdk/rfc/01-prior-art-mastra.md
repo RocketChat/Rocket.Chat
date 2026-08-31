@@ -57,5 +57,5 @@ engine should adopt. The patterns we took:
 
 11. **Processor model for interception** — `processInput` / `processOutput`
     either **return a modified value** or call **`abort(reason)`** to stop. We map
-    this directly onto pre-event listeners (modify vs. prevent).
+    this directly onto pre-event listeners (patch vs. prevent).
 

@@ -14,14 +14,22 @@
  *
  * The SDK has ONE primitive — `defineListener({ event, handle })` — and encodes
  * intent in the **return value**, exactly like Mastra processors (`abort()` to
- * block, return a modified value to change, return nothing to observe):
+ * block, return a modified value to change, return nothing to observe).
  *
- *   - observe:  return nothing (post-events, e.g. `message.sent`)
- *   - prevent:  `return ctx.prevent('reason')`  (any `*.before*` event)
- *   - modify:   `return ctx.modify({ ...subject })` (modifiable `*.before*` events)
+ * The outcome factories live under one namespace, `ctx.event`, and take their
+ * names from in-tree ADR 0002 (`docs/adr/0002-unified-event-result-for-pre-events.md`):
+ *
+ *   - observe: return nothing, or `return ctx.event.pass()` (any event)
+ *   - pass:    `return ctx.event.pass()` — allow unchanged, explicitly
+ *   - patch:   `return ctx.event.patch({ ...subject })` (modifiable `*.before*` events)
+ *   - prevent: `return ctx.event.prevent('reason')` (any `*.before*` event)
+ *
+ * ADR 0002 also specifies a fourth intent, `prompt`. The SDK does not expose it
+ * yet, because it depends on an interactive-UI design that is not settled — see
+ * rfc/16-surface-interactive-ui.md.
  *
  * The event name is a string literal, so `ctx.data` is precisely typed, and
- * `ctx.prevent` / `ctx.modify` only exist on events that actually support them.
+ * `ctx.event.patch` / `ctx.event.prevent` only exist on events that support them.
  */
 
 import type { AppContext, AppEnv, BaseEnv } from './context';
@@ -80,7 +88,7 @@ export type EventName = keyof EventPayloads;
 /** Events that can veto the pending action. */
 export type PreventableEvent = Extract<EventName, `${string}.before${string}`>;
 
-/** Subject each modifiable event lets you replace via `ctx.modify(...)`. */
+/** Subject each modifiable event lets you replace via `ctx.event.patch(...)`. */
 export interface ModifiableSubjects {
 	'message.beforeSent': IMessage;
 	'message.beforeUpdated': IMessage;
@@ -89,7 +97,7 @@ export interface ModifiableSubjects {
 }
 export type ModifiableEvent = keyof ModifiableSubjects;
 
-/** Opaque outcome; only `ctx.prevent`/`ctx.modify` can produce one. */
+/** Opaque outcome; only the `ctx.event.*` factories can produce one. */
 declare const OUTCOME: unique symbol;
 export type ListenerOutcome = { readonly [OUTCOME]: true };
 
@@ -98,17 +106,29 @@ type PreventMixin<E> = IsAny<E> extends true
 	: E extends PreventableEvent
 		? { prevent(reason?: string): ListenerOutcome }
 		: {};
-type ModifyMixin<E> = IsAny<E> extends true
-	? { modify(subject: any): ListenerOutcome }
+type PatchMixin<E> = IsAny<E> extends true
+	? { patch(subject: any): ListenerOutcome }
 	: E extends ModifiableEvent
-		? { modify(subject: ModifiableSubjects[E]): ListenerOutcome }
+		? { patch(subject: ModifiableSubjects[E]): ListenerOutcome }
 		: {};
 
-export type ListenerContext<Env extends AppEnv, E extends EventName> = AppContext<Env> & {
-	readonly event: E;
-	readonly data: IsAny<E> extends true ? any : EventPayloads[E];
+/**
+ * The `event` namespace on a listener context: the event name plus the outcome
+ * factories the event allows. `pass` is always there; `patch` and `prevent` are
+ * conditional, so a post-event handler that calls one fails to type-check.
+ */
+export type EventNamespace<E extends EventName> = {
+	/** The event this handler runs for. */
+	readonly name: IsAny<E> extends true ? EventName : E;
+	/** Allow the action unchanged. Equivalent to a bare `return`. */
+	pass(): ListenerOutcome;
 } & PreventMixin<E> &
-	ModifyMixin<E>;
+	PatchMixin<E>;
+
+export type ListenerContext<Env extends AppEnv, E extends EventName> = AppContext<Env> & {
+	readonly event: EventNamespace<E>;
+	readonly data: IsAny<E> extends true ? any : EventPayloads[E];
+};
 
 /** Declarative pre-filter (evaluated by the runtime, replaces the `check…` gate). */
 export interface EventFilter {

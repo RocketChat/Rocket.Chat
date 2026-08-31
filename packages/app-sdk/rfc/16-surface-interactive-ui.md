@@ -66,7 +66,8 @@ In-tree ADR 0002 (see [the event listeners](15-surface-event-listeners.md))
 specifies a fourth listener outcome, `prompt`: ask the user, and let the action
 proceed only if they accept. It ships **specified but not implemented**, for one
 stated reason — the variant is inert without a suspend/resume path, and the
-legacy engine has none.
+legacy engine has none. The SDK matches that: `ctx.event` exposes `pass`,
+`patch` and `prevent`, and nothing else.
 
 This section is that path. `await ctx.ui.open(...)` already suspends a handler
 and resumes it with the user's answer, so a prompt is not new machinery here:
@@ -75,9 +76,9 @@ and resumes it with the user's answer, so a prompt is not new machinery here:
 export const confirmLargeUpload = app.listener({
   event: 'upload.beforeUploaded',
   async handle(ctx) {
-    if (ctx.data.upload.size < TEN_MB) return;                       // observe
+    if (ctx.data.upload.size < TEN_MB) return ctx.event.pass();      // allow unchanged
     const ok = await ctx.ui.confirm({ i18n: { key: 'confirm_large_upload' } });
-    if (!ok) return ctx.prevent({ i18n: { key: 'upload_cancelled' } });
+    if (!ok) return ctx.event.prevent({ i18n: { key: 'upload_cancelled' } });
   },
 });
 ```
