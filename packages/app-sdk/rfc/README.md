@@ -34,6 +34,7 @@ What an app author writes.
 | 16 | [Interactive UI](16-surface-interactive-ui.md) | `await ctx.ui.open` — suspend and resume |
 | 17 | [Settings, persistence, providers, lifecycle](17-surface-settings-persistence-lifecycle.md) | the remaining app-facing pieces |
 | 18 | [Store associations](18-surface-store-associations.md) | secondary concern: cascade cleanup, and whether to keep the tag |
+| 19 | [Block authoring](assets/19-ui-block-authoring.md) | research report: builder vs. object literals, and binding blocks to the state schema |
 
 ## The data layer
 
@@ -96,3 +97,7 @@ ADRs 0002 and 0003 live on branch `feat/apps-media-call-hooks`, not on
 - Documents 30 and 31 are **research reports** against the current codebase.
   They keep their own section numbering, because their internal
   cross-references are dense.
+- [`assets/`](assets) holds research reports that support a scope document
+  rather than stating a decision. Each carries YAML frontmatter recording the
+  `origin/develop` commit it was researched against, so a reader can tell how
+  stale its citations are.
