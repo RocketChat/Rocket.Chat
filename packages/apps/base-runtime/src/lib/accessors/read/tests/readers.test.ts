@@ -6,6 +6,7 @@ import { createRecordingSender } from '../../tests/helpers/parityHarness';
 import { CloudWorkspaceRead } from '../CloudWorkspaceRead';
 import { ContactRead } from '../ContactRead';
 import { LivechatRead } from '../LivechatRead';
+import { MediaCallRead } from '../MediaCallRead';
 import { MessageRead } from '../MessageRead';
 import { OAuthAppsReader } from '../OAuthAppsReader';
 import { PersistenceRead } from '../PersistenceRead';
@@ -123,6 +124,16 @@ describe('Reader family (base-runtime)', () => {
 			const b = setup();
 			await new UserRead(b.senderFn).getAppUser('another-app');
 			assert.deepStrictEqual(b.rec.emitted()[0], { method: 'bridges:getUserBridge:doGetAppUser', params: ['another-app'] });
+		});
+	});
+
+	describe('MediaCallRead', () => {
+		it('getById forwards to getMediaCallBridge:doGetById with the APP_ID sentinel', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getMediaCallBridge:doGetById': { id: 'm1' } });
+			const result = await new MediaCallRead(senderFn).getById('m1');
+
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getMediaCallBridge:doGetById', params: ['m1', 'APP_ID'] }]);
+			assert.deepStrictEqual(result, { id: 'm1' });
 		});
 	});
 
