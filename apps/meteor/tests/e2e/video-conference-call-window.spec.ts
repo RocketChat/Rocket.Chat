@@ -452,6 +452,12 @@ test.describe('video conference call window', () => {
 	 * that found all this stopped at its five-failure cap three tests earlier. With those four failures gone it
 	 * will run, and it is the experiment that settles this: if it passes, the stream works for an add and the
 	 * diagnosis above is too broad; if it fails, it is the third witness.
+	 *
+	 * Two holes in the subscription have since been closed — it no longer subscribes for a call that does not
+	 * exist yet, and it re-subscribes when the connection comes back — but neither is *known* to be what
+	 * happened here: the run recorded no WebSocket frames, so nothing shows which side dropped the
+	 * subscription. Still `fixme` for that reason, rather than because the fix is believed not to work. A run
+	 * with WS frames recorded settles it in one look: `sub`/`nosub` for `stream-video-conference`.
 	 */
 	test.fixme('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
@@ -553,20 +559,12 @@ test.describe('video conference call window', () => {
 	/**
 	 * Qase case 52 step 2 — with persistent chat off, the call's chat panel is the room the call started in.
 	 *
-	 * `test.fixme` because the case is right and the code is not. `ee/server/settings/video-conference.ts` says
-	 * so where it explains why the call window is deliberately *not* gated on `VideoConf_Enable_Persistent_Chat`
-	 * ("with persistent chat off its chat panel simply shows the room the call was started in"), and the server
-	 * behaves that way: `autoFollowCallThread` and `maybeCreateDiscussion` both refuse unless persistent chat is
-	 * on *and* the provider declares the `persistentChat` capability.
-	 *
-	 * `useConferenceEmbedded` asks neither. It reads `VideoConf_Persistent_Chat_Mode` alone — whose stored
-	 * default is `thread`, and whose `enableQuery` greys the admin field without changing the value — and hands
-	 * the panel `tmid = messages.started`. So the window opens a thread off the call message on a workspace
-	 * where persistent chat is off, against a provider whose own `capabilities.persistentChat` is `false` in the
-	 * very response it read. In CI run 33428535519 the panel is headed `Thread in <channel>`, following a thread
-	 * the server subscribed nobody to.
+	 * This failed in CI run 33428535519 with the panel headed `Thread in <channel>`, following a thread the
+	 * server had subscribed nobody to: the window read `VideoConf_Persistent_Chat_Mode` alone, whose registered
+	 * default is `thread`, while the server takes three answers before it will thread a call's chat — persistent
+	 * chat enabled, the mode, and a provider that declares it supports it. The window asks all three now.
 	 */
-	test.fixme('should title the chat panel after the room when persistent chat is off', async ({ api, page }) => {
+	test('should title the chat panel after the room when persistent chat is off', async ({ api, page }) => {
 		const channel = await createSharedChannel(api);
 		const callName = `Chat panel ${faker.string.uuid()}`;
 
