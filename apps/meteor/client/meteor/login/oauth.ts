@@ -4,7 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { Reload } from 'meteor/reload';
-import { URL } from 'meteor/url';
 
 import { LoginCancelledError } from './LoginCancelledError';
 import type { IOAuthProvider, LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';

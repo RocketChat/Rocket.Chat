@@ -1,7 +1,6 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { Random } from 'meteor/random';
 
 import {
@@ -60,6 +59,5 @@ const loginWithMeteorDeveloperAccountForMeteor = (
 	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
 };
 
-Object.assign(MeteorDeveloperAccounts, { requestCredential });
 Object.assign(Accounts._loginFuncs, { 'meteor-developer': loginWithMeteorDeveloperAccountForMeteor });
 Object.assign(Meteor, { loginWithMeteorDeveloperAccount: loginWithMeteorDeveloperAccountForMeteor });

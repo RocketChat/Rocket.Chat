@@ -1,7 +1,6 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 
 import {
@@ -80,6 +79,5 @@ const loginWithGoogleForMeteor = (
 	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
 };
 
-Object.assign(Google, { requestCredential });
 Object.assign(Accounts._loginFuncs, { google: loginWithGoogleForMeteor });
 Object.assign(Meteor, { loginWithGoogle: loginWithGoogleForMeteor });

@@ -1,7 +1,6 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
 
 import {
@@ -65,6 +64,5 @@ const loginWithFacebookForMeteor = (
 	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
 };
 
-Object.assign(Facebook, { requestCredential });
 Object.assign(Accounts._loginFuncs, { facebook: loginWithFacebookForMeteor });
 Object.assign(Meteor, { loginWithFacebook: loginWithFacebookForMeteor });

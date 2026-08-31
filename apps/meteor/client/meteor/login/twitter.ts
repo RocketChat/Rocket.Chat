@@ -2,7 +2,6 @@ import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
@@ -60,6 +59,5 @@ const loginWithTwitterForMeteor = (
 	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
 };
 
-Object.assign(Twitter, { validParamsAuthenticate, requestCredential });
 Object.assign(Accounts._loginFuncs, { twitter: loginWithTwitterForMeteor });
 Object.assign(Meteor, { loginWithTwitter: loginWithTwitterForMeteor });
