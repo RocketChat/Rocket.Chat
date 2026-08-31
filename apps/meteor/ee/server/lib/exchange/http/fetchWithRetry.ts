@@ -1,6 +1,7 @@
 import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
+import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 import { scrubForLog } from '../scrub';
@@ -18,13 +19,6 @@ const DEFAULT_RETRY_AFTER_SECONDS = 60;
 const BACKOFF_BASE_MS = 1000;
 export const MAX_RETRY_AFTER_SECONDS = 300;
 
-type Sleep = (ms: number) => Promise<void>;
-
-const defaultSleep: Sleep = (ms) =>
-	new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
-
 const parseRetryAfterSeconds = (header: string | null): number => {
 	if (!header) {
 		return DEFAULT_RETRY_AFTER_SECONDS;
@@ -38,11 +32,10 @@ const parseRetryAfterSeconds = (header: string | null): number => {
 	return Math.min(seconds, MAX_RETRY_AFTER_SECONDS);
 };
 
-/** `sleep` is injectable so tests do not spend real time waiting. */
 export async function fetchWithRetry(
 	url: string,
 	options: ExtendedFetchOptions,
-	{ sleep = defaultSleep, maxRetries = MAX_RETRIES }: { sleep?: Sleep; maxRetries?: number } = {},
+	{ maxRetries = MAX_RETRIES }: { maxRetries?: number } = {},
 ): Promise<Response> {
 	let lastResponse: Response | undefined;
 
