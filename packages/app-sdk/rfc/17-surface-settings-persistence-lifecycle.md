@@ -7,8 +7,10 @@ the value's type, `ctx.settings.set(key, value)` is type-checked. Legacy
 `getValueById(id)` returned `any`.
 
 **Persistence** — typed collections (`defineStore`) with familiar CRUD +
-`find(query)`; the useful part of legacy "associations" survives as an optional
-per-record tag for cascade cleanup, without the untyped surface. See
+`find(query)`, without the untyped surface. Legacy "associations" survive in the
+sketch as an optional per-record tag, on the argument that they can drive
+cascade cleanup. That argument is a secondary concern and is not settled — see
+[Store associations](18-surface-store-associations.md). See
 [`src/store.ts`](../src/store.ts) and `ctx.store` usage throughout the examples.
 
 **Providers** — `defineVideoConfProvider` / `defineOutboundProvider`; methods
