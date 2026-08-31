@@ -352,7 +352,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "设置外部账号的邮箱地址为已验证",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "由外部服务创建的账号，例如 LDAP、OAuth，将自动设邮件地址为已验证",
   "Accounts_SetDefaultAvatar": "设置默认头像",
-  "Accounts_SetDefaultAvatar_Description": "尝试基于 OAuth 账户或 Gravatar 决定默认头像",
   "Accounts_ShowFormLogin": "显示默认登录表单",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "自动为新用户启用基于邮件的两步验证",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "新用户将默认启用基于邮件的两步验证。他们可以稍后在个人资料页面禁用它。",

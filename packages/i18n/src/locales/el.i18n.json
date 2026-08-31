@@ -177,7 +177,6 @@
   "Accounts_RequirePasswordConfirmation": "Απαίτηση Επιβεβαίωσης Κωδικού",
   "Accounts_SearchFields": "Πεδία που θα ληφθούν υπ' όψη στην Αναζήτηση",
   "Accounts_SetDefaultAvatar": "Ορισμός Προκαθορισμένου Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Προσπαθεί να προσδιορίσει το προκαθορισμένο avatar βασιζόμενο σε λογαριασμό OAuth ή Gravatar ",
   "Accounts_ShowFormLogin": "Εμφάνιση Σύνδεσης με Μορφή Φόρμας",
   "Accounts_TwoFactorAuthentication_Enabled": "Ενεργοποίηση επαλήθευσης δύο παραγόντων",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Μέγιστο Δέλτα",

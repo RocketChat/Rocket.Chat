@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Изисква потвърждение на паролата",
   "Accounts_SearchFields": "Полетата, които да разгледате в търсенето",
   "Accounts_SetDefaultAvatar": "Задайте аватар по подразбиране",
-  "Accounts_SetDefaultAvatar_Description": "Опитва се да определи аватар по подразбиране въз основа на OAuth акаунт или Gravatar",
   "Accounts_ShowFormLogin": "Показване на формуляра за влизане",
   "Accounts_TwoFactorAuthentication_Enabled": "Активиране на удостоверяване с два фактора",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Максимална делта",
