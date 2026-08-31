@@ -5561,6 +5561,17 @@ describe('[/rooms.history]', () => {
 		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
 	});
 
+	it('should report the cursor conflict even when `aroundId` does not resolve', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: 'does-not-exist', previous: '1' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
+	});
+
 	it('should not find a message that belongs to another room', async () => {
 		const other = (await createRoom({ type: 'c', name: `rooms-history-other-${Date.now()}` })).body.channel;
 		const stray = await sendMessage({ message: { rid: other._id, msg: 'stray message' } });
