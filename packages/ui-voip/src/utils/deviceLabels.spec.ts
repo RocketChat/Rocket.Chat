@@ -17,6 +17,12 @@ describe('deviceName', () => {
 		expect(deviceName('Default - Display Audio (05ac:1107)')).toBe('Display Audio');
 	});
 
+	// Whitespace around the pair is trimmed rather than matched, which is what keeps the pattern linear in it.
+	it('drops the vendor pair however it is spaced', () => {
+		expect(deviceName('Display Audio \t (05ac:1107)  ')).toBe('Display Audio');
+		expect(deviceName(`Display Audio${'\t'.repeat(2000)}(05ac:1107)`)).toBe('Display Audio');
+	});
+
 	// A parenthetical that is part of the name has to survive: only an id pair at the very end is noise.
 	it('keeps a parenthetical that belongs to the name', () => {
 		expect(deviceName('MacBook Pro Microphone (Built-in)')).toBe('MacBook Pro Microphone (Built-in)');
