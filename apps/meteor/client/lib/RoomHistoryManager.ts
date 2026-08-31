@@ -348,6 +348,9 @@ class RoomHistoryManagerClass extends Emitter {
 			hasMoreNext: false,
 			cursorPrevious: undefined,
 			cursorNext: undefined,
+			// The snapshot describes the DOM of the window being discarded; a stale restoreScroll
+			// resuming after this clear must no-op instead of applying it to the rebuilt window.
+			scroll: undefined,
 		});
 		this.emit('room-cleared', rid);
 	}
