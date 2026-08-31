@@ -237,7 +237,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Установить электронную почту внешних аккаунтов как подтвержденную",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Учетные записи, созданные из внешних сервисов, таких как LDAP, OAth и т.д., будут иметь подтвержденную электронную почту автоматически",
   "Accounts_SetDefaultAvatar": "Установить аватар по-умолчанию",
-  "Accounts_SetDefaultAvatar_Description": "Пытаться найти аватар по-умолчанию через аккаунт OAuth или Gravatar",
   "Accounts_ShowFormLogin": "Показать логин на основе формы",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Автоматический настраивать двухфакторную аутентификацию по электронной почте для новых пользователей",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "У новых пользователей по умолчанию будет включена двухфакторная аутентификация по электронной почте. Они смогут отключить ее на странице своего профиля.",

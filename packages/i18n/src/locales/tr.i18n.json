@@ -193,7 +193,6 @@
   "Accounts_Send_Email_When_Activating": "Kullanıcı etkinleştirildiğinde kullanıcıya e-posta gönderilsin",
   "Accounts_Send_Email_When_Deactivating": "Kullanıcı devre dışı bırakıldığında kullanıcıya e-posta gönderilsin",
   "Accounts_SetDefaultAvatar": "Varsayılanı Avatar Seç",
-  "Accounts_SetDefaultAvatar_Description": "Varsayılan avatarın OAuth Hesabı'na veya Gravatar'a dayalı olarak belirlenmeye çalışılması",
   "Accounts_ShowFormLogin": "Varsayılan giriş formunu göster",
   "Accounts_TwoFactorAuthentication_Enabled": "İki Aşamalı Kimlik Doğrulamayı Etkinleştir",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum delta",

@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Zahtjevaj potvrdu lozinke",
   "Accounts_SearchFields": "Polja koja treba razmotriti u pretraživanju",
   "Accounts_SetDefaultAvatar": "Namjesti zadani Avatar",
-  "Accounts_SetDefaultAvatar_Description": "Pokušava odrediti zadani avatar prema OAuth računu ili Gravataru",
   "Accounts_ShowFormLogin": "Prikaži obrazac za prijavu",
   "Accounts_TwoFactorAuthentication_Enabled": "Omogući provjeru autentičnosti dva faktora",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimalna delta",
