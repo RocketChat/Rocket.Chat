@@ -3,16 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import {
-	createOAuthTotpLoginMethod,
-	credentialRequestCompleteHandler,
-	launchLogin,
-	redirectUri,
-	stateParam,
-	wrapRequestCredentialFn,
-} from './oauth';
+import { createOAuthLoginFunctionForMeteor, launchLogin, redirectUri, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 
 type LoginWithMeteorDeveloperAccountOptions = LoginWithExternalServiceOptions & {
 	details?: string;
@@ -42,22 +34,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	},
 );
 
-const loginWithMeteorDeveloperAccount = (
-	options: LoginWithMeteorDeveloperAccountOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
-	requestCredential(options, credentialRequestCompleteCallback);
-};
-
-const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod<LoginWithMeteorDeveloperAccountOptions>({ requestCredential });
-
-const loginWithMeteorDeveloperAccountForMeteor = (
-	options: LoginWithMeteorDeveloperAccountOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], callback, loginWithMeteorDeveloperAccountAndTOTP);
-};
+const loginWithMeteorDeveloperAccountForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
 
 Object.assign(Accounts._loginFuncs, { 'meteor-developer': loginWithMeteorDeveloperAccountForMeteor });
 Object.assign(Meteor, { loginWithMeteorDeveloperAccount: loginWithMeteorDeveloperAccountForMeteor });

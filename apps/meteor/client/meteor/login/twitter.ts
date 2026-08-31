@@ -3,9 +3,8 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, stateParam, wrapRequestCredentialFn } from './oauth';
+import { createOAuthLoginFunctionForMeteor, launchLogin, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 
 type LoginWithTwitterOptions = LoginWithExternalServiceOptions & {
@@ -42,22 +41,7 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 	},
 );
 
-const loginWithTwitter = (
-	options: LoginWithTwitterOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
-	requestCredential(options, credentialRequestCompleteCallback);
-};
-
-const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod<LoginWithTwitterOptions>({ requestCredential });
-
-const loginWithTwitterForMeteor = (
-	options: LoginWithTwitterOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
-};
+const loginWithTwitterForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
 
 Object.assign(Accounts._loginFuncs, { twitter: loginWithTwitterForMeteor });
 Object.assign(Meteor, { loginWithTwitter: loginWithTwitterForMeteor });

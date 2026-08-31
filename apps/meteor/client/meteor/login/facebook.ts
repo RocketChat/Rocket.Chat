@@ -3,16 +3,8 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import {
-	createOAuthTotpLoginMethod,
-	credentialRequestCompleteHandler,
-	launchLogin,
-	redirectUri,
-	stateParam,
-	wrapRequestCredentialFn,
-} from './oauth';
+import { createOAuthLoginFunctionForMeteor, launchLogin, redirectUri, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import type { AbsoluteUrlOptions } from '../../lib/absoluteUrl';
 
 type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
@@ -47,22 +39,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 	},
 );
 
-const loginWithFacebook = (
-	options: LoginWithFacebookOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
-	requestCredential(options, credentialRequestCompleteCallback);
-};
-
-const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod<LoginWithFacebookOptions>({ requestCredential });
-
-const loginWithFacebookForMeteor = (
-	options: LoginWithFacebookOptions,
-	callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-) => {
-	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
-};
+const loginWithFacebookForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
 
 Object.assign(Accounts._loginFuncs, { facebook: loginWithFacebookForMeteor });
 Object.assign(Meteor, { loginWithFacebook: loginWithFacebookForMeteor });

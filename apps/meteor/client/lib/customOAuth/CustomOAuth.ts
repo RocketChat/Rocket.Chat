@@ -6,15 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import {
-	createOAuthTotpLoginMethod,
-	credentialRequestCompleteHandler,
-	launchLogin,
-	getLoginStyle,
-	redirectUri,
-	stateParam,
-} from '../../meteor/login/oauth';
-import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
+import { launchLogin, getLoginStyle, redirectUri, stateParam, createOAuthLoginFunctionForMeteor } from '../../meteor/login/oauth';
 import { loginServices } from '../loginServices';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
@@ -59,18 +51,9 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${capitalize(this.name)}` as const;
+		const loginWithOAuthTokenForMeteor = createOAuthLoginFunctionForMeteor(this.requestCredential.bind(this));
 
-		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
-
-		const loginWithOAuthToken = async (options?: Meteor.LoginWithExternalServiceOptions, callback?: LoginCallback) => {
-			const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
-			await this.requestCredential(options, credentialRequestCompleteCallback);
-		};
-
-		(Meteor as any)[loginWithService] = (options: Meteor.LoginWithExternalServiceOptions, callback: LoginCallback) => {
-			overrideLoginMethod(loginWithOAuthToken, [options], callback, loginWithOAuthTokenAndTOTP);
-		};
+		Object.assign(Meteor, { [`loginWith${capitalize(this.name)}` as const]: loginWithOAuthTokenForMeteor });
 	}
 
 	async requestCredential(

@@ -6,8 +6,8 @@ import { OAuth } from 'meteor/oauth';
 import { Reload } from 'meteor/reload';
 
 import { LoginCancelledError } from './LoginCancelledError';
-import type { IOAuthProvider, LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
+import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import type { AbsoluteUrlOptions } from '../../lib/absoluteUrl';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { loginServices } from '../../lib/loginServices';
@@ -17,7 +17,7 @@ import { settings } from '../../lib/settings';
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === LoginCancelledError.numericError;
 
-export const convertError = <T>(error: T): LoginCancelledError | T => {
+const convertError = <T>(error: T): LoginCancelledError | T => {
 	if (isLoginCancelledError(error)) {
 		return new LoginCancelledError(error.reason);
 	}
@@ -29,8 +29,9 @@ let lastCredentialToken: string | null = null;
 let lastCredentialSecret: string | null | undefined = null;
 
 const meteorOAuthRetrieveCredentialSecret = OAuth._retrieveCredentialSecret;
-OAuth._retrieveCredentialSecret = (credentialToken: string): string | null => {
-	let secret = meteorOAuthRetrieveCredentialSecret.call(OAuth, credentialToken);
+
+const retrieveCredentialSecret = (credentialToken: string): string | null => {
+	let secret = meteorOAuthRetrieveCredentialSecret(credentialToken);
 	if (!secret) {
 		const localStorageKey = `${OAuth._storageTokenPrefix}${credentialToken}`;
 		secret = localStorage.getItem(localStorageKey);
@@ -46,7 +47,7 @@ const tryLoginAfterPopupClosed = (
 	totpCode?: string,
 	credentialSecret?: string | null,
 ) => {
-	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
+	credentialSecret = credentialSecret || retrieveCredentialSecret(credentialToken) || null;
 	const methodArgument = {
 		oauth: {
 			credentialToken,
@@ -76,38 +77,6 @@ const tryLoginAfterPopupClosed = (
 		},
 	});
 };
-
-export const credentialRequestCompleteHandler =
-	(callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void, totpCode?: string) =>
-	(credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => {
-		if (!credentialTokenOrError) {
-			callback?.(new Meteor.Error('No credential token passed'));
-			return;
-		}
-
-		if (credentialTokenOrError instanceof Error) {
-			callback?.(credentialTokenOrError);
-			return;
-		}
-
-		tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
-	};
-
-export const createOAuthTotpLoginMethod =
-	<TOptions extends Meteor.LoginWithExternalServiceOptions>(provider: IOAuthProvider) =>
-	(options: TOptions, code: string, callback?: LoginCallback) => {
-		if (lastCredentialToken && lastCredentialSecret) {
-			tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
-		} else {
-			const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback, code);
-			provider.requestCredential(options, credentialRequestCompleteCallback);
-		}
-
-		lastCredentialToken = null;
-		lastCredentialSecret = null;
-	};
-
-Accounts.oauth.credentialRequestCompleteHandler = credentialRequestCompleteHandler;
 
 getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
 	if (loginAttempt?.error?.error !== 'totp-required') {
@@ -232,7 +201,7 @@ const saveDataForRedirect = (loginService: string, credentialToken: string) => {
 	Reload._migrate(null, { immediateMigration: true });
 };
 
-export function launchLogin({
+export const launchLogin = ({
 	loginService,
 	loginStyle,
 	loginUrl,
@@ -249,7 +218,7 @@ export function launchLogin({
 	};
 	credentialToken: string;
 	credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void;
-}): void {
+}): void => {
 	// Settings might not be loaded yet; in that case, just skip the proxying
 	const proxiedServices = settings.peek<string>('Accounts_OAuth_Proxy_services')?.replace(/\s/g, '').split(',') ?? [];
 	const proxyHost = settings.peek<string>('Accounts_OAuth_Proxy_host');
@@ -270,7 +239,7 @@ export function launchLogin({
 	} else {
 		throw new Error('invalid login style');
 	}
-}
+};
 
 export const redirectUri = (
 	serviceName: string,
@@ -334,4 +303,58 @@ export const getLoginStyle = (config: { loginStyle?: string }, options?: { login
 	}
 
 	return loginStyle;
+};
+
+const credentialRequestCompleteHandler =
+	(callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void, totpCode?: string) =>
+	(credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => {
+		if (!credentialTokenOrError) {
+			callback?.(new Error('No credential token passed'));
+			return;
+		}
+
+		if (credentialTokenOrError instanceof Error) {
+			callback?.(credentialTokenOrError);
+			return;
+		}
+
+		tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
+	};
+
+const createBaseOAuthLoginFunction = <TOptions extends LoginWithExternalServiceOptions>(
+	requestCredential: (options: TOptions, credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void) => void,
+) => {
+	return (options: TOptions, callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void) => {
+		const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback);
+		requestCredential(options, credentialRequestCompleteCallback);
+	};
+};
+
+const createOAuthLoginFunctionWithTOTP =
+	<TOptions extends LoginWithExternalServiceOptions>(
+		requestCredential: (options: TOptions, credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void) => void,
+	) =>
+	(options: TOptions, code: string, callback?: LoginCallback) => {
+		try {
+			if (lastCredentialToken && lastCredentialSecret) {
+				tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
+				return;
+			}
+
+			const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback, code);
+			requestCredential(options, credentialRequestCompleteCallback);
+		} finally {
+			lastCredentialToken = null;
+			lastCredentialSecret = null;
+		}
+	};
+
+export const createOAuthLoginFunctionForMeteor = <TOptions extends LoginWithExternalServiceOptions>(
+	requestCredential: (options: TOptions, credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void) => void,
+) => {
+	const login = createBaseOAuthLoginFunction(requestCredential);
+	const loginWithTOTP = createOAuthLoginFunctionWithTOTP(requestCredential);
+	return (options: TOptions, callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void) => {
+		overrideLoginMethod(login, [options], callback, loginWithTOTP);
+	};
 };
