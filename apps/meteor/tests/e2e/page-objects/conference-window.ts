@@ -96,12 +96,15 @@ export class ConferenceWindow {
 	// ---------------------------------------------------------------------------------------------------------
 
 	/**
-	 * The window's own bar above the call and its panels: `CallTopBar` renders a `<header>`, and it is the only
-	 * one in the window. The chat-access notice above it is a `status`, not a second banner, and the room header
-	 * inside the chat panel is suppressed by the embedded layout.
+	 * The window's own bar above the call and its panels: `CallTopBar` renders a named `<header>`.
+	 *
+	 * Named, and matched by that name, because it is *not* the only banner a modal can put in the window —
+	 * Fuselage's `ModalHeader` is a `header` too, and a `dialog` ancestor does not stop it being one. The
+	 * chat-access notice above the bar is a `status` rather than a banner, and the room header inside the chat
+	 * panel is suppressed by the embedded layout.
 	 */
 	get topBar(): Locator {
-		return this.page.getByRole('banner');
+		return this.page.getByRole('banner', { name: 'Call', exact: true });
 	}
 
 	/** How long the call has been running — a live region counting up, which is what `timer` says. */
