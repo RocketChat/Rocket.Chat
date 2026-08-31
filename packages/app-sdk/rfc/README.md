@@ -30,6 +30,7 @@ What an app author writes.
 | 15 | [Event listeners](15-surface-event-listeners.md) | one listener, intent by return value |
 | 16 | [Interactive UI](16-surface-interactive-ui.md) | `await ctx.ui.open` — suspend and resume |
 | 17 | [Settings, persistence, providers, lifecycle](17-surface-settings-persistence-lifecycle.md) | the remaining app-facing pieces |
+| 18 | [Store associations](18-surface-store-associations.md) | secondary concern: cascade cleanup, and whether to keep the tag |
 
 ## The data layer
 
