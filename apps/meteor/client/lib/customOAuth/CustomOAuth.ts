@@ -3,7 +3,6 @@ import { Random } from '@rocket.chat/random';
 import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
@@ -11,6 +10,7 @@ import {
 	createOAuthTotpLoginMethod,
 	credentialRequestCompleteHandler,
 	launchLogin,
+	getLoginStyle,
 	redirectUri,
 	stateParam,
 } from '../../meteor/login/oauth';
@@ -86,7 +86,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		}
 
 		const credentialToken = Random.secret();
-		const loginStyle = OAuth._loginStyle(this.name, config);
+		const loginStyle = getLoginStyle(config);
 
 		const loginUrl = new URL(this.authorizePath);
 		loginUrl.searchParams.append('client_id', config.clientId);

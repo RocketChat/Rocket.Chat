@@ -160,7 +160,8 @@ export function wrapRequestCredentialFn<
 					return;
 				}
 
-				const loginStyle = OAuth._loginStyle(serviceName, config, options);
+				const loginStyle = getLoginStyle(config, options);
+
 				fn({
 					config,
 					loginStyle,
@@ -313,4 +314,24 @@ export const stateParam = (loginStyle: string, credentialToken: string, redirect
 	// parameter when they pass it back to us.
 	// Use the 'base64' package here because 'btoa' isn't supported in IE8/9.
 	return Base64.encode(JSON.stringify(state));
+};
+
+export const getLoginStyle = (config: { loginStyle?: string }, options?: { loginStyle?: string }) => {
+	let loginStyle = options?.loginStyle || config.loginStyle || 'popup';
+
+	if (!['popup', 'redirect'].includes(loginStyle)) throw new Error(`Invalid login style: ${loginStyle}`);
+
+	// If we don't have session storage (for example, Safari in private
+	// mode), the redirect login flow won't work, so fallback to the
+	// popup style.
+	if (loginStyle === 'redirect') {
+		try {
+			sessionStorage.setItem('Meteor.oauth.test', 'test');
+			sessionStorage.removeItem('Meteor.oauth.test');
+		} catch (e) {
+			loginStyle = 'popup';
+		}
+	}
+
+	return loginStyle;
 };
