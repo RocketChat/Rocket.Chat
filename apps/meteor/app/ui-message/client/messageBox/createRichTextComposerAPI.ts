@@ -158,8 +158,6 @@ export const createRichTextComposerAPI = (
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
-		const { selectionStart, selectionEnd } = getSelectionRange(input);
-
 		// Selects the text that is connected to the cursor, then focus so execCommand has an active target
 		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		focus();
@@ -176,21 +174,17 @@ export const createRichTextComposerAPI = (
 			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
 		}
 
-		if (selectionStart !== selectionEnd) {
-			setSelectionRange(input, selectionStart, selectionStart);
-		} else {
-			setSelectionRange(input, newStart, newEnd);
-		}
+		setSelectionRange(input, newStart, newEnd);
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 	};
 
 	const insertNewLine = (): void => {
-		const { selectionStart } = getSelectionRange(input);
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
 		const text = input.innerText;
 
-		const bare = bareLinePrefixRange(text, selectionStart);
+		const bare = selectionStart === selectionEnd ? bareLinePrefixRange(text, selectionStart) : undefined;
 
 		if (bare) {
 			replaceText('', bare);

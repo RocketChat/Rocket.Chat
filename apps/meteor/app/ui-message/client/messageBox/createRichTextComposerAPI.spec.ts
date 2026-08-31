@@ -1,5 +1,6 @@
 import { createRichTextComposerAPI } from './createRichTextComposerAPI';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, toggleLinePrefix } from './toggleLinePrefix';
 
 jest.mock('../../../../client/lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
@@ -93,6 +94,60 @@ describe('RichText Composer API - replaceText', () => {
 		expect(stripLineEnd(input.textContent)).toBe('hi @john there');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 9, selectionEnd: 9 });
 	});
+
+	it('leaves the caret after the replacement when the user had text selected', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		composer.replaceText('- one\n- two', { start: 0, end: 7 });
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 11, selectionEnd: 11 });
+	});
+});
+
+describe('RichText Composer API - toggleLinePrefix', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it.each([
+		['bullets', UNORDERED_LINE_PREFIX, '- one\n- two'],
+		['numbers', ORDERED_LINE_PREFIX, '1. one\n2. two'],
+	])('applies %s to every selected line and leaves the caret at the end of the block', (_label, prefix, expected) => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, prefix);
+
+		expect(stripLineEnd(input.innerText)).toBe(expected);
+		expect(getSelectionRange(input)).toEqual({ selectionStart: expected.length, selectionEnd: expected.length });
+	});
+
+	it('does not leave the caret inside the marker when the selection starts mid-line', () => {
+		const { composer, input } = setupComposer('one\ntwo\nthree', { start: 1, end: 9 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- two\n- three');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 19, selectionEnd: 19 });
+	});
+
+	it('keeps typing inside the list instead of sending it to the top of the composer', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+		composer.insertText('X');
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- twoX');
+	});
+
+	it('strips the markers and leaves the caret at the end when toggling off', () => {
+		const { composer, input } = setupComposer('- one\n- two', { start: 0, end: 11 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+
+		expect(stripLineEnd(input.innerText)).toBe('one\ntwo');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 7, selectionEnd: 7 });
+	});
 });
 
 describe('RichText Composer API - insertNewLine', () => {
@@ -169,6 +224,30 @@ describe('RichText Composer API - insertNewLine', () => {
 		composer.insertNewLine();
 
 		expect(stripLineEnd(input.innerText)).toBe('intro\n- one\n- ');
+	});
+
+	it('replaces the selected text instead of only dropping a bare marker', () => {
+		const { composer, input } = setupComposer('- \nabc', { start: 0, end: 6 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('');
+	});
+
+	it('replaces a selection that spans a bare marker mid-list', () => {
+		const { composer, input } = setupComposer('- one\n- \n- three', { start: 6, end: 16 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n');
+	});
+
+	it('continues the list from the selection start when text is selected', () => {
+		const { composer, input } = setupComposer('- one two', { start: 6, end: 9 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one \n- ');
 	});
 });
 
