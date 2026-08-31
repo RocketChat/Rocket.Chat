@@ -60,7 +60,7 @@ const setSubscriptions = (...subscriptions: ReturnType<typeof createFakeSubscrip
 
 describe('/open slash command', () => {
 	beforeEach(() => {
-		getSearchParameters.mockReturnValue({ layout: 'embedded' });
+		getSearchParameters.mockReturnValue({});
 	});
 
 	afterEach(() => {
@@ -77,7 +77,7 @@ describe('/open slash command', () => {
 
 		await runCommand(`  #${name}  `);
 
-		expect(openRouteLink).toHaveBeenCalledWith(type, subscription, { layout: 'embedded' });
+		expect(openRouteLink).toHaveBeenCalledWith(type, subscription, {});
 		expect(openRouteLink).toHaveBeenCalledTimes(1);
 		expect(post).not.toHaveBeenCalled();
 	});
@@ -88,8 +88,18 @@ describe('/open slash command', () => {
 
 		await runCommand('general');
 
-		expect(openRouteLink).toHaveBeenCalledWith('c', subscription, { layout: 'embedded' });
+		expect(openRouteLink).toHaveBeenCalledWith('c', subscription, {});
 		expect(post).not.toHaveBeenCalled();
+	});
+
+	it('forwards the current search parameters when opening a subscription', async () => {
+		const subscription = createFakeSubscription({ name: 'general', t: 'c' });
+		setSubscriptions(subscription);
+		getSearchParameters.mockReturnValue({ layout: 'embedded' });
+
+		await runCommand('#general');
+
+		expect(openRouteLink).toHaveBeenCalledWith('c', subscription, { layout: 'embedded' });
 	});
 
 	it('uses the trimmed username from direct-message input', async () => {
@@ -101,6 +111,16 @@ describe('/open slash command', () => {
 		expect(post).toHaveBeenCalledTimes(1);
 	});
 
+	it('opens an existing direct-message subscription', async () => {
+		const subscription = createFakeSubscription({ name: 'alice', t: 'd' });
+		setSubscriptions(subscription);
+		post.mockResolvedValue({} as never);
+
+		await runCommand('@alice');
+
+		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, {});
+	});
+
 	it('opens the direct-message subscription created by the REST API', async () => {
 		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'dm-room-id', name: 'alice', t: 'd' });
 		findSubscription.mockReturnValueOnce(undefined).mockReturnValueOnce(subscription);
@@ -109,7 +129,7 @@ describe('/open slash command', () => {
 		await runCommand('@alice');
 
 		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'alice' });
-		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, { layout: 'embedded' });
+		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, {});
 		expect(post.mock.invocationCallOrder[0]).toBeLessThan(openRouteLink.mock.invocationCallOrder[0]);
 	});
 
