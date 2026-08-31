@@ -82,6 +82,44 @@ along that line first.
   real audio (ring tone, dial tone, silencing), a real second provider or a framing-refusing one, killing a
   browser process, hand-opening a second window for the same call, and access lost mid-call.
 
+### What is automated so far
+
+`tests/e2e/video-conference-call-window.spec.ts` covers thirteen of the `e2e` cases: **7** (in its own
+flag-off describe), **9**, **10**, **11**, **12**, **13**, **15** (with **16**'s negative folded in), **17**
+(with **47** folded in), **18**, **27**/**30**/**52** in one layout journey, **34** with **46**, **35**/**36**/**37**,
+and **63**. Everything else in the set is still a manual pass, and three things are worth knowing about why:
+
+- **Absence is asserted by name, not by emptiness.** A call row is an `<a>` with no `href` — no role, no
+  accessible name, no `data-qa` — so a conference started in a channel is given a unique name at its preflight
+  and that name is what the ongoing-calls list is asserted on. It is also what stops one test reading another
+  test's call as its own.
+- **Anything timed is left to a person.** The fifteen-second ring window (**20**), the ten-second empty-call
+  grace (**48**) and the twenty-second poll expiring a row (**41** step 4) are all assertions *about* a
+  duration, and a suite that waits out three of them buys little for what it costs.
+- **Group ringing is not reachable as written.** Cases **21** and **22** both assume a channel call rings —
+  see below.
+
+### Cases the code does not agree with
+
+Found while automating, and worth reconciling in the CSV rather than in the tests:
+
+- **A conference in a channel rings nobody.** `ee/server/configuration/videoConference.ts` registers ringing
+  for `t === 'd'` only: the `direct` type for a two-person DM, and the `videoconference` type for a group DM.
+  So case **21**, which has a conference in the public channel *#qa-calls* ringing user2 and user3, cannot
+  pass; and case **22** is true for a reason other than the one it gives — a channel call rings nobody
+  whatever the room's size, so `RING_RECIPIENTS_LIMIT` is never what stops it. The other side discovers a
+  channel call through the joinable list's twenty-second poll, which is what the automated cases wait on.
+- **Reloading the call window asks the join preflight again.** The join result lives in that window's own
+  react-query cache (`useConferenceEmbedded`, `enabled: false`, and no persister anywhere in the client), so a
+  reload finds no join and `conference.joined` is false. Case **11** step 3 and case **49** step 1 both say it
+  lands straight in the call. What does hold, and is what the automated case asserts, is that the window comes
+  back on the same `/conference/<callId>` and that no second conference was created.
+- **A direct call's window is titled after everyone on it.** `useConferenceEmbedded`'s `currentName` joins the
+  names of `info.users`, and with the flag on the callee is a member from the moment the call is created
+  (`startDirect` → `addAbsentMember`). So the callee's join preflight reads *Join conference with user1, user2*,
+  not *Join conference with user1* as case **17** step 1 has it. The *list* row is a different name from a
+  different place — `conferenceNameFor` with the reader's own subscription — and there it really is `user1`.
+
 ## Keeping it current
 
 Do not hand-edit rows into a spreadsheet and back: the file is generated, and the value is that every expected
