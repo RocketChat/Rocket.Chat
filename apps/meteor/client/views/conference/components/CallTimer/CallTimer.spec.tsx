@@ -46,3 +46,10 @@ it('does not count backwards for a start in the future', () => {
 
 	expect(screen.getByText('00:00')).toBeInTheDocument();
 });
+
+// A counting clock is a live region, and its role is what anything else can refer to it by.
+it('is a timer', () => {
+	render(<CallTimer startAt={new Date()} />);
+
+	expect(screen.getByRole('timer')).toBeInTheDocument();
+});

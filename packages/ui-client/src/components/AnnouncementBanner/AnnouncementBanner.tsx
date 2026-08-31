@@ -40,7 +40,10 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			borderRadius={0}
 			className={[announcementBar, className]}
 			tabIndex={onClick ? 0 : -1}
-			role={onClick ? 'button' : 'banner'}
+			// A banner is the page's own header landmark, and a non-interactive announcement is not that: it is
+			// something that became true, which is what `status` says. Two `banner`s in one page — the conference
+			// window has a header of its own — left neither of them referrable.
+			role={onClick ? 'button' : 'status'}
 			onClick={onClick}
 			{...props}
 		>

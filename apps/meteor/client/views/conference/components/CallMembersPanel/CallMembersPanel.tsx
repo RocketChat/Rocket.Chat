@@ -54,7 +54,9 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 				)}
 			</CallPanelHeader>
 
-			<Box flexGrow={1} overflowY='auto'>
+			{/* A list, said out loud: the rows are Fuselage `Option`s, which render as `li` — inside a plain box
+			    that made them neither countable nor individually referrable. */}
+			<Box role='list' aria-label={t('Members')} flexGrow={1} overflowY='auto'>
 				{present.length > 0 && (
 					<>
 						<MembersListDivider title='In_call' count={present.length} />

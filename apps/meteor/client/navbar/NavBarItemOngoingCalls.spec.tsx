@@ -81,3 +81,14 @@ it('keeps a declined call behind a separator', async () => {
 	expect(await screen.findByText('Standup')).toBeInTheDocument();
 	expect(screen.getByText('Design review')).toBeInTheDocument();
 });
+
+// The list opens into a bare box, so the calls in it were loose rows nothing could scope to.
+it('opens a named region holding the calls', async () => {
+	renderButton([call({ callId: 'call-1', name: 'Standup' })]);
+
+	await userEvent.click(await screen.findByRole('button', { name: /Ongoing_calls/ }));
+
+	const list = await screen.findByRole('region', { name: 'Ongoing_calls' });
+
+	await waitFor(() => expect(list).toHaveTextContent('Standup'));
+});
