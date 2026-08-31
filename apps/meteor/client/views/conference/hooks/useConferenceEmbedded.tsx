@@ -1,9 +1,17 @@
 import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
+import {
+	useConnectionStatus,
+	useEndpoint,
+	useSetting,
+	useStream,
+	useToastMessageDispatch,
+	useUser,
+	useUserId,
+} from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import type { CallPreferences } from './useCallPreferences';
 import { departureFor } from './useLeaveConferenceOnClose';
@@ -11,6 +19,7 @@ import { conferenceNameFor } from '../../../../lib/videoConference/conferenceNam
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
+import { NEW_CONFERENCE_ID } from '../lib/callWindow';
 
 /**
  * A member of the call, as this window holds them: who they are, and where they stand with the call.
@@ -57,6 +66,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const subscribeToVideoConference = useStream('video-conference');
+	const { connected } = useConnectionStatus();
 	const queryClient = useQueryClient();
 	const uid = useUserId();
 	// The provider is told who is arriving, so the name in the call is the one the workspace shows.
@@ -80,13 +90,33 @@ export const useConferenceEmbedded = (callId: string) => {
 	// The conference can change under a participant in several ways — the chat moves to another room, the same room
 	// becomes readable by members who couldn't read it, someone joins, declines or leaves — and every one of them
 	// has the same answer: read the conference again. It carries the room, who can see it, and who is in it.
-	useEffect(
-		() =>
-			subscribeToVideoConference(`${callId}/updated`, () => {
-				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-			}),
-		[callId, subscribeToVideoConference, queryClient],
-	);
+	//
+	// Two things this has to get right, because the stream is the window's only word on what the call is doing and
+	// the server refuses a subscription rather than queueing it — and a refused subscription is never retried:
+	//
+	// - **Never ask about a call that cannot exist.** The window opens on `/conference/new` before the conference
+	//   is created, so `new` is a call id this page can be handed; `streamVideoConference.allowRead` looks the call
+	//   up by that id, finds nothing and refuses. Waiting for a real id costs nothing: the id changing re-runs this.
+	// - **A subscription is only good while the connection under it is.** One that was refused, or lost with the
+	//   socket, leaves the window watching nothing — silently, since a stream reports neither. So this re-subscribes
+	//   on every connection, and re-reads the conference when it does, because whatever moved while this window was
+	//   away was announced to nobody here.
+	const subscribedTo = useRef<string | undefined>(undefined);
+	useEffect(() => {
+		if (callId === NEW_CONFERENCE_ID || !connected) {
+			return;
+		}
+
+		// Not on the first subscription for a call — that one is the same read the query is already making.
+		if (subscribedTo.current === callId) {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		}
+		subscribedTo.current = callId;
+
+		return subscribeToVideoConference(`${callId}/updated`, () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		});
+	}, [callId, connected, subscribeToVideoConference, queryClient]);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
