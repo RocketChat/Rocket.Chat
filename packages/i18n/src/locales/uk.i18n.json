@@ -212,7 +212,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Встановити електронну пошту для зовнішніх облікових записів як підтверджену",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "У облікових записах, створених із зовнішніх служб (наприклад, LDAP, OAth тощо), електронні листи перевірятимуться автоматично",
   "Accounts_SetDefaultAvatar": "Встановити аватар за замовчуванням",
-  "Accounts_SetDefaultAvatar_Description": "Спробувати визначити аватар із сервісів OAuth або Gravatar",
   "Accounts_ShowFormLogin": "Показати форму входу за замовчуванням",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Автоматично вибирайте нових користувачів для двофакторної авторизації за допомогою електронної пошти",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Для нових користувачів за замовчуванням ввімкнено двофакторну автентифікацію із використанням електронної пошти. Цей параметр можна вимкнути на сторінці профілю.",

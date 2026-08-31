@@ -242,7 +242,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Sæt e-mail for ekstern konto som verificeret",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Konti oprettet fra eksterne tjenester, såsom LDAP, OAth osv., får automatisk deres e-mails verificeret",
   "Accounts_SetDefaultAvatar": "Vælg standardavatar",
-  "Accounts_SetDefaultAvatar_Description": "Forsøger at finde en standardavatar baseret på OAuth-konto eller Gravatar",
   "Accounts_ShowFormLogin": "Vis standardformular for login",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Tilmeld nye brugere automatisk til to-faktor via e-mail",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Nye brugere har som standard to-faktor-godkendelse via e-mail aktiveret. De vil være i stand til at deaktivere det på deres profilside.",

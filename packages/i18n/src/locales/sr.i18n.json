@@ -123,7 +123,6 @@
   "Accounts_Send_Email_When_Activating": "Пошаљи имејл кориснику када је корисник активиран",
   "Accounts_Send_Email_When_Deactivating": "Пошаљи имејл кориснику када је корисник деактивиран",
   "Accounts_SetDefaultAvatar": "Подеси подразумевани аватар",
-  "Accounts_SetDefaultAvatar_Description": "Покушава да одреди подразумевани аватар на основу ОАутх налога или Граватар",
   "Accounts_ShowFormLogin": "Прикажи предефинисани образац пријаве",
   "Accounts_TwoFactorAuthentication_Enabled": "Омогући двоструку верификацију са TOTP",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Максимална Делта",

@@ -386,12 +386,9 @@ Accounts.insertUserDoc = async function (options, user) {
 		}
 		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			for (const service of Object.keys(avatarSuggestions)) {
-				const avatarData = avatarSuggestions[service];
-				if (service !== 'gravatar') {
-					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
-					break;
-				}
+			const [service] = Object.keys(avatarSuggestions);
+			if (service) {
+				await setAvatarFromServiceWithValidation(_id, avatarSuggestions[service].blob, '', service);
 			}
 		}
 	}
