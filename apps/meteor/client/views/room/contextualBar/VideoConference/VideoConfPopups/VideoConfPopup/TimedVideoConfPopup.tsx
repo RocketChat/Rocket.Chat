@@ -69,9 +69,14 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 		dismissCall(id);
 	};
 
-	const handleStartCall = (): void => {
+	const handleStartCall = async (): Promise<void> => {
 		setStarting(true);
-		startCall(rid);
+		try {
+			await startCall(rid);
+		} catch (error) {
+			setStarting(false);
+			dismissOutgoing();
+		}
 
 		if (!conferenceWindowEnabled) {
 			return;

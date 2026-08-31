@@ -24,9 +24,9 @@ export type VideoConfContextValue = {
 	conferenceWindowEnabled: boolean;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
-	startCall: (rid: IRoom['_id'], title?: string) => void;
+	startCall: (rid: IRoom['_id'], title?: string) => Promise<void>;
 	acceptCall: (callId: string) => void;
-	joinCall: (callId: string) => void;
+	joinCall: (callId: string) => Promise<void>;
 	dismissCall: (callId: string) => void;
 	rejectIncomingCall: (callId: string) => void;
 	abortCall: () => void;
