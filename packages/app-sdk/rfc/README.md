@@ -55,6 +55,7 @@ What sits behind `ctx.rooms`, `ctx.messages`, `ctx.users`, … on the host.
 | 30 | [Cursor pagination](30-data-cursor-pagination.md) | research report: keyset paging, tokens, indexes |
 | 31 | [The query surface](31-data-query-surface.md) | research report: filters, aggregates, the analytics gap |
 | 32 | [What changes in the app-facing surface](32-data-impact-on-the-surface.md) | the edits this domain forces on 10–17 |
+| 33 | [Interoperability with `core-typings`](assets/33-core-typings-interop.md) | research report: reuse the server's models, or keep a second map |
 
 ## The platform
 
