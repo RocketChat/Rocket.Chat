@@ -14,6 +14,8 @@ import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
 
+const storageTokenPrefix = 'Meteor.oauth.credentialSecret-';
+
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === LoginCancelledError.numericError;
 
@@ -33,7 +35,7 @@ const meteorOAuthRetrieveCredentialSecret = OAuth._retrieveCredentialSecret;
 const retrieveCredentialSecret = (credentialToken: string): string | null => {
 	let secret = meteorOAuthRetrieveCredentialSecret(credentialToken);
 	if (!secret) {
-		const localStorageKey = `${OAuth._storageTokenPrefix}${credentialToken}`;
+		const localStorageKey = `${storageTokenPrefix}${credentialToken}`;
 		secret = localStorage.getItem(localStorageKey);
 		localStorage.removeItem(localStorageKey);
 	}
@@ -196,6 +198,28 @@ const showPopup = (
 	}, 100);
 };
 
+const getDataAfterRedirect = () => {
+	const migrationData = Reload._migrationData('oauth');
+
+	if (!migrationData?.credentialToken) return null;
+
+	const { loginService, credentialToken } = migrationData;
+
+	const localStorageKey = `${storageTokenPrefix}${credentialToken}`;
+	let credentialSecret;
+	try {
+		credentialSecret = localStorage.getItem(localStorageKey);
+		localStorage.removeItem(localStorageKey);
+	} catch (e) {
+		console.error('error retrieving credentialSecret', e);
+	}
+	return {
+		loginService,
+		credentialToken,
+		credentialSecret,
+	};
+};
+
 const saveDataForRedirect = (loginService: string, credentialToken: string) => {
 	Reload._onMigrate('oauth', () => [true, { loginService, credentialToken }]);
 	Reload._migrate(null, { immediateMigration: true });
@@ -266,7 +290,7 @@ export const redirectUri = (
 		url.searchParams.set('close', '');
 	}
 
-	return url.toString();
+	return url.toString().replace(/\bclose=/, 'close');
 };
 
 export const stateParam = (loginStyle: string, credentialToken: string, redirectUrl?: string) => {
@@ -276,7 +300,7 @@ export const stateParam = (loginStyle: string, credentialToken: string, redirect
 	};
 
 	if (loginStyle === 'redirect') {
-		state.redirectUrl = redirectUrl || `${window.location}`;
+		state.redirectUrl = redirectUrl || `${window.location.href}`;
 	}
 
 	// Encode base64 as not all login services URI-encode the state
@@ -358,3 +382,6 @@ export const createOAuthLoginFunctionForMeteor = <TOptions extends LoginWithExte
 		overrideLoginMethod(login, [options], callback, loginWithTOTP);
 	};
 };
+
+// There is a Meteor.startup callback in accounts-oauth that relies on OAuth.getDataAfterRedirect being available
+Object.assign(OAuth, { getDataAfterRedirect });
