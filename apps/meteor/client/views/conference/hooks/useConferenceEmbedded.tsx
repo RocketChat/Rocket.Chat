@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
 import type { CallPreferences } from './useCallPreferences';
+import { departureFor } from './useLeaveConferenceOnClose';
 import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
@@ -173,6 +174,8 @@ export const useConferenceEmbedded = (callId: string) => {
 		},
 	});
 
+	const ownMember = members.find((member) => member._id === uid);
+
 	return {
 		call: {
 			// Who is associated with the call and where each of them stands — the call window uses it to tell
@@ -213,6 +216,20 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		conference: {
 			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
+			/**
+			 * What this window should tell the server when it goes, which depends on how far its user got.
+			 *
+			 * Having joined, they leave. Having not, they were either the one placing a direct call — for whom
+			 * abandoning the preflight is cancelling it, the ring included — or someone who was rung and is
+			 * answering no. Anyone else was never asked and never arrived: closing a window they opened
+			 * themselves is not an event in the call's history.
+			 */
+			departure: departureFor({
+				joined: !!data,
+				isDirect: info?.type === 'direct',
+				isCreator: info?.createdBy._id === uid,
+				wasRung: !!ownMember?.ringingAt,
+			}),
 			/**
 			 * A provider that runs the call inside Rocket.Chat rather than at a URL of its own. The server says so
 			 * by answering the join with an empty url — there is no page to send anyone to — so that is what this

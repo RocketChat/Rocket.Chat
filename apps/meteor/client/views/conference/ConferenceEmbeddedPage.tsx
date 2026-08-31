@@ -73,7 +73,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : handleOpenThread });
 
-	const { leaveNow } = useLeaveConferenceOnClose(callId);
+	const { leaveNow } = useLeaveConferenceOnClose(callId, conference.departure);
 
 	useConferencePresenceLease(callId, conference.joined);
 

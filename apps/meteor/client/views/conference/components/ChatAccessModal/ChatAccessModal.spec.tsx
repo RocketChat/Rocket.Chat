@@ -63,3 +63,28 @@ it.each([
 
 	await waitFor(() => expect(shareChat).toHaveBeenCalledWith({ callId: 'call-id', mode }));
 });
+
+// The two actions are alternatives, and each is applied on its own — so a click on the second while the first
+// was still in flight applied both: the members were added to the room *and* the chat moved out of it, which is
+// the tradeoff the user picked plus the one they declined.
+it('takes only one of the two actions, however fast the second is clicked', async () => {
+	let release: (value: { rid: string; success: boolean }) => void = () => undefined;
+	shareChat.mockImplementationOnce(
+		() =>
+			new Promise<{ rid: string; success: boolean }>((resolve) => {
+				release = resolve;
+			}) as never,
+	);
+
+	renderModal(buildAccess());
+
+	await userEvent.click(screen.getByRole('button', { name: 'Add_to_room' }));
+	await waitFor(() => expect(screen.getByRole('button', { name: 'Create_discussion' })).toBeDisabled());
+
+	await userEvent.click(screen.getByRole('button', { name: 'Create_discussion' }));
+
+	expect(shareChat).toHaveBeenCalledTimes(1);
+	expect(shareChat).toHaveBeenCalledWith({ callId: 'call-id', mode: 'invite' });
+
+	release({ rid: 'room-id', success: true });
+});
