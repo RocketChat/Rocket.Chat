@@ -123,6 +123,7 @@ it('should handle reconnecting', async () => {
 	);
 
 	expect(connection.status).toBe('connected');
+	connection.close();
 	jest.useRealTimers();
 });
 
@@ -245,6 +246,7 @@ it('should not surface the retry timer rejection when an external connect won th
 	expect(connection.status).toBe('connected');
 	expect(unhandled).not.toHaveBeenCalled();
 	process.off('unhandledRejection', unhandled);
+	connection.close();
 	jest.useRealTimers();
 });
 
@@ -314,6 +316,7 @@ it('should reset retryCount on a successful connection so subsequent drops can r
 	);
 	jest.useRealTimers();
 	expect(connection.status).toBe('connected');
+	connection.close();
 });
 
 it('should ignore a stale ws.onclose that fires after the socket has been replaced', async () => {
@@ -365,4 +368,5 @@ it('should ignore a stale ws.onclose that fires after the socket has been replac
 
 	expect(connection.status).toBe(statusBefore);
 	expect((connection as unknown as { retryCount: number }).retryCount).toBe(retryBefore);
+	connection.close();
 });
