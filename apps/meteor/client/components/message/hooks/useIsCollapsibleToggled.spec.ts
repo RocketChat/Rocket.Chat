@@ -4,7 +4,7 @@ import { useIsCollapsibleToggled } from './useIsCollapsibleToggled';
 import { RoomManager } from '../../../lib/RoomManager';
 import { MAX_TOGGLED_COLLAPSIBLES_PER_ROOM } from '../../../lib/constants';
 
-jest.mock('../../../../app/ui-utils/client/lib/RoomHistoryManager', () => ({
+jest.mock('../../../../client/lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {},
 }));
 
