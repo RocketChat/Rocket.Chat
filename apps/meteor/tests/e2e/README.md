@@ -199,7 +199,7 @@ Test names should clearly describe the behavior and expected outcome being verif
 It can be used to group related tests into a test suite. It provides a way to organize tests logically and improve the readability and maintainability of your test code.
 ```ts
 test.describe('Feature Test', () => {
-  test('should show the feature after navigation', async ({ api}) => {
+  test('should display the feature heading after navigation', async ({ api}) => {
     // do some tests
   });
 });
@@ -209,9 +209,10 @@ test.describe('Feature Test', () => {
 Enhances test readability and provides more detailed information in test reports
 ```ts
 test.describe('Feature Test', () => {
-  test('should show the feature after navigation', async ({ page }) => {
-    await test.step('Open the feature page', async () => {
+  test('should display the feature heading after navigation', async ({ page }) => {
+    await test.step('open the feature page', async () => {
       await page.goto('/feature');
+      await expect(page.getByRole('heading', { name: 'Feature' })).toBeVisible();
     });
   });
 });
