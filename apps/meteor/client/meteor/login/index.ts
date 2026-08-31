@@ -1,5 +1,4 @@
 import './cas';
-import './crowd';
 import './facebook';
 import './google';
 import './ldap';
