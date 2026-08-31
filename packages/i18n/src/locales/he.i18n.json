@@ -1290,6 +1290,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "שינוי גודל התמונה לא יעבוד כי אנחנו לא יכולים לזהות ImageMagick או GraphicsMagick מותקן על השרת שלך.",
   "The_redirectUri_is_required": "RedirectUri נדרש",
   "The_server_will_restart_in_s_seconds": "השרת יפעיל את עצמו מחדש בעוד ",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "ה- <strong>S הגדרת%</strong> <strong>מוגדר %s</strong> ואתה ניגש <strong>מ %s!</strong>",
   "The_user_will_be_removed_from_s": "המשתמש יוסר מ{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "המשתמש לא יוכל להקליד {{roomName}}",
   "Theme": "ערכת עיצוב",
