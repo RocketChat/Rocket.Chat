@@ -48,6 +48,16 @@ describe('any call in the list', () => {
 		expect(screen.getByText('2 people joined')).toBeInTheDocument();
 	});
 
+	// Answering or rejoining is what the row is for, so it is a link to where it goes — which is also the only
+	// thing that gives it a role, a name and a place in the tab order.
+	it('is a link to the call, named after it', () => {
+		renderItem(ongoingCall('Sprint planning'));
+
+		const row = screen.getByRole('link', { name: /Sprint planning/ });
+
+		expect(row).toHaveAttribute('href', '/conference/call-1');
+	});
+
 	it('is the room item with no avatar', () => {
 		const { container } = renderItem(ongoingCall());
 

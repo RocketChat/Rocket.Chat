@@ -82,6 +82,11 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 
 	return (
 		<Extended
+			// The row is where the call is answered or rejoined, so it is the same kind of thing as a room in the
+			// sidebar and gets the same treatment: a real link to where it goes. Without an `href` this rendered as
+			// an anchor with no role, no accessible name and no way to reach it from the keyboard — the click below
+			// still does the work, and prevents the navigation, but the row is now addressable by what it is.
+			href={`/conference/${call.callId}`}
 			onClick={(event) => {
 				event.preventDefault();
 

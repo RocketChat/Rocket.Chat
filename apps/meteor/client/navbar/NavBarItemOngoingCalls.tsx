@@ -62,7 +62,8 @@ const NavBarItemOngoingCalls = () => {
 			</Box>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-end'>
-					<Box paddingBlock={8} width='x280' borderRadius='x8' backgroundColor='surface-light'>
+					{/* Named, so the calls in it are reachable as a group rather than as loose rows in an unnamed box. */}
+					<Box role='region' aria-label={name} paddingBlock={8} width='x280' borderRadius='x8' backgroundColor='surface-light'>
 						<OngoingCallsList />
 					</Box>
 				</Dropdown>
