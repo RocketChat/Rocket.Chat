@@ -5,7 +5,7 @@ import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
@@ -15,7 +15,8 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut } from './messageBoxHelpers';
 import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
-import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { formattingButtons, isLinePrefixButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
@@ -254,10 +255,12 @@ const MessageBox = ({
 		chat.composer?.recordingVideo.get ?? getEmptyFalse,
 	);
 
-	const formatters = useSyncExternalStore(
+	const availableFormatters = useSyncExternalStore<FormattingButton[]>(
 		chat.composer?.formatters.subscribe ?? emptySubscribe,
 		chat.composer?.formatters.get ?? getEmptyArray,
 	);
+
+	const formatters = useMemo(() => availableFormatters.filter((formatter) => !isLinePrefixButton(formatter)), [availableFormatters]);
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
