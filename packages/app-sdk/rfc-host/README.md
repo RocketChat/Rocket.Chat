@@ -16,14 +16,20 @@ nomenclature in [`../GLOSSARY.md`](../GLOSSARY.md).
 |---|---|---|
 | 10 | [The app user](10-identity-app-user.md) | the principal assigned at install, and the second gate |
 
+## Runtime and lifecycle
+
+| | Document | Scope |
+|---|---|---|
+| 40 | [Durable suspend and resume](40-runtime-continuations.md) | research report — how one `await ctx.ui.open` survives a separate request |
+
 ## Reserved ranges
 
-| | | |
+| Range | Covers | Written |
 |---|---|---|
 | 10–19 | identity and authority | 10 |
-| 20–29 | enforcement | where gate 1 runs, the scope table as data |
-| 30–39 | the data gateway | the host side of [27](../rfc/27-data-host-gateways.md) |
-| 40–49 | runtime and lifecycle | install, enable, disable, update, uninstall; audit and revocation |
+| 20–29 | enforcement — where gate 1 runs, the scope table as data | |
+| 30–39 | the data gateway — the host side of [27](../rfc/27-data-host-gateways.md) | |
+| 40–49 | runtime and lifecycle — install, enable, disable, update, uninstall; audit and revocation; durable execution state | 40 |
 | 50–59 | wrap-up | |
 
 ## Related decisions
