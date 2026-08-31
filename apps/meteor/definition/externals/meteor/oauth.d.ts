@@ -28,18 +28,6 @@ declare module 'meteor/oauth' {
 		const _pendingCredentials: MeteorServerMongoCollection<IOauthCredentials>;
 		const _storageTokenPrefix: string;
 
-		function launchLogin(options: {
-			loginService: string;
-			loginStyle: string;
-			loginUrl: string;
-			credentialRequestCompleteCallback?: (credentialTokenOrError?: string | Error) => void;
-			credentialToken: string;
-			popupOptions?: {
-				width?: number;
-				height?: number;
-			};
-		}): void;
-
 		function _stateParam(loginStyle: string, credentialToken: string, redirectUrl?: string): string;
 
 		function _redirectUri(

@@ -5,11 +5,10 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 type LoginWithTwitterOptions = LoginWithExternalServiceOptions & {
 	force_login?: string;
@@ -35,7 +34,7 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 			});
 		}
 
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'twitter',
 			loginStyle,
 			loginUrl: loginUrl.toString(),

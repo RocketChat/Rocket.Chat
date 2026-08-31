@@ -3,7 +3,6 @@ import './ddpOverREST';
 import './ddpSdkCollectionBridge';
 import './desktopInjection';
 import './killMeteorStream';
-import './oauthProxy';
 import './oauthRedirectUri';
 import './settings';
 import './stubMeteorStream';

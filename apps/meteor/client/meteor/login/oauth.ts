@@ -1,11 +1,15 @@
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
+import { Reload } from 'meteor/reload';
 
 import { LoginCancelledError } from './LoginCancelledError';
-import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
+import type { IOAuthProvider, LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { settings } from '../../lib/settings';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === LoginCancelledError.numericError;
@@ -128,3 +132,131 @@ getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
 		result: undefined,
 	});
 });
+
+type RequestCredentialConfig<
+	T extends Partial<OAuthConfiguration>,
+	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
+> = {
+	config: T;
+	loginStyle: string;
+	options: TOptions;
+	credentialRequestCompleteCallback: RequestCredentialCallback;
+};
+
+type RequestCredentialCallback = (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
+
+export function wrapRequestCredentialFn<
+	T extends Partial<OAuthConfiguration>,
+	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
+>(serviceName: string, fn: (params: RequestCredentialConfig<T, TOptions>) => void) {
+	return (options: TOptions, credentialRequestCompleteCallback: RequestCredentialCallback) => {
+		loginServices.loadLoginService<T>(serviceName).then(
+			(config) => {
+				if (!config) {
+					credentialRequestCompleteCallback?.(new Accounts.ConfigError());
+					return;
+				}
+
+				const loginStyle = OAuth._loginStyle(serviceName, config, options);
+				fn({
+					config,
+					loginStyle,
+					options,
+					credentialRequestCompleteCallback,
+				});
+			},
+			() => {
+				credentialRequestCompleteCallback?.(new Accounts.ConfigError());
+			},
+		);
+	};
+}
+
+const openCenteredPopup = (url: string, width: number, height: number) => {
+	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
+	const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
+	const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
+	const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : document.body.clientHeight - 22;
+	// XXX what is the 22?
+	// Use `outerWidth - width` and `outerHeight - height` for help in
+	// positioning the popup centered relative to the current window
+	const left = screenX + (outerWidth - width) / 2;
+	const top = screenY + (outerHeight - height) / 2;
+
+	const newwindow = window.open(url, 'Login', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`);
+
+	if (!newwindow || newwindow.closed) {
+		// blocked by a popup blocker maybe?
+		const err = new Error('The login popup was blocked by the browser');
+		Object.assign(err, { attemptedUrl: url });
+		throw err;
+	}
+
+	if (newwindow.focus) newwindow.focus();
+
+	return newwindow;
+};
+
+const showPopup = (
+	url: string,
+	callback: (credentialTokenOrError?: string | Error) => void,
+	dimensions?: {
+		width?: number;
+		height?: number;
+	},
+) => {
+	// default dimensions that worked well for facebook and google
+	const popup = openCenteredPopup(url, dimensions?.width || 650, dimensions?.height || 331);
+
+	const checkPopupOpen = setInterval(() => {
+		let popupClosed;
+		try {
+			popupClosed = popup.closed || popup.closed === undefined;
+		} catch (e) {
+			return;
+		}
+
+		if (popupClosed) {
+			clearInterval(checkPopupOpen);
+			callback();
+		}
+	}, 100);
+};
+
+const saveDataForRedirect = (loginService: string, credentialToken: string) => {
+	Reload._onMigrate('oauth', () => [true, { loginService, credentialToken }]);
+	Reload._migrate(null, { immediateMigration: true });
+};
+
+export function launchLogin(options: {
+	loginService: string;
+	loginStyle: string;
+	loginUrl: string;
+	credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void;
+	credentialToken: string;
+	popupOptions?: {
+		width?: number;
+		height?: number;
+	};
+}): void {
+	// Settings might not be loaded yet; in that case, just skip the proxying
+	const proxiedServices = settings.peek<string>('Accounts_OAuth_Proxy_services')?.replace(/\s/g, '').split(',') ?? [];
+	const proxyHost = settings.peek<string>('Accounts_OAuth_Proxy_host');
+
+	if (proxyHost && proxiedServices.includes(options.loginService)) {
+		const redirectUri = options.loginUrl.match(/(&redirect_uri=)([^&]+|$)/)?.[2];
+		options.loginUrl = options.loginUrl.replace(/(&redirect_uri=)([^&]+|$)/, `$1${encodeURIComponent(proxyHost)}/oauth_redirect`);
+		options.loginUrl = options.loginUrl.replace(/(&state=)([^&]+|$)/, `$1${redirectUri}!$2`);
+		options.loginUrl = `${proxyHost}/redirect/${encodeURIComponent(options.loginUrl)}`;
+	}
+
+	if (!options.loginService) throw new Error('loginService required');
+	if (options.loginStyle === 'popup') {
+		showPopup(options.loginUrl, options.credentialRequestCompleteCallback.bind(null, options.credentialToken), options.popupOptions);
+	} else if (options.loginStyle === 'redirect') {
+		saveDataForRedirect(options.loginService, options.credentialToken);
+		window.location.href = options.loginUrl;
+	} else {
+		throw new Error('invalid login style');
+	}
+}

@@ -7,7 +7,7 @@ import { OAuth } from 'meteor/oauth';
 
 import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from '../../meteor/login/oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
 
@@ -92,7 +92,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 				this.scope,
 			)}`;
 
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: this.name,
 			loginStyle,
 			loginUrl,

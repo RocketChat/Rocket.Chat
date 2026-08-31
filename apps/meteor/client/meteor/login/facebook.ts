@@ -5,10 +5,9 @@ import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
 	absoluteUrlOptions?: Record<string, any>;
@@ -32,7 +31,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl));
 		if (options.auth_type) loginUrl.searchParams.append('auth_type', options.auth_type);
 
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'facebook',
 			loginStyle,
 			loginUrl: loginUrl.toString(),

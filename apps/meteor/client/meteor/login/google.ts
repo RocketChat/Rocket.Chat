@@ -5,10 +5,9 @@ import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 type LoginWithGoogleOptions = LoginWithExternalServiceOptions & {
 	loginUrlParameters?: {
@@ -47,7 +46,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('google', config));
 		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl));
 
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'google',
 			loginStyle,
 			loginUrl: loginUrl.toString(),

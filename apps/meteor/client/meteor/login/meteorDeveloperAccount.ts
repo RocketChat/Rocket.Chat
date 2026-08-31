@@ -5,10 +5,9 @@ import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { OAuth } from 'meteor/oauth';
 import { Random } from 'meteor/random';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
 type LoginWithMeteorDeveloperAccountOptions = LoginWithExternalServiceOptions & {
 	details?: string;
@@ -27,7 +26,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		if (options.loginHint) loginUrl.searchParams.append('user_email', options.loginHint);
 		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('meteor-developer', config));
 
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'meteor-developer',
 			loginStyle,
 			loginUrl: loginUrl.toString(),
