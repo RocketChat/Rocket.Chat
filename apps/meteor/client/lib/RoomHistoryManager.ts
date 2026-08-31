@@ -386,6 +386,12 @@ class RoomHistoryManagerClass extends Emitter {
 				showThreadMessages,
 			});
 
+			// A `clear`/`close` that landed while the fetch was on the wire superseded this jump;
+			// clearing here would wipe the newer window and rebuild a stale one over it.
+			if (generation !== this.generation(message.rid)) {
+				return;
+			}
+
 			// Rebuilds the window around the target, so the store does not grow monotonically here.
 			this.clear(message.rid);
 
