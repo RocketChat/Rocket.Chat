@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -15,15 +15,13 @@ const CustomFieldsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/customfields'));
+	const handleCloseContextualbar = useStableCallback(() => router.navigate('/omnichannel/customfields'));
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Custom_Fields')}>
-					<Button data-qa-id='CustomFieldPageBtnNew' onClick={() => router.navigate('/omnichannel/customfields/new')}>
-						{t('Create_custom_field')}
-					</Button>
+					<Button onClick={() => router.navigate('/omnichannel/customfields/new')}>{t('Create_custom_field')}</Button>
 				</PageHeader>
 				<PageContent>
 					<CustomFieldsTable />

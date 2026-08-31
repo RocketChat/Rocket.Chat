@@ -27,7 +27,7 @@ const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Seri
 	const openDays = useMemo(() => workHours.filter(({ open }) => !!open).map(({ day }) => day), [workHours]);
 
 	return (
-		<GenericTableRow key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
+		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<GenericTableCell withTruncatedText>{name || t('Default')}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{t(timezone.name as TranslationKey)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{openDays.join(', ')}</GenericTableCell>

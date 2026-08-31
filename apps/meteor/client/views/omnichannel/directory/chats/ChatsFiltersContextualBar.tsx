@@ -23,7 +23,7 @@ import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 
-type ChatsFiltersContextualBarProps = {
+export type ChatsFiltersContextualBarProps = {
 	onClose: () => void;
 };
 

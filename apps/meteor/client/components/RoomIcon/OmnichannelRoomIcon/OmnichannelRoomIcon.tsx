@@ -14,7 +14,7 @@ const colors = {
 	disabled: 'annotation',
 } as const;
 
-type OmnichannelRoomIconProps = {
+export type OmnichannelRoomIconProps = {
 	source: IOmnichannelSource;
 	color?: ComponentProps<typeof Icon>['color'];
 	status?: UserStatus;

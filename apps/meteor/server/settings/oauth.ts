@@ -1,7 +1,16 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { Random } from '@rocket.chat/random';
+
+import { settingsRegistry } from '.';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
+		await this.add('Accounts_OAuth_Use_Modern_Flow', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Accounts_OAuth_Use_Modern_Flow_Label',
+			i18nDescription: 'Accounts_OAuth_Use_Modern_Flow_Description',
+		});
+
 		await this.section('Drupal', async function () {
 			const enableQuery = {
 				_id: 'Accounts_OAuth_Drupal',
@@ -126,29 +135,6 @@ export const createOauthSettings = () =>
 			});
 		});
 
-		await this.section('Tokenpass', async function () {
-			const enableQuery = {
-				_id: 'Accounts_OAuth_Tokenpass',
-				value: true,
-			};
-
-			await this.add('Accounts_OAuth_Tokenpass', false, { type: 'boolean' });
-			await this.add('API_Tokenpass_URL', '', {
-				type: 'string',
-				public: true,
-				enableQuery,
-				i18nDescription: 'API_Tokenpass_URL_Description',
-			});
-			await this.add('Accounts_OAuth_Tokenpass_id', '', { type: 'string', enableQuery });
-			await this.add('Accounts_OAuth_Tokenpass_secret', '', { type: 'string', enableQuery });
-			await this.add('Accounts_OAuth_Tokenpass_callback_url', '_oauth/tokenpass', {
-				type: 'relativeUrl',
-				readonly: true,
-				// @ts-expect-error - force: true is not a valid option for this method
-				force: true,
-				enableQuery,
-			});
-		});
 		await this.section('WordPress', async function () {
 			const enableQuery = {
 				_id: 'Accounts_OAuth_Wordpress',
@@ -427,6 +413,11 @@ export const createOauthSettings = () =>
 				readonly: true,
 				enableQuery,
 			});
+		});
+		await this.add('Accounts_OAuth_Session_Secret', Random.secret(), {
+			type: 'string',
+			secret: true,
+			hidden: true,
 		});
 		return this.section('Proxy', async function () {
 			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {

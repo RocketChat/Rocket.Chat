@@ -1,6 +1,6 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import {
 	GenericTable,
@@ -12,7 +12,7 @@ import {
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,11 +20,11 @@ import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
-import { useVoipExtensionPermission } from '../useVoipExtensionPermission';
+import { useShowVoipExtension } from '../useShowVoipExtension';
 
-type UsersTableProps = {
+export type UsersTableProps = {
 	tab: AdminUsersTab;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
 	total: number;
 	isLoading: boolean;
@@ -50,7 +50,7 @@ const UsersTable = ({
 	paginationData,
 	sortData,
 	isSeatsCapExceeded,
-}: UsersTableProps): ReactElement | null => {
+}: UsersTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const breakpoints = useBreakpoints();
@@ -58,14 +58,14 @@ const UsersTable = ({
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const showVoipExtension = useShowVoipExtension();
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
 	};
 
-	const handleClickOrKeyDown = useEffectEvent((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
+	const handleClickOrKeyDown = useStableCallback((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
 		e.stopPropagation();
 
 		const keyboardSubmitKeys = ['Enter', ' '];
@@ -137,9 +137,9 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			tab === 'all' && canManageVoipExtension && (
+			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
-					w='x180'
+					width='x180'
 					key='freeSwitchExtension'
 					direction={sortData?.sortDirection}
 					active={sortData?.sortBy === 'freeSwitchExtension'}
@@ -149,11 +149,11 @@ const UsersTable = ({
 					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'}>
+			<GenericTableHeaderCell key='actions' width={tab === 'pending' ? 'x204' : 'x50'}>
 				{t('Actions')}
 			</GenericTableHeaderCell>,
 		],
-		[sortData, t, isLaptop, tab, isMobile, canManageVoipExtension],
+		[sortData, t, isLaptop, tab, isMobile, showVoipExtension],
 	);
 
 	return (
@@ -174,10 +174,7 @@ const UsersTable = ({
 			{isSuccess && users.length === 0 && (
 				<GenericNoResults
 					icon='user'
-					title={t('Users_Table_Generic_No_users', {
-						postProcess: 'sprintf',
-						sprintf: [tab !== 'all' ? t(tab as TranslationKey) : ''],
-					})}
+					title={t('Users_Table_Generic_No_users', { status: tab !== 'all' ? t(tab as TranslationKey) : '' })}
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}
@@ -195,7 +192,7 @@ const UsersTable = ({
 									isMobile={isMobile}
 									isLaptop={isLaptop}
 									isSeatsCapExceeded={isSeatsCapExceeded}
-									showVoipExtension={canManageVoipExtension}
+									showVoipExtension={showVoipExtension}
 									onReload={onReload}
 									onClick={handleClickOrKeyDown}
 								/>

@@ -20,7 +20,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
-			if (Array.isArray(value)) action({ target: { value } });
+			if (Array.isArray(value)) void action({ target: { value } });
 		},
 		[action],
 	);
@@ -36,7 +36,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
 				<Chip key={value} {...props} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label?.name}
 					</Box>
 				</Chip>

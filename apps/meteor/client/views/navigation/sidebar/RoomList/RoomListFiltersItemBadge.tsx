@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type RoomListFiltersItemBadgeProps = {
+export type RoomListFiltersItemBadgeProps = {
 	roomTitle: TranslationKey;
 	unreadGroupCount: Pick<
 		SubscriptionWithRoom,

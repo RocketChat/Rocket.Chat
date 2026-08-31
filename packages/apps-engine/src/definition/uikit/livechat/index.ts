@@ -1,4 +1,4 @@
-export * from './IUIKitLivechatActionHandler';
-export * from './UIKitLivechatIncomingInteractionType';
+export type * from './IUIKitLivechatActionHandler';
+export type * from './UIKitLivechatIncomingInteractionType';
 export * from './UIKitLivechatInteractionContext';
-export * from './IUIKitLivechatIncomingInteraction';
+export type * from './IUIKitLivechatIncomingInteraction';

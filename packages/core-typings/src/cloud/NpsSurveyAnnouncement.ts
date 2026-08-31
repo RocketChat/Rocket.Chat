@@ -1,7 +1,11 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import * as z from 'zod';
 
-export interface NpsSurveyAnnouncement {
-	id: string;
-	startAt: Date;
-	expireAt: Date;
-}
+import { TimestampSchema } from '../utils';
+
+export const NpsSurveyAnnouncementSchema = z.object({
+	id: z.string(),
+	startAt: TimestampSchema,
+	expireAt: TimestampSchema,
+});
+
+export type NpsSurveyAnnouncement = z.infer<typeof NpsSurveyAnnouncementSchema>;

@@ -2,7 +2,7 @@ import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server/cached';
+import { settings } from '../../settings/cached';
 
 export async function updateCasServices(): Promise<void> {
 	const data: Partial<LoginServiceConfiguration> = {

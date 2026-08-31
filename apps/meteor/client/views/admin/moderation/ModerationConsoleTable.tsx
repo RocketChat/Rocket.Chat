@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableLoadingTable,
@@ -63,7 +63,7 @@ const ModerationConsoleTable = () => {
 		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useEffectEvent((id: IUser['_id']): void => {
+	const handleClick = useStableCallback((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: {
@@ -105,7 +105,7 @@ const ModerationConsoleTable = () => {
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
+					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={headers.length} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (

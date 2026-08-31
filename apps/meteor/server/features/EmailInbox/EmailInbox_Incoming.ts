@@ -13,13 +13,13 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import { stripHtml } from 'string-strip-html';
 
 import { logger } from './logger';
-import { FileUpload } from '../../../app/file-upload/server';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
-import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
-import { sendMessage } from '../../../app/livechat/server/lib/messages';
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { QueueManager } from '../../lib/omnichannel/QueueManager';
+import { setDepartmentForGuest } from '../../lib/omnichannel/departmentsLib';
+import { sendMessage } from '../../lib/omnichannel/messages';
+import { settings } from '../../settings';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
@@ -48,7 +48,10 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 			email,
 			department,
 		},
-		{ shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') },
+		{
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		},
 	);
 
 	if (!livechatVisitor) {
@@ -101,7 +104,7 @@ async function uploadAttachment(attachmentParam: Attachment, rid: string, visito
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
-	logger.info(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
+	logger.info({ msg: 'New email conversation received on inbox. Will be assigned to department', inbox, department });
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -112,7 +115,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	if (!guest) {
-		logger.error(`No visitor found for ${email.from.value[0].address}`);
+		logger.error({ msg: 'No visitor found', address: email.from.value[0].address });
 		return;
 	}
 

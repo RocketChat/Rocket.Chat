@@ -13,11 +13,11 @@ test.describe('Preview public channel', () => {
 	let targetChannel: string;
 	let targetChannelMessage: string;
 
+	// Each test navigates to /home by itself after its API setup is done, otherwise the API mutations
+	// can race the client boot (initial cached stores sync) and leave the UI stuck on the loading screen
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poDirectory = new Directory(page);
-
-		await page.goto('/home');
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -36,29 +36,46 @@ test.describe('Preview public channel', () => {
 		test.use({ storageState: Users.user1.state });
 
 		test('should let user preview public rooms messages', async () => {
-			await poHomeChannel.sidenav.openDirectory();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
 		});
 
-		test('should let user view direct rooms', async ({ api }) => {
+		test('should disable all composer toolbar actions during channel preview', async () => {
+			await poDirectory.goto();
+			await poDirectory.openChannel(targetChannel);
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+
+			const actions = await poHomeChannel.composer.allPrimaryActions.all();
+			await Promise.all(
+				actions.map(async (action) => {
+					await expect(action).toBeDisabled();
+				}),
+			);
+		});
+
+		test('should let user view direct rooms', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 			await createDirectMessage(api);
 
-			await poHomeChannel.sidenav.openChat(Users.user2.data.username);
+			await page.goto('/home');
 
-			await expect(poHomeChannel.content.btnJoinChannel).not.toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await poHomeChannel.navbar.openChat(Users.user2.data.username);
+
+			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 		});
 
 		test('should not let user role preview public rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.sidenav.openDirectory();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
-			await expect(poHomeChannel.content.btnJoinChannel).toBeVisible();
+			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 		});
 	});
@@ -69,12 +86,13 @@ test.describe('Preview public channel', () => {
 
 		test('should prevent user from join the room', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
-			await poHomeChannel.sidenav.openDirectory();
+
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
 
-			await poHomeChannel.btnJoinRoom.click();
+			await poHomeChannel.composer.btnJoinRoom.click();
 
 			await expect(
 				page.locator('[role="alert"]', {
@@ -86,11 +104,11 @@ test.describe('Preview public channel', () => {
 		test('should prevent user from join the room without preview permission', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.sidenav.openDirectory();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 
-			await poHomeChannel.content.btnJoinChannel.click();
+			await poHomeChannel.btnJoinChannel.click();
 
 			await expect(
 				page.locator('[role="alert"]', {

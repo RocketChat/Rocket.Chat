@@ -1,10 +1,8 @@
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { createContext } from 'react';
 
-type TooltipPayload = ReactElement;
-
 export type TooltipContextValue = {
-	open: (payload: TooltipPayload, anchor: HTMLElement) => void;
+	open: (payload: ReactNode, anchor: HTMLElement) => void;
 	close: () => void;
 };
 

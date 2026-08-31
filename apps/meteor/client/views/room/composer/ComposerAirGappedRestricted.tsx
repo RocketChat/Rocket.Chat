@@ -1,12 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
-const ComposerAirGappedRestricted = (): ReactElement => {
+const ComposerAirGappedRestricted = () => {
 	return (
 		<MessageFooterCallout color='default'>
-			<Icon name='warning' size={20} mie={4} />
+			<Icon name='warning' size={20} marginInlineEnd={4} />
 			<span>
 				<Trans i18nKey='Composer_readonly_airgapped'>
 					<Box is='span' fontWeight={600}>

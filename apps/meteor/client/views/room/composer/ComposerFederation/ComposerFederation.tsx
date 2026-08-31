@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
@@ -8,11 +6,11 @@ import ComposerFederationInvalidVersion from './ComposerFederationInvalidVersion
 import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisabled';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
-type ComposerFederationProps = ComposerMessageProps & {
+export type ComposerFederationProps = ComposerMessageProps & {
 	blocked?: boolean;
 };
 
-const ComposerFederation = ({ children, blocked, ...props }: ComposerFederationProps): ReactElement => {
+const ComposerFederation = ({ children, blocked, ...props }: ComposerFederationProps) => {
 	const federationEnabled = useIsFederationEnabled();
 	const { data: federationModuleEnabled = false } = useHasLicenseModule('federation');
 

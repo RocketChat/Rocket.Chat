@@ -6,24 +6,23 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PrioritiesTableRow from './PrioritiesTableRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type PrioritiesTableProps = {
+export type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];
 	onRowClick: (id: string) => void;
 	isLoading: boolean;
 };
 
-export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps): ReactElement => {
+export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps) => {
 	const { t } = useTranslation();
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='icon' w='100px'>
+			<GenericTableHeaderCell key='icon' width='100px'>
 				{t('Icon')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
@@ -42,7 +41,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 			)}
 			{priorities?.length === 0 && <GenericNoResults />}
 			{priorities && priorities?.length > 0 && (
-				<GenericTable>
+				<GenericTable aria-label={t('Priorities')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{priorities?.map(({ _id, name, i18n, sortItem, dirty }) => (

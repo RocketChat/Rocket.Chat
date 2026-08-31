@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type DeleteRoomModalProps = {
+export type DeleteRoomModalProps = {
 	rid: IRoom['_id'];
 	roomName: string;
 	onClose: () => void;

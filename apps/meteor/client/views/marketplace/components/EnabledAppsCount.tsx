@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +13,7 @@ const EnabledAppsCount = ({
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	tooltip?: string;
-}): ReactElement | null => {
+}) => {
 	const { t } = useTranslation();
 
 	const variant = useMemo(() => {

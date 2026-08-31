@@ -68,7 +68,7 @@ const AppInstallationModal = ({
 			<Modal>
 				<ModalHeader>
 					<ModalHeaderText>
-						<ModalTitle data-qa-id='confirm-app-upload-modal-title'>{getTitle()}</ModalTitle>
+						<ModalTitle>{getTitle()}</ModalTitle>
 					</ModalHeaderText>
 					<ModalClose onClick={handleClose} />
 				</ModalHeader>

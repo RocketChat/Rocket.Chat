@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain } from '../src/utils';
+import { link, paragraph, plain } from './helpers';
 
 test.each([
 	['joe@joe.com', [paragraph([link('mailto:joe@joe.com', [plain('joe@joe.com')])])]],
@@ -47,5 +47,5 @@ test.each([
 	['My email is fake@gmail.c', [paragraph([plain('My email is fake@gmail.c')])]],
 	['My email is fake@gmail.comf', [paragraph([plain('My email is fake@gmail.comf')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

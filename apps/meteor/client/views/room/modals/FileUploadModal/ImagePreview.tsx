@@ -1,16 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import GenericPreview from './GenericPreview';
 import PreviewSkeleton from './PreviewSkeleton';
 
-type ImagePreviewProps = {
+export type ImagePreviewProps = {
 	url: string;
 	file: File;
+	altText?: string;
 };
 
-const ImagePreview = ({ url, file }: ImagePreviewProps): ReactElement => {
+const ImagePreview = ({ url, file, altText = '' }: ImagePreviewProps) => {
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
 
@@ -30,8 +30,9 @@ const ImagePreview = ({ url, file }: ImagePreviewProps): ReactElement => {
 			<Box
 				is='img'
 				src={url}
+				alt={altText}
 				maxWidth='full'
-				style={{ objectFit: 'contain' }}
+				objectFit='contain'
 				onLoad={handleLoad}
 				onError={handleError}
 				display={loading ? 'none' : 'initial'}

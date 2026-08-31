@@ -1,42 +1,22 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar, SidebarToggler } from '@rocket.chat/ui-client';
-import { useLayout } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
 import { useJoinRoom } from '../../hooks/useJoinRoom';
 
-type NotSubscribedRoomProps = {
+export type NotSubscribedRoomProps = {
 	rid: IRoom['_id'];
 	reference: string;
 	type: IRoom['t'];
 };
 
-const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): ReactElement => {
+const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps) => {
 	const { t } = useTranslation();
-
 	const handleJoinClick = useJoinRoom();
-
-	const { isMobile } = useLayout();
 
 	return (
 		<RoomLayout
-			header={
-				isMobile && (
-					<FeaturePreview feature='newNavigation'>
-						<FeaturePreviewOff>
-							<HeaderV1 justifyContent='start'>
-								<HeaderV1Toolbar>
-									<SidebarToggler />
-								</HeaderV1Toolbar>
-							</HeaderV1>
-						</FeaturePreviewOff>
-						<FeaturePreviewOn>{null}</FeaturePreviewOn>
-					</FeaturePreview>
-				)
-			}
 			body={
 				<Box display='flex' justifyContent='center' height='full'>
 					<States>
@@ -51,7 +31,7 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 								/>
 							</Box>
 						</StatesSubtitle>
-						<Box mbs={16}>
+						<Box marginBlockStart={16}>
 							<StatesActions>
 								<StatesAction disabled={handleJoinClick.isPending} onClick={() => handleJoinClick.mutate({ rid, reference, type })}>
 									{t('Join_channel')}

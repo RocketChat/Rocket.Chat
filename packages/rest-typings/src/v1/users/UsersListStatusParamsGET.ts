@@ -1,10 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajvQuery } from '../Ajv';
 
 export type UsersListStatusParamsGET = PaginatedRequest<{
 	status?: 'active' | 'deactivated';
@@ -63,4 +58,4 @@ const UsersListStatusParamsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isUsersListStatusProps = ajv.compile<UsersListStatusParamsGET>(UsersListStatusParamsGetSchema);
+export const isUsersListStatusProps = ajvQuery.compile<UsersListStatusParamsGET>(UsersListStatusParamsGetSchema);

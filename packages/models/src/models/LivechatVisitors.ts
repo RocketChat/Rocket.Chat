@@ -1,6 +1,6 @@
-import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { FindPaginated, ILivechatVisitorsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
 	Collection,
@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
+			{ key: { 'externalIds.entityId': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -49,6 +50,51 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
+	async findOneVisitorByPhoneOrEmailAndAddExternalId(
+		contactData: { phone: string } | { email: string },
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const query =
+			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
+
+		const visitor = await this.findOne(query);
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id: visitor._id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
+	}
+
+	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null> {
+		return this.findOne({
+			'externalIds.entityId': entityId,
+		});
+	}
+
+	async updateExternalIdById(
+		_id: string,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<ILivechatVisitor | null> {
+		const visitor = await this.findOne({ _id });
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
+	}
+
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
 		if (!emailAddress) {
 			return null;
@@ -65,16 +111,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	 * Find visitors by _id
 	 * @param {string} token - Visitor token
 	 */
-	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+	findById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
-		return this.find(
+	findEnabled<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<ILivechatVisitor>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				...query,
 				disabled: { $ne: true },
@@ -83,30 +135,27 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
+	findOneEnabledById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id,
 			disabled: { $ne: true },
 		};
 
-		return this.findOne<T>(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
-		const query = {
-			token,
-			disabled: { $ne: true },
-		};
-
-		return this.find(query);
-	}
-
-	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	getVisitorByToken<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			token,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
@@ -179,14 +228,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	/**
 	 * Find visitors by their email or phone or username or name
 	 */
-	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField<
+		T extends Document = ILivechatVisitor,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		emailOrPhone?: string,
 		nameOrUsername?: RegExp,
 		allowedCustomFields: string[] = [],
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
+		options?: O,
+	): Promise<FindPaginated<FindCursor<DocumentWithProjection<T, O>>>> {
 		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
-			return this.findPaginated({ disabled: { $ne: true } }, options);
+			return this.findPaginated<T, O>({ disabled: { $ne: true } }, options);
 		}
 
 		const query: Filter<ILivechatVisitor> = {
@@ -216,7 +268,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			disabled: { $ne: true },
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
 	async findOneByEmailAndPhoneAndCustomField(
@@ -267,8 +319,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
-		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
+		};
 
 		return this.updateOne(query, update);
 	}
@@ -369,7 +420,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.deleteOne({ _id });
 	}
 
-	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
+	async saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
@@ -384,16 +435,27 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		// the only reason we're using $setUnion here instead of $addToSet is because
-		// old visitors might have `visitorEmails` or `phone` as `null` which would cause $addToSet to fail
-		return this.updateOne({ _id }, [
+		// TODO: Lead Capture features: Either create a migration script fixing records or deprecate it
+		// Temporary workaround for legacy data.
+		// Some old records have 'visitorEmails' or 'phone' set to 'null', which breaks the $addToSet below.
+		// Pending Product decision: either run a proper DB migration to fix all nulls,
+		// or deprecate this feature entirely. Remove this once a decision is made.
+		if (saveEmail.length) {
+			await this.updateOne({ _id, visitorEmails: null as any }, { $set: { visitorEmails: [] } });
+		}
+		if (savePhone.length) {
+			await this.updateOne({ _id, phone: null }, { $set: { phone: [] } });
+		}
+
+		return this.updateOne(
+			{ _id },
 			{
-				$set: {
-					...(saveEmail.length && { visitorEmails: { $setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail] } }),
-					...(savePhone.length && { phone: { $setUnion: [{ $ifNull: ['$phone', []] }, savePhone] } }),
+				$addToSet: {
+					...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+					...(savePhone.length && { phone: { $each: savePhone } }),
 				},
 			},
-		]);
+		);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
@@ -449,6 +511,16 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateDepartmentById(_id: string, department: string) {
 		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
+	}
+
+	findByIds<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			_id: { $in: ids },
+		};
+		return this.find<T, O>(query, options);
 	}
 }
 

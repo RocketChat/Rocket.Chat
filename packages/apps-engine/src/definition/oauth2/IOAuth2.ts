@@ -1,4 +1,4 @@
-import type { URL } from 'url';
+import type { URL } from 'node:url';
 
 import type { IConfigurationExtend, IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { IUser } from '../users/IUser';

@@ -1,2 +1,0 @@
-import './hooks';
-import './methods';

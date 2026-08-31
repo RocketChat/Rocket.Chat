@@ -8,7 +8,7 @@ import type {
 	Token,
 	User,
 } from '@node-oauth/oauth2-server';
-import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
+import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, Users } from '@rocket.chat/models';
 
 export type ModelConfig = {
 	debug?: boolean;
@@ -51,6 +51,11 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 		if (!client) {
 			throw new Error('Invalid clientId');
+		}
+
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
+			return;
 		}
 
 		const result: Token = {
@@ -226,6 +231,11 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 		if (!client) {
 			throw new Error('Invalid clientId');
+		}
+
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
+			throw new Error('Invalid token');
 		}
 
 		const result: RefreshToken = {

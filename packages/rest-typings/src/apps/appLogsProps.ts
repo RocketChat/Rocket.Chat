@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { ajv } from '../v1/Ajv';
+import { ajvQuery } from '../v1/Ajv';
 
 export type AppLogsProps = PaginatedRequest<{
 	appId?: string;
@@ -26,4 +26,4 @@ const AppLogsPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isAppLogsProps = ajv.compile<AppLogsProps>(AppLogsPropsSchema);
+export const isAppLogsProps = ajvQuery.compile<AppLogsProps>(AppLogsPropsSchema);

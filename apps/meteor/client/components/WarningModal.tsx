@@ -9,10 +9,10 @@ import {
 	ModalIcon,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type WarningModalProps = {
+export type WarningModalProps = {
 	text: ReactNode;
 	confirmText: ReactNode;
 	cancelText?: ReactNode;
@@ -21,7 +21,7 @@ type WarningModalProps = {
 	close: () => void;
 };
 
-const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {
+const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps) => {
 	const { t } = useTranslation();
 	return (
 		<Modal open {...props}>

@@ -4,7 +4,7 @@ import { ImageGallery } from '../components/ImageGallery';
 import { ImageGalleryContext } from '../contexts/ImageGalleryContext';
 import ImageGalleryData from '../views/room/ImageGallery/ImageGalleryData';
 
-type ImageGalleryProviderProps = {
+export type ImageGalleryProviderProps = {
 	children: ReactNode;
 };
 

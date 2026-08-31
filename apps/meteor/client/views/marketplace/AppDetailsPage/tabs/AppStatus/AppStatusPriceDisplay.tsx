@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
 
-type AppStatusPriceDisplayProps = {
+export type AppStatusPriceDisplayProps = {
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
 	price: number;

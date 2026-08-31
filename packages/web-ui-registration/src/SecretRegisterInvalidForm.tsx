@@ -1,14 +1,16 @@
-import type { ReactElement } from 'react';
+import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import VerticalTemplate from './template/VerticalTemplate';
 
-const SecretRegisterInvalidForm = (): ReactElement => {
+const SecretRegisterInvalidForm = () => {
 	const { t } = useTranslation();
 
 	return (
 		<VerticalTemplate>
-			<h2>{t('Invalid_secret_URL_message')}</h2>
+			<Callout role='status' type='warning'>
+				{t('Invalid_secret_URL_message')}
+			</Callout>
 		</VerticalTemplate>
 	);
 };

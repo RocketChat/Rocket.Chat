@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 
 import { NAVIGATION_REGION_ID } from '../../lib/constants';
 
-type SidebarPortalProps = { children?: ReactNode };
+export type SidebarPortalProps = { children: ReactNode };
 
 const SidebarPortal = ({ children }: SidebarPortalProps) => {
 	const sidebarRoot = document.getElementById(NAVIGATION_REGION_ID);

@@ -1,6 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import type { UserStatus } from './UserStatus';
 
 export interface ICalendarEvent extends IRocketChatRecord {
 	startTime: Date;
@@ -11,12 +10,11 @@ export interface ICalendarEvent extends IRocketChatRecord {
 	description: string;
 	notificationSent: boolean;
 
-	externalId?: string;
-	meetingUrl?: string;
+	externalId?: string | null;
+	meetingUrl?: string | null;
 
 	reminderMinutesBeforeStart?: number;
 	reminderTime?: Date;
 
 	busy?: boolean;
-	previousStatus?: UserStatus;
 }

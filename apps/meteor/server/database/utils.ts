@@ -36,7 +36,7 @@ export const onceTransactionCommitedSuccessfully = async <T extends ClientSessio
 			try {
 				await cb();
 			} catch (error) {
-				SystemLogger.error(error);
+				SystemLogger.error({ err: error });
 			}
 		};
 

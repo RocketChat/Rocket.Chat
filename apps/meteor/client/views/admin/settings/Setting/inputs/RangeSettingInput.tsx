@@ -1,10 +1,9 @@
 import { Slider, Field, FieldLabel, FieldRow, FieldHint } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RangeSettingInputProps = SettingInputProps<number> & {
+export type RangeSettingInputProps = SettingInputProps<number> & {
 	hint?: string;
 	minValue?: number;
 	maxValue?: number;
@@ -23,23 +22,22 @@ function RangeSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: RangeSettingInputProps): ReactElement {
+}: RangeSettingInputProps) {
 	return (
 		<Field>
 			<FieldRow>
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			{hint && (
 				<FieldRow>
-					<FieldHint mbe={4}>{hint}</FieldHint>
+					<FieldHint marginBlockEnd={4}>{hint}</FieldHint>
 				</FieldRow>
 			)}
 			<FieldRow>
 				<Slider
-					data-qa-setting-id={_id}
 					disabled={disabled || readonly}
 					minValue={minValue}
 					maxValue={maxValue}

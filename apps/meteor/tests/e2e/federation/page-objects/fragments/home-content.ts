@@ -15,12 +15,16 @@ export class FederationHomeContent {
 		return this.page.locator('role=menu[name="People"]');
 	}
 
+	get messageListItems(): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]');
+	}
+
 	get lastUserMessage(): Locator {
-		return this.page.locator('[data-qa-type="message"]').last();
+		return this.messageListItems.last();
 	}
 
 	get lastUserMessageBody(): Locator {
-		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
+		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	async sendMessage(text: string): Promise<void> {
@@ -96,30 +100,36 @@ export class FederationHomeContent {
 	}
 
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child');
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child');
 	}
 
 	async getLastFileMessageByFileName(filename: string): Promise<Locator> {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last().locator(`div[title="${filename}"]`);
+		return this.page
+			.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container')
+			.last()
+			.locator(`div[title="${filename}"]`);
 	}
 
 	async getLastFileThreadMessageByFileName(filename: string): Promise<Locator> {
 		return this.page
-			.locator('div.thread-list ul.thread [data-qa-type="message"]:last-child .rcx-message-container')
+			.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container')
 			.last()
 			.locator(`div[title="${filename}"]`);
 	}
 
 	get lastFileMessage(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last();
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container').last();
 	}
 
 	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
 	get waitForLastThreadMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+		return this.page
+			.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]')
+			.last()
+			.locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -150,10 +160,6 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-id="menu-more-actions"]');
 	}
 
-	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
-	}
-
 	get btnContactEdit(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
 	}
@@ -171,7 +177,7 @@ export class FederationHomeContent {
 	}
 
 	get lastThreadMessageText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+		return this.page.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]').last();
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
@@ -184,9 +190,9 @@ export class FederationHomeContent {
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	threadSendToChannelAlso(): Locator {
@@ -201,19 +207,9 @@ export class FederationHomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
-		await this.page
-			.getByRole('dialog')
-			.locator('[data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.waitFor();
-		await this.page
-			.getByRole('dialog')
-			.locator('[data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.click();
+		await this.lastThreadMessageText.hover();
+		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async quoteMessageInsideThread(message: string): Promise<void> {
@@ -230,19 +226,19 @@ export class FederationHomeContent {
 	}
 
 	async unreactLastMessage(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).click();
+		await this.lastUserMessage.locator('.rcx-message-reactions__reaction').nth(1).waitFor();
+		await this.lastUserMessage.locator('.rcx-message-reactions__reaction').nth(1).click();
 	}
 
 	async getSystemMessageByText(text: string): Promise<Locator> {
-		return this.page.locator('div[data-qa="system-message"] div[data-qa-type="system-message-body"]', { hasText: text });
+		return this.page.locator('[role="document"][aria-roledescription="system message body"]', { hasText: text });
 	}
 
 	async getLastSystemMessageName(): Promise<Locator> {
-		return this.page.locator('div[data-qa="system-message"]:last-child span.rcx-message-system__name');
+		return this.page.locator('[role="listitem"][aria-roledescription="system message"]').last().getByRole('button');
 	}
 
 	async getAllReactions(): Promise<Locator> {
-		return this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction');
+		return this.lastUserMessage.locator('.rcx-message-reactions__reaction');
 	}
 }

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import ReadReceiptsModal from '../../../views/room/modals/ReadReceiptsModal';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
@@ -18,12 +18,13 @@ export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionCo
 		id: 'receipt-detail',
 		icon: 'check-double',
 		label: 'Read_Receipts',
-		context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads', 'federated'],
 		type: 'duplication',
 		action() {
 			setModal(
 				<ReadReceiptsModal
 					messageId={message._id}
+					rid={message.rid}
 					onClose={() => {
 						setModal(null);
 					}}

@@ -1,12 +1,11 @@
 import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type SelectSettingInputProps = SettingInputProps & {
+export type SelectSettingInputProps = SettingInputProps & {
 	values?: { key: string; i18nLabel: TranslationKey }[];
 };
 
@@ -24,7 +23,7 @@ function SelectSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: SelectSettingInputProps): ReactElement {
+}: SelectSettingInputProps) {
 	const { t } = useTranslation();
 
 	const handleChange = (value: string): void => {
@@ -37,11 +36,10 @@ function SelectSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Select
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}

@@ -1,8 +1,7 @@
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat } from '../page-objects';
-import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
+import { OmnichannelLiveChat, OmnichannelLivechatAppearance } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -55,7 +54,7 @@ test.describe('OC - Livechat - Hide "Expand chat"', async () => {
 
 		await test.step('expect to change setting', async () => {
 			await poLivechatAppearance.labelHideExpandChat.click();
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect "Expand chat" button to be hidden', async () => {

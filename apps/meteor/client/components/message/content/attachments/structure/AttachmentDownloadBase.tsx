@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import Action from '../../Action';
 
-type AttachmentDownloadBaseProps = Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string };
+export type AttachmentDownloadBaseProps = Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string };
 
 const AttachmentDownloadBase = ({ title, href, disabled, ...props }: AttachmentDownloadBaseProps) => {
 	const { t } = useTranslation();

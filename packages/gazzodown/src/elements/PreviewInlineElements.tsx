@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { Fragment } from 'react';
 
 import BoldSpan from './BoldSpan';
@@ -13,33 +12,38 @@ import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
 
-type PreviewInlineElementsProps = {
+export type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 
-const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactElement => (
+const PreviewInlineElements = ({ children }: PreviewInlineElementsProps) => (
 	<>
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
+
+				case 'SPOILER':
+					return <PreviewInlineElements key={index}>{child.value}</PreviewInlineElements>;
 
 				case 'LINK':
 					return (
-						<PreviewInlineElements key={index} children={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />
+						<PreviewInlineElements key={index}>
+							{Array.isArray(child.value.label) ? child.value.label : [child.value.label]}
+						</PreviewInlineElements>
 					);
 
 				case 'PLAIN_TEXT':
-					return <Fragment key={index} children={child.value} />;
+					return <Fragment key={index}>{child.value}</Fragment>;
 
 				case 'IMAGE':
-					return <PreviewInlineElements key={index} children={[child.value.label]} />;
+					return <PreviewInlineElements key={index}>{[child.value.label]}</PreviewInlineElements>;
 
 				case 'MENTION_USER':
 					return <PreviewUserMentionElement key={index} mention={child.value.value} />;

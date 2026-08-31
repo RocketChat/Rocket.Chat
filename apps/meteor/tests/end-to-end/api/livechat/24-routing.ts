@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IUser, ILivechatAgent } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -16,9 +16,10 @@ import {
 	makeAgentUnavailable,
 	switchLivechatStatus,
 } from '../../../data/livechat/rooms';
-import { updateSetting } from '../../../data/permissions.helper';
+import { getAgent } from '../../../data/livechat/users';
+import { getSettingValueById, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, login, setUserActiveStatus, setUserAway, setUserStatus } from '../../../data/users.helper';
+import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
@@ -347,39 +348,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
-		it('should ignore offline users when Livechat_enabled_when_agent_idle is false', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.OFFLINE);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should not route to an idle user', async () => {
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
-			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-			await setUserAway(testUser3.credentials);
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to an idle user', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.an('object');
-		});
 		it('should route to another available agent if contact manager is unavailable and Omnichannel_contact_manager_routing is enabled', async () => {
 			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
@@ -426,6 +394,52 @@ import { IS_EE } from '../../../e2e/config/constants';
 				const roomInfo = await getLivechatRoomInfo(room._id);
 
 				expect(roomInfo.servedBy).to.be.an('object').that.has.property('_id').that.is.not.equal(testUser3.user._id);
+			});
+		});
+		describe('Auto_Selection - Livechat_accept_chats_with_no_agents', async () => {
+			let initialSettingValue: any;
+			let testUserInitialState: ILivechatAgent;
+			let testUser3InitialState: ILivechatAgent;
+
+			before(async () => {
+				testUserInitialState = await getAgent(testUser.user._id);
+				testUser3InitialState = await getAgent(testUser3.user._id);
+				initialSettingValue = await getSettingValueById('Livechat_accept_chats_with_no_agents');
+			});
+
+			after(async () => {
+				await updateSetting('Livechat_accept_chats_with_no_agents', initialSettingValue);
+				await switchLivechatStatus(testUserInitialState.statusLivechat, testUser.credentials);
+				await switchLivechatStatus(testUser3InitialState.statusLivechat, testUser3.credentials);
+				await setUserStatus(testUser3.credentials, testUser3InitialState.status);
+			});
+			describe('Livechat_accept_chats_with_no_agents is false', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', false);
+					await switchLivechatStatus('not-available', testUser.credentials);
+					await switchLivechatStatus('available', testUser3.credentials);
+					await setUserStatus(testUser3.credentials, UserStatus.OFFLINE);
+				});
+
+				it('should fail to start a conversation if there is an available but offline agent and Livechat_accept_chats_with_no_agents is false', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
+					expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+				});
+			});
+			describe('Livechat_accept_chats_with_no_agents is true', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', true);
+					await switchLivechatStatus('available', testUser3.credentials);
+					await setUserStatus(testUser3.credentials, UserStatus.OFFLINE);
+				});
+				it('should accept a conversation and route to an offline agent', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const room = await createLivechatRoom(visitor.token);
+					const roomInfo = await getLivechatRoomInfo(room._id);
+					expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
+				});
 			});
 		});
 	});
@@ -509,32 +523,52 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 		});
-		it('should not route to an idle user', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			await setUserAway(testUser2.credentials);
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
+		describe('Load_Balancing - Livechat_accept_chats_with_no_agents', async () => {
+			let initialSettingValue: any;
+			let testUserInitialState: ILivechatAgent;
+			let testUser2InitialState: ILivechatAgent;
 
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
+			before(async () => {
+				testUserInitialState = await getAgent(testUser.user._id);
+				testUser2InitialState = await getAgent(testUser2.user._id);
+				initialSettingValue = await getSettingValueById('Livechat_accept_chats_with_no_agents');
+			});
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to agents even if theyre idle when setting is enabled', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
+			after(async () => {
+				await updateSetting('Livechat_accept_chats_with_no_agents', initialSettingValue);
+				await switchLivechatStatus(testUserInitialState.statusLivechat, testUser.credentials);
+				await switchLivechatStatus(testUser2InitialState.statusLivechat, testUser2.credentials);
+				await setUserStatus(testUser2.credentials, testUser2InitialState.status);
+			});
+			describe('Livechat_accept_chats_with_no_agents is false', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', false);
+					await switchLivechatStatus('not-available', testUser.credentials);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
 
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
+				it('should fail to start a conversation if there is an available but offline agent and Livechat_accept_chats_with_no_agents is false', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
+					expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+				});
+			});
+			describe('Livechat_accept_chats_with_no_agents is true', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', true);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
+				it('should accept a conversation and route to an offline agent', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const room = await createLivechatRoom(visitor.token);
+					const roomInfo = await getLivechatRoomInfo(room._id);
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			// Not checking who, just checking it's served
-			expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
+				});
+			});
 		});
 	});
 	describe('Load Rotation', () => {
@@ -617,32 +651,52 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
-		it('should not route to an idle user', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			await setUserAway(testUser2.credentials);
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
+		describe('Load_Rotation - Livechat_accept_chats_with_no_agents', async () => {
+			let initialSettingValue: any;
+			let testUserInitialState: ILivechatAgent;
+			let testUser2InitialState: ILivechatAgent;
 
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
+			before(async () => {
+				testUserInitialState = await getAgent(testUser.user._id);
+				testUser2InitialState = await getAgent(testUser2.user._id);
+				initialSettingValue = await getSettingValueById('Livechat_accept_chats_with_no_agents');
+			});
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to agents even if theyre idle when setting is enabled', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
+			after(async () => {
+				await updateSetting('Livechat_accept_chats_with_no_agents', initialSettingValue);
+				await switchLivechatStatus(testUserInitialState.statusLivechat, testUser.credentials);
+				await switchLivechatStatus(testUser2InitialState.statusLivechat, testUser2.credentials);
+				await setUserStatus(testUser2.credentials, testUser2InitialState.status);
+			});
+			describe('Livechat_accept_chats_with_no_agents is false', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', false);
+					await switchLivechatStatus('not-available', testUser.credentials);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
 
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
+				it('should fail to start a conversation if there is an available but offline agent and Livechat_accept_chats_with_no_agents is false', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
+					expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+				});
+			});
+			describe('Livechat_accept_chats_with_no_agents is true', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', true);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
+				it('should accept a conversation and route to an offline agent', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const room = await createLivechatRoom(visitor.token);
+					const roomInfo = await getLivechatRoomInfo(room._id);
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			// Not checking who, just checking it's served
-			expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
+				});
+			});
 		});
 	});
 });

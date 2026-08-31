@@ -1,9 +1,8 @@
 import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
-import DOMPurify from 'dompurify';
 import { useId } from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
@@ -34,8 +33,8 @@ const AdminUserSetRandomPasswordRadios = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={8}>
-				<FieldRow mie={8}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} marginBlockEnd={8}>
+				<FieldRow marginInlineEnd={8}>
 					<Controller
 						control={control}
 						name='setRandomPassword'
@@ -57,15 +56,18 @@ const AdminUserSetRandomPasswordRadios = ({
 				</FieldLabel>
 			</Box>
 			{!isSmtpEnabled && (
-				<FieldHint
-					id={`${setRandomPasswordId}-hint`}
-					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-					mbe={16}
-					mbs={0}
-				/>
+				<FieldHint id={`${setRandomPasswordId}-hint`} marginBlockEnd={16} marginBlockStart={0}>
+					<Trans
+						i18nKey='Send_Email_SMTP_Warning'
+						components={{
+							// eslint-disable-next-line jsx-a11y/anchor-has-content
+							a: <a href='/admin/settings/Email' />,
+						}}
+					/>
+				</FieldHint>
 			)}
 			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1}>
-				<FieldRow mie={8}>
+				<FieldRow marginInlineEnd={8}>
 					<Controller
 						control={control}
 						name='setRandomPassword'

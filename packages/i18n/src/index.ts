@@ -1,5 +1,5 @@
 import { isObject } from '@rocket.chat/tools';
-import type { i18n, TOptions } from 'i18next';
+import type { i18n, TFunction, TOptions } from 'i18next';
 
 import type { RocketchatI18nKeys } from './resources.ts';
 
@@ -13,8 +13,8 @@ declare module 'i18next' {
 	}
 }
 
-export const addSprinfToI18n = function (t: any) {
-	return function (key: string, ...replaces: any): string {
+export const addSprinfToI18n = (t: TFunction) => {
+	return (key: string, ...replaces: any): string => {
 		if (replaces[0] === undefined) {
 			return t(key);
 		}
@@ -107,7 +107,7 @@ export const extractTranslationNamespaces = (source: Record<string, string>): Re
 export const extractTranslationKeys = (source: Record<string, string>, namespaces: string | string[] = []): { [key: string]: any } => {
 	const all = extractTranslationNamespaces(source);
 	return Array.isArray(namespaces)
-		? (namespaces as TranslationNamespace[]).reduce((result, namespace) => ({ ...result, ...all[namespace] }), {})
+		? (namespaces as TranslationNamespace[]).reduce((result, namespace) => Object.assign(result, all[namespace]), {})
 		: all[namespaces as TranslationNamespace];
 };
 

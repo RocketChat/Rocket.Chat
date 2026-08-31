@@ -6,10 +6,10 @@ import type { ComponentProps } from 'react';
 import OutlookEventItemContent from './OutlookEventsList/OutlookEventItemContent';
 import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
 
-type OutlookCalendarEventModalProps = ComponentProps<typeof GenericModal> & {
+export type OutlookCalendarEventModalProps = ComponentProps<typeof GenericModal> & {
 	id?: string;
 	subject?: string;
-	meetingUrl?: string;
+	meetingUrl?: string | null;
 	description?: string;
 };
 

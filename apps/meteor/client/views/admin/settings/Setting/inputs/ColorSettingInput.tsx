@@ -1,14 +1,14 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, Key, ReactElement } from 'react';
+import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type ColorSettingInputProps = SettingInputProps & {
+export type ColorSettingInputProps = SettingInputProps & {
 	value: string;
 	editor: string;
 	allowedTypes?: TranslationKey[];
@@ -30,7 +30,7 @@ function ColorSettingInput({
 	onChangeValue,
 	onChangeEditor,
 	onResetButtonClick,
-}: ColorSettingInputProps): ReactElement {
+}: ColorSettingInputProps) {
 	const { t } = useTranslation();
 
 	const handleChange = useCallback(
@@ -53,15 +53,14 @@ function ColorSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<Margins inline={4}>
 				<FieldRow>
 					<Margins inline={4}>
-						<Flex.Item grow={2}>
+						<FlexItem grow={2}>
 							{editor === 'color' && (
 								<InputBox
-									data-qa-setting-id={_id}
 									type='color'
 									id={_id}
 									value={value}
@@ -74,7 +73,6 @@ function ColorSettingInput({
 							)}
 							{editor === 'expression' && (
 								<TextInput
-									data-qa-setting-id={_id}
 									id={_id}
 									value={value}
 									placeholder={placeholder}
@@ -84,9 +82,8 @@ function ColorSettingInput({
 									onChange={handleChange}
 								/>
 							)}
-						</Flex.Item>
+						</FlexItem>
 						<Select
-							data-qa-setting-id={`${_id}_editor`}
 							type='color'
 							id={`${_id}_editor`}
 							value={editor}

@@ -1,5 +1,5 @@
 import { Authorization, MeteorError } from '@rocket.chat/core-services';
-import { type IMessage, type IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { i18n } from '../../../lib/i18n';
 

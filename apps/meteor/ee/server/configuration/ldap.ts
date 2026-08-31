@@ -1,3 +1,4 @@
+import { LDAPEnterprise } from '@rocket.chat/core-services';
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
@@ -5,12 +6,11 @@ import { Settings } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../server/lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
+import { settings } from '../../../server/settings';
 import { LDAPEEManager } from '../lib/ldap/Manager';
-import { LDAPEE } from '../sdk';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
 Meteor.startup(async () => {
@@ -46,25 +46,27 @@ Meteor.startup(async () => {
 			};
 		}
 
-		const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => LDAPEE.sync());
+		const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () =>
+			LDAPEnterprise.sync(),
+		);
 		const addAvatarCronJob = configureBackgroundSync(
 			'LDAP_AvatarSync',
 			'LDAP_Background_Sync_Avatars',
 			'LDAP_Background_Sync_Avatars_Interval',
-			() => LDAPEE.syncAvatars(),
+			() => LDAPEnterprise.syncAvatars(),
 		);
 		const addLogoutCronJob = configureBackgroundSync(
 			'LDAP_AutoLogout',
 			'LDAP_Sync_AutoLogout_Enabled',
 			'LDAP_Sync_AutoLogout_Interval',
-			() => LDAPEE.syncLogout(),
+			() => LDAPEnterprise.syncLogout(),
 		);
 
 		const addAbacCronJob = configureBackgroundSync(
 			'LDAP_AbacSync',
 			'LDAP_Background_Sync_ABAC_Attributes',
 			'LDAP_Background_Sync_ABAC_Attributes_Interval',
-			() => LDAPEE.syncAbacAttributes(),
+			() => LDAPEnterprise.syncAbacAttributes(),
 		);
 
 		settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
@@ -82,16 +84,16 @@ Meteor.startup(async () => {
 		settings.watch<string>('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 			try {
 				LDAPEEManager.validateLDAPTeamsMappingChanges(value);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 		});
 
 		settings.watch<string>('LDAP_ABAC_AttributeMap', (value) => {
 			try {
 				LDAPEEManager.validateLDAPABACAttributeMap(value);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 		});
 

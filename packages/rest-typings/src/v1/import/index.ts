@@ -1,4 +1,4 @@
-export * from './import';
+export type * from './import';
 export * from './DownloadPendingAvatarsParamsPOST';
 export * from './DownloadPendingFilesParamsPOST';
 export * from './DownloadPublicImportFileParamsPOST';

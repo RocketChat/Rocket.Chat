@@ -1,19 +1,21 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { settings } from '../../../app/settings/server/cached';
+import { refreshVisibility } from '../../lib/notifications/core/lib/Presence';
+import { statusVisibilityGate } from '../../lib/statusVisibility/StatusVisibilityGate';
+import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
-const STATUS_MAP: Record<UserStatus, 0 | 1 | 2 | 3> = {
+const STATUS_MAP: Record<UserStatus, PresenceStatusCode> = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
@@ -29,6 +31,8 @@ const minimongoChangeMap: Record<string, string> = {
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
+		statusVisibilityGate.watch(service);
+
 		const logger = new Logger('ListenersModule');
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
@@ -46,8 +50,8 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.forceLogout', (uid) => {
-			notifications.notifyUserInThisInstance(uid, 'force_logout');
+		service.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout', sessionId);
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
@@ -156,9 +160,34 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
+		service.onEvent('presence.invalidateVisibility', ({ targets, viewers }) => {
+			void StatusVisibility.refresh(targets)
+				.then(async (users) => {
+					await Promise.all([refreshVisibility(viewers), statusVisibilityGate.syncRestrictedUsers()]);
+
+					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
+						if (username) {
+							notifications.sendPresence(
+								_id,
+								username,
+								STATUS_MAP[status ?? UserStatus.OFFLINE],
+								statusText,
+								statusSource,
+								statusExpiresAt,
+							);
+						}
+					}
+				})
+				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
-			const { _id, username, name, status, statusText, roles } = user;
+			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
+				return;
+			}
+
+			if (settings.get('Presence_broadcast_disabled')) {
 				return;
 			}
 
@@ -168,16 +197,33 @@ export class ListenersModule {
 				diff: {
 					status,
 					...(statusText && { statusText }),
+					...(statusSource && { statusSource }),
+					...(statusExpiresAt && { statusExpiresAt }),
 				},
 				unset: {
 					...(!statusText && { statusText: 1 }),
+					...(!statusSource && { statusSource: 1 }),
+					...(!statusExpiresAt && { statusExpiresAt: 1 }),
 				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+			// TODO: no client in this repo subscribes to notify-logged/user-status; if mobile and the
+			// SDK don't either, this check and the restricted mirror behind it can be dropped
+			if (!statusVisibilityGate.hasRestrictions(_id)) {
+				notifications.notifyLoggedInThisInstance('user-status', [
+					_id,
+					username,
+					STATUS_MAP[status],
+					statusText,
+					name,
+					roles,
+					statusSource,
+					statusExpiresAt,
+				]);
+			}
 
 			if (_id) {
-				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);
 			}
 		});
 
@@ -393,10 +439,6 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 
-		service.onEvent('voip.events', (userId, data): void => {
-			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
-		});
-
 		service.onEvent('call.callerhangup', (userId, data): void => {
 			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});
@@ -450,9 +492,6 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('connector.statuschanged', (enabled): void => {
-			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
-		});
 		service.onEvent('omnichannel.room', (roomId, data): void => {
 			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
@@ -508,13 +547,6 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
-		});
-
-		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
-			notifications.streamRoomMessage.emit(roomId, message, user, room);
-		});
-		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
-			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

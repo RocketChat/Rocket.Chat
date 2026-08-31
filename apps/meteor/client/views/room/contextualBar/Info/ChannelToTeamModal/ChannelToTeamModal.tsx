@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ChannelToTeamConfirmation from './ChannelToTeamConfirmation';
 import ChannelToTeamSelection from './ChannelToTeamSelection';
 
-type ChannelToTeamModalProps = {
+export type ChannelToTeamModalProps = {
 	onCancel: () => void;
 	onConfirm: (teamId: IRoom['_id']) => void;
 };

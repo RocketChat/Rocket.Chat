@@ -1,42 +1,48 @@
 {
 	"name": "@rocket.chat/eslint-config",
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
-	"main": "./standard/index.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/eslint-config"
+	},
+	"type": "module",
+	"main": "./index.js",
+	"exports": {
+		".": "./index.js"
+	},
 	"files": [
-		"/standard",
-		"/original",
-		"/best-practices",
-		"/errors",
-		"/es6",
-		"/imports",
-		"/node",
-		"/style",
-		"/variables",
-		"react.js"
+		"/index.js"
 	],
 	"scripts": {
-		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/eslint-parser": "~7.28.5",
-		"@types/eslint": "~8.44.9",
+		"@babel/core": "~7.29.7",
+		"@babel/eslint-parser": "~7.29.7",
+		"@eslint/js": "~10.0.1",
+		"@types/eslint": "~9.6.1",
 		"@types/prettier": "^2.7.3",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
-		"eslint": "~8.45.0",
-		"eslint-config-prettier": "~9.1.2",
-		"eslint-import-resolver-typescript": "~4.4.4",
-		"eslint-plugin-anti-trojan-source": "~1.1.2",
-		"eslint-plugin-import": "~2.31.0",
-		"eslint-plugin-jest": "~28.8.3",
-		"eslint-plugin-jsx-a11y": "^6.10.2",
-		"eslint-plugin-prettier": "~5.2.6",
-		"prettier": "~3.3.3"
+		"eslint": "~10.7.0",
+		"eslint-config-prettier": "~10.1.8",
+		"eslint-import-resolver-typescript": "~4.4.5",
+		"eslint-plugin-anti-trojan-source": "~1.1.7",
+		"eslint-plugin-import-x": "~4.17.1",
+		"eslint-plugin-jest": "~29.15.5",
+		"eslint-plugin-jsx-a11y": "~6.10.2",
+		"eslint-plugin-prettier": "~5.5.6",
+		"eslint-plugin-react": "patch:eslint-plugin-react@npm%3A7.37.5#~/.yarn/patches/eslint-plugin-react-npm-7.37.5-d03f6b6543.patch",
+		"eslint-plugin-react-hooks": "~7.1.1",
+		"eslint-plugin-storybook": "~9.1.20",
+		"eslint-plugin-testing-library": "~7.16.2",
+		"globals": "~17.7.0",
+		"prettier": "~3.3.3",
+		"typescript-eslint": "~8.64.0"
 	},
 	"devDependencies": {
+		"storybook": "^9.1.20",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

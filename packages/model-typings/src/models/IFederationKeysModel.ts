@@ -15,8 +15,6 @@ export interface IFederationKeysModel extends IBaseModel<FederationKey> {
 
 	getPrivateKey(): Promise<'' | NodeRSA | null>;
 
-	getPrivateKeyString(): Promise<string | null>;
-
 	getPublicKey(): Promise<'' | NodeRSA | null>;
 
 	getPublicKeyString(): Promise<string | null>;

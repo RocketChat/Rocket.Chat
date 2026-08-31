@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type PreviewItemProps = {
+export type PreviewItemProps = {
 	label: string;
 	icon: Keys;
 	children: ReactNode;
@@ -17,7 +17,7 @@ const PreviewItem = ({ icon, label, children }: PreviewItemProps) => {
 	return (
 		<Box display='flex'>
 			<Icon size={18} name={icon} />
-			<Box mis={6}>
+			<Box marginInlineStart={6}>
 				<Box is='span' id={id} fontScale='p2m'>
 					{label}
 				</Box>

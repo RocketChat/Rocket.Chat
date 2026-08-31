@@ -1,12 +1,13 @@
-import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload, UiKitCoreAppViewSubmitPayload } from '@rocket.chat/core-services';
 import { Banner, NPS } from '@rocket.chat/core-services';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { createModal } from './nps/createModal';
 
 export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
 
-	async blockAction(payload: UiKitCoreAppPayload) {
+	async blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<UiKit.ServerInteraction> {
 		const {
 			triggerId,
 			actionId,
@@ -32,7 +33,7 @@ export class Nps implements IUiKitCoreApp {
 		});
 	}
 
-	async viewSubmit(payload: UiKitCoreAppPayload) {
+	async viewSubmit(payload: UiKitCoreAppViewSubmitPayload): Promise<undefined> {
 		if (!payload.payload?.view?.state || !payload.payload?.view?.id) {
 			throw new Error('Invalid payload');
 		}
@@ -65,7 +66,5 @@ export class Nps implements IUiKitCoreApp {
 		}
 
 		await Banner.dismiss(userId, bannerId);
-
-		return true;
 	}
 }

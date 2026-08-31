@@ -1,0 +1,105 @@
+diff --git a/v4/classic/external.cjs b/v4/classic/external.cjs
+index ee133825d44ab44b86dd8aef6bd985653ebde06c..ea74468d20c2371f9c4d8941467e3b7fe93a00ef 100644
+--- a/v4/classic/external.cjs
++++ b/v4/classic/external.cjs
+@@ -29,7 +29,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.coerce = exports.iso = exports.ZodISODuration = exports.ZodISOTime = exports.ZodISODate = exports.ZodISODateTime = exports.locales = exports.fromJSONSchema = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
++exports.coerce = exports.iso = exports.ZodISODuration = exports.ZodISOTime = exports.ZodISODate = exports.ZodISODateTime = exports.fromJSONSchema = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
+ exports.core = __importStar(require("../core/index.cjs"));
+ __exportStar(require("./schemas.cjs"), exports);
+ __exportStar(require("./checks.cjs"), exports);
+@@ -60,7 +60,7 @@ var json_schema_processors_js_1 = require("../core/json-schema-processors.cjs");
+ Object.defineProperty(exports, "toJSONSchema", { enumerable: true, get: function () { return json_schema_processors_js_1.toJSONSchema; } });
+ var from_json_schema_js_1 = require("./from-json-schema.cjs");
+ Object.defineProperty(exports, "fromJSONSchema", { enumerable: true, get: function () { return from_json_schema_js_1.fromJSONSchema; } });
+-exports.locales = __importStar(require("../locales/index.cjs"));
++// locales removed from barrel
+ // iso
+ // must be exported from top-level
+ // https://github.com/colinhacks/zod/issues/4491
+diff --git a/v4/classic/external.js b/v4/classic/external.js
+index 9567900bbb57099481c0ea5864fbf697d62021a5..98ee2af29038deca6c38c46c24d5fb14725e40f0 100644
+--- a/v4/classic/external.js
++++ b/v4/classic/external.js
+@@ -11,7 +11,7 @@ config(en());
+ export { globalRegistry, registry, config, $output, $input, $brand, clone, regexes, treeifyError, prettifyError, formatError, flattenError, TimePrecision, util, NEVER, } from "../core/index.js";
+ export { toJSONSchema } from "../core/json-schema-processors.js";
+ export { fromJSONSchema } from "./from-json-schema.js";
+-export * as locales from "../locales/index.js";
++// locales removed from barrel
+ // iso
+ // must be exported from top-level
+ // https://github.com/colinhacks/zod/issues/4491
+diff --git a/v4/core/index.cjs b/v4/core/index.cjs
+index c3fa303104a191d142a5212f69e7954cba3606a7..44bdc3437c6a88971c1c85b63024213880fe0fff 100644
+--- a/v4/core/index.cjs
++++ b/v4/core/index.cjs
+@@ -26,7 +26,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
+     return result;
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.JSONSchema = exports.JSONSchemaGenerator = exports.toJSONSchema = exports.locales = exports.regexes = exports.util = void 0;
++exports.JSONSchema = exports.JSONSchemaGenerator = exports.toJSONSchema = exports.regexes = exports.util = void 0;
+ __exportStar(require("./core.cjs"), exports);
+ __exportStar(require("./parse.cjs"), exports);
+ __exportStar(require("./errors.cjs"), exports);
+@@ -35,7 +35,7 @@ __exportStar(require("./checks.cjs"), exports);
+ __exportStar(require("./versions.cjs"), exports);
+ exports.util = __importStar(require("./util.cjs"));
+ exports.regexes = __importStar(require("./regexes.cjs"));
+-exports.locales = __importStar(require("../locales/index.cjs"));
++// locales removed from barrel
+ __exportStar(require("./registries.cjs"), exports);
+ __exportStar(require("./doc.cjs"), exports);
+ __exportStar(require("./api.cjs"), exports);
+diff --git a/v4/core/index.js b/v4/core/index.js
+index d334515bf004600f2e55ff85e3730f1b2f2ff703..4ff979844ba18d012893064b01889bf70ec245c8 100644
+--- a/v4/core/index.js
++++ b/v4/core/index.js
+@@ -6,7 +6,7 @@ export * from "./checks.js";
+ export * from "./versions.js";
+ export * as util from "./util.js";
+ export * as regexes from "./regexes.js";
+-export * as locales from "../locales/index.js";
++// locales removed from barrel
+ export * from "./registries.js";
+ export * from "./doc.js";
+ export * from "./api.js";
+diff --git a/v4/mini/external.cjs b/v4/mini/external.cjs
+index 0d0079d94d94010b51abe23042418adbc6077b7f..fd3acb42a12dde65f383eb2c3f46a9108dd8c865 100644
+--- a/v4/mini/external.cjs
++++ b/v4/mini/external.cjs
+@@ -26,7 +26,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
+     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.coerce = exports.ZodMiniISODuration = exports.ZodMiniISOTime = exports.ZodMiniISODate = exports.ZodMiniISODateTime = exports.iso = exports.locales = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
++exports.coerce = exports.ZodMiniISODuration = exports.ZodMiniISOTime = exports.ZodMiniISODate = exports.ZodMiniISODateTime = exports.iso = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
+ exports.core = __importStar(require("../core/index.cjs"));
+ __exportStar(require("./parse.cjs"), exports);
+ __exportStar(require("./schemas.cjs"), exports);
+@@ -49,7 +49,7 @@ Object.defineProperty(exports, "util", { enumerable: true, get: function () { re
+ Object.defineProperty(exports, "NEVER", { enumerable: true, get: function () { return index_js_1.NEVER; } });
+ var json_schema_processors_js_1 = require("../core/json-schema-processors.cjs");
+ Object.defineProperty(exports, "toJSONSchema", { enumerable: true, get: function () { return json_schema_processors_js_1.toJSONSchema; } });
+-exports.locales = __importStar(require("../locales/index.cjs"));
++// locales removed from barrel
+ /** A special constant with type `never` */
+ // export const NEVER = {} as never;
+ // iso
+diff --git a/v4/mini/external.js b/v4/mini/external.js
+index d6523c153e213be110c21b370164b5eca1cdf744..7a1addf9ce6e331e56c943867bf04cf199745145 100644
+--- a/v4/mini/external.js
++++ b/v4/mini/external.js
+@@ -4,7 +4,7 @@ export * from "./schemas.js";
+ export * from "./checks.js";
+ export { globalRegistry, registry, config, $output, $input, $brand, clone, regexes, treeifyError, prettifyError, formatError, flattenError, TimePrecision, util, NEVER, } from "../core/index.js";
+ export { toJSONSchema } from "../core/json-schema-processors.js";
+-export * as locales from "../locales/index.js";
++// locales removed from barrel
+ /** A special constant with type `never` */
+ // export const NEVER = {} as never;
+ // iso

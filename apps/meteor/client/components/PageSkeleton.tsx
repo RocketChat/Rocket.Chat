@@ -1,12 +1,13 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 
-const PageSkeleton = (): ReactElement => (
+const PageSkeleton = () => (
 	<Page>
 		<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
 			<ButtonGroup>
-				<Button children={<Skeleton width='x80' />} disabled />
+				<Button disabled>
+					<Skeleton width='x80' />
+				</Button>
 			</ButtonGroup>
 		</PageHeader>
 		<PageContent>

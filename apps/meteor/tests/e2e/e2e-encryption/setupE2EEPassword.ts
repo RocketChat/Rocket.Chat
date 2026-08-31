@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
-import { SaveE2EEPasswordBanner, SaveE2EEPasswordModal } from '../page-objects/fragments/e2ee';
+import { SaveE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
+import { SaveE2EEPasswordModal } from '../page-objects/fragments/modals';
 
 /**
  * Click the banner to open the dialog to save the generated password

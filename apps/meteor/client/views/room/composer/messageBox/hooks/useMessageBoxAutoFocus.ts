@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * @returns callbackRef to bind the logic to the message box
  */
 export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
-	const ref = useRef<HTMLElement>();
+	const ref = useRef<HTMLElement>(undefined);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {

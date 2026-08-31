@@ -1,8 +1,8 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from './api-data';
-import { permissions } from '../../app/authorization/server/constant/permissions';
-import { omnichannelEEPermissions } from '../../ee/app/livechat-enterprise/server/permissions';
+import { omnichannelEEPermissions } from '../../ee/server/lib/omnichannel/permissions';
+import { permissions } from '../../server/lib/authorization/constant/permissions';
 import { IS_EE } from '../e2e/config/constants';
 
 export const updatePermission = (permission: string, roles: string[]): Promise<void | Error> =>
@@ -13,7 +13,14 @@ export const updatePermission = (permission: string, roles: string[]): Promise<v
 			.send({ permissions: [{ _id: permission, roles }] })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
+			.end((err?: Error) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
 	});
 
 export const updateEEPermission = (permission: string, roles: string[]): Promise<void | Error> =>

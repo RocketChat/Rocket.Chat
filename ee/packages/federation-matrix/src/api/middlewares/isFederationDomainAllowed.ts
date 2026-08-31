@@ -52,8 +52,8 @@ export const isFederationDomainAllowedMiddleware = createMiddleware(async (c, ne
 		return c.json({ errcode: 'M_MISSING_ORIGIN', error: 'Missing origin in authorization header.' }, 401);
 	}
 
-	// Check if domain is in allowed list
-	if (allowList.some((allowed) => domain.endsWith(allowed))) {
+	// Check if domain is in allowed list (exact match only)
+	if (allowList.some((allowed) => domain === allowed)) {
 		return next();
 	}
 

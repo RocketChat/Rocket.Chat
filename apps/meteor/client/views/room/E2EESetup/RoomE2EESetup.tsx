@@ -1,12 +1,10 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { Accounts } from 'meteor/accounts-base';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import { e2e } from '../../../lib/e2ee';
+import { getStoredItem, STORAGE_KEYS } from '../../../lib/sdk/storage';
 import RoomBody from '../body/RoomBody';
-import RoomBodyV2 from '../body/RoomBodyV2';
 import { useRoom } from '../contexts/RoomContext';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
@@ -18,7 +16,7 @@ const RoomE2EESetup = () => {
 	const e2eRoomState = useE2EERoomState(room._id);
 
 	const { t } = useTranslation();
-	const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
+	const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 
 	const onSavePassword = useCallback(() => {
 		if (!randomPassword) {
@@ -64,16 +62,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	return (
-		<FeaturePreview feature='newNavigation'>
-			<FeaturePreviewOn>
-				<RoomBodyV2 />
-			</FeaturePreviewOn>
-			<FeaturePreviewOff>
-				<RoomBody />
-			</FeaturePreviewOff>
-		</FeaturePreview>
-	);
+	return <RoomBody />;
 };
 
 export default RoomE2EESetup;

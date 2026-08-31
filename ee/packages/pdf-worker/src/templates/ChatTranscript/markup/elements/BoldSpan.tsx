@@ -20,7 +20,7 @@ type MessageBlock =
 	| MessageParser.MarkupExcluding<MessageParser.Bold>
 	| MessageParser.InlineCode;
 
-type BoldSpanProps = {
+export type BoldSpanProps = {
 	children: MessageBlock[];
 };
 
@@ -48,10 +48,10 @@ const renderBlockComponent = (child: MessageBlock, index: number) => {
 			return <Text key={index}>{child.value}</Text>;
 
 		case 'STRIKE':
-			return <StrikeSpan key={index} children={child.value} />;
+			return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 		case 'ITALIC':
-			return <ItalicSpan key={index} children={child.value} />;
+			return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 		case 'EMOJI':
 			return <EmojiSpan key={index} {...child} />;

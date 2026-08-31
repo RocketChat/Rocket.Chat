@@ -6,7 +6,7 @@ import { onClientMessageReceived } from '../../../../../lib/onClientMessageRecei
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../../../stores';
 
-export const useGetMessageByID = () => {
+export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const storeMessage = Messages.use((state) => state.store);
 
@@ -16,7 +16,9 @@ export const useGetMessageByID = () => {
 				const { message: rawMessage } = await getMessage({ msgId: mid });
 				const mappedMessage = mapMessageFromApi(rawMessage);
 				const message = (await onClientMessageReceived(mappedMessage)) || mappedMessage;
-				storeMessage(message);
+				if (shouldStoreMessage) {
+					storeMessage(message);
+				}
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {
@@ -26,6 +28,6 @@ export const useGetMessageByID = () => {
 				throw error;
 			}
 		},
-		[getMessage, storeMessage],
+		[getMessage, shouldStoreMessage, storeMessage],
 	);
 };

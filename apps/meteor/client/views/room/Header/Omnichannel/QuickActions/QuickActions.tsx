@@ -8,7 +8,7 @@ import QuickActionOptions from './QuickActionOptions';
 import { useQuickActions } from './hooks/useQuickActions';
 import { useOmnichannelRoom } from '../../../contexts/RoomContext';
 
-type QuickActionsProps = {
+export type QuickActionsProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 
@@ -32,7 +32,7 @@ const QuickActions = ({ className }: QuickActionsProps) => {
 				};
 
 				if (options) {
-					return <QuickActionOptions key={id} action={action} options={options} {...props} />;
+					return <QuickActionOptions options={options} key={id} action={action} {...props} />;
 				}
 
 				return <HeaderToolbarAction key={id} onClick={() => action(id)} {...props} />;

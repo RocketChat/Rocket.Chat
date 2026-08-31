@@ -1,6 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
 import type {
@@ -37,28 +37,29 @@ import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { RocketChatAssets } from '../../../app/assets/server';
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { createRoom } from '../../../app/lib/server/functions/createRoom';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { metrics } from '../../../app/metrics/server/lib/metrics';
-import { Push } from '../../../app/push/server/push';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
-import { settings } from '../../../app/settings/server';
-import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
+import { RocketChatAssets } from '../../lib/media/assets';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { metrics } from '../../lib/metrics/lib/metrics';
+import { Push } from '../../lib/notifications/push/push';
+import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { settings } from '../../settings';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -100,12 +101,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			const title = (data as Partial<IGroupVideoConference>).title || room.fname || room.name || '';
 			return this.startGroup(providerName, user, room._id, title, data, useAppUser);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.create',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -131,12 +132,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.create(data, false);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.start',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -163,16 +164,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.joinCall(call, user || undefined, options);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.join',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
-	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.LayoutBlock[]> {
+	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.ModalSurfaceLayout> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
@@ -202,7 +203,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 
 		if (blocks?.length) {
-			return blocks as UiKit.LayoutBlock[];
+			return blocks as UiKit.ModalSurfaceLayout;
 		}
 
 		return [
@@ -400,19 +401,30 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			readPreference: readSecondaryPreferred(db),
 		};
 
+		const [videoConferenceStarted, videoConferenceEnded, directCalling, directStarted, directEnded, livechatStarted, livechatEnded] =
+			await Promise.all([
+				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
+				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
+			]);
+
 		return {
 			videoConference: {
-				started: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
+				started: videoConferenceStarted,
+				ended: videoConferenceEnded,
 			},
 			direct: {
-				calling: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
-				started: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
+				calling: directCalling,
+				started: directStarted,
+				ended: directEnded,
 			},
 			livechat: {
-				started: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
+				started: livechatStarted,
+				ended: livechatEnded,
 			},
 			settings: {
 				provider: settings.get<string>('VideoConf_Default_Provider'),
@@ -555,7 +567,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
-		const message = await sendMessage(user, record, room, false);
+		const message = await sendMessage(user, record, room);
 
 		if (!message) {
 			throw new Error('failed-to-create-message');
@@ -662,7 +674,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		await Push.send({
 			from: 'push',
 			badge: 0,
@@ -689,6 +700,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				category: 'VIDEOCONF',
 			},
 		});
+
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'mobile' });
 	}
 
 	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {
@@ -1223,11 +1237,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
 		try {
 			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipSystemMessage: true, createAsHidden: true });
-		} catch (error) {
+		} catch (err) {
 			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
 			logger.error({
 				name: 'Error trying to subscribe user to discussion',
-				error,
+				err,
 				rid,
 				uid,
 			});

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import type { Request, Response } from 'express';
 import type { Hono } from 'hono';

@@ -23,6 +23,7 @@ export interface IActionManager {
 	openView(surface: 'modal', view: UiKit.ModalView): void;
 	openView(surface: 'banner', view: UiKit.BannerView): void;
 	openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
+	// eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 	disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']): void;
 }
 

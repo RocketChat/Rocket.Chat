@@ -1,5 +1,5 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { UnitOption } from '../hooks/useUnitsList';
 import { useUnitsList } from '../hooks/useUnitsList';
 
-type AutoCompleteUnitProps = Omit<
+export type AutoCompleteUnitProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
@@ -34,7 +34,7 @@ const AutoCompleteUnit = ({
 
 	const { data: unitsList, fetchNextPage } = useUnitsList({ filter: debouncedUnitFilter, haveNone });
 
-	const handleLoadItems = useEffectEvent(onLoadItems);
+	const handleLoadItems = useStableCallback(onLoadItems);
 
 	useEffect(() => {
 		handleLoadItems(unitsList);
@@ -43,7 +43,7 @@ const AutoCompleteUnit = ({
 	return (
 		<PaginatedSelectFiltered
 			id={id}
-			data-qa='autocomplete-unit'
+			aria-label={t('Unit')} // FIXME: remove this when PaginatedSelectFiltered properly associates the input with the label htmlFor
 			error={error}
 			filter={unitsFilter}
 			flexGrow={0}

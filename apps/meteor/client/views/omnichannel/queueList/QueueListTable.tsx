@@ -15,13 +15,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const QueueListTable = (): ReactElement => {
+const QueueListTable = () => {
 	const t = useTranslation();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');
@@ -134,9 +133,9 @@ const QueueListTable = (): ReactElement => {
 							{data?.queue.map(({ user, department, chats }) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
 									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center' mb='5px'>
+										<Box display='flex' alignItems='center' marginBlock='5px'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
-											<Box display='flex' mi={8}>
+											<Box display='flex' marginInline={8}>
 												{user.username}
 											</Box>
 										</Box>

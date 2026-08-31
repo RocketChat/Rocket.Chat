@@ -1,15 +1,14 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsRoomOverMacLimit } from '../hooks/useIsRoomOverMacLimit';
 
-type RoomActivityIconProps = {
+export type RoomActivityIconProps = {
 	room: IOmnichannelRoom;
 };
 
-const RoomActivityIcon = ({ room }: RoomActivityIconProps): ReactElement | null => {
+const RoomActivityIcon = ({ room }: RoomActivityIconProps) => {
 	const { t } = useTranslation();
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 

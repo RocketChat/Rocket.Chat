@@ -1,4 +1,4 @@
-import type { IUpload } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -6,12 +6,12 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useId } from 'react';
 
-import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
-import { useRoom } from '../../../contexts/RoomContext';
+import { getURL } from '../../../../../lib/getURL';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
-type FileItemMenuProps = {
+export type FileItemMenuProps = {
+	rid: IRoom['_id'];
 	fileData: IUpload;
 	onClickDelete: (id: IUpload['_id']) => void;
 };
@@ -28,11 +28,10 @@ if ('serviceWorker' in navigator) {
 	});
 }
 
-const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
+const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 	const t = useTranslation();
-	const room = useRoom();
 	const userId = useUserId();
-	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, fileData, userId);
+	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, fileData, userId);
 	const canDownloadFile = !fileData.encryption || 'serviceWorker' in navigator;
 
 	const { controller } = navigator?.serviceWorker || {};

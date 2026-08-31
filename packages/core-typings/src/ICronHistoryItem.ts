@@ -1,5 +1,6 @@
-export interface ICronHistoryItem {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface ICronHistoryItem extends IRocketChatRecord {
 	name: string;
 	intendedAt: Date;
 	startedAt: Date;

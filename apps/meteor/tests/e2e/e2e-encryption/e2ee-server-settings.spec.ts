@@ -4,7 +4,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deleteRoom } from '../utils/create-target-channel';
+import { deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 

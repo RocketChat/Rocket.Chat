@@ -1,10 +1,10 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-theming';
+import { useThemeMode } from '@rocket.chat/ui-client';
 
 import { codeBlock } from '../lib/codeBlockStyles';
 
 export const MainLayoutStyleTags = () => {
-	const [, , theme] = useThemeMode();
+	const theme = useThemeMode();
 
 	return (
 		<>

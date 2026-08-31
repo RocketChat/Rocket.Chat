@@ -1,6 +1,6 @@
 import type { IOAuthAuthCode, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IOAuthAuthCodesModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindOptions, IndexDescription } from 'mongodb';
+import type { IOAuthAuthCodesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, Collection, DeleteResult, IndexDescription, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -10,10 +10,24 @@ export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuth
 	}
 
 	override modelIndexes(): IndexDescription[] {
-		return [{ key: { authCode: 1 } }, { key: { expires: 1 }, expireAfterSeconds: 60 * 5 }];
+		return [{ key: { authCode: 1 } }, { key: { userId: 1 } }, { key: { expires: 1 }, expireAfterSeconds: 60 * 5 }];
 	}
 
-	findOneByAuthCode(authCode: string, options?: FindOptions<IOAuthAuthCode>): Promise<IOAuthAuthCode | null> {
-		return this.findOne({ authCode }, options);
+	findOneByAuthCode<T extends Document = IOAuthAuthCode, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		authCode: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		if (typeof authCode !== 'string' || !authCode) {
+			return Promise.resolve(null);
+		}
+		return this.findOne<T, O>({ authCode }, options);
+	}
+
+	async deleteByUserId(userId: string): Promise<DeleteResult> {
+		return this.deleteMany({ userId });
+	}
+
+	async deleteByUserIds(userIds: string[]): Promise<DeleteResult> {
+		return this.deleteMany({ userId: { $in: userIds } });
 	}
 }

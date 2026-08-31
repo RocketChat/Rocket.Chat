@@ -1,6 +1,6 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
+import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,9 +11,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
-
-		await page.goto('/omnichannel');
-		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
+		await poLivechatAppearance.goTo();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -29,26 +27,23 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {
 		await test.step('expect to have default values', async () => {
-			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
-			await poLivechatAppearance.inputHideSystemMessages.locator('.rcx-icon--name-chevron-down').click();
+			await poLivechatAppearance.inputHideSystemMessages.click();
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('ul')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('livechat-close')).toHaveAttribute('aria-selected', 'true');
-			await poLivechatAppearance.inputHideSystemMessages.locator('.rcx-icon--name-chevron-up').click();
+			await poLivechatAppearance.inputHideSystemMessages.click();
 		});
 
 		await test.step('expect to change values', async () => {
-			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
-			await poLivechatAppearance.inputHideSystemMessages.locator('.rcx-icon--name-chevron-down').click();
+			await poLivechatAppearance.inputHideSystemMessages.click();
 			await poLivechatAppearance.findHideSystemMessageOption('livechat_transfer_history').click();
 			await poLivechatAppearance.findHideSystemMessageOption('livechat-close').click();
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {
 			await page.reload();
-			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
-			await poLivechatAppearance.inputHideSystemMessages.locator('.rcx-icon--name-chevron-down').click();
+			await poLivechatAppearance.inputHideSystemMessages.click();
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('ul')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('livechat_transfer_history')).toHaveAttribute('aria-selected', 'true');
@@ -63,7 +58,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 
 		await test.step('expect to change value', async () => {
 			await poLivechatAppearance.inputLivechatBackground.fill('rgb(186, 1, 85)');
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {
@@ -78,9 +73,7 @@ test.describe('OC - Livechat Appearance - CE', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
-
-		await page.goto('/omnichannel');
-		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
+		await poLivechatAppearance.goTo();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -98,7 +91,7 @@ test.describe('OC - Livechat Appearance - CE', () => {
 
 		await test.step('expect to change value', async () => {
 			await poLivechatAppearance.inputLivechatTitle.fill('Test Title');
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {

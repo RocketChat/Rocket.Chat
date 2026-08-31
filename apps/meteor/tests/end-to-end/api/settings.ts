@@ -1,105 +1,86 @@
 import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
+import { before, describe, it, after, afterEach } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {
-		it('should return public settings', (done) => {
-			void request
-				.get(api('settings.public'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return public settings', async () => {
+			const res = await request.get(api('settings.public')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return public settings even requested with count and offset params', (done) => {
-			void request
+		it('should return public settings even requested with count and offset params', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					count: 5,
 					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
 		});
-		it('should return public settings even requested with _id param', (done) => {
-			void request
+		it('should return public settings even requested with _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
 		});
-		it('should return public settings even requested with _id param as an array', (done) => {
-			void request
+		it('should return public settings even requested with _id param as an array', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url,LDAP_Enable',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
 		});
-		it('should return an empty response when requesting public settings with a broken _id param', (done) => {
-			void request
+		it('should return an empty response when requesting public settings with a broken _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 10,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
 		});
 	});
 
 	describe('[/settings]', () => {
-		it('should return private settings', (done) => {
-			void request
-				.get(api('settings'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return private settings', async () => {
+			const res = await request.get(api('settings')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
 		it('should return the default values of the settings when includeDefaults is true', async () => {
 			return request
@@ -114,6 +95,111 @@ describe('[Settings]', () => {
 					expect(res.body).to.have.property('count');
 					expect(res.body.settings[0]).to.have.property('packageValue');
 				});
+		});
+
+		describe('POST (bulk)', () => {
+			before(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			after(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			it('should return unauthorized when not authenticated', async () => {
+				await request
+					.post(api('settings'))
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(401);
+			});
+
+			it('should return bad request when settings is missing', async () => {
+				await request.post(api('settings')).set(credentials).send({}).expect(400);
+			});
+
+			it('should return bad request when settings is empty', async () => {
+				await request.post(api('settings')).set(credentials).send({ settings: [] }).expect(400);
+			});
+
+			it('should return bad request when an item is missing value', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable' }] })
+					.expect(400);
+			});
+
+			it('should successfully update multiple settings in a single request', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({
+						settings: [
+							{ _id: 'LDAP_Enable', value: false },
+							{ _id: 'Accounts_Default_User_Preferences_masterVolume', value: 50 },
+						],
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/LDAP_Enable'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', false);
+					});
+
+				await request
+					.get(api('settings/Accounts_Default_User_Preferences_masterVolume'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', 50);
+					});
+			});
+
+			it('should accept an optional editor for a setting', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#000000', editor: 'color' }] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/Livechat_title_color'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', '#000000');
+					});
+			});
+
+			it('should return bad request when editor is an empty string', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#C1272D', editor: '' }] })
+					.expect(400);
+			});
+
+			it('should fail when the user does not have edit-privileged-setting permission', async () => {
+				await updatePermission('edit-privileged-setting', []);
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.match(/error-action-not-allowed/);
+					});
+			});
 		});
 	});
 
@@ -222,17 +308,11 @@ describe('[Settings]', () => {
 	});
 
 	describe('[/service.configurations]', () => {
-		it('should return service configurations', (done) => {
-			void request
-				.get(api('service.configurations'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('configurations');
-				})
-				.end(done);
+		it('should return service configurations', async () => {
+			const res = await request.get(api('service.configurations')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('configurations');
 		});
 
 		describe('With OAuth enabled', () => {
@@ -285,29 +365,18 @@ describe('[Settings]', () => {
 	});
 
 	describe('/settings.oauth', () => {
-		it('should have return list of available oauth services when user is not logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is not logged', async () => {
+			const res = await request.get(api('settings.oauth')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 
-		it('should have return list of available oauth services when user is logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is logged', async () => {
+			const res = await request.get(api('settings.oauth')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 	});
 
@@ -422,6 +491,278 @@ describe('[Settings]', () => {
 						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
 					});
 				});
+		});
+
+		describe('Masking sensitive settings', () => {
+			let originalSmtpPassword: string | undefined;
+			let originalSmtpUsername: string | undefined;
+			let maskingStart: Date;
+			let maskingEnd: Date;
+			const testPassword = 'testpassword123';
+			const testUsername = 'testuser@example.com';
+
+			before(async () => {
+				maskingStart = new Date();
+				originalSmtpPassword = (await getSettingValueById('SMTP_Password')) as string | undefined;
+				originalSmtpUsername = (await getSettingValueById('SMTP_Username')) as string | undefined;
+
+				await updateSetting('SMTP_Password', testPassword);
+				await updateSetting('SMTP_Username', testUsername);
+				maskingEnd = new Date();
+			});
+
+			after(async () => {
+				await updateSetting('SMTP_Password', originalSmtpPassword || '');
+				await updateSetting('SMTP_Username', originalSmtpUsername || '');
+			});
+
+			it('should mask sensitive settings in audit logs', async () => {
+				await request
+					.get(api('audit.settings'))
+					.query({ settingId: 'SMTP_Password', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('events').and.to.be.an('array');
+						expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+
+						const passwordEvents = res.body.events as IServerEvents['settings.changed'][];
+						const passwordEvent = passwordEvents.find((event) => {
+							const settingId = event.data.find((item) => item.key === 'id')?.value;
+							return settingId === 'SMTP_Password';
+						});
+
+						expect(passwordEvent).to.exist;
+
+						if (passwordEvent) {
+							const previous = passwordEvent.data.find((item) => item.key === 'previous')?.value;
+							const current = passwordEvent.data.find((item) => item.key === 'current')?.value;
+
+							if (previous && typeof previous === 'string' && previous.length > 0) {
+								expect(previous).to.include('*');
+								expect(previous).to.not.equal(testPassword);
+								if (previous.length > 8) {
+									expect(previous.substring(0, 3)).to.equal(originalSmtpPassword?.substring(0, 3));
+									expect(previous.substring(3)).to.match(/^\*+$/);
+								}
+							}
+
+							if (current && typeof current === 'string' && current.length > 0) {
+								expect(current).to.include('*');
+								expect(current).to.not.equal(testPassword);
+								if (testPassword.length > 8) {
+									expect(current.substring(0, 3)).to.equal(testPassword.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
+								} else {
+									expect(current).to.match(/^\*+$/);
+								}
+							}
+						}
+					});
+
+				await request
+					.get(api('audit.settings'))
+					.query({ settingId: 'SMTP_Username', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('events').and.to.be.an('array');
+						expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+
+						const usernameEvents = res.body.events as IServerEvents['settings.changed'][];
+						const usernameEvent = usernameEvents.find((event) => {
+							const settingId = event.data.find((item) => item.key === 'id')?.value;
+							return settingId === 'SMTP_Username';
+						});
+
+						expect(usernameEvent).to.exist;
+
+						if (usernameEvent) {
+							const previous = usernameEvent.data.find((item) => item.key === 'previous')?.value;
+							const current = usernameEvent.data.find((item) => item.key === 'current')?.value;
+
+							if (previous && typeof previous === 'string' && previous.length > 0) {
+								expect(previous).to.include('*');
+								expect(previous).to.not.equal(originalSmtpUsername);
+							}
+
+							if (current && typeof current === 'string' && current.length > 0) {
+								expect(current).to.include('*');
+								expect(current).to.not.equal(testUsername);
+								if (testUsername.length > 8) {
+									expect(current.substring(0, 3)).to.equal(testUsername.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
+								} else {
+									expect(current).to.match(/^\*+$/);
+								}
+							}
+						}
+					});
+			});
+		});
+
+		describe('Sorting', () => {
+			const isSortedAscending = (events: IServerEvents['settings.changed'][]) =>
+				events.every((event, i) => i === 0 || new Date(event.ts).getTime() >= new Date(events[i - 1].ts).getTime());
+
+			const isSortedDescending = (events: IServerEvents['settings.changed'][]) =>
+				events.every((event, i) => i === 0 || new Date(event.ts).getTime() <= new Date(events[i - 1].ts).getTime());
+
+			it('should sort by timestamp ascending', async () => {
+				const response = await request
+					.get(api('audit.settings'))
+					.query({ sort: JSON.stringify({ ts: 1 }), start: formatDate(startDate), end: formatDate(endDate) })
+					.set(credentials)
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedAscending(response.body.events)).to.be.true;
+			});
+
+			it('should sort by timestamp descending', async () => {
+				const response = await request
+					.get(api('audit.settings'))
+					.query({ sort: JSON.stringify({ ts: -1 }), start: formatDate(startDate), end: formatDate(endDate) })
+					.set(credentials)
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+
+			it('should sort by timestamp descending by default', async () => {
+				const response = await request.get(api('audit.settings')).set(credentials).expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+		});
+	});
+
+	describe('Custom OAuth admin endpoints', () => {
+		const oauthName = 'apitest';
+		const enableSettingId = 'Accounts_OAuth_Custom-Apitest';
+
+		before(() => updatePermission('add-oauth-service', ['admin']));
+
+		// guarantee the permission is restored even if a permission-denied assertion fails mid-test,
+		// so a failure cannot cascade into the following cases
+		afterEach(() => updatePermission('add-oauth-service', ['admin']));
+
+		after(async () => {
+			await updatePermission('add-oauth-service', ['admin']);
+			// best-effort cleanup in case a test left the custom service behind
+			await request.post(api('settings.removeCustomOAuth')).set(credentials).send({ name: oauthName });
+		});
+
+		describe('[/settings.addCustomOAuth]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.addCustomOAuth')).send({ name: oauthName }).expect(401));
+
+			it('should fail when the "name" param is not provided', () =>
+				request.post(api('settings.addCustomOAuth')).set(credentials).send({}).expect(400));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should add a custom oauth service', async () => {
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const value = await getSettingValueById(enableSettingId);
+				expect(value).to.be.a('boolean');
+			});
+		});
+
+		describe('[/settings.refreshOAuthServices]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.refreshOAuthServices')).expect(401));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should refresh the oauth services', () =>
+				request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					}));
+		});
+
+		describe('[/settings.removeCustomOAuth]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.removeCustomOAuth')).send({ name: oauthName }).expect(401));
+
+			it('should fail when the "name" param is not provided', () =>
+				request.post(api('settings.removeCustomOAuth')).set(credentials).send({}).expect(400));
+
+			it('should fail when the "name" normalizes to an empty string', () =>
+				request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: '!!!' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					}));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should remove a custom oauth service', async () => {
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				// the provider settings should be gone: settings/:_id answers 400 for an unknown id
+				await request.get(`/api/v1/settings/${enableSettingId}`).set(credentials).expect(400);
+			});
 		});
 	});
 });

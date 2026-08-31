@@ -4,7 +4,7 @@ import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type IntegrationRowProps = {
+export type IntegrationRowProps = {
 	integration: Serialized<IIntegration>;
 	isMobile: boolean;
 	onClick: (_id: string, type: string) => () => void;

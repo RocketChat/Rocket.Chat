@@ -1,5 +1,5 @@
-import type { IUpload } from '@rocket.chat/core-typings';
-import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
+import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
+import type { IBaseUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type {
 	DeleteResult,
 	IndexDescription,
@@ -8,7 +8,6 @@ import type {
 	InsertOneResult,
 	WithId,
 	Filter,
-	FindOptions,
 	FindCursor,
 	ClientSession,
 } from 'mongodb';
@@ -92,6 +91,19 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
+	findByIds<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		_ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
+		const query = {
+			_id: {
+				$in: _ids,
+			},
+		};
+
+		return this.find<T_, O>(query, options);
+	}
+
 	async findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null> {
 		return this.findOne<T>({ name }, { session: options?.session });
 	}
@@ -100,8 +112,10 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.findOne({ rid });
 	}
 
-	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T> {
-		return this.find(
+	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
+		return this.find<T_, O>(
 			{
 				expiresAt: {
 					$lte: new Date(),
@@ -123,5 +137,22 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 
 	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
+	}
+
+	async findOneByIdAndUserIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		userId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null> {
+		return this.findOne<T_, O>({ _id: fileId, userId, rid }, options);
+	}
+
+	async updateFileMetadata(
+		fileId: string,
+		userId: string,
+		metadata: { name?: string; description?: string; typeGroup?: string; content?: EncryptedContent },
+	): Promise<UpdateResult | null> {
+		return this.updateOne({ _id: fileId, userId }, { $set: metadata });
 	}
 }

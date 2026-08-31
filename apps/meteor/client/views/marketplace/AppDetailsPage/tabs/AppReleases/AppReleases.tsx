@@ -2,13 +2,14 @@ import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppReleasesItem from './AppReleasesItem';
 import AccordionLoading from '../../../components/AccordionLoading';
 
-const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
+export type AppReleasesProps = { id: App['id'] };
+
+const AppReleases = ({ id }: AppReleasesProps) => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
 	const { t } = useTranslation();
 

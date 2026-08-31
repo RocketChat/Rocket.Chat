@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { unorderedList, plain, listItem, bold, emoji } from '../src/utils';
+import { unorderedList, plain, listItem, bold, emoji } from './helpers';
 
 test.each([
 	[
@@ -72,5 +72,5 @@ test.each([
 	//     [paragraph([])],
 	//   ],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

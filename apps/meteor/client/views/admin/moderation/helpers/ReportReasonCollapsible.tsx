@@ -3,7 +3,9 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ReportReasonCollapsible = ({ children }: { children: ReactNode }) => {
+export type ReportReasonCollapsibleProps = { children: ReactNode };
+
+const ReportReasonCollapsible = ({ children }: ReportReasonCollapsibleProps) => {
 	const [isOpen, setIsOpen] = useToggle(false);
 	const { t } = useTranslation();
 

@@ -1,6 +1,6 @@
 import type { ISettingStatistics, ISettingStatisticsObject } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {
@@ -26,7 +26,6 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 		readReceiptEnabled,
 		readReceiptStoreUsers,
 		globalSearchEnabled,
-		otrEnable,
 		pushEnable,
 		threadsEnabled,
 		webRTCEnableChannel,
@@ -81,9 +80,6 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 			readReceiptEnabled,
 			readReceiptStoreUsers,
 		},
-		otr: {
-			otrEnable,
-		},
 		push: {
 			pushEnable,
 		},
@@ -125,7 +121,6 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 			{ key: 'Message_Read_Receipt_Enabled', alias: 'readReceiptEnabled' },
 			{ key: 'Message_Read_Receipt_Store_Users', alias: 'readReceiptStoreUsers' },
 			{ key: 'Search.defaultProvider.GlobalSearchEnabled', alias: 'globalSearchEnabled' },
-			{ key: 'OTR_Enable', alias: 'otrEnable' },
 			{ key: 'Push_enable', alias: 'pushEnable' },
 			{ key: 'Threads_enabled', alias: 'threadsEnabled' },
 			{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },

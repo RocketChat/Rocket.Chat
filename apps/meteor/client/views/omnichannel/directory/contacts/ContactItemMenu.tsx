@@ -1,39 +1,36 @@
 import type { ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useRouter, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RemoveContactModal from './RemoveContactModal';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-type ContactItemMenuProps = {
+export type ContactItemMenuProps = {
 	_id: string;
 	name: string;
 	channels: ILivechatContactChannel[];
 };
 
-const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactElement => {
+const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const router = useRouter();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const canEditContact = usePermission('update-livechat-contact');
 	const canDeleteContact = usePermission('delete-livechat-contact');
 
-	const handleContactEdit = useEffectEvent((): void =>
-		router.navigate({
-			pattern: '/omnichannel-directory/:tab?/:context?/:id?',
-			params: {
-				tab: 'contacts',
-				context: 'edit',
-				id: _id,
-			},
+	const handleContactEdit = useStableCallback((): void =>
+		omnichannelDirectoryRouter.navigate({
+			tab: 'contacts',
+			context: 'edit',
+			id: _id,
 		}),
 	);
 
-	const handleContactRemoval = useEffectEvent(() => {
+	const handleContactRemoval = useStableCallback(() => {
 		setModal(<RemoveContactModal _id={_id} name={name} channelsCount={channels.length} onClose={() => setModal(null)} />);
 	});
 

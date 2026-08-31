@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-import { OmnichannelLiveChatEmbedded } from '../page-objects';
+import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('Omnichannel - Livechat Widget Embedded', () => {

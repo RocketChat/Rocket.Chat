@@ -2,12 +2,15 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent } from '../../components';
-import { useMediaCallContext } from '../../context';
+import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const IncomingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, onAccept, peerInfo } = useMediaCallContext();
+	const { sessionState, onEndCall, onAccept } = useMediaCallView();
+	const { peerInfo, connectionState } = sessionState;
+
+	const connecting = connectionState === 'CONNECTING';
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -17,7 +20,7 @@ const IncomingCall = () => {
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={`${t('Incoming_call')}...`}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : `${t('Incoming_call')}...`}>
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
@@ -25,12 +28,20 @@ const IncomingCall = () => {
 			</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
-					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
-						{t('Reject')}
-					</Button>
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => void onAccept()}>
-						{t('Accept')}
-					</Button>
+					{connecting ? (
+						<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+							{t('Cancel')}
+						</Button>
+					) : (
+						<>
+							<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+								{t('Reject')}
+							</Button>
+							<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => void onAccept()}>
+								{t('Accept')}
+							</Button>
+						</>
+					)}
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>

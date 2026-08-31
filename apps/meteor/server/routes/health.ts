@@ -1,9 +1,17 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
+import { getHeapStatistics } from 'node:v8';
 
+import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 
 import { SystemLogger } from '../lib/logger/system';
+
+const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+export function pingMongo() {
+	return mongo.db.command({ ping: 1 });
+}
 
 function setDefaultHeaders(res: ServerResponse) {
 	// Set headers to prevent any caching of the health check response.
@@ -65,8 +73,8 @@ function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) 
  * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const { heapUsed, heapTotal } = process.memoryUsage();
-	const usageRatio = heapUsed / heapTotal;
+	const { heap_size_limit, used_heap_size } = getHeapStatistics();
+	const usageRatio = used_heap_size / heap_size_limit;
 	const usageValue = Number.parseFloat((usageRatio * 100).toFixed(2));
 
 	if (usageRatio > READINESS_THRESHOLDS.HEAP_USAGE_PERCENT) {
@@ -76,8 +84,6 @@ function checkMemoryUsage() {
 }
 
 async function checkMongo() {
-	const { pingMongo } = await import('../startup/watchDb');
-
 	try {
 		await pingMongo();
 		return { status: 'ok' };

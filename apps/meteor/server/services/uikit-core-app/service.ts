@@ -1,5 +1,11 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IUiKitCoreApp, IUiKitCoreAppService, UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import type {
+	IUiKitCoreApp,
+	IUiKitCoreAppService,
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
+} from '@rocket.chat/core-services';
 
 const registeredApps = new Map<string, IUiKitCoreApp>();
 
@@ -24,29 +30,25 @@ export class UiKitCoreAppService extends ServiceClassInternal implements IUiKitC
 		return registeredApps.has(appId);
 	}
 
-	async blockAction(payload: UiKitCoreAppPayload) {
+	async blockAction(payload: UiKitCoreAppBlockActionPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
-		if (!service) {
-			return;
-		}
+		if (!service) return undefined;
 
 		return service.blockAction?.(payload);
 	}
 
-	async viewClosed(payload: UiKitCoreAppPayload) {
+	async viewClosed(payload: UiKitCoreAppViewClosedPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
-		if (!service) {
-			return;
-		}
+		if (!service) return undefined;
 
 		return service.viewClosed?.(payload);
 	}
 
-	async viewSubmit(payload: UiKitCoreAppPayload) {
+	async viewSubmit(payload: UiKitCoreAppViewSubmitPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);

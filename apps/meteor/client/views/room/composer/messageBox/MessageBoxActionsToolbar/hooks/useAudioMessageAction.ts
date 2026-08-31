@@ -1,9 +1,9 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
-import { AudioRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/AudioRecorder';
+import { AudioRecorder } from '../../../../../../lib/AudioRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';
@@ -34,13 +34,13 @@ export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boo
 
 	const chat = useChat();
 
-	const stopRecording = useEffectEvent(() => {
+	const stopRecording = useStableCallback(() => {
 		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
 	});
 
-	const setMicrophoneDenied = useEffectEvent((isDenied: boolean) => {
+	const setMicrophoneDenied = useStableCallback((isDenied: boolean) => {
 		if (isDenied) {
 			stopRecording();
 		}

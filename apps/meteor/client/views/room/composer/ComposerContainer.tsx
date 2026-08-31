@@ -1,6 +1,5 @@
-import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated, isVoipRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
@@ -14,7 +13,6 @@ import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerSelectMessages from './ComposerSelectMessages';
-import ComposerVoIP from './ComposerVoIP';
 import { useRoom } from '../contexts/RoomContext';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchived';
@@ -23,7 +21,7 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const room = useRoom();
 
 	const canJoinWithoutCode = usePermission('join-without-join-code');
@@ -39,7 +37,6 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	const isFederation = isRoomFederated(room);
 
 	const isFederationBlocked = !isRoomNativeFederated(room);
-	const isVoip = isVoipRoom(room);
 
 	const [isAirGappedRestricted] = useAirGappedRestriction();
 
@@ -49,10 +46,6 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	if (isOmnichannel) {
 		return <ComposerOmnichannel {...props} />;
-	}
-
-	if (isVoip) {
-		return <ComposerVoIP />;
 	}
 
 	if (isFederation) {

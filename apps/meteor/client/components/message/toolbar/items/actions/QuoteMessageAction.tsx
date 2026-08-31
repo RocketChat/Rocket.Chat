@@ -12,7 +12,7 @@ import { useRoom } from '../../../../../views/room/contexts/RoomContext';
 import { useMessageListAutoTranslate } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type QuoteMessageActionProps = {
+export type QuoteMessageActionProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	subscription: ISubscription | undefined;
 };
@@ -40,7 +40,6 @@ const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) 
 			id='quote-message'
 			icon='quote'
 			title={t('Quote')}
-			qa='Quote'
 			onClick={() => {
 				if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
 					message.msg =

@@ -7,14 +7,14 @@ const className = css`
 	white-space: normal;
 `;
 
-type AttachmentProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentProps = ComponentPropsWithoutRef<typeof Box>;
 
 const Attachment = (props: AttachmentProps) => {
 	const { width } = useAttachmentDimensions();
 	return (
 		<Box
 			rcx-message-attachment
-			mb={4}
+			marginBlock={4}
 			maxWidth={width}
 			width='full'
 			display='flex'

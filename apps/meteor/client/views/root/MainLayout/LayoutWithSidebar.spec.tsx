@@ -1,115 +1,125 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { useCurrentRoutePath, useRoute } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useCurrentRoutePath: jest.fn(),
-	useRoute: jest.fn(),
+	useRouter: jest.fn(),
 }));
 
+jest.mock('../../../navbar', () => () => <div>NavBar</div>);
 jest.mock('../../../sidebar', () => () => <div>Sidebar</div>);
+jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
+jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
+jest.mock('../../navigation/providers/RoomsNavigationProvider', () => ({
+	__esModule: true,
+	default: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	FeaturePreview: ({ children }: { children: ReactNode }) => <>{children}</>,
+	FeaturePreviewOn: ({ children }: { children: ReactNode }) => <>{children}</>,
+	FeaturePreviewOff: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
 
 const mockedUseCurrentRoutePath = useCurrentRoutePath as jest.MockedFunction<typeof useCurrentRoutePath>;
-const mockedUseRoute = useRoute as jest.MockedFunction<typeof useRoute>;
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
 
 describe('LayoutWithSidebar - First_Channel_After_Login navigation', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
-	const setupChannelRouteMock = () => {
-		const push = jest.fn();
-		mockedUseRoute.mockImplementation((routeName) => {
-			if (routeName === 'channel') {
-				return { push } as any;
-			}
-			return {} as any;
-		});
-		return push;
+	const setupRouterMock = () => {
+		const navigate = jest.fn();
+		mockedUseRouter.mockReturnValue({ navigate } as any);
+		return navigate;
 	};
 
 	it('redirects to First_Channel_After_Login on "/"', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', 'general').build(),
 		});
 
-		expect(push).toHaveBeenCalledWith({ name: 'general' });
+		expect(navigate).toHaveBeenCalledWith({ name: '/channel/general' });
 	});
 
 	it('strips leading "#" from First_Channel_After_Login before redirecting', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '#general').build(),
 		});
 
-		expect(push).toHaveBeenCalledWith({ name: 'general' });
+		expect(navigate).toHaveBeenCalledWith({ name: '/channel/general' });
 	});
 
 	it('does NOT redirect if First_Channel_After_Login starts with "?"', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '?general').build(),
 		});
 
-		expect(push).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	it('does NOT redirect if First_Channel_After_Login starts with "##"', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '##general').build(),
 		});
 
-		expect(push).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	it('redirects when route is "/home"', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/home');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', 'general').build(),
 		});
 
-		expect(push).toHaveBeenCalled();
+		expect(navigate).toHaveBeenCalled();
 	});
 
 	it('does NOT redirect if First_Channel_After_Login is empty', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '').build(),
 		});
 
-		expect(push).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	it('does NOT redirect on non-home routes (e.g. /admin)', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/admin' as any);
 
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', 'general').build(),
 		});
 
-		expect(push).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	it('redirects only once even if component re-renders', () => {
-		const push = setupChannelRouteMock();
+		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/');
 
 		const { rerender } = render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
@@ -118,7 +128,7 @@ describe('LayoutWithSidebar - First_Channel_After_Login navigation', () => {
 
 		rerender(<LayoutWithSidebar>content again</LayoutWithSidebar>);
 
-		expect(push).toHaveBeenCalledTimes(1);
-		expect(push).toHaveBeenCalledWith({ name: 'general' });
+		expect(navigate).toHaveBeenCalledTimes(1);
+		expect(navigate).toHaveBeenCalledWith({ name: '/channel/general' });
 	});
 });

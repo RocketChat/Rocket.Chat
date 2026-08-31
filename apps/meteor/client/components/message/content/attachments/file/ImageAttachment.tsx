@@ -1,11 +1,11 @@
 import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 
+import { useLoadImage } from './hooks/useLoadImage';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentImage from '../structure/AttachmentImage';
-import { useLoadImage } from './hooks/useLoadImage';
 
 const ImageAttachment = ({
 	id,
@@ -17,6 +17,7 @@ const ImageAttachment = ({
 		width: 368,
 		height: 368,
 	},
+	image_alt: altText,
 	description,
 	descriptionMd,
 	title_link: link,
@@ -38,6 +39,7 @@ const ImageAttachment = ({
 					src={getURL(url)}
 					previewUrl={`data:image/png;base64,${imagePreview}`}
 					id={id}
+					alt={altText}
 				/>
 			</MessageCollapsible>
 		</>

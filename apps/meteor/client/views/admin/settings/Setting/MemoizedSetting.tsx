@@ -1,6 +1,6 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
-import type { ElementType, ReactElement, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
@@ -47,7 +47,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	group: GenericSettingInput, // @todo: implement
 };
 
-type MemoizedSettingProps = {
+export type MemoizedSettingProps = {
 	_id?: string;
 	type: ISettingBase['type'];
 	packageValue: ISettingBase['packageValue'];
@@ -82,7 +82,7 @@ const MemoizedSetting = ({
 	className = undefined,
 	invisible = undefined,
 	...inputProps
-}: MemoizedSettingProps): ReactElement | null => {
+}: MemoizedSettingProps) => {
 	if (invisible) {
 		return null;
 	}
@@ -91,7 +91,7 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' w='full'>
+			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
 				<InputComponent
 					value={value}
 					hint={hint}

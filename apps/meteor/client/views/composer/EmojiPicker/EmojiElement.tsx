@@ -4,13 +4,19 @@ import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import { memo } from 'react';
 
-import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
+import type { EmojiItem } from '../../../lib/emoji';
 
-type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
+export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,
 		'is'
 	>;
+
+const smallEmojiClass = css`
+	.emoji {
+		font-size: 1.125rem;
+	}
+`;
 
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
@@ -19,22 +25,14 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		return null;
 	}
 
-	const emojiSmallClass = css`
-		> .emoji,
-		.emojione {
-			width: 1.125rem;
-			height: 1.125rem;
-		}
-	`;
-
 	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
-			{...(small && { className: emojiSmallClass })}
+			{...(small && { className: smallEmojiClass })}
 			small={small}
 			medium={!small}
-			onMouseOver={() => handlePreview(image, emoji)}
+			onMouseEnter={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}
 			data-emoji={emoji}

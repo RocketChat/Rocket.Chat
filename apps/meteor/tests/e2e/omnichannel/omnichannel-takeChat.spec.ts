@@ -3,7 +3,9 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { expectPollUserStatus } from '../utils/expectPollUserStatus';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
@@ -31,8 +33,8 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.navbar.switchOmnichannelStatus('online');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
 
 		await agent.page.close();
 		await Promise.all([
@@ -43,7 +45,8 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
+		await expectPollUserStatus(api, 'user1', 'online');
 
 		newVisitor = createFakeVisitor();
 
@@ -55,35 +58,41 @@ test.describe('omnichannel-takeChat', () => {
 	test('When agent is online should take the chat', async () => {
 		await sendLivechatMessage();
 
-		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
 
 		await agent.poHomeChannel.content.btnTakeChat.click();
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
-		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+		await expect(agent.poHomeChannel.composer.inputMessage).toBeVisible();
 	});
 
-	test('When agent is offline should not take the chat', async () => {
-		await agent.poHomeChannel.sidenav.switchStatus('offline');
+	test('When agent is offline should not take the chat', async ({ api }) => {
+		await agent.poHomeChannel.navbar.changeUserStatus('offline');
+		await expectPollUserStatus(api, 'user1', 'offline');
 
 		await sendLivechatMessage();
 
 		await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
 	});
 
-	test('When a new livechat conversation starts but agent is offline, it should not be able to take the chat', async () => {
+	test('When a new livechat conversation is selected and the agent becomes offline or unavailable, they should not be able to take the chat', async ({
+		api,
+	}) => {
 		await sendLivechatMessage();
 
-		await agent.poHomeChannel.sidenav.switchStatus('offline');
-		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
+
+		await agent.poHomeChannel.navbar.changeUserStatus('offline');
+		await expectPollUserStatus(api, 'user1', 'offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 
-		await agent.poHomeChannel.sidenav.switchStatus('online');
-		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
+		await expectPollUserStatus(api, 'user1', 'online');
+		await agent.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 	});

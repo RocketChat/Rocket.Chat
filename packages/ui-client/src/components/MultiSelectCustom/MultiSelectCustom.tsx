@@ -1,7 +1,8 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import { useButtonPattern, useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ComponentPropsWithoutRef, FormEvent, RefObject } from 'react';
+import type { Keys as IconNames } from '@rocket.chat/icons';
+import type { ChangeEvent, ComponentPropsWithoutRef, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -26,6 +27,7 @@ export type OptionProp = {
 	text: string;
 	checked?: boolean;
 	isGroupTitle?: boolean;
+	icon?: { name: IconNames; color?: 'default' | 'danger' | 'warning' };
 };
 
 /**
@@ -78,7 +80,7 @@ export const MultiSelectCustom = ({
 	useOutsideClick([target], onClose);
 
 	const onSelect = useCallback(
-		(selectedOption: OptionProp, e?: FormEvent<HTMLElement>): void => {
+		(selectedOption: OptionProp, e?: ChangeEvent<HTMLElement>): void => {
 			e?.stopPropagation();
 
 			if (selectedOption.hasOwnProperty('checked')) {

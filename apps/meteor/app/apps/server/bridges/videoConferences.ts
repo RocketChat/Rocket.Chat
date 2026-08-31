@@ -1,7 +1,7 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { VideoConferenceBridge } from '@rocket.chat/apps/dist/server/bridges/VideoConferenceBridge';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
 import { VideoConf } from '@rocket.chat/core-services';
 
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
@@ -42,7 +42,7 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
-		for await (const { _id, ts } of data.users) {
+		for (const { _id, ts } of data.users) {
 			if (oldData.users.find((user) => user._id === _id)) {
 				continue;
 			}

@@ -2,7 +2,8 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelBusinessHours } from '../page-objects';
+import { OmnichannelBusinessHours } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
@@ -10,6 +11,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+// TODO: These tests needs to be refactored to be independent from each other
 test.describe('OC - Business Hours', () => {
 	test.skip(!IS_EE, 'OC - Manage Business Hours > Enterprise Edition Only');
 
@@ -24,6 +26,7 @@ test.describe('OC - Business Hours', () => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
 		agent = await createAgent(api, 'user2');
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
 		await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/settings/Livechat_business_hour_type', { value: 'Multiple' }).then((res) => expect(res.status()).toBe(200));
 	});
@@ -32,6 +35,7 @@ test.describe('OC - Business Hours', () => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200);
 		await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
 	});
@@ -40,9 +44,8 @@ test.describe('OC - Business Hours', () => {
 		poOmnichannelBusinessHours = new OmnichannelBusinessHours(page);
 	});
 
-	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+	test('OC - Manage Business Hours - Create Business Hours', async () => {
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
@@ -58,33 +61,21 @@ test.describe('OC - Business Hours', () => {
 
 			await test.step('expect business hours to have been created', async () => {
 				await poOmnichannelBusinessHours.search(BHName);
-				await expect(poOmnichannelBusinessHours.findRowByName(BHName)).toBeVisible();
+				await expect(poOmnichannelBusinessHours.table.findRowByName(BHName)).toBeVisible();
 			});
 		});
 
 		await test.step('expect to be able to delete business hours', async () => {
-			await test.step('expect to be able to cancel delete', async () => {
-				await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
-				await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
-				await poOmnichannelBusinessHours.btnCancelDeleteModal.click();
-				await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
-			});
-
-			await test.step('expect to confirm delete', async () => {
-				await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
-				await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
-				await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
-				await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
-			});
+			await poOmnichannelBusinessHours.deleteBusinessHour(BHName);
 		});
 
 		await test.step('expect business hours to have been deleted', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
-			await expect(poOmnichannelBusinessHours.findRowByName(BHName)).not.toBeVisible();
+			await expect(poOmnichannelBusinessHours.table.findRowByName(BHName)).not.toBeVisible();
 		});
 	});
 
-	test('OC - Business hours - Edit BH departments', async ({ api, page }) => {
+	test('OC - Business hours - Edit BH departments', async ({ api }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
 				name: BHName,
@@ -94,46 +85,44 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect department to be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeVisible();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
 		await test.step('expect to remove business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect department to not be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeHidden();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
 		await test.step('expect delete business hours', async () => {
-			await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
-			await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
-			await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
-			await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
+			await poOmnichannelBusinessHours.deleteBusinessHour(BHName);
 		});
 	});
 
-	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+	test('OC - Business hours - Toggle BH active status', async ({ api }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
 				name: BHName,
@@ -143,37 +132,32 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect to disable business hours', async () => {
-			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
-
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 
 			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
 			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).not.toBeChecked();
 
 			await poOmnichannelBusinessHours.btnSave.click();
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect to enable business hours', async () => {
-			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
-
 			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 
 			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
 			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).toBeChecked();
 
 			await poOmnichannelBusinessHours.btnSave.click();
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect delete business hours', async () => {
-			await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
-			await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
-			await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
+			await poOmnichannelBusinessHours.deleteBusinessHour(BHName);
 		});
 	});
 });

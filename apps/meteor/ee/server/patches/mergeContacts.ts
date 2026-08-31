@@ -3,11 +3,11 @@ import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, Settings } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
-import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
-import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
-import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
+import { notifyOnSettingChanged } from '../../../server/lib/notifyListener';
+import { ContactMerger } from '../../../server/lib/omnichannel/contacts/ContactMerger';
+import { mergeContacts } from '../../../server/lib/omnichannel/contacts/mergeContacts';
+import { contactLogger as logger } from '../lib/omnichannel/logger';
 
 export const runMergeContacts = async (
 	_next: any,
@@ -34,7 +34,7 @@ export const runMergeContacts = async (
 		return originalContact;
 	}
 
-	logger.debug({ msg: `Found ${similarContacts.length} contacts to merge`, contactId });
+	logger.debug({ msg: 'Found contacts to merge', contactId, count: similarContacts.length });
 	for await (const similarContact of similarContacts) {
 		const fields = ContactMerger.getAllFieldsFromContact(similarContact);
 		await ContactMerger.mergeFieldsIntoContact({ fields, contact: originalContact, session });

@@ -36,7 +36,9 @@ export type BusinessHoursFormData = {
 // TODO: replace `Select` in favor `SelectFiltered`
 // TODO: add time validation for start and finish not be equal on UI
 // TODO: add time validation for start not be higher than finish on UI
-const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
+export type BusinessHoursFormProps = { type?: 'default' | 'custom' };
+
+const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
@@ -69,7 +71,7 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
 					/>
 				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' mbs='x8'>
+				<Callout title={t('Daylight_savings_time')} type='info' marginBlockStart='x8'>
 					{t('Business_hours_will_update_automatically')}
 				</Callout>
 			</Field>
@@ -91,7 +93,7 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 								options={daysOptions}
 								value={value}
 								placeholder={t('Select_an_option')}
-								w='full'
+								width='full'
 							/>
 						)}
 					/>
@@ -101,14 +103,14 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 				<Field key={dayTime.id}>
 					<FieldLabel>{t(dayTime.day as TranslationKey)}</FieldLabel>
 					<FieldRow>
-						<Box display='flex' flexDirection='column' flexGrow={1} mie={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.start.time`}
 								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
 							/>
 						</Box>
-						<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineStart={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}

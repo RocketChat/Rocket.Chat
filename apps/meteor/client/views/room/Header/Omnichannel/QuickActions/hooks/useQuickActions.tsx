@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -9,22 +9,21 @@ import {
 	useEndpoint,
 	useTranslation,
 	useRouter,
-	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
-import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
+import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
 import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
+import PlaceChatOnHoldModal from '../../../../../omnichannel/modals/PlaceChatOnHoldModal';
 import ReturnChatQueueModal from '../../../../../omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../omnichannel/modals/TranscriptModal';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
@@ -47,12 +46,11 @@ export const useQuickActions = (): {
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
-	const subscription = useUserSubscription(rid);
 	const roomLastMessage = room.lastMessage;
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
-	const getVisitorEmail = useEffectEvent(async () => {
+	const getVisitorEmail = useStableCallback(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
@@ -135,45 +133,6 @@ export const useQuickActions = (): {
 		}
 	}, [closeModal, discardTranscript, dispatchToastMessage, t]);
 
-	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
-
-	const handleForwardChat = useCallback(
-		async (departmentId?: string, userId?: string, comment?: string) => {
-			if (departmentId && userId) {
-				return;
-			}
-			const transferData: {
-				roomId: string;
-				clientAction: boolean;
-				comment?: string;
-				departmentId?: string;
-				userId?: string;
-			} = {
-				roomId: rid,
-				comment,
-				clientAction: true,
-			};
-
-			if (departmentId) {
-				transferData.departmentId = departmentId;
-			}
-			if (userId) {
-				transferData.userId = userId;
-			}
-
-			try {
-				await forwardChat(transferData);
-				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				router.navigate('/home');
-				LegacyRoomManager.close(room.t + rid);
-				closeModal();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		},
-		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, router, t],
-	);
-
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
 	const discardForRoom = useLivechatInquiryStore((state) => state.discardForRoom);
@@ -235,7 +194,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useEffectEvent(async (id: string) => {
+	const handleAction = useStableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -270,7 +229,7 @@ export const useQuickActions = (): {
 				);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(<ForwardChatModal room={room} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
 				const email = await getVisitorEmail();
@@ -333,7 +292,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
-				return (subscription && (canCloseRoom || canCloseOthersRoom)) || (!!roomOpen && canCloseOthersRoom);
+				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:
@@ -355,7 +314,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useEffectEvent((actionId: string) => {
+	const actionDefault = useStableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 

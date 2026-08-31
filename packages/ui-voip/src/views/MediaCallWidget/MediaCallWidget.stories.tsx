@@ -1,15 +1,17 @@
 import { Button } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import MediaCallWidget from './MediaCallWidget';
-import { useMediaCallContext, MockedMediaCallProvider } from '../../context';
+import { useMediaCallInstance, useMediaCallView, useWidgetExternalControls } from '../../context';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
-		New_Call: 'New Call',
-		Incoming_call: 'Incoming Call',
+		New_Call: 'New call',
+		Incoming_call: 'Incoming call',
 		Enter_username_or_number: 'Enter username or number',
+		meteor_status_connecting: 'Connecting...',
 		Call: 'Call',
 		Calling: 'Calling',
 		Cancel: 'Cancel',
@@ -17,15 +19,15 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 const meta = {
-	title: 'V2/MediaCallWidget',
+	title: 'Views/MediaCallWidget/Draggable Widget',
 	component: MediaCallWidget,
 	args: {
-		state: 'closed',
+		state: 'none',
 	},
 	decorators: [
 		mockedContexts,
 		(Story, options) => (
-			<MockedMediaCallProvider {...options.args}>
+			<MockedMediaCallProvider instanceProps={{ targetWidgetVisibility: 'open' }} {...options.args}>
 				<Story />
 			</MockedMediaCallProvider>
 		),
@@ -35,30 +37,45 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () => {
-	const { onToggleWidget, onCall, state } = useMediaCallContext();
-	return (
-		<>
-			<Button onClick={() => onToggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
-				Toggle widget
-			</Button>
-			<Button onClick={() => onCall()} disabled={state !== 'closed'}>
-				Receive call
-			</Button>
-			<MediaCallWidget />
-		</>
-	);
+export const MediaCallWidgetManualTesting: Story = {
+	args: {
+		instanceProps: {},
+	},
+	render: () => {
+		const { targetWidgetVisibility } = useMediaCallInstance();
+		const { sessionState, onCall } = useMediaCallView();
+		const { toggleWidget } = useWidgetExternalControls();
+		const { state } = sessionState;
+		return (
+			<>
+				<Button onClick={() => toggleWidget()} disabled={state !== 'none'} marginInlineEnd={8}>
+					Toggle widget
+				</Button>
+				<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
+					Receive call
+				</Button>
+				<MediaCallWidget />
+			</>
+		);
+	},
 };
 
 export const NewCall: Story = {
 	args: {
-		state: 'new',
+		state: 'none',
 	},
 };
 
 export const IncomingCall: Story = {
 	args: {
 		state: 'ringing',
+	},
+};
+
+export const IncomingCallConnecting: Story = {
+	args: {
+		state: 'ringing',
+		connectionState: 'CONNECTING',
 	},
 };
 
@@ -75,6 +92,13 @@ export const OutgoingCall: Story = {
 	},
 };
 
+export const OutgoingCallConnecting: Story = {
+	args: {
+		state: 'calling',
+		connectionState: 'CONNECTING',
+	},
+};
+
 export const OutgoingCallTransfer: Story = {
 	args: {
 		state: 'calling',
@@ -85,5 +109,26 @@ export const OutgoingCallTransfer: Story = {
 export const OngoingCall: Story = {
 	args: {
 		state: 'ongoing',
+	},
+};
+
+export const OngoingCallConnecting: Story = {
+	args: {
+		state: 'ongoing',
+		connectionState: 'CONNECTING',
+	},
+};
+
+export const OngoingCallDisabledAllFeatures: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: [],
+	},
+};
+
+export const OngoingCallDisabledAllButScreenshare: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: ['screen-share'],
 	},
 };

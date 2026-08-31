@@ -1,4 +1,4 @@
-import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
@@ -46,7 +46,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	const [value, setValue] = useSafely(useState(_value));
 	const [loading, setLoading] = useSafely(useState(false));
 
-	const actionFunction = useEffectEvent(async (e: any) => {
+	const actionFunction = useStableCallback(async (e: any) => {
 		// FIXME: fix typings
 		const {
 			target: { value: elValue },
@@ -86,7 +86,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
 	// Used for triggering actions on text inputs. Removing the load state
 	// makes the text input field remain focused after running the action
-	const noLoadStateActionFunction = useEffectEvent(async (e: any) => {
+	const noLoadStateActionFunction = useStableCallback(async (e: any) => {
 		// FIXME: fix typings
 		const {
 			target: { value },
@@ -108,7 +108,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		);
 	});
 
-	const stateFunction = useEffectEvent(async (e: any) => {
+	const stateFunction = useStableCallback(async (e: any) => {
 		// FIXME: fix typings
 		const {
 			target: { value },
@@ -138,10 +138,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		return [result, noLoadStateActionFunction];
 	}
 
-	if (
-		(context && [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(context)) ||
-		(Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected'))
-	) {
+	if (context === UiKit.BlockContext.SECTION || context === UiKit.BlockContext.ACTION) {
+		return [result, actionFunction];
+	}
+
+	if (Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected')) {
 		return [result, actionFunction];
 	}
 

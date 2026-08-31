@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
-import { type Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
@@ -565,6 +565,18 @@ describe('LIVECHAT - visitors', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor._id).to.be.equal(visitor._id);
+				});
+		});
+		it('should not return the visitor token', async () => {
+			await request
+				.get(api('livechat/visitors.info'))
+				.query({ visitorId: visitor._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.visitor).to.not.have.property('token');
 				});
 		});
 	});

@@ -6,8 +6,8 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-type InfoPanelTextProps = ComponentPropsWithoutRef<typeof Box>;
+export type InfoPanelTextProps = ComponentPropsWithoutRef<typeof Box>;
 
-const InfoPanelText = (props: InfoPanelTextProps) => <Box mb={8} fontScale='p2' color='hint' className={wordBreak} {...props} />;
+const InfoPanelText = (props: InfoPanelTextProps) => <Box marginBlock={8} fontScale='p2' color='hint' className={wordBreak} {...props} />;
 
 export default InfoPanelText;

@@ -4,5 +4,5 @@
  * @returns `true` if the `TEST_MODE` environment variable equals `'true'`, `false` otherwise.
  */
 export function isTesting() {
-	return process.env.TEST_MODE === 'true';
+	return process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api';
 }

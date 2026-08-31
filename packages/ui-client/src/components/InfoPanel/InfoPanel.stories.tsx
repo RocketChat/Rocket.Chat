@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentType } from 'react';
 
 import {
@@ -27,34 +27,36 @@ export default {
 	},
 } satisfies Meta<typeof InfoPanel>;
 
-export const Default: StoryFn<typeof InfoPanel> = () => (
-	<InfoPanel>
-		<InfoPanelAvatar />
-		<InfoPanelSection>
-			<InfoPanelTitle title='rocketchat-frontend-team' icon='hashtag' />
-		</InfoPanelSection>
-		<InfoPanelSection>
-			<InfoPanelField>
-				<InfoPanelLabel>Description</InfoPanelLabel>
-				<InfoPanelText>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
-					libero
-				</InfoPanelText>
-			</InfoPanelField>
-			<InfoPanelField>
-				<InfoPanelLabel>Announcement</InfoPanelLabel>
-				<InfoPanelText>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
-					libero
-				</InfoPanelText>
-			</InfoPanelField>
-			<InfoPanelField>
-				<InfoPanelLabel title='This is helpful information about the label'>Topic</InfoPanelLabel>
-				<InfoPanelText>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
-					libero
-				</InfoPanelText>
-			</InfoPanelField>
-		</InfoPanelSection>
-	</InfoPanel>
-);
+export const Default: StoryObj<typeof InfoPanel> = {
+	render: () => (
+		<InfoPanel>
+			<InfoPanelAvatar />
+			<InfoPanelSection>
+				<InfoPanelTitle title='rocketchat-frontend-team' icon='hashtag' />
+			</InfoPanelSection>
+			<InfoPanelSection>
+				<InfoPanelField>
+					<InfoPanelLabel>Description</InfoPanelLabel>
+					<InfoPanelText>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
+						libero
+					</InfoPanelText>
+				</InfoPanelField>
+				<InfoPanelField>
+					<InfoPanelLabel>Announcement</InfoPanelLabel>
+					<InfoPanelText>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
+						libero
+					</InfoPanelText>
+				</InfoPanelField>
+				<InfoPanelField>
+					<InfoPanelLabel title='This is helpful information about the label'>Topic</InfoPanelLabel>
+					<InfoPanelText>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
+						libero
+					</InfoPanelText>
+				</InfoPanelField>
+			</InfoPanelSection>
+		</InfoPanel>
+	),
+};

@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetModal, useSetting, useUser } from '@rocket.chat/ui-contexts';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import CreateDiscussion from '../../CreateDiscussion';
 
@@ -60,6 +60,7 @@ export const useNewDiscussionMessageAction = (
 					onClose={() => setModal(undefined)}
 					parentMessageId={message._id}
 					nameSuggestion={message?.msg?.substr(0, 140)}
+					encryptedParentRoom={room?.encrypted}
 				/>,
 			);
 		},

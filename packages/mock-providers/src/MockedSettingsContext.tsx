@@ -29,6 +29,8 @@ const createSettingContextValue = ({ settings }: { settings?: Record<string, ISe
 	};
 };
 
-export const MockedSettingsContext = ({ settings, children }: { children: ReactNode; settings?: Record<string, ISetting['value']> }) => {
+export type MockedSettingsContextProps = { children: ReactNode; settings?: Record<string, ISetting['value']> };
+
+export const MockedSettingsContext = ({ settings, children }: MockedSettingsContextProps) => {
 	return <SettingsContext.Provider value={createSettingContextValue({ settings })}>{children}</SettingsContext.Provider>;
 };

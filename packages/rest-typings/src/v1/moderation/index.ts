@@ -1,4 +1,4 @@
-export * from './moderation';
+export type * from './moderation';
 
 export * from './ArchiveReportProps';
 export * from './ModerationDeleteMsgHistoryParams';

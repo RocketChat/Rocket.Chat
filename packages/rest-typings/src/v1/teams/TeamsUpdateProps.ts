@@ -1,17 +1,16 @@
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import { TeamType } from '@rocket.chat/core-typings';
 
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsUpdateProps = ({ teamId: string } | { teamName: string }) & {
 	data:
 		| {
 				name: string;
-				type?: TEAM_TYPE;
+				type?: TeamType;
 		  }
 		| {
 				name?: string;
-				type: TEAM_TYPE;
+				type: TeamType;
 		  };
 };
 
@@ -39,7 +38,7 @@ const teamsUpdatePropsSchema = {
 				},
 				type: {
 					type: 'number',
-					enum: [TEAM_TYPE.PUBLIC, TEAM_TYPE.PRIVATE],
+					enum: [TeamType.PUBLIC, TeamType.PRIVATE],
 				},
 			},
 			additionalProperties: false,

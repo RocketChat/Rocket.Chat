@@ -10,7 +10,7 @@ export type MediaCallActor<T extends MediaCallActorType = MediaCallActorType> = 
 	contractId?: string;
 };
 
-export type MediaCallSignedEntity<T extends MediaCallActor> = RequiredField<T, 'contractId'>;
+type MediaCallSignedEntity<T extends MediaCallActor> = RequiredField<T, 'contractId'>;
 
 export type MediaCallSignedActor<T extends MediaCallActorType = MediaCallActorType> = MediaCallSignedEntity<MediaCallActor<T>>;
 
@@ -30,7 +30,7 @@ export type MediaCallContact<T extends MediaCallActorType = MediaCallActorType> 
 export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallSignedEntity<MediaCallContact<T>>;
 
 /* The list of call states that may actually be stored on the collection is smaller than the list of call states that may be computed by the client class */
-export type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
+type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
@@ -64,5 +64,11 @@ export interface IMediaCall extends IRocketChatRecord {
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
 
+	/** The party whose line was diverted at the SIP level (from the Diversion header) */
+	divertedBy?: MediaCallContact;
+
 	uids: IUser['_id'][];
+
+	/** The list of features that may be used in this call. Values are final once the call is accepted. */
+	features: string[];
 }

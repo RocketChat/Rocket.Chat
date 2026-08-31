@@ -1,31 +1,69 @@
 import type { Locator, Page } from '@playwright/test';
 
+import {
+	EditStatusModal,
+	CreateNewChannelModal,
+	CreateNewDiscussionModal,
+	CreateNewDMModal,
+	CreateNewTeamModal,
+	CreateNewCategoryModal,
+} from './modals';
 import { expect } from '../../utils/test';
 
 export class Navbar {
-	private readonly page: Page;
+	readonly modals: {
+		'Channel': CreateNewChannelModal;
+		'Team': CreateNewTeamModal;
+		'Discussion': CreateNewDiscussionModal;
+		'Direct message': CreateNewDMModal;
+		'editStatus': EditStatusModal;
+		'Category': CreateNewCategoryModal;
+	};
 
-	constructor(page: Page) {
-		this.page = page;
-	}
-
-	get navbar(): Locator {
-		return this.page.getByRole('navigation', { name: 'header' });
+	constructor(private readonly root: Page) {
+		this.modals = {
+			'Channel': new CreateNewChannelModal(root),
+			'Team': new CreateNewTeamModal(root),
+			'Discussion': new CreateNewDiscussionModal(root),
+			'Direct message': new CreateNewDMModal(root),
+			'editStatus': new EditStatusModal(root),
+			'Category': new CreateNewCategoryModal(root),
+		};
 	}
 
 	get btnVoiceAndOmnichannel(): Locator {
-		return this.navbar.getByRole('button', { name: 'Voice and omnichannel' });
+		return this.root.getByRole('button', { name: 'Voice and omnichannel' });
 	}
 
 	get groupHistoryNavigation(): Locator {
-		return this.navbar.getByRole('group', { name: 'History navigation' });
+		return this.root.getByRole('group', { name: 'History navigation' });
 	}
 
 	get pagesGroup(): Locator {
-		return this.navbar.getByRole('group', { name: 'Pages and actions' });
+		return this.root.getByRole('group', { name: 'Pages and actions' });
 	}
 
-	get homeButton(): Locator {
+	get omnichannelGroup(): Locator {
+		return this.root.getByRole('group', { name: 'Omnichannel' });
+	}
+
+	get btnContactCenter(): Locator {
+		return this.omnichannelGroup.getByRole('button', { name: 'Contact Center' });
+	}
+
+	get voiceCallGroup(): Locator {
+		return this.root.getByRole('group', { name: 'Voice call' });
+	}
+
+	get btnNewVoiceCall(): Locator {
+		return this.voiceCallGroup.getByRole('button', { name: 'New voice call' });
+	}
+
+	get btnSwitchOmnichannelStatus(): Locator {
+		return this.omnichannelGroup.getByRole('button', { name: 'answer chats' });
+	}
+
+	get btnHome(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Home' });
 	}
 
@@ -33,12 +71,56 @@ export class Navbar {
 		return this.pagesGroup.getByRole('button', { name: 'Directory' });
 	}
 
+	get btnMarketplace(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Marketplace' });
+	}
+
 	get btnMenuPages(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}
 
+	get btnDisplay(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Display' });
+	}
+
+	get menuDisplay(): Locator {
+		return this.root.getByRole('menu', { name: 'Display' });
+	}
+
+	get groupDisplay(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Display' });
+	}
+
+	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
+		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupSortBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Sort by' });
+	}
+
+	getSortMenuItem(mode: 'Activity' | 'Name'): Locator {
+		return this.groupSortBy.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupGroupBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Group by' });
+	}
+
+	getGroupByMenuItem(mode: 'Unread' | 'Favorites' | 'Types'): Locator {
+		return this.groupGroupBy.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get btnCreateNew(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Create new' });
+	}
+
+	get createNewMenu(): Locator {
+		return this.root.getByRole('menu', { name: 'Create new' });
+	}
+
 	get navbarSearchSection(): Locator {
-		return this.navbar.getByRole('search');
+		return this.root.getByRole('search');
 	}
 
 	get searchInput(): Locator {
@@ -50,21 +132,65 @@ export class Navbar {
 	}
 
 	get workspaceGroup(): Locator {
-		return this.navbar.getByRole('group', { name: 'Workspace and user preferences' });
+		return this.root.getByRole('group', { name: 'Workspace and user preferences' });
 	}
 
-	get manageWorkspaceButton(): Locator {
+	get btnManageWorkspace(): Locator {
 		return this.workspaceGroup.getByRole('button', { name: 'Manage' });
 	}
 
+	async openManageMenuItem(name: 'Workspace' | 'Omnichannel'): Promise<void> {
+		await this.btnManageWorkspace.click();
+		await this.root.getByRole('menu', { name: 'Manage' }).getByRole('menuitem', { name }).click();
+	}
+
+	get btnUserMenu(): Locator {
+		return this.workspaceGroup.getByRole('button', { name: 'User menu' });
+	}
+
+	get userMenu(): Locator {
+		return this.root.getByRole('menu', { name: 'User menu' });
+	}
+
+	get btnLogout(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
+	get btnCustomStatus(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Custom...' });
+	}
+
+	getUserProfileMenuOption(name: string): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name });
+	}
+
+	createNewMenuItem(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Outbound message' | 'Category'): Locator {
+		return this.createNewMenu.getByRole('menuitem', { name });
+	}
+
+	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Category'): Promise<void> {
+		await this.btnCreateNew.click();
+		await this.createNewMenuItem(name).click();
+	}
+
+	async openCreateCategory(): Promise<void> {
+		await this.btnCreateNew.click();
+		await this.createNewMenu.getByRole('menuitem', { name: 'Category', exact: true }).click();
+	}
+
+	async logout(): Promise<void> {
+		await this.btnUserMenu.click();
+		return this.btnLogout.click();
+	}
+
 	btnSidebarToggler(closeSidebar?: boolean): Locator {
-		return this.navbar.getByRole('button', { name: closeSidebar ? 'Close sidebar' : 'Open sidebar' });
+		return this.root.getByRole('button', { name: closeSidebar ? 'Close sidebar' : 'Open sidebar' });
 	}
 
 	async openAdminPanel(): Promise<void> {
-		await this.manageWorkspaceButton.click();
-		await this.page.getByRole('menuitem', { name: 'Workspace' }).click();
-		await this.page.waitForURL(/\/admin/);
+		await this.btnManageWorkspace.click();
+		await this.root.getByRole('menuitem', { name: 'Workspace' }).click();
+		await this.root.waitForURL(/\/admin/);
 	}
 
 	async typeSearch(name: string): Promise<void> {
@@ -72,21 +198,138 @@ export class Navbar {
 	}
 
 	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await this.root.locator('role=main').waitFor();
+		await this.root.locator('role=main >> role=heading[level=1]').waitFor();
+		const messageList = this.root.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
 		await messageList.waitFor();
 
 		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('option', { name, exact: true });
+		return this.searchList.getByRole('option', { name }).filter({ has: this.root.getByText(name, { exact: true }) });
+	}
+
+	getSearchItemBadge(name: string): Locator {
+		return this.getSearchRoomByName(name).getByRole('status', { name: 'unread' });
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
+		await this.getSearchRoomByName(name).waitFor();
 		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
+	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.btnDisplay.click();
+		await this.menuDisplay.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.root.keyboard.press('Escape');
+	}
+
+	async createNew(
+		type: 'Channel' | 'Team',
+		name: string,
+		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; federated?: boolean; members?: string[] },
+	): Promise<void> {
+		await this.openCreate(type);
+		await this.modals[type].inputName.fill(name);
+
+		if (options?.private === false) {
+			await this.modals[type].checkboxPrivate.click();
+		}
+
+		if (options?.members && options.members.length > 0) {
+			await Promise.all(options.members.map((member) => this.modals[type].addMember(member)));
+		}
+
+		if (options && ('encrypted' in options || 'readOnly' in options || 'federated' in options)) {
+			await this.modals[type].advancedSettingsAccordion.click();
+		}
+		if (options?.encrypted) {
+			await this.modals[type].checkboxEncrypted.click();
+		}
+		if (options?.readOnly) {
+			await this.modals[type].checkboxReadOnly.click();
+		}
+		if (options?.federated) {
+			await this.modals[type].checkboxFederated.click();
+		}
+
+		await this.modals[type].btnCreate.click();
+	}
+
+	async createNewDM(username: string): Promise<void> {
+		await this.openCreate('Direct message');
+		await this.modals['Direct message'].inviteUserToDM(username);
+		await this.modals['Direct message'].btnCreate.click();
+	}
+
+	async createNewCategory(name: string): Promise<void> {
+		await this.openCreate('Category');
+		await this.modals.Category.inputName.fill(name);
+		await this.modals.Category.create();
+	}
+
+	async createNewDiscussion(parentRoom: string, name: string, message?: string): Promise<void> {
+		await this.openCreate('Discussion');
+		await this.modals.Discussion.inputParentRoom.click();
+		await this.modals.Discussion.inputParentRoom.pressSequentially(parentRoom);
+		await this.modals.Discussion.getParentRoomListItem(parentRoom).click();
+		await this.modals.Discussion.inputName.fill(name);
+		message && (await this.modals.Discussion.inputMessage.fill(message));
+		await this.modals.Discussion.btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string): Promise<void> {
+		await this.createNew('Channel', name, { encrypted: true });
+	}
+
+	async changeUserStatus(status: 'online' | 'away' | 'busy' | 'invisible' | 'offline' | string): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.getUserProfileMenuOption(status).click();
+	}
+
+	async changeUserCustomStatus(text?: string): Promise<void> {
+		await this.openEditStatusModal();
+		await this.modals.editStatus.changeStatusMessage(text);
+	}
+
+	get editStatusModal(): EditStatusModal {
+		return this.modals.editStatus;
+	}
+
+	async openEditStatusModal(): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.btnCustomStatus.click();
+	}
+
+	async changeUserCustomStatusWithExpiration(options: {
+		message?: string;
+		statusType?: string;
+		duration: string;
+		customDate?: string;
+		customTime?: string;
+	}): Promise<void> {
+		await this.openEditStatusModal();
+		await this.modals.editStatus.setStatusWithExpiration(options);
+	}
+
+	async switchOmnichannelStatus(status: 'offline' | 'online') {
+		const toggleButton = this.btnSwitchOmnichannelStatus;
+		await expect(toggleButton).toBeVisible();
+
+		const expectedTitle = status === 'offline' ? 'Turn on answer chats' : 'Turn off answer chats';
+
+		const currentStatus = await toggleButton.getAttribute('title');
+		if (currentStatus !== expectedTitle) {
+			await toggleButton.click();
+		}
+
+		await expect(toggleButton).toHaveAttribute('title', expectedTitle);
+	}
+
+	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {
+		return this.btnUserMenu.locator(`svg[class*="${status}"]`);
 	}
 }

@@ -5,7 +5,7 @@ import type {
 	ITeam,
 	ITeamMember,
 	ITeamStats,
-	TEAM_TYPE,
+	TeamType,
 	IRoom,
 	IUser,
 	IRole,
@@ -61,11 +61,11 @@ export interface IListRoomsFilter {
 export type ITeamUpdateData = { updateRoom?: boolean } & (
 	| {
 			name: string;
-			type?: TEAM_TYPE;
+			type?: TeamType;
 	  }
 	| {
 			name?: string;
-			type: TEAM_TYPE;
+			type: TeamType;
 	  }
 );
 

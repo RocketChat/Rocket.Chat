@@ -1,0 +1,24 @@
+export type DenoConfigurationFileSchema = {
+	compilerOptions?: Record<string, string | Array<string | Record<string, any>> | Record<string, any>>;
+	importMap?: string;
+	imports?: Record<string, string>;
+	scopes?: Record<string, Record<string, string>>;
+	exclude?: string[];
+	lint?: Record<string, string | Array<string | Record<string, any>> | Record<string, any>>;
+	fmt?: Record<string, string | Array<string | Record<string, any>> | Record<string, any>>;
+	minimumDependencyAge?: any;
+	nodeModulesDir?: any;
+	vendor?: boolean;
+	tasks?: Record<string, string>;
+	test?: Record<string, string | Array<string | Record<string, any>> | Record<string, any>>;
+	publish?: any;
+	bench?: Record<string, string | Array<string | Record<string, any>> | Record<string, any>>;
+	lock?: string | boolean | { path: string; frozen?: boolean };
+	unstable?: string[];
+	name?: string;
+	version?: string;
+	exports?: string | Record<string, string>;
+	permissions?: Record<string, string>;
+	patch?: string[];
+	links?: string[];
+};

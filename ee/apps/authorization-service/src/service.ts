@@ -7,7 +7,7 @@ import polka from 'polka';
 
 const PORT = process.env.PORT || 3034;
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'authorization-service', db: client });

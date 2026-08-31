@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AdminSettings, AdminSectionsHref } from './page-objects';
-import { HomeSidenav } from './page-objects/fragments';
+import { Navbar } from './page-objects/fragments';
 import { LoginPage } from './page-objects/login';
 import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
@@ -9,12 +9,12 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration-settings', () => {
 	let poAdminSettings: AdminSettings;
-	let poHomeSidenav: HomeSidenav;
+	let navbar: Navbar;
 	let poLoginPage: LoginPage;
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
-		poHomeSidenav = new HomeSidenav(page);
+		navbar = new Navbar(page);
 		poLoginPage = new LoginPage(page);
 	});
 
@@ -30,11 +30,11 @@ test.describe.parallel('administration-settings', () => {
 
 			await test.step('should list settings after logout and login', async () => {
 				await poAdminSettings.sidebar.close();
-				await poHomeSidenav.logout();
+				await navbar.logout();
 
 				await poLoginPage.loginByUserState(Users.admin);
 
-				await poHomeSidenav.openAdministrationByLabel('Workspace');
+				await navbar.openAdminPanel();
 				const settingsButton = await poAdminSettings.adminSectionButton(AdminSectionsHref.Settings);
 				await settingsButton.click();
 

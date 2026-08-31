@@ -1,13 +1,37 @@
+import { setTimeout, clearTimeout } from 'node:timers';
+
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
-import { License, ServiceClass } from '@rocket.chat/core-services';
+import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Settings, Users, UsersSessions } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
+import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
-import { processPresenceAndStatus } from './lib/processConnectionStatus';
+import { normalizeStatusText } from './lib/normalizeStatusText';
+import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
+
+const logger = new Logger('Presence');
 
 const MAX_CONNECTIONS = 200;
+const STATUS_EXPIRATION_JOB = 'presence-status-expiration';
+
+type PresenceUser = Pick<
+	IUser,
+	| '_id'
+	| 'username'
+	| 'type'
+	| 'roles'
+	| 'status'
+	| 'statusDefault'
+	| 'statusSource'
+	| 'statusText'
+	| 'statusExpiresAt'
+	| 'statusConnection'
+	| 'statusId'
+	| 'previousState'
+>;
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -28,6 +52,8 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private reaper: PresenceReaper;
 
+	private expirationScheduleToken?: symbol;
+
 	constructor() {
 		super();
 
@@ -47,11 +73,11 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 
 			// always store the number of connections per instance so we can show correct in the UI
-			if (diff?.hasOwnProperty('extraInformation.conns')) {
+			if (diff && Object.hasOwn(diff, 'extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
 				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());
-				this.validateAvailability();
+				void this.validateAvailability();
 			}
 		});
 
@@ -89,7 +115,7 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 10000);
 
 		try {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
@@ -97,6 +123,40 @@ export class Presence extends ServiceClass implements IPresence {
 		} catch (e: unknown) {
 			// ignore
 		}
+
+		await this.handleExpirationJob();
+	}
+
+	private async processExpiredStatuses(): Promise<void> {
+		const expiredCursor = Users.findExpiredStatuses();
+		for await (const user of expiredCursor) {
+			await this.updateUserPresence(user, { type: 'endActive' });
+		}
+	}
+
+	private async setupNextExpiration(): Promise<void> {
+		const token = Symbol();
+		this.expirationScheduleToken = token;
+
+		const next = await Users.findNextStatusExpiration();
+
+		// A newer reschedule superseded this token during the lookup; let it win.
+		if (this.expirationScheduleToken !== token) {
+			return;
+		}
+
+		await cronJobs.remove(STATUS_EXPIRATION_JOB);
+
+		if (!next?.statusExpiresAt) {
+			return;
+		}
+
+		await cronJobs.addAtTimestamp(STATUS_EXPIRATION_JOB, next.statusExpiresAt, () => this.handleExpirationJob());
+	}
+
+	private async handleExpirationJob(): Promise<void> {
+		await this.processExpiredStatuses();
+		await this.setupNextExpiration();
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
@@ -105,22 +165,22 @@ export class Presence extends ServiceClass implements IPresence {
 		const rejected = results.filter((result) => result.status === 'rejected');
 
 		if (fulfilled.length > 0) {
-			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+			logger.debug({ msg: 'Successfully updated presence for users', count: fulfilled.length });
 		}
 
 		if (rejected.length > 0) {
-			console.error(
-				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
-				rejected.map(({ reason }) => reason),
-			);
+			logger.error({
+				msg: 'Failed to update presence for users',
+				count: rejected.length,
+				reasons: rejected.map(({ reason }): unknown => reason),
+			});
 		}
 	}
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
-		if (!this.lostConTimeout) {
-			return;
-		}
+		this.expirationScheduleToken = undefined;
+		await cronJobs.remove(STATUS_EXPIRATION_JOB);
 		clearTimeout(this.lostConTimeout);
 	}
 
@@ -132,7 +192,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
 		if (enabled) {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 		}
 	}
 
@@ -230,27 +290,67 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.map(({ _id }) => _id);
 	}
 
-	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
+	/**
+	 * Updates presence and reschedules the expiration job.
+	 * All public methods should use this instead of calling updateUserPresence directly.
+	 */
+	private async updatePresenceAndReschedule(uid: string, claimUpdate: ClaimUpdate): Promise<boolean> {
+		const result = await this.updateUserPresence(uid, claimUpdate);
+		await this.setupNextExpiration();
+		return result;
+	}
 
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'roles' | 'status'>>(uid, {
-			projection: { username: 1, roles: 1, status: 1 },
-		});
-
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			statusDefault,
-			status,
-			statusConnection,
-			statusText,
-		});
-
-		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] }, user?.status);
+	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string, statusExpiresAt?: Date): Promise<boolean> {
+		// Selecting 'online' without a status message clears any manual claim
+		// and reverts to connection-driven presence.
+		if (statusDefault === UserStatus.ONLINE && !statusText) {
+			return this.clearActiveState(userId);
 		}
 
-		return !!result.modifiedCount;
+		return this.setActiveState(userId, {
+			statusDefault,
+			statusSource: 'manual',
+			...(statusText != null && { statusText: normalizeStatusText(statusText) }),
+			...(statusExpiresAt && { statusExpiresAt }),
+		});
+	}
+
+	/**
+	 * Applies a presence claim from a source (manual, external, internal).
+	 */
+	async setActiveState(
+		userId: string,
+		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
+	): Promise<boolean> {
+		if (newState.statusExpiresAt) {
+			const expiresAt = new Date(newState.statusExpiresAt).getTime();
+			if (Number.isNaN(expiresAt) || expiresAt <= Date.now()) {
+				throw new Error('statusExpiresAt must be a future date');
+			}
+		}
+
+		return this.updatePresenceAndReschedule(userId, {
+			type: 'setActive',
+			newState: {
+				...newState,
+				...(newState.statusText != null && { statusText: normalizeStatusText(newState.statusText) }),
+			},
+		});
+	}
+
+	/**
+	 * Ends a presence claim. With `statusId`, only that claim is affected (so concurrent voice/video
+	 * claims end in either order); without it, the displaced claim is restored.
+	 */
+	async endActiveState(userId: string, statusId?: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'endActive', ...(statusId && { statusId }) });
+	}
+
+	/**
+	 * Removes all presence claims and resets to "Online" with no text.
+	 */
+	async clearActiveState(userId: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'clearActive' });
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
@@ -261,44 +361,66 @@ export class Presence extends ServiceClass implements IPresence {
 		return !!result.modifiedCount;
 	}
 
-	async updateUserPresence(uid: string): Promise<void> {
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
-			projection: {
-				username: 1,
-				statusDefault: 1,
-				statusText: 1,
-				roles: 1,
-				status: 1,
-			},
-		});
+	/**
+	 * Low-level presence update. Does not reschedule the expiration job.
+	 * Prefer {@link updatePresenceAndReschedule} for public-facing methods.
+	 */
+	private async updateUserPresence(uidOrUser: string | PresenceUser, claimUpdate?: ClaimUpdate): Promise<boolean> {
+		const user =
+			typeof uidOrUser === 'string'
+				? await Users.findOneById<PresenceUser>(uidOrUser, {
+						projection: {
+							username: 1,
+							type: 1,
+							roles: 1,
+							status: 1,
+							statusDefault: 1,
+							statusSource: 1,
+							statusText: 1,
+							statusExpiresAt: 1,
+							statusConnection: 1,
+							statusId: 1,
+							previousState: 1,
+						},
+					})
+				: uidOrUser;
 		if (!user) {
-			return;
+			return false;
 		}
 
-		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
+		const userSessions = await UsersSessions.findOneById(user._id);
+		const sessions = userSessions?.connections ?? [];
 
-		const { statusDefault } = user;
-
-		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-
-		const result = await Users.updateStatusById(uid, {
-			status,
-			statusConnection,
-		});
-
-		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
+		const result = processPresence(user, sessions, claimUpdate);
+		if (Object.keys(result.values).length === 0) {
+			return false;
 		}
+
+		// Only apply this update if statusExpiresAt and previousState haven't changed since we read them.
+		// Prevents two presence instances from processing the same expiration and overwriting each other.
+		const guard =
+			claimUpdate?.type === 'endActive' && user.statusExpiresAt
+				? {
+						statusExpiresAt: user.statusExpiresAt,
+						...(user.previousState ? { previousState: user.previousState } : { previousState: { $exists: false } }),
+					}
+				: undefined;
+
+		const updatedUser = await Users.updatePresenceAndStatus(user._id, result.values, result.clear, guard);
+		if (updatedUser) {
+			this.broadcast(updatedUser, user.status);
+		}
+		return !!updatedUser;
 	}
 
 	private broadcast(
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles'>,
 		previousStatus: UserStatus | undefined,
 	): void {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api?.broadcast('presence.status', {
+		void this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
 		});
@@ -312,7 +434,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (this.getTotalConnections() > MAX_CONNECTIONS) {
 			this.broadcastEnabled = false;
 
-			await Settings.updateValueById('Presence_broadcast_disabled', true);
+			await Settings.set('Presence_broadcast_disabled', true);
 		}
 	}
 

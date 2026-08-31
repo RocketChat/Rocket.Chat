@@ -4,9 +4,9 @@ import { AttachmentContext, useLayout, useUserPreference } from '@rocket.chat/ui
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/client';
+import { getURL } from '../lib/getURL';
 
-type AttachmentProviderProps = {
+export type AttachmentProviderProps = {
 	children?: ReactNode;
 	width?: number;
 	height?: number;
@@ -32,7 +32,7 @@ const AttachmentProvider = ({ children, width = 360, height = 360 }: AttachmentP
 		[collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile, width, height],
 	);
 
-	return <AttachmentContext.Provider children={children} value={contextValue} />;
+	return <AttachmentContext.Provider value={contextValue}>{children}</AttachmentContext.Provider>;
 };
 
 export default AttachmentProvider;

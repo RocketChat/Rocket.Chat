@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ImageBox from './ImageBox';
 
-type RetryProps = { retry: () => void };
+export type RetryProps = { retry: () => void };
 
 const Retry = ({ retry }: RetryProps) => {
 	const { t } = useTranslation();

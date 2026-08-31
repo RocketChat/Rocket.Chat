@@ -17,7 +17,7 @@ type DateRange = {
 
 type DateRangeAction = 'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'last30Minutes' | 'last1Hour' | 'thisWeek' | 'custom';
 
-type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
+export type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
 export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSelectProps) => {
 	const { setValue, control, getValues } = useAppLogsFilterFormContext();

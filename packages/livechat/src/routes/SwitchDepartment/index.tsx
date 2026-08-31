@@ -1,5 +1,3 @@
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { useContext } from 'preact/hooks';
 import { route } from 'preact-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -10,17 +8,16 @@ import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput } from '../../components/Form';
 import { ModalManager } from '../../components/Modal';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
-import type { StoreState } from '../../store';
-import { StoreContext } from '../../store';
+import { useStore } from '../../store';
 
 type SwitchDepartmentFormData = { department: string };
 
-type SwitchDepartmentProps = {
-	path: string;
+export type SwitchDepartmentProps = {
+	path?: string;
 };
 
 const SwitchDepartment = (_: SwitchDepartmentProps) => {
@@ -38,7 +35,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		dispatch,
 		alerts,
 		token,
-	} = useContext(StoreContext);
+	} = useStore();
 
 	const {
 		handleSubmit,
@@ -64,35 +61,25 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({
-				user: user as StoreState['user'],
+			dispatch({
+				user,
 				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
 			});
 			route('/');
 			return;
 		}
 
-		await dispatch({ loading: true });
+		dispatch({ loading: true });
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
-			// TODO: Investigate why the api results are not returning the correct type
-			const { success } = result as Serialized<
-				| {
-						room: IOmnichannelRoom;
-						success: boolean;
-				  }
-				| {
-						room: IOmnichannelRoom;
-						success: boolean;
-						warning: string;
-				  }
-			>;
+			const { success } = result;
+
 			if (!success) {
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
+			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });
 			await loadConfig();
 
 			await ModalManager.alert({
@@ -102,11 +89,11 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 			route('/');
 		} catch (error) {
 			console.error(error);
-			await dispatch({
+			dispatch({
 				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts),
 			});
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 
@@ -114,13 +101,10 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		route('/');
 	};
 
-	const defaultTitle = t('change_department_1');
-	const defaultMessage = t('choose_a_department_1');
-
 	return (
-		<Screen title={defaultTitle} className={createClassName(styles, 'switch-department')}>
-			<Screen.Content>
-				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
+		<Screen title={t('change_department_1')} className={createClassName(styles, 'switch-department')}>
+			<ScreenContent>
+				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || t('choose_a_department_1')}</p>
 
 				<Form
 					id='switchDepartment'
@@ -142,8 +126,8 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 						/>
 					</FormField>
 				</Form>
-			</Screen.Content>
-			<Screen.Footer>
+			</ScreenContent>
+			<ScreenFooter>
 				<ButtonGroup full>
 					<Button loading={loading} form='switchDepartment' submit stack full disabled={!isDirty || !isValid || loading || isSubmitting}>
 						{t('start_chat')}
@@ -152,7 +136,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 						{t('cancel')}
 					</Button>
 				</ButtonGroup>
-			</Screen.Footer>
+			</ScreenFooter>
 		</Screen>
 	);
 };

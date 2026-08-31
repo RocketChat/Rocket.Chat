@@ -4,7 +4,9 @@ import SidePanelTag from './SidePanelTag';
 import SidePanelTagIcon from './SidePanelTagIcon';
 import { useParentTeamData } from './useParentTeamData';
 
-const SidePanelParentTeam = ({ room }: { room: SubscriptionWithRoom }) => {
+export type SidePanelParentTeamProps = { room: SubscriptionWithRoom };
+
+const SidePanelParentTeam = ({ room }: SidePanelParentTeamProps) => {
 	const { teamName, shouldDisplayTeam, teamInfoError, isTeamPublic } = useParentTeamData(room.teamId);
 
 	if (teamInfoError || !shouldDisplayTeam) {

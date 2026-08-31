@@ -35,13 +35,13 @@ it('should show Undo request button when roomOpen is true and transcriptRequest 
 it('should show Request button when roomOpen is true and transcriptRequest not exist', async () => {
 	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
-	const requestBtn = await screen.findByRole('button', { name: 'request-button' });
+	const requestBtn = await screen.findByRole('button', { name: 'Request' });
 	expect(requestBtn).toBeInTheDocument();
 });
 
 it('should show Send button when roomOpen is false', async () => {
 	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
-	const sendBtn = await screen.findByRole('button', { name: 'send-button' });
+	const sendBtn = await screen.findByRole('button', { name: 'Send' });
 	expect(sendBtn).toBeInTheDocument();
 });

@@ -1,4 +1,4 @@
-import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
+import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
+export type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
 	const { t, i18n } = useTranslation();
@@ -36,7 +36,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
 
-	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
+	const itemsList = sections ? sections.flatMap(({ items }) => items) : items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
@@ -60,7 +60,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	return (
 		<>
 			{sections && (
-				<MenuV2
+				<Menu
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
@@ -82,10 +82,10 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							)}
 						</MenuSection>
 					))}
-				</MenuV2>
+				</Menu>
 			)}
 			{items && (
-				<MenuV2
+				<Menu
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
@@ -99,7 +99,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							<GenericMenuItem {...item} />
 						</MenuItem>
 					))}
-				</MenuV2>
+				</Menu>
 			)}
 		</>
 	);

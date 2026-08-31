@@ -15,46 +15,36 @@ describe('[Permissions]', () => {
 	after(() => updatePermission('add-oauth-service', ['admin']));
 
 	describe('[/permissions.listAll]', () => {
-		it('should return an array with update and remove properties', (done) => {
-			void request
-				.get(api('permissions.listAll'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('update').and.to.be.an('array');
-					expect(res.body).to.have.property('remove').and.to.be.an('array');
-				})
-				.end(done);
+		it('should return an array with update and remove properties', async () => {
+			const res = await request.get(api('permissions.listAll')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('update').and.to.be.an('array');
+			expect(res.body).to.have.property('remove').and.to.be.an('array');
 		});
 
-		it('should return an array with update and remov properties when search by "updatedSince" query parameter', (done) => {
-			void request
+		it('should return an array with update and remov properties when search by "updatedSince" query parameter', async () => {
+			const res = await request
 				.get(api('permissions.listAll'))
 				.query({ updatedSince: '2018-11-27T13:52:01Z' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('update').and.to.be.an('array');
-					expect(res.body).to.have.property('remove').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('update').and.to.be.an('array');
+			expect(res.body).to.have.property('remove').and.to.be.an('array');
 		});
 
-		it('should return an error when updatedSince query parameter is not a valid ISODate string', (done) => {
-			void request
+		it('should return an error when updatedSince query parameter is not a valid ISODate string', async () => {
+			const res = await request
 				.get(api('permissions.listAll'))
 				.query({ updatedSince: 'fsafdf' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 
@@ -72,78 +62,77 @@ describe('[Permissions]', () => {
 			await deleteUser(testUser);
 		});
 
-		it('should change the permissions on the server', (done) => {
+		it('should change the permissions on the server', async () => {
 			const permissions = [
 				{
 					_id: 'add-oauth-service',
 					roles: ['admin', 'user'],
 				},
 			];
-			void request
+
+			const res = await request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('permissions');
+				.expect(200);
 
-					const firstElement = res.body.permissions[0];
-					expect(firstElement).to.have.property('_id');
-					expect(firstElement).to.have.property('roles').and.to.be.a('array');
-					expect(firstElement).to.have.property('_updatedAt');
-				})
-				.end(done);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('permissions');
+
+			const firstElement = res.body.permissions[0];
+			expect(firstElement).to.have.property('_id');
+			expect(firstElement).to.have.property('roles').and.to.be.a('array');
+			expect(firstElement).to.have.property('_updatedAt');
 		});
-		it('should 400 when trying to set an unknown permission', (done) => {
+
+		it('should 400 when trying to set an unknown permission', async () => {
 			const permissions = [
 				{
 					_id: 'this-permission-does-not-exist',
 					roles: ['admin'],
 				},
 			];
-			void request
+
+			const res = await request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
-		it('should 400 when trying to assign a permission to an unknown role', (done) => {
+
+		it('should 400 when trying to assign a permission to an unknown role', async () => {
 			const permissions = [
 				{
 					_id: 'add-oauth-service',
 					roles: ['this-role-does-not-exist'],
 				},
 			];
-			void request
+
+			const res = await request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
-		it('should 400 when trying to set permissions to a string', (done) => {
+
+		it('should 400 when trying to set permissions to a string', async () => {
 			const permissions = '';
-			void request
+
+			const res = await request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 		it('should fail updating permission if user does NOT have the access-permissions permission', async () => {
 			const permissions = [
@@ -161,6 +150,120 @@ describe('[Permissions]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+	});
+
+	describe('[/permissions.addRole]', () => {
+		const testPermission = 'add-oauth-service';
+		const testRole = 'moderator';
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		after(async () => {
+			await request.post(api('permissions.removeRole')).set(credentials).send({ permissionId: testPermission, role: testRole });
+			await deleteUser(testUser);
+			await updatePermission('access-permissions', ['admin']);
+		});
+
+		it('should fail when unauthenticated', () =>
+			request.post(api('permissions.addRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+
+		it('should fail with 400 when the permission does not exist', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: 'this-permission-does-not-exist', role: testRole })
+				.expect(400)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should fail with 400 when the role does not exist', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: 'this-role-does-not-exist' })
+				.expect(400)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should fail with 403 when the user lacks the access-permissions permission', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(testUserCredentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(403)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should add the role to the permission', async () => {
+			await request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(200)
+				.expect((res) => expect(res.body).to.have.property('success', true));
+
+			await request
+				.get(api('permissions.listAll'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					const permission = res.body.update.find((p: { _id: string; roles: string[] }) => p._id === testPermission);
+					expect(permission).to.be.an('object');
+					expect(permission.roles).to.include(testRole);
+				});
+		});
+	});
+
+	describe('[/permissions.removeRole]', () => {
+		const testPermission = 'add-oauth-service';
+		const testRole = 'moderator';
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+			await request.post(api('permissions.addRole')).set(credentials).send({ permissionId: testPermission, role: testRole });
+		});
+
+		after(async () => {
+			await deleteUser(testUser);
+			await updatePermission('access-permissions', ['admin']);
+		});
+
+		it('should fail when unauthenticated', () =>
+			request.post(api('permissions.removeRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+
+		it('should fail with 403 when the user lacks the access-permissions permission', () =>
+			request
+				.post(api('permissions.removeRole'))
+				.set(testUserCredentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(403)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should remove the role from the permission', async () => {
+			await request
+				.post(api('permissions.removeRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(200)
+				.expect((res) => expect(res.body).to.have.property('success', true));
+
+			await request
+				.get(api('permissions.listAll'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					const permission = res.body.update.find((p: { _id: string; roles: string[] }) => p._id === testPermission);
+					expect(permission).to.be.an('object');
+					expect(permission.roles).to.not.include(testRole);
 				});
 		});
 	});

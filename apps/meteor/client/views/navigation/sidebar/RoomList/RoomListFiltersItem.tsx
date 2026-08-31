@@ -38,6 +38,7 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 			selected={group === currentTab}
 			aria-selected={group === currentTab}
 			{...buttonProps}
+			role='tab'
 		>
 			<SidebarV2ItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>

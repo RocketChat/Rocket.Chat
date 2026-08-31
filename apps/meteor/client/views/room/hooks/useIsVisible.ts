@@ -1,5 +1,4 @@
-import { useDebouncedState, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useDebouncedState, useSafely, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback } from 'react';
 
 export const useIsVisible = () => {
@@ -7,11 +6,7 @@ export const useIsVisible = () => {
 
 	const callbackRef = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
-
+			(node: HTMLElement) => {
 				const observer = new IntersectionObserver((entries) => {
 					entries.forEach((entry) => {
 						setMenuVisibility(entry.isIntersecting);

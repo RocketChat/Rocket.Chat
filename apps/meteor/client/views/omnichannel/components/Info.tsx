@@ -8,7 +8,7 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-type InfoProps = Omit<ComponentProps<typeof UserCardInfo>, 'className' | 'style' | 'children'> & {
+export type InfoProps = Omit<ComponentProps<typeof UserCardInfo>, 'className' | 'style' | 'children'> & {
 	className?: string | cssFn;
 	style?: CSSProperties;
 	children?: ReactNode;

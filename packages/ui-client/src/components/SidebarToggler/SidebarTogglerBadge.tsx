@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type SidebarTogglerBadgeProps = {
+export type SidebarTogglerBadgeProps = {
 	children?: ReactNode;
 };
 

@@ -1,5 +1,5 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -29,8 +29,8 @@ const CustomFieldsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/customfields/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/customfields/new'));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
 
 	const handleDelete = useRemoveCustomField();
 
@@ -72,7 +72,7 @@ const CustomFieldsTable = () => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60' />
+			<GenericTableHeaderCell key='remove' width='x60' />
 		</>
 	);
 
@@ -104,11 +104,11 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-label={t('Custom_Fields')} aria-busy={isLoading} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
 									<GenericTableCell withTruncatedText>{_id}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{label}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>

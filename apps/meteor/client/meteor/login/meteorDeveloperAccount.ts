@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import/no-duplicates
+// eslint-disable-next-line import-x/no-duplicates
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
-// eslint-disable-next-line import/no-duplicates
+// eslint-disable-next-line import-x/no-duplicates
 import { OAuth } from 'meteor/oauth';
+import { Random } from 'meteor/random';
 
 import { createOAuthTotpLoginMethod } from './oauth';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';

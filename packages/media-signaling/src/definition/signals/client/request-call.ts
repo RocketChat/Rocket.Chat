@@ -1,6 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallService } from '../../call';
+import type { CallFeature, CallService } from '../../call';
+import { callFeatureList } from '../../call/IClientMediaCall';
 
 export type ClientMediaSignalRequestCall = {
 	/** the callId on this signal is temporary and is never propagated to other agents */
@@ -12,6 +13,7 @@ export type ClientMediaSignalRequestCall = {
 		id: string;
 	};
 	supportedServices: CallService[];
+	supportedFeatures?: CallFeature[];
 };
 
 export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSignalRequestCall> = {
@@ -56,6 +58,15 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 				nullable: false,
 			},
 			nullable: false,
+		},
+		supportedFeatures: {
+			type: 'array',
+			items: {
+				type: 'string',
+				enum: callFeatureList,
+				nullable: false,
+			},
+			nullable: true,
 		},
 	},
 	additionalProperties: false,

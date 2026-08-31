@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSession } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
@@ -10,7 +10,7 @@ const SideBarToggler = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread') as number | string | undefined;
 
-	const toggleSidebar = useEffectEvent(() => sidebar.toggle());
+	const toggleSidebar = useStableCallback(() => sidebar.toggle());
 
 	return <SidebarTogglerButton onClick={toggleSidebar} badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge} />;
 };

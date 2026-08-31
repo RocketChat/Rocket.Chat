@@ -3,11 +3,11 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FormattingToolbarDropdown from './FormattingToolbarDropdown';
-import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { isPromptButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
+import type { FormattingButton } from '../../../../../lib/messageBoxFormatting';
+import { isPromptButton } from '../../../../../lib/messageBoxFormatting';
 
-type MessageBoxFormattingToolbarProps = {
+export type MessageBoxFormattingToolbarProps = {
 	composer: ComposerAPI;
 	variant?: 'small' | 'large';
 	items: FormattingButton[];

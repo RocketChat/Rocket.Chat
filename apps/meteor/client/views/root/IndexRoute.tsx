@@ -15,24 +15,21 @@ const IndexRoute = () => {
 			return;
 		}
 
-		const computation = Tracker.autorun((c) => {
-			setTimeout(async () => {
-				if (user?.defaultRoom) {
-					const room = user.defaultRoom.split('/') as [routeName: RouteName, routeParam: string];
-					router.navigate({
-						name: room[0],
-						params: { name: room[1] },
-						search: router.getSearchParameters(),
-					});
-				} else {
-					router.navigate('/home');
-				}
-			}, 0);
-			c.stop();
-		});
+		const timerId = setTimeout(() => {
+			if (user?.defaultRoom) {
+				const room = user.defaultRoom.split('/') as [routeName: RouteName, routeParam: string];
+				router.navigate({
+					name: room[0],
+					params: { name: room[1] },
+					search: router.getSearchParameters(),
+				});
+			} else {
+				router.navigate('/home');
+			}
+		}, 0);
 
 		return () => {
-			computation.stop();
+			clearTimeout(timerId);
 		};
 	}, [router, uid, user?.defaultRoom]);
 

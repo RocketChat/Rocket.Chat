@@ -1,12 +1,26 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Palette, IconButton, ButtonGroup, AvatarStack } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	Button,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageTimestamp,
+	MessageBody,
+	MessageBlock,
+	Box,
+	Palette,
+	IconButton,
+	ButtonGroup,
+	AvatarStack,
+} from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -21,7 +35,7 @@ const VideoConfListItem = ({
 	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
-}): ReactElement => {
+}) => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
@@ -48,7 +62,7 @@ const VideoConfListItem = ({
 		}
 	`;
 
-	const handleJoinConference = useEffectEvent((): void => {
+	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
 	});
@@ -62,18 +76,18 @@ const VideoConfListItem = ({
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
-			pb={8}
+			paddingBlock={8}
 		>
 			<Message {...props}>
-				<Message.LeftContainer>{username && <UserAvatar username={username} size='x36' />}</Message.LeftContainer>
-				<Message.Container>
-					<Message.Header>
-						<Message.Name title={username}>{displayName}</Message.Name>
-						<Message.Timestamp>{formatDate(createdAt)}</Message.Timestamp>
-					</Message.Header>
-					<Message.Body clamp={2} />
+				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
+				<MessageContainer>
+					<MessageHeader>
+						<MessageName title={username}>{displayName}</MessageName>
+						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
+					</MessageHeader>
+					<MessageBody clamp={2} />
 					<Box display='flex'></Box>
-					<Message.Block flexDirection='row' alignItems='center'>
+					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
 							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
 								{endedAt ? t('Call_ended') : t('Join_call')}
@@ -89,7 +103,7 @@ const VideoConfListItem = ({
 							)}
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
-							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
+							<Box marginInlineStart={8} fontScale='c1' display='flex' alignItems='center'>
 								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
@@ -99,13 +113,13 @@ const VideoConfListItem = ({
 													data-tooltip={user.username}
 													key={user.username}
 													username={user.username}
-													etag={user.avatarETag}
+													etag={user.avatarETag ?? undefined}
 													size='x28'
 												/>
 											),
 									)}
 								</AvatarStack>
-								<Box mis={4}>
+								<Box marginInlineStart={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
@@ -113,12 +127,12 @@ const VideoConfListItem = ({
 							</Box>
 						)}
 						{joinedUsers.length === 0 && !endedAt && (
-							<Box mis={8} fontScale='c1'>
+							<Box marginInlineStart={8} fontScale='c1'>
 								{t('Be_the_first_to_join')}
 							</Box>
 						)}
-					</Message.Block>
-				</Message.Container>
+					</MessageBlock>
+				</MessageContainer>
 			</Message>
 		</Box>
 	);

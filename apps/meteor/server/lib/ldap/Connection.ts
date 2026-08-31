@@ -12,8 +12,8 @@ import ldapjs from 'ldapjs';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { processLdapVariables, type LDAPVariableMap } from './processLdapVariables';
-import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import { settings } from '../../settings';
 
 interface ILDAPEntryCallback<T> {
 	(entry: ldapjs.SearchEntry): T | undefined;
@@ -349,16 +349,16 @@ export class LDAPConnection {
 		let realEntries = 0;
 
 		return new Promise((resolve, reject) => {
-			this.client.search(baseDN, searchOptions, (error, res: ldapjs.SearchCallbackResponse) => {
-				if (error) {
-					searchLogger.error(error);
-					reject(error);
+			this.clientSearch(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
+				if (err) {
+					searchLogger.error({ err });
+					reject(err);
 					return;
 				}
 
-				res.on('error', (error) => {
-					searchLogger.error(error);
-					reject(error);
+				res.on('error', (err) => {
+					searchLogger.error({ err });
+					reject(err);
 				});
 
 				const entries: T[] = [];
@@ -370,13 +370,17 @@ export class LDAPConnection {
 							entries.push(result as T);
 						}
 						realEntries++;
-					} catch (e) {
-						searchLogger.error(e);
+					} catch (err) {
+						searchLogger.error({ err });
 					}
 				});
 
 				res.on('end', () => {
-					searchLogger.info(`LDAP Search found ${realEntries} entries and loaded the data of ${entries.length}.`);
+					searchLogger.info({
+						msg: 'LDAP search completed',
+						foundEntries: realEntries,
+						loadedEntries: entries.length,
+					});
 					resolve(entries);
 				});
 			});
@@ -391,11 +395,18 @@ export class LDAPConnection {
 
 		this.addUserFilters(filter, username);
 
-		const usernameFilter = this.options.userSearchField.split(',').map((item) => `(${item}=${username})`);
+		const fields = this.options.userSearchField
+			.split(',')
+			.map((field) => field.trim())
+			.filter(Boolean);
 
-		if (usernameFilter.length === 0) {
-			logger.error('LDAP_LDAP_User_Search_Field not defined');
-		} else if (usernameFilter.length === 1) {
+		if (!fields.length) {
+			throw new Error('LDAP User Search Field is not configured');
+		}
+
+		const usernameFilter = fields.map((field) => `(${field}=${username})`);
+
+		if (usernameFilter.length === 1) {
 			filter.push(`${usernameFilter[0]}`);
 		} else {
 			filter.push(`(|${usernameFilter.join('')})`);
@@ -414,7 +425,7 @@ export class LDAPConnection {
 		}
 
 		if (!this.options.groupFilterGroupMemberFormat) {
-			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+			searchLogger.debug('LDAP Group Filter is enabled but no group member format is set.');
 			return [];
 		}
 
@@ -513,6 +524,14 @@ export class LDAPConnection {
 		});
 	}
 
+	private clientSearch(baseDN: string, searchOptions: ldapjs.SearchOptions, callback: ldapjs.SearchCallBack): void {
+		try {
+			this.client.search(baseDN, searchOptions, callback);
+		} catch (err) {
+			callback(err as ldapjs.Error, undefined as unknown as ldapjs.SearchCallbackResponse);
+		}
+	}
+
 	private async doAsyncSearch<T = ldapjs.SearchEntry>(
 		baseDN: string,
 		searchOptions: ldapjs.SearchOptions,
@@ -523,16 +542,16 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
-			if (error) {
-				searchLogger.error(error);
-				callback(error);
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+			if (err) {
+				searchLogger.error({ err });
+				callback(err);
 				return;
 			}
 
-			res.on('error', (error) => {
-				searchLogger.error(error);
-				callback(error);
+			res.on('error', (err) => {
+				searchLogger.error({ err });
+				callback(err);
 			});
 
 			const entries: T[] = [];
@@ -541,8 +560,8 @@ export class LDAPConnection {
 				try {
 					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
-				} catch (e) {
-					searchLogger.error(e);
+				} catch (err) {
+					searchLogger.error({ err });
 				}
 			});
 
@@ -587,16 +606,16 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
-			if (error) {
-				searchLogger.error(error);
-				callback(error);
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+			if (err) {
+				searchLogger.error({ err });
+				callback(err);
 				return;
 			}
 
-			res.on('error', (error) => {
-				searchLogger.error(error);
-				callback(error);
+			res.on('error', (err) => {
+				searchLogger.error({ err });
+				callback(err);
 			});
 
 			let entries: T[] = [];
@@ -618,8 +637,8 @@ export class LDAPConnection {
 						);
 						entries = [];
 					}
-				} catch (e) {
-					searchLogger.error(e);
+				} catch (err) {
+					searchLogger.error({ err });
 				}
 			});
 
@@ -715,7 +734,6 @@ export class LDAPConnection {
 			connectTimeout: this.options.connectionTimeout,
 			idleTimeout: this.options.idleTimeout,
 			reconnect: this.options.reconnect,
-			log: connLogger,
 		};
 
 		const tlsOptions: Record<string, any> = {
@@ -750,24 +768,20 @@ export class LDAPConnection {
 		};
 	}
 
-	private handleConnectionResponse(error: any, response?: any): void {
+	private handleConnectionResponse(err: any, response?: any): void {
 		if (!this._receivedResponse) {
 			this._receivedResponse = true;
-			this._connectionCallback(error, response);
+			this._connectionCallback(err, response);
 			return;
 		}
 
-		if (this._connectionTimedOut && !error) {
+		if (this._connectionTimedOut && !err) {
 			connLogger.info('Received a response after the connection timedout.');
 		} else {
 			logger.debug('Ignored error/response:');
 		}
 
-		if (error) {
-			connLogger.debug(error);
-		} else {
-			connLogger.debug(response);
-		}
+		connLogger.debug({ err, response });
 	}
 
 	private initializeConnection(callback: ILDAPCallback): void {
@@ -783,7 +797,7 @@ export class LDAPConnection {
 		this.client = ldapjs.createClient(clientOptions);
 
 		this.client.on('error', (error) => {
-			connLogger.error(error);
+			connLogger.error({ err: error });
 			this.handleConnectionResponse(error, null);
 		});
 
@@ -805,10 +819,10 @@ export class LDAPConnection {
 			connLogger.info('Starting TLS');
 			connLogger.debug({ msg: 'tlsOptions', tlsOptions });
 
-			this.client.starttls(tlsOptions, null, (error, response) => {
-				if (error) {
-					connLogger.error({ msg: 'TLS connection', error });
-					return this.handleConnectionResponse(error, null);
+			this.client.starttls(tlsOptions, null, (err, response) => {
+				if (err) {
+					connLogger.error({ msg: 'TLS connection', err });
+					return this.handleConnectionResponse(err, null);
 				}
 
 				connLogger.info('TLS connected');

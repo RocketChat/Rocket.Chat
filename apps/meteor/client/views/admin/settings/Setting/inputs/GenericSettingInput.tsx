@@ -1,10 +1,10 @@
 import { Field, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type GenericSettingInputProps = SettingInputProps & {
+export type GenericSettingInputProps = SettingInputProps & {
 	value: string;
 };
 
@@ -21,8 +21,8 @@ function GenericSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: GenericSettingInputProps): ReactElement {
-	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+}: GenericSettingInputProps) {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event): void => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 
@@ -32,11 +32,10 @@ function GenericSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<TextInput
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}

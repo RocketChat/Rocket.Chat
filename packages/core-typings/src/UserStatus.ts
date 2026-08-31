@@ -5,3 +5,5 @@ export enum UserStatus {
 	BUSY = 'busy',
 	DISABLED = 'disabled',
 }
+
+export type PresenceSource = 'internal' | 'external' | 'manual';

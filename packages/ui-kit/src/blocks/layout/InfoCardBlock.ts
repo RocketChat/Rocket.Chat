@@ -1,4 +1,3 @@
-import type { LayoutBlockType } from '../LayoutBlockType';
 import type { LayoutBlockish } from '../LayoutBlockish';
 import type { IconButtonElement } from '../elements/IconButtonElement';
 import type { FrameableIconElement } from '../elements/IconElement';
@@ -12,6 +11,6 @@ type InfoCardRow = {
 };
 
 export type InfoCardBlock = LayoutBlockish<{
-	type: `${LayoutBlockType.INFO_CARD}`;
+	type: 'info_card';
 	rows: readonly InfoCardRow[];
 }>;

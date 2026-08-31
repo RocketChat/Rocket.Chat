@@ -1,17 +1,39 @@
+import { dirname, join } from 'path';
+
 import type { StorybookConfig } from '@storybook/preact-webpack5';
-import type { RuleSetRule } from 'webpack';
+import webpack, { type RuleSetRule } from 'webpack';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/{*.story,story,*.stories,stories}.tsx'],
 
 	addons: [
-		'@storybook/addon-essentials',
+		'@storybook/addon-docs',
 		{
 			name: '@storybook/addon-styling-webpack',
 			options: {
 				rules: [
 					{
-						test: /\.s?css$/,
+						test: /\.css$/,
+						sideEffects: true,
+						use: [
+							'style-loader',
+							{
+								loader: 'css-loader',
+								options: {
+									importLoaders: 1,
+									sourceMap: true,
+								},
+							},
+							{
+								loader: 'postcss-loader',
+								options: {
+									implementation: 'postcss',
+								},
+							},
+						],
+					},
+					{
+						test: /\.scss$/,
 						sideEffects: true,
 						use: [
 							'style-loader',
@@ -56,11 +78,16 @@ const config: StorybookConfig = {
 	typescript: {},
 
 	webpackFinal: async (config) => {
+		const dateFnsRoot = dirname(require.resolve('date-fns/package.json'));
 		config.resolve = {
 			...config.resolve,
 			alias: {
 				...config.resolve?.alias,
 				[require.resolve('../src/lib/uiKit')]: require.resolve('./mocks/uiKit.ts'),
+				// date-fns v4's `exports` map doesn't expose the `./locale` directory
+				// for enumeration, so webpack's dynamic `import()` context fails. Alias
+				// to the on-disk folder to bypass `exports`.
+				'date-fns/locale$': join(dateFnsRoot, 'locale'),
 			},
 		};
 
@@ -83,6 +110,15 @@ const config: StorybookConfig = {
 			type: 'asset/resource',
 			generator: { filename: 'static/media/[path][name][ext]' },
 		});
+
+		// webpack 5 doesn't handle the `node:` scheme, so `node:stream` (pulled in by the
+		// preact `react-dom/server` shim) bypasses the `stream: false` resolve fallback and
+		// throws. Strip the prefix so those specifiers hit the existing node-core fallbacks.
+		config.plugins?.push(
+			new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+				resource.request = resource.request.replace(/^node:/, '');
+			}),
+		);
 
 		return config;
 	},

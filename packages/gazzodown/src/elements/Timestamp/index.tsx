@@ -10,7 +10,9 @@ type BoldSpanProps = {
 	children: MessageParser.Timestamp;
 };
 
-const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'; value: Date }) => {
+export type TimestampProps = { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'; value: Date };
+
+const Timestamp = ({ format, value }: TimestampProps) => {
 	switch (format) {
 		case 't': // Short time format
 			return <ShortTime value={value} />;
@@ -35,40 +37,46 @@ const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const TimestampWrapper = ({ children }: BoldSpanProps) => {
-	const { enableTimestamp } = useContext(MarkupInteractionContext);
+const TimestampWrapper = ({ children }: BoldSpanProps) => (
+	<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
+		<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
+	</ErrorBoundary>
+);
 
-	if (!enableTimestamp) {
-		return <>{`<t:${children.value.timestamp}:${children.value.format}>`}</>;
-	}
-
-	return (
-		<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
-			<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
-		</ErrorBoundary>
-	);
-};
+export type ShortTimeProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortTime = ({ value }: { value: Date }) => <Time value={format(value, 'p')} dateTime={value.toISOString()} />;
+const ShortTime = ({ value }: ShortTimeProps) => <Time value={format(value, 'p')} dateTime={value.toISOString()} />;
+
+export type LongTimeProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const LongTime = ({ value }: { value: Date }) => <Time value={format(value, 'pp')} dateTime={value.toISOString()} />;
+const LongTime = ({ value }: LongTimeProps) => <Time value={format(value, 'pp')} dateTime={value.toISOString()} />;
+
+export type ShortDateProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortDate = ({ value }: { value: Date }) => <Time value={format(value, 'P')} dateTime={value.toISOString()} />;
+const ShortDate = ({ value }: ShortDateProps) => <Time value={format(value, 'P')} dateTime={value.toISOString()} />;
+
+export type LongDateProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const LongDate = ({ value }: { value: Date }) => <Time value={format(value, 'Pp')} dateTime={value.toISOString()} />;
+const LongDate = ({ value }: LongDateProps) => <Time value={format(value, 'Pp')} dateTime={value.toISOString()} />;
+
+export type FullDateProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDate = ({ value }: { value: Date }) => <Time value={format(value, 'PPPppp')} dateTime={value.toISOString()} />;
+const FullDate = ({ value }: FullDateProps) => <Time value={format(value, 'PPPP p')} dateTime={value.toISOString()} />;
+
+export type FullDateLongProps = { value: Date };
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDateLong = ({ value }: { value: Date }) => <Time value={format(value, 'PPPPpppp')} dateTime={value.toISOString()} />;
+const FullDateLong = ({ value }: FullDateLongProps) => <Time value={format(value, 'PPPP pp')} dateTime={value.toISOString()} />;
+
+export type TimeProps = { value: string; dateTime: string };
 
 // eslint-disable-next-line react/no-multi-comp
-const Time = ({ value, dateTime }: { value: string; dateTime: string }) => (
+const Time = ({ value, dateTime }: TimeProps) => (
 	<time
 		title={new Date(dateTime).toLocaleString()}
 		dateTime={dateTime}
@@ -80,22 +88,30 @@ const Time = ({ value, dateTime }: { value: string; dateTime: string }) => (
 	</time>
 );
 
+export type RelativeTimeProps = { value: Date };
+
 // eslint-disable-next-line react/no-multi-comp
-const RelativeTime = ({ value }: { value: Date }) => {
+const RelativeTime = ({ value }: RelativeTimeProps) => {
 	const time = value.getTime();
 
 	const { language } = useContext(MarkupInteractionContext);
-	const [text, setTime] = useState(() => intlFormatDistance(time, Date.now(), { locale: language ?? 'en' }));
-	const [timeToRefresh, setTimeToRefresh] = useState(() => getTimeToRefresh(time));
+	const locale = language ?? 'en';
+	const [text, setText] = useState(() => intlFormatDistance(time, Date.now(), { locale }));
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			setTime(intlFormatDistance(value.getTime(), Date.now(), { locale: 'en' }));
-			setTimeToRefresh(getTimeToRefresh(time));
-		}, timeToRefresh);
+		setText(intlFormatDistance(time, Date.now(), { locale }));
 
-		return () => clearInterval(interval);
-	}, [time, timeToRefresh, value]);
+		let timeoutId: ReturnType<typeof setTimeout>;
+
+		const refresh = () => {
+			setText(intlFormatDistance(time, Date.now(), { locale }));
+			timeoutId = setTimeout(refresh, getTimeToRefresh(time));
+		};
+
+		timeoutId = setTimeout(refresh, getTimeToRefresh(time));
+
+		return () => clearTimeout(timeoutId);
+	}, [time, locale]);
 
 	return <Time value={text} dateTime={value.toISOString()} />;
 };

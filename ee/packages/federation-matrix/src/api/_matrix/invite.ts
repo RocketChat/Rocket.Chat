@@ -1,10 +1,10 @@
-import { Authorization } from '@rocket.chat/core-services';
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const EventBaseSchema = {
@@ -130,8 +130,6 @@ const ProcessInviteResponseSchema = {
 const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 
 export const getMatrixInviteRoutes = () => {
-	const logger = new Logger('matrix-invite');
-
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
@@ -175,8 +173,8 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			// check federation permission before processing the invite
-			if (!(await Authorization.hasPermission(ourUser._id, 'access-federation'))) {
-				logger.info(`User ${userToCheck} denied federation access, rejecting invite to room ${roomId}`);
+			if (!(await FederationMatrix.canUserAccessFederation(ourUser))) {
+				logger.info({ msg: 'User denied federation access, rejecting invite to room', userId: userToCheck, roomId });
 
 				return {
 					body: {

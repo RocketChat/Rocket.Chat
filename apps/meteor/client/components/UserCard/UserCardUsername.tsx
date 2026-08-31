@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode, ComponentProps } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../UserStatus';
 
-type UserCardUsernameProps = ComponentProps<typeof Box> & {
+export type UserCardUsernameProps = ComponentProps<typeof Box> & {
 	name: ReactNode;
 	status: ReactNode;
 };
 
-const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: UserCardUsernameProps): ReactElement => (
+const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: UserCardUsernameProps) => (
 	<Box
 		display='flex'
 		title={name}
@@ -22,7 +22,7 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 		{...props}
 	>
 		{status}
-		<Box mis={8} flexGrow={1} withTruncatedText>
+		<Box marginInlineStart={8} flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
 	</Box>

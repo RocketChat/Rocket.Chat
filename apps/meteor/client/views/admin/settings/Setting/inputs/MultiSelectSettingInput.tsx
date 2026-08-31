@@ -1,13 +1,12 @@
 import { FieldLabel, MultiSelectFiltered, MultiSelect, Field, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
-type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
+export type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
 	values: valuesOption[];
 };
 
@@ -25,7 +24,7 @@ function MultiSelectSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 	autocomplete,
-}: MultiSelectSettingInputProps): ReactElement {
+}: MultiSelectSettingInputProps) {
 	const { t } = useTranslation();
 
 	const handleChange = (value: string[]): void => {
@@ -39,12 +38,11 @@ function MultiSelectSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Component
 					max-width='full'
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}
@@ -53,6 +51,7 @@ function MultiSelectSettingInput({
 					// autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
+					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
 				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}

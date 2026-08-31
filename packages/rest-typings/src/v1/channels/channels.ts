@@ -1,4 +1,4 @@
-import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
+import type { IUploadWithUser, IMessage, IRoom, ITeam, IUser, IIntegration } from '@rocket.chat/core-typings';
 
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
@@ -30,6 +30,7 @@ import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { IGetRoomRoles } from '../../helpers/IGetRoomRoles';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
@@ -53,9 +54,11 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.history': {
-		GET: (params: ChannelsHistoryProps) => PaginatedResult<{
+		GET: (params: ChannelsHistoryProps) => {
 			messages: IMessage[];
-		}>;
+			firstUnread?: IMessage;
+			unreadNotLoaded?: number;
+		};
 	};
 	'/v1/channels.archive': {
 		POST: (params: ChannelsArchiveProps) => void;
@@ -159,7 +162,7 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
-			mentions: IUser[];
+			mentions: IMessage[];
 		}>;
 	};
 	'/v1/channels.moderators': {

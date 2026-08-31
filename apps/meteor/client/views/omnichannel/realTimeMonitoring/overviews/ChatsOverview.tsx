@@ -13,7 +13,7 @@ const initialData = [
 	{ title: '', value: '00:00:00' },
 ];
 
-type ChatsOverviewProps = {
+export type ChatsOverviewProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;

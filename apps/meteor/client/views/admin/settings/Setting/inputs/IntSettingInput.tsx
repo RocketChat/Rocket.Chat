@@ -1,10 +1,10 @@
 import { Field, FieldHint, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type IntSettingInputProps = SettingInputProps<string, string | number> & {
+export type IntSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
 };
 
@@ -21,8 +21,8 @@ function IntSettingInput({
 	onChangeValue,
 	hasResetButton,
 	onResetButtonClick,
-}: IntSettingInputProps): ReactElement {
-	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
+}: IntSettingInputProps) {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		onChangeValue?.(parseInt(event.currentTarget.value, 10));
 	};
 
@@ -32,11 +32,10 @@ function IntSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<InputBox
-					data-qa-setting-id={_id}
 					id={_id}
 					type='number'
 					value={value}

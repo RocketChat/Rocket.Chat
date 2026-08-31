@@ -48,7 +48,7 @@ async function build() {
 
 	// ./resources/*.i18n.json
 	await mkdir(join(distDirectory, 'resources'), { recursive: true });
-	for await (const resource of resources) {
+	for (const resource of resources) {
 		await writeFile(join(distDirectory, 'resources', resourceBasename(resource.language)), JSON.stringify(resource.content, null, 2));
 	}
 

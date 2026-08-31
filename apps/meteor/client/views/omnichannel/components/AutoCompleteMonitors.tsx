@@ -1,17 +1,17 @@
 import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMonitorsList } from '../hooks/useMonitorsList';
 
-type AutoCompleteMonitorsProps = Omit<
+export type AutoCompleteMonitorsProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'setFilter' | 'endReached' | 'filter' | 'renderItem'
 >;
 
-const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCompleteMonitorsProps): ReactElement => {
+const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCompleteMonitorsProps) => {
 	const { t } = useTranslation();
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);

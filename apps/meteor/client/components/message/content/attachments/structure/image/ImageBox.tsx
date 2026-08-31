@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type ImageBoxProps = ComponentPropsWithoutRef<typeof Box>;
+export type ImageBoxProps = ComponentPropsWithoutRef<typeof Box>;
 
 const ImageBox = (props: ImageBoxProps) => (
 	<Box

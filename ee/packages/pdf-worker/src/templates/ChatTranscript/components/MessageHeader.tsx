@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 const styles = StyleSheet.create({
 	header: {
@@ -8,17 +8,19 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	name: {
-		fontSize: fontScales.p2b.fontSize,
-		fontWeight: fontScales.p2b.fontWeight,
+		fontSize: fontScale.p2b.fontSize,
+		fontWeight: fontScale.p2b.fontWeight,
 		color: colors.n900,
 	},
 	time: {
-		fontSize: fontScales.c1.fontSize,
+		fontSize: fontScale.c1.fontSize,
 		marginLeft: 4,
 	},
 });
 
-export const MessageHeader = ({ name, time, light }: { name: string; time: string; light?: boolean }) => (
+export type MessageHeaderProps = { name: string; time: string; light?: boolean };
+
+export const MessageHeader = ({ name, time, light }: MessageHeaderProps) => (
 	<View style={styles.header} wrap={false}>
 		<Text style={styles.name}>{name}</Text>
 		<Text style={{ ...styles.time, color: light ? colors.n600 : colors.n700 }}>{time}</Text>

@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
+import { AccordionItem } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage-forms';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -12,21 +12,18 @@ const PreferencesGlobalSection = () => {
 	const options: SelectOption[] = userDontAskAgainList.map(({ action, label }) => [action, label]);
 
 	const { control } = useFormContext();
-	const dontAskAgainListId = useId();
 
 	return (
 		<AccordionItem title={t('Global')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='span' htmlFor={dontAskAgainListId}>
-						{t('Dont_ask_me_again_list')}
-					</FieldLabel>
+					<FieldLabel>{t('Dont_ask_me_again_list')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='dontAskAgainList'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<MultiSelect id={dontAskAgainListId} placeholder={t('Nothing_found')} value={value} onChange={onChange} options={options} />
+								<MultiSelect placeholder={t('Nothing_found')} value={value} onChange={onChange} options={options} />
 							)}
 						/>
 					</FieldRow>

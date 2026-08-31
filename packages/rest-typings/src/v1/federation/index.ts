@@ -10,7 +10,7 @@ export type FederationPaginatedResult<T = Record<string, boolean | number | stri
 	total: number;
 } & T;
 
-export * from './rooms';
+export type * from './rooms';
 export * from './FederationJoinExternalPublicRoomProps';
 export * from './FederationPublicRoomsProps';
 export * from './FederationAddServerProps';

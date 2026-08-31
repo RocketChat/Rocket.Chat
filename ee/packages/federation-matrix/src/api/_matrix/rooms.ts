@@ -1,6 +1,6 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
@@ -19,7 +19,7 @@ const PublicRoomsQuerySchema = {
 	required: ['include_all_networks', 'limit'],
 };
 
-const isPublicRoomsQueryProps = ajv.compile(PublicRoomsQuerySchema);
+const isPublicRoomsQueryProps = ajvQuery.compile(PublicRoomsQuerySchema);
 
 const RoomObjectSchema = {
 	type: 'object',

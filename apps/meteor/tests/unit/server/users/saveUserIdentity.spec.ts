@@ -10,13 +10,14 @@ const stubs = {
 	updateAllUsernamesByUserId: sinon.stub(),
 	updateDirectNameAndFnameByName: sinon.stub(),
 	updateUserReferences: sinon.stub(),
+	updateHistoryReferences: sinon.stub(),
 	setUsername: sinon.stub(),
 	setRealName: sinon.stub(),
 	validateName: sinon.stub(),
 	FileUpload: sinon.stub(),
 };
 
-const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/saveUserIdentity', {
+const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../server/lib/users/saveUserIdentity', {
 	'@rocket.chat/models': {
 		Users: {
 			findOneById: stubs.findOneUserById,
@@ -32,26 +33,29 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 		VideoConference: {
 			updateUserReferences: stubs.updateUserReferences,
 		},
+		CallHistory: {
+			updateUserReferences: stubs.updateHistoryReferences,
+		},
 	},
 	'meteor/meteor': {
 		'Meteor': sinon.stub(),
 		'@global': true,
 	},
-	'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../../../../app/file-upload/server': {
+	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
+	'../media/file-upload': {
 		FileUpload: stubs.FileUpload,
 	},
-	'../../../../app/lib/server/functions/setRealName': {
-		_setRealName: stubs.setRealName,
-	},
-	'../../../../app/lib/server/functions/setUsername': {
+	'./setUsername': {
 		_setUsername: stubs.setUsername,
 		_setUsernameWithSession: () => stubs.setUsername,
 	},
-	'../../../../app/lib/server/functions/updateGroupDMsName': {
+	'./setRealName': {
+		setRealName: stubs.setRealName,
+	},
+	'../rooms/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
 	},
-	'../../../../app/lib/server/functions/validateName': {
+	'../shared/validateName': {
 		validateName: stubs.validateName,
 	},
 });
@@ -110,18 +114,10 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername.called).to.be.false;
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
 		expect(stubs.updateUserReferences.called).to.be.false;
+		expect(stubs.updateHistoryReferences.called).to.be.false;
 	});
 
-	it('should return false if _setName fails', async () => {
-		stubs.findOneUserById.returns({ name: 'oldName' });
-		stubs.setRealName.returns(false);
-		const result = await saveUserIdentity({ _id: 'valid_id', name: 'invalidName' });
-
-		expect(stubs.setRealName.calledWith('valid_id', 'invalidName', { name: 'oldName' })).to.be.true;
-		expect(result).to.be.false;
-	});
-
-	it('should update Subscriptions and VideoConference if name changes', async () => {
+	it('should update Subscriptions, VideoConference and Call History if name changes', async () => {
 		stubs.findOneUserById.returns({ name: 'oldName', username: 'oldUsername' });
 		stubs.setRealName.returns(true);
 		const result = await saveUserIdentity({ _id: 'valid_id', name: 'name', username: 'oldUsername' });
@@ -131,6 +127,7 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUsernameOfEditByUserId.called).to.be.false;
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.true;
 		expect(stubs.updateUserReferences.called).to.be.true;
+		expect(stubs.updateHistoryReferences.called).to.be.true;
 		expect(result).to.be.true;
 	});
 });

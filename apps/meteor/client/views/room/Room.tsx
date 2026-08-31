@@ -1,30 +1,32 @@
+import { FocusScope } from '@react-aria/focus';
 import { isInviteSubscription } from '@rocket.chat/core-typings';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, ContextualbarSkeleton } from '@rocket.chat/ui-client';
-import { useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
+import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
+import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import { createElement, lazy, memo, Suspense } from 'react';
-import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
+import ClassificationBanner from './ClassificationBanner';
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
-import { HeaderV2 } from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomInvite from './RoomInvite';
+import MediaCallRoom from './body/MediaCallRoom';
 import RoomBody from './body/RoomBody';
-import RoomBodyV2 from './body/RoomBodyV2';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
+import GenericError from '../../components/GenericError';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
-const Room = (): ReactElement => {
+const Room = () => {
 	const { t } = useTranslation();
+	const userId = useUserId();
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const toolbox = useRoomToolbox();
@@ -35,10 +37,12 @@ const Room = (): ReactElement => {
 	const roomLabel =
 		room.t === 'd' ? t('Conversation_with__roomName__', { roomName: room.name }) : t('Channel__roomName__', { roomName: room.name });
 
+	useMediaCallOpenRoomTracker(room._id);
+
 	if (subscription && isInviteSubscription(subscription)) {
 		return (
 			<FocusScope>
-				<RoomInvite room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />
+				<RoomInvite userId={userId} room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />
 			</FocusScope>
 		);
 	}
@@ -51,35 +55,20 @@ const Room = (): ReactElement => {
 						<RoomLayout
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
-							header={
-								<FeaturePreview feature='newNavigation'>
-									<FeaturePreviewOn>
-										<HeaderV2 room={room} subscription={subscription} />
-									</FeaturePreviewOn>
-									<FeaturePreviewOff>
-										<Header room={room} subscription={subscription} />
-									</FeaturePreviewOff>
-								</FeaturePreview>
-							}
+							classificationBanner={<ClassificationBanner />}
+							header={<Header room={room} />}
 							body={
 								shouldDisplayE2EESetup ? (
 									<RoomE2EESetup />
 								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
+									<MediaCallRoom>
+										<RoomBody />
+									</MediaCallRoom>
 								)
 							}
 							aside={
 								(toolbox.tab?.tabComponent && (
-									<ErrorBoundary fallback={null}>
+									<ErrorBoundary fallback={<GenericError icon='circle-exclamation' />}>
 										<SelectedMessagesProvider>
 											<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
 										</SelectedMessagesProvider>
@@ -87,7 +76,7 @@ const Room = (): ReactElement => {
 								)) ||
 								(contextualBarView && (
 									// TODO: improve fallback handling
-									<ErrorBoundary fallback={null}>
+									<ErrorBoundary fallback={<GenericError icon='circle-exclamation' />}>
 										<SelectedMessagesProvider>
 											<Suspense fallback={<ContextualbarSkeleton />}>
 												<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />

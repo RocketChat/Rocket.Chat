@@ -1,6 +1,6 @@
-import { readFile } from 'fs/promises';
-import { EOL } from 'os';
-import path from 'path';
+import { readFile } from 'node:fs/promises';
+import { EOL } from 'node:os';
+import path from 'node:path';
 
 import { readPackageJson } from './utils';
 

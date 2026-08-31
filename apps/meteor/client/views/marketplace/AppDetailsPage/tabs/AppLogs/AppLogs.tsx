@@ -2,7 +2,7 @@ import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -40,7 +40,9 @@ function expandedReducer(
 	}
 }
 
-const AppLogs = ({ id }: { id: string }): ReactElement => {
+export type AppLogsProps = { id: string };
+
+const AppLogs = ({ id }: AppLogsProps) => {
 	const { t } = useTranslation();
 
 	const router = useRouter();
@@ -97,7 +99,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	return (
 		<>
-			<Box pb={16}>
+			<Box paddingBlock={16}>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}

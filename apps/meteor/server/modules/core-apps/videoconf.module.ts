@@ -1,12 +1,13 @@
-import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload } from '@rocket.chat/core-services';
 import { VideoConf } from '@rocket.chat/core-services';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { i18n } from '../../lib/i18n';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';
 
-	async blockAction(payload: UiKitCoreAppPayload) {
+	async blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<UiKit.ServerInteraction | undefined> {
 		const {
 			triggerId,
 			actionId,
@@ -31,7 +32,6 @@ export class VideoConfModule implements IUiKitCoreApp {
 				appId: this.appId,
 				view: {
 					appId: this.appId,
-					type: 'modal',
 					id: `${callId}-info`,
 					title: {
 						type: 'plain_text',
@@ -40,6 +40,8 @@ export class VideoConfModule implements IUiKitCoreApp {
 					},
 					close: {
 						type: 'button',
+						appId: this.appId,
+						blockId: callId,
 						text: {
 							type: 'plain_text',
 							text: i18n.t('Close'),

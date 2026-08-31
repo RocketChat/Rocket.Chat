@@ -12,7 +12,7 @@ export interface IMediaCallAgent {
 
 	onCallEnded(callId: string): Promise<void>;
 	/* Called when the call was accepted, even if the webrtc negotiation is pending */
-	onCallAccepted(callId: string, signedContractId: string): Promise<void>;
+	onCallAccepted(call: IMediaCall): Promise<void>;
 	onCallActive(callId: string): Promise<void>;
 	onCallCreated(call: IMediaCall): Promise<void>;
 	/* Called when the sdp of the other actor is available, regardless of call state, or when this actor must provide an offer */

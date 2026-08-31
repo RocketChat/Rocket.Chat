@@ -1,6 +1,4 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import { formatDistance } from 'date-fns/formatDistance';
-import moment from 'moment';
 
 import type { MessageTypes } from '../MessageTypes';
 
@@ -65,13 +63,13 @@ export default (instance: MessageTypes) => {
 						...(comment && { comment }),
 					}),
 				autoTransferUnansweredChatsToAgent: (): string =>
-					t(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
+					t('Livechat_transfer_to_agent_auto_transfer_unanswered_chat', {
 						from,
 						to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 						duration: comment,
 					}),
 				autoTransferUnansweredChatsToQueue: (): string =>
-					t(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
+					t('Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat', {
 						from,
 						duration: comment,
 					}),
@@ -116,29 +114,6 @@ export default (instance: MessageTypes) => {
 			};
 
 			return t('Livechat_chat_transcript_sent', { transcript: requestTypes[type]() });
-		},
-	});
-
-	instance.registerType({
-		id: 'livechat_webrtc_video_call',
-		system: false,
-		text: (t, message) => {
-			if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-				return t('room_changed_type', {
-					message: t('WebRTC_call_ended_message', {
-						callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
-						endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
-					}),
-				});
-			}
-			if (message.msg === 'declined' && message.webRtcCallEndTs) {
-				return t('room_changed_type', {
-					message: t('WebRTC_call_declined_message'),
-				});
-			}
-			return t('room_changed_type', {
-				message: message.msg,
-			});
 		},
 	});
 };

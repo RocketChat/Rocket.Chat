@@ -1,48 +1,59 @@
-import type { CallHistoryItem, IExternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
-import { CallHistoryContextualBar, useMediaCallContext } from '@rocket.chat/ui-voip';
+import type { CallHistoryItem, IInternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
+import {
+	CallHistoryContextualBar,
+	useWidgetExternalControls,
+	usePeekMediaSessionState,
+	type CallHistoryExternalContact,
+	type CallHistoryUnknownContact,
+} from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 type ExternalCallEndpointData = Serialized<{
-	item: IExternalMediaCallHistoryItem;
-	call: IMediaCall;
+	item: Exclude<CallHistoryItem, IInternalMediaCallHistoryItem>;
+	call?: IMediaCall;
 }>;
 
-type MediaCallHistoryExternalProps = {
+export type MediaCallHistoryExternalProps = {
 	data: ExternalCallEndpointData;
 	onClose: () => void;
 };
 
-const getContact = (item: ExternalCallEndpointData['item']) => {
-	return {
-		number: item.contactExtension,
-	};
+export const getExternalContact = (item: ExternalCallEndpointData['item']): CallHistoryExternalContact | CallHistoryUnknownContact => {
+	if (item.type === 'media-call') {
+		return {
+			number: item.contactExtension,
+		};
+	}
+
+	return { unknown: true };
 };
 
 export const isExternalCallHistoryItem = (data: { item: Serialized<CallHistoryItem> }): data is ExternalCallEndpointData => {
-	return 'external' in data.item && data.item.external;
+	return data.item.type !== 'media-call' || data.item.external;
 };
 
 const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalProps) => {
-	const contact = useMemo(() => getContact(data.item), [data]);
+	const contact = useMemo(() => getExternalContact(data.item), [data]);
 	const historyData = useMemo(() => {
 		return {
-			callId: data.call._id,
+			callId: data.item.callId,
 			direction: data.item.direction,
 			duration: data.item.duration,
 			startedAt: new Date(data.item.ts),
 			state: data.item.state,
 		};
 	}, [data]);
-	const { onToggleWidget } = useMediaCallContext();
+	const state = usePeekMediaSessionState();
+	const { toggleWidget } = useWidgetExternalControls();
 
 	const actions = useMemo(() => {
-		if (!onToggleWidget) {
+		if (state !== 'available') {
 			return {};
 		}
 		return {
-			voiceCall: () => onToggleWidget(contact),
+			voiceCall: () => toggleWidget(contact),
 		};
-	}, [contact, onToggleWidget]);
+	}, [contact, state, toggleWidget]);
 
 	return <CallHistoryContextualBar onClose={onClose} actions={actions} contact={contact} data={historyData} />;
 };

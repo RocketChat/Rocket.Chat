@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ReplyInThreadMessageActionProps = {
+export type ReplyInThreadMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
@@ -37,7 +37,6 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 			id='reply-in-thread'
 			icon='thread'
 			title={t('Reply_in_thread')}
-			qa='Reply_in_thread'
 			onClick={(event) => {
 				event.stopPropagation();
 				const routeName = router.getRouteName();

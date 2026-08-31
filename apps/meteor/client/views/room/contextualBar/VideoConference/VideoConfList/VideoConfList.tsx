@@ -11,24 +11,23 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
-type VideoConfListProps = {
+export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
 	videoConfs: VideoConference[];
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
-	loadMoreItems: (min: number, max: number) => void;
+	loadMoreItems: () => void;
 };
 
-const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
+const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps) => {
 	const { t } = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
@@ -42,10 +41,9 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				{loading && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
@@ -76,16 +74,10 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 									width: inlineSize,
 								}}
 								totalCount={total}
-								endReached={
-									loading
-										? (): void => undefined
-										: (start) => {
-												loadMoreItems(start, Math.min(50, total - start));
-											}
-								}
+								endReached={loadMoreItems}
 								overscan={25}
 								data={videoConfs}
-								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
+								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
 							/>
 						</VirtualizedScrollbars>
 					)}

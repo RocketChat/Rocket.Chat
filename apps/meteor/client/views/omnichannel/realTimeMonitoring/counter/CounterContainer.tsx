@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import CounterItem from './CounterItem';
 import CounterRow from './CounterRow';
 
-type CounterContainerProps = {
+export type CounterContainerProps = {
 	totals: {
 		title: string;
 		value: number | string;

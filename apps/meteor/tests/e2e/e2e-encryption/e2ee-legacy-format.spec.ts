@@ -5,7 +5,7 @@ import { BASE_API_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deleteRoom } from '../utils/create-target-channel';
+import { deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -81,7 +81,7 @@ test.describe('E2EE Legacy Format', () => {
 
 		await page.evaluate(
 			async ({ rid, kid, encryptedKey }) => {
-				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
+				// eslint-disable-next-line import-x/no-absolute-path
 				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
 				const room = await e2e.getInstanceByRoomId(rid);
 				await room?.importGroupKey(kid + encryptedKey);

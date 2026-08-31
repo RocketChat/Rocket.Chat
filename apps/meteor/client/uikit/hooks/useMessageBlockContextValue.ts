@@ -1,5 +1,5 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import {
@@ -24,7 +24,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const loadVideoConfCapabilities = useVideoConfLoadCapabilities();
 
-	const handleOpenVideoConf = useEffectEvent(async (rid: IRoom['_id']) => {
+	const handleOpenVideoConf = useStableCallback(async (rid: IRoom['_id']) => {
 		if (isCalling || isRinging) {
 			return;
 		}

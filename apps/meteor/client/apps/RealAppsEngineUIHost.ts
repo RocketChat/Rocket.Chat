@@ -1,10 +1,11 @@
-import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+import { AppsEngineUIHost } from '@rocket.chat/apps/dist/client/AppsEngineUIHost';
+import type { IExternalComponentRoomInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentRoomInfo';
+import type { IExternalComponentUserInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentUserInfo';
 
-import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { RoomManager } from '../lib/RoomManager';
+import { sdk } from '../lib/SDKClient';
 import { baseURI } from '../lib/baseURI';
+import { getUserAvatarURL } from '../lib/getUserAvatarURL';
 import { getUser } from '../lib/user';
 import { Rooms } from '../stores';
 

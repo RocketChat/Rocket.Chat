@@ -4,7 +4,6 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDocumentTitle } from '../../hooks';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 import { HeaderToolbar } from '../Header';
 import { SidebarToggler } from '../SidebarToggler';
 
@@ -21,7 +20,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
-		<Box is='header' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
+		<Box is='header' borderBlockEndWidth='default' paddingBlock={8} borderBlockEndColor='transparent' {...props}>
 			<Box
 				height='100%'
 				marginInline={24}
@@ -32,24 +31,13 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 				alignItems='center'
 				color='default'
 			>
-				<FeaturePreview feature='newNavigation'>
-					<FeaturePreviewOff>
-						{sidebar.shouldToggle ? (
-							<HeaderToolbar>
-								<SidebarToggler />
-							</HeaderToolbar>
-						) : null}
-					</FeaturePreviewOff>
-					<FeaturePreviewOn>
-						{sidebar.shouldToggle && isEmbedded ? (
-							<HeaderToolbar>
-								<SidebarToggler />
-							</HeaderToolbar>
-						) : null}
-					</FeaturePreviewOn>
-				</FeaturePreview>
-				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
-				<Box is='h1' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
+				{sidebar.shouldToggle && isEmbedded ? (
+					<HeaderToolbar>
+						<SidebarToggler />
+					</HeaderToolbar>
+				) : null}
+				{onClickBack && <IconButton small marginInlineEnd={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				<Box is='h1' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>
 				{children}

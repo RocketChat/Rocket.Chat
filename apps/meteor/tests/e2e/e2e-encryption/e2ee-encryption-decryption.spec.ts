@@ -1,12 +1,13 @@
 import { faker } from '@faker-js/faker';
 
+import { resetOwnE2EKey } from './resetOwnE2EKey';
 import { setupE2EEPassword } from './setupE2EEPassword';
-import { BASE_URL } from '../config/constants';
+import { ADMIN_CREDENTIALS, BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { HomeSidenav } from '../page-objects/fragments';
+import { Navbar } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
+import { FileUploadModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
 import { createTargetGroupAndReturnFullRoom, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -19,6 +20,9 @@ preserveSettings(settingsList);
 
 test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	const createdChannels: { name: string; id?: string | null }[] = [];
+	let loginPage: LoginPage;
+	let navbar: Navbar;
+	let encryptedRoomPage: EncryptedRoomPage;
 	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.admin.state });
@@ -28,17 +32,17 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 	});
 
-	test.beforeEach(async ({ api, page }) => {
-		const loginPage = new LoginPage(page);
+	test.beforeEach(async ({ page }) => {
+		loginPage = new LoginPage(page);
+		navbar = new Navbar(page);
+		encryptedRoomPage = new EncryptedRoomPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 
-		await api.post('/method.call/e2e.resetOwnE2EKey', {
-			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-		});
+		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
 		await page.goto('/home');
 		await loginPage.waitForIt();
 		await loginPage.loginByUserState(Users.admin);
-		createE2EEChannel = new CreateE2EEChannel(page);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -46,10 +50,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	});
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
-		const loginPage = new LoginPage(page);
-		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const sidenav = new HomeSidenav(page);
-
 		const channelName = faker.string.uuid();
 		const messageText = 'This is an encrypted message.';
 
@@ -58,7 +58,8 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await encryptedRoomPage.waitForChannel();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 		await encryptedRoomPage.sendMessage(messageText);
@@ -66,15 +67,15 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(messageText);
 
 		// Log out
-		await sidenav.logout();
+		await navbar.logout();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
 		// Navigate to the encrypted channel WITHOUT entering the password
 
-		await sidenav.openChat(channelName);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await navbar.openChat(channelName);
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).toBeVisible();
 
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
@@ -84,10 +85,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	});
 
 	test('expect placeholder text in place of encrypted file upload description', async ({ page }) => {
-		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const loginPage = new LoginPage(page);
 		const fileUploadModal = new FileUploadModal(page);
-		const sidenav = new HomeSidenav(page);
 
 		const channelName = faker.string.uuid();
 		const fileName = faker.system.commonFileName('txt');
@@ -99,53 +97,62 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 		await test.step('upload the file with encryption', async () => {
 			// Upload a file
 			await encryptedRoomPage.dragAndDropTxtFile();
-			await fileUploadModal.setName(fileName);
-			await fileUploadModal.setDescription(fileDescription);
-			await fileUploadModal.send();
 
-			// Check the file upload
+			// Update file name and send
+			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
+			await fileUploadModal.setName(fileName);
+			await fileUploadModal.update();
+			await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
+
+			await encryptedRoomPage.composer.inputMessage.fill(fileDescription);
+			await encryptedRoomPage.composer.btnSend.click();
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
-			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
+			await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
 			await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 		});
 
 		await test.step('disable encryption in the room', async () => {
 			await encryptedRoomPage.disableEncryption();
-			await expect(encryptedRoomPage.encryptedIcon).not.toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).not.toBeVisible();
 		});
 
 		await test.step('upload the file without encryption', async () => {
 			await encryptedRoomPage.dragAndDropTxtFile();
-			await fileUploadModal.setName(fileName);
-			await fileUploadModal.setDescription(fileDescription);
-			await fileUploadModal.send();
 
+			// Update file name and send
+			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
+			await fileUploadModal.setName(fileName);
+			await fileUploadModal.update();
+			await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
+
+			await encryptedRoomPage.composer.inputMessage.fill(fileDescription);
+			await encryptedRoomPage.composer.btnSend.click();
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
-			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
+			await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
 			await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 		});
 
 		await test.step('enable encryption in the room', async () => {
 			await encryptedRoomPage.enableEncryption();
-			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		});
 
 		// Log out
-		await sidenav.logout();
+		await navbar.logout();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
-		await expect(sidenav.btnCreateNew).toBeVisible();
+		await expect(navbar.btnCreateNew).toBeVisible();
 
-		await sidenav.openChat(channelName);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await navbar.openChat(channelName);
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 
 		await expect(encryptedRoomPage.lastNthMessage(1).body).toHaveText(
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
@@ -153,7 +160,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastNthMessage(1).encryptedIcon).toBeVisible();
 
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
-		await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
+		await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 	});
 
@@ -176,7 +183,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			await createE2EEChannel.createAndStore(targetChannelName, createdChannels);
 
 			await expect(page).toHaveURL(`/group/${targetChannelName}`);
-			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 			await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 			await encryptedRoomPage.sendMessage('First encrypted message.');

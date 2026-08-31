@@ -13,9 +13,9 @@ import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import { drawLineChart } from '../../chartHandler';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
@@ -41,7 +41,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
 	);
 
-type ResponseTimesChartProps = {
+export type ResponseTimesChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;

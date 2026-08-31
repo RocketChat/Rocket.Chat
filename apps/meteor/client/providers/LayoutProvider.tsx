@@ -11,7 +11,7 @@ const hiddenActionsDefaultValue = {
 	userToolbox: [],
 };
 
-type LayoutProviderProps = {
+export type LayoutProviderProps = {
 	children?: ReactNode;
 };
 
@@ -54,7 +54,6 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 
 	return (
 		<LayoutContext.Provider
-			children={children}
 			value={useMemo(
 				() => ({
 					isMobile,
@@ -108,7 +107,9 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					router,
 				],
 			)}
-		/>
+		>
+			{children}
+		</LayoutContext.Provider>
 	);
 };
 

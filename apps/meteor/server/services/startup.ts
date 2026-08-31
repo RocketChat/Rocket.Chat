@@ -3,12 +3,13 @@ import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 import { MongoInternals } from 'meteor/mongo';
 
-import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { isRunningMs } from '../lib/isRunningMs';
+import { AISearchService } from './ai-search/service';
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
+import { CallHistoryService } from './call-history/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
@@ -20,18 +21,18 @@ import { NPSService } from './nps/service';
 import { OmnichannelService } from './omnichannel/service';
 import { OmnichannelAnalyticsService } from './omnichannel-analytics/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
-import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { PushService } from './push/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { SettingsService } from './settings/service';
+import { StatusVisibilityService } from './statusVisibility/service';
 import { TeamService } from './team/service';
 import { UiKitCoreAppService } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
-import { VoipAsteriskService } from './voip-asterisk/service';
 import { i18n } from '../lib/i18n';
+import { AuthorizationLivechat } from '../lib/omnichannel/roomAccessValidator.internalService';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -47,9 +48,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new NPSService());
 	api.registerService(new RoomService());
 	api.registerService(new SAUMonitorService());
-	api.registerService(new VoipAsteriskService(db));
 	api.registerService(new OmnichannelService());
-	api.registerService(new OmnichannelVoipService());
 	api.registerService(new TeamService());
 	api.registerService(new UiKitCoreAppService());
 	api.registerService(new PushService());
@@ -58,11 +57,14 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new UploadService());
 	api.registerService(new MessageService());
 	api.registerService(new SettingsService());
+	api.registerService(new StatusVisibilityService());
 	api.registerService(new OmnichannelIntegrationService());
 	api.registerService(new ImportService());
 	api.registerService(new OmnichannelAnalyticsService());
 	api.registerService(new UserService());
 	api.registerService(new MediaCallService());
+	api.registerService(new CallHistoryService());
+	api.registerService(new AISearchService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {

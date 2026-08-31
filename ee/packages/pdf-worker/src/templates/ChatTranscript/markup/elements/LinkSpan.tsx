@@ -1,17 +1,16 @@
 import { View, Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import StrikeSpan from './StrikeSpan';
 
-type LinkSpanProps = {
+export type LinkSpanProps = {
 	label: MessageParser.Markup | MessageParser.Markup[];
 };
 
-const LinkSpan = ({ label }: LinkSpanProps): ReactElement => {
+const LinkSpan = ({ label }: LinkSpanProps) => {
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 
@@ -21,14 +20,11 @@ const LinkSpan = ({ label }: LinkSpanProps): ReactElement => {
 					return <Text key={index}>{child.value.trim()}</Text>;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
-
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
-
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
-
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 				default:
 					return null;
 			}

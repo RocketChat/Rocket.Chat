@@ -1,6 +1,6 @@
-export interface ISmarshHistory {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
+export interface ISmarshHistory extends IRocketChatRecord {
 	lastRan: Date;
 	lastResult: string;
 }

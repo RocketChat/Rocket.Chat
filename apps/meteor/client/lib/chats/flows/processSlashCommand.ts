@@ -1,12 +1,12 @@
 import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { slashCommands } from '../../../../app/utils/client';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { sdk } from '../../SDKClient';
+import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings';
+import { slashCommands } from '../../slashCommand';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
@@ -54,6 +54,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	if (typeof command === 'string') {
 		if (!settings.peek('Message_AllowUnrecognizedSlashCommand')) {
+			chat.composer?.clear();
 			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
 			return true;
 		}
@@ -64,11 +65,13 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
 
 	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
+		chat.composer?.clear();
 		await warnUnrecognizedSlashCommand(chat, t('You_do_not_have_permission_to_execute_this_command', { command: escapeHTML(commandName) }));
 		return true;
 	}
 
 	if (clientOnly && chat.uid) {
+		chat.composer?.clear();
 		handleOnClient?.({ command: commandName, message, params, userId: chat.uid });
 		return true;
 	}
@@ -91,7 +94,14 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 			chat.ActionManager.notifyBusy();
 		}
 
-		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+		chat.composer?.clear();
+		const { result } = await sdk.rest.post('/v1/commands.run', {
+			command: commandName,
+			params,
+			roomId: message.rid,
+			...(message.tmid && { tmid: message.tmid }),
+			...(triggerId && { triggerId }),
+		});
 
 		handleResult?.(undefined, result, data);
 	} catch (error: unknown) {

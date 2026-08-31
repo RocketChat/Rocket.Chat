@@ -1,6 +1,6 @@
-import fs from 'fs';
-import { unlink } from 'fs/promises';
-import { isNativeError } from 'util/types';
+import fs from 'node:fs';
+import { unlink } from 'node:fs/promises';
+import { isNativeError } from 'node:util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';

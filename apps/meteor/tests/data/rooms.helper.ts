@@ -9,12 +9,10 @@ type CreateRoomParams = {
 	name?: IRoom['name'];
 	type: IRoom['t'];
 	username?: string;
-	token?: string;
-	agentId?: string;
 	members?: string[];
 	credentials?: Credentials;
+	readOnly?: boolean;
 	extraData?: Record<string, any>;
-	voipCallDirection?: 'inbound' | 'outbound';
 	config?: IRequestConfig;
 };
 
@@ -22,12 +20,10 @@ export const createRoom = ({
 	name,
 	type,
 	username,
-	token,
-	agentId,
 	members,
 	credentials: customCredentials,
 	extraData,
-	voipCallDirection = 'inbound',
+	readOnly,
 	config,
 }: CreateRoomParams) => {
 	if (!type) {
@@ -36,15 +32,6 @@ export const createRoom = ({
 
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || customCredentials || credentials;
-
-	if (type === 'v') {
-		/* Special handling for voip type of rooms.
-		 * The endpoints below do not have a way to create
-		 * a voip room. Hence creation of a voip room
-		 * is handled separately here.
-		 */
-		return requestInstance.get(api('voip/room')).query({ token, agentId, direction: voipCallDirection }).set(credentialsInstance).send();
-	}
 
 	if (type === 'd' && !username) {
 		throw new Error('To be able to create DM Room, you must provide the username');
@@ -57,8 +44,6 @@ export const createRoom = ({
 	} as const;
 	const params = type === 'd' ? { username } : { name };
 
-	// Safe assertion because we already checked the type is not 'v'
-	// which is the only case where type is not in the endpoints object
 	const roomType = endpoints[type as keyof typeof endpoints];
 
 	return requestInstance
@@ -67,6 +52,7 @@ export const createRoom = ({
 		.send({
 			...params,
 			...(members && { members }),
+			...(readOnly && { readOnly }),
 			...(extraData && { extraData }),
 		});
 };
@@ -74,7 +60,7 @@ export const createRoom = ({
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
 export type ActionRoomParams = {
 	action: ActionType;
-	type: Exclude<IRoom['t'], 'v' | 'l'>;
+	type: Exclude<IRoom['t'], 'l'>;
 	roomId: IRoom['_id'];
 	overrideCredentials?: Credentials;
 	extraData?: Record<string, any>;
@@ -131,11 +117,49 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
 	});
 
 /**
- * Adds users to a room using the addUsersToRoom method.
+ * Adds users to a room using the REST invite endpoints (channels.invite / groups.invite).
  *
- * Invites one or more users to join a room using the DDP method call.
- * Supports both local and federated users, with proper error handling
- * for federation restrictions.
+ * This is the entrypoint the "Add users" UI uses. Supports both local and federated users.
+ * The REST endpoints accept a single invitee per call, so this issues one request per
+ * username (mirroring how the UI fans out the invites) and resolves to the array of responses.
+ *
+ * @param usernames - Array of usernames to add to the room
+ * @param rid - The unique identifier of the room
+ * @param type - Room type, selects the endpoint: 'c' -> channels.invite, 'p' -> groups.invite
+ * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the array of REST invite responses (one per username)
+ */
+export const addUserToRoom = ({
+	usernames,
+	rid,
+	type = 'c',
+	userCredentials,
+	config,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	type?: 'c' | 'p';
+	userCredentials?: Credentials;
+	config?: IRequestConfig;
+}) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || userCredentials || credentials;
+	const endpoint = type === 'p' ? 'groups.invite' : 'channels.invite';
+
+	// The REST invite endpoints accept a single invitee per call, so we issue one
+	// request per username (mirroring how the UI fans out the invites).
+	return Promise.all(
+		usernames.map((username) => requestInstance.post(api(endpoint)).set(credentialsInstance).send({ roomId: rid, username })),
+	);
+};
+
+/**
+ * Adds users to a room using the deprecated `addUsersToRoom` DDP method.
+ *
+ * The method is deprecated in favour of the REST invite endpoints (see {@link addUserToRoom}),
+ * but it is still a supported entrypoint. Prefer the REST helper for general test setup — this
+ * helper exists to keep dedicated coverage of the DDP-method entrypoint (e.g. federation invites).
  *
  * @param usernames - Array of usernames to add to the room
  * @param rid - The unique identifier of the room
@@ -143,7 +167,7 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
  * @param config - Optional request configuration for custom domains
  * @returns Promise resolving to the method call response
  */
-export const addUserToRoom = ({
+export const addUserToRoomViaMethod = ({
 	usernames,
 	rid,
 	userCredentials,
@@ -183,6 +207,10 @@ export const addUserToRoom = ({
  * @returns Promise resolving to the method call response
  * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
  */
+// TODO(ddp-removal): swap /api/v1/method.call/slashCommand for
+// POST /v1/commands.run. Same caveat as addUserToRoom: federation specs
+// inspect the DDP-style `message` payload and need to be ported to the
+// REST envelope first.
 export const addUserToRoomSlashCommand = ({
 	usernames,
 	rid,
@@ -308,10 +336,8 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
-	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
 			const member = membersResponse.members.find((member: IUser) => member.username === username);
 
@@ -320,14 +346,12 @@ export const findRoomMember = async (
 			}
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}

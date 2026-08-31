@@ -4,13 +4,13 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:-title"
+      aria-labelledby="_r_0_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -23,7 +23,7 @@ exports[`renders Default without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r0:-title"
+                id="_r_0_-title"
               >
                 Setting_change
               </h2>
@@ -40,12 +40,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -54,7 +54,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Actor
               </div>
@@ -65,7 +65,7 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
                 >
                   <img
-                    alt=""
+                    alt="Avatar"
                     aria-hidden="true"
                     class="rcx-avatar__element rcx-avatar__element--x24"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
@@ -82,12 +82,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 Show_message_in_email_notification
               </div>
@@ -96,12 +96,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 false
               </div>
@@ -110,12 +110,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 true
               </div>
@@ -140,13 +140,13 @@ exports[`renders app without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r1:-title"
+      aria-labelledby="_r_1_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -159,7 +159,7 @@ exports[`renders app without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r1:-title"
+                id="_r_1_-title"
               >
                 Setting_change
               </h2>
@@ -176,12 +176,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -190,12 +190,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Actor
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 App
               </div>
@@ -204,7 +204,7 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 App_id
               </div>
@@ -212,7 +212,7 @@ exports[`renders app without crashing 1`] = `
                 class="rcx-skeleton rcx-skeleton--text"
               />
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 app-id
               </div>
@@ -221,12 +221,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 Show_message_in_email_notification
               </div>
@@ -235,12 +235,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 false
               </div>
@@ -249,12 +249,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 true
               </div>
@@ -279,13 +279,13 @@ exports[`renders system without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r2:-title"
+      aria-labelledby="_r_2_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -298,7 +298,7 @@ exports[`renders system without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r2:-title"
+                id="_r_2_-title"
               >
                 Setting_change
               </h2>
@@ -315,12 +315,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -329,12 +329,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Actor
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 System
               </div>
@@ -343,12 +343,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Reason
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 update
               </div>
@@ -357,12 +357,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 Show_message_in_email_notification
               </div>
@@ -371,12 +371,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 false
               </div>
@@ -385,12 +385,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-p0ao07"
+                class="rcx-box rcx-box--full rcx-css-1xvc5bb"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1i2cn7r"
               >
                 true
               </div>

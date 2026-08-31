@@ -18,7 +18,7 @@ import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
-import { type TriggersPayload } from '../EditTrigger';
+import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {

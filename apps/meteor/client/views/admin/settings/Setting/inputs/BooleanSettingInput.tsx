@@ -1,10 +1,10 @@
 import { Box, Field, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type BooleanSettingInputProps = SettingInputProps<boolean>;
+export type BooleanSettingInputProps = SettingInputProps<boolean>;
 
 function BooleanSettingInput({
 	_id,
@@ -17,8 +17,8 @@ function BooleanSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: BooleanSettingInputProps): ReactElement {
-	const handleChange = (event: SyntheticEvent<HTMLInputElement>): void => {
+}: BooleanSettingInputProps) {
+	const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		const value = event.currentTarget.checked;
 		onChangeValue?.(value);
 	};
@@ -30,14 +30,8 @@ function BooleanSettingInput({
 					{label}
 				</FieldLabel>
 				<Box display='flex' alignItems='center'>
-					{hasResetButton && <ResetSettingButton mie={8} data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-					<ToggleSwitch
-						data-qa-setting-id={_id}
-						id={_id}
-						checked={value === true}
-						disabled={disabled || readonly}
-						onChange={handleChange}
-					/>
+					{hasResetButton && <ResetSettingButton marginInlineEnd={8} onClick={onResetButtonClick} />}
+					<ToggleSwitch id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
 				</Box>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}

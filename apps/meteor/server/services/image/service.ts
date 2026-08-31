@@ -1,12 +1,14 @@
-import type { Readable } from 'stream';
-import stream from 'stream';
+import type { Readable } from 'node:stream';
+import stream from 'node:stream';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
+import { streamToBuffer } from '@rocket.chat/tools';
 import ExifTransformer from 'exif-be-gone';
 import ft from 'file-type';
 import isSvg from 'is-svg';
 import sharp from 'sharp';
+import type { FitEnum } from 'sharp';
 
 export class MediaService extends ServiceClassInternal implements IMediaService {
 	protected name = 'media';
@@ -39,7 +41,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof FitEnum | undefined,
 	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
@@ -52,9 +54,9 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof FitEnum | undefined,
 	): Promise<ResizeResult> {
-		const transformer = sharp().resize({ width, height, fit, withoutEnlargement: !enlarge });
+		const transformer = sharp({ limitInputChannels: 8 }).resize({ width, height, fit, withoutEnlargement: !enlarge });
 
 		if (!keepType) {
 			transformer.jpeg();
@@ -91,7 +93,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	}
 
 	stripExifFromBuffer(buffer: Buffer): Promise<Buffer> {
-		return this.streamToBuffer(this.stripExifFromImageStream(this.bufferToStream(buffer)));
+		return streamToBuffer(this.stripExifFromImageStream(this.bufferToStream(buffer)));
 	}
 
 	stripExifFromImageStream(stream: stream.Stream): Readable {
@@ -102,12 +104,5 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		const bufferStream = new stream.PassThrough();
 		bufferStream.end(buffer);
 		return bufferStream;
-	}
-
-	private streamToBuffer(stream: stream.Stream): Promise<Buffer> {
-		return new Promise((resolve) => {
-			const chunks: Array<Buffer> = [];
-			stream.on('data', (data) => chunks.push(data)).on('end', () => resolve(Buffer.concat(chunks)));
-		});
 	}
 }

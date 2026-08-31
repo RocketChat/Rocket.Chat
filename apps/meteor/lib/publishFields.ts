@@ -9,6 +9,7 @@ export const subscriptionFields = {
 	code: 1,
 	f: 1,
 	u: 1,
+	category: 1,
 	open: 1,
 	alert: 1,
 	roles: 1,
@@ -39,6 +40,8 @@ export const subscriptionFields = {
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
 	oldRoomKeys: 1,
+	draft: 1,
+	threadDrafts: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
@@ -121,11 +124,6 @@ export const roomFields = {
 	usernames: 1,
 	uids: 1,
 
-	// Voip fields
-	queue: 1,
-	callDuration: 1,
-	callTotalHoldTime: 1,
-	callWaitingTime: 1,
 	usersWaitingForE2EKeys: 1,
 
 	// ABAC fields

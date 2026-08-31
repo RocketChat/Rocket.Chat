@@ -1,10 +1,9 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AccountTokensTable from './AccountTokensTable';
 
-const AccountTokensPage = (): ReactElement => {
+const AccountTokensPage = () => {
 	const { t } = useTranslation();
 
 	return (

@@ -1,10 +1,10 @@
 import { Field, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
-import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
+export type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
 
 function PasswordSettingInput({
 	_id,
@@ -19,8 +19,8 @@ function PasswordSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: PasswordSettingInputProps): ReactElement {
-	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
+}: PasswordSettingInputProps) {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 
@@ -30,11 +30,10 @@ function PasswordSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<PasswordInput
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}

@@ -8,15 +8,24 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-const RANDOM_PASSWORD = faker.string.alphanumeric(10);
+const RANDOM_PASSWORD = faker.helpers
+	.shuffle([
+		faker.string.alpha({ casing: 'upper' }),
+		faker.string.alpha({ casing: 'lower' }),
+		faker.string.numeric(),
+		faker.string.symbol(),
+		faker.string.alphanumeric(10),
+	])
+	.join('');
 
 test.describe.serial('account-security', () => {
 	let poAccountSecurity: AccountSecurity;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poAccountSecurity = new AccountSecurity(page);
 		await page.goto('/account/security');
 		await page.waitForSelector('#main-content');
+		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 	});
 
 	test.afterAll(async ({ api }) =>
@@ -24,6 +33,7 @@ test.describe.serial('account-security', () => {
 			setSettingValueById(api, 'Accounts_AllowPasswordChange', true),
 			setSettingValueById(api, 'Accounts_TwoFactorAuthentication_Enabled', true),
 			setSettingValueById(api, 'E2E_Enable', false),
+			setSettingValueById(api, 'Accounts_Password_Policy_Enabled', true),
 		]),
 	);
 

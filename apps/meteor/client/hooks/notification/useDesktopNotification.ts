@@ -1,5 +1,5 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 
 import { useNotification } from './useNotification';
@@ -11,7 +11,7 @@ export const useDesktopNotification = () => {
 	const user = useUser();
 	const notify = useNotification();
 
-	const notifyDesktop = useEffectEvent(async (notification: INotificationDesktop) => {
+	const notifyDesktop = useStableCallback(async (notification: INotificationDesktop) => {
 		if (
 			notification.payload.rid === RoomManager.opened &&
 			(typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)

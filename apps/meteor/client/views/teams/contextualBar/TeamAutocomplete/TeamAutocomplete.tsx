@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) => {
 	const [filter, setFilter] = useState('');

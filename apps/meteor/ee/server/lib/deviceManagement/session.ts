@@ -5,12 +5,12 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
-import * as Mailer from '../../../../app/mailer/server/api';
-import { settings } from '../../../../app/settings/server';
-import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { t } from '../../../../app/utils/lib/i18n';
-import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
+import { UAParserDesktop, UAParserMobile } from '../../../../server/lib/statistics/lib/UAParserCustom';
+import { getUserPreference } from '../../../../server/lib/utils/lib/getUserPreference';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
+import { settings } from '../../../../server/settings';
 
 let mailTemplates: string;
 
@@ -32,14 +32,10 @@ const uaParser = async (
 };
 
 export const listenSessionLogin = () => {
-	return deviceManagementEvents.on('device-login', async ({ userId, connection }) => {
+	return deviceManagementEvents.on('device-login', async ({ userId, userAgent, clientAddress }) => {
 		const deviceEnabled = settings.get('Device_Management_Enable_Login_Emails');
 
 		if (!deviceEnabled) {
-			return;
-		}
-
-		if (connection.loginToken) {
 			return;
 		}
 
@@ -67,11 +63,7 @@ export const listenSessionLogin = () => {
 			emails: [{ address: email }],
 		} = user;
 
-		const userAgentString =
-			connection.httpHeaders instanceof Headers
-				? (connection.httpHeaders.get('user-agent') ?? '')
-				: (connection.httpHeaders['user-agent'] ?? '');
-		const { browser, os, device, cpu, app } = await uaParser(userAgentString);
+		const { browser, os, device, cpu, app } = await uaParser(userAgent);
 
 		const mailData = {
 			name,
@@ -81,7 +73,7 @@ export const listenSessionLogin = () => {
 			deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
 				cpu.architecture || ''
 			}`,
-			ipInfo: connection.clientAddress,
+			ipInfo: clientAddress,
 			userAgent: '',
 			date: moment().format(String(dateFormat)),
 		};
@@ -105,7 +97,7 @@ export const listenSessionLogin = () => {
 				mailData.deviceInfo = `Desktop App ${cpu.architecture || ''}`;
 				break;
 			default:
-				mailData.userAgent = connection.httpHeaders['user-agent'] || '';
+				mailData.userAgent = userAgent || '';
 				break;
 		}
 

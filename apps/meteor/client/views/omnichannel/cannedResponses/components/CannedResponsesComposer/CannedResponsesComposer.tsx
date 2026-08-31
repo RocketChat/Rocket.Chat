@@ -8,15 +8,20 @@ import {
 	MessageComposerActionsDivider,
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
-const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof MessageComposerInput>) => {
+export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
+	onChange: (value: string) => void;
+};
+
+const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposerProps) => {
 	const { t } = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
 
@@ -53,22 +58,23 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
 				}
 
-				onChange?.(textAreaRef.current.value as any);
+				onChange?.(textAreaRef.current.value);
 			}
 		}, [char]);
 
-	const onClickEmoji = (emoji: string): void => {
+	const onClickEmoji = (emojiName: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;
-			const emojiValue = `:${emoji}: `;
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const emojiValue = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? `${emojiEntry.unicode} ` : `:${emojiName}: `;
 
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
 			textAreaRef.current.focus();
 			textAreaRef.current.setSelectionRange(startPos + emojiValue.length, startPos + emojiValue.length);
 
-			onChange?.(textAreaRef.current.value as any);
+			onChange?.(textAreaRef.current.value);
 		}
 	};
 
@@ -81,7 +87,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 			throw new Error('Missing textAreaRef');
 		}
 
-		openEmojiPicker(textAreaRef.current, (emoji: string) => onClickEmoji(emoji));
+		openEmojiPicker(textAreaRef.current, (emojiName: string) => onClickEmoji(emojiName));
 	};
 
 	const openPlaceholderSelect = (): void => {
@@ -91,7 +97,12 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 
 	return (
 		<MessageComposer>
-			<MessageComposerInput ref={textAreaRef} rows={10} onChange={onChange} {...props} />
+			<MessageComposerInput
+				ref={textAreaRef}
+				rows={10}
+				onChange={(e: ChangeEvent<HTMLTextAreaElement>): void => onChange(e.target.value)}
+				{...props}
+			/>
 			<MessageComposerToolbar>
 				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
@@ -112,7 +123,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 						}}
 					/>
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' w='224px'>
+						<Tile elevation='1' width='224px'>
 							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
 						</Tile>
 					</PositionAnimated>

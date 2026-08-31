@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
-import { EnterPasswordModal } from './fragments/enter-password-modal';
+import { EnterPasswordModal } from './fragments/modals';
 
 export class AccountSecurity extends Account {
 	private readonly enterPasswordModal: EnterPasswordModal;
@@ -13,6 +13,10 @@ export class AccountSecurity extends Account {
 
 	goto() {
 		return this.page.goto('/account/security');
+	}
+
+	async waitForSecurityPage() {
+		await this.securityHeader.waitFor({ state: 'visible' });
 	}
 
 	get inputNewPassword() {
@@ -40,7 +44,7 @@ export class AccountSecurity extends Account {
 	}
 
 	get securityHeader(): Locator {
-		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
+		return this.page.getByRole('main').getByRole('heading', { level: 1, name: 'Security', exact: true });
 	}
 
 	get securityPasswordSection(): Locator {

@@ -14,5 +14,5 @@
 		"allowJs": false,
 		"lib": ["ES2024", "ESNext.Collection"],
 	},
-	"include": ["./src/**/*", "./jest.config.ts"]
+	"include": ["./src/**/*", "./jest.config.ts"],
 }

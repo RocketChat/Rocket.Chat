@@ -2,18 +2,18 @@ import { AvatarUrlContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/client/getURL';
+import { getURL } from '../lib/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-type AvatarUrlProviderProps = {
+export type AvatarUrlProviderProps = {
 	children?: ReactNode;
 };
 
 const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 	const contextValue = useMemo(() => {
-		function getUserPathAvatar(username: string, etag?: string): string;
-		function getUserPathAvatar({ userId, etag }: { userId: string; etag?: string }): string;
-		function getUserPathAvatar({ username, etag }: { username: string; etag?: string }): string;
+		function getUserPathAvatar(username: string, etag?: string | null): string;
+		function getUserPathAvatar({ userId, etag }: { userId: string; etag?: string | null }): string;
+		function getUserPathAvatar({ username, etag }: { username: string; etag?: string | null }): string;
 		function getUserPathAvatar(...args: any): string {
 			if (typeof args[0] === 'string') {
 				const [username, etag] = args;
@@ -34,7 +34,7 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 		};
 	}, []);
 
-	return <AvatarUrlContext.Provider children={children} value={contextValue} />;
+	return <AvatarUrlContext.Provider value={contextValue}>{children}</AvatarUrlContext.Provider>;
 };
 
 export default AvatarUrlProvider;

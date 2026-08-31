@@ -1,9 +1,9 @@
+import { FocusScope } from '@react-aria/focus';
 import { Box } from '@rocket.chat/fuselage';
-import { FocusScope } from 'react-aria';
 
 import Key from './Key';
 
-type KeypadProps = {
+export type KeypadProps = {
 	onKeyPress(key: string): void;
 };
 

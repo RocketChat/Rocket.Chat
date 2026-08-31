@@ -6,10 +6,10 @@ import { reaction } from './reaction';
 import { room } from './room';
 
 export function registerEvents() {
-	ping();
+	void ping();
 	message();
 	reaction();
 	member();
-	edus();
+	void edus();
 	room();
 }

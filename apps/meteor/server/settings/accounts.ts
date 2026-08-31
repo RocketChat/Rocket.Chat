@@ -1,6 +1,7 @@
 import { Random } from '@rocket.chat/random';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
+import { positiveOrDisabled, notGreaterThanSetting, notLowerThanSetting } from './functions/validationRuleBuilders';
 
 export const createAccountSettings = () =>
 	settingsRegistry.addGroup('Accounts', async function () {
@@ -181,6 +182,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowAnonymousWrite', false, {
 			type: 'boolean',
 			public: true,
+			alert: 'Accounts_AllowAnonymousWrite_Deprecation_Alert',
 			enableQuery: {
 				_id: 'Accounts_AllowAnonymousRead',
 				value: true,
@@ -771,6 +773,17 @@ export const createAccountSettings = () =>
 			});
 		});
 
+		await this.section('Privacy', async function () {
+			await this.add('Accounts_StatusVisibility_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
+			});
+		});
+
 		await this.section('Avatar', async function () {
 			await this.add('Accounts_AvatarResize', true, {
 				type: 'boolean',
@@ -805,11 +818,12 @@ export const createAccountSettings = () =>
 
 			return this.add('Accounts_SetDefaultAvatar', true, {
 				type: 'boolean',
+				alert: 'Accounts_SetDefaultAvatar_Deprecation_Alert',
 			});
 		});
 
 		await this.section('Password_Policy', async function () {
-			await this.add('Accounts_Password_Policy_Enabled', false, {
+			await this.add('Accounts_Password_Policy_Enabled', true, {
 				type: 'boolean',
 				public: true,
 			});
@@ -820,16 +834,18 @@ export const createAccountSettings = () =>
 				public: true,
 			};
 
-			await this.add('Accounts_Password_Policy_MinLength', 7, {
+			await this.add('Accounts_Password_Policy_MinLength', 14, {
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [positiveOrDisabled(), notGreaterThanSetting('Accounts_Password_Policy_MaxLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [positiveOrDisabled(), notLowerThanSetting('Accounts_Password_Policy_MinLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {

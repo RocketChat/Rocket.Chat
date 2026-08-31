@@ -11,5 +11,4 @@ export interface ICalendarService {
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
 	setupNextNotification(): Promise<void>;
 	setupNextStatusChange(): Promise<void>;
-	cancelUpcomingStatusChanges(uid: IUser['_id'], endTime?: Date): Promise<void>;
 }

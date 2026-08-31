@@ -1,9 +1,8 @@
 type updateCounterDataType = { settingsId: string };
 type slashCommandsDataType = { command: string };
-type otrDataType = { rid: string };
 
 // TODO this is duplicated from /packages/rest-typings/src/v1/statistics.ts
-export type TelemetryMap = { otrStats: otrDataType; slashCommandsStats: slashCommandsDataType; updateCounter: updateCounterDataType };
+export type TelemetryMap = { slashCommandsStats: slashCommandsDataType; updateCounter: updateCounterDataType };
 export type TelemetryEvents = keyof TelemetryMap;
 
 export interface ITelemetryEvent {

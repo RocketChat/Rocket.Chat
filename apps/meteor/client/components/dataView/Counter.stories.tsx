@@ -12,27 +12,29 @@ export default {
 
 export const Example: StoryFn<typeof Counter> = () => <Counter count={740} variation={59} description='LDAP users' />;
 
-const Template: StoryFn<typeof Counter> = (args) => <Counter {...args} />;
-
-export const WithoutVariation = Template.bind({});
-WithoutVariation.args = {
-	count: 123,
+export const WithoutVariation = {
+	args: {
+		count: 123,
+	},
 };
 
-export const WithPositiveVariation = Template.bind({});
-WithPositiveVariation.args = {
-	count: 123,
-	variation: 4,
+export const WithPositiveVariation = {
+	args: {
+		count: 123,
+		variation: 4,
+	},
 };
 
-export const WithNegativeVariation = Template.bind({});
-WithNegativeVariation.args = {
-	count: 123,
-	variation: -4,
+export const WithNegativeVariation = {
+	args: {
+		count: 123,
+		variation: -4,
+	},
 };
 
-export const WithDescription = Template.bind({});
-WithDescription.args = {
-	count: 123,
-	description: 'Description',
+export const WithDescription = {
+	args: {
+		count: 123,
+		description: 'Description',
+	},
 };

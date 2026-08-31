@@ -3,7 +3,6 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type {
 	IEmailInbox,
 	IEmoji,
-	IInquiry,
 	IInstanceStatus,
 	IIntegration,
 	IIntegrationHistory,
@@ -11,7 +10,6 @@ import type {
 	ILoginServiceConfiguration,
 	IMessage,
 	INotificationDesktop,
-	IPbxEvent,
 	IRole,
 	IRoom,
 	ISetting,
@@ -20,7 +18,6 @@ import type {
 	IUser,
 	IInvite,
 	ICustomSound,
-	VoipEventDataSignature,
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
@@ -33,7 +30,6 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
-	IOTRMessage,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -41,7 +37,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
 
-type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
+export type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 type LoginServiceConfigurationEvent = {
 	id: string;
@@ -75,7 +71,7 @@ export type EventSignatures = {
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
 
-	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
+	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: ILivechatInquiryRecord }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
@@ -140,7 +136,7 @@ export type EventSignatures = {
 			  },
 	): void;
 	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
-	'user.forceLogout': (uid: string) => void;
+	'user.forceLogout': (uid: string, sessionId?: string) => void;
 	'user.media-signal'(data: { userId: IUser['_id']; signal: ServerMediaSignal }): void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
@@ -161,8 +157,9 @@ export type EventSignatures = {
 			rid: IRoom['_id'];
 		};
 	}): void;
+	'presence.invalidateVisibility'(data: { targets?: IUser['_id'][]; viewers?: IUser['_id'][] }): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;
@@ -258,7 +255,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),
@@ -294,15 +291,13 @@ export type EventSignatures = {
 	): void;
 
 	// Send all events from here
-	'voip.events'(userId: string, data: VoipEventDataSignature): void;
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
-	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
-	'apps.updated'(appId: string): void;
+	'apps.updated'(appId: string, originInstanceId?: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
 	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;
@@ -310,7 +305,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
-	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 	'media-call.updated'(data: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 };

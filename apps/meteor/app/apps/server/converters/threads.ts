@@ -1,12 +1,20 @@
-import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type {
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppThreadsConverter,
+	IAppUsersConverter,
+	IAppsMessage,
+	IAppsUser,
+} from '@rocket.chat/apps';
 import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { cachedFunction } from './cachedFunction';
-import { transformMappedData } from './transformMappedData';
+import { mappedDecodeAsync, type AsyncFieldMap } from './codecs/mappedData';
+import { convertMessageFiles } from './convertMessageFiles';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
@@ -20,13 +28,7 @@ interface Orchestrator {
 }
 
 export class AppThreadsConverter implements IAppThreadsConverter {
-	constructor(
-		private readonly orch: {
-			getConverters: () => {
-				get: <O extends keyof Orchestrator>(key: O) => ReturnType<Orchestrator[O]>;
-			};
-		},
-	) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
@@ -50,7 +52,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 		const replies = await Messages.find(query).toArray();
 
-		const room = (await this.orch.getConverters().get('rooms').convertById(mainMessage.rid)) as IRoom | undefined;
+		const room = await this.orch.getConverters().get('rooms').convertById(mainMessage.rid);
 
 		if (!room) {
 			return [];
@@ -69,6 +71,8 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 		convertUserById: ReturnType<Orchestrator['users']>['convertById'],
 		convertToApp: ReturnType<Orchestrator['users']>['convertToApp'],
 	): Promise<AppsEngineMessage> {
+		const { attachments, file: mainFile } = msgObj;
+
 		const map = {
 			id: '_id',
 			threadId: 'tmid',
@@ -100,7 +104,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 				if (!message.attachments) {
 					return undefined;
 				}
-				const result = await this._convertAttachmentsToApp(message.attachments);
+				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
 				delete message.attachments;
 				return result;
 			},
@@ -117,8 +121,9 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 					user = await convertToApp(message.u as unknown as IUser);
 				}
 
-				return user as IAppsUser;
+				return user;
 			},
+			files: async (message: IMessage) => convertMessageFiles(message.files, attachments),
 		} as const;
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
@@ -127,10 +132,13 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			reactions: msgObj.reactions as unknown as AppsEngineMessage['reactions'],
 		} as IMessage & { reactions?: AppsEngineMessage['reactions'] };
 
-		return transformMappedData(msgData, map);
+		return mappedDecodeAsync<AppsEngineMessage>(msgData, map as unknown as AsyncFieldMap);
 	}
 
-	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>): Promise<NonNullable<IAppsMessage['attachments']>> {
+	async _convertAttachmentsToApp(
+		attachments: NonNullable<IMessage['attachments']>,
+		mainFile: IMessage['file'],
+	): Promise<NonNullable<IAppsMessage['attachments']>> {
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
@@ -180,8 +188,22 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 				delete attachment.ts;
 				return result;
 			},
+			fileId: (attachment: NonNullable<IMessage['attachments']>[number]) => {
+				if ('fileId' in attachment && attachment.fileId) {
+					return attachment.fileId;
+				}
+
+				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
+				if (isFileAttachment(attachment) && mainFile?._id && attachments?.length === 1) {
+					return mainFile._id;
+				}
+
+				return undefined;
+			},
 		} as const;
 
-		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
+		return Promise.all(
+			attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)),
+		) as unknown as Promise<NonNullable<IAppsMessage['attachments']>>;
 	}
 }

@@ -2,7 +2,7 @@ import type { IVideoConferenceUser } from './IVideoConferenceUser';
 
 export type VideoConferenceMember = IVideoConferenceUser & {
 	ts: Date;
-	avatarETag?: string;
+	avatarETag?: string | null;
 };
 
 export enum VideoConferenceStatus {

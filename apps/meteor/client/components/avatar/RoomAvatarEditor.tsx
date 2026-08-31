@@ -2,29 +2,28 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import { getAvatarURL } from '../../lib/getAvatarURL';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
-type RoomAvatarEditorProps = {
+export type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
 	disabled?: boolean;
 	roomAvatar?: string;
 	onChangeAvatar: (url: string | null) => void;
 };
 
-const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement => {
+const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleChangeAvatar = useEffectEvent(async (file: File) => {
+	const handleChangeAvatar = useStableCallback(async (file: File) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = async (): Promise<void> => {
@@ -38,7 +37,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	});
 
 	const [clickUpload, reset] = useSingleFileInput(handleChangeAvatar);
-	const clickReset = useEffectEvent(() => {
+	const clickReset = useStableCallback(() => {
 		reset();
 		onChangeAvatar(null);
 	});
@@ -50,7 +49,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
 
 	return (
-		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative'>
+		<Box borderRadius='x2' maxWidth='x332' width='full' position='relative'>
 			<RoomAvatar {...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })} room={room} size='x332' />
 			<Box
 				className={[
@@ -60,7 +59,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 					`,
 				]}
 				position='absolute'
-				m={12}
+				margin={12}
 			>
 				<ButtonGroup>
 					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>

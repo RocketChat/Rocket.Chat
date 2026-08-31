@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ export const useRemoveBusinessHour = () => {
 	const removeBusinessHour = useEndpoint('POST', '/v1/livechat/business-hours.remove');
 	const queryClient = useQueryClient();
 
-	const handleRemove = useEffectEvent((_id: string, type: string) => {
+	const handleRemove = useStableCallback((_id: string, type: string) => {
 		const onDeleteBusinessHour = async () => {
 			try {
 				await removeBusinessHour({ _id, type });

@@ -1,14 +1,14 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactElement } from 'react';
+import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
+import type { State } from '../../context/definitions';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const noop = () => undefined;
 
 const meta = {
-	title: 'V2/Views/CallHistoryContextualbar/CallHistoryActions',
 	component: CallHistoryActions,
 	decorators: [
 		mockAppRoot()
@@ -22,7 +22,7 @@ const meta = {
 			})
 			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
-		(Story): ReactElement => <Story />,
+		(Story) => <Story />,
 	],
 } satisfies Meta<typeof CallHistoryActions>;
 
@@ -36,11 +36,20 @@ const getArgs = (index: number) => {
 	return Object.fromEntries(actionList.slice(0, index).map((action) => [action, noop])) as HistoryActionCallbacks;
 };
 
+const getDecorator = (state: State): Decorator => {
+	return (Story) => (
+		<MockedMediaCallProvider state={state}>
+			<Story />
+		</MockedMediaCallProvider>
+	);
+};
+
 export const Default: Story = {
 	args: {
 		onClose: noop,
 		actions: getArgs(5),
 	},
+	decorators: [getDecorator('none')],
 };
 
 export const WithLessActions: Story = {
@@ -48,6 +57,7 @@ export const WithLessActions: Story = {
 		onClose: noop,
 		actions: getArgs(3),
 	},
+	decorators: [getDecorator('none')],
 };
 
 export const WithSingleAction: Story = {
@@ -55,4 +65,13 @@ export const WithSingleAction: Story = {
 		onClose: noop,
 		actions: getArgs(1),
 	},
+	decorators: [getDecorator('none')],
+};
+
+export const WithDisabledVoiceCall: Story = {
+	args: {
+		onClose: noop,
+		actions: getArgs(1),
+	},
+	decorators: [getDecorator('ongoing')],
 };

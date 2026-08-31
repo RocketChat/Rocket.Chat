@@ -7,9 +7,9 @@ import CannedResponse from './CannedResponse';
 import { useCanEditCannedResponse } from '../../hooks/useCanEditCannedResponse';
 import CreateCannedResponse from '../../modals/CreateCannedResponse';
 
-type WrapCannedResponseProps = {
+export type WrapCannedResponseProps = {
 	canUseCannedResponses: boolean;
-	cannedItem: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
+	cannedItem: IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] };
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	onClose: () => void;

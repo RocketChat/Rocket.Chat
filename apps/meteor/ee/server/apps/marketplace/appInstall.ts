@@ -1,8 +1,8 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
-import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
+import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';
 
 type MarketplaceNotificationType = 'install' | 'update' | 'uninstall';
@@ -49,6 +49,8 @@ export async function notifyMarketplace(action: MarketplaceNotificationType, app
 			method: 'POST',
 			headers,
 			body: data,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 		});
 
 		// eslint-disable-next-line no-empty

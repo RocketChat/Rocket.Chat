@@ -2,16 +2,15 @@ import { Box, Chip, AutoComplete, Option, OptionAvatar, OptionContent, OptionDes
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
 import { memo, useCallback, useState } from 'react';
 
 import { useUsersData } from './hooks/useUsersData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
+export type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
-const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProps): ReactElement => {
+const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);
 	const [filter, setFilter] = useState('');
 
@@ -21,7 +20,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
-			if (Array.isArray(value)) action({ target: { value } });
+			if (Array.isArray(value)) void action({ target: { value } });
 		},
 		[action],
 	);
@@ -36,15 +35,15 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 			setFilter={setFilter}
 			onChange={handleChange}
 			multiple
-			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
+			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
+				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
 					<UserAvatar size='x20' username={value} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label}
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }): ReactElement => (
+			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
 						<UserAvatar username={value} size='x20' />

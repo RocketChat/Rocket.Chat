@@ -6,6 +6,9 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 	const callId3 = 'rocketchat.external.call.test.outbound';
 	const callId4 = 'rocketchat.external.call.test.inbound';
 
+	const extraCallId1 = 'rocketchat.extra.call.test.1';
+	const extraCallId2 = 'rocketchat.extra.call.test.2';
+
 	await CallHistory.deleteMany({ uid });
 	await MediaCalls.deleteMany({ _id: { $in: [callId1, callId2, callId3, callId4] } });
 
@@ -22,6 +25,8 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			uid,
 			contactId: extraUid,
 			direction: 'outbound',
+			contactName: 'Pineapple', // random words used for searching
+			contactUsername: 'fruit-001',
 		},
 		{
 			_id: 'rocketchat.internal.history.test.inbound',
@@ -35,6 +40,38 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			uid,
 			contactId: extraUid,
 			direction: 'inbound',
+			contactName: 'Apple',
+			contactUsername: 'fruit-002',
+		},
+		{
+			_id: 'rocketchat.internal.history.test.outbound.2',
+			ts: new Date(),
+			callId: extraCallId1,
+			state: 'transferred',
+			type: 'media-call',
+			duration: 10,
+			endedAt: new Date(),
+			external: false,
+			uid,
+			contactId: extraUid,
+			direction: 'outbound',
+			contactName: 'Grapefruit 002',
+			contactUsername: 'username-001',
+		},
+		{
+			_id: 'rocketchat.internal.history.test.inbound.2',
+			ts: new Date(),
+			callId: extraCallId2,
+			state: 'transferred',
+			type: 'media-call',
+			duration: 10,
+			endedAt: new Date(),
+			external: false,
+			uid,
+			contactId: extraUid,
+			direction: 'inbound',
+			contactName: 'Pasta 1',
+			contactUsername: 'meal',
 		},
 		{
 			_id: 'rocketchat.external.history.test.outbound',
@@ -60,7 +97,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			external: true,
 			uid,
 			direction: 'inbound',
-			contactExtension: '1001',
+			contactExtension: '1002',
 		},
 	]);
 
@@ -96,6 +133,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
+			features: ['audio'],
 		},
 		{
 			_id: callId2,
@@ -128,6 +166,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
+			features: ['audio'],
 		},
 		{
 			_id: callId3,
@@ -160,6 +199,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid],
+			features: ['audio'],
 		},
 		{
 			_id: callId4,
@@ -192,6 +232,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid],
+			features: ['audio'],
 		},
 	]);
 }

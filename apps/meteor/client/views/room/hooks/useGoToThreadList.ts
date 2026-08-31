@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 
 import { useRoom } from '../contexts/RoomContext';
@@ -7,7 +7,7 @@ export const useGoToThreadList = ({ replace = false }: { replace?: boolean } = {
 	const router = useRouter();
 	const room = useRoom();
 
-	return useEffectEvent(() => {
+	return useStableCallback(() => {
 		const routeName = router.getRouteName();
 
 		if (!routeName) {

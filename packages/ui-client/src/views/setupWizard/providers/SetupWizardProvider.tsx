@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import {
 	useToastMessageDispatch,
@@ -8,11 +8,11 @@ import {
 	useSettingsDispatch,
 	useMethod,
 	useEndpoint,
-	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks';
 import { clientCallbacks } from '../../../lib';
@@ -37,9 +37,13 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
-const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+export type SetupWizardProviderProps = {
+	children: ReactNode;
+};
+
+const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const invalidateLicenseQuery = useInvalidateLicense();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();
@@ -163,12 +167,12 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const queryClient = useQueryClient();
 
-	const registerServer: HandleRegisterServer = useEffectEvent(
+	const registerServer: HandleRegisterServer = useStableCallback(
 		async ({ email, resend = false }: { email: string; resend?: boolean }): Promise<void> => {
 			try {
 				const { intentData } = await createRegistrationIntent({ resend, email });
 				invalidateLicenseQuery(100);
-				queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
+				void queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
 
 				setSetupWizardData((prevState) => ({
 					...prevState,
@@ -176,14 +180,14 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				}));
 
 				goToStep(4);
-				setShowSetupWizard('in_progress');
+				void setShowSetupWizard('in_progress');
 			} catch (e) {
 				dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 			}
 		},
 	);
 
-	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
+	const completeSetupWizard = useStableCallback(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});

@@ -1,11 +1,11 @@
 import { RouterContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
+import { action } from 'storybook/actions';
 
 const logAction = action('RouterContext');
 
-type RouterContextMockProps = {
+export type RouterContextMockProps = {
 	children: ReactNode;
 };
 
@@ -15,7 +15,7 @@ window.__meteor_runtime_config__ = {
 	ROOT_URL_PATH_PREFIX: '',
 };
 
-const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({ children }: RouterContextMockProps) => {
 	const parent = useContext(RouterContext);
 
 	const value = useMemo(
@@ -28,7 +28,7 @@ const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement =
 		[parent],
 	);
 
-	return <RouterContext.Provider children={children} value={value} />;
+	return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 
 export default RouterContextMock;

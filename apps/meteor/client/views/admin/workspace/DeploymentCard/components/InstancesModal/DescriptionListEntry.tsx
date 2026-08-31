@@ -2,7 +2,7 @@ import { TableRow, TableCell } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type DescriptionListEntryProps = {
+export type DescriptionListEntryProps = {
 	label: ReactNode;
 	children: ReactNode;
 };

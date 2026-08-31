@@ -8,18 +8,18 @@ import jsonLinter from './jsonLinter';
 import theme from './theme';
 
 export const actionBlockExtensions = [
-  highlightStyle,
-  json(),
-  jsonLinter,
-  basicSetup,
-  // payloadLinter,
-  ...theme,
+	highlightStyle,
+	json(),
+	jsonLinter,
+	basicSetup,
+	// payloadLinter,
+	...theme,
 ];
 
 export const actionPreviewExtensions = [
-  EditorView.contentAttributes.of({ contenteditable: 'false' }),
-  highlightStyle,
-  json(),
-  basicSetup,
-  ...theme,
+	EditorView.contentAttributes.of({ contenteditable: 'false' }),
+	highlightStyle,
+	json(),
+	basicSetup,
+	...theme,
 ];

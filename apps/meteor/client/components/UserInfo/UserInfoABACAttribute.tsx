@@ -1,11 +1,11 @@
 import { Tag } from '@rocket.chat/fuselage';
 
-type UserInfoABACAttributeProps = {
+export type UserInfoABACAttributeProps = {
 	attribute: string;
 };
 
 const UserInfoABACAttribute = ({ attribute }: UserInfoABACAttributeProps) => {
-	return <Tag variant='secondary-warning' children={attribute} />;
+	return <Tag variant='secondary-warning'>{attribute}</Tag>;
 };
 
 export default UserInfoABACAttribute;

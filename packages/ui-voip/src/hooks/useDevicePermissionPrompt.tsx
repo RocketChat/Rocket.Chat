@@ -27,6 +27,10 @@ type IncomingPromptProps = {
 
 type UseDevicePermissionPromptProps = DeviceChangePromptProps | OutgoingPromptProps | IncomingPromptProps;
 
+const isNoDeviceError = (error: Error) => {
+	return ['NotFoundError', 'DevicesNotFoundError'].includes(error.name);
+};
+
 const getModalType = (
 	actionType: UseDevicePermissionPromptProps['actionType'],
 	state: Exclude<PermissionState, 'granted'>,
@@ -60,82 +64,6 @@ export class PermissionRequestCancelledCallRejectedError extends Error {
 	}
 }
 
-// TODO: Remove this hook
-export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
-	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
-	const setModal = useSetModal();
-	const setInputMediaDevice = useSetInputMediaDevice();
-	const queryClient = useQueryClient();
-
-	return useCallback(
-		(stopTracks = true) => {
-			const onAccept = (stream: MediaStream) => {
-				// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
-				// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
-				queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
-
-				stream.getTracks().forEach((track) => {
-					const { deviceId } = track.getSettings();
-					if (!deviceId) {
-						return;
-					}
-
-					if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
-						navigator.mediaDevices.enumerateDevices().then((devices) => {
-							const device = devices.find((device) => device.deviceId === deviceId);
-							if (!device) {
-								return;
-							}
-							setInputMediaDevice({
-								id: device.deviceId,
-								label: device.label,
-								type: 'audioinput',
-							});
-						});
-					}
-				});
-				_onAccept(stream);
-
-				// For now we only need this stream to be able to list the devices (firefox doesn't list devices without a stream)
-				// and also to get the selected device from the tracks settings (firefox requests permission per device)
-				// This is set as a flag in case we need to use the stream in the future.
-				if (stopTracks) {
-					stream.getTracks().forEach((track) => {
-						track.stop();
-					});
-				}
-			};
-
-			if (state === 'granted') {
-				requestDevice({
-					onAccept,
-				});
-				return;
-			}
-
-			const onConfirm = () => {
-				requestDevice?.({
-					onReject,
-					onAccept: (...args) => {
-						onAccept(...args);
-						setModal(null);
-					},
-				});
-			};
-
-			const onCancel = () => {
-				if (onReject) {
-					onReject();
-				}
-				setModal(null);
-			};
-
-			setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
-		},
-		[state, setModal, actionType, queryClient, _onAccept, setInputMediaDevice, requestDevice, onReject],
-	);
-};
-
 export const useDevicePermissionPrompt2 = () => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
@@ -157,7 +85,7 @@ export const useDevicePermissionPrompt2 = () => {
 				const resolve = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
-					queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+					void queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
 					_resolve(stream);
 				};
 
@@ -169,7 +97,7 @@ export const useDevicePermissionPrompt2 = () => {
 						}
 
 						if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
-							navigator.mediaDevices.enumerateDevices().then((devices) => {
+							void navigator.mediaDevices.enumerateDevices().then((devices) => {
 								const device = devices.find((device) => device.deviceId === deviceId);
 								if (!device) {
 									return;
@@ -189,20 +117,15 @@ export const useDevicePermissionPrompt2 = () => {
 					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
 				};
 
-				if (state === 'granted') {
-					requestDevice({
-						onAccept: resolve,
-						onReject: reject,
-						constraints,
-					});
-					return;
-				}
-
 				const onConfirm = () => {
-					requestDevice?.({
+					void requestDevice?.({
 						onReject: (...args) => {
-							reject(...args);
-							setModal(<PermissionFlowModal type='denied' onCancel={() => setModal(null)} onConfirm={() => setModal(null)} />);
+							const [error] = args;
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							setModal(<PermissionFlowModal type='denied' onCancel={onCancel} onConfirm={onCancel} />);
 						},
 						onAccept: (...args) => {
 							onAccept(...args);
@@ -212,15 +135,29 @@ export const useDevicePermissionPrompt2 = () => {
 					});
 				};
 
-				const modalType = getModalType(actionType, state);
-
 				const onCancel = () => {
-					if (modalType === 'incomingPrompt') {
-						reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
-					}
+					reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
 
 					setModal(null);
 				};
+
+				if (state === 'granted') {
+					void requestDevice({
+						onAccept: resolve,
+						onReject: (error) => {
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							reject(error);
+						},
+						constraints,
+					});
+					return;
+				}
+
+				const modalType = getModalType(actionType, state);
+
 				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},

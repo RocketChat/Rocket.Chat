@@ -2,14 +2,12 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { Filter, ObjectId } from 'mongodb';
+import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -18,32 +16,26 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { getUserPreference } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
-import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { getDdpSdk } from '../../lib/sdk/ddpSdk';
+import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
-type UserProviderProps = {
+export type UserProviderProps = {
 	children: ReactNode;
 };
 
+// Local logout broadcaster — `onLogout(cb)` consumers (e.g. e2ee cleanup) still
+// subscribe to this. The post-logout side effects that used to require a
+// `sdk.call('logoutCleanUp')` round-trip (afterLogoutCleanUpCallback +
+// Apps.IPostUserLoggedOut) now fire server-side via `Accounts.onLogout` and
+// `POST /v1/users.logout`, so this emitter is purely client-side fan-out.
 const ee = new Emitter();
-Accounts.onLogout(() => ee.emit('logout'));
-
-ee.on('logout', async () => {
-	const userId = userIdStore.getState();
-	if (!userId) return;
-	const user = Users.state.get(userId);
-	if (!user) return;
-
-	await afterLogoutCleanUpCallback.run(user);
-	await sdk.call('logoutCleanUp', user);
-});
+getDdpSdk().account.onLogout(() => ee.emit('logout'));
 
 const queryRoom = (
 	query: Filter<Pick<IRoom, '_id'>>,
@@ -64,7 +56,7 @@ const queryRoom = (
 	return [subscribe, getSnapshot];
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+const UserProvider = ({ children }: UserProviderProps) => {
 	const userId = userIdStore();
 
 	const user = Users.use((state) => {
@@ -78,8 +70,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const [, setSamlInviteToken] = useSamlInviteToken();
 	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
 	const inviteTokenHash = useRouteParameter('hash');
-
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
@@ -142,9 +132,30 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		(): ContextType<typeof UserContext> => ({
 			userId,
 			user,
-			queryPreference: createReactiveSubscriptionFactory(
-				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
-			),
+			queryPreference: <T,>(
+				key: string | ObjectId,
+				defaultValue?: T,
+			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined] => {
+				const effectiveKey = String(key);
+
+				const subscribe = (onStoreChange: () => void): (() => void) => {
+					const unsubUsers = Users.use.subscribe(onStoreChange);
+					const unsubSettings = settings.observe(`Accounts_Default_User_Preferences_${effectiveKey}`, onStoreChange);
+					return () => {
+						unsubUsers();
+						unsubSettings();
+					};
+				};
+
+				const getSnapshot = (): T | undefined => {
+					return (
+						(user?.settings?.preferences?.[effectiveKey] as T | undefined) ??
+						defaultValue ??
+						settings.peek(`Accounts_Default_User_Preferences_${effectiveKey}`)
+					);
+				};
+				return [subscribe, getSnapshot];
+			},
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
@@ -156,17 +167,22 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		[userId, user, querySubscription, querySubscriptions],
 	);
 
+	// Mirror local preference changes into the live userLanguage state without hitting the server.
 	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
+		if (preferedLanguage === userLanguage) {
+			return;
 		}
 
+		setUserLanguage(preferedLanguage);
+	}, [preferedLanguage, setUserLanguage, userLanguage]);
+
+	// When the server reports a new language, overwrite both storage keys so every tab stays aligned.
+	useEffect(() => {
 		if (user?.language !== undefined && user.language !== userLanguage) {
 			setUserLanguage(user.language);
 			setPreferedLanguage(user.language);
 		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+	}, [setPreferedLanguage, setUserLanguage, user?.language, userLanguage]);
 
 	useEffect(() => {
 		if (!samlCredentialToken && !inviteTokenHash) {
@@ -184,7 +200,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		previousUserId.current = userId;
 	}, [queryClient, userId]);
 
-	return <UserContext.Provider children={children} value={contextValue} />;
+	return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export default UserProvider;

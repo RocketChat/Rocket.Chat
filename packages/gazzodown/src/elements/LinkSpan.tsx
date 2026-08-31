@@ -1,6 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { getBaseURI, isExternal } from '@rocket.chat/ui-client/dist/helpers/getBaseURI';
-import type { ReactElement } from 'react';
+import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,12 +9,12 @@ import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import { sanitizeUrl } from './sanitizeUrl';
 
-type LinkSpanProps = {
+export type LinkSpanProps = {
 	href: string;
 	label: MessageParser.Markup | MessageParser.Markup[];
 };
 
-const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
+const LinkSpan = ({ href, label }: LinkSpanProps) => {
 	// Should sanitize 'href' if any of the insecure prefixes are present - see DSK-34 on Jira
 	const sanitizedHref = sanitizeUrl(href);
 
@@ -29,13 +28,13 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 					return <PlainSpan key={index} text={child.value} />;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				default:
 					return null;

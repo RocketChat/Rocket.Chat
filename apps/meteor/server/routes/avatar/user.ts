@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
@@ -7,10 +7,13 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type { NextFunction } from 'connect';
 
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
-	const response = await fetch(externalProviderUrl.replace('{username}', username));
+	const response = await fetch(externalProviderUrl.replace('{username}', username), {
+		ignoreSsrfValidation: false,
+		allowList: settings.get<string>('SSRF_Allowlist'),
+	});
 	response.headers.forEach((value, key) => res.setHeader(key, value));
 	response.body.pipe(res);
 };
@@ -38,7 +41,13 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 		return;
 	}
 
-	// if request starts with @ always return the svg letters
+	const file = await Avatars.findOneByName(requestUsername);
+	if (file) {
+		void serveAvatarFile(file, req, res, next);
+		return;
+	}
+
+	// if still not found and starts with @, return SVG with username without @
 	if (requestUsername[0] === '@') {
 		serveSvgAvatarInRequestedFormat({
 			nameOrUsername: requestUsername.slice(1),
@@ -46,12 +55,6 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 			res,
 			useAllInitials: settings.get('UI_Use_Name_Avatar'),
 		});
-		return;
-	}
-
-	const file = await Avatars.findOneByName(requestUsername);
-	if (file) {
-		void serveAvatarFile(file, req, res, next);
 		return;
 	}
 

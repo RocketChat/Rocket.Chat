@@ -10,3 +10,7 @@ export function apps<TPath extends PathWithoutPrefix<Path>>(path: TPath): `/api/
 export function apps(path = '') {
 	return `/api/apps${path}` as const;
 }
+
+export function installedApps() {
+	return `/api/apps/installed` as const;
+}

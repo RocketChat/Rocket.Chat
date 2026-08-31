@@ -2,7 +2,7 @@ import type { IUser } from './IUser';
 
 export type SpotlightUser = {
 	_id: IUser['_id'];
-	username: Required<IUser>['username'];
+	username: NonNullable<IUser['username']>;
 	nickname: IUser['nickname'];
 	name: IUser['name'];
 	status: IUser['status'];

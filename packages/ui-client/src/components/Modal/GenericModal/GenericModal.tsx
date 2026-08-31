@@ -12,7 +12,7 @@ import {
 	ModalTagline,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
@@ -24,14 +24,15 @@ import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
-type GenericModalProps = RequiredModalProps & {
+export type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
-	title?: string | ReactElement;
-	icon?: IconName | ReactElement | null;
+	title?: string | ReactElement<any>;
+	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
+	confirmLoading?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
@@ -89,6 +90,7 @@ const GenericModal = ({
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
+	confirmLoading,
 	tagline,
 	wrapperFunction,
 	annotation,
@@ -101,24 +103,24 @@ const GenericModal = ({
 
 	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
 
-	const handleConfirm = useEffectEvent(() => {
+	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
-		onConfirm?.();
+		void onConfirm?.();
 	});
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		dismissedRef.current = false;
-		onCancel?.();
+		void onCancel?.();
 	});
 
-	const handleCloseButtonClick = useEffectEvent(() => {
+	const handleCloseButtonClick = useStableCallback(() => {
 		dismissedRef.current = true;
-		onClose?.();
+		void onClose?.();
 	});
 
-	const handleDismiss = useEffectEvent(() => {
+	const handleDismiss = useStableCallback(() => {
 		dismissedRef.current = true;
-		onDismiss?.();
+		void onDismiss?.();
 	});
 
 	useEffect(() => {
@@ -139,7 +141,7 @@ const GenericModal = ({
 					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
-				{onClose && <ModalClose aria-label={t('Close')} onClick={handleCloseButtonClick} />}
+				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
 			<ModalContent fontScale='p2'>{children}</ModalContent>
 			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
@@ -152,12 +154,12 @@ const GenericModal = ({
 						</Button>
 					)}
 					{wrapperFunction && (
-						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}

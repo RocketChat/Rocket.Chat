@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import OutgoingCall from './OutgoingCall';
-import { MockedMediaCallProvider } from '../../context';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -12,7 +12,6 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 export default {
-	title: 'V2/Views/OutgoingCall',
 	component: OutgoingCall,
 	decorators: [
 		mockedContexts,
@@ -24,6 +23,4 @@ export default {
 	],
 } satisfies Meta<typeof OutgoingCall>;
 
-export const OutgoingCallStory: StoryFn<typeof OutgoingCall> = () => {
-	return <OutgoingCall />;
-};
+export const OutgoingCallStory: StoryObj<typeof OutgoingCall> = {};

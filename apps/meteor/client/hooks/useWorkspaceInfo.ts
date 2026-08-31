@@ -1,35 +1,43 @@
 import type { IStats, IWorkspaceInfo, Serialized } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+
+const useServerInfoQueryOptions = () => {
+	const getServerInfo = useEndpoint('GET', '/info');
+
+	return {
+		queryKey: ['info', 'serverInfo'],
+		queryFn: async () => {
+			const data = await getServerInfo();
+
+			if (!('minimumClientVersions' in data)) {
+				throw new Error('Invalid server info');
+			}
+			if (!('info' in data)) {
+				throw new Error('Invalid server info');
+			}
+			if (!('version' in data)) {
+				throw new Error('Invalid server info');
+			}
+
+			return data as IWorkspaceInfo;
+		},
+		staleTime: Infinity,
+		placeholderData: keepPreviousData,
+	} as const;
+};
+
+export const useServerInfo = () => useQuery(useServerInfoQueryOptions());
 
 export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: boolean } = {}) => {
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
 	const getInstances = useEndpoint('GET', '/v1/instances.get');
-	const getServerInfo = useEndpoint('GET', '/info');
+	const serverInfoQueryOptions = useServerInfoQueryOptions();
 
 	return useQueries({
 		queries: [
-			{
-				queryKey: ['info', 'serverInfo'],
-				queryFn: async () => {
-					const data = await getServerInfo();
-
-					if (!('minimumClientVersions' in data)) {
-						throw new Error('Invalid server info');
-					}
-					if (!('info' in data)) {
-						throw new Error('Invalid server info');
-					}
-					if (!('version' in data)) {
-						throw new Error('Invalid server info');
-					}
-
-					return data as IWorkspaceInfo;
-				},
-				staleTime: Infinity,
-				placeholderData: keepPreviousData,
-			},
+			serverInfoQueryOptions,
 			{
 				queryKey: ['info', 'instances'],
 				queryFn: () => getInstances(),
@@ -53,15 +61,15 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 				queryFn: () => getStatistics({ refresh: refreshStatistics ? 'true' : 'false' }),
 				staleTime: Infinity,
 				placeholderData: keepPreviousData,
-				select: (data: unknown) => {
-					const statsData = data as Serialized<IStats>;
+				select: (data: Serialized<IStats>): IStats => {
 					return {
-						...statsData,
-						lastMessageSentAt: statsData.lastMessageSentAt ? new Date(statsData.lastMessageSentAt) : undefined,
+						...data,
+						lastMessageSentAt: data.lastMessageSentAt ? new Date(data.lastMessageSentAt) : undefined,
+						_updatedAt: new Date(data._updatedAt),
 					};
 				},
 			},
-		],
+		] as const,
 	});
 };
 

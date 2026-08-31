@@ -1,0 +1,136 @@
+import { api } from '@rocket.chat/core-services';
+import { Settings, Users } from '@rocket.chat/models';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { Accounts } from 'meteor/accounts-base';
+import { MongoInternals } from 'meteor/mongo';
+
+const { _expireTokens: expireTokensOriginal } = Accounts;
+
+Accounts._expireTokens = async () => {
+	const loginExpiration: number | undefined = await Settings.getValueById('Accounts_LoginExpiration');
+	const oldestValidDate = new Date(Date.now() - getLoginExpirationInMs(loginExpiration));
+
+	const users = await Users.find(
+		{
+			$or: [
+				{ 'services.resume.loginTokens.when': { $lt: oldestValidDate } },
+				{ 'services.resume.loginTokens.when': { $lt: +oldestValidDate } },
+			],
+		},
+		{ projection: { services: 1 } },
+	).toArray();
+
+	const updates: { _id: string; validTokens: any[] }[] = [];
+
+	users.forEach(({ _id, services }) => {
+		const loginTokens = services?.resume?.loginTokens;
+
+		// remove all tokens that are expired
+		const validTokens = loginTokens?.filter((token: any) => token.when >= oldestValidDate) || [];
+
+		updates.push({ _id, validTokens });
+	});
+
+	await expireTokensOriginal.call(Accounts);
+
+	updates.forEach(({ _id, validTokens }) => {
+		void api.broadcast('watch.users', {
+			clientAction: 'updated',
+			id: _id,
+			diff: {
+				'services.resume.loginTokens': validTokens,
+			},
+			unset: {},
+		});
+	});
+};
+
+type Callbacks = {
+	added(id: string, record: object): void;
+	changed(id: string, record: object): void;
+	removed(id: string): void;
+};
+
+export const serviceConfigCallbacks = new Set<Callbacks>();
+
+// Stores the callbacks for the disconnection reactivity bellow
+const userCallbacks = new Map();
+
+// Overrides the native observe changes to prevent database polling and stores the callbacks
+// for the users' tokens to re-implement the reactivity based on our database listeners
+const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+MongoInternals.Connection.prototype._observeChanges = async function (
+	{
+		collectionName,
+		selector,
+		options = {},
+	}: {
+		collectionName: string;
+		selector: Record<string, any>;
+		options?: {
+			projection?: Record<string, number>;
+			fields?: Record<string, number>;
+		};
+	},
+	_ordered: boolean,
+	callbacks: Callbacks,
+): Promise<any> {
+	let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
+	let data: { hashedToken: string; callbacks: Callbacks };
+	if (callbacks?.added) {
+		const records = await mongo
+			.rawCollection(collectionName)
+			.find(selector, {
+				...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
+			})
+			.toArray();
+
+		for (const { _id, ...fields } of records) {
+			callbacks.added(String(_id), fields);
+		}
+
+		if (collectionName === 'users' && selector['services.resume.loginTokens.hashedToken']) {
+			cbs = userCallbacks.get(selector._id) || new Set();
+			data = {
+				hashedToken: selector['services.resume.loginTokens.hashedToken'],
+				callbacks,
+			};
+
+			cbs.add(data);
+			userCallbacks.set(selector._id, cbs);
+		}
+	}
+
+	if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
+		serviceConfigCallbacks.add(callbacks);
+	}
+
+	return {
+		stop(): void {
+			if (cbs) {
+				cbs.delete(data);
+			}
+			serviceConfigCallbacks.delete(callbacks);
+		},
+	};
+};
+
+// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
+// associated was removed
+export const processOnChange = (diff: Record<string, any>, id: string): void => {
+	if (!diff || !('services.resume.loginTokens' in diff)) {
+		return;
+	}
+	const loginTokens: undefined | { hashedToken: string }[] = diff['services.resume.loginTokens'];
+	const tokens = loginTokens?.map(({ hashedToken }) => hashedToken);
+
+	const cbs = userCallbacks.get(id);
+	if (cbs) {
+		[...cbs]
+			.filter(({ hashedToken }) => !tokens?.includes(hashedToken))
+			.forEach((item) => {
+				item.callbacks.removed(id);
+				cbs.delete(item);
+			});
+	}
+};

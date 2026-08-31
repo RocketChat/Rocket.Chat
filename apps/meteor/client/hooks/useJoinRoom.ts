@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { roomsQueryKeys } from '../lib/queryKeys';
 
 type UseJoinRoomMutationFunctionProps = {
 	rid: IRoom['_id'];
@@ -13,16 +13,18 @@ type UseJoinRoomMutationFunctionProps = {
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const joinChannel = useEndpoint('POST', '/v1/rooms.join');
 
 	return useMutation({
 		mutationFn: async ({ rid, reference, type }: UseJoinRoomMutationFunctionProps) => {
-			await sdk.call('joinRoom', rid);
-
+			await joinChannel({ roomId: rid });
 			return { reference, type };
 		},
 		onSuccess: (data) => {
+			// Prefix-match the open-room query key (roomsQueryKeys.roomReference) so the
+			// "not subscribed" screen refetches and flips to the joined state without a reload.
 			queryClient.invalidateQueries({
-				queryKey: ['rooms', data],
+				queryKey: [...roomsQueryKeys.all, data.reference, data.type],
 			});
 		},
 		onError: (error: unknown) => {

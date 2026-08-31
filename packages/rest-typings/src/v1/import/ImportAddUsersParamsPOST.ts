@@ -1,9 +1,6 @@
 import type { IImportUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type ImportAddUsersParamsPOST = {
 	users: [Omit<IImportUser, '_id' | 'services' | 'customFields'>];

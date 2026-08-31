@@ -1,12 +1,12 @@
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 
-type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
+export type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
 
 const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowProps) => {
 	const t = useTranslation();
@@ -15,14 +15,14 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 	const deleteTrigger = useEndpoint('DELETE', '/v1/livechat/triggers/:_id', { _id });
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleClick = useEffectEvent(() => {
+	const handleClick = useStableCallback(() => {
 		triggersRoute.push({
 			context: 'edit',
 			id: _id,
 		});
 	});
 
-	const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
+	const handleKeyDown = useStableCallback((e: KeyboardEvent) => {
 		if (!['Enter', 'Space'].includes(e.code)) {
 			return;
 		}
@@ -30,7 +30,7 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 		handleClick();
 	});
 
-	const handleDelete = useEffectEvent((e: MouseEvent) => {
+	const handleDelete = useStableCallback((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteTrigger = async () => {
 			try {
@@ -47,7 +47,7 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 	});
 
 	return (
-		<GenericTableRow key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
+		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{description}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{enabled ? t('Yes') : t('No')}</GenericTableCell>

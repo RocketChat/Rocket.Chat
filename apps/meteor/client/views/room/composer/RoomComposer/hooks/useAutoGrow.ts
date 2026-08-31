@@ -1,4 +1,4 @@
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
 import { useCallback } from 'react';
 
@@ -19,10 +19,6 @@ export const useAutoGrow = (
 	const autoGrowRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLTextAreaElement) => {
-				if (!node) {
-					return;
-				}
-
 				ref.current = node;
 
 				const resize = () => {

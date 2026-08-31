@@ -15,26 +15,26 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: false
+      NPM_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
 
     name: Unit Tests
 
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -45,24 +45,18 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v7
-        with:
-          name: packages-build
-          path: /tmp
-
-      - name: Unpack packages build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+      - uses: ./.github/actions/restore-packages
 
       - name: Unit Test
-        run: yarn testunit
+        run: yarn testunit --concurrency=1
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           flags: unit
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # tests don't re-run on the develop push, so the merge queue run (same SHA
+          # that lands on develop) provides the develop coverage baseline
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}

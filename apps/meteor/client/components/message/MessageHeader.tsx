@@ -10,7 +10,6 @@ import {
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,12 +23,13 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
+import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
-type MessageHeaderProps = {
+export type MessageHeaderProps = {
 	message: IMessage;
 };
 
-const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
+const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { t } = useTranslation();
 
 	const formatTime = useMessageListFormatTime();
@@ -42,10 +42,11 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
+	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
-	const shouldShowRolesList = roles.length > 0;
+	const shouldShowRolesList = showRoles && roles.length > 0;
 
 	return (
 		<FuselageMessageHeader>
@@ -57,18 +58,15 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				{...triggerProps}
 			>
 				<MessageName
-					{...(!showUsername && { 'data-qa-type': 'username' })}
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
-					data-username={user.username}
+					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+					data-username={normalizedUsername}
 				>
 					{message.alias || displayName}
 				</MessageName>
 				{showUsername && (
 					<>
 						{' '}
-						<MessageUsername data-username={user.username} data-qa-type='username'>
-							@{user.username}
-						</MessageUsername>
+						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
 					</>
 				)}
 			</MessageNameContainer>

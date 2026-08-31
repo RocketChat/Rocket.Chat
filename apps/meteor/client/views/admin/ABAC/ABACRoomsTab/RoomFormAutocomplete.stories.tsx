@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import { createFakeRoom } from '../../../../../tests/mocks/data';

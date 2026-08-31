@@ -1,22 +1,18 @@
-import type {
-	MediaCallSignedContact,
-	IMediaCall,
-	MediaCallContactInformation,
-	MediaCallContact,
-	IMediaCallChannel,
-} from '@rocket.chat/core-typings';
+import type { MediaCallSignedContact, IMediaCall, MediaCallContactInformation, MediaCallContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
+import { SIP_CALL_FEATURES } from '../../constants';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 type IncomingSipCallNegotiation = {
 	id: string;
@@ -38,12 +34,11 @@ export class IncomingSipCall extends BaseSipCall {
 		session: SipServerSession,
 		call: IMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
-		channel: IMediaCallChannel,
 		private readonly srf: Srf,
 		private readonly req: SrfRequest,
 		private readonly res: SrfResponse,
 	) {
-		super(session, call, agent, channel);
+		super(session, call, agent);
 		this.sipDialog = null;
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
@@ -82,6 +77,12 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
 		logger.debug({ msg: 'incoming call from', callerContact: caller });
+
+		const divertedBy = await this.getDiversionContactFromInvite(req);
+		if (divertedBy) {
+			logger.debug({ msg: 'incoming call diverted by', divertedBy });
+		}
+
 		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
 		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
@@ -103,13 +104,13 @@ export class IncomingSipCall extends BaseSipCall {
 			callee,
 			callerAgent,
 			calleeAgent,
+			features: SIP_CALL_FEATURES,
+			...(divertedBy && { divertedBy }),
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
-		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
-
-		sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res);
+		sipCall = new IncomingSipCall(session, call, callerAgent, srf, req, res);
 
 		callerAgent.provider = sipCall;
 
@@ -169,7 +170,7 @@ export class IncomingSipCall extends BaseSipCall {
 					answer: null,
 				});
 
-				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+				void calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
@@ -296,12 +297,16 @@ export class IncomingSipCall extends BaseSipCall {
 		this.lastCallState = 'hangup';
 
 		if (sipDialog) {
-			sipDialog.destroy();
+			try {
+				await sipDialog.destroy();
+			} catch (err) {
+				logger.error({ msg: 'Failed to destroy SIP dialog', err, method: 'IncomingSipCall.processEndedCall' });
+			}
 		}
 	}
 
 	private async getPendingInboundNegotiation(): Promise<IncomingSipCallNegotiation | null> {
-		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
 			if (localNegotiation.answer) {
 				continue;
 			}
@@ -448,6 +453,36 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		return null;
+	}
+
+	private static async getDiversionContactFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
+		if (!req.has('diversion')) {
+			return null;
+		}
+
+		logger.debug({ msg: 'IncomingSipCall.getDiversionContactFromInvite' });
+
+		const parsed = parseDiversionHeader(req.get('diversion'));
+		if (!parsed) {
+			logger.warn({ msg: 'IncomingSipCall.getDiversionContactFromInvite: failed to parse Diversion header', raw: req.get('diversion') });
+			return null;
+		}
+
+		const { extension, displayName } = parsed;
+
+		const defaultContactInfo: MediaCallContactInformation = {
+			sipExtension: extension,
+			displayName: displayName || extension,
+		};
+
+		const contact = await mediaCallDirector.cast.getContactForExtensionNumber(extension, { requiredType: 'sip' }, defaultContactInfo);
+
+		return {
+			...defaultContactInfo,
+			...contact,
+			type: 'sip',
+			id: extension,
+		};
 	}
 
 	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {

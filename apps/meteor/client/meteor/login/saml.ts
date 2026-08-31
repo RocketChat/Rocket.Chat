@@ -3,6 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { absoluteUrl } from '../../lib/absoluteUrl';
+import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 import { settings } from '../../lib/settings';
 
 declare module 'meteor/meteor' {
@@ -61,7 +63,7 @@ Meteor.logout = async function (...args) {
 	if (provider && settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
 		console.info('SAML session terminated via SLO');
 
-		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
+		const { sdk } = await import('../../lib/SDKClient');
 		sdk
 			.call('samlLogout', provider)
 			.then((result) => {
@@ -72,10 +74,10 @@ Meteor.logout = async function (...args) {
 
 				// Remove the userId from the client to prevent calls to the server while the logout is processed.
 				// If the logout fails, the userId will be reloaded on the resume call
-				Accounts.storageLocation.removeItem(Accounts.USER_ID_KEY);
+				removeStoredItem(STORAGE_KEYS.USER_ID);
 
 				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-				window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
+				window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
 			})
 			.catch(() => logout.apply(Meteor));
 		return;
@@ -89,7 +91,15 @@ Meteor.loginWithSaml = (options) => {
 	const credentialToken = `id-${Random.id()}`;
 	options.credentialToken = credentialToken;
 
-	window.location.href = `_saml/authorize/${options.provider}/${options.credentialToken}`;
+	let url = `_saml/authorize/${options.provider}/${options.credentialToken}`;
+
+	// Forward the loginClient so the session can be deep-linked back to the native client.
+	const loginClient = new URLSearchParams(window.location.search).get('loginClient');
+	if (settings.peek('Accounts_OAuth_Use_Modern_Flow') && (loginClient === 'desktop' || loginClient === 'mobile')) {
+		url += `?loginClient=${loginClient}`;
+	}
+
+	window.location.href = url;
 };
 
 const loginWithSamlToken = (credentialToken: string) =>

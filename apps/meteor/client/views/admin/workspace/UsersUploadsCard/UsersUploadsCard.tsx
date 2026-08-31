@@ -1,8 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,17 +11,17 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type UsersUploadsCardProps = {
+export type UsersUploadsCardProps = {
 	statistics: IStats;
 };
 
-const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement => {
+const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	const { t } = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
 
 	const router = useRouter();
 
-	const handleEngagement = useEffectEvent(() => {
+	const handleEngagement = useStableCallback(() => {
 		router.navigate('/admin/engagement');
 	});
 

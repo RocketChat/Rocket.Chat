@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createSoundsSettings = () =>
 	settingsRegistry.addGroup('CustomSoundsFilesystem', async function () {

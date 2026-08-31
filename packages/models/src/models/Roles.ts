@@ -1,5 +1,5 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IRolesModel } from '@rocket.chat/model-typings';
+import type { IRolesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
 import { Subscriptions, Users } from '../index';
@@ -10,12 +10,15 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		super(db, 'roles', trash);
 	}
 
-	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole> {
+	findByUpdatedDate<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		updatedAfterDate: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_updatedAt: { $gte: new Date(updatedAfterDate) },
 		};
 
-		return options ? this.find(query, options) : this.find(query);
+		return options ? this.find<T, O>(query, options) : this.find<T, O>(query);
 	}
 
 	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
@@ -23,7 +26,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			throw new Error('Roles.isUserInRoles method received a role scope instead of a scope value.');
 		}
 
-		for await (const roleId of roles) {
+		for (const roleId of roles) {
 			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 			if (!role) {
@@ -46,16 +49,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return false;
 	}
 
-	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
-
-	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options: FindOptions<IRole>): Promise<IRole | null>;
-
-	async findOneByIdOrName<P extends Document>(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options: FindOptions<P extends IRole ? IRole : P>,
-	): Promise<P | null>;
-
-	findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options?: any): Promise<IRole | P | null> {
+	findOneByIdOrName<P extends Document = IRole, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_idOrName: IRole['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const query: Filter<IRole> = {
 			$or: [
 				{
@@ -67,7 +64,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			],
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<P, O>(query, options);
 	}
 
 	async findOneByName<P = IRole>(name: IRole['name'], options?: any): Promise<IRole | P | null> {
@@ -75,7 +72,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			name,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IRole>(query, options);
 	}
 
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
@@ -89,7 +86,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	}
 
 	findInIdsOrNames<P>(
-		_idsOrNames: IRole['_id'][] | IRole['name'][],
+		_idsOrNames: IRole['_id'][],
 		options?: FindOptions<IRole>,
 	): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
 		const query: Filter<IRole> = {
@@ -110,22 +107,15 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	}
 
-	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
-		const query: Filter<IRole> = {
-			_id: {
-				$nin: ids,
-			},
-		};
-
-		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
-	}
-
-	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole> {
+	findByScope<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		scope: IRole['scope'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope,
 		};
 
-		return this.find(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
 	countByScope(scope: IRole['scope'], options?: CountDocumentsOptions): Promise<number> {
@@ -136,12 +126,14 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.countDocuments(query, options);
 	}
 
-	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole> {
+	findCustomRoles<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IRole> = {
 			protected: false,
 		};
 
-		return this.find(query, options || {});
+		return this.find<T, O>(query, options);
 	}
 
 	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
@@ -194,7 +186,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	async findUsersInRole<P extends Document>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
-		options?: any | undefined,
+		options?: any,
 	): Promise<FindCursor<IUser | P>> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
@@ -250,6 +242,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 		return {
 			_id: res.insertedId,
+			_updatedAt: new Date(), // TODO: this should be set by the BaseRaw, but we need to set it here to return a complete IRole object
 			...role,
 		};
 	}

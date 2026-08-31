@@ -6,7 +6,7 @@ import RegisteredWorkspaceModal from '../RegisteredWorkspaceModal';
 import RegisterWorkspaceSetupStepOneModal from './RegisterWorkspaceSetupStepOneModal';
 import RegisterWorkspaceSetupStepTwoModal from './RegisterWorkspaceSetupStepTwoModal';
 
-type RegisterWorkspaceSetupModalProps = {
+export type RegisterWorkspaceSetupModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };

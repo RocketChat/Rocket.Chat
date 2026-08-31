@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	AgentOverviewDataOptions,
@@ -14,9 +13,9 @@ import { ChartData } from './ChartData';
 import { OverviewData } from './OverviewData';
 import { serviceLogger } from './logger';
 import { dayIterator } from './utils';
-import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { getTimezone } from '../../lib/utils/lib/getTimezone';
 
 const HOURS_IN_DAY = 24;
 
@@ -55,7 +54,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		if (!this.agentOverview.isActionAllowed(name)) {
-			serviceLogger.error(`AgentOverview.${name} is not a valid action`);
+			serviceLogger.error({ msg: 'AgentOverview action is not valid', name });
 			return;
 		}
 
@@ -74,7 +73,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		// Check if function exists, prevent server error in case property altered
 		if (!this.chart.isActionAllowed(chartLabel)) {
-			serviceLogger.error(`ChartData.${chartLabel} is not a valid action`);
+			serviceLogger.error({ msg: 'ChartData action is not valid', chartLabel });
 			return;
 		}
 
@@ -164,7 +163,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		if (!this.overview.isActionAllowed(name)) {
-			serviceLogger.error(`OverviewData.${name} is not a valid action`);
+			serviceLogger.error({ msg: 'OverviewData action is not valid', name });
 			return;
 		}
 

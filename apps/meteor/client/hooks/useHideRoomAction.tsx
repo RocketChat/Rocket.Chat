@@ -1,5 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModalDoNotAskAgain, useDontAskAgain } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useRouter, useUserId } from '@rocket.chat/ui-contexts';
@@ -24,14 +24,13 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	p: '/v1/groups.close', // private
 	c: '/v1/channels.close', // channel
 	d: '/v1/im.close', // direct message
-	v: '/v1/channels.close', // omnichannel voip
 	l: '/v1/channels.close', // livechat
 } as const;
 
 export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { redirect = true }: HideRoomOptions = {}) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal());
+	const closeModal = useStableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 	const router = useRouter();
@@ -63,7 +62,7 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 		},
 	});
 
-	const handleHide = useEffectEvent(async () => {
+	const handleHide = useStableCallback(async () => {
 		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {

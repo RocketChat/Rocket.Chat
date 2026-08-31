@@ -40,4 +40,6 @@ export interface IMessageAttachment {
 	actions?: Array<IMessageAction>;
 	/** The field property of the attachments allows for "tables" or "columns" to be displayed on messages. */
 	fields?: Array<IMessageAttachmentField>;
+	/** For file attachments, this points to the specific file that this attachment links to */
+	fileId?: string;
 }

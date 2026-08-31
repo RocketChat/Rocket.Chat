@@ -14,6 +14,7 @@ import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
+import { invalidate as invalidatePublicationUserCache } from '../../../../apps/meteor/server/modules/streamer/publication-user-cache';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 
 const { PORT = 4000 } = process.env;
@@ -50,11 +51,33 @@ export class DDPStreamer extends ServiceClass {
 			}
 		});
 
-		this.onEvent('user.forceLogout', (uid: string) => {
+		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			this.wss?.clients.forEach((ws) => {
 				const client = clientMap.get(ws);
+				if (sessionId) {
+					if (client?.connection.id === sessionId) {
+						ws.close();
+					}
+					return;
+				}
 				if (client?.userId === uid) {
-					ws.terminate();
+					// Graceful close: lets the WS lib flush queued frames (including
+					// the `notify-user/<uid>/force_logout` stream message that the
+					// monolith listener at apps/meteor/server/modules/listeners/listeners.module.ts:49
+					// just enqueued) before the socket goes down. Previously this was
+					// `ws.terminate()`, which sends a TCP RST immediately and drops
+					// the queued frames — clients depending on the stream message
+					// (useForceLogout hook → Accounts._unstoreLoginToken + setUserId(null))
+					// then never see the cleanup, leaving stale credentials in
+					// localStorage. Falls back to terminate() after a short grace
+					// period for unresponsive sockets.
+					ws.close();
+					const guard = setTimeout(() => {
+						if (ws.readyState !== ws.CLOSED) {
+							ws.terminate();
+						}
+					}, 5000);
+					ws.once('close', () => clearTimeout(guard));
 				}
 			});
 		});
@@ -62,11 +85,21 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
 			Autoupdate.updateVersion(versions);
 		});
+
+		// The publication user cache lives inside the NotificationsModule process. In a
+		// microservices deployment, ddp-streamer hosts that module but does not host
+		// MeteorService, so the watch.users invalidation registered in
+		// apps/meteor/server/services/meteor/service.ts never reaches this process.
+		// Without this listener, role/ban/user changes would only propagate after the
+		// 60s TTL expires.
+		this.onEvent('watch.users', (data): void => {
+			invalidatePublicationUserCache(data.id);
+		});
 	}
 
 	// update connections count every 30 seconds
 	updateConnections = throttle(() => {
-		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+		void InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
 	}, 30000);
 
 	override async created(): Promise<void> {
@@ -154,7 +187,6 @@ export class DDPStreamer extends ServiceClass {
 					'oauth.authorizedClients': 1,
 					'_updatedAt': 1,
 					'avatarETag': 1,
-					'extension': 1,
 					'openBusinessHours': 1,
 					'services.totp.enabled': 1,
 					'services.email2fa.enabled': 1,
@@ -183,37 +215,37 @@ export class DDPStreamer extends ServiceClass {
 
 			server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', { userId, connection });
+			void this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('accounts.logout', { userId, connection });
+			void this.api?.broadcast('accounts.logout', { userId, connection });
 
-			this.updateConnections();
+			void this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('socket.disconnected', connection);
+			void this.api?.broadcast('socket.disconnected', connection);
 
 			this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			this.api?.broadcast('socket.connected', connection);
+			void this.api?.broadcast('socket.connected', connection);
 		});
 	}
 
@@ -259,7 +291,7 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-			InstanceStatus.registerInstance('ddp-streamer', {});
+			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {
 			console.error('DDPStreamer did not start correctly', err);
 		}

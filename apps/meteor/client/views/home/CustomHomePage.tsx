@@ -1,12 +1,11 @@
 import { Page, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 
 import HomePageHeader from './HomePageHeader';
 import CustomContentCard from './cards/CustomContentCard';
 
-const CustomHomePage = (): ReactElement => {
+const CustomHomePage = () => {
 	return (
-		<Page data-qa='page-home' data-qa-type='custom' color='default' background='tint'>
+		<Page color='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContentWithShadow>
 				<CustomContentCard />

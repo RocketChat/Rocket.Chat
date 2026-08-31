@@ -1,12 +1,12 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
 
 import { useNotificationAllowed } from './useNotificationAllowed';
-import { getUserAvatarURL } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { stripTags } from '../../../lib/utils/stringUtils';
+import { sdk } from '../../lib/SDKClient';
+import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {
@@ -14,7 +14,7 @@ export const useNotification = () => {
 	const router = useRouter();
 	const notificationAllowed = useNotificationAllowed();
 
-	const notify = useEffectEvent(async (notification: INotificationDesktop) => {
+	const notify = useStableCallback(async (notification: INotificationDesktop) => {
 		if (!notificationAllowed) {
 			return;
 		}
@@ -33,7 +33,7 @@ export const useNotification = () => {
 		} as any);
 
 		const n = new Notification(notification.title, {
-			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
+			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
 			tag: msgId,
 			canReply: true,
@@ -51,10 +51,12 @@ export const useNotification = () => {
 			n.addEventListener(
 				'reply',
 				({ response }) =>
-					void sdk.call('sendMessage', {
-						_id: Random.id(),
-						rid,
-						msg: response,
+					void sdk.rest.post('/v1/chat.sendMessage', {
+						message: {
+							_id: Random.id(),
+							rid,
+							msg: response,
+						},
 					}),
 			);
 		}

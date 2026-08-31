@@ -1,21 +1,23 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DiscussionsListItem from './components/DiscussionsListItem';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 
-type DiscussionListRowProps = {
+export type DiscussionListRowProps = {
 	discussion: IDiscussionMessage;
 	showRealNames: boolean;
 	onClick: (e: MouseEvent<HTMLElement>) => void;
 };
 
 function DiscussionListRow({ discussion, showRealNames, onClick }: DiscussionListRowProps) {
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 
-	const msg = normalizeThreadMessage(discussion);
+	const msg = normalizeThreadMessage(discussion, t);
 
 	const { name = discussion.u.username } = discussion.u;
 

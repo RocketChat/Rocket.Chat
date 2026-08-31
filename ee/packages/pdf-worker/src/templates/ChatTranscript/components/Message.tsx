@@ -1,12 +1,12 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFMessage } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { Divider } from './Divider';
 import { Files } from './Files';
 import { MessageHeader } from './MessageHeader';
-import { Quotes } from './Quotes';
+import Quotes from './Quotes';
 import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
 
 const styles = StyleSheet.create({
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 	},
 	message: {
 		marginTop: 1,
-		fontSize: fontScales.p2.fontSize,
+		fontSize: fontScale.p2.fontSize,
 	},
 	systemMessage: {
 		fontStyle: 'italic',
@@ -51,8 +51,10 @@ const processMessage = (message: PDFMessage) => {
 	);
 };
 
-const Message = ({ message, invalidFileMessage }: { message: PDFMessage; invalidFileMessage: string }) => (
-	<View style={styles.wrapper} wrap={!!message.quotes || messageLongerThanPage(message.msg)}>
+export type MessageProps = { message: PDFMessage; invalidFileMessage: string };
+
+const Message = ({ message, invalidFileMessage }: MessageProps) => (
+	<View style={styles.wrapper} wrap={!!message.quotes || messageLongerThanPage(message.msg) || (message.files && message.files.length > 0)}>
 		{message.divider && <Divider divider={message.divider} />}
 		<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
 

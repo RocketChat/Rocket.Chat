@@ -4,11 +4,11 @@ export class Message {
 	constructor(public readonly root: Locator) {}
 
 	get body() {
-		return this.root.locator('[data-qa-type="message-body"]');
+		return this.root.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
-	get fileUploadName() {
-		return this.root.locator('[data-qa-type="attachment-title-link"]');
+	getFileUploadByName(filename: string) {
+		return this.root.getByRole('link', { name: filename });
 	}
 
 	get encryptedIcon() {

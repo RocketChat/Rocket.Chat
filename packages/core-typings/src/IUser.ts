@@ -1,8 +1,8 @@
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
-import type { Serialized } from './Serialized';
-import type { UserStatus } from './UserStatus';
+import type { PresenceSource, UserStatus } from './UserStatus';
+import type { Serialized } from './utils';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -22,34 +22,21 @@ export interface IPersonalAccessToken extends ILoginToken {
 	bypassTwoFactor?: boolean;
 }
 
+type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
+
 export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
 	'type' in token && token.type === 'personalAccessToken';
 
-export interface IUserEmailVerificationToken {
-	token: string;
-	address: string;
-	when: Date;
-}
-
-export interface IUserEmailCode {
-	code: string;
-	expire: Date;
-	attempts: number;
-}
-
-type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
-export type Username = string;
-
-export type ILoginUsername =
+export type LoginUsername =
+	| string
 	| {
 			username: string;
 	  }
 	| {
 			email: string;
 	  };
-export type LoginUsername = string | ILoginUsername;
 
-export interface IOAuthUserServices {
+interface IOAuthUserServices {
 	google?: any;
 	facebook?: any;
 	github?: any;
@@ -77,14 +64,18 @@ export interface IOAuthUserServices {
 	};
 }
 
-export interface IUserServices extends IOAuthUserServices {
+interface IUserServices extends IOAuthUserServices {
 	password?: {
 		exists?: boolean;
 		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
-		verificationTokens?: IUserEmailVerificationToken[];
+		verificationTokens?: {
+			token: string;
+			address: string;
+			when: Date;
+		}[];
 	};
 	resume?: {
 		loginTokens?: LoginToken[];
@@ -104,7 +95,11 @@ export interface IUserServices extends IOAuthUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode?: IUserEmailCode;
+	emailCode?: {
+		code: string;
+		expire: Date;
+		attempts: number;
+	};
 
 	/**
 	 * iframe is used for iframe login
@@ -127,7 +122,7 @@ export interface IUserServices extends IOAuthUserServices {
 type IUserService = keyof IUserServices;
 type IOAuthService = keyof IOAuthUserServices;
 
-const defaultOAuthKeys = [
+const defaultOAuthKeys: IOAuthService[] = [
 	'google',
 	'dolphin',
 	'facebook',
@@ -139,33 +134,31 @@ const defaultOAuthKeys = [
 	'nextcloud',
 	'saml',
 	'twitter',
-] as IOAuthService[];
-const userServiceKeys = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'] as IUserService[];
+];
+const userServiceKeys: IUserService[] = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'];
 
-export const isUserServiceKey = (key: string): key is IUserService =>
+const isUserServiceKey = (key: string): key is IUserService =>
 	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
 
-export const isDefaultOAuthUser = (user: IUser): boolean =>
+const isDefaultOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
 
-export const isCustomOAuthUser = (user: IUser): boolean =>
+const isCustomOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
 
-export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
+export const isOAuthUser = (user: Pick<IUser, 'services'>): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
 	verified?: boolean;
 }
 
-export interface IOutlook {
-	Enabled: boolean;
-	Exchange_Url: string;
-	Outlook_Url: string;
-}
-
 export interface IUserCalendar {
-	outlook?: IOutlook;
+	outlook?: {
+		Enabled: boolean;
+		Exchange_Url: string;
+		Outlook_Url: string;
+	};
 }
 
 export interface IUserSettings {
@@ -174,18 +167,29 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
-export interface IGetRoomRoles {
+export const SIDEBAR_SYSTEM_GROUP_KEYS = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+] as const;
+
+export interface ISidebarCategory {
 	_id: string;
-	rid: string;
-	u: {
-		_id: string;
-		username: string;
-	};
-	roles: string[];
+	name: string;
+	default?: boolean;
+	showUnreads?: boolean;
+	keepUnreadsOnTop?: boolean;
 }
 
 export interface IUser extends IRocketChatRecord {
-	_id: string;
 	createdAt: Date;
 	roles: IRole['_id'][];
 	type: string;
@@ -206,10 +210,19 @@ export interface IUser extends IRocketChatRecord {
 	language?: string;
 	statusDefault?: UserStatus;
 	statusText?: string;
+	statusSource?: PresenceSource;
+	statusExpiresAt?: Date;
+	statusId?: string;
+	previousState?: {
+		statusDefault: UserStatus;
+		statusText: string;
+		statusSource: PresenceSource;
+		statusExpiresAt?: Date;
+		statusId?: string;
+	};
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt: Date;
 	e2e?: {
 		private_key: string;
 		public_key: string;
@@ -218,7 +231,6 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	extension?: string;
 	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
@@ -254,7 +266,7 @@ export interface IUser extends IRocketChatRecord {
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
 	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
-
+	providerId?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
 }
 
@@ -263,7 +275,9 @@ export interface IRegisterUser extends IUser {
 	name: string;
 }
 
-export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+export const isRegisterUser = <T extends Pick<IUser, 'username' | 'name'>>(
+	user: T,
+): user is T & Required<Pick<IUser, 'username' | 'name'>> => user.username !== undefined && user.name !== undefined;
 
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 
@@ -297,13 +311,21 @@ export type IUserDataEvent = {
 	  }
 );
 
+export type IDirectoryUserResult = Pick<
+	IUser,
+	'_id' | 'createdAt' | 'username' | 'name' | 'nickname' | 'bio' | 'emails' | 'federation' | 'avatarETag'
+>;
+
 export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type AvatarUrlObj = {

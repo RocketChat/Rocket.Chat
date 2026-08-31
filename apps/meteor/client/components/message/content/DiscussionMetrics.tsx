@@ -6,20 +6,19 @@ import {
 	MessageMetricsItemLabel,
 	MessageMetricsReply,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type DiscussionMetricsProps = {
+export type DiscussionMetricsProps = {
 	drid: string;
 	rid: string;
 	count: number;
 	lm?: Date;
 };
 
-const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): ReactElement => {
+const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps) => {
 	const { t } = useTranslation();
 	const format = useTimeAgo();
 

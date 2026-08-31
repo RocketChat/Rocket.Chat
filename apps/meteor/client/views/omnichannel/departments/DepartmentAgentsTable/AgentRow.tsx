@@ -8,7 +8,7 @@ import type { EditDepartmentFormData, IDepartmentAgent } from '../definitions';
 import AgentAvatar from './AgentAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
-type AgentRowProps = {
+export type AgentRowProps = {
 	agent: IDepartmentAgent;
 	index: number;
 	register: UseFormRegister<EditDepartmentFormData>;
@@ -19,7 +19,7 @@ const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<GenericTableRow key={agent.agentId} tabIndex={0} role='link' action qa-user-id={agent.agentId}>
+		<GenericTableRow key={agent.agentId} tabIndex={0} action>
 			<GenericTableCell withTruncatedText>
 				<AgentAvatar name={agent.name || ''} username={agent.username || ''} />
 			</GenericTableCell>

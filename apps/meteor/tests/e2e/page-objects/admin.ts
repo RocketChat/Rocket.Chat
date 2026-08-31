@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { AdminSidebar, ToastMessages } from './fragments';
-import { ConfirmDeleteModal } from './fragments/modal';
+import { ConfirmDeleteModal } from './fragments/modals';
 
 export enum AdminSectionsHref {
 	Workspace = '/admin/info',
@@ -19,7 +19,7 @@ export enum AdminSectionsHref {
 	Third_party_login = '/admin/third-party-login',
 	Integrations = '/admin/integrations',
 	Import = '/admin/import',
-	Reports = '/admin/reports',
+	Reports = '/admin/analytic-reports',
 	Sounds = '/admin/sounds',
 	Emoji = '/admin/emoji',
 	Settings = '/admin/settings',

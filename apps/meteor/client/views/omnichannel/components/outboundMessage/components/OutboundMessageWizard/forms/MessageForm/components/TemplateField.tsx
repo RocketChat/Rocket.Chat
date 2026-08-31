@@ -1,6 +1,6 @@
 import type { IOutboundProviderTemplate, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
@@ -12,7 +12,7 @@ import TemplateSelect from '../../../../TemplateSelect';
 import { cxp } from '../../../utils/cx';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplateFieldProps = ComponentProps<typeof Field> & {
+export type TemplateFieldProps = ComponentProps<typeof Field> & {
 	control: Control<MessageFormData>;
 	templates: Serialized<IOutboundProviderTemplate>[] | undefined;
 	onChange?: (templateId: string) => void;
@@ -41,7 +41,7 @@ const TemplateField = ({ control, templates, onChange: onChangeExternal, ...prop
 		},
 	});
 
-	const handleTemplateChange = useEffectEvent((value: string) => {
+	const handleTemplateChange = useStableCallback((value: string) => {
 		onChangeExternal?.(value);
 		templateField.onChange(value);
 	});

@@ -1,5 +1,5 @@
 import { Box, Button, Icon, Margins, Pagination, TextInput } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -9,7 +9,7 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,14 +22,16 @@ import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 const AttributesPage = () => {
 	const { t } = useTranslation();
 
-	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 200);
+	const searchTerm = useSearchParameter('searchTerm');
+	const [text, setText] = useState(searchTerm ?? '');
+
+	const debouncedText = useDebouncedValue(text, 400);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
 	const router = useRouter();
-	const handleNewAttribute = useEffectEvent(() => {
+	const handleNewAttribute = useStableCallback(() => {
 		router.navigate({
 			name: 'admin-ABAC',
 			params: {
@@ -58,12 +60,12 @@ const AttributesPage = () => {
 			<Margins block={24}>
 				<Box display='flex'>
 					<TextInput
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_attributes')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary mis={8} disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
 				</Box>
@@ -78,7 +80,7 @@ const AttributesPage = () => {
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Value')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' width={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.attributes?.map((attribute) => (

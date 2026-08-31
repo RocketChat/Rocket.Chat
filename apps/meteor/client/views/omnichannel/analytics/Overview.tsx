@@ -12,7 +12,9 @@ const initialData: { title?: string; value: string | number }[] = Array.from({ l
 const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
 
-const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: { start: string; end: string }; departmentId: string }) => {
+export type OverviewProps = { type: string; dateRange: { start: string; end: string }; departmentId: string };
+
+const Overview = ({ type, dateRange, departmentId }: OverviewProps) => {
 	const { t } = useTranslation();
 
 	const { start, end } = dateRange;
@@ -56,13 +58,13 @@ const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: 
 	}, [start, end, loadData, params]);
 
 	return (
-		<Box pb={28} flexDirection='column'>
+		<Box paddingBlock={28} flexDirection='column'>
 			{displayData.map((items = [], i) => (
-				<CounterRow key={i} border='0' pb='none'>
+				<CounterRow key={i} border='0' paddingBlock='none'>
 					{items.map(({ title, value }, i) => (
 						<CounterItem
 							flexShrink={1}
-							pb={8}
+							paddingBlock={8}
 							flexBasis='100%'
 							key={i}
 							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}

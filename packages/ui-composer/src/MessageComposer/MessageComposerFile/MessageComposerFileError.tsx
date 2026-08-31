@@ -1,0 +1,30 @@
+import type { AllHTMLAttributes, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import MessageComposerFile from './MessageComposerFile';
+
+export type MessageComposerFileErrorProps = {
+	fileTitle: string;
+	fileFormat: string;
+	error: Error;
+	actionIcon: ReactNode;
+	onClick: () => void;
+} & AllHTMLAttributes<HTMLButtonElement>;
+
+const MessageComposerFileError = ({ fileTitle, error, actionIcon, onClick, ...props }: MessageComposerFileErrorProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<MessageComposerFile
+			error={true}
+			fileTitle={fileTitle}
+			fileSubtitle={t('Upload_failed')}
+			actionIcon={actionIcon}
+			title={error.message}
+			onClick={onClick}
+			{...props}
+		/>
+	);
+};
+
+export default MessageComposerFileError;

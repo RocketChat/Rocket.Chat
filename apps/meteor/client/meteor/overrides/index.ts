@@ -1,7 +1,12 @@
+import './absoluteUrl';
 import './ddpOverREST';
+import './ddpSdkCollectionBridge';
 import './desktopInjection';
+import './killMeteorStream';
+import './oauthProxy';
 import './oauthRedirectUri';
 import './settings';
+import './stubMeteorStream';
+import './subscribeViaSDK';
 import './totpOnCall';
-import './unstoreLoginToken';
 import './userAndUsers';

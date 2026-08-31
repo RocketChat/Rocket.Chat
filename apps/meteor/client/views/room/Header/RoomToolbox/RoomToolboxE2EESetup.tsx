@@ -6,27 +6,21 @@ import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { roomActionHooksForE2EESetup } from '../../../../ui';
-import { useRoom } from '../../contexts/RoomContext';
-import { getRoomGroup } from '../../lib/getRoomGroup';
 
-type RoomToolboxE2EESetupProps = {
+export type RoomToolboxE2EESetupProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 
 const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
 	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
-	const room = useRoom();
 
 	const { tab } = toolbox;
 
 	const actions = useStableArray(
 		roomActionHooksForE2EESetup
 			.map((roomActionHook) => roomActionHook())
-			.filter(
-				(roomAction): roomAction is RoomToolboxActionConfig =>
-					!!roomAction && (!roomAction.groups || roomAction.groups.includes(getRoomGroup(room))),
-			),
+			.filter((roomAction): roomAction is RoomToolboxActionConfig => !!roomAction),
 	);
 
 	return (

@@ -1,9 +1,11 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
-const UserCardRole = ({ children }: { children: ReactNode }): ReactElement => (
-	<Box m={2} fontScale='c2'>
-		<Tag children={children} />
+export type UserCardRoleProps = { children: ReactNode };
+
+const UserCardRole = ({ children }: UserCardRoleProps) => (
+	<Box margin={2} fontScale='c2'>
+		<Tag>{children}</Tag>
 	</Box>
 );
 

@@ -1,16 +1,15 @@
 /* eslint-disable no-nested-ternary */
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.json';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
 import HeaderSkeleton from '../Header/HeaderSkeleton';
-import HeaderSkeletonV2 from '../HeaderV2/HeaderSkeleton';
 
-type RoomLayoutProps = {
+export type RoomLayoutProps = {
+	classificationBanner?: ReactNode;
 	header?: ReactNode;
 	body?: ReactNode;
 	footer?: ReactNode;
@@ -24,9 +23,9 @@ const useBreakpointsElement = () => {
 
 	const breakpoints = useMemo(
 		() =>
-			breakpointsDefinitions
-				.filter(({ minViewportWidth }) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
-				.map(({ name }) => name),
+			Object.entries(breakpointsDefinitions)
+				.filter(([, { minViewportWidth }]) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
+				.map(([name]) => name),
 		[borderBoxSize],
 	);
 
@@ -36,11 +35,12 @@ const useBreakpointsElement = () => {
 	};
 };
 
-const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps): ReactElement => {
+const RoomLayout = ({ classificationBanner, header, body, footer, aside, ...props }: RoomLayoutProps) => {
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
 	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
+	const hideBody = aside && contextualbarSize === '100%';
 
 	const layout = useLayout();
 
@@ -58,24 +58,12 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 				[layout, contextualbarPosition, contextualbarSize],
 			)}
 		>
-			<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
-				<Suspense
-					fallback={
-						<FeaturePreview feature='newNavigation'>
-							<FeaturePreviewOff>
-								<HeaderSkeleton />
-							</FeaturePreviewOff>
-							<FeaturePreviewOn>
-								<HeaderSkeletonV2 />
-							</FeaturePreviewOn>
-						</FeaturePreview>
-					}
-				>
-					{header}
-				</Suspense>
+			<Box height='full' width='full' display='flex' flexDirection='column' backgroundColor='room' {...props} ref={ref}>
+				{classificationBanner}
+				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-					<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
-						<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
+					<Box display={hideBody ? 'none' : 'flex'} flexDirection='column' flexGrow={1} minWidth={0}>
+						<Box is='div' display='flex' flexDirection='column' flexGrow={1} maxHeight='100%'>
 							<Suspense fallback={null}>{body}</Suspense>
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}

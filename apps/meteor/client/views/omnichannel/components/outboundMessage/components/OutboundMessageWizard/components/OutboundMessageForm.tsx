@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-type OutboundMessageFormProps = ComponentProps<typeof Box> & {
+export type OutboundMessageFormProps = ComponentProps<typeof Box> & {
 	onSubmit?: () => void;
 };
 

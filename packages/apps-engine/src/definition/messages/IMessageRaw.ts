@@ -1,10 +1,13 @@
-import type { IBlock, Block } from '@rocket.chat/ui-kit';
+import type { Block, LayoutBlock } from '@rocket.chat/ui-kit';
 
 import type { IRoom } from '../rooms';
 import type { IUserLookup } from '../users';
 import type { IMessageAttachment } from './IMessageAttachment';
 import type { IMessageFile } from './IMessageFile';
 import type { IMessageReactions } from './IMessageReaction';
+
+type InterfaceOf<T> = Pick<T, keyof T>;
+type IBlock = InterfaceOf<LayoutBlock>;
 
 /**
  * The raw version of a message, without resolved information for relationship fields, i.e.

@@ -7,7 +7,6 @@ import type {
 	LicenseLimit,
 	LicenseModule,
 	LicensePeriod,
-	Timestamp,
 } from '@rocket.chat/core-typings';
 
 import { encrypt, encryptStatsToken } from './token';
@@ -16,12 +15,12 @@ export class MockedLicenseBuilder {
 	information: {
 		id?: string;
 		autoRenew: boolean;
-		visualExpiration?: Timestamp;
-		notifyAdminsAt?: Timestamp;
-		notifyUsersAt?: Timestamp;
+		visualExpiration?: string;
+		notifyAdminsAt?: string;
+		notifyUsersAt?: string;
 		trial: boolean;
 		offline: boolean;
-		createdAt: Timestamp;
+		createdAt: string;
 		grantedBy: {
 			method: 'manual' | 'self-service' | 'sales' | 'support' | 'reseller';
 			seller?: string;
@@ -116,6 +115,11 @@ export class MockedLicenseBuilder {
 		};
 	}
 
+	public withCreatedAt(date: Date): this {
+		this.information.createdAt = date.toISOString();
+		return this;
+	}
+
 	public withExpiredDate(): this {
 		// expired 1 minute ago
 		const date = new Date();
@@ -170,6 +174,11 @@ export class MockedLicenseBuilder {
 
 	public withGrantedTo(grantedTo: { name?: string; company?: string; email?: string }): this {
 		this.information.grantedTo = grantedTo;
+		return this;
+	}
+
+	public withOffline(offline = true): this {
+		this.information.offline = offline;
 		return this;
 	}
 

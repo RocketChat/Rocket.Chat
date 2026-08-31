@@ -80,7 +80,7 @@ const replaceNestedPlurals = (
 		}
 	}
 
-	return Object.fromEntries(entries);
+	return Object.fromEntries(entries) as Record<string, any>;
 };
 
 const pipe =

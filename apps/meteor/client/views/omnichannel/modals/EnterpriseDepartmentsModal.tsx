@@ -14,14 +14,15 @@ import {
 } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
-const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
+// TODO: use `GenericModal` instead of creating a new modal from scratch
+// This seems a upSell modal for enterprise feature
+const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const ref = useRef<HTMLDivElement>(null);
@@ -42,17 +43,17 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 	useOutsideClick([ref], onClose);
 
 	return (
-		<Modal data-qa-id='enterprise-departments-modal' ref={ref}>
+		<Modal aria-label={t('Departments')} ref={ref}>
 			<ModalHeader>
 				<ModalHeaderText>
 					<ModalTagline>{t('Premium_capability')}</ModalTagline>
 					<ModalTitle>{t('Departments')}</ModalTitle>
 				</ModalHeaderText>
-				<ModalClose onClick={onClose} data-qa='modal-close' />
+				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
 				<ModalHeroImage src='/images/departments.svg' />
-				<Box fontScale='h3' mbe={28}>
+				<Box fontScale='h3' marginBlockEnd={28}>
 					{t('Premium_Departments_title')}
 				</Box>
 				{t('Premium_Departments_description_upgrade')}
@@ -60,7 +61,6 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-
 					<Button onClick={goToManageSubscriptionPage} primary>
 						{t('Upgrade')}
 					</Button>

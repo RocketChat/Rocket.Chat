@@ -1,20 +1,20 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
-import moment from 'moment';
-import type { ReactElement } from 'react';
+import { Box, FlexContainer, FlexItem, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { format, subDays } from 'date-fns';
 import { useMemo } from 'react';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
+import { formatDate } from '../../../../lib/utils/dateFormat';
 
-type ContentForDaysProps = {
+export type ContentForDaysProps = {
 	displacement: number;
 	onPreviousDateClick: () => void;
 	onNextDateClick: () => void;
 	timezone: 'utc' | 'local';
 };
 
-const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps): ReactElement => {
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useWeeklyChatActivity({ displacement, utc });
 
@@ -23,9 +23,10 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 			return null;
 		}
 
-		const endOfWeek = moment(data.day);
-		const startOfWeek = moment(data.day).subtract(6, 'days');
-		return `${startOfWeek.format('L')} - ${endOfWeek.format('L')}`;
+		const dayDate = new Date(data.day);
+		const endOfWeek = dayDate;
+		const startOfWeek = subDays(dayDate, 6);
+		return `${format(startOfWeek, 'P')} - ${format(endOfWeek, 'P')}`;
 	}, [data]);
 
 	const values = useMemo(
@@ -33,32 +34,32 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 			data?.month
 				?.map(({ users, day, month, year }) => ({
 					users,
-					day: moment({ year, month: month - 1, day }),
+					day: new Date(year, month - 1, day).getTime(),
 				}))
-				?.sort(({ day: a }, { day: b }) => a.diff(b))
-				?.map(({ users, day }) => ({ users, day: String(day.valueOf()) })) ?? [],
+				?.sort((a, b) => a.day - b.day)
+				?.map(({ users, day }) => ({ users, day: String(day) })) ?? [],
 		[data],
 	);
 
 	return (
 		<>
-			<Flex.Container alignItems='center' justifyContent='center'>
+			<FlexContainer alignItems='center' justifyContent='center'>
 				<Box>
 					<IconButton icon='chevron-down' verticalAlign='middle' small onClick={onPreviousDateClick} />
-					<Flex.Item basis='50%'>
+					<FlexItem basis='50%'>
 						<Margins inline={8}>
 							<Box is='span' textAlign='center'>
 								{formattedCurrentDate}
 							</Box>
 						</Margins>
-					</Flex.Item>
+					</FlexItem>
 					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
-			</Flex.Container>
-			<Flex.Container>
+			</FlexContainer>
+			<FlexContainer>
 				{data ? (
 					<Box height={196}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box position='relative'>
 								<Box position='absolute' width='full' height='full'>
 									<ResponsiveBar
@@ -85,7 +86,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (timestamp): string => moment(parseInt(timestamp, 10)).format('L'),
+											format: (timestamp): string => formatDate(parseInt(timestamp, 10), 'L'),
 										}}
 										axisLeft={null}
 										animate={true}
@@ -98,11 +99,6 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 														fill: colors.n600,
 														fontFamily:
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-														fontSize: '10px',
-														fontStyle: 'normal',
-														fontWeight: 600,
-														letterSpacing: '0.2px',
-														lineHeight: '12px',
 													},
 												},
 											},
@@ -110,12 +106,12 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Skeleton variant='rect' height={196} />
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

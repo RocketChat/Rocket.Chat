@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 
 import SidebarItemWithData from './SidebarItemWithData';
 
-type RoomListRowProps = {
+export type RoomListRowProps = {
 	data: {
 		t: TFunction;
 		openedRoom: string;

@@ -1,6 +1,6 @@
-import type { IPushToken } from '@rocket.chat/core-typings';
-import type { IPushTokenModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, IndexDescription } from 'mongodb';
+import type { IPushToken, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IPushTokenModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, FindCursor, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,10 +17,119 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		return [{ key: { userId: 1, authToken: 1 } }, { key: { appName: 1, token: 1 } }];
 	}
 
-	removeByUserIdExceptTokens(userId: string, tokens: string[]): Promise<DeleteResult> {
+	countApnTokens() {
+		const query = {
+			'token.apn': { $exists: true },
+		};
+
+		return this.countDocuments(query);
+	}
+
+	countGcmTokens() {
+		const query = {
+			'token.gcm': { $exists: true },
+		};
+
+		return this.countDocuments(query);
+	}
+
+	countTokensByUserId(userId: IUser['_id']) {
+		const query = {
+			userId,
+			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+		};
+
+		return this.countDocuments(query);
+	}
+
+	async findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ userId }, options);
+	}
+
+	findAllTokensByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				userId,
+				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+			},
+			options,
+		);
+	}
+
+	findTokensByUserIdExceptId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				_id: { $ne: idToIgnore },
+				userId,
+				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+			},
+			options,
+		);
+	}
+
+	async insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>> {
+		return this.insertOne({
+			enabled: true,
+			createdAt: new Date(),
+			...data,
+		});
+	}
+
+	async refreshTokenById(
+		id: IPushToken['_id'],
+		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId' | 'voipToken'>,
+	): Promise<UpdateResult<IPushToken>> {
+		return this.updateOne(
+			{ _id: id },
+			{
+				$set: {
+					token: data.token,
+					authToken: data.authToken,
+					appName: data.appName,
+					userId: data.userId,
+					...(data.voipToken && { voipToken: data.voipToken }),
+				},
+				...(!data.voipToken && { $unset: { voipToken: 1 } }),
+			},
+		);
+	}
+
+	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null> {
+		return this.findOne({
+			token,
+			appName,
+		});
+	}
+
+	removeByUserIdExceptTokens(userId: string, tokens: IPushToken['authToken'][]): Promise<DeleteResult> {
 		return this.deleteMany({
 			userId,
 			authToken: { $nin: tokens },
+		});
+	}
+
+	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'token' | 'appName' | 'authToken'>): Promise<DeleteResult> {
+		return this.deleteMany({
+			_id: { $ne: tokenData._id },
+			$or: [
+				{
+					token: tokenData.token,
+					appName: tokenData.appName,
+				},
+				{
+					authToken: tokenData.authToken,
+				},
+			],
 		});
 	}
 
@@ -28,5 +137,46 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		return this.deleteMany({
 			userId,
 		});
+	}
+
+	removeAllByTokenStringAndUserId(token: string, userId: string): Promise<DeleteResult> {
+		return this.deleteMany({
+			$or: [
+				{
+					'token.apn': token,
+				},
+				{
+					'token.gcm': token,
+				},
+				{
+					voipToken: token,
+				},
+			],
+			userId,
+		});
+	}
+
+	async removeOrUnsetByTokenString(token: string): Promise<void> {
+		await this.deleteMany({
+			$or: [
+				{
+					'token.apn': token,
+				},
+				{
+					'token.gcm': token,
+				},
+			],
+		});
+
+		await this.updateMany(
+			{
+				voipToken: token,
+			},
+			{
+				$unset: {
+					voipToken: 1,
+				},
+			},
+		);
 	}
 }

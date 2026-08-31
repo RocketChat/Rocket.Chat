@@ -1,7 +1,7 @@
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type CustomUserStatusDisabledModalProps = { isAdmin: boolean; onConfirm: () => void; onClose: () => void };
+export type CustomUserStatusDisabledModalProps = { isAdmin: boolean; onConfirm: () => void; onClose: () => void };
 
 const CustomUserStatusDisabledModal = ({ isAdmin, onConfirm, onClose }: CustomUserStatusDisabledModalProps) => {
 	const { t } = useTranslation();
@@ -10,22 +10,18 @@ const CustomUserStatusDisabledModal = ({ isAdmin, onConfirm, onClose }: CustomUs
 			title={t('User_status_disabled_learn_more')}
 			cancelText={t('Close')}
 			confirmText={t('Go_to_workspace_settings')}
-			children={t('User_status_disabled_learn_more_description')}
 			onConfirm={onConfirm}
 			onClose={onClose}
 			onCancel={onClose}
 			icon={null}
 			variant='warning'
-		/>
+		>
+			{t('User_status_disabled_learn_more_description')}
+		</GenericModal>
 	) : (
-		<GenericModal
-			title={t('User_status_disabled_learn_more')}
-			confirmText={t('Close')}
-			children={t('User_status_disabled_learn_more_description')}
-			onConfirm={onConfirm}
-			onClose={onClose}
-			icon={null}
-		/>
+		<GenericModal title={t('User_status_disabled_learn_more')} confirmText={t('Close')} onConfirm={onConfirm} onClose={onClose} icon={null}>
+			{t('User_status_disabled_learn_more_description')}
+		</GenericModal>
 	);
 };
 

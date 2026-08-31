@@ -23,6 +23,7 @@ export const processMessageEditing = async (
 	}
 
 	try {
+		chat.composer?.clear();
 		await chat.data.updateMessage({ ...message, _id: mid }, previewUrls);
 	} catch (error) {
 		dispatchToastMessage({ type: 'error', message: error });

@@ -7,7 +7,7 @@ import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
-type InstancesModalProps = {
+export type InstancesModalProps = {
 	instances: IInstance[];
 	onClose: () => void;
 };
@@ -69,15 +69,6 @@ const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
 								}
 							>
 								{formatDateAndTime(instanceRecord?._createdAt)}
-							</DescriptionListEntry>
-							<DescriptionListEntry
-								label={
-									<>
-										{t('Instance_Record')} &gt; {t('Updated_at')}
-									</>
-								}
-							>
-								{formatDateAndTime(instanceRecord?._updatedAt)}
 							</DescriptionListEntry>
 						</DescriptionList>
 					</AccordionItem>

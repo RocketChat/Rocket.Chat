@@ -1,5 +1,4 @@
-import { Accounts } from 'meteor/accounts-base';
-
+import { getDdpSdk } from './sdk/ddpSdk';
 import { getUserId } from './user';
 
 const isLoggedIn = () => {
@@ -13,8 +12,8 @@ export const whenLoggedIn = () => {
 	}
 
 	return new Promise<void>((resolve) => {
-		const subscription = Accounts.onLogin(() => {
-			subscription.stop();
+		const stop = getDdpSdk().account.onLogin(() => {
+			stop();
 			resolve();
 		});
 	});
@@ -30,11 +29,11 @@ export const onLoggedIn = (cb: (() => () => void) | (() => Promise<() => void>) 
 		}
 	};
 
-	const subscription = Accounts.onLogin(handler);
+	const stop = getDdpSdk().account.onLogin(handler);
 	if (isLoggedIn()) handler();
 
 	return () => {
-		subscription.stop();
+		stop();
 		cleanup?.();
 	};
 };

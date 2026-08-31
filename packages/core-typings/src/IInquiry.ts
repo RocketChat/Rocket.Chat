@@ -6,12 +6,6 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
 import type { SelectedAgent } from './omnichannel/routing';
 
-export interface IInquiry {
-	_id: string;
-	_updatedAt?: Date;
-	department?: string;
-}
-
 export enum LivechatInquiryStatus {
 	VERIFYING = 'verifying',
 	QUEUED = 'queued',

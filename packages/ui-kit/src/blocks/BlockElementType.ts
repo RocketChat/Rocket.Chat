@@ -1,32 +1,25 @@
-export enum BlockElementType {
-	BUTTON = 'button',
-	IMAGE = 'image',
-	OVERFLOW = 'overflow',
-	/** @deprecated */
-	OVERFLOW_MENU = 'overflow',
-	PLAIN_TEXT_INPUT = 'plain_text_input',
-	STATIC_SELECT = 'static_select',
-	MULTI_STATIC_SELECT = 'multi_static_select',
-	/** @deprecated */
-	CONVERSATION_SELECT = 'conversations_select',
-	/** @deprecated */
-	CHANNEL_SELECT = 'channels_select',
-	/** @deprecated */
-	USER_SELECT = 'users_select',
-	CONVERSATIONS_SELECT = 'conversations_select',
-	CHANNELS_SELECT = 'channels_select',
-	USERS_SELECT = 'users_select',
-	DATEPICKER = 'datepicker',
-	LINEAR_SCALE = 'linear_scale',
-	MULTI_CHANNELS_SELECT = 'multi_channels_select',
-	MULTI_CONVERSATIONS_SELECT = 'multi_conversations_select',
-	MULTI_USERS_SELECT = 'multi_users_select',
-	TOGGLE_SWITCH = 'toggle_switch',
-	RADIO_BUTTON = 'radio_button',
-	CHECKBOX = 'checkbox',
-	TIME_PICKER = 'time_picker',
-	TAB = 'tab',
+import type { BlockElement } from './BlockElement';
 
-	ICON = 'icon',
-	ICON_BUTTON = 'icon_button',
-}
+export const BlockElementType = {
+	BUTTON: 'button',
+	CHANNELS_SELECT: 'channels_select',
+	CHECKBOX: 'checkbox',
+	CONVERSATIONS_SELECT: 'conversations_select',
+	DATEPICKER: 'datepicker',
+	ICON: 'icon',
+	ICON_BUTTON: 'icon_button',
+	IMAGE: 'image',
+	LINEAR_SCALE: 'linear_scale',
+	MULTI_CHANNELS_SELECT: 'multi_channels_select',
+	MULTI_CONVERSATIONS_SELECT: 'multi_conversations_select',
+	MULTI_STATIC_SELECT: 'multi_static_select',
+	MULTI_USERS_SELECT: 'multi_users_select',
+	OVERFLOW: 'overflow',
+	PLAIN_TEXT_INPUT: 'plain_text_input',
+	RADIO_BUTTON: 'radio_button',
+	STATIC_SELECT: 'static_select',
+	TAB: 'tab',
+	TIME_PICKER: 'time_picker',
+	TOGGLE_SWITCH: 'toggle_switch',
+	USERS_SELECT: 'users_select',
+} as const satisfies Record<Uppercase<BlockElement['type']>, BlockElement['type']>;

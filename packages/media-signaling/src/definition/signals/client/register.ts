@@ -6,6 +6,8 @@ export type ClientMediaSignalRegister = {
 	contractId: string;
 
 	oldContractId?: string;
+	// If true, signals for existing calls will be re-sent to the client
+	requestSignals?: boolean;
 };
 
 export const clientMediaSignalRegisterSchema: JSONSchemaType<ClientMediaSignalRegister> = {
@@ -22,6 +24,10 @@ export const clientMediaSignalRegisterSchema: JSONSchemaType<ClientMediaSignalRe
 		},
 		oldContractId: {
 			type: 'string',
+			nullable: true,
+		},
+		requestSignals: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},

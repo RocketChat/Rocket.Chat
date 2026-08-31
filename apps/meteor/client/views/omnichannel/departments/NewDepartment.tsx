@@ -8,7 +8,7 @@ import EditDepartment from './EditDepartment';
 import PageSkeleton from '../../../components/PageSkeleton';
 import EnterpriseDepartmentsModal from '../modals/EnterpriseDepartmentsModal';
 
-type NewDepartmentProps = {
+export type NewDepartmentProps = {
 	id?: string;
 };
 

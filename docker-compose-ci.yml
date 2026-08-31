@@ -5,6 +5,7 @@ services:
     build:
       dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -13,7 +14,8 @@ services:
         DENO_VERSION: ${DENO_VERSION:-}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
+      - APPS_ENGINE_RUNTIME_BACKEND=${APPS_ENGINE_RUNTIME_BACKEND:-}
       - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
@@ -24,11 +26,13 @@ services:
       - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
       - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
       - traefik
       - mongo
@@ -37,7 +41,17 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.routers.rocketchat.middlewares: test-retry
       traefik.http.middlewares.test-retry.retry.attempts: 4
+      # dedicated route for dynamic-import: buffering coalesces the tiny POST
+      # into a single upstream write, closing the go-transport early-response
+      # race window (response beating the request-write bookkeeping kills the
+      # conn mid body copy); scoped here because suite-wide buffering broke
+      # 404/CORS response semantics
+      traefik.http.routers.rocketchat-dynimport.rule: PathPrefix(`/__meteor__/dynamic-import`)
+      traefik.http.routers.rocketchat-dynimport.service: rocketchat
+      traefik.http.routers.rocketchat-dynimport.middlewares: test-buffer,test-retry
+      traefik.http.middlewares.test-buffer.buffering.retryExpression: IsNetworkError() && Attempts() < 4
     healthcheck:
       interval: 2s
       timeout: 5s
@@ -47,8 +61,9 @@ services:
 
   authorization-service:
     build:
-      dockerfile: ee/apps/authorization-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/authorization-service
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -67,8 +82,9 @@ services:
 
   account-service:
     build:
-      dockerfile: ee/apps/account-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/account-service
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -87,8 +103,9 @@ services:
 
   presence-service:
     build:
-      dockerfile: ee/apps/presence-service/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/presence-service
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -107,8 +124,9 @@ services:
 
   ddp-streamer-service:
     build:
-      dockerfile: ee/apps/ddp-streamer/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/ddp-streamer
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -131,31 +149,11 @@ services:
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
 
-  stream-hub-service:
-    build:
-      dockerfile: ee/apps/stream-hub-service/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
-      args:
-        SERVICE: stream-hub-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
-
   queue-worker-service:
     build:
-      dockerfile: ee/apps/queue-worker/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/queue-worker
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -174,8 +172,9 @@ services:
 
   omnichannel-transcript-service:
     build:
-      dockerfile: ee/apps/omnichannel-transcript/Dockerfile
-      context: .
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/omnichannel-transcript
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -184,7 +183,7 @@ services:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
-      - TEST_MODE=true
+      - 'TEST_MODE=${TEST_MODE:-true}'
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
@@ -197,7 +196,7 @@ services:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.2}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     container_name: mongo
     restart: on-failure
     ports:
@@ -222,11 +221,28 @@ services:
   httpbin:
     image: kong/httpbin
 
+  mock-server:
+    image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
+    profiles:
+      - api
+    ports:
+      - 4000:8080
+    networks:
+      default:
+        # single-label hostnames fail server-fetch SSRF domain validation and message-parser only links TLDs
+        # from its whitelist (.local/.test/.internal are not in it), so oembed tests reach it through this alias
+        aliases:
+          - mock-server.dev
+    healthcheck:
+      test: ['CMD', '/mock-server', '-healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.6.6
     command:
       - --providers.docker=true
-      - '--serverstransport.maxidleconnsperhost=-1'
     ports:
       - 3000:80
     volumes:

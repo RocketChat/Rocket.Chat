@@ -1,0 +1,16 @@
+name: 'Restore Packages Build'
+description: 'Downloads and unpacks the packages build artifact'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Restore packages build
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: packages-build
+        path: /tmp
+
+    - name: Unpack packages build
+      shell: bash
+      run: |
+        tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .

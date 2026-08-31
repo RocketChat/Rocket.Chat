@@ -1,23 +1,17 @@
-import {
-	isEncryptedMessageContent,
-	isOTRAckMessage,
-	isOTRMessage,
-	type IEditedMessage,
-	type IMessage,
-	type IRoom,
-	type ISubscription,
-} from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
-import moment from 'moment';
+import { differenceInMinutes } from 'date-fns';
 
 import type { DataAPI } from './ChatAPI';
-import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
+import { hasAtLeastOnePermission, hasPermission } from '../authorization';
 import { settings } from '../settings';
 import { getUserId } from '../user';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 import { prependReplies } from '../utils/prependReplies';
+import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (
@@ -41,7 +35,8 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
-		Messages.state.find((record) => record._id === mid && record._hidden !== true) ?? sdk.call('getSingleMessage', mid);
+		Messages.state.find((record) => record._id === mid && record._hidden !== true) ??
+		sdk.rest.get('/v1/chat.getMessage', { msgId: mid }).then((response) => mapMessageFromApi(response.message));
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -74,22 +69,18 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		if (isOTRMessage(message) || isOTRAckMessage(message)) {
-			return false;
-		}
-
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = (settings.peek('Message_AllowEditing') as boolean | undefined) ?? false;
+		const editAllowed = settings.peek('Message_AllowEditing') ?? false;
 		const editOwn = message?.u && message.u._id === getUserId();
 
 		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
-		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes');
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
-		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
 		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
 			return false;
 		}
@@ -174,7 +165,12 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
+		const fullMessage = { ...message, rid, ...(tmid && { tmid }) };
+		Messages.state.store(fullMessage);
+
+		if (tmid) {
+			upsertThreadMessageInCache(fullMessage, rid, tmid);
+		}
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
@@ -212,7 +208,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return true;
 		}
 
-		const deletionEnabled = settings.peek('Message_AllowDeleting') as boolean | undefined;
+		const deletionEnabled = settings.peek('Message_AllowDeleting');
 		if (!deletionEnabled) {
 			return false;
 		}
@@ -225,9 +221,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes');
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
-		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const elapsedMinutes = differenceInMinutes(new Date(), message.ts);
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
 		return deleteAllowed && onTimeForDelete;
@@ -278,7 +274,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.state.find((record) => record.rid === rid);
 
 	const joinRoom = async (): Promise<void> => {
-		await sdk.call('joinRoom', rid);
+		await sdk.rest.post('/v1/rooms.join', { roomId: rid });
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>

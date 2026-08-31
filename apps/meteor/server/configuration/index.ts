@@ -7,11 +7,12 @@ import { configureCORS } from './configureCORS';
 import { configureDirectReply } from './configureDirectReply';
 import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
+import { configurePassport } from './configurePassport';
 import { configureSMTP } from './configureSMTP';
 import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([
@@ -28,5 +29,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureDirectReply(settings),
 		configureSMTP(settings),
 		configureIRC(settings),
+		configurePassport(settings),
 	]);
 }

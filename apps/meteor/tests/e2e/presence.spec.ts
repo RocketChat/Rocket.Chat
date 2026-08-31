@@ -1,38 +1,28 @@
 import { faker } from '@faker-js/faker';
 
-import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Registration, HomeChannel } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { AccountProfile, HomeChannel, Login } from './page-objects';
 import { test, expect } from './utils/test';
-import { links } from '../../client/lib/links';
 
 test.describe.serial('Presence', () => {
-	let poRegistration: Registration;
+	let poLogin: Login;
 	let poHomeChannel: HomeChannel;
+	let poAccountProfile: AccountProfile;
 
 	test.beforeEach(async ({ page }) => {
-		poRegistration = new Registration(page);
+		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
+		poAccountProfile = new AccountProfile(page);
 
 		await page.goto('/home');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
-	});
-
 	test.describe('Login using default settings', () => {
 		test('should user be online after log in', async () => {
-			await poRegistration.username.fill('user1');
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
-			await expect(poHomeChannel.sidenav.btnUserProfileMenu).toBeVisible();
+			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
 		});
 	});
 
@@ -42,7 +32,7 @@ test.describe.serial('Presence', () => {
 
 		test('should user custom status be reactive', async ({ browser }) => {
 			await test.step('user1 custom status should be empty', async () => {
-				await poHomeChannel.sidenav.openChat('user1');
+				await poHomeChannel.navbar.openChat('user1');
 
 				await expect(poHomeChannel.content.channelHeader).not.toContainText(customStatus);
 			});
@@ -52,148 +42,204 @@ test.describe.serial('Presence', () => {
 				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
 
-				await user1Channel.sidenav.changeUserCustomStatus(customStatus);
+				await user1Channel.navbar.changeUserCustomStatus(customStatus);
 				await user1Page.close();
 			});
 
 			await test.step('should user1 custom status be updated', async () => {
-				await poHomeChannel.sidenav.openChat('user1');
+				await poHomeChannel.navbar.openChat('user1');
 
 				await expect(poHomeChannel.content.channelHeader).toContainText(customStatus);
 			});
 		});
 
 		test('should be able to erase custom status', async ({ page }) => {
-			await poHomeChannel.sidenav.changeUserCustomStatus(customStatus);
-			await poHomeChannel.sidenav.btnUserProfileMenu.click();
-			await expect(poHomeChannel.sidenav.userProfileMenu).toContainText(customStatus);
+			await poHomeChannel.navbar.changeUserCustomStatus(customStatus);
+			await poHomeChannel.navbar.btnUserMenu.click();
+			await expect(poHomeChannel.navbar.userMenu).toContainText(customStatus);
 			await page.keyboard.press('Escape');
 
-			await poHomeChannel.sidenav.changeUserCustomStatus('');
+			await poHomeChannel.navbar.changeUserCustomStatus('');
 
-			await poHomeChannel.sidenav.btnUserProfileMenu.click();
-			await expect(async () => expect(poHomeChannel.sidenav.userProfileMenu).not.toContainText(customStatus)).toPass();
+			await poHomeChannel.navbar.btnUserMenu.click();
+			await expect(async () => expect(poHomeChannel.navbar.userMenu).not.toContainText(customStatus)).toPass();
+		});
+
+		test('should not save custom status as `undefined` if nothing changes', async ({ page }) => {
+			await poHomeChannel.navbar.openEditStatusModal();
+
+			const { editStatusModal } = poHomeChannel.navbar;
+
+			await test.step('Save stays disabled while the form is untouched', async () => {
+				await expect(editStatusModal.btnSubmit).toBeDisabled();
+			});
+
+			await test.step('closing without changes leaves stored status untouched', async () => {
+				await editStatusModal.close();
+				expect(await page.evaluate(() => localStorage.getItem('fuselage-localStorage-Local_Custom_Status'))).not.toBe('undefined');
+			});
+		});
+
+		test('should show both Custom Status action and active status row when a custom status is set', async ({ page }) => {
+			const text = faker.string.alpha(8);
+
+			await test.step('Custom Status entry visible while no status is set', async () => {
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.btnCustomStatus).toBeVisible();
+				await page.keyboard.press('Escape');
+			});
+
+			await test.step('after setting a status, Custom Status entry stays visible alongside the active row', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatus(text);
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.btnCustomStatus).toBeVisible();
+				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
+				await page.keyboard.press('Escape');
+			});
+
+			await test.step('cleanup', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatus('');
+			});
 		});
 	});
 
-	test.describe('Login using with "Methods by REST" disabled', () => {
-		test.skip(IS_EE, `Micro services don't support turning this setting off`);
-
-		test.beforeAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
-		});
-
-		test('expect user to be online after log in', async ({ page }) => {
-			await poRegistration.username.type('user1');
-			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
-
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
-		});
-	});
-
-	// This test is supposed to be ran locally because it is too slow.
-	// It is also a workaround until we find a better way to test this.
-	test.describe.skip('Calendar appointment automatic status', () => {
-		test.describe.configure({ timeout: 1000 * 60 * 10 });
+	test.describe('Status expiration', () => {
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', true);
+		test('should toggle custom date/time inputs when selecting duration', async () => {
+			await poHomeChannel.navbar.openEditStatusModal();
+
+			const { editStatusModal } = poHomeChannel.navbar;
+
+			await editStatusModal.setStatusMessage('available');
+
+			await editStatusModal.selectDuration('Choose date and time');
+			await expect(editStatusModal.customDateInput).toBeVisible();
+			await expect(editStatusModal.customTimeInput).toBeVisible();
+
+			await editStatusModal.selectDuration("Don't clear");
+			await expect(editStatusModal.customDateInput).not.toBeVisible();
+			await expect(editStatusModal.customTimeInput).not.toBeVisible();
+
+			await editStatusModal.close();
 		});
 
-		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', false);
+		test('should reject custom expiration in the past', async () => {
+			await poHomeChannel.navbar.openEditStatusModal();
+
+			const { editStatusModal } = poHomeChannel.navbar;
+
+			await editStatusModal.setStatusMessage('available');
+
+			await editStatusModal.selectDuration('Choose date and time');
+
+			const today = new Date().toLocaleDateString('en-CA');
+
+			await editStatusModal.customDateInput.fill(today);
+			await editStatusModal.customTimeInput.fill('00:00');
+			await editStatusModal.btnSubmit.click();
+
+			await expect(editStatusModal.durationError).toBeVisible();
+			await editStatusModal.close();
 		});
 
-		test('Should change user status to busy when there is an appointment', async ({ page, api }) => {
-			await page.goto('/home');
+		test('should reject custom expiration when date/time is missing', async () => {
+			await poHomeChannel.navbar.openEditStatusModal();
 
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
-			expect(
-				(
-					await api.post('/calendar-events.create', {
-						startTime: new Date(new Date().getTime() + 1000 * 60 * 2).toISOString(),
-						endTime: new Date(new Date().getTime() + 1000 * 60 * 3).toISOString(),
-						subject: 'Test appointment',
-						description: 'Test appointment description',
-						meetingUrl: links.rocketChat,
-					})
-				).status(),
-			).toBe(200);
+			const { editStatusModal } = poHomeChannel.navbar;
 
-			await test.step('Should change status to busy', async () => {
-				// wait 2 minutes to ensure the status is changed
-				await page.waitForTimeout(1000 * 60 * 2);
+			await editStatusModal.setStatusMessage('available');
 
-				await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--busy')).toBeVisible();
+			await editStatusModal.selectDuration('Choose date and time');
+			await editStatusModal.customDateInput.fill('');
+			await editStatusModal.btnSubmit.click();
+
+			await expect(editStatusModal.durationMissingError).toBeVisible();
+			await editStatusModal.close();
+		});
+
+		test('should set status with custom date/time expiration', async ({ page }) => {
+			const tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			const dateStr = tomorrow.toLocaleDateString('en-CA');
+			const timeStr = '12:00';
+
+			await test.step('set status with custom expiration', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatusWithExpiration({
+					message: 'custom deadline',
+					duration: 'Choose date and time',
+					customDate: dateStr,
+					customTime: timeStr,
+				});
 			});
 
-			await test.step('Should revert status to online', async () => {
-				// wait 2 minutes to ensure the status is changed
-				await page.waitForTimeout(1000 * 60);
+			await test.step('verify expiration is displayed in user menu', async () => {
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.userMenu).toContainText('custom deadline');
+				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');
+				await page.keyboard.press('Escape');
+			});
 
-				await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
+			await test.step('clear status', async () => {
+				await poHomeChannel.navbar.changeUserStatus('online');
 			});
 		});
 
-		test('Should not change status to busy if the event is deleted', async ({ page, api }) => {
-			await page.goto('/home');
-
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
-
-			const apiResponse = await api.post('/calendar-events.create', {
-				startTime: new Date(new Date().getTime() + 1000 * 60 * 2).toISOString(),
-				endTime: new Date(new Date().getTime() + 1000 * 60 * 3).toISOString(),
-				subject: 'Test appointment',
-				description: 'Test appointment description',
-				meetingUrl: links.rocketChat,
+		test('should set status with expiration, show it, and clear it', async ({ page }) => {
+			await test.step('set busy status with 30-minute expiration', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatusWithExpiration({
+					message: 'focus time',
+					statusType: 'Busy',
+					duration: '30 minutes',
+				});
 			});
 
-			expect(apiResponse.status()).toBe(200);
+			await test.step('verify expiration is displayed in user menu', async () => {
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.userMenu).toContainText('focus time');
+				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');
+				await page.keyboard.press('Escape');
+			});
 
-			const eventId = (await apiResponse.json()).id;
+			await test.step('clear status and verify expiration is removed', async () => {
+				await poHomeChannel.navbar.changeUserStatus('online');
 
-			expect((await api.post('/calendar-events.delete', { eventId })).status()).toBe(200);
-
-			await page.waitForTimeout(1000 * 60 * 2);
-
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.userMenu).not.toContainText('Until');
+				await expect(poHomeChannel.navbar.userMenu).not.toContainText('focus time');
+			});
 		});
+	});
 
-		test('Should update status to busy when the event is updated', async ({ page, api }) => {
-			await page.goto('/home');
+	test.describe('Status set from account profile', () => {
+		test.use({ storageState: Users.admin.state });
 
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
+		test('should save status with expiration from the profile form and surface it in the user menu', async ({ page }) => {
+			const text = faker.string.alpha(10);
 
-			const apiResponse = await api.post('/calendar-events.create', {
-				startTime: new Date(new Date().getTime() + 1000 * 60 * 50).toISOString(),
-				endTime: new Date(new Date().getTime() + 1000 * 60 * 55).toISOString(),
-				subject: 'Test appointment',
-				description: 'Test appointment description',
-				meetingUrl: links.rocketChat,
+			await test.step('fill Status field + Clear-after on /account/profile and save', async () => {
+				await page.goto('/account/profile');
+				await poAccountProfile.inputStatusText.fill(text);
+				await poAccountProfile.chooseClearStatusAfter('30 minutes');
+				await Promise.all([
+					page.waitForResponse((r) => r.url().endsWith('/v1/users.setStatus') && r.ok()),
+					page.waitForResponse((r) => r.url().endsWith('/v1/users.updateOwnBasicInfo') && r.ok()),
+					poAccountProfile.btnSaveChanges.click(),
+				]);
+				await expect(page.getByText('Profile saved successfully')).toBeVisible();
 			});
 
-			expect(apiResponse.status()).toBe(200);
+			await test.step('status with expiration appears in user menu', async () => {
+				await page.goto('/home');
+				await poHomeChannel.navbar.btnUserMenu.click();
+				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
+				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');
+				await page.keyboard.press('Escape');
+			});
 
-			const eventId = (await apiResponse.json()).id;
-
-			expect(
-				(
-					await api.post('/calendar-events.update', {
-						eventId,
-						startTime: new Date(new Date().getTime() + 1000 * 60 * 2).toISOString(),
-						subject: 'Test appointment updated',
-						description: 'Test appointment description updated',
-						meetingUrl: links.rocketChatUpdated,
-					})
-				).status(),
-			).toBe(200);
-
-			// wait 2 minutes to ensure the status is changed
-			await page.waitForTimeout(1000 * 60 * 2);
-
-			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--busy')).toBeVisible();
+			await test.step('cleanup', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatus('');
+			});
 		});
 	});
 });

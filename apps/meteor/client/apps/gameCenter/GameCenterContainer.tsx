@@ -7,7 +7,6 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
@@ -18,7 +17,7 @@ interface IGameCenterContainerProps {
 	game: IGame;
 }
 
-const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps): ReactElement => {
+const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -30,7 +29,7 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 				</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent pb={16}>
+			<ContextualbarContent paddingBlock={16}>
 				<iframe title={t('Apps_Game_Center')} style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url} />
 			</ContextualbarContent>
 		</ContextualbarDialog>

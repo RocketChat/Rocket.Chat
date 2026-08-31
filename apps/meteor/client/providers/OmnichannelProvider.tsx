@@ -12,7 +12,6 @@ import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -21,6 +20,7 @@ import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
+import { initializeLivechatInquiryStream } from '../lib/omnichannel/queueManager';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -37,7 +37,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	},
 };
 
-type OmnichannelProviderProps = {
+export type OmnichannelProviderProps = {
 	children?: ReactNode;
 };
 
@@ -59,14 +59,12 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const user = useUser() as IOmnichannelAgent;
 
 	const agentAvailable = user?.statusLivechat === 'available';
-	const voipCallAvailable = true; // TODO: use backend check;
 
 	const getRoutingConfig = useEndpoint('GET', '/v1/livechat/config/routing');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
 	const accessible = hasAccess && omniChannelEnabled;
-	const iceServersSetting: any = useSetting('WebRTC_Servers');
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
@@ -119,7 +117,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
+	}, [accessible, getRoutingConfig, omnichannelRouting, setRouteConfig]);
 
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
@@ -185,7 +183,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				enabled: true,
 				isEnterprise,
 				agentAvailable,
-				voipCallAvailable,
 				routeConfig,
 				livechatPriorities,
 				isOverMacLimit,
@@ -197,7 +194,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			enabled: true,
 			isEnterprise,
 			agentAvailable,
-			voipCallAvailable,
 			routeConfig,
 			inquiries: queue
 				? {
@@ -218,14 +214,13 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		manuallySelected,
 		isEnterprise,
 		agentAvailable,
-		voipCallAvailable,
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
 		isOverMacLimit,
 	]);
 
-	return <OmnichannelContext.Provider children={children} value={contextValue} />;
+	return <OmnichannelContext.Provider value={contextValue}>{children}</OmnichannelContext.Provider>;
 };
 
 export default memo<typeof OmnichannelProvider>(OmnichannelProvider);

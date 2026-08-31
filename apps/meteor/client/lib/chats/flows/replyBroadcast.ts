@@ -5,11 +5,12 @@ import { roomCoordinator } from '../../rooms/roomCoordinator';
 import type { ChatAPI } from '../ChatAPI';
 
 export const replyBroadcast = async (_chat: ChatAPI, message: IMessage) => {
+	const { msg: _, ...searchParameters } = router.getSearchParameters();
 	roomCoordinator.openRouteLink(
 		'd',
 		{ name: message.u.username },
 		{
-			...router.getSearchParameters(),
+			...searchParameters,
 			reply: message._id,
 		},
 	);

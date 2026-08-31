@@ -2,7 +2,6 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveAgent } from '../hooks/useRemoveAgent';
@@ -20,18 +19,18 @@ const AgentsTableRow = ({
 		statusLivechat: string;
 	};
 	mediaQuery: boolean;
-}): ReactElement => {
+}) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
 	const handleDelete = useRemoveAgent(_id);
 
 	return (
-		<GenericTableRow data-qa-id={username} action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
+		<GenericTableRow action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
-					<Box display='flex' withTruncatedText mi={8}>
+					<Box display='flex' withTruncatedText marginInline={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
@@ -50,7 +49,7 @@ const AgentsTableRow = ({
 					<Box fontScale='p2m' withTruncatedText color='hint'>
 						{username}
 					</Box>
-					<Box mi={4} />
+					<Box marginInline={4} />
 				</GenericTableCell>
 			)}
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>

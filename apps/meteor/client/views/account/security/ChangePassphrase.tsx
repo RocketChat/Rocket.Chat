@@ -2,7 +2,6 @@ import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Pa
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -43,7 +42,7 @@ const defaultValues = {
 	confirmationPassphrase: '',
 };
 
-export const ChangePassphrase = (): JSX.Element => {
+export const ChangePassphrase = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -99,17 +98,14 @@ export const ChangePassphrase = (): JSX.Element => {
 
 	return (
 		<>
-			<Box
-				is='p'
-				fontScale='p1'
-				id={e2ePasswordExplanationId}
-				dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Encryption_Password_Explanation')) }}
-			/>
-			<Box mbs={36} w='full'>
-				<Box is='h3' fontScale='h4' mbe={12}>
+			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
+			</Box>
+			<Box marginBlockStart={36} width='full'>
+				<Box is='h3' fontScale='h4' marginBlockEnd={12}>
 					{t('Change_E2EE_password')}
 				</Box>
-				<FieldGroup w='full'>
+				<FieldGroup width='full'>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>
@@ -196,13 +192,7 @@ export const ChangePassphrase = (): JSX.Element => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button
-					primary
-					disabled={!(keysExist && valid && isValid)}
-					onClick={handleSubmit(handleSave)}
-					mbs={12}
-					data-qa-type='e2e-encryption-save-password-button'
-				>
+				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} marginBlockStart={12}>
 					{t('Save_changes')}
 				</Button>
 			</Box>

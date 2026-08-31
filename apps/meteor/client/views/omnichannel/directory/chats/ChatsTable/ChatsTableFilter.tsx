@@ -1,24 +1,27 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../../components/FilterByText';
 import { useChatsContext } from '../../contexts/ChatsContext';
+import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
 
 const ChatsTableFilter = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 	const queryClient = useQueryClient();
 	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
+	const canRemoveAllClosedChats = usePermission('remove-closed-livechat-rooms');
 
 	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter, textInputRef } = useChatsContext();
 
-	const handleRemoveAllClosed = useEffectEvent(async () => {
+	const handleRemoveAllClosed = useStableCallback(async () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedRooms();
@@ -31,41 +34,35 @@ const ChatsTableFilter = () => {
 			}
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				data-qa-id='current-chats-modal-remove-all-closed'
-				onConfirm={onDeleteAll}
-				onCancel={() => setModal(null)}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAll} onCancel={() => setModal(null)} confirmText={t('Delete')} />);
 	});
 
-	const menuItems = [
-		{
-			items: [
+	const menuItems = canRemoveAllClosedChats
+		? [
 				{
-					id: 'delete-all-closed-chats',
-					variant: 'danger',
-					icon: 'trash',
-					content: t('Delete_all_closed_chats'),
-					onClick: handleRemoveAllClosed,
-				} as const,
-			],
-		},
-	];
+					items: [
+						{
+							id: 'delete-all-closed-chats',
+							variant: 'danger',
+							icon: 'trash',
+							content: t('Delete_all_closed_chats'),
+							onClick: handleRemoveAllClosed,
+						} as const,
+					],
+				},
+			]
+		: [];
 
 	return (
 		<>
 			<FilterByText
-				ref={textInputRef}
+				ref={textInputRef as RefObject<HTMLInputElement>}
 				value={filtersQuery.guest}
 				onChange={(event) => setFiltersQuery((prevState) => ({ ...prevState, guest: event.target.value }))}
 			>
 				<Button
 					onClick={() =>
-						directoryRoute.push({
+						omnichannelDirectoryRouter.navigate({
 							tab: 'chats',
 							context: 'filters',
 						})
@@ -74,16 +71,16 @@ const ChatsTableFilter = () => {
 				>
 					{t('Filters')}
 				</Button>
-				<GenericMenu placement='bottom-end' detached title={t('More')} sections={menuItems} />
+				{menuItems.length > 0 && <GenericMenu placement='bottom-end' detached title={t('More')} sections={menuItems} />}
 			</FilterByText>
-			<Box display='flex' flexWrap='wrap' mbe={4}>
+			<Box display='flex' flexWrap='wrap' marginBlockEnd={4}>
 				{Object.entries(displayFilters).map(([value, label], index) => {
 					if (!label) {
 						return null;
 					}
 
 					return (
-						<Chip mie={8} mbe={8} key={index} onClick={() => removeFilter(value)}>
+						<Chip marginInlineEnd={8} marginBlockEnd={8} key={index} onClick={() => removeFilter(value)}>
 							{label}
 						</Chip>
 					);

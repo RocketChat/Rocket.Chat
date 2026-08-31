@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type UnorderedListBlockProps = {
+export type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
@@ -24,7 +24,7 @@ const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
 		{items.map(({ value }, index) => (
 			<View style={styles.list} key={index}>
 				<Text style={styles.bullet}>•</Text>
-				<InlineElements children={value} />
+				<InlineElements>{value}</InlineElements>
 			</View>
 		))}
 	</View>

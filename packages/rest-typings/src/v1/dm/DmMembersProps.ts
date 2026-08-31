@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({ coerceTypes: true });
+import { ajvQuery } from '../Ajv';
 
 export type DmMemberProps = PaginatedRequest<
 	(
@@ -18,7 +15,7 @@ export type DmMemberProps = PaginatedRequest<
 	}
 >;
 
-export const isDmMemberProps = ajv.compile<DmMemberProps>({
+export const isDmMemberProps = ajvQuery.compile<DmMemberProps>({
 	oneOf: [
 		{
 			type: 'object',

@@ -8,7 +8,7 @@ import { getPermaLink } from '../../../../../lib/getPermaLink';
 import ForwardMessageModal from '../../../../../views/room/modals/ForwardMessageModal';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ForwardMessageActionProps = {
+export type ForwardMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 };
@@ -35,7 +35,6 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 			id='forward-message'
 			icon='arrow-forward'
 			title={getTitle}
-			qa='Forward_message'
 			disabled={encrypted || isABACEnabled}
 			onClick={async () => {
 				const permalink = await getPermaLink(message._id);

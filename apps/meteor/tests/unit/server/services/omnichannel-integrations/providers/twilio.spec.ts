@@ -14,8 +14,8 @@ const twilioStub = {
 };
 
 const { Twilio } = proxyquire.noCallThru().load('../../../../../../server/services/omnichannel-integrations/providers/twilio.ts', {
-	'../../../../app/settings/server': { settings: settingsStub },
-	'../../../../app/utils/server/restrictions': { fileUploadIsValidContentType: sinon.stub() },
+	'../../../settings': { settings: settingsStub },
+	'../../../lib/utils/restrictions': { fileUploadIsValidContentType: sinon.stub() },
 	'../../../lib/i18n': { i18n: sinon.stub() },
 	'../../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 });

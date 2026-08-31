@@ -1,9 +1,9 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 
 type LoginServicesEvents = {
 	changed: undefined;
@@ -35,7 +35,6 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		'dolphin': { title: 'Dolphin', icon: 'dophin' },
 		'drupal': { title: 'Drupal', icon: 'drupal' },
 		'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-		'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
 		'meteor-developer': { title: 'Meteor', icon: 'meteor' },
 		'wordpress': { title: 'WordPress', icon: 'wordpress' },
 		'linkedin': { title: 'Linkedin', icon: 'linkedin' },

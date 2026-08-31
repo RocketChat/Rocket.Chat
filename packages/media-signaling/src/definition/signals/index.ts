@@ -1,3 +1,3 @@
 export * from './client';
-export * from './server';
-export * from './Transport';
+export type * from './server';
+export type * from './Transport';

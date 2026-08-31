@@ -1,6 +1,6 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { HTTP } from 'meteor/http';
-import { URL, URLSearchParams } from 'meteor/url';
+import { URL } from 'meteor/url';
 
 import { truncate } from '../../../lib/utils/stringUtils';
 
@@ -149,6 +149,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 		referrer: options.referrer,
 		integrity: options.integrity,
 		headers,
+		ignoreSsrfValidation: true,
 	} as const;
 
 	fetch(newUrl, requestOptions)
@@ -186,7 +187,7 @@ function httpCallAsync(httpMethod: string, url: string, callback: callbackFn): v
 function httpCallAsync(httpMethod: string, url: string, optionsOrCallback: HttpCallOptions | callbackFn = {}, callback?: callbackFn): void {
 	// If the options argument was omitted, adjust the arguments:
 	if (!callback && typeof optionsOrCallback === 'function') {
-		return _call(httpMethod, url, {}, optionsOrCallback as callbackFn);
+		return _call(httpMethod, url, {}, optionsOrCallback);
 	}
 
 	return _call(httpMethod, url, optionsOrCallback as HttpCallOptions, callback as callbackFn);

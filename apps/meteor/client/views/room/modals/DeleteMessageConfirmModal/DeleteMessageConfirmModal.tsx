@@ -56,11 +56,12 @@ const DeleteMessageConfirmModal = ({
 			variant='danger'
 			title={t('Are_you_sure')}
 			confirmText={t('Yes_delete_it')}
-			children={room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover')}
 			onConfirm={deleteMessageMutation.mutate}
 			onCancel={onCancel}
 			confirmDisabled={deleteMessageMutation.isPending}
-		/>
+		>
+			{room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover')}
+		</GenericModal>
 	);
 };
 

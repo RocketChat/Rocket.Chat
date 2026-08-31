@@ -3,6 +3,7 @@ import type { KeyOfEach } from '@rocket.chat/core-typings';
 import type { AppsEndpoints } from './apps';
 import type { DefaultEndpoints } from './default';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
+import type { AISearchEndpoints } from './v1/aiSearch';
 import type { AssetsEndpoints } from './v1/assets';
 import type { AuthEndpoints } from './v1/auth';
 import type { AutoTranslateEndpoints } from './v1/autoTranslate';
@@ -41,14 +42,14 @@ import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
+import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
-import type { VoipEndpoints } from './v1/voip';
-import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
-	extends ChannelsEndpoints,
+	extends AISearchEndpoints,
+		ChannelsEndpoints,
 		MeEndpoints,
 		ModerationEndpoints,
 		BannersEndpoints,
@@ -78,7 +79,6 @@ export interface Endpoints
 		InstancesEndpoints,
 		IntegrationsEndpoints,
 		IntegrationHooksEndpoints,
-		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
@@ -92,8 +92,8 @@ export interface Endpoints
 		CalendarEndpoints,
 		AuthEndpoints,
 		ImportEndpoints,
-		VoipFreeSwitchEndpoints,
 		ServerEventsEndpoints,
+		TwoFactorChallengesEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -207,16 +207,19 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
-export * from './v1/presence';
+export type * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
+export * from './v1/aiSearch';
 export * from './v1/channels';
-export * from './v1/customUserStatus';
+export * from './v1/customSounds';
+export type * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
-export * from './v1/mailer';
+export type * from './v1/mailer';
+export * from './v1/me/meSuccessResponse';
 export * from './v1/mailer/MailerParamsPOST';
 export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
@@ -226,12 +229,16 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
-export * from './helpers/PaginatedRequest';
-export * from './helpers/PaginatedResult';
-export * from './helpers/ReplacePlaceholders';
-export * from './helpers/WithItemCount';
+export * from './v1/push';
+export type * from './helpers/IGetRoomRoles';
+export type * from './helpers/PaginatedRequest';
+export type * from './helpers/PaginatedResult';
+export type * from './helpers/ReplacePlaceholders';
+export type * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
-export * from './v1/instances';
+export type * from './v1/instances';
+export * from './v1/ldap';
+export * from './v1/saml';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
@@ -239,19 +246,20 @@ export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/users/UsersGetAvatarParamsGET';
+export * from './v1/users/UsersPresenceParamsGET';
+export * from './v1/users/UsersRequestDataDownloadParamsGET';
+export * from './v1/users/UsersGetPresenceParamsGET';
+export * from './v1/users/UsersGetStatusParamsGET';
 export * from './v1/moderation';
 export * from './v1/server-events';
+export * from './v1/statistics';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
-export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
-export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
-export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
-export * from './v1/voip';
-export * from './v1/voip-freeswitch';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
 export * from './v1/federation';
@@ -262,6 +270,11 @@ export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
+export * from './v1/twoFactorChallenges';
+
+// Opt-in experimental endpoint typings. Deliberately NOT part of the `Endpoints`
+// union above — see ./experimental for the rationale.
+export type * from './experimental';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';

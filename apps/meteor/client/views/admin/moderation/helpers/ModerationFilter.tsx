@@ -1,7 +1,7 @@
 import DateRangePicker from './DateRangePicker';
 import FilterByText from '../../../../components/FilterByText';
 
-type ModerationFilterProps = {
+export type ModerationFilterProps = {
 	text: string;
 	setText: (text: string) => void;
 	setDateRange: (dateRange: { start: string; end: string }) => void;

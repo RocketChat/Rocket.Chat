@@ -5,10 +5,10 @@ import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { memo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
+import { useDropdownVisibility } from './hooks/useDropdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
-type QuickActionOptionsProps = {
+export type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
 	action: (id: string) => void;
 	room: IOmnichannelRoom;
@@ -17,7 +17,7 @@ type QuickActionOptionsProps = {
 
 const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActionOptionsProps) => {
 	const { t } = useTranslation();
-	const reference = useRef(null);
+	const reference = useRef<HTMLButtonElement>(null);
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 

@@ -15,7 +15,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-jest.mock('../../app/statistics/server/functions/sendUsageReport', () => ({
+jest.mock('../lib/statistics/functions/sendUsageReport', () => ({
 	sendUsageReport: () => undefined,
 }));
 

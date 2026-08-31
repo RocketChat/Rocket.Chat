@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult, Document, FindOptions } from 'mongodb';
+import type { ILoginServiceConfigurationModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -44,14 +44,14 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return existing._id;
 	}
 
-	async removeService(_id: LoginServiceConfiguration['_id']): Promise<DeleteResult> {
-		return this.deleteOne({ _id });
+	removeByService(serviceName: LoginServiceConfiguration['service']): Promise<Pick<LoginServiceConfiguration, '_id'> | null> {
+		return this.findOneAndDelete({ service: serviceName.toLowerCase() }, { projection: { _id: 1 } });
 	}
 
-	async findOneByService<P extends Document = LoginServiceConfiguration>(
-		serviceName: LoginServiceConfiguration['service'],
-		options?: FindOptions<P>,
-	): Promise<P | null> {
-		return this.findOne({ service: serviceName.toLowerCase() }, options);
+	async findOneByService<
+		P extends Document = LoginServiceConfiguration,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(serviceName: LoginServiceConfiguration['service'], options?: O): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ service: serviceName.toLowerCase() }, options);
 	}
 }

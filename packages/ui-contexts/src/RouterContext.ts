@@ -15,6 +15,7 @@ export interface IRouterPaths {
 
 export type LocationPathname = IRouterPaths[keyof IRouterPaths]['pathname'];
 export type LocationSearch = string;
+export type LocationHash = string;
 
 export type RouteParameters = Record<string, string>;
 export type SearchParameters = Record<string, string>;
@@ -57,6 +58,7 @@ export type RouterContextValue = {
 	subscribeToRouteChange(onRouteChange: () => void): () => void;
 	getLocationPathname(): LocationPathname;
 	getLocationSearch(): LocationSearch;
+	getLocationHash(): LocationHash;
 	getRouteParameters(): RouteParameters;
 	getSearchParameters(): SearchParameters;
 	getRouteName(): RouteName | undefined;
@@ -66,7 +68,7 @@ export type RouterContextValue = {
 	navigate(delta: number): void;
 	defineRoutes(routes: RouteObject[]): () => void;
 	getRoomRoute(roomType: 'd', routeData: DirectRoomRouteData): { path: LocationPathname };
-	getRoomRoute(roomType: 'l' | 'v', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
+	getRoomRoute(roomType: 'l', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
 	getRoomRoute(roomType: 'p' | 'c', routeData: ChannelRouteData): { path: LocationPathname };
 	getRoomRoute(
 		roomType: RoomType,
@@ -85,6 +87,9 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	getLocationSearch: () => {
+		throw new Error('not implemented');
+	},
+	getLocationHash: () => {
 		throw new Error('not implemented');
 	},
 	getSearchParameters: () => {

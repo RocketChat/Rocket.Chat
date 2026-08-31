@@ -1,9 +1,7 @@
-import type { ThemePreference } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import type { ISidebarCategory, ThemePreference } from '@rocket.chat/core-typings';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
+
 export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
@@ -38,9 +36,11 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarShowFavorites?: boolean;
 		sidebarShowUnread?: boolean;
 		sidebarSortby?: string;
+		statusVisibilityDenied?: string[];
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
+		sidebarCategories?: ISidebarCategory[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -55,6 +55,7 @@ export type UsersSetPreferencesParamsPOST = {
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
 		desktopNotificationVoiceCalls?: boolean;
+		utcOffset?: number;
 	};
 };
 
@@ -184,6 +185,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				statusVisibilityDenied: {
+					type: 'array',
+					items: { type: 'string' },
+				},
 				sidebarSortby: {
 					type: 'string',
 					nullable: true,
@@ -199,6 +204,21 @@ const UsersSetPreferencesParamsPostSchema = {
 				sidebarGroupByType: {
 					type: 'boolean',
 					nullable: true,
+				},
+				sidebarCategories: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							name: { type: 'string', minLength: 1, maxLength: 30 },
+							default: { type: 'boolean' },
+							showUnreads: { type: 'boolean', nullable: true },
+							keepUnreadsOnTop: { type: 'boolean', nullable: true },
+						},
+						required: ['_id', 'name'],
+						additionalProperties: false,
+					},
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
@@ -268,6 +288,10 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				desktopNotificationVoiceCalls: {
 					type: 'boolean',
+					nullable: true,
+				},
+				utcOffset: {
+					type: 'number',
 					nullable: true,
 				},
 			},

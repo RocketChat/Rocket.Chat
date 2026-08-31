@@ -1,7 +1,6 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import HomePageHeader from './HomePageHeader';
 import AddUsersCard from './cards/AddUsersCard';
@@ -14,7 +13,7 @@ import MobileAppsCard from './cards/MobileAppsCard';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
-const DefaultHomePage = (): ReactElement => {
+const DefaultHomePage = () => {
 	const t = useTranslation();
 	const canAddUsers = usePermission('view-user-administration');
 	const isAdmin = useRole('admin');
@@ -24,16 +23,16 @@ const DefaultHomePage = (): ReactElement => {
 	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
 
 	return (
-		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>
+		<Page color='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' mb={20} data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' marginBlock={20}>
 					{t('Welcome_to_workspace', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
-				<Box is='h3' fontScale='h3' mb={16}>
+				<Box is='h3' fontScale='h3' marginBlock={16}>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Box mi='neg-x8'>
+				<Box marginInline='neg-x8'>
 					<CardGroup wrap stretch>
 						{canAddUsers && <AddUsersCard />}
 						{canCreateChannel && <CreateChannelsCard />}

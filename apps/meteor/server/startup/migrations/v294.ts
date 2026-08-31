@@ -1,8 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
-import type { AppSignatureManager } from '@rocket.chat/apps-engine/server/managers/AppSignatureManager';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 
-import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
@@ -14,12 +12,12 @@ addMigration({
 
 		Apps.initialize();
 
-		const sigMan = Apps.getManager()?.getSignatureManager() as AppSignatureManager;
-		const appsStorage = Apps.getStorage() as AppRealStorage;
+		const sigMan = Apps.getManager().getSignatureManager();
+		const appsStorage = Apps.getStorage();
 
 		const apps = await appsStorage.retrieveAll();
 
-		for await (const app of apps.values()) {
+		for (const app of apps.values()) {
 			if (app.installationSource && app.signature) {
 				continue;
 			}

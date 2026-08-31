@@ -21,14 +21,14 @@ const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	}, [onDismiss]);
 };
 
-const isAtBackdropChildren = (e: MouseEvent, ref: RefObject<HTMLElement>): boolean => {
+const isAtBackdropChildren = (e: MouseEvent, ref: RefObject<HTMLElement | null>): boolean => {
 	const backdrop = ref.current;
 	const { parentElement } = e.target as HTMLElement;
 
 	return (Boolean(parentElement) && backdrop?.contains(parentElement)) ?? false;
 };
 
-const useOutsideClick = (ref: RefObject<HTMLElement>, onDismiss: (() => void) | undefined) => {
+const useOutsideClick = (ref: RefObject<HTMLElement | null>, onDismiss: (() => void) | undefined) => {
 	const hasClicked = useRef<boolean>(false);
 
 	const onMouseDown = useCallback(
@@ -67,7 +67,7 @@ const useOutsideClick = (ref: RefObject<HTMLElement>, onDismiss: (() => void) | 
 	};
 };
 
-type ModalBackdropProps = {
+export type ModalBackdropProps = {
 	children?: ReactNode;
 	onDismiss?: () => void;
 };
@@ -81,7 +81,6 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 	return (
 		<Box
 			ref={ref}
-			children={children}
 			className='rcx-modal__backdrop'
 			position='fixed'
 			zIndex={9999}
@@ -90,7 +89,9 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 			flexDirection='column'
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
-		/>
+		>
+			{children}
+		</Box>
 	);
 };
 

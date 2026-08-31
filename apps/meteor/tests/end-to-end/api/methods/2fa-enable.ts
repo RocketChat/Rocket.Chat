@@ -151,9 +151,9 @@ describe('2fa:enable', function () {
 					params: [],
 				}),
 			})
-			.expect(200)
+			.expect(400)
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('success', false);
 				const parsedBody = JSON.parse(res.body.message);
 				expect(parsedBody).to.have.property('error');
 				expect(parsedBody).to.not.have.property('result');

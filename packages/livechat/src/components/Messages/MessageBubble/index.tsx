@@ -5,7 +5,7 @@ import { memo } from 'preact/compat';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type MessageBubbleProps = {
+export type MessageBubbleProps = {
 	inverse?: boolean;
 	nude?: boolean;
 	quoted?: boolean;

@@ -1,4 +1,4 @@
-export { default as AnchorPortal, AnchorPortalProps } from './AnchorPortal';
+export { default as AnchorPortal, type AnchorPortalProps } from './AnchorPortal';
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
@@ -8,11 +8,10 @@ export * from './PasswordVerifier/PasswordVerifier';
 export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
 export * as UserStatus from './UserStatus';
-export * from './HeaderV1';
-export * from './HeaderV2';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview';
+export { default as FilePreviewIcon } from './FilePreviewIcon';
 export * from './Contextualbar';
 export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as UserAutoComplete } from './UserAutoComplete';

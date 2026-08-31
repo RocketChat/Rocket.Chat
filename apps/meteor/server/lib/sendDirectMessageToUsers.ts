@@ -1,14 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
-import { createDirectMessage } from '../methods/createDirectMessage';
 import { SystemLogger } from './logger/system';
+import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
 export async function sendDirectMessageToUsers(
 	fromId = 'rocket.cat',
 	toIds: string[],
-	messageFn: (user: IUser) => string,
+	messageFn: (user: Pick<IUser, '_id' | 'username' | 'language'>) => string,
 ): Promise<string[]> {
 	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1, username: 1 } });
 	if (!fromUser) {
@@ -25,8 +25,8 @@ export async function sendDirectMessageToUsers(
 
 			await executeSendMessage(fromId, { rid, msg });
 			success.push(user._id);
-		} catch (error) {
-			SystemLogger.error(error);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 

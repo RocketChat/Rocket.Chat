@@ -9,7 +9,7 @@ import type {
 	EncryptedMessageContent,
 	EncryptedContent,
 } from '@rocket.chat/core-typings';
-import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, isFileAttachment, isRemovedFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -23,16 +23,25 @@ import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha2
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const log = createLogger('E2E:Room');
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
+
+const isRoomKeyAlreadyExistsError = async (error: Response): Promise<boolean> => {
+	try {
+		const body = await error.clone().json();
+		return body?.errorType === 'error-room-e2e-key-already-exists';
+	} catch {
+		return false;
+	}
+};
 
 type Mutations = { [k in E2ERoomState]?: E2ERoomState[] };
 
@@ -164,7 +173,7 @@ export class E2ERoom extends Emitter {
 		this.setState('KEYS_RECEIVED');
 	}
 
-	async shouldConvertSentMessages(message: { msg: string }) {
+	async shouldConvertSentMessages(message: { msg?: string }) {
 		if (!this.isReady() || this[PAUSED]) {
 			return false;
 		}
@@ -175,7 +184,7 @@ export class E2ERoom extends Emitter {
 			});
 		}
 
-		if (message.msg[0] === '/') {
+		if (message.msg?.[0] === '/') {
 			return false;
 		}
 
@@ -331,7 +340,12 @@ export class E2ERoom extends Emitter {
 			span.set('room', room);
 			if (!room?.e2eKeyId) {
 				this.setState('CREATING_KEYS');
-				await this.createGroupKey();
+				const created = await this.createGroupKey();
+				if (!created) {
+					// another member won the race
+					this.setState('WAITING_KEYS');
+					return;
+				}
 				this.setState('READY');
 				return;
 			}
@@ -401,7 +415,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 			span.info('Group key imported');
@@ -420,10 +434,26 @@ export class E2ERoom extends Emitter {
 		this.keyID = crypto.randomUUID();
 	}
 
-	async createGroupKey() {
+	private discardGroupKey() {
+		this.groupSessionKey = null;
+		this.sessionKeyExportedString = undefined;
+		this.keyID = undefined as unknown as string;
+	}
+
+	async createGroupKey(): Promise<boolean> {
+		const span = log.span('createGroupKey');
 		await this.createNewGroupKey();
 
-		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
+		try {
+			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
+		} catch (error) {
+			if (error instanceof Response && (await isRoomKeyAlreadyExistsError(error))) {
+				span.info('Room key already established by another member; discarding local key');
+				this.discardGroupKey();
+				return false;
+			}
+			throw error;
+		}
 		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
 		if (myKey) {
 			await sdk.rest.post('/v1/e2e.updateGroupKey', {
@@ -433,6 +463,7 @@ export class E2ERoom extends Emitter {
 			});
 			await this.encryptKeyForOtherParticipants();
 		}
+		return true;
 	}
 
 	async resetRoomKey() {
@@ -482,7 +513,9 @@ export class E2ERoom extends Emitter {
 		try {
 			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
-			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+			const users = (await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId })).users.filter(
+				(user) => user?.e2e?.public_key,
+			);
 
 			if (!users.length) {
 				span.info('No users to encrypt the key for');
@@ -498,13 +531,13 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;
@@ -660,24 +693,71 @@ export class E2ERoom extends Emitter {
 		return data;
 	}
 
+	async decryptMessageContent(message: IE2EEMessage): Promise<IE2EEMessage> {
+		const { attachments } = message;
+		const deletedAttachments = attachments?.filter((att) => isRemovedFileAttachment(att)) || [];
+		const deletedAllAttachment = deletedAttachments.find((att) => !att.fileId);
+
+		const content = await this.decrypt(message.content);
+		Object.assign(message, content);
+
+		// If the encrypted message had deleted files and the decrypted message has files, compare both lists to remove from the final result any file that was flagged as deleted
+		if (!deletedAttachments.length || !message.attachments?.length || !content.attachments?.length) {
+			return message;
+		}
+
+		message.attachments = message.attachments.map((att) => {
+			if (!isFileAttachment(att)) {
+				return att;
+			}
+
+			if (deletedAllAttachment) {
+				return deletedAllAttachment;
+			}
+
+			const fileId = att.fileId || message.file?._id;
+			if (!fileId) {
+				return att;
+			}
+
+			for (const removedAttachment of deletedAttachments) {
+				if (removedAttachment.fileId === fileId) {
+					return removedAttachment;
+				}
+			}
+
+			return att;
+		});
+
+		return message;
+	}
+
 	// Decrypt messages
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IE2EEMessage | IMessage> {
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
 		}
 
-		// TODO(@cardoso): review backward compatibility
-		if (message.msg && !isEncryptedMessageContent(message)) {
-			const data = await this.decrypt(message.msg);
-			if (data.msg) {
-				message.msg = data.msg;
-			}
+		if (isEncryptedMessageContent(message)) {
+			return {
+				...(await this.decryptMessageContent({ ...message })),
+				e2e: 'done' as const,
+			};
 		}
 
-		message = isEncryptedMessageContent(message) ? await this.decryptContent(message) : message;
+		if (!message.msg) {
+			return {
+				...message,
+				e2e: 'done' as const,
+			};
+		}
+
+		// TODO(@cardoso): review backward compatibility
+		const data = await this.decrypt(message.msg);
 
 		return {
 			...message,
+			msg: typeof data.msg === 'string' ? data.msg : message.msg,
 			e2e: 'done' as const,
 		};
 	}

@@ -1,13 +1,19 @@
 /* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitBanner } from '..';
 import * as payloads from './payloads';
 
+type StoryArgs = {
+	blocks: readonly UiKit.LayoutBlock[];
+	type: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
+	errors: Record<string, string>;
+};
+
 export default {
-	title: 'Surfaces/Banner',
 	argTypes: {
 		blocks: { control: 'object' },
 		type: {
@@ -15,22 +21,13 @@ export default {
 				type: 'radio',
 			},
 			options: ['neutral', 'info', 'success', 'warning', 'danger'],
-			defaultValue: 'neutral',
 		},
 		errors: { control: 'object' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
-	const story = ({
-		blocks,
-		type,
-		errors,
-	}: {
-		blocks: readonly UiKit.LayoutBlock[];
-		type: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-		errors: Record<string, string>;
-	}) => (
+	args: {
+		type: 'neutral',
+	},
+	render: ({ blocks, type, errors }) => (
 		<UiKitContext.Provider
 			value={{
 				action: action('action'),
@@ -43,14 +40,15 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
 				{UiKitBanner(blocks)}
 			</Banner>
 		</UiKitContext.Provider>
-	);
-	story.args = {
+	),
+} satisfies Meta<StoryArgs>;
+
+const createStory = (blocks: readonly UiKit.LayoutBlock[], errors: Record<string, string> = {}): StoryObj<StoryArgs> => ({
+	args: {
 		blocks,
 		errors,
-	};
-
-	return story;
-};
+	},
+});
 
 export const Divider = createStory(payloads.divider);
 

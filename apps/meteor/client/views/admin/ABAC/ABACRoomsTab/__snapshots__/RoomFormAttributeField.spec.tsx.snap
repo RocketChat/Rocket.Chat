@@ -13,14 +13,16 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-box rcx-box--full rcx-select rcx-css-1hx4au7"
+            aria-invalid="false"
+            aria-required="false"
+            class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1hx4au7"
             name="attributes.0.key"
           >
             <div
               class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
             >
               <span
-                class="rcx-box rcx-box--full rcx-select__item rcx-css-4wu0oz"
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-1rqlrtn"
               >
                 ABAC_Search_Attribute
               </span>
@@ -46,23 +48,26 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-box rcx-box--full rcx-select rcx-css-1te28na"
-            name="attributes.0.values"
+            class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1te28na"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1sr8su7"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-w398ts"
-                role="listbox"
               >
-                <button
+                <input
+                  aria-expanded="false"
                   aria-haspopup="listbox"
-                  class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-3fq6z9"
-                  type="button"
-                >
-                  ABAC_Select_Attribute_Values
-                </button>
+                  aria-invalid="false"
+                  aria-required="false"
+                  autocomplete="off"
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                  name="attributes.0.values"
+                  placeholder="ABAC_Select_Attribute_Values"
+                  role="combobox"
+                  value=""
+                />
               </div>
             </div>
             <div
@@ -77,17 +82,6 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             </div>
           </div>
         </span>
-        <button
-          class="rcx-box rcx-box--full rcx-button rcx-css-1qsx7et"
-          title="Remove"
-          type="button"
-        >
-          <span
-            class="rcx-button--content"
-          >
-            Remove
-          </span>
-        </button>
       </div>
     </div>
   </div>

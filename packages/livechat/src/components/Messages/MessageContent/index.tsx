@@ -5,7 +5,7 @@ import { memo } from 'preact/compat';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type MessageContentProps = {
+export type MessageContentProps = {
 	reverse?: boolean;
 	className?: string;
 	style?: CSSProperties;

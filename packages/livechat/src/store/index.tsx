@@ -32,12 +32,6 @@ export type StoreState = {
 			background?: string;
 			hideExpandChat?: boolean;
 			actionLinks?: {
-				webrtc: {
-					actionLinksAlignment: string;
-					i18nLabel: string;
-					label: string;
-					method_id: string;
-				}[];
 				jitsi: {
 					icon: string;
 					i18nLabel: string;
@@ -61,6 +55,8 @@ export type StoreState = {
 			livechatLogo?: { url: string };
 			transcript?: boolean;
 			visitorsCanCloseChat?: boolean;
+			clearLocalStorageWhenChatEnded?: boolean;
+			agentHiddenInfo?: boolean;
 		};
 		online?: boolean;
 		departments: Department[];
@@ -106,7 +102,6 @@ export type StoreState = {
 	minimized: boolean;
 	unread: any;
 	incomingCallAlert: any;
-	ongoingCall: any;
 	businessUnit: any;
 	openSessionIds?: string[];
 	triggered?: boolean;
@@ -114,18 +109,24 @@ export type StoreState = {
 	expanded?: boolean;
 	modal?: any;
 	agent?: any;
-	room?: { _id: string };
+	room?: { _id: string; servedBy?: unknown } | null;
 	noMoreMessages?: boolean;
 	loading?: boolean;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
-	queueInfo?: any;
+	queueInfo?: {
+		spot?: number;
+		estimatedWaitTimeSeconds?: number;
+		message?: { text?: string; user?: unknown };
+	};
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
 	renderedTriggers: TriggerMessage[];
 	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
+	parentMessages?: any[];
+	triggersRecords?: Record<string, any>;
 };
 
 export const initialState = (): StoreState => ({
@@ -164,7 +165,6 @@ export const initialState = (): StoreState => ({
 	minimized: true,
 	unread: null,
 	incomingCallAlert: null,
-	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 	renderedTriggers: [],
 	customFieldsQueue: {},
@@ -179,7 +179,6 @@ const dontPersist = [
 	'noMoreMessages',
 	'modal',
 	'incomingCallAlert',
-	'ongoingCall',
 	'parentUrl',
 ] as Array<keyof StoreState>;
 

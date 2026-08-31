@@ -1,7 +1,7 @@
 import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import { CurrentChatTags } from '../additionalForms';
 import { FormSkeleton } from './FormSkeleton';
 import { useLivechatTags } from '../hooks/useLivechatTags';
 
-type TagsProps = {
+export type TagsProps = {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
@@ -17,7 +17,7 @@ type TagsProps = {
 	department?: string;
 };
 
-const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
+const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps) => {
 	const { t } = useTranslation();
 	const tagsFieldId = useId();
 
@@ -42,7 +42,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 		handler(tags.filter((tag) => tag !== tagToRemove));
 	};
 
-	const handleTagTextSubmit = useEffectEvent(() => {
+	const handleTagTextSubmit = useStableCallback(() => {
 		if (!tags) {
 			return;
 		}
@@ -67,16 +67,16 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<FieldLabel htmlFor={tagsFieldId} required={tagRequired} mb={4}>
+			<FieldLabel htmlFor={tagsFieldId} required={tagRequired} marginBlock={4}>
 				{t('Tags')}
 			</FieldLabel>
 
-			{tagsResult?.tags && tagsResult?.tags.length ? (
+			{tagsResult?.tags?.length ? (
 				<FieldRow>
 					<CurrentChatTags
 						id={tagsFieldId}
 						value={paginatedTagValue}
-						handler={(tags: { label: string; value: string }[]): void => {
+						handler={(tags): void => {
 							handler(tags.map((tag) => tag.label));
 						}}
 						department={department}
@@ -94,7 +94,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} marginInlineStart={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
 					</FieldRow>
@@ -104,7 +104,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			{customTags.length > 0 && (
 				<FieldRow justifyContent='flex-start'>
 					{customTags?.map((tag, i) => (
-						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
+						<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
 							{tag}
 						</Chip>
 					))}

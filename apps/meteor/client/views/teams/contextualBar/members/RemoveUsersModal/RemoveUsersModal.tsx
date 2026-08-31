@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 import { teamsQueryKeys, usersQueryKeys } from '../../../../../lib/queryKeys';
 
-type RemoveUsersModalProps = {
+export type RemoveUsersModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
@@ -18,7 +18,7 @@ const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }: Remo
 	const listRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
 	const { isPending, data } = useQuery({
 		queryKey: teamsQueryKeys.roomsOfUser(teamId, userId),
-		queryFn: () => listRoomsOfUser({ teamId, userId, canUserDelete: 'true' }),
+		queryFn: () => listRoomsOfUser({ teamId, userId }),
 	});
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');

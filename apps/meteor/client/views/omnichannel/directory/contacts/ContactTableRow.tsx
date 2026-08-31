@@ -1,23 +1,31 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
-import { useRoute } from '@rocket.chat/ui-contexts';
 
 import ContactItemMenu from './ContactItemMenu';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useIsCallReady } from '../../../../contexts/CallContext';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
-import { CallDialpadButton } from '../components/CallDialpadButton';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
+
+const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
-	const directoryRoute = useRoute('omnichannel-directory');
-	const isCallReady = useIsCallReady();
+	const formatDate = useFormatDate();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const phoneNumber = phones?.length ? phones[0].phoneNumber : undefined;
 	const latestChannel = channels?.sort((a, b) => {
 		if (a.lastChat && b.lastChat) {
 			return a.lastChat.ts > b.lastChat.ts ? -1 : 1;
@@ -26,13 +34,12 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 		return 0;
 	})[0];
 
-	const onRowClick = useEffectEvent(
-		(id: string) => (): void =>
-			directoryRoute.push({
-				id,
-				tab: 'contacts',
-				context: 'details',
-			}),
+	const onRowClick = useStableCallback((id: string) =>
+		omnichannelDirectoryRouter.navigate({
+			id,
+			tab: 'contacts',
+			context: 'details',
+		}),
 	);
 
 	return (
@@ -40,30 +47,35 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 			action
 			key={_id}
 			tabIndex={0}
-			role='link'
 			height='40px'
-			qa-user-id={_id}
 			rcx-show-call-button-on-hover
-			onClick={onRowClick(_id)}
+			className={customAlignTop}
+			onClick={() => onRowClick(_id)}
 		>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
+			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
+				{name}
+			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
-						<Box withTruncatedText mis={8}>
+						<Box withTruncatedText marginInlineStart={8}>
 							{getSourceLabel(latestChannel?.details)}
 						</Box>
 					</Box>
 				)}
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
-			{isCallReady && (
-				<GenericTableCell>
-					<CallDialpadButton phoneNumber={phoneNumber} />
-				</GenericTableCell>
-			)}
+			<GenericTableCell withTruncatedText>
+				{lastChat && (
+					<Box display='flex' flexDirection='column'>
+						<Box fontScale='p2m' withTruncatedText color='default'>
+							{formatDate(lastChat.ts)}
+						</Box>
+						<Box withTruncatedText>{getTimeFromNow(lastChat.ts)}</Box>
+					</Box>
+				)}
+			</GenericTableCell>
 			<GenericTableCell>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>

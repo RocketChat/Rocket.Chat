@@ -1,10 +1,10 @@
-import type { ILicenseV3, BehaviorWithContext, Timestamp, LicenseValidationOptions } from '@rocket.chat/core-typings';
+import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
 import { isBehaviorAllowed } from '../isItemAllowed';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
 
-export const isPeriodInvalid = (from: Timestamp | undefined, until: Timestamp | undefined) => {
+export const isPeriodInvalid = (from: string | undefined, until: string | undefined) => {
 	const now = new Date();
 
 	if (from && now < new Date(from)) {

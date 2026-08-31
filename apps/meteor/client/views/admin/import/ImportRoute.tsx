@@ -6,7 +6,7 @@ import NewImportPage from './NewImportPage';
 import PrepareImportPage from './PrepareImportPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-type ImportHistoryRouteProps = {
+export type ImportHistoryRouteProps = {
 	page: 'history' | 'new' | 'prepare' | 'progress';
 };
 

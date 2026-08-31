@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createLogSettings = () =>
 	settingsRegistry.addGroup('Logs', async function () {
@@ -19,9 +19,6 @@ export const createLogSettings = () =>
 				},
 			],
 			public: true,
-		});
-		await this.add('Log_View_Limit', 1000, {
-			type: 'int',
 		});
 
 		await this.add('Log_Trace_Methods', false, {

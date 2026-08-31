@@ -1,7 +1,7 @@
 import type { EventID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
@@ -279,7 +279,10 @@ const BackfillQuerySchema = {
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
-			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			// a string branch here would be redundant: ajvQuery coerces a single `?v=` into a
+			// one-element array, and in a `oneOf` both branches would match and fail validation
+			type: 'array',
+			items: { type: 'string' },
 			description: 'Event ID(s) to backfill from',
 		},
 	},
@@ -287,9 +290,9 @@ const BackfillQuerySchema = {
 	additionalProperties: false,
 };
 
-const isBackfillQueryProps = ajv.compile<{
+const isBackfillQueryProps = ajvQuery.compile<{
 	limit: number;
-	v: string | string[];
+	v: string[];
 }>(BackfillQuerySchema);
 
 const BackfillResponseSchema = {

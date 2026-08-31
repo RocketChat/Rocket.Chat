@@ -1,20 +1,20 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
+export type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
 
-const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactElement => {
+const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 
 	const { url, value, label, icon } = block;
 	const { icon: iconName, variant } = icon;
 
 	const handleClick: MouseEventHandler = (e) => {
-		action({ target: e.currentTarget });
+		void action({ target: e.currentTarget });
 	};
 
 	if (url) {

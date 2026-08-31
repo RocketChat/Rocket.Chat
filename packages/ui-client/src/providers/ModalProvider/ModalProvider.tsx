@@ -1,11 +1,11 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo, useSyncExternalStore } from 'react';
 
 import { modalStore } from './ModalStore';
 
-type ModalProviderProps = {
+export type ModalProviderProps = {
 	children?: ReactNode;
 	region?: symbol;
 };
@@ -13,7 +13,7 @@ type ModalProviderProps = {
 const ModalProvider = ({ children, region }: ModalProviderProps) => {
 	const currentModal = useSyncExternalStore(modalStore.subscribe, modalStore.getSnapshot);
 
-	const setModal = useEffectEvent((modal: ReactNode | (() => ReactNode)) => {
+	const setModal = useStableCallback((modal: ReactNode | (() => ReactNode)) => {
 		if (typeof modal === 'function') {
 			modalStore.open(modal(), region);
 			return;
@@ -35,7 +35,7 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 		[currentModal?.node, currentModal?.region, region, setModal],
 	);
 
-	return <ModalContext.Provider value={contextValue} children={children} />;
+	return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;
 };
 
 export default memo<typeof ModalProvider>(ModalProvider);

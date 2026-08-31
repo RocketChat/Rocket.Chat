@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import BoldSpan from './BoldSpan';
 import LinkSpan from './LinkSpan';
@@ -18,11 +17,11 @@ type MessageBlock =
 	| MessageParser.MarkupExcluding<MessageParser.Italic>
 	| MessageParser.InlineCode;
 
-type ItalicSpanProps = {
+export type ItalicSpanProps = {
 	children: MessageBlock[];
 };
 
-const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
+const ItalicSpan = ({ children }: ItalicSpanProps) => (
 	<>
 		{children.map((block, index) => {
 			if (
@@ -39,7 +38,7 @@ const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
 	</>
 );
 
-const renderBlockComponent = (block: MessageBlock, index: number): ReactElement | null => {
+const renderBlockComponent = (block: MessageBlock, index: number) => {
 	switch (block.type) {
 		case 'EMOJI':
 			return <EmojiElement key={index} {...block} />;
@@ -57,10 +56,10 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 			return <LinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
 
 		case 'STRIKE':
-			return <StrikeSpan key={index} children={block.value} />;
+			return <StrikeSpan key={index}>{block.value}</StrikeSpan>;
 
 		case 'BOLD':
-			return <BoldSpan key={index} children={block.value} />;
+			return <BoldSpan key={index}>{block.value}</BoldSpan>;
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;

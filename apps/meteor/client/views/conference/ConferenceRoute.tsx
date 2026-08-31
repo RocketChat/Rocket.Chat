@@ -1,9 +1,7 @@
-import type { ReactElement } from 'react';
-
 import ConferencePage from './ConferencePage';
 import AuthenticationCheck from '../root/MainLayout/AuthenticationCheck';
 
-const ConferenceRoute = (): ReactElement => {
+const ConferenceRoute = () => {
 	return (
 		<AuthenticationCheck guest>
 			<ConferencePage />

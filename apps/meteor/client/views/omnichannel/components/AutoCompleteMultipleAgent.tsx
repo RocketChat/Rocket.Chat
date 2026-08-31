@@ -1,12 +1,12 @@
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
 
-type AutoCompleteMultipleAgentProps = Omit<
+export type AutoCompleteMultipleAgentProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'renderItem' | 'setFilter' | 'filter' | 'endReached' | 'value' | 'onChange'
 > & {
@@ -27,7 +27,7 @@ const AutoCompleteMultipleAgent = ({
 	withTitle = false,
 	onChange,
 	...props
-}: AutoCompleteMultipleAgentProps): ReactElement => {
+}: AutoCompleteMultipleAgentProps) => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
@@ -53,7 +53,6 @@ const AutoCompleteMultipleAgent = ({
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
-			data-qa='autocomplete-multiple-agent'
 			endReached={() => fetchNextPage()}
 		/>
 	);

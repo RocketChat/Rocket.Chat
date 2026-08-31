@@ -1,5 +1,5 @@
 import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useGoToRoom, useSetting, useTranslation, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -15,20 +15,22 @@ import {
 	VideoConfMessageActions,
 	VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
-import type { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../..';
+import { useGoToRoom } from './hooks/useGoToRoom';
 import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
+export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
 const MAX_USERS = 3;
 
-const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElement => {
-	const t = useTranslation();
+const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
+	const { t } = useTranslation();
 	const { callId, appId = 'videoconf-core' } = block;
 	const surfaceType = useSurfaceType();
 	const userId = useUserId();
@@ -49,7 +51,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	const result = useVideoConfDataStream({ rid, callId });
 
 	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-		action(
+		void action(
 			{
 				blockId: block.blockId || '',
 				appId,
@@ -62,7 +64,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	};
 
 	const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-		action(
+		void action(
 			{
 				blockId: rid || '',
 				appId,
@@ -75,7 +77,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	};
 
 	const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
-		action(
+		void action(
 			{
 				blockId: callId,
 				appId,
@@ -89,7 +91,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 
 	const openDiscussion: MouseEventHandler<HTMLButtonElement> = (_e) => {
 		if (data.discussionRid) {
-			goToRoom(data.discussionRid);
+			void goToRoom(data.discussionRid);
 		}
 	};
 

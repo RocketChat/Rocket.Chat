@@ -112,7 +112,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'rm',
 		system: true,
-		text: (t) => t('Message_is_removed'),
+		text: (t, _, options) => (options?.capitalize ? t('Message_removed') : t('message_removed')),
 	});
 
 	instance.registerType({
@@ -125,6 +125,18 @@ export default (instance: MessageTypes) => {
 		id: 'user-unmuted',
 		system: true,
 		text: (t, message) => t('User_has_been_unmuted', { user_unmuted: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'user-banned',
+		system: true,
+		text: (t, message) => t('User_has_been_banned', { user_banned: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'user-unbanned',
+		system: true,
+		text: (t, message) => t('User_has_been_unbanned', { user_unbanned: message.msg }),
 	});
 
 	instance.registerType({

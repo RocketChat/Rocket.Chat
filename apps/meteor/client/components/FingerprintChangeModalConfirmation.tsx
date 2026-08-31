@@ -1,24 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
-import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { links } from '../lib/links';
 
-type FingerprintChangeModalConfirmationProps = {
+export type FingerprintChangeModalConfirmationProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
 	onClose: () => void;
 	newWorkspace: boolean;
 };
 
-const FingerprintChangeModalConfirmation = ({
-	onConfirm,
-	onCancel,
-	onClose,
-	newWorkspace,
-}: FingerprintChangeModalConfirmationProps): ReactElement => {
+const FingerprintChangeModalConfirmation = ({ onConfirm, onCancel, onClose, newWorkspace }: FingerprintChangeModalConfirmationProps) => {
 	const { t } = useTranslation();
 	return (
 		<GenericModal
@@ -30,28 +23,19 @@ const FingerprintChangeModalConfirmation = ({
 			confirmText={newWorkspace ? t('Confirm_new_workspace') : t('Confirm_configuration_update')}
 			onClose={onClose}
 		>
-			<Box
-				is='p'
-				mbe={16}
-				dangerouslySetInnerHTML={{
-					__html: newWorkspace
-						? DOMPurify.sanitize(t('Confirm_new_workspace_description'))
-						: DOMPurify.sanitize(t('Confirm_configuration_update_description')),
-				}}
-			/>
-			<Box
-				is='p'
-				mbe={16}
-				dangerouslySetInnerHTML={{
-					__html: DOMPurify.sanitize(
-						t('Unique_ID_change_detected_learn_more_link', { fingerPrintChangedFaq: links.go.fingerPrintChangedFaq }),
-						{
-							ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
-							ALLOWED_ATTR: ['href', 'title'],
-						},
-					),
-				}}
-			/>
+			<Box is='p' marginBlockEnd={16}>
+				{newWorkspace ? (
+					<Trans i18nKey='Confirm_new_workspace_description' />
+				) : (
+					<Trans i18nKey='Confirm_configuration_update_description' />
+				)}
+			</Box>
+			<Box is='p' marginBlockEnd={16}>
+				<Trans
+					i18nKey='Unique_ID_change_detected_learn_more_link'
+					components={{ a: <ExternalLink to={links.go.fingerPrintChangedFaq} /> }}
+				/>
+			</Box>
 		</GenericModal>
 	);
 };

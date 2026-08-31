@@ -1,6 +1,8 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { setRootUrl } from '../../../lib/meteorRuntimeConfig';
+
 export const useSettingsOnLoadSiteUrl = () => {
 	const siteUrl = useSetting('Site_Url') as string;
 
@@ -9,6 +11,6 @@ export const useSettingsOnLoadSiteUrl = () => {
 		if (value == null || value.trim() === '') {
 			return;
 		}
-		(window as any).__meteor_runtime_config__.ROOT_URL = value;
+		setRootUrl(value);
 	}, [siteUrl]);
 };

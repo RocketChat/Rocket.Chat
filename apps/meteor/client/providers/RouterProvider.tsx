@@ -2,15 +2,20 @@ import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
+import { useRouterScrollToHash } from '../hooks/useRouterScrollToHash';
 import { Router } from '../router';
 
 /** @deprecated consume it from the `RouterContext` instead */
 export const router: RouterContextValue = new Router();
 
-type RouterProviderProps = {
+export type RouterProviderProps = {
 	children?: ReactNode;
 };
 
-const RouterProvider = ({ children }: RouterProviderProps) => <RouterContext.Provider children={children} value={router} />;
+const RouterProvider = ({ children }: RouterProviderProps) => {
+	useRouterScrollToHash(router);
+
+	return <RouterContext.Provider value={router}>{children}</RouterContext.Provider>;
+};
 
 export default RouterProvider;

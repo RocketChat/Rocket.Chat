@@ -26,7 +26,7 @@ exports[`renders Default without crashing 1`] = `
           >
             <div>
               <p>
-                a minute June 1, 2024 at 12:30 AM
+                1 minute June 1, 2024 at 12:30 AM
               </p>
             </div>
           </div>
@@ -63,7 +63,7 @@ exports[`renders InvalidSettings without crashing 1`] = `
           >
             <div>
               <p>
-                a minute June 12, 2024 at 12:00 AM
+                1 minute June 12, 2024 at 12:00 AM
               </p>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
 import { useToastMessageDispatch, useSettingSetValue, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useCallback } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
@@ -8,7 +7,7 @@ import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);
 
-const CloudAccountConfirmation = (): ReactElement => {
+const CloudAccountConfirmation = () => {
 	const {
 		registerServer,
 		currentStep,

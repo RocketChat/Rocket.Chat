@@ -3,7 +3,18 @@ import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, ISe
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
-export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval';
+export type AbacAuditReason =
+	| 'ldap-sync'
+	| 'room-attributes-change'
+	| 'system'
+	| 'api'
+	| 'realtime-policy-eval'
+	| 'virtru-pdp-sync'
+	| 'attribute-store-switch';
+
+export type AbacPdpType = 'local' | 'virtru';
+
+export type AbacAttributeStoreType = 'local' | 'virtru';
 
 export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
@@ -18,21 +29,15 @@ export type AbacAttributeDefinitionChangeType =
 	| 'key-added'
 	| 'key-updated';
 
-export type AbacAttributeDefinitionDiff = {
-	added?: string[];
-	removed?: string[];
-	renamedFrom?: string;
-};
-
 // Since user attributes can grow without limits, we're only logging the diffs
-interface IServerEventAbacSubjectAttributeChanged
+export interface IServerEventAbacSubjectAttributeChanged
 	extends IAuditServerEventType<
 		{ key: 'subject'; value: MinimalUser } | { key: 'reason'; value: AbacAuditReason } | { key: 'diff'; value: IAbacAttributeDefinition[] }
 	> {
 	t: 'abac.subject.attribute.changed';
 }
 
-interface IServerEventAbacObjectAttributeChanged
+export interface IServerEventAbacObjectAttributeChanged
 	extends IAuditServerEventType<
 		| { key: 'room'; value: MinimalRoom }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -43,7 +48,7 @@ interface IServerEventAbacObjectAttributeChanged
 	t: 'abac.object.attribute.changed';
 }
 
-interface IServerEventAbacAttributeChanged
+export interface IServerEventAbacAttributeChanged
 	extends IAuditServerEventType<
 		| { key: 'attributeKey'; value: string }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -54,17 +59,18 @@ interface IServerEventAbacAttributeChanged
 	t: 'abac.attribute.changed';
 }
 
-interface IServerEventAbacActionPerformed
+export interface IServerEventAbacActionPerformed
 	extends IAuditServerEventType<
 		| { key: 'action'; value: AbacActionPerformed }
 		| { key: 'reason'; value: AbacAuditReason }
 		| { key: 'subject'; value: MinimalUser | undefined }
 		| { key: 'object'; value: MinimalRoom | undefined }
+		| { key: 'pdp'; value: AbacPdpType | undefined }
 	> {
 	t: 'abac.action.performed';
 }
 
-interface IServerEventAbacObjectAttributesRemoved
+export interface IServerEventAbacObjectAttributesRemoved
 	extends IAuditServerEventType<
 		| { key: 'room'; value: MinimalRoom }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -74,14 +80,15 @@ interface IServerEventAbacObjectAttributesRemoved
 	> {
 	t: 'abac.object.attributes.removed';
 }
-declare module '../IServerEvent' {
-	interface IServerEvents {
-		'abac.subject.attribute.changed': IServerEventAbacSubjectAttributeChanged;
-		'abac.object.attribute.changed': IServerEventAbacObjectAttributeChanged;
-		'abac.attribute.changed': IServerEventAbacAttributeChanged;
-		'abac.action.performed': IServerEventAbacActionPerformed;
-		'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
-	}
+
+export interface IServerEventAbacAttributeStoreSwitched
+	extends IAuditServerEventType<
+		| { key: 'from'; value: AbacAttributeStoreType }
+		| { key: 'to'; value: AbacAttributeStoreType }
+		| { key: 'reason'; value: AbacAuditReason }
+		| { key: 'roomsAffected'; value: number }
+	> {
+	t: 'abac.attribute.store.switched';
 }
 
 // Utility type to extract all ABAC-related server event names

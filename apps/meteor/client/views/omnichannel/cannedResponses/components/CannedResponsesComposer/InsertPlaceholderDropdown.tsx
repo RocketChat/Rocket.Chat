@@ -4,9 +4,9 @@ import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type InsertPlaceholderDropdownProps = {
-	onChange: any;
-	textAreaRef: RefObject<HTMLTextAreaElement>;
+export type InsertPlaceholderDropdownProps = {
+	onChange: (value: string) => void;
+	textAreaRef: RefObject<HTMLTextAreaElement | null>;
 	setVisible: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -17,7 +17,7 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 		cursor: pointer;
 	`;
 
-	const setPlaceholder = (name: any): void => {
+	const setPlaceholder = (name: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;
@@ -40,17 +40,17 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 			</Box>
 			<Box is='ul'>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.name')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Name')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.email')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Email')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.phone')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Phone')}
 					</Box>
 				</Box>
@@ -61,12 +61,12 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 			</Box>
 			<Box is='ul'>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('agent.name')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Name')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('agent.email')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Email')}
 					</Box>
 				</Box>

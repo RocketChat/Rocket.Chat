@@ -1,5 +1,5 @@
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { SystemLogger } from '../lib/logger/system';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export function configureSMTP(settings: ICachedSettings): void {
 	settings.watchMultiple(

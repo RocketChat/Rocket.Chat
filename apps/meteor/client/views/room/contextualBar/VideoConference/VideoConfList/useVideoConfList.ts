@@ -1,52 +1,48 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { VideoConfRecordList } from './VideoConfRecordList';
-import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
+import { videoConferenceQueryKeys } from '../../../../../lib/queryKeys';
 
-export const useVideoConfList = (options: {
-	roomId: IRoom['_id'];
-}): {
-	videoConfList: VideoConfRecordList;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
+export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 	const getVideoConfs = useEndpoint('GET', '/v1/video-conference.list');
-	const [videoConfList, setVideoConfList] = useState(() => new VideoConfRecordList());
-	const reload = useCallback(() => setVideoConfList(new VideoConfRecordList()), []);
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const count = 25;
 
-	const fetchData = useCallback(
-		async (_start: number, _end: number) => {
+	return useInfiniteQuery({
+		queryKey: videoConferenceQueryKeys.fromRoom(roomId),
+		queryFn: async ({ pageParam: offset }) => {
 			const { data, total } = await getVideoConfs({
-				roomId: options.roomId,
+				roomId,
+				offset,
+				count,
 			});
 
 			return {
-				items: data.map((videoConf: any) => ({
-					...videoConf,
-					_updatedAt: new Date(videoConf._updatedAt),
-					createdAt: new Date(videoConf.createdAt),
-					endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
-				})),
+				items: data.map(
+					(videoConf): VideoConference => ({
+						...videoConf,
+						_updatedAt: new Date(videoConf._updatedAt),
+						createdAt: new Date(videoConf.createdAt),
+						endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
+						users: videoConf.users.map((user) => ({
+							...user,
+							ts: new Date(user.ts),
+						})),
+					}),
+				),
 				itemCount: total,
 			};
 		},
-		[getVideoConfs, options],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(videoConfList, fetchData);
-
-	return {
-		reload,
-		videoConfList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _, lastOffset) => {
+			const nextOffset = lastOffset + count;
+			if (nextOffset >= lastPage.itemCount) return undefined;
+			return nextOffset;
+		},
+		select: ({ pages }) => ({
+			videoConfs: pages.flatMap((page) => page.items),
+			total: pages.at(-1)?.itemCount,
+		}),
+	});
 };

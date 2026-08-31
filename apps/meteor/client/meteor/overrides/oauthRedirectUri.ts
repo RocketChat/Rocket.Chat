@@ -1,15 +1,11 @@
+// TODO: remove this override together with the Meteor auth/DDP layer — it
+// monkey-patches meteor/oauth for backwards compatibility with pre-2.3
+// clients. Once Meteor's OAuth stack is gone, this file goes with it.
 import { OAuth } from 'meteor/oauth';
-
-declare module 'meteor/oauth' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace OAuth {
-		function _redirectUri(serviceName: string, config: any, params: any, absoluteUrlOptions: any): string;
-	}
-}
 
 const { _redirectUri } = OAuth;
 
-OAuth._redirectUri = (serviceName: string, config: any, params: unknown, absoluteUrlOptions: unknown): string => {
+OAuth._redirectUri = (serviceName: string, config: any, params?: Record<string, any>, absoluteUrlOptions?: Record<string, any>): string => {
 	const ret = _redirectUri(serviceName, config, params, absoluteUrlOptions);
 
 	// DEPRECATED: Remove in v5.0.0

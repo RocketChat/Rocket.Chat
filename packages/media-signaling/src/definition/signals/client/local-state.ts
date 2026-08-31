@@ -1,7 +1,8 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallState } from '../../call';
+import { callStateList, type CallState } from '../../call';
 import type { ClientContractState, ClientState } from '../../client';
+import { clientContractStateList, clientStateList } from '../../client';
 
 /** Client is sending their local call state */
 export type ClientMediaSignalLocalState = {
@@ -36,12 +37,12 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		},
 		callState: {
 			type: 'string',
-			enum: ['none', 'ringing', 'accepted', 'active', 'renegotiating', 'hangup'],
+			enum: callStateList,
 			nullable: false,
 		},
 		clientState: {
 			type: 'string',
-			enum: ['none', 'pending', 'accepting', 'accepted', 'busy-elsewhere', 'active', 'renegotiating', 'hangup'],
+			enum: clientStateList,
 			nullable: false,
 		},
 		serviceStates: {
@@ -60,7 +61,7 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		},
 		contractState: {
 			type: 'string',
-			enum: ['proposed', 'signed', 'pre-signed', 'self-signed', 'ignored'],
+			enum: clientContractStateList,
 			nullable: false,
 		},
 		negotiationId: {

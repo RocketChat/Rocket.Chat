@@ -1,4 +1,4 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import type { LicenseAppSources } from '@rocket.chat/core-typings';
 
 /**

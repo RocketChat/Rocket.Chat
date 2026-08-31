@@ -40,7 +40,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
@@ -58,7 +58,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -68,7 +68,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button"
             type="button"
           >
             <span
@@ -124,7 +124,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
@@ -142,7 +142,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button"
             disabled=""
             type="button"
           >
@@ -159,7 +159,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button"
             disabled=""
             type="button"
           >
@@ -222,7 +222,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
@@ -240,7 +240,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -250,7 +250,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button"
             type="button"
           >
             <span

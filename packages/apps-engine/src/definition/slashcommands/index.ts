@@ -1,5 +1,7 @@
-import { ISlashCommand } from './ISlashCommand';
-import { ISlashCommandPreview, ISlashCommandPreviewItem, SlashCommandPreviewItemType } from './ISlashCommandPreview';
+import type { ISlashCommand } from './ISlashCommand';
+import type { ISlashCommandPreview, ISlashCommandPreviewItem } from './ISlashCommandPreview';
+import { SlashCommandPreviewItemType } from './ISlashCommandPreview';
 import { SlashCommandContext } from './SlashCommandContext';
 
-export { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem, SlashCommandContext, SlashCommandPreviewItemType };
+export type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem };
+export { SlashCommandContext, SlashCommandPreviewItemType };

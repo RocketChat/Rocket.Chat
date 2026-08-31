@@ -1,10 +1,13 @@
+import type Stream from 'node:stream';
+
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import type { IMessage, IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import type { IMessage, IUpload, IUser, FilesAndAttachments, AtLeast } from '@rocket.chat/core-typings';
 
 export interface IUploadFileParams {
 	userId: string;
 	buffer: Buffer;
-	details: Partial<IUploadDetails>;
+	details: IUploadDetails;
+	federation?: Required<IUpload>['federation'];
 }
 export interface ISendFileMessageParams {
 	roomId: string;
@@ -27,4 +30,20 @@ export interface IUploadService {
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
 	extractMetadata(file: IUpload): Promise<{ height?: number; width?: number; format?: string }>;
 	parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments>;
+	canDeleteFile(
+		user: Pick<IUser, '_id' | 'username'>,
+		file: Pick<IUpload, '_id' | 'userId' | 'rid' | 'expiresAt' | 'uploadedAt'>,
+		msg: IMessage | null,
+	): Promise<boolean>;
+	deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }>;
+	streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable>;
+	uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: Omit<IUploadDetails, 'size'> }): Promise<IUpload>;
+	setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void>;
+	resetUserAvatar(user: AtLeast<IUser, '_id' | 'username'>): Promise<void>;
 }

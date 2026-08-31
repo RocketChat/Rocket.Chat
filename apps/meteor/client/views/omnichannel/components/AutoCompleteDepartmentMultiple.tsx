@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
-type AutoCompleteDepartmentMultipleProps = Omit<
+export type AutoCompleteDepartmentMultipleProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'renderItem' | 'setFilter' | 'filter' | 'placeholder' | 'endReached'
 > & {

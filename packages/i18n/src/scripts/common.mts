@@ -18,6 +18,7 @@ export const getLanguagePlurals = (language: string): string[] => {
 	}
 
 	// @ts-expect-error - faulty module resolution from ESM package
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 	return i18next.services.pluralResolver.getSuffixes(language).map((suffix: string) => suffix.slice(1));
 };
 
@@ -30,7 +31,7 @@ export async function readResource(language: string): Promise<Record<string, unk
 	if (typeof result !== 'object' || result === null || Array.isArray(result)) {
 		throw new Error(`Invalid resource format for language "${language}"`);
 	}
-	return result;
+	return result as Record<string, unknown>;
 }
 
 export async function writeResource(language: string, resource: unknown) {

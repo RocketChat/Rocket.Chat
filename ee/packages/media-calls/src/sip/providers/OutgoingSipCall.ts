@@ -1,10 +1,11 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
+import { SIP_CALL_FEATURES } from '../../constants';
 import type { InternalCallParams } from '../../definition/common';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
@@ -34,9 +35,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		session: SipServerSession,
 		call: IMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
-		channel: IMediaCallChannel,
 	) {
-		super(session, call, agent, channel);
+		super(session, call, agent);
 		this.sipDialog = null;
 		this.sipDialogReq = null;
 		this.processedTransfer = false;
@@ -45,7 +45,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'OutgoingSipCall.createCall', sessionId: session.sessionId });
-		const { callee, ...extraParams } = params;
+		const { callee, features: requestedFeatures, ...extraParams } = params;
 
 		// pre-sign the callee to this session
 		const signedCallee: MediaCallSignedContact = {
@@ -67,16 +67,16 @@ export class OutgoingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
+		const features = requestedFeatures.filter((feature) => SIP_CALL_FEATURES.includes(feature));
 		const call = await mediaCallDirector.createCall({
 			...extraParams,
 			callee: signedCallee,
 			calleeAgent,
 			callerAgent,
+			features,
 		});
 
-		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId);
-
-		const sipCall = new OutgoingSipCall(session, call, calleeAgent, channel);
+		const sipCall = new OutgoingSipCall(session, call, calleeAgent);
 		session.registerCall(sipCall);
 		calleeAgent.provider = sipCall;
 
@@ -239,7 +239,7 @@ export class OutgoingSipCall extends BaseSipCall {
 					answer: null,
 				});
 
-				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+				void callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
@@ -266,11 +266,12 @@ export class OutgoingSipCall extends BaseSipCall {
 		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
+			supportedFeatures: SIP_CALL_FEATURES,
 		});
 	}
 
 	protected async getPendingInboundNegotiation(): Promise<OutgoingSipCallNegotiation | null> {
-		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
 			if (localNegotiation.answer) {
 				continue;
 			}
@@ -404,7 +405,11 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.lastCallState = 'hangup';
 
 		if (sipDialog) {
-			sipDialog.destroy();
+			try {
+				await sipDialog.destroy();
+			} catch (err) {
+				logger.error({ msg: 'Failed to destroy SIP dialog', err, method: 'OutgoingSipCall.processEndedCall' });
+			}
 		}
 	}
 

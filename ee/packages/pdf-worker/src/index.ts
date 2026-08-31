@@ -6,7 +6,7 @@ import type { WorkerData } from './types/WorkerData';
 
 export type Templates = 'chat-transcript';
 
-export { Quote, MessageData, WorkerData } from './types/WorkerData';
+export type { Quote, MessageData, WorkerData } from './types/WorkerData';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];

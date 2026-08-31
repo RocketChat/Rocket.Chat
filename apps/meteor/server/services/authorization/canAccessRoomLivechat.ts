@@ -7,7 +7,7 @@ const AuthorizationLivechat = proxify<IAuthorizationLivechat>('authorization-liv
 
 export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// If we received a partial room and its type is not `l` or `v`, skip all checks.
-	if (room && !['v', 'l'].includes(room.t)) {
+	if (room && room.t !== 'l') {
 		return false;
 	}
 
@@ -22,7 +22,7 @@ export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, ext
 	}
 
 	// Check the type again in case the room parameter was not received
-	if (!['v', 'l'].includes(livechatRoom.t)) {
+	if (livechatRoom.t !== 'l') {
 		return false;
 	}
 

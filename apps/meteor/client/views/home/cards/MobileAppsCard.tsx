@@ -1,5 +1,5 @@
 import type { Card } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
@@ -9,7 +9,7 @@ import { links } from '../../../lib/links';
 const GOOGLE_PLAY_URL = links.go.mobileAppGoogle;
 const APP_STORE_URL = links.go.mobileAppApple;
 
-const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
+const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
@@ -18,10 +18,13 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 			title={t('Mobile_apps')}
 			body={t('Take_rocket_chat_with_you_with_mobile_applications')}
 			buttons={[
-				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} children={t('Google_Play')} role='link' />,
-				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} children={t('App_Store')} role='link' />,
+				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} role='link'>
+					{t('Google_Play')}
+				</GenericCardButton>,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} role='link'>
+					{t('App_Store')}
+				</GenericCardButton>,
 			]}
-			data-qa-id='homepage-mobile-apps-card'
 			width='x340'
 			{...props}
 		/>

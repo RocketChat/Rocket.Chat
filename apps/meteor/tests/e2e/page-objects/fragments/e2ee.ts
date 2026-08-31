@@ -1,9 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { LoginPage } from '../login';
-import { HomeSidenav } from './home-sidenav';
-import { Modal } from './modal';
-import { ToastMessages } from './toast-messages';
+import { Navbar } from './navbar';
 import { resolvePrivateRoomId } from '../../utils/resolve-room-id';
 import { expect } from '../../utils/test';
 
@@ -42,149 +39,33 @@ export class E2EEKeyDecodeFailureBanner extends E2EEBanner {
 	}
 }
 
-export class SaveE2EEPasswordModal extends Modal {
-	private readonly toastMessages: ToastMessages;
-
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Save your new E2EE password' }));
-		this.toastMessages = new ToastMessages(page);
-	}
-
-	private get password() {
-		return this.root.getByLabel('Your E2EE password is:').getByRole('code');
-	}
-
-	private get savedPasswordButton() {
-		return this.root.getByRole('button', { name: 'I saved my password' });
-	}
-
-	async getPassword() {
-		return (await this.password.textContent()) ?? '';
-	}
-
-	async confirm() {
-		await this.savedPasswordButton.click();
-		await this.waitForDismissal();
-		await this.toastMessages.dismissToast('success');
-	}
-}
-
-export class EnterE2EEPasswordModal extends Modal {
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Enter E2EE password' }));
-	}
-
-	private get passwordInput() {
-		return this.root.getByPlaceholder('Please enter your E2EE password');
-	}
-
-	private get forgotPasswordLink() {
-		return this.root.getByRole('link', { name: 'Forgot E2EE password?' });
-	}
-
-	private get enterE2EEPasswordButton() {
-		return this.root.getByRole('button', { name: 'Enable encryption' });
-	}
-
-	async enterPassword(password: string) {
-		await this.passwordInput.fill(password);
-		await this.enterE2EEPasswordButton.click();
-		await this.waitForDismissal();
-	}
-
-	async forgotPassword() {
-		await this.forgotPasswordLink.click();
-		await this.waitForDismissal();
-	}
-}
-
-export class ResetE2EEPasswordModal extends Modal {
-	private readonly login: LoginPage;
-
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Reset E2EE password' }));
-		this.login = new LoginPage(page);
-	}
-
-	private get resetE2EEPasswordButton() {
-		return this.root.getByRole('button', { name: 'Reset E2EE password' });
-	}
-
-	async confirmReset() {
-		await this.resetE2EEPasswordButton.click();
-		await this.waitForDismissal();
-		await this.login.waitForIt();
-	}
-}
-
-export class EnableRoomEncryptionModal extends Modal {
-	private readonly toastMessages: ToastMessages;
-
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Enable encryption' }));
-		this.toastMessages = new ToastMessages(page);
-	}
-
-	private get enableButton() {
-		return this.root.getByRole('button', { name: 'Enable encryption' });
-	}
-
-	async enable() {
-		await this.enableButton.click();
-		await this.waitForDismissal();
-		await this.toastMessages.dismissToast('success');
-	}
-}
-
-export class DisableRoomEncryptionModal extends Modal {
-	private readonly toastMessages: ToastMessages;
-
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Disable encryption' }));
-		this.toastMessages = new ToastMessages(page);
-	}
-
-	private get disableButton() {
-		return this.root.getByRole('button', { name: 'Disable encryption' });
-	}
-
-	async disable() {
-		await this.disableButton.click();
-		await this.waitForDismissal();
-		await this.toastMessages.dismissToast('success');
-	}
-}
 export class CreateE2EEChannel {
-	private readonly page: Page;
+	private readonly navbar: Navbar;
 
-	private readonly sidenav: HomeSidenav;
-
-	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new HomeSidenav(page);
+	constructor(private readonly page: Page) {
+		this.navbar = new Navbar(page);
 	}
 
 	async create(name: string): Promise<string> {
-		await this.sidenav.createEncryptedChannel(name);
-		const id = await resolvePrivateRoomId(this.page, name);
-		await expect(id, `Failed to resolve roomId for ${name}`).toBeTruthy();
-		return id || '';
-	}
-
-	async storeChannel(name: string, id: string, createdChannels: { name: string; id?: string | null }[]): Promise<void> {
-		createdChannels.push({ name, id });
+		await this.navbar.createEncryptedChannel(name);
+		return this.resolve(name);
 	}
 
 	async createAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
 		const id = await this.create(name);
-		await this.storeChannel(name, id, createdChannels);
+		createdChannels.push({ name, id });
 		return id;
 	}
 
 	async resolveAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
+		const id = await this.resolve(name);
+		createdChannels.push({ name, id });
+		return id;
+	}
+
+	private async resolve(name: string): Promise<string> {
 		const id = await resolvePrivateRoomId(this.page, name);
 		await expect(id, `Failed to resolve roomId for ${name}`).toBeTruthy();
-		await this.storeChannel(name, id || '', createdChannels);
 		return id || '';
 	}
 }

@@ -1,4 +1,10 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { RTCSessionDescriptionInit } from './RTCSessionDescription';
+
+export type MediaCallNegotiationStream = {
+	tag: string;
+	id: string;
+};
 
 export interface IMediaCallNegotiation extends IRocketChatRecord {
 	callId: string;
@@ -12,4 +18,7 @@ export interface IMediaCallNegotiation extends IRocketChatRecord {
 
 	offer?: RTCSessionDescriptionInit;
 	answer?: RTCSessionDescriptionInit;
+
+	offerStreams?: MediaCallNegotiationStream[];
+	answerStreams?: MediaCallNegotiationStream[];
 }

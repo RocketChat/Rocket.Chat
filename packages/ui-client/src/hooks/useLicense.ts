@@ -18,7 +18,7 @@ const invalidateQueryClientLicenses = (() => {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => {
 			timeout = undefined;
-			queryClient.invalidateQueries({
+			void queryClient.invalidateQueries({
 				queryKey: ['licenses'],
 			});
 		}, milliseconds);

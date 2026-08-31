@@ -2,18 +2,20 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, SetStateAction } from 'react';
+import type { SetStateAction } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { useAppRequests } from '../../../hooks/useAppRequests';
+import { useAppsReload } from '../../../hooks/useAppsReload';
 
 type itemsPerPage = 25 | 50 | 100;
 
-const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean }): ReactElement => {
+export type AppRequestsProps = { id: App['id']; isAdminUser: boolean };
+
+const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 	const [limit, setLimit] = useState<itemsPerPage>(25);
 	const [offset, setOffset] = useState<number>(0);
 
@@ -55,15 +57,15 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 
 	if (isLoading) {
 		return (
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart={36}>
 				<AppRequestsLoading />
 			</Box>
 		);
 	}
 
 	return (
-		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
+		<Box height='full' display='flex' flexDirection='column'>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart={36} flexGrow='1'>
 				{isSuccess && paginatedAppRequests.data?.length ? (
 					paginatedAppRequests.data.map((request) => (
 						<AppRequestItem

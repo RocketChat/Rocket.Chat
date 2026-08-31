@@ -1,6 +1,6 @@
 import { FederationKeys } from '@rocket.chat/models';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createFederationSettings = () =>
 	settingsRegistry.addGroup('Federation', async function () {

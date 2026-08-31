@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain, bold } from '../src/utils';
+import { link, paragraph, plain, bold } from './helpers';
 
 test.each([
 	['+07563546725', [paragraph([link('tel:07563546725', [plain('+07563546725')])])]],
@@ -22,5 +22,5 @@ test.each([
 	['+123-4', [paragraph([plain('+123-4')])]],
 	['5+51231', [paragraph([plain('5+51231')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

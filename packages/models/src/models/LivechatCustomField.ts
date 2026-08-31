@@ -1,6 +1,6 @@
 import type { ILivechatCustomField, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatCustomFieldModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, IndexDescription, FindOptions, FindCursor, Document } from 'mongodb';
+import type { ILivechatCustomFieldModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, Collection, IndexDescription, FindCursor, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,44 +13,46 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return [{ key: { scope: 1 } }];
 	}
 
-	findByScope<T extends ILivechatCustomField>(
+	findByScope<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		scope: ILivechatCustomField['scope'],
-		options?: FindOptions<ILivechatCustomField>,
+		options?: O,
 		includeHidden = true,
-	): FindCursor<T> {
-		return this.find<T>({ scope, ...(includeHidden === true ? {} : { visibility: { $ne: 'hidden' } }) }, options);
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ scope, ...(includeHidden === true ? {} : { visibility: { $ne: 'hidden' } }) }, options);
 	}
 
-	findMatchingCustomFields(
-		scope: ILivechatCustomField['scope'],
-		searchable = true,
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<ILivechatCustomField> {
+	findMatchingCustomFields<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(scope: ILivechatCustomField['scope'], searchable = true, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope,
 			searchable,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findMatchingCustomFieldsByIds(
+	findMatchingCustomFieldsByIds<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		ids: ILivechatCustomField['_id'][],
 		scope: ILivechatCustomField['scope'],
 		searchable = true,
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<ILivechatCustomField> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
 			scope,
 			searchable,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	async createOrUpdateCustomField(
-		_id: string,
+		_id: string | null,
 		field: string,
 		label: ILivechatCustomField['label'],
 		scope: ILivechatCustomField['scope'],
@@ -72,13 +74,5 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		}
 
 		return record;
-	}
-
-	findByIdsAndScope<T extends Document = ILivechatCustomField>(
-		ids: ILivechatCustomField['_id'][],
-		scope: ILivechatCustomField['scope'],
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<T> {
-		return this.find<T>({ _id: { $in: ids }, scope }, options);
 	}
 }

@@ -3,6 +3,7 @@
  */
 
 import { MinimalDDPClient } from './MinimalDDPClient';
+import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { MethodPayload } from './types/methodsPayloads';
 
 type Blocks = {
@@ -15,12 +16,25 @@ type Queue = Blocks[];
 export class DDPDispatcher extends MinimalDDPClient {
 	queue: Queue = [];
 
-	override dispatch(msg: MethodPayload, options?: { wait?: boolean }) {
-		if (options?.wait) {
-			this.wait(msg);
+	override dispatch(payload: OutgoingPayload, options?: { wait?: boolean }) {
+		// Only method payloads participate in the wait/queue serialization that
+		// implements Meteor's wait-method semantics. Protocol-level frames
+		// (connect, sub, unsub, ping, pong) must be delivered immediately:
+		// queueing a `connect` frame behind a wait `login` block, for example,
+		// wedges the DDP handshake — the socket opens but `connect` never
+		// reaches the server, so the server never replies `connected` and the
+		// session never establishes.
+		if (payload.msg !== 'method') {
+			this.emit('send', payload);
 			return;
 		}
-		this.pushItem(msg);
+
+		if (options?.wait) {
+			this.wait(payload);
+			return;
+		}
+
+		this.pushItem(payload);
 	}
 
 	wait(block: MethodPayload) {

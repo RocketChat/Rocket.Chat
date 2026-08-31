@@ -1,13 +1,17 @@
+import type { BrowserContext } from '@playwright/test';
+
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
 test.describe('OC - Livechat - Cross Tab Communication', () => {
 	let pageLivechat1: OmnichannelLiveChat;
 	let pageLivechat2: OmnichannelLiveChat;
+	let livechatContext: BrowserContext;
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
@@ -20,9 +24,9 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
-		const context = await browser.newContext();
-		const p1 = await context.newPage();
-		const p2 = await context.newPage();
+		livechatContext = await browser.newContext();
+		const p1 = await livechatContext.newPage();
+		const p2 = await livechatContext.newPage();
 
 		pageLivechat1 = new OmnichannelLiveChat(p1, api);
 		pageLivechat2 = new OmnichannelLiveChat(p2, api);
@@ -32,8 +36,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	});
 
 	test.afterEach(async () => {
-		await pageLivechat1.page.close();
-		await pageLivechat2.page.close();
+		// Both pages share the same context; closing it disposes both pages
+		await livechatContext.close();
 	});
 
 	test.afterAll(async () => {

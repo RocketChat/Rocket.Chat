@@ -1,12 +1,18 @@
 import { cronJobs } from '@rocket.chat/cron';
+import { License } from '@rocket.chat/license';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
+import { settings } from '../../../server/settings';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
+		if (License.hasOfflineLicense()) {
+			return;
+		}
+
 		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
 			return;
@@ -24,7 +30,9 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
-		};
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		} as ExtendedFetchOptions;
 
 		const pendingSentUrl = `v1/app-request/sent/pending`;
 		const result = await Apps.getMarketplaceClient().fetch(pendingSentUrl, options);
@@ -38,6 +46,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			const usersNotified = await appRequestNotififyForUsers(Apps.getMarketplaceClient().getMarketplaceUrl(), workspaceUrl, appId, appName)
 				.then(async (response) => {
 					// Mark all app requests as sent
+					// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})

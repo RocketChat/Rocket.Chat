@@ -1,15 +1,19 @@
-import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
-import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
+import { FederationMatrix, Message, MeteorError, Room } from '@rocket.chat/core-services';
+import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated, isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
-import { Rooms } from '@rocket.chat/models';
+import { isReservedByExclusiveBridge, validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
+import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { checkUsernameAvailabilityCallback } from '../../../../server/lib/callbacks/checkUsernameAvailabilityCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../server/lib/notifyListener';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -75,8 +79,13 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, { room }) => {
+	async (message: IMessage, { room, user }) => {
 		if (!message.federation?.eventId) {
+			return;
+		}
+
+		// deletion came from federation — don't echo
+		if (isUserNativeFederated(user)) {
 			return;
 		}
 
@@ -112,8 +121,27 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		// TODO should we really check for "user" here? it is potentially an external user
-		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		// Check if user is already in room
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription) {
+			if (!isBannedSubscription(subscription)) {
+				return;
+			}
+			// For federated rooms, unban requires a Matrix kick (leave) followed by a new invite.
+			// Remove the subscription so the unban propagates to Matrix via the afterUnbanFromRoom callback,
+			// then let the flow continue to create a new INVITED subscription via the beforeAddUserToRoom hook.
+			await Subscriptions.removeById(subscription._id);
+
+			await Message.saveSystemMessage('user-unbanned', room._id, user.username, inviter);
+
+			void notifyOnSubscriptionChanged(subscription, 'removed');
+			void notifyOnRoomChangedById(room._id);
+
+			await afterUnbanFromRoomCallback.run({ unbannedUser: user, userWhoUnbanned: inviter }, room);
+		}
+
+		if (!isUserNativeFederated(user) && !(await FederationMatrix.canUserAccessFederation(user))) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
 
@@ -189,6 +217,26 @@ afterRemoveFromRoomCallback.add(
 	'federation-matrix-after-remove-from-room',
 );
 
+afterBanFromRoomCallback.add(
+	async (data: { bannedUser: IUser; userWhoBanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.banUser(room, data.bannedUser, data.userWhoBanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-ban-from-room',
+);
+
+afterUnbanFromRoomCallback.add(
+	async (data: { unbannedUser: IUser; userWhoUnbanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.unbanUser(room, data.unbannedUser, data.userWhoUnbanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-unban-from-room',
+);
+
 callbacks.add(
 	'afterRoomNameChange',
 	async ({ room, name, user }) => {
@@ -213,14 +261,19 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, { room }) => {
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			if (!isEditedMessage(message)) {
-				return;
-			}
-
-			await FederationMatrix.updateMessage(room, message);
+	async (message: IMessage, { room, user }) => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
 		}
+		if (!isEditedMessage(message)) {
+			return;
+		}
+		// editor is remote -> edit came from federation, don't echo
+		if (isUserNativeFederated(user)) {
+			return;
+		}
+
+		await FederationMatrix.updateMessage(room, message);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-room-message-updated',
@@ -288,3 +341,58 @@ prepareCreateRoomCallback.add(async ({ extraData }) => {
 	// only an empty "federation" object
 	(extraData as IRoomNativeFederated).federation = { version: 1 } as any;
 });
+
+callbacks.add(
+	'afterReadMessages',
+	async (room: IRoom, params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
+		}
+
+		const user = await Users.findOneById(params.uid);
+		if (!user) {
+			return;
+		}
+
+		if (isUserNativeFederated(user)) {
+			// if the user is federated, it means the read receipt came from Matrix, so we don't need to notify Matrix again
+			return;
+		}
+
+		await FederationMatrix.notifyRoomRead({ room, userId: params.uid, threadId: params.tmid });
+	},
+	callbacks.priority.MEDIUM,
+	'federation-read-receipt',
+);
+
+callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData }) => {
+	if (!userUpdated || !oldUserData) {
+		return;
+	}
+
+	if (isUserNativeFederated(userUpdated)) {
+		// if the user is federated, it means the update came from Matrix, so we don't need to notify Matrix again
+		return;
+	}
+
+	if ('name' in userUpdated && userUpdated.name !== oldUserData.name) {
+		void FederationMatrix.updateUserName(userUpdated);
+	}
+});
+
+// Reserve handles that fall within a bridge's exclusive namespace, so a regular user cannot
+// register or rename into a localpart only the bridge is allowed to own. Usernames are checked
+// against the bridge's exclusive `users` namespace; room/team names against its `aliases`/`rooms`
+// namespaces. Inert when federation is disabled (the helper matches against loaded appservice
+// registrations, of which there are none). Every handle assignment path — user creation,
+// SSO/LDAP assignment and renames, plus room renames and team creation — funnels through
+// `checkUsernameAvailability`.
+checkUsernameAvailabilityCallback.add(
+	(name, type) => {
+		if (isReservedByExclusiveBridge(type, name)) {
+			throw new MeteorError('error-username-reserved-by-bridge', 'Name is reserved by a federation bridge');
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-bridge-namespace',
+);

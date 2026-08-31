@@ -13,7 +13,7 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = Omit<ComponentPropsWithoutRef<typeof AutoComplete>, 'filter'> & {
+export type UserAutoCompleteProps = Omit<ComponentPropsWithoutRef<typeof AutoComplete>, 'filter'> & {
 	conditions?: { [key: string]: unknown };
 };
 
@@ -37,11 +37,10 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
-			data-qa-id='UserAutoComplete'
 			renderSelected={({ selected: { value, label } }) => (
-				<Chip height='x20' value={value} mie={4}>
+				<Chip height='x20' value={value} marginInlineEnd={4}>
 					<UserAvatar size='x20' username={value} />
-					<Box verticalAlign='middle' is='span' margin='none' mi={4}>
+					<Box verticalAlign='middle' is='span' margin='none' marginInline={4}>
 						{label}
 					</Box>
 				</Chip>

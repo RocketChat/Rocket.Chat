@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRoomItems } from '../hooks/useRoomItems';
 
-type RoomMenuProps = {
+export type RoomMenuProps = {
 	room: { rid: string; name: string };
 };
 

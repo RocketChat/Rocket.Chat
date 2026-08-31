@@ -3,7 +3,9 @@ import { ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-const AdminUserCreated = ({ uid }: { uid: string }) => {
+export type AdminUserCreatedProps = { uid: string };
+
+const AdminUserCreated = ({ uid }: AdminUserCreatedProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 

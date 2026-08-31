@@ -1,2 +1,2 @@
 export * from './ServerEventsAuditSettingsParamsGET';
-export * from './server-events';
+export type * from './server-events';

@@ -1,10 +1,9 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAccountTable from './DeviceManagementAccountTable';
 
-const DeviceManagementAccountPage = (): ReactElement => {
+const DeviceManagementAccountPage = () => {
 	const { t } = useTranslation();
 
 	return (

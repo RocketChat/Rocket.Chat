@@ -69,8 +69,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/invites';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/reports';
-			pattern: '/admin/reports';
+			pathname: '/admin/analytic-reports';
+			pattern: '/admin/analytic-reports';
 		};
 		'admin-permissions': {
 			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
@@ -107,6 +107,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'admin-ABAC': {
 			pathname: '/admin/ABAC';
 			pattern: '/admin/ABAC/:tab?/:context?/:id?';
+		};
+		'admin-ai-center': {
+			pathname: `/admin/ai-center${`/${string}` | ''}`;
+			pattern: '/admin/ai-center/:section?';
 		};
 	}
 }
@@ -192,12 +196,17 @@ registerAdminRoute('/rooms/:context?/:id?', {
 	component: lazy(() => import('./rooms/RoomsRoute')),
 });
 
+registerAdminRoute('/ai-center/:section?', {
+	name: 'admin-ai-center',
+	component: lazy(() => import('./aiCenter/AICenterRoute')),
+});
+
 registerAdminRoute('/invites', {
 	name: 'invites',
 	component: lazy(() => import('./invites/InvitesRoute')),
 });
 
-registerAdminRoute('/reports', {
+registerAdminRoute('/analytic-reports', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });

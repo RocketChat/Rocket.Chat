@@ -1,6 +1,6 @@
 import type { AppSubscriptionStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import { AppInfoField } from './AppInfoField';
 
@@ -81,8 +81,8 @@ export default {
 	],
 } satisfies Meta<typeof AppInfoField>;
 
-export const Default: StoryFn<typeof AppInfoField> = (args) => <AppInfoField {...args} />;
+export const Default: StoryObj<typeof AppInfoField> = {};
 
-export const NoAppInfo: StoryFn<typeof AppInfoField> = (args) => <AppInfoField {...args} />;
-
-NoAppInfo.decorators = [mockAppRoot().withTranslations('en', 'core', { App_id: 'App Id' }).buildStoryDecorator()];
+export const NoAppInfo: StoryObj<typeof AppInfoField> = {
+	decorators: [mockAppRoot().withTranslations('en', 'core', { App_id: 'App Id' }).buildStoryDecorator()],
+};

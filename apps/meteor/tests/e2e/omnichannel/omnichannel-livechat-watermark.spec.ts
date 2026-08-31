@@ -2,7 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects';
+import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -60,7 +60,7 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 		await test.step('expect to change setting', async () => {
 			await poOmnichannelSettings.group('Livechat').click();
 			await poOmnichannelSettings.labelHideWatermark.click();
-			await poOmnichannelSettings.btnSave.click();
+			await poOmnichannelSettings.btnSaveChanges.click();
 		});
 
 		await test.step('expect watermark to be hidden', async () => {

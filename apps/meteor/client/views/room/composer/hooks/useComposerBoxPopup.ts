@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
@@ -58,7 +58,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 	const option = options[optionIndex];
 
-	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
+	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef(undefined);
 
 	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, option) as {
 		queries: UseQueryResult<T[]>[];
@@ -79,13 +79,13 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFocused((focused) => {
 			const sortedItems = items
 				.filter((item) => item.isSuccess)
-				.flatMap((item) => item.data as T[])
+				.flatMap((item) => item.data)
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
 	}, [items, option, suspended]);
 
-	const select = useEffectEvent((item: T) => {
+	const select = useStableCallback((item: T) => {
 		if (!option) {
 			throw new Error('No popup is open');
 		}
@@ -112,7 +112,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFocused(undefined);
 	});
 
-	const setOptionByInput = useEffectEvent((): ComposerBoxPopupOptions<T> | undefined => {
+	const setOptionByInput = useStableCallback((): ComposerBoxPopupOptions<T> | undefined => {
 		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 
 		if (!value) {
@@ -148,31 +148,32 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		return option;
 	});
 
-	const handleFocus = useEffectEvent(() => {
+	const handleFocus = useStableCallback(() => {
 		if (option) {
 			return;
 		}
 		setOptionByInput();
 	});
 
-	const handleKeyUp = useEffectEvent((event: KeyboardEvent) => {
-		if (!setOptionByInput()) {
-			return;
-		}
-
-		if (!option) {
-			return;
-		}
-
-		if (option.closeOnEsc === true && event.which === keys.ESC) {
-			setOptionIndex(-1);
-			setFocused(undefined);
-			event.preventDefault();
-			event.stopImmediatePropagation();
-		}
+	const handleInput = useStableCallback(() => {
+		setOptionByInput();
 	});
 
-	const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+	const handleKeyUp = useStableCallback((event: KeyboardEvent) => {
+		if (event.which === keys.ESC) {
+			if (option?.closeOnEsc === true) {
+				setOptionIndex(-1);
+				setFocused(undefined);
+				event.preventDefault();
+				event.stopImmediatePropagation();
+			}
+			return;
+		}
+
+		setOptionByInput();
+	});
+
+	const handleKeyDown = useStableCallback((event: KeyboardEvent) => {
 		if (!option) {
 			return;
 		}
@@ -192,7 +193,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -201,7 +202,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
+				return focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -211,7 +212,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -220,7 +221,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0]) as T;
+				return focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -228,11 +229,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		}
 	});
 
-	const clear = useEffectEvent(() => {
-		if (!option) {
-			return;
-		}
-
+	const clear = useStableCallback(() => {
 		setOptionIndex(-1);
 		setFocused(undefined);
 		setFilter('');
@@ -242,6 +239,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (ref.current) {
+				ref.current.removeEventListener('input', handleInput);
 				ref.current.removeEventListener('keyup', handleKeyUp);
 				ref.current.removeEventListener('keydown', handleKeyDown);
 				ref.current.removeEventListener('focus', handleFocus);
@@ -250,12 +248,13 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 			if (node) {
 				ref.current = node;
+				node.addEventListener('input', handleInput);
 				node.addEventListener('keyup', handleKeyUp);
 				node.addEventListener('keydown', handleKeyDown);
 				node.addEventListener('focus', handleFocus);
 			}
 		},
-		[handleKeyUp, handleKeyDown, handleFocus],
+		[handleInput, handleKeyUp, handleKeyDown, handleFocus],
 	);
 
 	if (!option) {

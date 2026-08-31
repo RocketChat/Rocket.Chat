@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import BaseConvertToChannelModal from './BaseConvertToChannelModal';
 import { teamsQueryKeys } from '../../../../../lib/queryKeys';
 
-type ConvertToChannelModalProps = {
+export type ConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;

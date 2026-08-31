@@ -4,64 +4,54 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-12iwr9i"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1apkof4"
+        class="rcx-box rcx-box--full rcx-css-e8r6o4"
       >
-        <div
-          class="rcx-box rcx-box--full rcx-css-llee4e"
-        >
-          <figure
-            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
-          >
-            <img
-              alt=""
-              aria-hidden="true"
-              class="rcx-avatar__element rcx-avatar__element--x36"
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-            />
-          </figure>
+        <div>
+          ParentRoom
         </div>
         <div
           class="rcx-box rcx-box--full rcx-css-1axz7ym"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+            class="rcx-box rcx-box--full rcx-css-1c6vtok"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
-              role="button"
-              tabindex="0"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-v5o1rw"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1o911xq"
-                >
-                  
-                </i>
-              </div>
-              <h1
-                class="rcx-box rcx-box--full rcx-css-15uaxsl"
-              >
-                rocket.cat
-              </h1>
-            </div>
             <button
-              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
               title="Favorite rocket.cat"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
             </button>
+            <div
+              aria-label="rocket.cat"
+              class="rcx-box rcx-box--full rcx-css-1lb6izd rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1vxtvqh"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-rm4moq"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-13pxsnj"
+              >
+                rocket.cat
+              </h1>
+            </div>
           </div>
         </div>
       </div>

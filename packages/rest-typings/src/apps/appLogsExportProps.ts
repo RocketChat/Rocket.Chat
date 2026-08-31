@@ -1,5 +1,5 @@
 import type { AppLogsProps } from './appLogsProps';
-import { ajv } from '../v1/Ajv';
+import { ajvQuery } from '../v1/Ajv';
 
 export type AppLogsExportProps = Omit<AppLogsProps, 'appId' | 'offset' | 'query'> & {
 	type: 'json' | 'csv';
@@ -21,4 +21,4 @@ const AppLogsExportPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isAppLogsExportProps = ajv.compile<AppLogsExportProps>(AppLogsExportPropsSchema);
+export const isAppLogsExportProps = ajvQuery.compile<AppLogsExportProps>(AppLogsExportPropsSchema);

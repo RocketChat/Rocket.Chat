@@ -2,7 +2,6 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
@@ -17,14 +16,14 @@ import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstalla
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 
-type AppStatusProps = {
+export type AppStatusProps = {
 	app: App;
 	showStatus?: boolean;
 	isAppDetailsPage: boolean;
 	installed?: boolean;
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps) => {
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
@@ -137,7 +136,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie={8}>
+		<Box {...props} display='flex' alignItems='center' marginInlineEnd={8}>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -154,7 +153,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						mie={8}
+						marginInlineEnd={8}
 					>
 						{t(button.label)}
 					</Button>
@@ -169,7 +168,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
-							{status.icon && <Icon name={status.icon} size={16} mie={2} />}
+							{status.icon && <Icon name={status.icon} size={16} marginInlineEnd={2} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
 						</Box>
 					</Tag>

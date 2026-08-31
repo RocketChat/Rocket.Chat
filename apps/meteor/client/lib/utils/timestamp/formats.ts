@@ -23,12 +23,12 @@ export const TIMESTAMP_FORMATS: Record<TimestampFormat, ITimestampFormatConfig> 
 	},
 	f: {
 		label: 'timestamps.fullDateTime',
-		format: 'PPPppp',
+		format: 'PPPP p',
 		description: 'timestamps.fullDateTimeDescription',
 	},
 	F: {
 		label: 'timestamps.fullDateTimeLong',
-		format: 'PPPPpppp',
+		format: 'PPPP pp',
 		description: 'timestamps.fullDateTimeLongDescription',
 	},
 	R: {

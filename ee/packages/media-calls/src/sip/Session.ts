@@ -1,4 +1,4 @@
-import type { Socket } from 'net';
+import type { Socket } from 'node:net';
 
 import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
@@ -116,7 +116,7 @@ export class SipServerSession {
 	}
 
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {
-		return Boolean(settings.enabled && settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
+		return Boolean(settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
 	}
 
 	private initializeDrachtio(): void {
@@ -156,7 +156,7 @@ export class SipServerSession {
 		logger.info({ msg: 'Connecting to drachtio', host, port });
 
 		this.wasEverEnabled = true;
-		this.srf.connect({
+		void this.srf.connect({
 			host,
 			port,
 			secret,

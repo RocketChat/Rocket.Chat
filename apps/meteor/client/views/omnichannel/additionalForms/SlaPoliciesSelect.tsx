@@ -5,7 +5,7 @@ import { useId, useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-type SlaPoliciesSelectProps = {
+export type SlaPoliciesSelectProps = {
 	value: string;
 	label: string;
 	options: Serialized<IOmnichannelServiceLevelAgreements[]>;

@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, mentionUser, mentionChannel } from '../src/utils';
+import { paragraph, plain, mentionUser, mentionChannel } from './helpers';
 
 test.each([
 	['@guilherme.gazzo', [paragraph([mentionUser('guilherme.gazzo')])]],
@@ -18,5 +18,5 @@ test.each([
 	['@Кириллица', [paragraph([mentionUser('Кириллица')])]],
 	['test @Кириллица test', [paragraph([plain('test '), mentionUser('Кириллица'), plain(' test')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

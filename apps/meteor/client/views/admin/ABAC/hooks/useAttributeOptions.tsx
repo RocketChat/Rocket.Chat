@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
+import { useViewRoomsAction } from './useViewRoomsAction';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 export const useAttributeOptions = (attribute: { _id: string; key: string }): GenericMenuItemProps[] => {
@@ -18,8 +19,9 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 	const isAttributeUsed = useEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', { key: attribute.key });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isABACAvailable = useIsABACAvailable();
+	const viewRoomsAction = useViewRoomsAction();
 
-	const editAction = useEffectEvent(() => {
+	const editAction = useStableCallback(() => {
 		return router.navigate(
 			{
 				name: 'admin-ABAC',
@@ -47,7 +49,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 		},
 	});
 
-	const deleteAction = useEffectEvent(async () => {
+	const deleteAction = useStableCallback(async () => {
 		const isUsed = await isAttributeUsed();
 		if (isUsed.inUse) {
 			return setModal(
@@ -56,8 +58,10 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 					icon={null}
 					title={t('ABAC_Cannot_delete_attribute')}
 					confirmText={t('View_rooms')}
-					// TODO Route to rooms tab once implemented
-					onConfirm={() => setModal(null)}
+					onConfirm={() => {
+						viewRoomsAction(attribute.key);
+						setModal(null);
+					}}
 					onCancel={() => setModal(null)}
 				>
 					<Trans
