@@ -90,6 +90,8 @@ ADRs 0002 and 0003 live on branch `feat/apps-media-call-hooks`, not on
 
 ## Conventions
 
+- Terms are fixed in [`GLOSSARY.md`](../GLOSSARY.md), which also lists the words
+  that name two different things here. Check it before reusing one.
 - One scope per document. If a discussion outgrows a document, split it and add
   a row above; the number prefixes leave room in each range.
 - Cross-references are links, not section numbers, so a document can be
