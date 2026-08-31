@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { APIRequestContext } from '@playwright/test';
 
-import { BASE_API_URL } from '../config/constants';
+import { BASE_API_URL, DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deleteRoom } from '../utils';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -35,7 +35,7 @@ const sendEncryptedMessage = async (request: APIRequestContext, rid: string, enc
 };
 
 test.describe('E2EE Legacy Format', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
 	let createE2EEChannel: CreateE2EEChannel;
 
@@ -56,7 +56,11 @@ test.describe('E2EE Legacy Format', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(
+			api,
+			{ username: Users.userE2EE.data.username, password: DEFAULT_USER_CREDENTIALS.password },
+			createdChannels,
+		);
 	});
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {

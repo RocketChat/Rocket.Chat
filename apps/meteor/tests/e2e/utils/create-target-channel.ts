@@ -3,6 +3,7 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
+import { BASE_API_URL } from '../config/constants';
 
 /**
  * createTargetChannel:
@@ -53,6 +54,20 @@ export async function isChannelMember(api: BaseTest['api'], roomName: string, us
 
 export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<void> {
 	await api.post('/rooms.delete', { roomId });
+}
+
+export async function deletePrivateRoomsByName(
+	api: BaseTest['api'],
+	credentials: { username: string; password: string },
+	roomNames: string[],
+): Promise<void> {
+	const userApi = await api.login(credentials);
+
+	try {
+		await Promise.all(roomNames.map((roomName) => userApi.post(`${BASE_API_URL}/groups.delete`, { data: { roomName } })));
+	} finally {
+		await userApi.dispose();
+	}
 }
 
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {

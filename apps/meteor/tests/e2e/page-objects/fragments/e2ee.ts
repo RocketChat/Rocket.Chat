@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Navbar } from './navbar';
-import { resolvePrivateRoomId } from '../../utils/resolve-room-id';
 import { expect } from '../../utils/test';
 
 abstract class E2EEBanner {
@@ -42,30 +41,20 @@ export class E2EEKeyDecodeFailureBanner extends E2EEBanner {
 export class CreateE2EEChannel {
 	private readonly navbar: Navbar;
 
-	constructor(private readonly page: Page) {
+	constructor(page: Page) {
 		this.navbar = new Navbar(page);
 	}
 
-	async create(name: string): Promise<string> {
+	async create(name: string): Promise<void> {
 		await this.navbar.createEncryptedChannel(name);
-		return this.resolve(name);
 	}
 
-	async createAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
-		const id = await this.create(name);
-		createdChannels.push({ name, id });
-		return id;
+	async createAndStore(name: string, createdChannels: string[]): Promise<void> {
+		await this.create(name);
+		this.store(name, createdChannels);
 	}
 
-	async resolveAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
-		const id = await this.resolve(name);
-		createdChannels.push({ name, id });
-		return id;
-	}
-
-	private async resolve(name: string): Promise<string> {
-		const id = await resolvePrivateRoomId(this.page, name);
-		await expect(id, `Failed to resolve roomId for ${name}`).toBeTruthy();
-		return id || '';
+	store(name: string, createdChannels: string[]): void {
+		createdChannels.push(name);
 	}
 }

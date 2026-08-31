@@ -9,7 +9,7 @@ import { Navbar } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { FileUploadModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
-import { createTargetGroupAndReturnFullRoom, deleteRoom } from '../utils';
+import { createTargetGroupAndReturnFullRoom, deletePrivateRoomsByName, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { sendMessageFromUser } from '../utils/sendMessage';
 import { test, expect } from '../utils/test';
@@ -19,7 +19,7 @@ const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 preserveSettings(settingsList);
 
 test.describe('E2EE Encryption and Decryption - Basic Features', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let loginPage: LoginPage;
 	let navbar: Navbar;
 	let encryptedRoomPage: EncryptedRoomPage;
@@ -46,7 +46,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {

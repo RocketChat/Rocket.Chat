@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from '../config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deleteRoom } from '../utils';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -18,7 +18,7 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE Server Settings', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
 	let createE2EEChannel: CreateE2EEChannel;
 
@@ -39,7 +39,11 @@ test.describe('E2EE Server Settings', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(
+			api,
+			{ username: Users.userE2EE.data.username, password: DEFAULT_USER_CREDENTIALS.password },
+			createdChannels,
+		);
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {

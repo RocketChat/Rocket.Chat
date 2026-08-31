@@ -7,7 +7,7 @@ import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { ExportMessagesFlexTab } from '../page-objects/fragments/flextabs';
 import { LoginPage } from '../page-objects/login';
-import { deleteRoom } from '../utils';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -21,7 +21,7 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE PDF Export', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.admin.state });
@@ -46,7 +46,7 @@ test.describe('E2EE PDF Export', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {

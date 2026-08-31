@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 
+import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { ToastMessages } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deleteRoom } from '../utils';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -18,7 +19,7 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE Encrypted Channels', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
 	let toastMessages: ToastMessages;
 	let createE2EEChannel: CreateE2EEChannel;
@@ -40,7 +41,11 @@ test.describe('E2EE Encrypted Channels', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(
+			api,
+			{ username: Users.userE2EE.data.username, password: DEFAULT_USER_CREDENTIALS.password },
+			createdChannels,
+		);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -148,7 +153,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
-		await createE2EEChannel.resolveAndStore(channelName, createdChannels);
+		createE2EEChannel.store(channelName, createdChannels);
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
@@ -245,7 +250,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
-		await createE2EEChannel.resolveAndStore(channelName, createdChannels);
+		createE2EEChannel.store(channelName, createdChannels);
 
 		// Send Unencrypted Messages
 		await poHomeChannel.content.sendMessage('first unencrypted message');

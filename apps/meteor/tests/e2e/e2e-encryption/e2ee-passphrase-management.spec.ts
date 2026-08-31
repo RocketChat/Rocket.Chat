@@ -10,7 +10,7 @@ import { Navbar } from '../page-objects/fragments';
 import { CreateE2EEChannel, E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
 import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
-import { deleteRoom } from '../utils';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -179,7 +179,7 @@ test.use({ storageState: Users.admin.state });
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
-	const createdChannels: { name: string; id?: string | null }[] = [];
+	const createdChannels: string[] = [];
 	let poAccountSecurity: AccountSecurity;
 	let poHomeChannel: HomeChannel;
 	let createE2EEChannel: CreateE2EEChannel;
@@ -203,7 +203,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
+		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {
