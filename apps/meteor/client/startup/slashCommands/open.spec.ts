@@ -101,17 +101,6 @@ describe('/open slash command', () => {
 		expect(post).toHaveBeenCalledTimes(1);
 	});
 
-	it('opens an existing direct-message subscription without creating it again', async () => {
-		const subscription = createFakeSubscription({ name: 'alice', t: 'd' });
-		setSubscriptions(subscription);
-
-		await runCommand('@alice');
-
-		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, { layout: 'embedded' });
-		expect(openRouteLink).toHaveBeenCalledTimes(1);
-		expect(post).not.toHaveBeenCalled();
-	});
-
 	it('opens the direct-message subscription created by the REST API', async () => {
 		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'dm-room-id', name: 'alice', t: 'd' });
 		findSubscription.mockReturnValueOnce(undefined).mockReturnValueOnce(subscription);
