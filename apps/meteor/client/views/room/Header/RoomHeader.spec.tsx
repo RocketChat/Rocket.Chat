@@ -11,7 +11,7 @@ const appRoot = mockAppRoot()
 	.wrap((children) => <FakeRoomProvider roomOverrides={mockedRoom}>{children}</FakeRoomProvider>)
 	.build();
 
-jest.mock('../../../../app/utils/client', () => ({
+jest.mock('../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 

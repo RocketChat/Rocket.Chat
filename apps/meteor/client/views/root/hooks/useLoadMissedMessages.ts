@@ -2,9 +2,9 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { upsertMessageBulk } from '../../../lib/RoomHistoryManager';
+import { sdk } from '../../../lib/SDKClient';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../stores/Messages';
 import { Subscriptions } from '../../../stores/Subscriptions';

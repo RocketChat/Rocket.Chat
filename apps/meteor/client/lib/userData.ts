@@ -2,7 +2,7 @@ import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typing
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
 import { create } from 'zustand';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 import { Users } from '../stores';
 
 export const useUserDataSyncReady = create(() => false);

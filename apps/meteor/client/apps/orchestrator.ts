@@ -5,9 +5,9 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import type { IAppExternalURL } from '../definitions/IAppExternalURL';
 import type { ICategory } from '../definitions/ICategory';
+import { sdk } from '../lib/SDKClient';
 import { hasAtLeastOnePermission } from '../lib/authorization';
 import { dispatchToastMessage } from '../lib/toast';
 import type { App } from '../views/marketplace/types';

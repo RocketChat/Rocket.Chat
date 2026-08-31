@@ -4,9 +4,9 @@ import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
 
 import { useNotificationAllowed } from './useNotificationAllowed';
-import { getUserAvatarURL } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { stripTags } from '../../../lib/utils/stringUtils';
+import { sdk } from '../../lib/SDKClient';
+import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {

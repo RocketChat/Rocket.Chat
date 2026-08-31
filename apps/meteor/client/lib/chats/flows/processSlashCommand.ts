@@ -2,11 +2,11 @@ import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/tools';
 
-import { slashCommands } from '../../../../app/utils/client';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { sdk } from '../../SDKClient';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings';
+import { slashCommands } from '../../slashCommand';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
