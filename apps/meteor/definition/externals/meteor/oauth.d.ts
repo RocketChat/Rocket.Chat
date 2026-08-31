@@ -28,8 +28,6 @@ declare module 'meteor/oauth' {
 		const _pendingCredentials: MeteorServerMongoCollection<IOauthCredentials>;
 		const _storageTokenPrefix: string;
 
-		function _stateParam(loginStyle: string, credentialToken: string, redirectUrl?: string): string;
-
 		function _redirectUri(
 			serviceName: string,
 			config: { loginStyle?: string },

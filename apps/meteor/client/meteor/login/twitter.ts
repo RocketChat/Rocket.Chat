@@ -2,10 +2,9 @@ import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, wrapRequestCredentialFn } from './oauth';
+import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, stateParam, wrapRequestCredentialFn } from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
@@ -24,7 +23,7 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 
 		const loginUrl = new URL(absoluteUrl('_oauth/twitter/'));
 		loginUrl.searchParams.append('requestTokenAndRedirect', 'true');
-		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl));
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options?.redirectUrl));
 		// Support additional, permitted parameters
 		if (options) {
 			validParamsAuthenticate.forEach((param) => {

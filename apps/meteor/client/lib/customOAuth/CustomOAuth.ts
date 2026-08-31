@@ -7,7 +7,13 @@ import { OAuth } from 'meteor/oauth';
 
 import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, redirectUri } from '../../meteor/login/oauth';
+import {
+	createOAuthTotpLoginMethod,
+	credentialRequestCompleteHandler,
+	launchLogin,
+	redirectUri,
+	stateParam,
+} from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
 
@@ -88,9 +94,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 			`${this.authorizePath}${separator}client_id=${config.clientId}&redirect_uri=${encodeURIComponent(
 				redirectUri(this.name, config),
 			)}&response_type=${encodeURIComponent(this.responseType)}` +
-			`&state=${encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(
-				this.scope,
-			)}`;
+			`&state=${encodeURIComponent(stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(this.scope)}`;
 
 		launchLogin({
 			loginService: this.name,

@@ -3,9 +3,15 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, redirectUri, wrapRequestCredentialFn } from './oauth';
+import {
+	createOAuthTotpLoginMethod,
+	credentialRequestCompleteHandler,
+	launchLogin,
+	redirectUri,
+	stateParam,
+	wrapRequestCredentialFn,
+} from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 
@@ -44,7 +50,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		loginUrl.searchParams.append('client_id', config.clientId ?? '');
 		loginUrl.searchParams.append('scope', ['email', ...(options.requestPermissions || ['profile'])].join(' '));
 		loginUrl.searchParams.append('redirect_uri', redirectUri('google', config));
-		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl));
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
 
 		launchLogin({
 			loginService: 'google',

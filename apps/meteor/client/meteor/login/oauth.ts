@@ -1,3 +1,4 @@
+import { Base64 } from '@rocket.chat/base64';
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -290,4 +291,20 @@ export const redirectUri = (
 	}
 
 	return url.toString();
+};
+
+export const stateParam = (loginStyle: string, credentialToken: string, redirectUrl?: string) => {
+	const state: Record<string, string> = {
+		loginStyle,
+		credentialToken,
+	};
+
+	if (loginStyle === 'redirect') {
+		state.redirectUrl = redirectUrl || `${window.location}`;
+	}
+
+	// Encode base64 as not all login services URI-encode the state
+	// parameter when they pass it back to us.
+	// Use the 'base64' package here because 'btoa' isn't supported in IE8/9.
+	return Base64.encode(JSON.stringify(state));
 };

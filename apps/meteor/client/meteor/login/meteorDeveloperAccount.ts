@@ -2,10 +2,16 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
-import { OAuth } from 'meteor/oauth';
 import { Random } from 'meteor/random';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, redirectUri, wrapRequestCredentialFn } from './oauth';
+import {
+	createOAuthTotpLoginMethod,
+	credentialRequestCompleteHandler,
+	launchLogin,
+	redirectUri,
+	stateParam,
+	wrapRequestCredentialFn,
+} from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 
@@ -19,7 +25,7 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 		const credentialToken = Random.secret();
 
 		const loginUrl = new URL('https://www.meteor.com/oauth2/authorize');
-		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl));
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
 		loginUrl.searchParams.append('response_type', 'code');
 		loginUrl.searchParams.append('client_id', config.clientId ?? '');
 		if (options.details) loginUrl.searchParams.append('details', options.details);

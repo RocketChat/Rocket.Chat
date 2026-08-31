@@ -3,9 +3,15 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod, credentialRequestCompleteHandler, launchLogin, redirectUri, wrapRequestCredentialFn } from './oauth';
+import {
+	createOAuthTotpLoginMethod,
+	credentialRequestCompleteHandler,
+	launchLogin,
+	redirectUri,
+	stateParam,
+	wrapRequestCredentialFn,
+} from './oauth';
 import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import type { AbsoluteUrlOptions } from '../../lib/absoluteUrl';
@@ -29,7 +35,7 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 			/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) ? 'touch' : 'popup',
 		);
 		loginUrl.searchParams.append('scope', options.requestPermissions?.join(',') ?? 'email');
-		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl));
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options?.redirectUrl));
 		if (options.auth_type) loginUrl.searchParams.append('auth_type', options.auth_type);
 
 		launchLogin({
