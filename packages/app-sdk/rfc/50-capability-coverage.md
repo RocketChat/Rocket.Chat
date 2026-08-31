@@ -13,7 +13,7 @@ Everything the legacy app-facing surface exposes has a home. `✅` designed here
 | `IProcessor` + `scheduleOnce/Recurring` | `defineJob` + `ctx.scheduler.runAt/runEvery` | ✅ |
 | `IApi` / `IApiEndpoint` | `defineEndpoint` | ✅ |
 | Pre/Post × Prevent/Extend/Modify interfaces | `defineListener` (intent by return) | ✅ |
-| the five legacy pre-event return contracts | one `pass`/`patch`/`prevent`/`prompt` vocabulary (ADR 0002) | ◑ |
+| the five legacy pre-event return contracts | one `ctx.event.pass`/`patch`/`prevent` vocabulary (ADR 0002); `prompt` is not exposed | ◑ |
 | `ISettingsExtend` / typed reads | `defineSettings` + typed `ctx.settings` | ✅ |
 | `IPersistence` (typed store) | `defineStore` typed collections | ✅ |
 | `IPersistence` associations | an optional per-record tag, for cascade cleanup the host does not do today | ◑ |

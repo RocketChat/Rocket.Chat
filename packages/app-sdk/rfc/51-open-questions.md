@@ -46,7 +46,7 @@ guess at:
    cleanly onto exposing app capabilities to Rocket.Chat's own AI features (and,
    as Mastra shows, onto MCP) if that becomes a goal.
 
-7. **The patch encoding.** `ctx.modify` sends a whole subject, and a shallow
+7. **The patch encoding.** `ctx.event.patch` sends a whole subject, and a shallow
    `Partial<T>` cannot express append, deletion or positional intent. ADR 0002
    keeps the door open by treating the payload as one *encoding* and branching
    on its shape, so an op-log sibling stays additive. It also shows the op log
