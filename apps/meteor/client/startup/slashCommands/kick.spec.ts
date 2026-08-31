@@ -10,35 +10,48 @@ jest.mock('../../lib/queryClient', () => ({
 	},
 }));
 
-const { callback, result } = slashCommands.commands.kick;
 const invalidateQueries = jest.mocked(queryClient.invalidateQueries);
 
-const callbackParams = (params: string) => ({
-	command: 'kick',
-	params,
-	message: { _id: 'message-id', rid: 'room-id' },
-	userId: 'user-id',
-});
+const getResultHandler = () => {
+	const { result } = slashCommands.commands.kick;
+	expect(result).toBeDefined();
+	return result as NonNullable<typeof result>;
+};
+
+const getCallback = () => {
+	const { callback } = slashCommands.commands.kick;
+	expect(callback).toBeDefined();
+	return callback as NonNullable<typeof callback>;
+};
+
+const runCommand = (params: string) =>
+	getCallback()({
+		command: 'kick',
+		params,
+		message: { _id: 'message-id', rid: 'room-id' },
+		userId: 'user-id',
+	});
 
 describe('/kick slash command', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it('trims the supplied username', () => {
-		expect(callback?.(callbackParams('  alice  '))).toBe('alice');
+	it.each([
+		['an unadorned username', 'alice'],
+		['surrounding whitespace', '  alice  '],
+		['an @ prefix and surrounding whitespace', '  @alice  '],
+	])('returns the normalized username when given %s', (_case, input) => {
+		expect(runCommand(input)).toBe('alice');
 	});
 
-	it('removes the @ prefix', () => {
-		expect(callback?.(callbackParams('@alice'))).toBe('alice');
-	});
-
-	it('handles empty input', () => {
-		expect(callback?.(callbackParams('   '))).toBeUndefined();
+	it('returns nothing when the input is empty after trimming', () => {
+		expect(runCommand('   ')).toBeUndefined();
 	});
 
 	it('invalidates the room-members query after success', () => {
-		result?.(undefined, undefined, {
+		const result = getResultHandler();
+		result(undefined, undefined, {
 			cmd: 'kick',
 			params: 'alice',
 			msg: createFakeMessage({ rid: 'room-id' }),
@@ -48,7 +61,8 @@ describe('/kick slash command', () => {
 	});
 
 	it('does not invalidate the room-members query after an error', () => {
-		result?.(new Error('Failed to kick user'), undefined, {
+		const result = getResultHandler();
+		result(new Error('Failed to kick user'), undefined, {
 			cmd: 'kick',
 			params: 'alice',
 			msg: createFakeMessage({ rid: 'room-id' }),

@@ -35,18 +35,28 @@ jest.mock('../../stores', () => ({
 	},
 }));
 
-const { callback } = slashCommands.commands.open;
 const post = jest.mocked(sdk.rest.post);
 const openRouteLink = jest.mocked(roomCoordinator.openRouteLink);
 const getSearchParameters = jest.mocked(router.getSearchParameters);
 const findSubscription = jest.mocked(Subscriptions.state.find);
 
-const callbackParams = (params: string) => ({
-	command: 'open',
-	params,
-	message: { _id: 'message-id', rid: 'room-id' },
-	userId: 'user-id',
-});
+const getCallback = () => {
+	const { callback } = slashCommands.commands.open;
+	expect(callback).toBeDefined();
+	return callback as NonNullable<typeof callback>;
+};
+
+const runCommand = (params: string) =>
+	getCallback()({
+		command: 'open',
+		params,
+		message: { _id: 'message-id', rid: 'room-id' },
+		userId: 'user-id',
+	});
+
+const setSubscriptions = (...subscriptions: ReturnType<typeof createFakeSubscription>[]) => {
+	findSubscription.mockImplementation((predicate) => subscriptions.find(predicate));
+};
 
 describe('/open slash command', () => {
 	beforeEach(() => {
@@ -58,48 +68,84 @@ describe('/open slash command', () => {
 	});
 
 	it.each([
-		['channel', 'c'],
-		['group', 'p'],
-	] as const)('opens an existing %s subscription', async (_kind, type) => {
-		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'target-room-id', name: 'general', t: type });
-		findSubscription.mockImplementation((predicate) => (predicate(subscription) ? subscription : undefined));
+		['channel', 'c', 'general'],
+		['group', 'p', 'secret'],
+	] as const)('opens the matching existing %s subscription', async (_kind, type, name) => {
+		const wrongType = createFakeSubscription({ name, t: 'd' });
+		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'target-room-id', name, t: type });
+		setSubscriptions(wrongType, subscription);
 
-		await callback?.(callbackParams('  #general  '));
+		await runCommand(`  #${name}  `);
 
 		expect(openRouteLink).toHaveBeenCalledWith(type, subscription, { layout: 'embedded' });
+		expect(openRouteLink).toHaveBeenCalledTimes(1);
 		expect(post).not.toHaveBeenCalled();
 	});
 
-	it('handles direct-message input', async () => {
-		post.mockResolvedValue({} as never);
+	it('opens a matching existing subscription when the input has no prefix', async () => {
+		const subscription = createFakeSubscription({ name: 'general', t: 'c' });
+		setSubscriptions(subscription);
 
-		await callback?.(callbackParams('  @alice  '));
+		await runCommand('general');
 
-		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'alice' });
+		expect(openRouteLink).toHaveBeenCalledWith('c', subscription, { layout: 'embedded' });
+		expect(post).not.toHaveBeenCalled();
 	});
 
-	it('creates a direct-message subscription and opens the newly created subscription', async () => {
+	it('uses the trimmed username from direct-message input', async () => {
+		post.mockResolvedValue({} as never);
+
+		await runCommand('  @alice  ');
+
+		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'alice' });
+		expect(post).toHaveBeenCalledTimes(1);
+	});
+
+	it('opens an existing direct-message subscription without creating it again', async () => {
+		const subscription = createFakeSubscription({ name: 'alice', t: 'd' });
+		setSubscriptions(subscription);
+
+		await runCommand('@alice');
+
+		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, { layout: 'embedded' });
+		expect(openRouteLink).toHaveBeenCalledTimes(1);
+		expect(post).not.toHaveBeenCalled();
+	});
+
+	it('opens the direct-message subscription created by the REST API', async () => {
 		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'dm-room-id', name: 'alice', t: 'd' });
 		findSubscription.mockReturnValueOnce(undefined).mockReturnValueOnce(subscription);
 		post.mockResolvedValue({} as never);
 
-		await callback?.(callbackParams('@alice'));
+		await runCommand('@alice');
 
 		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'alice' });
 		expect(openRouteLink).toHaveBeenCalledWith('d', subscription, { layout: 'embedded' });
+		expect(post.mock.invocationCallOrder[0]).toBeLessThan(openRouteLink.mock.invocationCallOrder[0]);
+	});
+
+	it('does nothing when a channel or group subscription is missing', async () => {
+		await expect(runCommand('#missing')).resolves.toBeUndefined();
+
+		expect(post).not.toHaveBeenCalled();
+		expect(openRouteLink).not.toHaveBeenCalled();
 	});
 
 	it('does not crash when the direct-message subscription is still missing after creation', async () => {
 		post.mockResolvedValue({} as never);
 
-		await expect(callback?.(callbackParams('@missing'))).resolves.toBeUndefined();
+		await expect(runCommand('@missing')).resolves.toBeUndefined();
+		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'missing' });
+		expect(post).toHaveBeenCalledTimes(1);
 		expect(openRouteLink).not.toHaveBeenCalled();
 	});
 
 	it('does not crash when direct-message creation fails', async () => {
 		post.mockRejectedValue(new Error('Failed to create direct message'));
 
-		await expect(callback?.(callbackParams('@alice'))).resolves.toBeUndefined();
+		await expect(runCommand('@alice')).resolves.toBeUndefined();
+		expect(post).toHaveBeenCalledWith('/v1/im.create', { username: 'alice' });
+		expect(post).toHaveBeenCalledTimes(1);
 		expect(openRouteLink).not.toHaveBeenCalled();
 	});
 });
