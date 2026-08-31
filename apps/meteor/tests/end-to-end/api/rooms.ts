@@ -5490,23 +5490,35 @@ describe('[/rooms.history]', () => {
 	});
 
 	it('should close the cursors at the edges of the room', async () => {
-		const newest = await request
-			.get(api('rooms.history'))
-			.set(credentials)
-			.query({ roomId: testChannel._id, aroundId: messageIds[messageCount - 1], count: 5 })
-			.expect(200);
+		// A dedicated room keeps the edges unambiguous: other tests keep appending to testChannel,
+		// so its newest message is whatever the previous test happened to send.
+		const edgeChannel = (await createRoom({ type: 'c', name: `rooms-history-edges-${Date.now()}` })).body.channel;
+		const ids: IMessage['_id'][] = [];
+		for (let i = 0; i < 6; i++) {
+			ids.push((await sendMessage({ message: { rid: edgeChannel._id, msg: `edge-${i}` } })).body.message._id);
+		}
 
-		expect(newest.body.cursor.next).to.be.null;
-		expect(newest.body.cursor.previous).to.be.a('string');
+		try {
+			const newest = await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: edgeChannel._id, aroundId: ids[ids.length - 1], count: 5 })
+				.expect(200);
 
-		const oldest = await request
-			.get(api('rooms.history'))
-			.set(credentials)
-			.query({ roomId: testChannel._id, aroundId: messageIds[0], count: 5 })
-			.expect(200);
+			expect(newest.body.cursor.next).to.be.null;
+			expect(newest.body.cursor.previous).to.be.a('string');
 
-		expect(oldest.body.cursor.previous).to.be.null;
-		expect(oldest.body.cursor.next).to.be.a('string');
+			const oldest = await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: edgeChannel._id, aroundId: ids[0], count: 5 })
+				.expect(200);
+
+			expect(oldest.body.cursor.previous).to.be.null;
+			expect(oldest.body.cursor.next).to.be.a('string');
+		} finally {
+			await deleteRoom({ type: 'c', roomId: edgeChannel._id });
+		}
 	});
 
 	it('should page in both directions from a window built by `aroundId`', async () => {
