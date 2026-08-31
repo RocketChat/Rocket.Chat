@@ -76,10 +76,10 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	/**
-	 * The delta is a change probe, not a source of items. What it reports cannot be used directly: a changed
-	 * series arrives as its master rather than as occurrences, and an occurrence deleted from a series is not
-	 * reported at all. So once anything has moved, Exchange expands the whole window and the caller
-	 * reconciles against a complete set, which is what the desktop integration has always done.
+	 * The delta is used as a 'Has something changed?', not as a source of items. What it reports cannot be used
+	 * directly: a changed series arrives as its master rather than as occurrences, and an occurrence deleted
+	 * from a series is not reported at all. So once anything was modified, Exchange expands the whole window
+	 * and the caller reconciles against a complete set, which is what the desktop integration has always done.
 	 */
 	private async snapshotWindow(mailbox: string, folderId: string, window: DateRange): Promise<ExchangeEvent[]> {
 		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, folderId, window.start, window.end)));
@@ -112,14 +112,10 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private async loadItems(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
 		const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds)));
 
-		return (
-			allByTag(doc, TYPES_NS, 'CalendarItem')
-				// A CalendarView returns occurrences, so a master here would be a surprise. Storing one anyway
-				// would put a single event at the first occurrence's time and call it the whole series.
-				.filter((node) => textOf(firstByTag(node, TYPES_NS, 'CalendarItemType')) !== 'RecurringMaster')
-				.map((node) => this.toExchangeEvent(node))
-				.filter((event): event is ExchangeEvent => event !== undefined)
-		);
+		return allByTag(doc, TYPES_NS, 'CalendarItem')
+			.filter((node) => textOf(firstByTag(node, TYPES_NS, 'CalendarItemType')) !== 'RecurringMaster')
+			.map((node) => this.toExchangeEvent(node))
+			.filter((event): event is ExchangeEvent => event !== undefined);
 	}
 
 	private toExchangeEvent(node: Element): ExchangeEvent | undefined {
