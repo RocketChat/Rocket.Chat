@@ -44,6 +44,7 @@ export class SipServerSession {
 		const sipCall = this.knownCalls.get(callId);
 		if (!sipCall) {
 			// If we don't know this call, then it's probably being handled by a session in some other server instance
+			logger.debug({ msg: 'callId not tracked by this session', method: 'SipServerSession.reactToCallUpdate', callId });
 			return;
 		}
 

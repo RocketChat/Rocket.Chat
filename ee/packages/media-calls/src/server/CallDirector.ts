@@ -24,6 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+	sipCallId?: string;
 };
 
 // expiration checks by call id
@@ -62,13 +63,18 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
+		data: {
+			calleeContractId: string;
+			webrtcAnswer?: RTCSessionDescriptionInit;
+			supportedFeatures: CallFeature[];
+			sipCallId?: string;
+		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
 		// To avoid race conditions, load the negotiation before changing the call state
 		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		const negotiation = data.webrtcAnswer ? await MediaCallNegotiations.findLatestByCallId(call._id) : null;
 
 		const { webrtcAnswer, ...acceptData } = data;
 
@@ -236,6 +242,7 @@ class MediaCallDirector {
 			...(divertedBy && { divertedBy }),
 
 			features: allowedFeatures,
+			...(params.sipCallId && { sipCallId: params.sipCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });

@@ -82,10 +82,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 
 	public async acceptCallById(
 		callId: string,
-		data: { calleeContractId: string; supportedFeatures: string[] },
+		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
 		expiresAt: Date,
 	): Promise<UpdateResult> {
-		const { calleeContractId } = data;
+		const { calleeContractId, sipCallId } = data;
 
 		return this.updateOne(
 			{
@@ -98,6 +98,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
+					...(sipCallId && { sipCallId }),
 				},
 				$pull: {
 					features: {
@@ -222,5 +223,23 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ limit: 1 },
 		);
 		return count > 0;
+	}
+
+	public async updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult> {
+		const { caller, callee } = participants;
+
+		if (!caller && !callee) {
+			throw new Error('participant-not-specified');
+		}
+
+		return this.updateOneById(callId, {
+			$set: {
+				...(caller && { caller }),
+				...(callee && { callee }),
+			},
+		});
 	}
 }

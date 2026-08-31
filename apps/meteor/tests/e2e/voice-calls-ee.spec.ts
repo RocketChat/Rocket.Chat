@@ -4,7 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { setSettingValueById } from './utils';
+import { setSettingValueById, setUserPreferences } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
@@ -434,6 +434,186 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 			await user2.poHomeChannel.voiceCalls.popout.hangup();
 			await expect(user1.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 			await expect(user1.poHomeChannel.voiceCalls.roomSection.content).not.toBeVisible();
+		});
+	});
+});
+
+test.describe('Internal Voice Calls - Docked Widget (call panel) - Enterprise Edition', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
+	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
+
+	test.beforeAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'Accounts_AllowFeaturePreview', true),
+			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
+			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
+			setUserPreferences(
+				api,
+				{
+					featuresPreview: [
+						{
+							name: 'sidebarRail',
+							value: true,
+						},
+					],
+				},
+				Users.user1.data._id,
+			),
+		]);
+	});
+
+	test.beforeAll(async ({ browser }) => {
+		sessions = await Promise.all([
+			createAuxContext(browser, Users.user1).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
+			createAuxContext(browser, Users.user2).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
+		]);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'Accounts_AllowFeaturePreview', false),
+			...sessions.map(({ page }) => page.close()),
+			setUserPreferences(
+				api,
+				{
+					featuresPreview: [
+						{
+							name: 'sidebarRail',
+							value: false,
+						},
+					],
+				},
+				Users.user1.data._id,
+			),
+		]);
+	});
+
+	test('should initiate voice call from call panel', async () => {
+		const [user1, user2] = sessions;
+
+		await test.step('should open call panel', async () => {
+			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+		});
+
+		await test.step('initiate a voice call docked widget', async () => {
+			await user1.poHomeChannel.voiceCalls.dockedWidget.initiateCall(Users.user2.data.username);
+		});
+
+		await test.step('user2 accepts the call', async () => {
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('user2 ends the call', async () => {
+			await user2.poHomeChannel.voiceCalls.widget.hangup();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			// Docked widget doesn't close
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+			// Test if widget is back to "new call" state
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toHaveAccessibleName('Voice call New call');
+		});
+	});
+
+	test('should handle call controls during active call', async () => {
+		const [user1, user2] = sessions;
+		await test.step('establish call connection', async () => {
+			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			await user1.poHomeChannel.voiceCalls.dockedWidget.initiateCall(Users.user2.data.username);
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('should mute/unmute microphone from user1', async () => {
+			// User1 mutes microphone
+			await user1.poHomeChannel.voiceCalls.dockedWidget.muteSelf();
+
+			// User1 unmutes microphone
+			await user1.poHomeChannel.voiceCalls.dockedWidget.unmuteSelf();
+		});
+
+		await test.step('should put call on hold from user1', async () => {
+			// User1 puts call on hold
+			await user1.poHomeChannel.voiceCalls.dockedWidget.holdSelf();
+
+			// User1 resumes call
+			await user1.poHomeChannel.voiceCalls.dockedWidget.resumeSelf();
+		});
+
+		await test.step('should show regular widget when not on call panel', async () => {
+			await user1.poHomeChannel.navbar.btnHome.click();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).not.toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+		});
+
+		await test.step('should show docked widget and hide regular when on call panel', async () => {
+			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			// widget fragment matches both docked and regular widget due to lack of specificity and shared components
+			// To ensure we only have the docked widget visible, we assert there's only one and that the visible one is the docked.
+			await expect(user1.poHomeChannel.voiceCalls.widget.content).toHaveCount(1);
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+		});
+
+		await test.step('should end the call from user1', async () => {
+			await user1.poHomeChannel.voiceCalls.dockedWidget.hangup();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toHaveAccessibleName('Voice call New call');
+		});
+	});
+
+	test('should transfer call to another user', async ({ browser, api }) => {
+		const [user1, user2] = sessions;
+
+		// Create user3 session only for this test
+		await api.post('/users.setStatus', { status: 'online', username: 'user3' });
+
+		const user3Context = await createAuxContext(browser, Users.user3);
+		const user3 = { page: user3Context.page, poHomeChannel: new HomeChannel(user3Context.page) };
+
+		await test.step('establish call between user1 and user2', async () => {
+			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			await user1.poHomeChannel.voiceCalls.dockedWidget.initiateCall(Users.user2.data.username);
+			await user2.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('user1 transfers call to user3', async () => {
+			await user1.poHomeChannel.voiceCalls.dockedWidget.transferCall('user3');
+			await user1.poHomeChannel.toastMessage.waitForDisplay({ type: 'success' });
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toHaveAccessibleName('Voice call New call');
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).toHaveAccessibleName(/Transferring call.../gi);
+		});
+
+		await test.step('user3 receives transferred call', async () => {
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).toBeVisible();
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).toHaveAccessibleName(/Incoming call transfer.../gi);
+			await user3.poHomeChannel.voiceCalls.widget.acceptCall();
+		});
+
+		await test.step('user3 ends the call', async () => {
+			await user3.poHomeChannel.voiceCalls.widget.hangup();
+			await expect(user3.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+		});
+
+		await user3.page.close();
+	});
+
+	test('should decline incoming voice call', async () => {
+		const [user1, user2] = sessions;
+
+		await test.step('user1 initiates call to user2', async () => {
+			await user1.poHomeChannel.sidebarRail.callBtn.click();
+			await user1.poHomeChannel.voiceCalls.dockedWidget.initiateCall(Users.user2.data.username);
+		});
+
+		await test.step('user2 declines the call', async () => {
+			await user2.poHomeChannel.voiceCalls.widget.reject();
+		});
+
+		await test.step('Verify call widget disappears', async () => {
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toBeVisible();
+			await expect(user1.poHomeChannel.voiceCalls.dockedWidget.content).toHaveAccessibleName('Voice call New call');
+			await expect(user2.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
 		});
 	});
 });
