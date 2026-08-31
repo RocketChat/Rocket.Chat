@@ -177,7 +177,6 @@
   "Accounts_RequirePasswordConfirmation": "Патрабуецца пацверджанне пароля",
   "Accounts_SearchFields": "Палі для разгляду ў пошуку",
   "Accounts_SetDefaultAvatar": "Ўсталяваць па змаўчанні Аватар",
-  "Accounts_SetDefaultAvatar_Description": "Спрабуе вызначыць аватар па змаўчанні на аснове OAuth рахунку або Gravatar",
   "Accounts_ShowFormLogin": "Паказаць па змаўчанні Увайсці Форма",
   "Accounts_TwoFactorAuthentication_Enabled": "Ўключэнне двухфакторную аўтэнтыфікацыі",
   "Accounts_TwoFactorAuthentication_MaxDelta": "максімальная Delta",

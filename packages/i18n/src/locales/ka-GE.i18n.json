@@ -205,7 +205,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "დააყენეთ გარე ანგარიშის ელ.ფოსტა როგორც შემოწმებული",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "გარე სერვისებისგან შექმნილ ანგარიშებს, როგორიცაა LDAP, OAth და ა.შ., მათი ელ.ფოსტა ავტომატურად დადასტურდება",
   "Accounts_SetDefaultAvatar": "Defult (ნაგულისხმევი) ავატარის დაყენება",
-  "Accounts_SetDefaultAvatar_Description": "ცდილობს დაადგინოს Default (ნაგულისხმევი) ავატარi OAuth- ის ან Gravatar– ის საფუძველზე",
   "Accounts_ShowFormLogin": "აჩვენეთ Default (ნაგულისხმები) შესვლის ფორმა",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "ავტომატური ოფცია ახალი მომხმარებლებისთვის ელ.ფოსტით ორ ფაქტორიანი იდენტიფიკაციისთვის",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "ახალ მომხმარებლებს ექნებათ ორი ფაქტორი ავთენტიფიკაცია ელექტრონული ფოსტით, ჩართულია ავტომატურად. მათ შეეძლებათ ის გამორთონ თავიანთი პროფილის გვერდზე.",

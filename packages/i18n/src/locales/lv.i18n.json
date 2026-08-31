@@ -175,7 +175,6 @@
   "Accounts_RequirePasswordConfirmation": "Pieprasīt paroles apstiprināšanu",
   "Accounts_SearchFields": "Lauki, kas jāņem vērā meklēšanā",
   "Accounts_SetDefaultAvatar": "Iestatīt noklusējuma avataru",
-  "Accounts_SetDefaultAvatar_Description": "Mēģina noteikt noklusējuma avataru, pamatojoties uz OAuth kontu vai Gravatar",
   "Accounts_ShowFormLogin": "Rādīt noklusējuma pieteikšanās veidlapu",
   "Accounts_TwoFactorAuthentication_Enabled": "Iespējojiet divu faktoru autentifikāciju",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",

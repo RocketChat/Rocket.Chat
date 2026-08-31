@@ -171,7 +171,6 @@
   "Accounts_RequirePasswordConfirmation": "Parolun Təsdiqini tələb edin",
   "Accounts_SearchFields": "Sahələr axtarışda düşünün",
   "Accounts_SetDefaultAvatar": "Default Avatar seçin",
-  "Accounts_SetDefaultAvatar_Description": "OAuth Hesabına və ya Gravatar'a əsaslanan default avatar müəyyən etməyə çalışır",
   "Accounts_ShowFormLogin": "Forma əsaslanan Giriş göstər",
   "Accounts_TwoFactorAuthentication_Enabled": "İki Faktör Kimlik Doğrulamasını Etkinleştir",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum Delta",

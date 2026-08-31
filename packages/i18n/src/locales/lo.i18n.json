@@ -181,7 +181,6 @@
   "Accounts_RequirePasswordConfirmation": "ຕ້ອງການການຢືນຢັນລະຫັດຜ່ານ",
   "Accounts_SearchFields": "ພາກສະຫນາມທີ່ຕ້ອງພິຈາລະນາໃນການຄົ້ນຫາ",
   "Accounts_SetDefaultAvatar": "ຕັ້ງມາດຕະຖານເລີ່ມຕົ້ນ",
-  "Accounts_SetDefaultAvatar_Description": "ພະຍາຍາມທີ່ຈະກໍານົດຕົວແບບທີ່ຖືກຕ້ອງຕາມແບບ OAuth Account ຫຼື Gravatar",
   "Accounts_ShowFormLogin": "ສະແດງໃຫ້ເຫັນຮູບແບບທີ່ເຂົ້າສູ່ລະບົບ",
   "Accounts_TwoFactorAuthentication_Enabled": "ອະນຸຍາດໃຫ້ມີການກວດສອບສອງປັດໃຈ",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
