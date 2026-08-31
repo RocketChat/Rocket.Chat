@@ -21,15 +21,6 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 				// flip this flag.
 				let userInteracted = false;
 
-				// A window rebuild (jump to a message, jump to recent) re-enters that same cascade
-				// mid-session: messages reinsert and the pending programmatic scroll hasn't run, so an
-				// observer pass would page off a stale scrollTop of 0. Require fresh input after each one.
-				const offRoomCleared = RoomHistoryManager.on('room-cleared', (clearedRid: string) => {
-					if (clearedRid === rid) {
-						userInteracted = false;
-					}
-				});
-
 				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
 					if (!element.isConnected) {
 						return;
@@ -75,6 +66,17 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 						});
 					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
 						await RoomHistoryManager.getMoreNext(rid);
+					}
+				});
+
+				// A window rebuild (jump to a message, jump to recent) re-enters that same cascade
+				// mid-session: messages reinsert and the pending programmatic scroll hasn't run, so an
+				// observer pass would page off a stale scrollTop of 0. Require fresh input after each
+				// one, and drop any trailing invocation already scheduled against the dead window.
+				const offRoomCleared = RoomHistoryManager.on('room-cleared', (clearedRid: string) => {
+					if (clearedRid === rid) {
+						userInteracted = false;
+						checkPositionAndGetMore.cancel();
 					}
 				});
 
