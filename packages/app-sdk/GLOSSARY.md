@@ -40,6 +40,8 @@ this file disagrees with it, this file is wrong.
 | **env** | an app's typed `{ settings, store }` pair, inferred from its declarations and threaded through every handler | [10](rfc/10-surface-composition-root.md) |
 | **store** | app-private persistence — `ctx.store`, typed collections. **Not** platform data | [17](rfc/17-surface-settings-persistence-lifecycle.md) |
 | **association** | an optional per-record relation tag on a store write. Unsettled: A drop / B keep / C declare per collection | [18](rfc/18-surface-store-associations.md) |
+| **store collection** | one named, schema-declared collection inside a store. Maps to one MongoDB collection, `rocketchat_app_<appId>_<name>` | [host 31](rfc-host/31-store-persistence.md) |
+| **the index contract** | the declared index set *is* the query surface: `find` accepts only a key set a declared index serves as a prefix | [host 31](rfc-host/31-store-persistence.md) |
 | **interactive surface** | a modal or contextual bar opened by `ctx.ui.open` and awaited | [16](rfc/16-surface-interactive-ui.md) |
 | **suspend / resume** | `await ctx.ui.open` suspends the handler; a later, separate interaction resumes that same `await` | [16](rfc/16-surface-interactive-ui.md) |
 | **surface instance** | one opened modal or contextual bar. Its id is ui-kit's `view.id` on the wire, and it is the resume key | [host 40](rfc-host/40-runtime-continuations.md) |
@@ -116,7 +118,7 @@ wrong one describes a component that does not exist.
 | **surface** | *the app-facing surface* — the API an author writes ([00](rfc/00-overview.md)) | an *interactive surface* — one modal or contextual bar ([16](rfc/16-surface-interactive-ui.md)); or a **ui-kit render surface** — message, modal, banner, attachment, contextual bar, each with its own legal block set |
 | **scope** | one permission name ([42](rfc/42-platform-permissions.md)) | the subject of a document ("one scope per document", [CLAUDE.md](CLAUDE.md)) |
 | **view** | a data-layer lens over a record — Discussion, Thread ([28](rfc/28-data-views.md)) | ui-kit's `View` / `ModalView` — an instance of a rendered surface. Say **surface instance** ([host 40](rfc-host/40-runtime-continuations.md)) |
-| **store** | app-private persistence, `ctx.store` ([17](rfc/17-surface-settings-persistence-lifecycle.md)) | platform data, reached through `ctx.rooms` / `ctx.messages` ([20](rfc/20-data-overview.md)); or Mongo, which is **storage** |
+| **store** | app-private persistence, `ctx.store` ([17](rfc/17-surface-settings-persistence-lifecycle.md)) | platform data, reached through `ctx.rooms` / `ctx.messages` ([20](rfc/20-data-overview.md)); or Mongo, which is **storage**. One declared collection inside a store is a **store collection** ([host 31](rfc-host/31-store-persistence.md)) |
 | **definition** | the inert value a `define*` factory returns, app-side ([10](rfc/10-surface-composition-root.md)) | *the declaration* — `defineEntity`, host-side ([27](rfc/27-data-host-gateways.md)) |
 | **selection** | what the app asks for — `select` / `with` ([24](rfc/24-data-read-surface.md)) | the **projection** it compiles to, after the grant removes ungranted fields ([43](rfc/43-platform-field-permissions.md)) |
 | **patch** | a listener outcome that modifies the subject ([15](rfc/15-surface-event-listeners.md)) | any host-side field filtering; that is projection |
