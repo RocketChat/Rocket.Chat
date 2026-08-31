@@ -26,9 +26,10 @@ type Session = { page: Page; poHomeChannel: HomeChannel };
  *
  * Deliberate choices worth knowing before changing anything here:
  *
- * - **Names are how rows are addressed.** A call row is an `<a>` with no `href`: no role, no accessible name, no
- *   `data-qa`. So a call started in a channel is given a unique name at the preflight, and that name is what the
- *   ongoing-calls list is asserted on. It also means one test cannot mistake another test's call for its own.
+ * - **Names are how rows are addressed.** A call row is a link named after the call, so a call started in a
+ *   channel is given a unique name at the preflight and that name is what picks its row out of the list. Unique
+ *   rather than merely descriptive because these tests run alongside each other: it means one test cannot
+ *   mistake another test's call for its own.
  * - **A call drops out of the joinable list the moment its last participant leaves** (`listJoinableCalls` skips
  *   calls nobody is in), so closing the call windows a test opened is enough cleanup for the next one — the
  *   ten-second empty-call grace only governs when the conference is *ended*, not when it stops being offered.
@@ -247,7 +248,7 @@ test.describe('video conference call window', () => {
 			await expect(user2.poHomeChannel.ongoingCalls.btnOngoingCalls).toBeVisible({ timeout: 45_000 });
 			await user2.poHomeChannel.ongoingCalls.ensureOpen();
 			await expect(user2.poHomeChannel.ongoingCalls.getCall(callName)).toBeVisible();
-			await expect(user2.poHomeChannel.ongoingCalls.dropdown.getByText('1 person joined')).toBeVisible();
+			await expect(user2.poHomeChannel.ongoingCalls.regionOngoingCalls.getByText('1 person joined')).toBeVisible();
 		});
 	});
 
@@ -310,7 +311,7 @@ test.describe('video conference call window', () => {
 		await test.step('and the callee is told without being taken over', async () => {
 			// The ring opens the dropdown itself: nothing below clicked the button.
 			await expect(user2.poHomeChannel.ongoingCalls.btnOngoingCalls).toBeVisible();
-			await expect(user2.poHomeChannel.ongoingCalls.dropdown).toBeVisible();
+			await expect(user2.poHomeChannel.ongoingCalls.regionOngoingCalls).toBeVisible();
 			await expect(user2.poHomeChannel.ongoingCalls.getCall('user1')).toBeVisible();
 			await expect(user2.poHomeChannel.ongoingCalls.textRinging).toBeVisible();
 
@@ -427,9 +428,8 @@ test.describe('video conference call window', () => {
 		});
 
 		await test.step('its own bar carries the timer, the name and exactly two controls', async () => {
-			// The timer is a bare `<time>` with no role, name or `data-qa`, so what is asserted is that the bar says
-			// a time at all — see the report.
-			await expect(callWindow.topBar).toContainText(/\d{1,2}:\d{2}/);
+			// What the clock reads is not pinned to a value — it is counting — only to being a clock reading a time.
+			await expect(callWindow.timer).toHaveText(/\d{1,2}:\d{2}/);
 			await expect(callWindow.topBar.getByText(callName)).toBeVisible();
 			await expect(callWindow.topBar.getByRole('button')).toHaveCount(2);
 		});
@@ -442,8 +442,7 @@ test.describe('video conference call window', () => {
 
 		await test.step('the chat panel replaces it in the same slot', async () => {
 			await callWindow.btnChat.click();
-			await expect(callWindow.panelTitle).toContainText('Chat in');
-			await expect(callWindow.panelTitle).toContainText(channel);
+			await expect(callWindow.getPanelTitle(`Chat in ${channel}`)).toBeVisible();
 			// Never both: with persistent chat off the chat is simply the room the call started in, and it takes
 			// the one slot there is.
 			await expect(callWindow.textInCall).toHaveCount(0);
