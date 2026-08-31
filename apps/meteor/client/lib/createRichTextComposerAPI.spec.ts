@@ -210,6 +210,22 @@ describe('RichText Composer API - insertNewLine', () => {
 		expect(stripLineEnd(input.innerText)).toBe('');
 	});
 
+	it('pushes a bare marker down instead of deleting it when the caret sits before it', () => {
+		const { composer, input } = setupComposer('- ', { start: 0, end: 0 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('\n- ');
+	});
+
+	it('keeps a bare marker on a later line when the caret sits at its start', () => {
+		const { composer, input } = setupComposer('- one\n- ', { start: 6, end: 6 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n\n- ');
+	});
+
 	it('continues rather than leaves when content sits after the caret', () => {
 		const { composer, input } = setupComposer('- text', { start: 2, end: 2 });
 
