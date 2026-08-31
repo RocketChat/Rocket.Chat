@@ -23,27 +23,22 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 	({ loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
 
-		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${OAuth._stateParam(
-			loginStyle,
-			credentialToken,
-			options?.redirectUrl,
-		)}`;
-
+		const loginUrl = new URL(absoluteUrl('_oauth/twitter/'));
+		loginUrl.searchParams.append('requestTokenAndRedirect', 'true');
+		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl));
 		// Support additional, permitted parameters
 		if (options) {
 			validParamsAuthenticate.forEach((param) => {
 				if (Object.hasOwn(options, param) && options[param] !== undefined) {
-					loginPath += `&${param}=${encodeURIComponent(options[param])}`;
+					loginUrl.searchParams.append(param, options[param]);
 				}
 			});
 		}
 
-		const loginUrl = absoluteUrl(loginPath);
-
 		OAuth.launchLogin({
 			loginService: 'twitter',
 			loginStyle,
-			loginUrl,
+			loginUrl: loginUrl.toString(),
 			credentialRequestCompleteCallback,
 			credentialToken,
 		});

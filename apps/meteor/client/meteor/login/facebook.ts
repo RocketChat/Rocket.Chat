@@ -20,29 +20,22 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 	'facebook',
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
-		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
-		const display = mobile ? 'touch' : 'popup';
 
-		const scope = options.requestPermissions?.join(',') ?? 'email';
-
-		const loginUrlParameters: Record<string, string | number | boolean> = {
-			client_id: config.appId,
-			redirect_uri: OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
-			display,
-			scope,
-			state: OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl),
-			// Handle authentication type (e.g. for force login you need auth_type: "reauthenticate")
-			...(options.auth_type && { auth_type: options.auth_type }),
-		};
-
-		const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?${Object.keys(loginUrlParameters)
-			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
-			.join('&')}`;
+		const loginUrl = new URL('https://www.facebook.com/v17.0/dialog/oauth');
+		loginUrl.searchParams.append('client_id', config.appId);
+		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions));
+		loginUrl.searchParams.append(
+			'display',
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) ? 'touch' : 'popup',
+		);
+		loginUrl.searchParams.append('scope', options.requestPermissions?.join(',') ?? 'email');
+		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl));
+		if (options.auth_type) loginUrl.searchParams.append('auth_type', options.auth_type);
 
 		OAuth.launchLogin({
 			loginService: 'facebook',
 			loginStyle,
-			loginUrl,
+			loginUrl: loginUrl.toString(),
 			credentialRequestCompleteCallback,
 			credentialToken,
 		});

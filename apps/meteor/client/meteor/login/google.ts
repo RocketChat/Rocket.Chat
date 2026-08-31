@@ -23,41 +23,34 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
 
+		const loginUrl = new URL('https://accounts.google.com/o/oauth2/auth');
+		if (options.loginUrlParameters) {
+			for (const [key, value] of Object.entries(options.loginUrlParameters)) {
+				loginUrl.searchParams.append(key, String(value));
+			}
+		}
 		// Use Google's domain-specific login page if we want to restrict creation to
 		// a particular email domain. (Don't use it if restrictCreationByEmailDomain
 		// is a function.) Note that all this does is change Google's UI ---
 		// accounts-base/accounts_server.js still checks server-side that the server
 		// has the proper email address after the OAuth conversation.
 		if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
-			options = { ...options, loginUrlParameters: { ...options.loginUrlParameters, hd: Accounts._options.restrictCreationByEmailDomain } };
+			loginUrl.searchParams.set('hd', Accounts._options.restrictCreationByEmailDomain);
 		}
-
-		const scope = ['email', ...(options.requestPermissions || ['profile'])].join(' ');
-
-		const loginUrlParameters: Record<string, string | number | boolean> = {
-			...options.loginUrlParameters,
-			...(options.requestOfflineToken !== undefined && {
-				access_type: options.requestOfflineToken ? 'offline' : 'online',
-			}),
-			...((options.prompt || options.forceApprovalPrompt) && { prompt: options.prompt || 'consent' }),
-			...(options.loginHint && { login_hint: options.loginHint }),
-		};
-
-		Object.assign(loginUrlParameters, {
-			response_type: 'code',
-			client_id: config.clientId,
-			scope,
-			redirect_uri: OAuth._redirectUri('google', config),
-			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
-		});
-		const loginUrl = `https://accounts.google.com/o/oauth2/auth?${Object.keys(loginUrlParameters)
-			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
-			.join('&')}`;
+		if (options.requestOfflineToken !== undefined)
+			loginUrl.searchParams.append('access_type', options.requestOfflineToken ? 'offline' : 'online');
+		if (options.prompt || options.forceApprovalPrompt) loginUrl.searchParams.append('prompt', options.prompt || 'consent');
+		if (options.loginHint) loginUrl.searchParams.append('login_hint', options.loginHint);
+		loginUrl.searchParams.append('response_type', 'code');
+		loginUrl.searchParams.append('client_id', config.clientId ?? '');
+		loginUrl.searchParams.append('scope', ['email', ...(options.requestPermissions || ['profile'])].join(' '));
+		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('google', config));
+		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl));
 
 		OAuth.launchLogin({
 			loginService: 'google',
 			loginStyle,
-			loginUrl,
+			loginUrl: loginUrl.toString(),
 			credentialRequestCompleteCallback,
 			credentialToken,
 			popupOptions: { height: 600 },

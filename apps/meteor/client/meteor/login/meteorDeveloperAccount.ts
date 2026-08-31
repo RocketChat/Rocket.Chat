@@ -19,22 +19,18 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	({ config, loginStyle, options, credentialRequestCompleteCallback }) => {
 		const credentialToken = Random.secret();
 
-		let loginUrl =
-			`https://www.meteor.com/oauth2/authorize?` +
-			`state=${OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)}` +
-			`&response_type=code&` +
-			`client_id=${config.clientId}${options.details ? `&details=${options.details}` : ''}`;
-
-		if (options.loginHint) {
-			loginUrl += `&user_email=${encodeURIComponent(options.loginHint)}`;
-		}
-
-		loginUrl += `&redirect_uri=${OAuth._redirectUri('meteor-developer', config)}`;
+		const loginUrl = new URL('https://www.meteor.com/oauth2/authorize');
+		loginUrl.searchParams.append('state', OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl));
+		loginUrl.searchParams.append('response_type', 'code');
+		loginUrl.searchParams.append('client_id', config.clientId ?? '');
+		if (options.details) loginUrl.searchParams.append('details', options.details);
+		if (options.loginHint) loginUrl.searchParams.append('user_email', options.loginHint);
+		loginUrl.searchParams.append('redirect_uri', OAuth._redirectUri('meteor-developer', config));
 
 		OAuth.launchLogin({
 			loginService: 'meteor-developer',
 			loginStyle,
-			loginUrl,
+			loginUrl: loginUrl.toString(),
 			credentialRequestCompleteCallback,
 			credentialToken,
 			popupOptions: { width: 497, height: 749 },
