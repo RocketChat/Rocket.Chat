@@ -15,7 +15,7 @@ export type LoginWithExternalServiceOptions = {
 
 export interface IOAuthProvider {
 	requestCredential(
-		options: LoginWithExternalServiceOptions | undefined,
+		options: LoginWithExternalServiceOptions,
 		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
 	): void;
 }

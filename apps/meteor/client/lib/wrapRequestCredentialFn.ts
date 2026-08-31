@@ -22,28 +22,25 @@ export function wrapRequestCredentialFn<
 	T extends Partial<OAuthConfiguration>,
 	TOptions extends LoginWithExternalServiceOptions = LoginWithExternalServiceOptions,
 >(serviceName: string, fn: (params: RequestCredentialConfig<T, TOptions>) => void) {
-	const wrapped = async (options: TOptions, credentialRequestCompleteCallback?: RequestCredentialCallback): Promise<void> => {
-		const config = await loginServices.loadLoginService<T>(serviceName);
-		if (!config) {
-			credentialRequestCompleteCallback?.(new Accounts.ConfigError());
-			return;
-		}
+	return (options: TOptions, credentialRequestCompleteCallback?: RequestCredentialCallback) => {
+		loginServices.loadLoginService<T>(serviceName).then(
+			(config) => {
+				if (!config) {
+					credentialRequestCompleteCallback?.(new Accounts.ConfigError());
+					return;
+				}
 
-		const loginStyle = OAuth._loginStyle(serviceName, config, options);
-		fn({
-			config,
-			loginStyle,
-			options,
-			credentialRequestCompleteCallback,
-		});
-	};
-
-	return (options?: TOptions | RequestCredentialCallback, credentialRequestCompleteCallback?: RequestCredentialCallback) => {
-		if (!credentialRequestCompleteCallback && typeof options === 'function') {
-			void wrapped({} as TOptions, options);
-			return;
-		}
-
-		void wrapped(options as TOptions, credentialRequestCompleteCallback);
+				const loginStyle = OAuth._loginStyle(serviceName, config, options);
+				fn({
+					config,
+					loginStyle,
+					options,
+					credentialRequestCompleteCallback,
+				});
+			},
+			() => {
+				credentialRequestCompleteCallback?.(new Accounts.ConfigError());
+			},
+		);
 	};
 }

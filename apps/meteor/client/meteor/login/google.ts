@@ -76,7 +76,7 @@ const loginWithGoogle = (
 
 const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod<LoginWithGoogleOptions>({ requestCredential });
 
-const loginWithGoogleAndTOTP = (options: LoginWithGoogleOptions | undefined, code: string, callback?: LoginCallback) => {
+const loginWithGoogleAndTOTP = (options: LoginWithGoogleOptions, code: string, callback?: LoginCallback) => {
 	// Use Google's domain-specific login page if we want to restrict creation to
 	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
 	// is a function.) Note that all this does is change Google's UI ---

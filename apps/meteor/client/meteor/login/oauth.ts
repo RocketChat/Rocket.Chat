@@ -88,7 +88,7 @@ export const credentialRequestCompleteHandler =
 
 export const createOAuthTotpLoginMethod =
 	<TOptions extends Meteor.LoginWithExternalServiceOptions>(provider: IOAuthProvider) =>
-	(options: TOptions | undefined, code: string, callback?: LoginCallback) => {
+	(options: TOptions, code: string, callback?: LoginCallback) => {
 		if (lastCredentialToken && lastCredentialSecret) {
 			tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
 		} else {
