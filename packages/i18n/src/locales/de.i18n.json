@@ -405,7 +405,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "E-Mail von externen Konten als verifiziert kennzeichnen",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Die E-Mail-Adressen von Konten, die von externen Diensten wie LDAP, OAth usw. erstellt wurden, gelten als überprüft",
   "Accounts_SetDefaultAvatar": "Standard-Avatar setzen",
-  "Accounts_SetDefaultAvatar_Description": "Versucht, Standard-Avatar über OAuth oder Gravatar zu bestimmen",
   "Accounts_ShowFormLogin": "Standard Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Für neue Benutzer automatisch Zwei-Faktor-Authentifizierung per E-Mail aktivieren",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Für neue Benutzer ist die Zwei-Faktor-Authentifizierung per E-Mail standardmäßig aktiviert. Sie können sie auf der Profilseite deaktivieren.",

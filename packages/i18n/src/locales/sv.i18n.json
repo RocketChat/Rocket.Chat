@@ -403,7 +403,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Ange e-postmeddelanden från externa konton som verifierade",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "För konton som skapats via externa tjänster som LDAP och OAuth verifieras e-postmeddelanden automatiskt",
   "Accounts_SetDefaultAvatar": "Ange standardavatar",
-  "Accounts_SetDefaultAvatar_Description": "Försöker bestämma standardavatar baserat på OAuth-konto eller Gravatar",
   "Accounts_ShowFormLogin": "Visa formulärinloggning",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Välj automatiskt tvåfaktorsautentisering via e-post för nya användare",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "För nya användare är tvåfaktorsautentisering via e-post aktiverat som standard. De kan inaktivera det på sina profilsidor.",

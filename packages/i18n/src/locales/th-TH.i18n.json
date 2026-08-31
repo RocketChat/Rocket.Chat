@@ -170,7 +170,6 @@
   "Accounts_RequirePasswordConfirmation": "ต้องได้รับการยืนยันรหัสผ่าน",
   "Accounts_SearchFields": "เขตข้อมูลที่ต้องพิจารณาในการค้นหา",
   "Accounts_SetDefaultAvatar": "ตั้งค่า Avatar เริ่มต้น",
-  "Accounts_SetDefaultAvatar_Description": "พยายามกำหนดแวดวงเริ่มต้นตาม OAuth Account หรือ Gravatar",
   "Accounts_ShowFormLogin": "แสดงการเข้าสู่ระบบแบบฟอร์ม",
   "Accounts_TwoFactorAuthentication_Enabled": "เปิดใช้งานการพิสูจน์ตัวตนสององค์ประกอบ",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta สูงสุด",

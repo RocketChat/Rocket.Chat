@@ -221,7 +221,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "تعيين البريد الإلكتروني للحسابات الخارجية كبريد إلكتروني تم التحقق منه",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "سيتم التحقق تلقائيًا من رسائل البريد الإلكتروني الخاصة بالحسابات التي تم إنشاؤها من خدمات خارجية، مثل LDAP وOAuth وما إلى ذلك.",
   "Accounts_SetDefaultAvatar": "تعيين الصورة الرمزية الافتراضية",
-  "Accounts_SetDefaultAvatar_Description": "يحاول تحديد الصورة الرمزية الافتراضية بناءً على حساب OAuth أو Gravatar",
   "Accounts_ShowFormLogin": "عرض نموذج تسجيل الدخول الافتراضي",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "الاختيار التلقائي لدى المستخدمين الجدد للمصادقة الثنائية عبر البريد الإلكتروني",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "سيتم تمكين المصادقة الثنائية لدى المستخدمين الجدد عبر البريد الإلكتروني افتراضيًا. وسيتمكنون من تعطيلها في صفحة ملفهم الشخصي.",

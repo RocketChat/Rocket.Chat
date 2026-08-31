@@ -224,7 +224,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Stel e-mail van externe accounts als geverifieerd in",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "Accounts aangemaakt via externe diensten, zoals LDAP, OAuth, enz., zullen automatisch een geverifieerde e-mail hebben",
   "Accounts_SetDefaultAvatar": "Avatar als standaard instellen",
-  "Accounts_SetDefaultAvatar_Description": "Probeert de standaardavatar te bepalen op basis van OAuth-account of Gravatar",
   "Accounts_ShowFormLogin": "Toon standaard login scherm",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "Automatisch nieuwe gebruikers aanmelden voor Two Factor via e-mail",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Tweefactorauthenticatie via e-mail zal standaard ingeschakeld zijn voor nieuwe gebruikers. Ze kunnen het uitschakelen op hun profielpagina.",

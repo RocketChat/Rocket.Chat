@@ -236,7 +236,6 @@
   "Accounts_Set_Email_Of_External_Accounts_as_Verified": "Külső fiókok e-mail-címének beállítása ellenőrzöttként",
   "Accounts_Set_Email_Of_External_Accounts_as_Verified_Description": "A külső szolgáltatásokból, például LDAP-ból, OAuth-ból stb. létrehozott fiókok e-mail-címei automatikusan ellenőrzésre kerülnek",
   "Accounts_SetDefaultAvatar": "Alapértelmezett profilkép beállítása",
-  "Accounts_SetDefaultAvatar_Description": "Megpróbálja meghatározni az alapértelmezett profilképet az OAuth-fiók vagy a Gravatar alapján",
   "Accounts_ShowFormLogin": "Alapértelmezett bejelentkezési űrlap megjelenítése",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In": "E-mailen keresztüli kétfaktoros hitelesítés automatikus engedélyezés az új felhasználóknál",
   "Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In_Description": "Az új felhasználóknak alapértelmezetten engedélyezve lesz az e-mailen keresztüli kétfaktoros hitelesítés. Ezt le tudják tiltani a profiloldalukon.",
