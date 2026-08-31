@@ -5,7 +5,8 @@ what an app author writes and what crosses the wire. This one designs what the
 host does once the envelope arrives: who the app is, what it may reach, how the
 runtime holds it.
 
-One document per scope. Writing rules in [`../CLAUDE.md`](../CLAUDE.md).
+One document per scope. Writing rules in [`../CLAUDE.md`](../CLAUDE.md);
+nomenclature in [`../GLOSSARY.md`](../GLOSSARY.md).
 
 **Status:** RFC / design proposal. Nothing here ships yet.
 

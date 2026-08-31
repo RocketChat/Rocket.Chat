@@ -57,6 +57,15 @@ State a legacy fact as a citation, not a narration:
 
 One line, checkable, no story. Verify the line number before you commit it.
 
+## Use the established word
+
+[`GLOSSARY.md`](GLOSSARY.md) records the nomenclature both indexes have fixed.
+A term listed there means that and nothing else. `gateway`, `client`, `command`,
+`surface`, `scope`, `view` and `store` each name two different things in this
+domain — check the collisions table before you reach for one.
+
+A new term earns a row in the same commit that introduces it.
+
 ## Shape of a document
 
 ```
