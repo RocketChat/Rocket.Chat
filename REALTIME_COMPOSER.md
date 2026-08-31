@@ -214,8 +214,8 @@ blocks. Paragraphs are `<span>` + a literal `'\n'`, never `<div>`/`<br>`.
 | QUOTE | ComposerMarkup | `> ` prefix per line, left border |
 | SPOILER_BLOCK | ComposerMarkup | tinted background |
 | CODE | ComposerCodeBlock | rebuilds the whole fenced block as text inside `<code>` |
-| UNORDERED_LIST | ComposerUnorderedList | inline `<span>` per item, `- ` marker kept as literal text and emphasized like `.rcx-message-body ul li:before` (bold, `0.5rem` inline-start padding) |
-| ORDERED_LIST | ComposerOrderedList | same shape, marker is `${item.number}. `; the typed numbers are echoed, never renumbered, matching `ol li:before { content: attr(value) "." }` in the message list |
+| UNORDERED_LIST | ComposerUnorderedList | inline `<span>` per item, a `-` marker plus a space kept as literal text and emphasized like `.rcx-message-body ul li:before` (bold, `0.5rem` inline-start padding) |
+| ORDERED_LIST | ComposerOrderedList | same shape, the marker is `${item.number}` followed by `.` and a space; the typed numbers are echoed, never renumbered, matching `ol li:before { content: attr(value) "." }` in the message list |
 | LINE_BREAK | ComposerMarkup | `\n` |
 | BOLD / ITALIC / STRIKE | ComposerBold/Italic/StrikeSpan | markers + `<strong>`/`<em>`/`<del>`; mutually nestable |
 | SPOILER | ComposerSpoilerSpan | |
@@ -266,9 +266,10 @@ order matters, `callbackRef` is what creates/releases the composer API and flush
    Must be unskipped before GA.
 4. The marker a list item was typed with is not in the AST — `listItem()` keeps only the item's
    inline value and, for ordered lists, `parseInt` of the digits — so the renderers rebuild it as
-   `- ` / `${number}. `. Anything else fails the text guard in `renderComposerContent`, which drops
-   the **whole** render back to plain text: an asterisk list (`* x`), any spacing other than a single
-   space (`-  x`, `-\tx`, `1.  x`), or a padded number (`01. x`). Text survives, styling does not.
+   `-` / `${number}.`, each followed by a space. Anything else fails the text guard in
+   `renderComposerContent`, which drops the **whole** render back to plain text: an asterisk list
+   (`* x`), any spacing other than a single space (`-  x`, `-\tx`, `1.  x`), or a padded number
+   (`01. x`). Text survives, styling does not.
    Fixing it means carrying the literal marker on `LIST_ITEM`, the way `HORIZONTAL_RULE`/`TABLE`
    carry `fallback` source ranges. Tasks have the same gap and are still unstyled.
 5. Loose ends: `setMdLines` state is written and never read; commented-out `textareaRef`/`style`
