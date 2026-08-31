@@ -99,6 +99,10 @@ export class RoomToolbar extends Toolbar {
 		return this.menu.getMenuItem('Files');
 	}
 
+	get menuItemCalls(): Locator {
+		return this.menu.getMenuItem('Calls');
+	}
+
 	async openRoomInfo() {
 		await this.btnRoomInfo.click();
 	}
@@ -113,6 +117,11 @@ export class RoomToolbar extends Toolbar {
 
 	async openMoreOptions() {
 		await this.btnMoreOptions.click();
+	}
+
+	async openCalls() {
+		await this.openMoreOptions();
+		await this.menuItemCalls.click();
 	}
 
 	private get btnTeamChannels(): Locator {
