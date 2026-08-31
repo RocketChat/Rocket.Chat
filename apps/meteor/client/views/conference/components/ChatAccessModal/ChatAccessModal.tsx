@@ -64,14 +64,23 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 	const roomName = access.name;
 	const discussionLeads = chatAccessLeadsWithDiscussion(access);
 
+	// Both are disabled while either is in flight, not just the one that was clicked. They are alternatives —
+	// one opens the room's history to the members who can't see the chat, the other moves the conversation out of
+	// it — and each is applied on its own, so a second click while the first was pending applied *both*: the
+	// tradeoff the user picked and the one they turned down.
 	const inviteButton = access.canInvite && (
-		<Button primary={!discussionLeads} loading={isPending && variables === 'invite'} onClick={() => mutate('invite')}>
+		<Button primary={!discussionLeads} disabled={isPending} loading={isPending && variables === 'invite'} onClick={() => mutate('invite')}>
 			{t('Add_to_room')}
 		</Button>
 	);
 
 	const discussionButton = (
-		<Button primary={discussionLeads} loading={isPending && variables === 'discussion'} onClick={() => mutate('discussion')}>
+		<Button
+			primary={discussionLeads}
+			disabled={isPending}
+			loading={isPending && variables === 'discussion'}
+			onClick={() => mutate('discussion')}
+		>
 			{t('Create_discussion')}
 		</Button>
 	);
