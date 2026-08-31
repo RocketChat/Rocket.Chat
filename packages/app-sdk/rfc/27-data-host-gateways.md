@@ -46,6 +46,10 @@ export const roomEntity = defineEntity({
 The `fields` map is the whole reason a storage rename does not break an app: it
 is the only place where `parentRoomId` is known to be `prid`.
 
+`policy.field` is the field-level gate: it names what the acting user, or the
+app's own grant, must hold before a field enters the projection at all. See
+[field-level permissions](43-platform-field-permissions.md).
+
 From this one declaration the host derives the projection, the loader plan, the
 JSON Schema for the envelope, and the permission gate. The SDK derives the
 client types. **The storage query lives only inside `relations` and `where`**,

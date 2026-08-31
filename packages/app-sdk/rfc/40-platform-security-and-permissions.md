@@ -2,6 +2,10 @@
 
 > Part of the [Apps Engine SDK RFC](README.md).
 
+The permission model behind these rules — what a grant is, where it is checked,
+who the principal is, and what an admin agrees to — is argued in
+[Permissions](42-platform-permissions.md).
+
 - **Non-forgeable actor.** `ctx.actor` is set by the platform from the
   authenticated trigger, following Mastra's reserved-request-context-key pattern
   (middleware-set values beat client-provided ones). Apps cannot claim to be

@@ -4,6 +4,9 @@ A ground-up redesign of the Rocket.Chat Apps Engine, written as one document per
 **scope**. Each document states one problem, argues one design, and carries its
 own open questions. Read the scope you want to discuss; you do not need the rest.
 
+The host side of the same redesign — the app's identity, the gate, the gateway,
+the runtime — is argued in its own index: [Apps Engine host RFC](../rfc-host/README.md).
+
 **Status:** RFC / design proposal. Nothing here ships yet. The types under
 [`src/`](../src) and the apps under [`examples/`](../examples) compile, so every
 claim about inference is checkable — see [Trying it](52-trying-it.md).
@@ -58,6 +61,8 @@ What sits behind `ctx.rooms`, `ctx.messages`, `ctx.users`, … on the host.
 |---|---|---|
 | 40 | [Security & permissions](40-platform-security-and-permissions.md) | the non-forgeable actor, declared permissions |
 | 41 | [Deployment & isolation](41-platform-deployment-and-isolation.md) | in-process vs. the apps-runtime microservice |
+| 42 | [Permissions](42-platform-permissions.md) | the grant, the single gate, the two principals, consent |
+| 43 | [Field-level permissions](43-platform-field-permissions.md) | gating a *field*, not a call: `@@SecureFields` and what replaces it |
 
 ## Wrap-up
 
