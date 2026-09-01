@@ -11,6 +11,7 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
+	isChatGetMessageByFileIdProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -25,6 +26,8 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -782,6 +785,45 @@ const chatEndpoints = API.v1
 
 			if (!msg) {
 				return API.v1.failure();
+			}
+
+			const [message] = await normalizeMessagesForUser([msg], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	)
+	.get(
+		'chat.getMessageByFileId',
+		{
+			authRequired: true,
+			query: isChatGetMessageByFileIdProps,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
+			const msg = await Messages.getMessageByFileId(this.queryParams.fileId);
+
+			if (!msg?.rid) {
+				return API.v1.notFound();
+			}
+
+			if (!(await canAccessRoomIdAsync(msg.rid, this.userId))) {
+				return API.v1.forbidden();
 			}
 
 			const [message] = await normalizeMessagesForUser([msg], this.userId);

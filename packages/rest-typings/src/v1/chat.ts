@@ -99,6 +99,26 @@ const ChatGetMessageSchema = {
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
+type ChatGetMessageByFileId = {
+	fileId: string;
+};
+
+const ChatGetMessageByFileIdSchema = {
+	type: 'object',
+	description: 'Fetch the message a file was sent in.',
+	properties: {
+		fileId: {
+			type: 'string',
+			minLength: 1,
+			description: 'The file id.',
+		},
+	},
+	required: ['fileId'],
+	additionalProperties: false,
+};
+
+export const isChatGetMessageByFileIdProps = ajv.compile<ChatGetMessageByFileId>(ChatGetMessageByFileIdSchema);
+
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
@@ -936,6 +956,11 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getMessage': {
 		GET: (params: ChatGetMessage) => {
+			message: IMessage;
+		};
+	};
+	'/v1/chat.getMessageByFileId': {
+		GET: (params: ChatGetMessageByFileId) => {
 			message: IMessage;
 		};
 	};
