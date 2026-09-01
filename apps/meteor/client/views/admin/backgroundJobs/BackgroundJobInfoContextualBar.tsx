@@ -11,7 +11,7 @@ import { STATUS_LABEL, statusVariant } from './helpers';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type BackgroundJobInfoContextualBarProps = {
+export type BackgroundJobInfoContextualBarProps = {
 	jobName: string;
 	tab: BackgroundJobsTab;
 	onClose: () => void;

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { formatDuration, STATUS_LABEL, statusVariant } from './helpers';
 
-type BackgroundJobHistoryCardProps = {
+export type BackgroundJobHistoryCardProps = {
 	entry: Serialized<ICronHistoryItem>;
 	formatDateAndTime: (date: string | Date) => string;
 };
@@ -27,7 +27,13 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const duration = formatDuration(entry.startedAt, entry.finishedAt);
 
 	return (
-		<Box onClick={hasError ? () => setShowError((prev) => !prev) : undefined} style={hasError ? { cursor: 'pointer' } : undefined}>
+		<Box
+			onClick={hasError ? () => setShowError((prev) => !prev) : undefined}
+			onKeyDown={hasError ? (e) => (e.key === 'Enter' || e.key === ' ') && setShowError((prev) => !prev) : undefined}
+			cursor={hasError ? 'pointer' : undefined}
+			role={hasError ? 'button' : undefined}
+			tabIndex={hasError ? 0 : undefined}
+		>
 			<Card>
 				<CardBody>
 					<Box display='flex' flexDirection='column' flexGrow={1}>
