@@ -2,13 +2,13 @@ import { useSession } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GuestForm from './GuestForm';
-import { LoginForm } from './LoginForm';
-import RegisterSecretPageRouter from './RegisterSecretPageRouter';
-import RegisterTemplate from './RegisterTemplate';
-import ResetPasswordForm from './ResetPasswordForm';
-import { useLoginRouter } from './hooks/useLoginRouter';
-import type { LoginRoutes } from './hooks/useLoginRouter';
+import GuestForm from './GuestForm.js';
+import { LoginForm } from './LoginForm.js';
+import RegisterSecretPageRouter from './RegisterSecretPageRouter.js';
+import RegisterTemplate from './RegisterTemplate.js';
+import ResetPasswordForm from './ResetPasswordForm.js';
+import { useLoginRouter } from './hooks/useLoginRouter.js';
+import type { LoginRoutes } from './hooks/useLoginRouter.js';
 
 export type RegistrationPageRouterProps = { defaultRoute?: LoginRoutes; children?: ReactNode };
 

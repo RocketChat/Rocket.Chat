@@ -3,8 +3,15 @@
 	"version": "1.0.14",
 	"private": true,
 	"description": "Base64 encoding and decoding; Fork of Meteor's Base64 package",
+	"type": "module",
 	"main": "./dist/base64.js",
 	"types": "./dist/base64.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/base64.d.ts",
+			"default": "./dist/base64.js"
+		}
+	},
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",

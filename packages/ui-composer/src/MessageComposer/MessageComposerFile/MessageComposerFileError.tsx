@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageComposerFile from './MessageComposerFile';
+import MessageComposerFile from './MessageComposerFile.js';
 
 export type MessageComposerFileErrorProps = {
 	fileTitle: string;

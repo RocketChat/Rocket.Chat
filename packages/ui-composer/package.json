@@ -2,8 +2,15 @@
 	"name": "@rocket.chat/ui-composer",
 	"version": "4.0.0",
 	"private": true,
+	"type": "module",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"files": [
 		"/dist"
 	],

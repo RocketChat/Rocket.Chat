@@ -1,8 +1,8 @@
 import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import type { BaseAvatarProps } from './BaseAvatar';
-import Avatar from './BaseAvatar';
+import type { BaseAvatarProps } from './BaseAvatar.js';
+import Avatar from './BaseAvatar.js';
 
 export type RoomAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	url?: string;

@@ -1,4 +1,4 @@
-import { tracerActiveSpan } from '.';
+import { tracerActiveSpan } from './index.js';
 
 const getArguments = (args: any[]): any[] => {
 	return args.map((arg) => {

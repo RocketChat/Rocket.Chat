@@ -1,8 +1,8 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import HorizontalTemplate from './template/HorizontalTemplate';
-import VerticalTemplate from './template/VerticalTemplate';
+import HorizontalTemplate from './template/HorizontalTemplate.js';
+import VerticalTemplate from './template/VerticalTemplate.js';
 
 export type RegisterTemplateProps = {
 	children: ReactNode;

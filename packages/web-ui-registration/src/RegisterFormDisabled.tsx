@@ -3,7 +3,7 @@ import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } fr
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
 
 export type RegisterFormDisabledProps = { setLoginRoute: DispatchLoginRouter };
 
