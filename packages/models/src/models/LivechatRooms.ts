@@ -2446,7 +2446,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 		currentActivity?: string[] | null,
 	): Updater<IOmnichannelRoom> {
-		// Legacy rooms can carry `v.activity: null`, which $addToSet rejects; replace it to heal the field
 		if (currentActivity === null) {
 			return updater.set('v.activity', [period]);
 		}
