@@ -31,9 +31,12 @@ const CallTimer = ({ startAt }: CallTimerProps) => {
 	const secondsStr = seconds.toString().padStart(2, '0');
 
 	return (
-		// `role='timer'` because that is what it is: a live region counting up. A bare `<time>` had no role and no
-		// name, so nothing could refer to it — neither assistive technology nor a test.
-		<Box is='time' role='timer' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
+		// `role='timer'` because that is what it is, and because a bare `<time>` had no role and no name, so
+		// nothing could refer to it — neither assistive technology nor a test.
+		//
+		// `aria-live='off'` said out loud rather than left to the role's default: this counts up every second for
+		// the length of the call, and a screen reader reading each tick would talk over everything else in it.
+		<Box is='time' role='timer' aria-live='off' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
 			{hoursStr !== '00' ? `${hours}:` : ''}
 			{minutesStr}:{secondsStr}
 		</Box>

@@ -54,19 +54,28 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 				)}
 			</CallPanelHeader>
 
-			{/* A list, said out loud: the rows are Fuselage `Option`s, which render as `li` — inside a plain box
-			    that made them neither countable nor individually referrable. */}
-			<Box role='list' aria-label={t('Members')} flexGrow={1} overflowY='auto'>
+			{/* Said out loud, because the rows are Fuselage `Option`s — `li` elements in a plain box, which made
+			    them neither countable nor individually referrable.
+			
+			    A list per group rather than one list around everything: the dividers between the groups are not
+			    list items, and a `list` whose children are not `listitem`s is a list a screen reader may skip or
+			    miscount. Each group is its own list, named by the divider that heads it, and the box around them
+			    is a `group` so the panel still has one handle. */}
+			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto'>
 				{present.length > 0 && (
 					<>
 						<MembersListDivider title='In_call' count={present.length} />
-						{present.map(renderMember)}
+						<Box role='list' aria-label={t('In_call')}>
+							{present.map(renderMember)}
+						</Box>
 					</>
 				)}
 				{absent.length > 0 && (
 					<>
 						<MembersListDivider title='Not_in_the_call' count={absent.length} />
-						{absent.map(renderMember)}
+						<Box role='list' aria-label={t('Not_in_the_call')}>
+							{absent.map(renderMember)}
+						</Box>
 					</>
 				)}
 			</Box>
