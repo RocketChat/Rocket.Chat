@@ -431,35 +431,17 @@ test.describe('video conference call window', () => {
 	 * Qase case 17 step 3, case 18 steps 2 and 4, and case 47 step 2 — the caller's own window following a call
 	 * as other people arrive, turn it down and go.
 	 *
-	 * `test.fixme` because the cases are right and the code is not. The call window reads its membership from
-	 * `video-conference.info`, and the only thing that refreshes it after somebody *else* moves is the
-	 * `video-conference/<callId>/updated` stream `useConferenceEmbedded` subscribes to. It does not arrive.
+	 * This was `fixme` on the theory that the `video-conference/<callId>/updated` stream never reaches the call
+	 * window. That theory is wrong: driven against a live workspace, the window subscribes, the frame arrives and
+	 * the conference is read again — the whole chain works.
 	 *
-	 * From the traces of CI run 33428535519, on two separate tests:
-	 *
-	 * - The callee joined; five seconds later the caller's window had issued no request at all and its panel
-	 *   still read `Ringing`, while the callee's own window read `2 people in the call`.
-	 * - user2 declined; the server wrote `declined: true` and user1's *main app page* read it back 1.4s later
-	 *   over `notify-room`/`<rid>/videoconf`, while user1's call window — same user, same workspace, its own
-	 *   timer still ticking in the same snapshot, so neither frozen nor throttled — never asked again.
-	 *
-	 * So the server emits and that user's clients are reachable; what does not work is the conference window's
-	 * own subscription. Un-fixme this when it does, and the three steps below are the proof.
-	 *
-	 * One thing left deliberately unguessed at: `should add participants from the call` further down asks the
-	 * same panel for the same kind of refresh — `AddParticipantsModal` invalidates nothing of its own, so its
-	 * `Ringing` assertion can only come from this stream — and it has never actually run, because the CI job
-	 * that found all this stopped at its five-failure cap three tests earlier. With those four failures gone it
-	 * will run, and it is the experiment that settles this: if it passes, the stream works for an add and the
-	 * diagnosis above is too broad; if it fails, it is the third witness.
-	 *
-	 * Two holes in the subscription have since been closed — it no longer subscribes for a call that does not
-	 * exist yet, and it re-subscribes when the connection comes back — but neither is *known* to be what
-	 * happened here: the run recorded no WebSocket frames, so nothing shows which side dropped the
-	 * subscription. Still `fixme` for that reason, rather than because the fix is believed not to work. A run
-	 * with WS frames recorded settles it in one look: `sub`/`nosub` for `stream-video-conference`.
+	 * What the CI traces actually show is a window that subscribed once and heard nothing after, which is what a
+	 * *refused* subscription looks like: `allowRead` resolves the user from the connection and refuses when there
+	 * is none, and a refusal is never retried. A call window opens fresh and authenticates as it loads, so it can
+	 * ask before the server knows who is asking. The subscription now waits for that, and this runs again to find
+	 * out whether that was the whole of it.
 	 */
-	test.fixme('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
+	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
 		await poHomeChannel.navbar.openChat('user2');

@@ -114,13 +114,17 @@ export const useConferenceEmbedded = (callId: string) => {
 	// - **Never ask about a call that cannot exist.** The window opens on `/conference/new` before the conference
 	//   is created, so `new` is a call id this page can be handed; `streamVideoConference.allowRead` looks the call
 	//   up by that id, finds nothing and refuses. Waiting for a real id costs nothing: the id changing re-runs this.
+	// - **Never ask before the server knows who is asking.** `allowRead` resolves the user from the connection and
+	//   refuses when there is none, so a window that subscribes while its session is still being restored is
+	//   refused for good — the very shape of a call window, which opens fresh and authenticates as it loads.
+	//   Waiting for the user id costs nothing and is what makes the subscription survive that race.
 	// - **A subscription is only good while the connection under it is.** One that was refused, or lost with the
 	//   socket, leaves the window watching nothing — silently, since a stream reports neither. So this re-subscribes
 	//   on every connection, and re-reads the conference when it does, because whatever moved while this window was
 	//   away was announced to nobody here.
 	const subscribedTo = useRef<string | undefined>(undefined);
 	useEffect(() => {
-		if (callId === NEW_CONFERENCE_ID || !connected) {
+		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
 			return;
 		}
 
@@ -133,7 +137,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		return subscribeToVideoConference(`${callId}/updated`, () => {
 			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 		});
-	}, [callId, connected, subscribeToVideoConference, queryClient]);
+	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.

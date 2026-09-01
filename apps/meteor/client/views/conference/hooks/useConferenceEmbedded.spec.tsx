@@ -104,6 +104,24 @@ describe('watching the conference', () => {
 		expect(streamRef.controller?.has('new/updated')).toBe(false);
 	});
 
+	// The window opens fresh and authenticates as it loads, so the race is its normal condition rather than an
+	// edge: `allowRead` resolves the user from the connection and refuses when there is none, and a refusal is
+	// never retried — the window would then watch nothing for as long as it stayed open.
+	it('asks about nothing before the server knows who is asking', async () => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has(`${callId}/updated`)).toBe(false);
+	});
+
 	it('starts watching as soon as the call is real', async () => {
 		const { result, streamRef, rerender } = renderFor('new');
 
