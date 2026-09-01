@@ -13,9 +13,9 @@ import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import { drawLineChart } from '../../chartHandler';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {

@@ -19,7 +19,7 @@ import StarredItems from './items/StarredItems';
 import ThreadsItems from './items/ThreadsItems';
 import VideoconfItems from './items/VideoconfItems';
 import VideoconfThreadsItems from './items/VideoconfThreadsItems';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {

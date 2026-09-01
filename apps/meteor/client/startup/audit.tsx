@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
-import { hasAllPermission } from '../../app/authorization/client';
 import { appLayout } from '../lib/appLayout';
+import { hasAllPermission } from '../lib/authorization';
 import { onToggledFeature } from '../lib/onToggledFeature';
 import { router } from '../providers/RouterProvider';
 import SettingsProvider from '../providers/SettingsProvider';

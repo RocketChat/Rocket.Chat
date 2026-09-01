@@ -1,13 +1,15 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
+import { refreshVisibility } from '../../lib/notifications/core/lib/Presence';
+import { statusVisibilityGate } from '../../lib/statusVisibility/StatusVisibilityGate';
 import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
@@ -29,6 +31,8 @@ const minimongoChangeMap: Record<string, string> = {
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
+		statusVisibilityGate.watch(service);
+
 		const logger = new Logger('ListenersModule');
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
@@ -156,6 +160,27 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
+		service.onEvent('presence.invalidateVisibility', ({ targets, viewers }) => {
+			void StatusVisibility.refresh(targets)
+				.then(async (users) => {
+					await Promise.all([refreshVisibility(viewers), statusVisibilityGate.syncRestrictedUsers()]);
+
+					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
+						if (username) {
+							notifications.sendPresence(
+								_id,
+								username,
+								STATUS_MAP[status ?? UserStatus.OFFLINE],
+								statusText,
+								statusSource,
+								statusExpiresAt,
+							);
+						}
+					}
+				})
+				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
@@ -182,16 +207,20 @@ export class ListenersModule {
 				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [
-				_id,
-				username,
-				STATUS_MAP[status],
-				statusText,
-				name,
-				roles,
-				statusSource,
-				statusExpiresAt,
-			]);
+			// TODO: no client in this repo subscribes to notify-logged/user-status; if mobile and the
+			// SDK don't either, this check and the restricted mirror behind it can be dropped
+			if (!statusVisibilityGate.hasRestrictions(_id)) {
+				notifications.notifyLoggedInThisInstance('user-status', [
+					_id,
+					username,
+					STATUS_MAP[status],
+					statusText,
+					name,
+					roles,
+					statusSource,
+					statusExpiresAt,
+				]);
+			}
 
 			if (_id) {
 				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);

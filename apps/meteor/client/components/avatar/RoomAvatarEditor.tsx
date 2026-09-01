@@ -8,8 +8,8 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import { getAvatarURL } from '../../lib/getAvatarURL';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
 export type RoomAvatarEditorProps = {

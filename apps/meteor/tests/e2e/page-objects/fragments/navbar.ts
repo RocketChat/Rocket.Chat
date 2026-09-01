@@ -1,15 +1,23 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { EditStatusModal, CreateNewChannelModal, CreateNewDiscussionModal, CreateNewDMModal, CreateNewTeamModal } from './modals';
+import {
+	EditStatusModal,
+	CreateNewChannelModal,
+	CreateNewDiscussionModal,
+	CreateNewDMModal,
+	CreateNewTeamModal,
+	CreateNewCategoryModal,
+} from './modals';
 import { expect } from '../../utils/test';
 
 export class Navbar {
-	private readonly modals: {
+	readonly modals: {
 		'Channel': CreateNewChannelModal;
 		'Team': CreateNewTeamModal;
 		'Discussion': CreateNewDiscussionModal;
 		'Direct message': CreateNewDMModal;
 		'editStatus': EditStatusModal;
+		'Category': CreateNewCategoryModal;
 	};
 
 	constructor(private readonly root: Page) {
@@ -19,6 +27,7 @@ export class Navbar {
 			'Discussion': new CreateNewDiscussionModal(root),
 			'Direct message': new CreateNewDMModal(root),
 			'editStatus': new EditStatusModal(root),
+			'Category': new CreateNewCategoryModal(root),
 		};
 	}
 
@@ -155,13 +164,18 @@ export class Navbar {
 		return this.userMenu.getByRole('menuitemcheckbox', { name });
 	}
 
-	createNewMenuItem(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Outbound message'): Locator {
+	createNewMenuItem(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Outbound message' | 'Category'): Locator {
 		return this.createNewMenu.getByRole('menuitem', { name });
 	}
 
-	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
+	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Category'): Promise<void> {
 		await this.btnCreateNew.click();
 		await this.createNewMenuItem(name).click();
+	}
+
+	async openCreateCategory(): Promise<void> {
+		await this.btnCreateNew.click();
+		await this.createNewMenu.getByRole('menuitem', { name: 'Category', exact: true }).click();
 	}
 
 	async logout(): Promise<void> {
@@ -249,6 +263,12 @@ export class Navbar {
 		await this.openCreate('Direct message');
 		await this.modals['Direct message'].inviteUserToDM(username);
 		await this.modals['Direct message'].btnCreate.click();
+	}
+
+	async createNewCategory(name: string): Promise<void> {
+		await this.openCreate('Category');
+		await this.modals.Category.inputName.fill(name);
+		await this.modals.Category.create();
 	}
 
 	async createNewDiscussion(parentRoom: string, name: string, message?: string): Promise<void> {

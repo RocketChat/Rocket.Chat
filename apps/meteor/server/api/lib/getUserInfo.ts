@@ -2,6 +2,7 @@ import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCa
 import semver from 'semver';
 
 import { Info } from '../../../app/utils/rocketchat.info';
+import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { getURL } from '../../lib/utils/getURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { settings } from '../../settings';
@@ -14,7 +15,7 @@ const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
 	return me.emails.find((email) => email.verified);
 };
 
-const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> => {
+const getPreferencesWithDefaults = async (me: IUser): Promise<Record<string, unknown>> => {
 	const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
 	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
@@ -87,7 +88,18 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IMeApiUser> {
 	const verifiedEmail = isVerifiedEmail(me);
 
-	const userPreferences = me.settings?.preferences ?? {};
+	const { statusVisibilityDenied, ...savedPreferences } = me.settings?.preferences ?? {};
+
+	const preferences = pullPreferences
+		? {
+				...(await getPreferencesWithDefaults(me)),
+				...savedPreferences,
+				...(settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
+					statusVisibilityDenied?.length && {
+						statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
+					}),
+			}
+		: undefined;
 
 	return {
 		...me,
@@ -95,7 +107,7 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
-			...(pullPreferences && { preferences: { ...(await getUserPreferences(me)), ...userPreferences } }),
+			...(preferences && { preferences }),
 			calendar: getUserCalendar(verifiedEmail),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),

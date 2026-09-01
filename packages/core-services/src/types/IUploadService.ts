@@ -30,7 +30,11 @@ export interface IUploadService {
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
 	extractMetadata(file: IUpload): Promise<{ height?: number; width?: number; format?: string }>;
 	parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments>;
-	canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean>;
+	canDeleteFile(
+		user: Pick<IUser, '_id' | 'username'>,
+		file: Pick<IUpload, '_id' | 'userId' | 'rid' | 'expiresAt' | 'uploadedAt'>,
+		msg: IMessage | null,
+	): Promise<boolean>;
 	deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }>;
 	streamUploadedFile({
 		file,

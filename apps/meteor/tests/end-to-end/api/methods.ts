@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { retry } from './helpers/retry';
-import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
+import { api, credentials, getCredentials, methodCall, methodCallAnon, request } from '../../data/api-data';
 import { sendMessage, sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, makeAgentAvailable } from '../../data/livechat/rooms';
@@ -857,7 +857,75 @@ describe('Meteor.methods', () => {
 				.end(done);
 		});
 
-		after(() => deleteRoom({ type: 'p', roomId: rid }));
+		let publicRid: IRoom['_id'];
+		let publicMessageId: IMessage['_id'];
+
+		before('create public channel with a message', async () => {
+			publicRid = (await createRoom({ type: 'c', name: `methods-test-public-${Date.now()}` })).body.channel._id;
+			publicMessageId = (await sendMessage({ message: { rid: publicRid, msg: 'public message' } })).body.message._id;
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteRoom({ type: 'c', roomId: publicRid })]));
+
+		describe('anonymous read', () => {
+			before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+
+			it('should return public channel messages to an anonymous caller when anonymous read is enabled', async () => {
+				const res = await request
+					.post(methodCallAnon('loadHistory'))
+					.send({
+						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
+							method: 'loadHistory',
+							params: [publicRid],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				const data = JSON.parse(res.body.message);
+				expect(data.result).to.have.a.property('messages').that.is.an('array');
+				expect(data.result.messages.map((m: IMessage) => m._id)).to.include(publicMessageId);
+			});
+
+			it('should not return private group messages to an anonymous caller even when anonymous read is enabled', async () => {
+				const res = await request
+					.post(methodCallAnon('loadHistory'))
+					.send({
+						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
+							method: 'loadHistory',
+							params: [rid],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				const data = JSON.parse(res.body.message);
+				expect(data.result).to.equal(false);
+			});
+		});
+
+		it('should fail for an anonymous caller when anonymous read is disabled', async () => {
+			const res = await request
+				.post(methodCallAnon('loadHistory'))
+				.send({
+					message: JSON.stringify({
+						id: 'id',
+						msg: 'method',
+						method: 'loadHistory',
+						params: [publicRid],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			const data = JSON.parse(res.body.message);
+			expect(data.error).to.have.property('error', 'error-invalid-user');
+		});
 
 		it('should fail if not logged in', async () => {
 			const res = await request
@@ -2539,7 +2607,7 @@ describe('Meteor.methods', () => {
 				}),
 			};
 
-			const res = await request.post('/api/v1/method.callAnon/getRoomByTypeAndName').set('Content-Type', 'application/json').send(payload);
+			const res = await request.post(methodCallAnon('getRoomByTypeAndName')).send(payload);
 
 			expect(res.body).to.have.property('message');
 			const parsedMessage = JSON.parse(res.body.message);
@@ -2668,17 +2736,14 @@ describe('Meteor.methods', () => {
 		it('should return the room object for a Public Channel if anonymous read is enabled', async () => {
 			await updateSetting('Accounts_AllowAnonymousRead', true);
 
-			const res = await request
-				.post(methodCall('getRoomByTypeAndName'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'getRoomByTypeAndName',
-						params: ['c', room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				});
+			const res = await request.post(methodCallAnon('getRoomByTypeAndName')).send({
+				message: JSON.stringify({
+					method: 'getRoomByTypeAndName',
+					params: ['c', room._id],
+					id: 'id',
+					msg: 'method',
+				}),
+			});
 
 			expect(res.body.success).to.equal(true);
 			const parsedResponse = JSON.parse(res.body.message);
@@ -2705,6 +2770,153 @@ describe('Meteor.methods', () => {
 					expect(parsedResponse.result._id).to.equal(dmId);
 					done();
 				});
+		});
+
+		it('should return the room object for a DM addressed by username', async () => {
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(dmId);
+			expect(parsedResponse.result.t).to.equal('d');
+		});
+
+		it('should throw error when the DM addressed by username does not exist', async () => {
+			const stranger = await createUser();
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', stranger.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(400);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse).to.have.property('error');
+			expect(parsedResponse.error.error).to.equal('error-invalid-room');
+
+			await deleteUser(stranger);
+		});
+
+		it('should return the room object for a group DM addressed by a comma separated username list', async () => {
+			const usernames = `${testUser.username},${testUser2.username}`;
+
+			const groupDm = (await request.post(api('im.create')).set(credentials).send({ usernames }).expect(200)).body.room;
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', usernames],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(groupDm._id);
+
+			await deleteRoom({ type: 'd', roomId: groupDm._id });
+		});
+
+		it('should keep resolving a DM by username after the other member is renamed', async () => {
+			const renamedUser = await createUser();
+			const renamedDmId = (await request.post(api('im.create')).set(credentials).send({ username: renamedUser.username }).expect(200)).body
+				.room._id;
+
+			const username = `renamed.${Date.now()}`;
+			await request.post(api('users.update')).set(credentials).send({ userId: renamedUser._id, data: { username } }).expect(200);
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(renamedDmId);
+
+			await deleteRoom({ type: 'd', roomId: renamedDmId });
+			await deleteUser(renamedUser);
+		});
+	});
+
+	describe('[@spotlight]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `methods-spotlight-${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), updateSetting('Accounts_AllowAnonymousRead', false)]);
+		});
+
+		const callAnonymousSpotlight = async (text: string) => {
+			const res = await request
+				.post(methodCallAnon('spotlight'))
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: 'id',
+						method: 'spotlight',
+						params: [text],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse).to.not.have.property('error');
+
+			return parsedResponse.result as { rooms: IRoom[]; users: IUser[] };
+		};
+
+		it('should return no rooms or users for an anonymous user when anonymous read is disabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+
+			// The unprefixed query also runs the user search with no user id, which used to throw.
+			const result = await callAnonymousSpotlight(testChannel.name as string);
+
+			expect(result).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+			expect(result).to.have.property('users').and.to.be.an('array').that.is.empty;
+		});
+
+		it('should return public rooms but no users for an anonymous user when anonymous read is enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const result = await callAnonymousSpotlight(testChannel.name as string);
+
+			expect(result.rooms.map((room) => room._id)).to.include(testChannel._id);
+			expect(result).to.have.property('users').and.to.be.an('array').that.is.empty;
 		});
 	});
 

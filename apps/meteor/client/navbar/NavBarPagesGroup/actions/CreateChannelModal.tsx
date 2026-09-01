@@ -39,6 +39,7 @@ export type CreateChannelModalProps = {
 	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
+	onSuccess?: (rid: string) => void | Promise<void>;
 };
 
 type CreateChannelModalPayload = {
@@ -70,13 +71,14 @@ const getFederationHintKey = (federationModule: boolean, featureToggle: boolean,
 
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
-const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps) => {
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
+	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
@@ -109,7 +111,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			topic: '',
 			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
-			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
+			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			federated: false,
 		},
@@ -131,6 +133,12 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			setValue('encrypted', false);
 		}
 	}, [isPrivate, setValue]);
+
+	useEffect(() => {
+		if (isPrivate && e2eEnforcedForPrivate && !federated) {
+			setValue('encrypted', true);
+		}
+	}, [isPrivate, e2eEnforcedForPrivate, federated, setValue]);
 
 	useEffect(() => {
 		setValue('readOnly', broadcast);
@@ -168,16 +176,20 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			},
 		};
 
+		let rid: string;
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
+				rid = roomData.group._id;
 				if (!teamId) goToRoom(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
+				rid = roomData.channel._id;
 				if (!teamId) goToRoom(roomData.channel._id);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+			void onSuccess?.(rid);
 			reload?.();
 			onClose();
 		} catch (error) {
@@ -185,7 +197,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
+	const e2eDisabled = useMemo<boolean>(
+		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
+		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
+	);
 
 	const createChannelFormId = useId();
 

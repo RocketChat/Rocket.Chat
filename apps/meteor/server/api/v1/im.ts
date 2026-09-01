@@ -26,6 +26,8 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
@@ -549,8 +551,10 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		);
 		const { status, filter } = this.queryParams;
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const roomUids = status && hidden ? room.uids?.filter((uid) => !hidden.has(uid)) : room.uids;
 		const extraQuery: Record<string, unknown> = {
-			_id: { $in: room.uids },
+			_id: { $in: roomUids },
 			...(status && { status: { $in: status } }),
 		};
 
@@ -586,13 +590,15 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
 		).toArray();
 
+		const subsByUserId = new Map(subs.map((sub) => [sub.u._id, sub]));
+
 		const membersWithSubscriptionInfo = members.map((member) => {
-			const sub = subs.find((sub) => sub.u._id === member._id);
+			const sub = subsByUserId.get(member._id);
 
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...member,
+				...(hidden?.has(member._id) ? redactStatus(member) : member),
 				subscription,
 			};
 		});

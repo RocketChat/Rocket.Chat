@@ -101,18 +101,18 @@ exports[`renders Default without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_9_"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-css-n501yz"
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                   id="react-aria-_r_9_"
                 >
                   Online
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>
@@ -321,18 +321,18 @@ exports[`renders Empty without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_j_"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-css-n501yz"
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                   id="react-aria-_r_j_"
                 >
                   Online
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>
@@ -514,18 +514,18 @@ exports[`renders Loading without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_t_"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-css-n501yz"
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                   id="react-aria-_r_t_"
                 >
                   Online
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>
@@ -699,18 +699,18 @@ exports[`renders WithABACRoom without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_17_"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-css-n501yz"
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                   id="react-aria-_r_17_"
                 >
                   Online
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>
@@ -919,18 +919,18 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_1h_"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-css-n501yz"
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                   id="react-aria-_r_1h_"
                 >
                   Online
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>

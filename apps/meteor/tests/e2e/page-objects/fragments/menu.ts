@@ -17,8 +17,11 @@ export abstract class Menu {
 		return this.root.getByRole('menuitem', { name: itemName, exact: true });
 	}
 
-	selectMenuItem(itemName: string) {
-		return this.getMenuItem(itemName).click();
+	async selectMenuItem(itemName: string, submenuTrigger = false) {
+		await this.getMenuItem(itemName).click();
+		if (!submenuTrigger) {
+			await this.waitForDismissal();
+		}
 	}
 }
 
@@ -37,5 +40,11 @@ export class MenuMoreActions extends Menu {
 export class MenuOptions extends Menu {
 	constructor(page: Page) {
 		super(page.getByRole('menu', { name: 'Options' }));
+	}
+}
+
+export class MenuMoveTo extends Menu {
+	constructor(page: Page) {
+		super(page.getByRole('menu', { name: 'Move to' }));
 	}
 }
