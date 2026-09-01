@@ -484,8 +484,7 @@ test.describe('teams-management-remove-member-channel-selection', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
 
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 	});
 
 	test('should load the channel selection modal when removing a member that belongs to team channels', async ({ api }) => {

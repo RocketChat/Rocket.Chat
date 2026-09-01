@@ -14,9 +14,9 @@ test.describe.parallel('register', () => {
 	});
 
 	test.describe('Registration default flow', async () => {
-		test('should complete the registration flow', async ({ page }) => {
+		test('should complete the registration flow', async () => {
 			await test.step('expect trigger a validation error if no data is provided on register', async () => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await poRegistration.goToRegister.click();
 
 				await poRegistration.btnRegister.click();
@@ -52,8 +52,8 @@ test.describe.parallel('register', () => {
 				await expect(result.ok()).toBeTruthy();
 			});
 
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/home');
+			test.beforeEach(async () => {
+				await poRegistration.goto();
 				await poRegistration.goToRegister.click();
 			});
 
@@ -92,7 +92,7 @@ test.describe.parallel('register', () => {
 			test.beforeEach(async ({ page }) => {
 				poRegistration = new Registration(page);
 
-				await page.goto('/home');
+				await poRegistration.goto();
 				await poRegistration.goToRegister.click();
 			});
 
@@ -125,15 +125,16 @@ test.describe.parallel('register', () => {
 				await api.post('/settings/Accounts_RegistrationForm', { value: 'Public' });
 			});
 
-			test('should expect a message warning that registration is disabled', async ({ page }) => {
-				await page.goto('/home');
+			test('should expect a message warning that registration is disabled', async () => {
+				await poRegistration.goto();
 				await poRegistration.goToRegister.click();
 				await expect(poRegistration.registrationDisabledCallout).toBeVisible();
 			});
 		});
 
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/home');
+		// FIXME: better to check for violations through unit tests rather than end-to-end tests
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			await poRegistration.goto();
 			await poRegistration.goToRegister.click();
 
 			const results = await makeAxeBuilder().analyze();
@@ -153,7 +154,7 @@ test.describe.parallel('register', () => {
 			});
 
 			await test.step('Attempt registration with the same email', async () => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await poRegistration.goToRegister.click();
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(email);
@@ -179,15 +180,15 @@ test.describe.parallel('register', () => {
 			await expect(result.ok()).toBeTruthy();
 		});
 
-		test('should expect a message warning that registration is disabled', async ({ page }) => {
-			await page.goto('/home');
+		test('should expect a message warning that registration is disabled', async () => {
+			await poRegistration.goto();
 			await poRegistration.goToRegister.click();
 			await expect(poRegistration.registrationDisabledCallout).toBeVisible();
 		});
 
 		test.describe('Using an invalid secret password', async () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/register/invalid_secret');
+			test.beforeEach(async () => {
+				await poRegistration.gotoWithSecret('invalid_secret');
 			});
 
 			test('should expect a invalid page informing that the secret password is invalid', async () => {
@@ -197,7 +198,7 @@ test.describe.parallel('register', () => {
 		});
 
 		test('should register a user if the right secret password is provided', async ({ page }) => {
-			await page.goto('/register/secret');
+			await poRegistration.gotoWithSecret('secret');
 			await page.waitForSelector('role=form');
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
@@ -216,8 +217,8 @@ test.describe.parallel('register', () => {
 			await expect(result.ok()).toBeTruthy();
 		});
 
-		test('should show an invalid page informing that the url is not valid', async ({ page }) => {
-			await page.goto('/register/secret');
+		test('should show an invalid page informing that the url is not valid', async () => {
+			await poRegistration.gotoWithSecret('secret');
 			await poRegistration.waitForCalloutPage();
 			await expect(poRegistration.registrationInvalidUrlCallout).toBeVisible();
 		});

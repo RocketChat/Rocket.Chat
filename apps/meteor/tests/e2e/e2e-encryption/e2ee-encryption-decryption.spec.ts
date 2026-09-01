@@ -36,8 +36,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
-		await page.goto('/home');
-		await loginPage.waitForIt();
+		await loginPage.goto();
 		await loginPage.loginByUserState(Users.admin);
 	});
 

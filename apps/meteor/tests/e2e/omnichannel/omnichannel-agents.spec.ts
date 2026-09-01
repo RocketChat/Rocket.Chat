@@ -19,7 +19,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
-		await poOmnichannelAgents.goTo();
+		await poOmnichannelAgents.goto();
 	});
 
 	test.beforeAll(async ({ api }) => {

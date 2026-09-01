@@ -14,7 +14,7 @@ test.describe.serial('email-inboxes', () => {
 	test.beforeEach(async ({ page }) => {
 		poAdminEmailInboxes = new AdminEmailInboxes(page);
 
-		await page.goto('/admin/email-inboxes');
+		await poAdminEmailInboxes.goto();
 	});
 
 	test('expect create an email inbox', async () => {

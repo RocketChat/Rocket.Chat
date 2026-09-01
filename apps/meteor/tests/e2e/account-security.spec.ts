@@ -23,7 +23,7 @@ test.describe.serial('account-security', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		poAccountSecurity = new AccountSecurity(page);
-		await page.goto('/account/security');
+		await poAccountSecurity.goto();
 		await page.locator('#main-content').waitFor();
 		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 	});

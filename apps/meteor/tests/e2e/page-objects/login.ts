@@ -20,6 +20,12 @@ export class LoginPage {
 		await this.loginButton.waitFor();
 	}
 
+	/** Navigates to `url` and waits for the login screen — for routes that bounce an anonymous visitor. */
+	async goto(url = '/home'): Promise<void> {
+		await this.page.goto(url);
+		await this.waitForIt();
+	}
+
 	protected async waitForLogin() {
 		await expect(this.loginButton).not.toBeVisible();
 		await expect(this.page.getByRole('main')).toBeVisible();

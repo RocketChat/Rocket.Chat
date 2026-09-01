@@ -18,12 +18,12 @@ test.describe.serial('settings-account-profile', () => {
 		poAccountProfile = new AccountProfile(page);
 	});
 
-	// FIXME: solve test intermitencies
 	test.describe('Profile', () => {
 		test.beforeEach(async () => {
-			await poAccountProfile.gotoProfile();
+			await poAccountProfile.goto();
 		});
 
+		// FIXME: solve test intermitencies
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
 			const newUsername = faker.internet.userName({ firstName: newName });

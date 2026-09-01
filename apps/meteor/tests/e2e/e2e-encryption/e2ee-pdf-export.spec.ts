@@ -35,8 +35,7 @@ test.describe('E2EE PDF Export', () => {
 
 		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
-		await page.goto('/home');
-		await loginPage.waitForIt();
+		await loginPage.goto();
 		await loginPage.loginByUserState(Users.admin);
 	});
 

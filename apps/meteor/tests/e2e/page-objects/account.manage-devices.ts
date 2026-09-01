@@ -1,9 +1,13 @@
-import type { Locator, Page } from 'playwright-core';
+import type { Page } from 'playwright-core';
 
-import { Account } from './account';
+import { Account, AccountSectionsHref } from './account';
 import { ConfirmLogoutModal, DevicesTable } from './fragments';
 
 export class AccountManageDevices extends Account {
+	protected readonly route = AccountSectionsHref.manageDevices;
+
+	protected readonly title = 'Manage Devices';
+
 	readonly logoutModal: ConfirmLogoutModal;
 
 	readonly table: DevicesTable;
@@ -14,17 +18,8 @@ export class AccountManageDevices extends Account {
 		this.table = new DevicesTable(page);
 	}
 
-	get devicesPageContent(): Locator {
-		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Manage Devices' }) });
-	}
-
-	async goto(): Promise<void> {
-		await this.page.goto('/account/manage-devices');
-		await this.devicesPageContent.waitFor({ state: 'visible' });
-	}
-
 	async getNthDeviceId(nth: number): Promise<string> {
-		const deviceId = await this.devicesPageContent.getByRole('row').nth(nth).getAttribute('aria-label');
+		const deviceId = await this.pageContent.getByRole('row').nth(nth).getAttribute('aria-label');
 		if (!deviceId) {
 			throw new Error(`Device ID not found for the device ${nth}`);
 		}

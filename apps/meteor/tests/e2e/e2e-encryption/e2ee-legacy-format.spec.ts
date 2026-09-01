@@ -47,7 +47,7 @@ test.describe('E2EE Legacy Format', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {

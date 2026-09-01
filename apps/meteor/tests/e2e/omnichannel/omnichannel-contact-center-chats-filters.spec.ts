@@ -39,7 +39,7 @@ test.describe('OC - Contact Center - Chats', () => {
 	test.beforeEach(async ({ page }) => {
 		poOmniChats = new OmnichannelContactCenterChats(page);
 
-		await page.goto('/omnichannel-directory/chats');
+		await poOmniChats.goto();
 	});
 
 	test.afterEach(async ({ page }) => {

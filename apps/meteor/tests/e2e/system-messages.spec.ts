@@ -43,13 +43,12 @@ test.describe.serial('System Messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.goto();
 
 		if (!group?.name) {
 			return;
 		}
 
-		await poHomeChannel.navbar.openChat(group.name);
+		await poHomeChannel.gotoGroup(group.name);
 	});
 
 	test.afterAll(async ({ api }) => {

@@ -23,9 +23,10 @@ import {
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
+import { RoutedPage } from './routed-page';
 
-export class HomeChannel {
-	public readonly page: Page;
+export class HomeChannel extends RoutedPage {
+	protected readonly route: string = '/home';
 
 	readonly content: HomeContent;
 
@@ -62,7 +63,7 @@ export class HomeChannel {
 	readonly threadComposer: ThreadComposer;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.content = new HomeContent(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
@@ -92,19 +93,40 @@ export class HomeChannel {
 		return this._tabs;
 	}
 
-	async goto(): Promise<void> {
-		await this.page.goto('/home');
+	async waitForReady(): Promise<void> {
 		await this.homepageHeader.waitFor({ state: 'visible' });
 	}
 
-	async gotoChannel(name: string) {
-		await this.page.goto(`/channel/${name}`);
-		await this.content.waitForChannel();
+	async gotoChannel(name: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}`, () => this.content.waitForChannel());
 	}
 
-	async gotoGroup(name: string) {
-		await this.page.goto(`/group/${name}`);
-		await this.content.waitForChannel();
+	async gotoGroup(name: string): Promise<void> {
+		await this.navigateTo(`/group/${name}`, () => this.content.waitForChannel());
+	}
+
+	/** Opens a channel scrolled to a message. Pass `isThread` when the message lives in a thread. */
+	async gotoChannelMessage(name: string, messageId: string, isThread = false): Promise<void> {
+		await this.navigateTo(`/channel/${name}?msg=${messageId}`, async () => {
+			await this.content.waitForChannel();
+
+			if (isThread) {
+				await this.content.waitForThread();
+			}
+		});
+	}
+
+	/** Opens a thread by the id of the message that started it. */
+	async gotoChannelThread(name: string, threadMessageId: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}/thread/${threadMessageId}`, async () => {
+			await this.content.waitForChannel();
+			await this.content.waitForThread();
+		});
+	}
+
+	/** Opens a channel with the Prune Messages panel open. */
+	async gotoChannelCleanHistory(name: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}/clean-history`, this.tabs.pruneMessages.root);
 	}
 
 	get btnContextualbarClose(): Locator {
@@ -203,7 +225,7 @@ export class HomeChannel {
 	}
 
 	async waitForHome(): Promise<void> {
-		await this.homepageHeader.waitFor({ state: 'visible' });
+		await this.waitForReady();
 	}
 
 	async waitForRoomLoad(): Promise<void> {

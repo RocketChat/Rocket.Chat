@@ -21,8 +21,7 @@ test.describe.serial('Apps > Modal', () => {
 		poHomeChannel = new HomeChannel(page);
 		poModal = new AppsModal(page);
 
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat('general');
+		await poHomeChannel.gotoChannel('general');
 	});
 
 	test.afterAll(async () => {

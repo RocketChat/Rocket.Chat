@@ -30,7 +30,7 @@ test.describe('E2EE Server Settings', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
@@ -65,7 +65,7 @@ test.describe('E2EE Server Settings', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto('/home');
+			await poHomeChannel.goto();
 		});
 
 		test.beforeAll(async ({ api }) => {

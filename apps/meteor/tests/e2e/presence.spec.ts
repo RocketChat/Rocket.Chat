@@ -15,7 +15,7 @@ test.describe.serial('Presence', () => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.describe('Login using default settings', () => {
@@ -218,7 +218,7 @@ test.describe.serial('Presence', () => {
 			const text = faker.string.alpha(10);
 
 			await test.step('fill Status field + Clear-after on /account/profile and save', async () => {
-				await page.goto('/account/profile');
+				await poAccountProfile.goto();
 				await poAccountProfile.inputStatusText.fill(text);
 				await poAccountProfile.chooseClearStatusAfter('30 minutes');
 				await Promise.all([
@@ -230,7 +230,7 @@ test.describe.serial('Presence', () => {
 			});
 
 			await test.step('status with expiration appears in user menu', async () => {
-				await page.goto('/home');
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnUserMenu.click();
 				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
 				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');

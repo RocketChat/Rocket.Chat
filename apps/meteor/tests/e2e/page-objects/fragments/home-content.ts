@@ -54,6 +54,11 @@ export class HomeContent {
 		return this.page.getByRole('list', { name: 'Thread message list', exact: true });
 	}
 
+	/** The open room, matched by id. Use it to assert a permalink landed in the room it should. */
+	getRoomById(roomId: string): Locator {
+		return this.page.locator(`[data-qa-rc-room="${roomId}"]`);
+	}
+
 	get messageListItems(): Locator {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
@@ -546,6 +551,11 @@ export class HomeContent {
 
 	getMessageById(id: string): Locator {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
+	}
+
+	/** Thread replies carry `aria-roledescription="thread message"`, so `getMessageById` skips them. */
+	getThreadMessageById(id: string): Locator {
+		return this.threadMessageList.locator(`[role="listitem"][id="${id}"]`);
 	}
 
 	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {

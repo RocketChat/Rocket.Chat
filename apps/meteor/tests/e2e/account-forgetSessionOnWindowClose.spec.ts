@@ -9,7 +9,7 @@ test.describe.serial('Forget session on window close setting', () => {
 	test.beforeEach(async ({ page }) => {
 		poLogin = new Login(page);
 
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.describe('Setting off', async () => {
@@ -23,7 +23,7 @@ test.describe.serial('Forget session on window close setting', () => {
 			await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 
 			const newPage = await context.newPage();
-			await newPage.goto('/home');
+			await new HomeChannel(newPage).goto();
 
 			await expect(newPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 		});
@@ -54,9 +54,9 @@ test.describe.serial('Forget session on window close setting', () => {
 			await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 
 			const newPage = await context.newPage();
-			await newPage.goto('/home');
-
 			const newPoLogin = new Login(newPage);
+			await newPoLogin.goto();
+
 			await newPoLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(newPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();

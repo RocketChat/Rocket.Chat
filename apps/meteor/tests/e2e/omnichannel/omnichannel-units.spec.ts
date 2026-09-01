@@ -56,7 +56,7 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelUnits = new OmnichannelUnits(page);
-		await poOmnichannelUnits.goTo();
+		await poOmnichannelUnits.goto();
 	});
 
 	test('OC - Manage Units - Create Unit', async () => {
@@ -106,7 +106,7 @@ test.describe('OC - Manage Units', () => {
 			return newUnit;
 		});
 
-		await poOmnichannelUnits.goTo();
+		await poOmnichannelUnits.goto();
 
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);

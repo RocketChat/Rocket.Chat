@@ -31,7 +31,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
 
@@ -62,7 +62,7 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 }
 
 export class OmnichannelAgents extends OmnichannelAdmin {
-	protected readonly route = 'agents';
+	protected readonly route = OmnichannelSectionsHref.agents;
 
 	protected readonly title = 'Agents';
 

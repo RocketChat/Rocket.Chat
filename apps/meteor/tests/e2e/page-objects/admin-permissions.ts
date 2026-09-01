@@ -1,11 +1,11 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
-export class AdminRoles extends Admin {
-	constructor(page: Page) {
-		super(page);
-	}
+export class AdminPermissions extends Admin {
+	protected readonly route = AdminSectionsHref.permissions;
+
+	protected readonly title = 'Permissions';
 
 	get btnCreateRole(): Locator {
 		return this.page.locator('button[name="New role"]');

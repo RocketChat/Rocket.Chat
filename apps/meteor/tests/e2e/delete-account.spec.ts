@@ -23,7 +23,7 @@ test.describe('Delete Own Account', () => {
 		poAccountProfile = new AccountProfile(page);
 		poLogin = new Login(page);
 		poAuth = new Authenticated(page);
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -39,7 +39,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await poAccountProfile.gotoProfile();
+			await poAccountProfile.goto();
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -66,7 +66,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await poAccountProfile.gotoProfile();
+			await poAccountProfile.goto();
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -96,7 +96,7 @@ test.describe('Delete Own Account', () => {
 			});
 
 			await test.step('navigate to profile and locate Delete My Account button', async () => {
-				await poAccountProfile.gotoProfile();
+				await poAccountProfile.goto();
 				await expect(poAccountProfile.btnDeleteMyAccount).not.toBeVisible();
 			});
 		});

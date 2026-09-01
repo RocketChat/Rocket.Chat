@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
 export class AdminIntegrations extends Admin {
 	constructor(page: Page) {
@@ -11,9 +11,9 @@ export class AdminIntegrations extends Admin {
 		return this.page.getByRole('button', { name: 'Instructions', exact: true });
 	}
 
-	get adminPageContent(): Locator {
-		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Integrations' }) });
-	}
+	protected readonly route = AdminSectionsHref.integrations;
+
+	protected readonly title = 'Integrations';
 
 	codeExamplePayload(text: string): Locator {
 		return this.page.locator('code', { hasText: text });
@@ -43,10 +43,5 @@ export class AdminIntegrations extends Admin {
 		await this.getIntegrationByName(name).click();
 		await this.btnDelete.click();
 		await this.deleteModal.confirmDelete();
-	}
-
-	async goto(): Promise<void> {
-		await this.page.goto('/admin/integrations');
-		await this.adminPageContent.waitFor({ state: 'visible' });
 	}
 }

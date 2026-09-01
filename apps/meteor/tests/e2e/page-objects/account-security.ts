@@ -1,23 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Account } from './account';
+import { Account, AccountSectionsHref } from './account';
 import { EnterPasswordModal } from './fragments/modals';
 
 export class AccountSecurity extends Account {
+	protected readonly route = AccountSectionsHref.security;
+
+	protected readonly title = 'Security';
+
 	private readonly enterPasswordModal: EnterPasswordModal;
 
 	constructor(page: Page) {
 		super(page);
 		this.enterPasswordModal = new EnterPasswordModal(page);
-	}
-
-	async goto(): Promise<void> {
-		await this.page.goto('/account/security');
-		await this.waitForSecurityPage();
-	}
-
-	async waitForSecurityPage(): Promise<void> {
-		await this.securityHeader.waitFor({ state: 'visible' });
 	}
 
 	get inputNewPassword() {

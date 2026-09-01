@@ -1,9 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Account } from './account';
+import { Account, AccountSectionsHref } from './account';
 import { DeleteAccountModal } from './fragments';
 
 export class AccountProfile extends Account {
+	protected readonly route = AccountSectionsHref.profile;
+
+	protected readonly title = 'Profile';
+
 	readonly deleteAccountModal: DeleteAccountModal;
 
 	constructor(page: Page) {
@@ -126,23 +130,23 @@ export class AccountProfile extends Account {
 	}
 
 	get profileHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Profile' });
+		return this.page.getByRole('heading', { name: 'Profile', exact: true });
 	}
 
 	get personalAccessTokensHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Personal Access Tokens' });
+		return this.page.getByRole('heading', { name: 'Personal Access Tokens', exact: true });
 	}
 
 	get omnichannelHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Omnichannel' });
+		return this.page.getByRole('heading', { name: 'Omnichannel', exact: true });
 	}
 
 	get featurePreviewHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Feature preview' });
+		return this.page.getByRole('heading', { name: 'Feature preview', exact: true });
 	}
 
 	get accessibilityAndAppearanceHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Accessibility & Appearance' });
+		return this.page.getByRole('heading', { name: 'Accessibility & appearance', exact: true });
 	}
 
 	get btnDeleteMyAccount(): Locator {
@@ -157,32 +161,19 @@ export class AccountProfile extends Account {
 		return this.getErrorAlertByText('Invalid image URL');
 	}
 
-	async goto(): Promise<void> {
-		await this.gotoProfile();
-	}
-
-	async gotoProfile(): Promise<void> {
-		await this.page.goto('/account/profile');
-		await this.profileHeading.waitFor({ state: 'visible' });
-	}
-
 	async gotoTokens(): Promise<void> {
-		await this.page.goto('/account/tokens');
-		await this.personalAccessTokensHeading.waitFor({ state: 'visible' });
+		await this.navigateTo(AccountSectionsHref.tokens, this.personalAccessTokensHeading);
 	}
 
 	async gotoOmnichannel(): Promise<void> {
-		await this.page.goto('/account/omnichannel');
-		await this.omnichannelHeading.waitFor({ state: 'visible' });
+		await this.navigateTo(AccountSectionsHref.omnichannel, this.omnichannelHeading);
 	}
 
 	async gotoFeaturePreview(): Promise<void> {
-		await this.page.goto('/account/feature-preview');
-		await this.featurePreviewHeading.waitFor({ state: 'visible' });
+		await this.navigateTo(AccountSectionsHref.featurePreview, this.featurePreviewHeading);
 	}
 
 	async gotoAccessibilityAndAppearance(): Promise<void> {
-		await this.page.goto('/account/accessibility-and-appearance');
-		await this.accessibilityAndAppearanceHeading.waitFor({ state: 'visible' });
+		await this.navigateTo(AccountSectionsHref.accessibilityAndAppearance, this.accessibilityAndAppearanceHeading);
 	}
 }

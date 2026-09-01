@@ -1,7 +1,15 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
+/**
+ * A single settings section, e.g. `/admin/settings/Omnichannel`. Its `title` is the section heading, so it gets its ready state from `Admin` like any other page.
+ */
+export abstract class AdminSettingsSection extends Admin {
+	protected abstract override readonly route: `${AdminSectionsHref.settings}/${string}`;
+}
+
+/** The settings index at `/admin/settings`. Individual sections are `AdminSettingsSection`s. */
 export class AdminSettings extends Admin {
 	constructor(page: Page) {
 		super(page);
@@ -11,8 +19,12 @@ export class AdminSettings extends Admin {
 		return this.page.locator('input[type=search]');
 	}
 
-	get adminPageContent(): Locator {
-		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Settings' }) });
+	protected readonly route = AdminSectionsHref.settings;
+
+	protected readonly title = 'Settings';
+
+	override async waitForReady(): Promise<void> {
+		await this.inputSearchSettings.waitFor({ state: 'visible' });
 	}
 
 	get inputSiteURL(): Locator {
@@ -43,22 +55,25 @@ export class AdminSettings extends Admin {
 		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
 	}
 
-	get btnSaveChanges(): Locator {
-		return this.page.getByRole('button', { name: 'Save changes' });
+	getSectionHeading(section: string): Locator {
+		return this.page.getByRole('main').getByRole('heading', { level: 1, name: section, exact: true });
 	}
 
-	async goto(): Promise<void> {
-		await this.page.goto('/admin/settings');
-		await this.inputSearchSettings.waitFor({ state: 'visible' });
+	/**
+	 * Opens a settings section, e.g. `Message` for `/admin/settings/Message`.
+	 *
+	 * @param section id of the section, which doubles as its heading
+	 * @param until element to wait for, when the section heading is not a strong enough ready signal
+	 */
+	async gotoSection(section: string, until: Locator = this.getSectionHeading(section)): Promise<void> {
+		await this.navigateTo(`${AdminSectionsHref.settings}/${section}`, until);
 	}
 
 	async gotoGeneral(): Promise<void> {
-		await this.page.goto('/admin/settings/General');
-		await this.inputSiteURL.waitFor({ state: 'visible' });
+		await this.gotoSection('General', this.inputSiteURL);
 	}
 
 	async gotoLayout(): Promise<void> {
-		await this.page.goto('/admin/settings/Layout');
-		await this.getAccordionBtnByName('Custom CSS').waitFor({ state: 'visible' });
+		await this.gotoSection('Layout', this.getAccordionBtnByName('Custom CSS'));
 	}
 }

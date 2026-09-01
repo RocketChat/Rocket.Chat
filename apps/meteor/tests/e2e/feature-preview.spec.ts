@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
+import { AccountProfile, AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
 import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
@@ -61,8 +61,7 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test('should show "Navigation" feature section', async ({ page }) => {
-		await page.goto('/account/feature-preview');
-		await page.waitForSelector('#main-content');
+		await new AccountProfile(page).gotoFeaturePreview();
 
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
@@ -175,8 +174,7 @@ test.describe.serial('feature preview', () => {
 			}).toPass();
 			await poHomeTeam.content.sendMessage('hello team');
 
-			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.content.waitForChannel();
+			await user1Channel.gotoChannel(targetChannel);
 			await user1Channel.content.openReplyInThread();
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('hello thread');
@@ -188,7 +186,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
-			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.waitForRoomLoad();
 			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
@@ -280,7 +278,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Discussions')).toBeVisible();
 		});
 
-		test('should show unread filter for thread messages', async ({ page, browser }) => {
+		test('should show unread filter for thread messages', async ({ browser }) => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
@@ -289,8 +287,7 @@ test.describe.serial('feature preview', () => {
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
-			await page.goto(`/channel/${targetChannel}`);
-			await poHomeChannel.content.waitForChannel();
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('test thread message');
 
 			await poHomeChannel.navbar.btnHome.click();
@@ -300,8 +297,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
 
 			await test.step('send a thread message from another user', async () => {
-				await user1Page.goto(`/channel/${targetChannel}`);
-				await user1Channel.content.waitForChannel();
+				await user1Channel.gotoChannel(targetChannel);
 				await user1Channel.content.openReplyInThread();
 				await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 				await user1Channel.content.sendMessageInThread('hello thread');
@@ -324,7 +320,7 @@ test.describe.serial('feature preview', () => {
 			await user1Page.close();
 		});
 
-		test('unread mentions badges on filters', async ({ page, browser }) => {
+		test('unread mentions badges on filters', async ({ browser }) => {
 			test.skip(IS_EE);
 
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
@@ -336,8 +332,7 @@ test.describe.serial('feature preview', () => {
 			});
 
 			await test.step('should favorite the target channel', async () => {
-				await page.goto(`/channel/${targetChannel}`);
-				await poHomeChannel.content.waitForChannel();
+				await poHomeChannel.gotoChannel(targetChannel);
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
@@ -361,8 +356,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.btnHome.click();
 
 			await test.step('send a mention message from another user', async () => {
-				await user1Page.goto(`/channel/${targetChannel}`);
-				await user1Channel.content.waitForChannel();
+				await user1Channel.gotoChannel(targetChannel);
 				await user1Channel.content.sendMessage(`hello @${Users.admin.data.username}`);
 			});
 

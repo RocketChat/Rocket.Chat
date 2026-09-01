@@ -35,7 +35,7 @@ test.describe.parallel('administration-settings', () => {
 				await poLoginPage.loginByUserState(Users.admin);
 
 				await navbar.openAdminPanel();
-				const settingsButton = await poAdminSettings.adminSectionButton(AdminSectionsHref.Settings);
+				const settingsButton = await poAdminSettings.adminSectionButton(AdminSectionsHref.settings);
 				await settingsButton.click();
 
 				await expect(page.getByText('No results found')).not.toBeVisible();
