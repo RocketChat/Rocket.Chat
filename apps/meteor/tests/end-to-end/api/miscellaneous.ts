@@ -197,6 +197,7 @@ describe('miscellaneous', () => {
 
 	describe('/directory', () => {
 		let user: TestUser<IUser>;
+		let userWithLeftoverFederationData: TestUser<IUser>;
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let normalUserCredentials: Credentials;
@@ -206,18 +207,27 @@ describe('miscellaneous', () => {
 		before(async () => {
 			await updatePermission('create-team', ['admin', 'user']);
 			user = await createUser();
+			userWithLeftoverFederationData = await createUser();
 			normalUserCredentials = await doLogin(user.username, password);
 			[testChannel, testGroup, teamCreated] = await Promise.all([
 				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
 				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
 				createTeam(normalUserCredentials, teamName, TeamType.PUBLIC),
 			]);
+
+			const connection = await MongoClient.connect(URL_MONGODB);
+			await connection
+				.db()
+				.collection('users')
+				.updateOne({ _id: userWithLeftoverFederationData._id as any }, { $set: { federation: { origin: 'example.com' } } });
+			await connection.close();
 		});
 
 		after(async () => {
 			await Promise.all([
 				deleteTeam(normalUserCredentials, teamName),
 				deleteUser(user),
+				deleteUser(userWithLeftoverFederationData),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('create-team', ['admin', 'user']),
@@ -270,19 +280,11 @@ describe('miscellaneous', () => {
 			expect(res.body.result[0]).to.have.property('name');
 		});
 		it('should find local users that still have leftover federation data', async () => {
-			const localUser = await createUser();
-			const connection = await MongoClient.connect(URL_MONGODB);
-			await connection
-				.db()
-				.collection('users')
-				.updateOne({ _id: localUser._id as any }, { $set: { federation: { origin: 'example.com' } } });
-			await connection.close();
-
 			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					text: localUser.username,
+					text: userWithLeftoverFederationData.username,
 					type: 'users',
 				})
 				.expect('Content-Type', 'application/json')
@@ -290,9 +292,7 @@ describe('miscellaneous', () => {
 
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.result).to.have.lengthOf(1);
-			expect(res.body.result[0]).to.have.property('_id', localUser._id);
-
-			await deleteUser(localUser);
+			expect(res.body.result[0]).to.have.property('_id', userWithLeftoverFederationData._id);
 		});
 
 		it('should return an array(result) when search by channel and execute successfully', async () => {
