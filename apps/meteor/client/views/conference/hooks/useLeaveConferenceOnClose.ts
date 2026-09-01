@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
+import { APIClient } from '../../../lib/RestApiClient';
 import { baseURI } from '../../../lib/baseURI';
 import { closeCallWindow } from '../lib/callWindow';
 

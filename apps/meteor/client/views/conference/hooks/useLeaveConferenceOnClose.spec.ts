@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { departureFor, useLeaveConferenceOnClose } from './useLeaveConferenceOnClose';
-import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
+import { APIClient } from '../../../lib/RestApiClient';
 
 const credentials = { 'X-User-Id': 'uid-1', 'X-Auth-Token': 'token-1' };
 
