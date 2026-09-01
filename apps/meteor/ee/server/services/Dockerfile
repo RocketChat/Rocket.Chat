@@ -1,9 +1,8 @@
-FROM node:24.15.0-alpine3.23 as build
+FROM node:24.15.0-alpine3.23 AS build
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y build-essential git
+RUN apk add --no-cache build-base git
 
 COPY ./package.json .
 COPY ./yarn.lock .
@@ -78,9 +77,12 @@ RUN apk update && \
     apk upgrade --no-cache openssl && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
-    apk del build-dependencies
+    apk del build-dependencies && \
+    chown -R node:node /app
 
 WORKDIR /app/apps/meteor/ee/server/services/${SERVICE}
+
+USER node
 
 EXPOSE 3000 9458
 

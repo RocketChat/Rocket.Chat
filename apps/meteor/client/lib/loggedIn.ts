@@ -31,9 +31,13 @@ export const onLoggedIn = (cb: (() => () => void) | (() => Promise<() => void>) 
 	const handler = () => {
 		cleanup?.();
 		void (async () => {
-			const ret = await cb();
-			if (typeof ret === 'function') {
-				cleanup = ret;
+			try {
+				const ret = await cb();
+				if (typeof ret === 'function') {
+					cleanup = ret;
+				}
+			} catch (error) {
+				console.error(error);
 			}
 		})();
 	};
