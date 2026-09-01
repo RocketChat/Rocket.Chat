@@ -19,13 +19,15 @@ export type ThreadMessageProps = {
 	unread: boolean;
 	sequential: boolean;
 	showUserAvatar: boolean;
+	ignoredUser?: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps) => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, triggerProps } = useUserCard();
 
 	// Checks if is videoconf message to limit toolbox actions
@@ -66,7 +68,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleIgnoring} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<ThreadMessageContent message={message} />
 				)}

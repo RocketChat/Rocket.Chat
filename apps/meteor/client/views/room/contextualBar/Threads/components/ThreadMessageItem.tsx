@@ -6,6 +6,7 @@ import SystemMessage from '../../../../../components/message/variants/SystemMess
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useDateRef } from '../../../providers/DateListProvider';
 
 type ThreadMessageProps = {
@@ -34,6 +35,9 @@ export const ThreadMessageItem = ({
 
 	const showDivider = newDay || firstUnread;
 
+	const subscription = useRoomSubscription();
+	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
+
 	return (
 		<>
 			{showDivider && (
@@ -60,7 +64,13 @@ export const ThreadMessageItem = ({
 			{system ? (
 				<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 			) : (
-				<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} showUserAvatar={showUserAvatar} />
+				<ThreadMessage
+					message={message}
+					sequential={shouldShowAsSequential}
+					unread={firstUnread}
+					showUserAvatar={showUserAvatar}
+					ignoredUser={ignoredUser}
+				/>
 			)}
 		</>
 	);
