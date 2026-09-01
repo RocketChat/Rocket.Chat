@@ -1,0 +1,57 @@
+apps/meteor/app/apps/server/bridges/users.ts
+  ai_agent 4,22-32,37,45,150-152
+packages/rest-typings/src/v1/users/UserSetPresenceDisabledParamsPOST.ts
+  s_e6b1783b7f4f2b::t_32b2fe750dddef 1-20
+apps/meteor/server/lib/authorization/constant/permissions.ts
+  ai_agent 38
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  ai_agent 66
+apps/meteor/client/lib/mutationEffects/updatePinMessage.spec.ts
+  ai_agent 1-53
+apps/meteor/server/lib/statusVisibility/hiddenUsers.ts
+  ai_agent 5,9-10
+apps/meteor/server/services/statusVisibility/service.spec.ts
+  ai_agent 3,7-8,12,17-20,27,30-32,43,47-48,89,119,168-245
+apps/meteor/client/lib/mutationEffects/updateSubscription.spec.ts
+  ai_agent 1-54
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 4,12-13,21-23,32-37,45,47-55,58-62,66,70,79-94,98-101,105-108,126,145-148,150
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 20,33-47
+packages/core-services/src/types/IStatusVisibilityService.ts
+  s_453d8d6e1aa7b9::t_41b9bda1b77ed7 5,9
+apps/meteor/server/api/v1/users.ts
+  ai_agent 1,3,8,548-614,2149-2150
+apps/meteor/server/meteor-methods/users/saveUserPreferences.ts
+  ai_agent 177-182
+apps/meteor/client/lib/mutationEffects/starredMessage.spec.ts
+  ai_agent 1-63
+apps/meteor/client/lib/mutationEffects/room.spec.ts
+  ai_agent 1-61
+packages/rest-typings/src/v1/users.ts
+  s_453d8d6e1aa7b9::t_b8e3abf1d2ad2e 10,299-304,420
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f1127d1a5d668f6714d544a24f234949da41f232",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_e6b1783b7f4f2b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d4f9d405-bed6-460e-91fa-83975a669835",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
