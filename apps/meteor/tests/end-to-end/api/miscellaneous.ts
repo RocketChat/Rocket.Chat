@@ -4,6 +4,7 @@ import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -12,7 +13,7 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('miscellaneous', () => {
 	before((done) => getCredentials(done));
@@ -268,6 +269,32 @@ describe('miscellaneous', () => {
 			expect(res.body.result[0]).to.not.have.property('emails');
 			expect(res.body.result[0]).to.have.property('name');
 		});
+		it('should find local users that still have leftover federation data', async () => {
+			const localUser = await createUser();
+			const connection = await MongoClient.connect(URL_MONGODB);
+			await connection
+				.db()
+				.collection('users')
+				.updateOne({ _id: localUser._id as any }, { $set: { federation: { origin: 'example.com' } } });
+			await connection.close();
+
+			const res = await request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					text: localUser.username,
+					type: 'users',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.have.lengthOf(1);
+			expect(res.body.result[0]).to.have.property('_id', localUser._id);
+
+			await deleteUser(localUser);
+		});
+
 		it('should return an array(result) when search by channel and execute successfully', async () => {
 			const res = await request
 				.get(api('directory'))
