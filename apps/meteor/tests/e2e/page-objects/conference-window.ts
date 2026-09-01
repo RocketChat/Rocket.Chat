@@ -177,18 +177,20 @@ export class ConferenceWindow {
 		return this.page.getByText('Not in the call', { exact: true });
 	}
 
-	/** The members the People panel lists, as the list it is. */
-	get listMembers(): Locator {
-		return this.page.getByRole('list', { name: 'Members', exact: true });
+	/**
+	 * Everything the People panel lists. A `group` rather than a list: the panel holds one list per section —
+	 * `In call` and `Not in the call` — because the dividers between them are not list items.
+	 */
+	get groupMembers(): Locator {
+		return this.page.getByRole('group', { name: 'Members', exact: true });
 	}
 
 	/**
-	 * The member rows themselves, and only those: the `In call` / `Not in the call` dividers are plain boxes
-	 * inside the same list, so counting the list's children would count them too. Exists so a roster can be
-	 * asserted by what is on it rather than by what is missing from it.
+	 * The member rows themselves, across both sections. Exists so a roster can be asserted by what is on it
+	 * rather than by what is missing from it.
 	 */
 	get memberRows(): Locator {
-		return this.listMembers.getByRole('listitem');
+		return this.groupMembers.getByRole('listitem');
 	}
 
 	/**
@@ -199,15 +201,15 @@ export class ConferenceWindow {
 	 * scoped to the list, which is what keeps them from matching the same words elsewhere in the window.
 	 */
 	getMemberStatus(status: 'Ringing' | 'Waiting for answer' | 'Declined' | 'Left'): Locator {
-		return this.listMembers.getByText(status, { exact: true });
+		return this.groupMembers.getByText(status, { exact: true });
 	}
 
 	getBtnRingMember(name: string): Locator {
-		return this.listMembers.getByRole('button', { name: `Ring ${name}`, exact: true });
+		return this.groupMembers.getByRole('button', { name: `Ring ${name}`, exact: true });
 	}
 
 	getMember(name: string): Locator {
-		return this.listMembers.getByText(name, { exact: true });
+		return this.groupMembers.getByText(name, { exact: true });
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -215,7 +217,7 @@ export class ConferenceWindow {
 	// ---------------------------------------------------------------------------------------------------------
 
 	get dialogAddPeople(): Locator {
-		return this.page.getByRole('dialog', { name: 'Add people' });
+		return this.page.getByRole('dialog', { name: 'Add people', exact: true });
 	}
 
 	/** Labelled rather than named by its placeholder, which the first keystroke takes away. */
