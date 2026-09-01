@@ -6,6 +6,17 @@ import { emoji } from '../../../../lib/emoji';
 
 jest.mock('../../../../lib/customEmoji', () => ({ customRender: jest.fn((html: string) => html) }));
 
+const pristinePackages = { ...emoji.packages };
+
+beforeEach(() => {
+	emoji.list = {};
+	emoji.packages = { ...pristinePackages };
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
+
 const createCustomEmoji = () => ({
 	_id: 'emojiId',
 	_updatedAt: new Date().toISOString(),
@@ -57,6 +68,4 @@ it('should reset emoji.packages.emojiCustom to an empty list when the request fa
 
 	expect(emoji.packages.emojiCustom.list).toEqual([]);
 	expect(emoji.packages.emojiCustom.emojisByCategory.rocket).toEqual([]);
-
-	consoleErrorSpy.mockRestore();
 });
