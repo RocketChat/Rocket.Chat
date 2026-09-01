@@ -1,6 +1,6 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallHangupReason, ClientMediaSignalBody } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import { MediaCalls, MediaCallNegotiations } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
@@ -23,7 +23,7 @@ export type SipCallNegotiation = {
 export abstract class BaseSipCall extends BaseCallProvider {
 	protected lastCallState: IMediaCall['state'];
 
-	protected abstract inboundRenegotiations: Map<string, SipCallNegotiation>;
+	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
 
 	protected sipDialog: Srf.Dialog | null;
 
@@ -37,6 +37,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		super(call);
 		this.lastCallState = 'none';
 		this.sipDialog = null;
+		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
 	}
 
@@ -196,5 +197,33 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			}
 			return this.processEndedCall(call);
 		}
+	}
+
+	protected async getPendingInboundNegotiation(): Promise<SipCallNegotiation | null> {
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
+			if (localNegotiation.answer) {
+				continue;
+			}
+
+			// If the negotiation does not exist, remove it from the list
+			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
+			// Negotiation will always exist; This is just a safe guard
+			if (!negotiation) {
+				logger.error({ msg: 'Invalid Negotiation reference.', localNegotiation: localNegotiation.id, type: this.constructor.name });
+				this.inboundRenegotiations.delete(localNegotiation.id);
+				if (localNegotiation.res) {
+					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				}
+				continue;
+			}
+
+			if (negotiation.answer) {
+				localNegotiation.answer = negotiation.answer;
+			}
+
+			return localNegotiation;
+		}
+
+		return null;
 	}
 }

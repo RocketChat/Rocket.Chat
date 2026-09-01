@@ -3,7 +3,7 @@ import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SrfRequest } from 'drachtio-srf';
 
-import { BaseSipCall, type SipCallNegotiation } from './BaseSipCall';
+import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
 import type { InternalCallParams } from '../../definition/common';
 import { logger } from '../../logger';
@@ -15,8 +15,6 @@ import { SipError, SipErrorCodes } from '../errorCodes';
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialogReq: SrfRequest | null;
 
-	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
-
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
@@ -24,7 +22,6 @@ export class OutgoingSipCall extends BaseSipCall {
 	) {
 		super(session, call, agent);
 		this.sipDialogReq = null;
-		this.inboundRenegotiations = new Map();
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
@@ -202,34 +199,6 @@ export class OutgoingSipCall extends BaseSipCall {
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 			supportedFeatures: SIP_CALL_FEATURES,
 		});
-	}
-
-	protected async getPendingInboundNegotiation(): Promise<SipCallNegotiation | null> {
-		for (const localNegotiation of this.inboundRenegotiations.values()) {
-			if (localNegotiation.answer) {
-				continue;
-			}
-
-			// If the negotiation does not exist, remove it from the list
-			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
-			// Negotiation will always exist; This is just a safe guard
-			if (!negotiation) {
-				logger.error({ msg: 'Invalid Negotiation reference on OutgoingSipCall.', localNegotiation: localNegotiation.id });
-				this.inboundRenegotiations.delete(localNegotiation.id);
-				if (localNegotiation.res) {
-					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
-				}
-				continue;
-			}
-
-			if (negotiation.answer) {
-				localNegotiation.answer = negotiation.answer;
-			}
-
-			return localNegotiation;
-		}
-
-		return null;
 	}
 
 	protected async processNegotiations(call: IMediaCall): Promise<void> {

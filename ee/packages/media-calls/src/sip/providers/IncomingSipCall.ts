@@ -4,7 +4,7 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
-import { BaseSipCall, type SipCallNegotiation } from './BaseSipCall';
+import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
@@ -15,8 +15,6 @@ import { SipError, SipErrorCodes } from '../errorCodes';
 import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 export class IncomingSipCall extends BaseSipCall {
-	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
-
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
@@ -26,7 +24,6 @@ export class IncomingSipCall extends BaseSipCall {
 		private readonly res: SrfResponse,
 	) {
 		super(session, call, agent);
-		this.inboundRenegotiations = new Map();
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -198,34 +195,6 @@ export class IncomingSipCall extends BaseSipCall {
 	protected override onDialogModifyError(_negotiationId: string): void {
 		// On an incoming call the SIP caller drives the call, so an unrecoverable renegotiation must end it.
 		this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
-	}
-
-	private async getPendingInboundNegotiation(): Promise<SipCallNegotiation | null> {
-		for (const localNegotiation of this.inboundRenegotiations.values()) {
-			if (localNegotiation.answer) {
-				continue;
-			}
-
-			// If the negotiation does not exist, remove it from the list
-			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
-			// Negotiation will always exist; This is just a safe guard
-			if (!negotiation) {
-				logger.error({ msg: 'Invalid Negotiation reference on IncomingSipCall.', localNegotiation: localNegotiation.id });
-				this.inboundRenegotiations.delete(localNegotiation.id);
-				if (localNegotiation.res) {
-					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
-				}
-				continue;
-			}
-
-			if (negotiation.answer) {
-				localNegotiation.answer = negotiation.answer;
-			}
-
-			return localNegotiation;
-		}
-
-		return null;
 	}
 
 	private async processNegotiations(call: IMediaCall): Promise<void> {
