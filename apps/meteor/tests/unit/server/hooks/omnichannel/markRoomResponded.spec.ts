@@ -131,9 +131,9 @@ describe('markRoomResponded', () => {
 		]);
 	});
 
-	it('should pass the current activity array to getVisitorActiveForPeriodUpdateQuery when present', async () => {
+	it('should not coerce an absent activity to null so it still gets the $addToSet treatment', async () => {
 		const message = {};
-		const room = { v: { _id: '1234', activity: ['2020-01'] } };
+		const room = { v: { _id: '1234' } };
 		const roomUpdater = {};
 
 		models.LivechatInquiry.markInquiryActiveForPeriod.resolves({});
@@ -141,7 +141,7 @@ describe('markRoomResponded', () => {
 		await markRoomResponded(message, room, roomUpdater);
 
 		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.calledOnce).to.be.true;
-		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.getCall(0).args[2]).to.be.deep.equal(['2020-01']);
+		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.getCall(0).args[2]).to.be.undefined;
 	});
 
 	it('should return room.responseBy when room is not waiting for response', async () => {
