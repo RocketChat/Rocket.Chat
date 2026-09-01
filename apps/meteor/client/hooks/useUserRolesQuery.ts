@@ -78,12 +78,10 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 		queryFn: async () => {
 			const { users } = await getUserRoles();
 
-			return users.map(
-				(record): UserRoles => ({
-					uid: record._id,
-					roles: record.roles,
-				}),
-			);
+			return users.map((record): UserRoles => ({
+				uid: record._id,
+				roles: record.roles,
+			}));
 		},
 		staleTime: Infinity,
 		...options,

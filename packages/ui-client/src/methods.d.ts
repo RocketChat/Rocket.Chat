@@ -3,15 +3,14 @@ import type { ISetting } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
-		getSetupWizardParameters(): Promise<{
+		'getSetupWizardParameters'(): Promise<{
 			settings: ISetting[];
 			serverAlreadyRegistered: boolean;
 		}>;
 		'cloud:getWorkspaceRegisterData': () => string;
-		registerUser(
+		'registerUser'(
 			formData:
-				| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
-				| { email?: null },
+				{ email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string } | { email?: null },
 		):
 			| {
 					token: string;

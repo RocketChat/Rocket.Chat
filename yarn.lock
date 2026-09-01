@@ -9261,7 +9261,6 @@ __metadata:
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
-    prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9278,7 +9277,6 @@ __metadata:
     eslint: "npm:~9.39.5"
     mongodb: "npm:6.16.0"
     npm-run-all: "npm:~4.1.5"
-    prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
@@ -9429,9 +9427,8 @@ __metadata:
     "@rollup/plugin-typescript": "npm:~12.3.0"
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
-    prettier: "npm:~3.3.3"
-    rollup: "npm:~4.62.3"
-    ts-jest: "npm:~29.4.11"
+    rollup: "npm:~4.62.4"
+    ts-jest: "npm:~29.4.12"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9458,7 +9455,7 @@ __metadata:
     eslint-plugin-storybook: "npm:~9.1.20"
     eslint-plugin-testing-library: "npm:~7.16.2"
     globals: "npm:~17.7.0"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.9.6"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
     typescript-eslint: "npm:~8.64.0"
@@ -9504,7 +9501,7 @@ __metadata:
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
     reflect-metadata: "npm:^0.2.2"
-    sanitize-html: "npm:~2.17.6"
+    sanitize-html: "npm:~2.17.7"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
     typescript: "npm:~5.9.3"
@@ -9614,11 +9611,10 @@ __metadata:
     jest: "npm:~30.2.0"
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
-    prettier: "npm:~3.3.3"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     rimraf: "npm:^6.0.1"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
@@ -9702,9 +9698,9 @@ __metadata:
     react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
     react-dom: "npm:~19.2.8"
-    react-error-boundary: "npm:~6.1.2"
+    react-error-boundary: "npm:~6.1.3"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -9779,7 +9775,6 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~9.39.5"
     mongodb: "npm:6.16.0"
-    prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10010,8 +10005,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
-    prettier: "npm:~3.3.3"
-    ts-jest: "npm:~29.4.11"
+    ts-jest: "npm:~29.4.12"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10022,7 +10016,6 @@ __metadata:
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/peggy-loader": "workspace:~"
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.19.21"
     eslint: "npm:~9.39.5"
@@ -10030,8 +10023,6 @@ __metadata:
     jest: "npm:~30.2.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
-    prettier-plugin-pegjs: "npm:~0.5.4"
     rimraf: "npm:^6.0.1"
     tinybench: "npm:^3.0.7"
     tldts: "npm:~6.1.86"
@@ -10255,7 +10246,7 @@ __metadata:
     "@types/ua-parser-js": "npm:^0.7.39"
     "@types/underscore": "npm:^1.13.0"
     "@types/xml-encryption": "npm:~1.2.4"
-    "@xmldom/xmldom": "npm:~0.8.13"
+    "@xmldom/xmldom": "npm:~0.8.14"
     adm-zip: "npm:0.6.0"
     ajv: "npm:^8.20.0"
     ajv-formats: "npm:~3.0.1"
@@ -10338,7 +10329,7 @@ __metadata:
     jsdom: "npm:^26.1.0"
     jsdom-global: "npm:^3.0.2"
     json-2-csv: "npm:^5.5.11"
-    jsrsasign: "npm:^11.1.3"
+    jsrsasign: "npm:^11.1.5"
     juice: "npm:^8.1.0"
     katex: "npm:~0.16.47"
     ldap-escape: "npm:^2.0.6"
@@ -10394,7 +10385,7 @@ __metadata:
     postcss-nested: "npm:^7.0.2"
     postcss-url: "npm:^10.1.4"
     postis: "npm:^2.2.0"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.9.6"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     proxy-from-env: "npm:^1.1.0"
@@ -10409,15 +10400,15 @@ __metadata:
     react-aria: "npm:~3.37.0"
     react-docgen-typescript-plugin: "npm:^1.0.8"
     react-dom: "npm:~19.2.8"
-    react-error-boundary: "npm:~6.1.2"
+    react-error-boundary: "npm:~6.1.3"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
     react-is: "npm:~19.2.8"
     react-keyed-flatten-children: "npm:~5.1.3"
     react-stately: "npm:~3.35.0"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     reflect-metadata: "npm:^0.2.2"
-    sanitize-html: "npm:~2.17.6"
+    sanitize-html: "npm:~2.17.7"
     semver: "npm:^7.6.3"
     sharp: "npm:^0.35.3"
     sinon: "npm:^19.0.5"
@@ -10461,7 +10452,7 @@ __metadata:
     yaqrcode: "npm:^0.2.1"
     yoga-layout: "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch"
     zod: "npm:~4.3.6"
-    zustand: "npm:~5.0.14"
+    zustand: "npm:~5.0.15"
   languageName: unknown
   linkType: soft
 
@@ -10560,7 +10551,6 @@ __metadata:
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
     jest-environment-jsdom: "npm:~30.2.0"
-    prettier: "npm:~3.3.3"
     rollup: "npm:~4.62.4"
     ts-jest: "npm:~29.4.12"
     typedoc: "npm:~0.28.20"
@@ -10801,12 +10791,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/peggy-loader@workspace:packages/peggy-loader"
   dependencies:
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/node": "npm:~22.19.21"
     eslint: "npm:~9.39.5"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -10876,15 +10864,6 @@ __metadata:
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/prettier-config@npm:~0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/prettier-config@npm:0.31.25"
-  peerDependencies:
-    prettier: ~2.7.1
-  checksum: 10/4c0be678e7c161bf132014aa3f986b84f4ec06808b5149f967d52515fb929ee07d073b00a60e197256c8244e02b7e521be20707d6f841de4949d8f516fb8ec09
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker":
   version: 0.0.0-use.local
@@ -11046,7 +11025,7 @@ __metadata:
     eslint: "npm:~9.39.5"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     storybook-dark-mode: "npm:^5.0.0"
     typescript: "npm:~5.9.3"
@@ -11130,7 +11109,7 @@ __metadata:
     eslint: "npm:~9.39.5"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -11180,7 +11159,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11225,7 +11204,7 @@ __metadata:
     jest: "npm:~30.2.0"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -11264,7 +11243,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -11288,7 +11267,6 @@ __metadata:
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
     npm-run-all: "npm:~4.1.5"
-    prettier: "npm:~3.3.3"
     rimraf: "npm:~6.0.1"
     ts-jest: "npm:~29.4.12"
     ts-patch: "npm:^3.3.0"
@@ -11326,7 +11304,7 @@ __metadata:
     jest-axe: "npm:~10.0.0"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -11388,7 +11366,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11437,13 +11415,13 @@ __metadata:
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.5"
     eslint4b-prebuilt: "npm:^6.7.2"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.9.6"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-router-dom: "npm:^6.30.4"
     react-split-pane: "npm:^3.2.0"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     reactflow: "npm:^11.11.4"
     typescript: "npm:~5.9.3"
     vite: "npm:^8.0.16"
@@ -11483,7 +11461,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.18.11"
+    react-virtuoso: "npm:~4.18.12"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -16648,10 +16626,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:0.8.13, @xmldom/xmldom@npm:~0.8.13":
+"@xmldom/xmldom@npm:0.8.13":
   version: 0.8.13
   resolution: "@xmldom/xmldom@npm:0.8.13"
   checksum: 10/f8f3d56fa91d5026885c0c5c00b07eae47647bda0d742ecbf8e51e06bb287ab30222977b20529ee15c364031606225ebca58907a8ecc76a3add6b3f10e6ddfc6
+  languageName: node
+  linkType: hard
+
+"@xmldom/xmldom@npm:~0.8.14":
+  version: 0.8.14
+  resolution: "@xmldom/xmldom@npm:0.8.14"
+  checksum: 10/f6bc3fbfa23542d8af9b6acd2e478925080655467af0d05c1973117498c54e1db09c9bef1f42dc108f889b0ca673874ffb4f6f1a2250aab4d944fe7efd87c9fd
   languageName: node
   linkType: hard
 
@@ -27649,10 +27634,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsrsasign@npm:^11.1.3":
-  version: 11.1.3
-  resolution: "jsrsasign@npm:11.1.3"
-  checksum: 10/fbe7ef29a8cd45fa78008a979a559367b87908e7fb79b3cd81f12b93754ed1c8c794fa8c6baf2d088767f77291cfd0e3da4188115c6492122801dc81a49dde01
+"jsrsasign@npm:^11.1.5":
+  version: 11.1.5
+  resolution: "jsrsasign@npm:11.1.5"
+  checksum: 10/51694b5502b57f45eb2ecb89be225f5cc0b692e6cc75f1327bbdfc8ec2e14049dff72b60016b3b4380714884813d42d5ecbbe0626b9b3f781e390f2c6ab7332a
   languageName: node
   linkType: hard
 
@@ -32198,16 +32183,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-pegjs@npm:~0.5.4":
-  version: 0.5.4
-  resolution: "prettier-plugin-pegjs@npm:0.5.4"
-  dependencies:
-    prettier: "npm:^2.8.4"
-  checksum: 10/d299a37e4ba03aeea4ba261a8efeec43403dbec345d192c13a9f73e7dbb1625863c4a3e6f4affd1b0b22139619b6534216cead68aa3cec56517e43b831ddacd8
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^2.7.1, prettier@npm:^2.8.4":
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -32216,12 +32192,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:~3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
+"prettier@npm:~3.9.6":
+  version: 3.9.6
+  resolution: "prettier@npm:3.9.6"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/5beac1f30b5b40162532b8e2f7c3a4eb650910a2695e9c8512a62ffdc09dae93190c29db9107fa7f26d1b6c71aad3628ecb9b5de1ecb0911191099be109434d7
+  checksum: 10/1dd1a1e0e40ec3b91cda9d294c4a95022aef61880ca3f441aad99b1252279f58a766c4cece81132c01550dcff1fd445efbd8812ea4a2374313e7fc6c8136f11f
   languageName: node
   linkType: hard
 
@@ -33030,12 +33006,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:~6.1.2":
-  version: 6.1.2
-  resolution: "react-error-boundary@npm:6.1.2"
+"react-error-boundary@npm:~6.1.3":
+  version: 6.1.3
+  resolution: "react-error-boundary@npm:6.1.3"
   peerDependencies:
+    "@types/react": ^18.0.0 || ^19.0.0
     react: ^18.0.0 || ^19.0.0
-  checksum: 10/b500bb59dfef0971552befe5f4613fa67ce84337c1228d1125a1a2ba7a0f41a6f69c436245b56d0821b286201268de2da9ab1765c4eb19b544d88cc9f1848ab1
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/cea335282ca081105b3036292a2184ed5b6f00b7d9667ec61125c230d4648f9b3cb4b747186845aaad140f230924bea297dcbdfe7722ec5265c1a6c83486f253
   languageName: node
   linkType: hard
 
@@ -33252,13 +33232,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:~4.18.11":
-  version: 4.18.11
-  resolution: "react-virtuoso@npm:4.18.11"
+"react-virtuoso@npm:~4.18.12":
+  version: 4.18.12
+  resolution: "react-virtuoso@npm:4.18.12"
   peerDependencies:
     react: ">=16 || >=17 || >= 18 || >= 19"
     react-dom: ">=16 || >=17 || >= 18 || >=19"
-  checksum: 10/a41bca414daf6747903af9717347182ec109cb85db04654ac14190e407d03795008571dd44e8e3598452871eef16eb0db1a5031379bb75e70dfd6f17136604db
+  checksum: 10/b619bdadcbe1eae5c043b5524f76424d014848be763cc35cde237e5712fa020efcb4ff4076e4c126e07e5576379213c560d73ca2161c1f46fb3d54674d372746
   languageName: node
   linkType: hard
 
@@ -34179,7 +34159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:~4.62.3, rollup@npm:~4.62.4":
+"rollup@npm:~4.62.4":
   version: 4.62.4
   resolution: "rollup@npm:4.62.4"
   dependencies:
@@ -34373,9 +34353,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:~2.17.6":
-  version: 2.17.6
-  resolution: "sanitize-html@npm:2.17.6"
+"sanitize-html@npm:~2.17.7":
+  version: 2.17.7
+  resolution: "sanitize-html@npm:2.17.7"
   dependencies:
     deepmerge: "npm:^4.2.2"
     escape-string-regexp: "npm:^4.0.0"
@@ -34384,7 +34364,7 @@ __metadata:
     launder: "npm:^1.7.1"
     parse-srcset: "npm:^1.0.2"
     postcss: "npm:^8.3.11"
-  checksum: 10/dafa757719fc2eb47c57d59f549aa3210a96bf82ac5d2a601f1a05fa1a3a951d146b25d05cb8edaab6f5ec2f8c13ba54790798b59aef232b53cd2875a6ea339c
+  checksum: 10/8418fcfdabb4cb50569fa7a8af42cac2b4be0247b90b29bd4d7fff61363e78e41455b40397f2a1d084ef71d810b8d90f683d6b27084d3616b7b349ab98bd0e97
   languageName: node
   linkType: hard
 
@@ -34604,7 +34584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.8.0, semver@npm:^7.8.5":
+"semver@npm:^7.8.5":
   version: 7.8.5
   resolution: "semver@npm:7.8.5"
   bin:
@@ -36819,46 +36799,6 @@ __metadata:
   version: 2.2.0
   resolution: "ts-dedent@npm:2.2.0"
   checksum: 10/93ed8f7878b6d5ed3c08d99b740010eede6bccfe64bce61c5a4da06a2c17d6ddbb80a8c49c2d15251de7594a4f93ffa21dd10e7be75ef66a4dc9951b4a94e2af
-  languageName: node
-  linkType: hard
-
-"ts-jest@npm:~29.4.11":
-  version: 29.4.11
-  resolution: "ts-jest@npm:29.4.11"
-  dependencies:
-    bs-logger: "npm:^0.2.6"
-    fast-json-stable-stringify: "npm:^2.1.0"
-    handlebars: "npm:^4.7.9"
-    json5: "npm:^2.2.3"
-    lodash.memoize: "npm:^4.1.2"
-    make-error: "npm:^1.3.6"
-    semver: "npm:^7.8.0"
-    type-fest: "npm:^4.41.0"
-    yargs-parser: "npm:^21.1.1"
-  peerDependencies:
-    "@babel/core": ">=7.0.0-beta.0 <8"
-    "@jest/transform": ^29.0.0 || ^30.0.0
-    "@jest/types": ^29.0.0 || ^30.0.0
-    babel-jest: ^29.0.0 || ^30.0.0
-    jest: ^29.0.0 || ^30.0.0
-    jest-util: ^29.0.0 || ^30.0.0
-    typescript: ">=4.3 <7"
-  peerDependenciesMeta:
-    "@babel/core":
-      optional: true
-    "@jest/transform":
-      optional: true
-    "@jest/types":
-      optional: true
-    babel-jest:
-      optional: true
-    esbuild:
-      optional: true
-    jest-util:
-      optional: true
-  bin:
-    ts-jest: cli.js
-  checksum: 10/8a76800cac1c102c789429a82655adde1d540d7ff025fc888006f4f458afe07ca4d3f73622a10a604edea06aa12c298605cd1a208a6380c0e3d591a3daed8af6
   languageName: node
   linkType: hard
 
@@ -39243,9 +39183,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:~5.0.14":
-  version: 5.0.14
-  resolution: "zustand@npm:5.0.14"
+"zustand@npm:~5.0.15":
+  version: 5.0.15
+  resolution: "zustand@npm:5.0.15"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -39260,7 +39200,7 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10/136ab316fa4fa479ce7cc0cf485665dcee9e1bd926d4e51e138cd40d6602900fd2a4b6bb172b39b03bd7b6df073a0656679e5a237c28dd026d8fd4e5228e1b7c
+  checksum: 10/5124e93d8f57483985981ea9795df6872991f0693eb3730d562b3cb09e72af8a892703f2610744e5814b2045f7373df3d6f80625a646197d700572f2c7f70db3
   languageName: node
   linkType: hard
 

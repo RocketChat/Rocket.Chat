@@ -30,13 +30,13 @@
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"codemirror": "^6.0.2",
 		"eslint4b-prebuilt": "^6.7.2",
-		"prettier": "~3.3.3",
+		"prettier": "~3.9.6",
 		"rc-scrollbars": "^1.1.6",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-router-dom": "^6.30.4",
 		"react-split-pane": "^3.2.0",
-		"react-virtuoso": "~4.18.11",
+		"react-virtuoso": "~4.18.12",
 		"reactflow": "^11.11.4"
 	},
 	"devDependencies": {

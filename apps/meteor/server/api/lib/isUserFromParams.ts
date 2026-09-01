@@ -7,8 +7,8 @@ export function isUserFromParams(
 ): boolean {
 	return Boolean(
 		(!params.userId && !params.username && !params.user) ||
-			(params.userId && loggedInUserId === params.userId) ||
-			(params.username && loggedInUser?.username === params.username) ||
-			(params.user && loggedInUser?.username === params.user),
+		(params.userId && loggedInUserId === params.userId) ||
+		(params.username && loggedInUser?.username === params.username) ||
+		(params.user && loggedInUser?.username === params.user),
 	);
 }

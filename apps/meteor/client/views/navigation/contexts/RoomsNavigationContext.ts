@@ -178,11 +178,11 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>): bool
 
 	return Boolean(
 		subscription.userMentions ||
-			subscription.groupMentions ||
-			subscription.tunread?.length ||
-			subscription.tunreadUser?.length ||
-			subscription.unread ||
-			subscription.alert,
+		subscription.groupMentions ||
+		subscription.tunread?.length ||
+		subscription.tunreadUser?.length ||
+		subscription.unread ||
+		subscription.alert,
 	);
 };
 

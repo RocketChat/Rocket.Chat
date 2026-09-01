@@ -11,7 +11,11 @@ export type AttachmentsProps = {
 
 const Attachments = ({ attachments, id, source }: AttachmentsProps) => {
 	return (
-		<>{attachments?.map((attachment, index) => <AttachmentsItem key={index} id={id} attachment={{ ...attachment }} source={source} />)}</>
+		<>
+			{attachments?.map((attachment, index) => (
+				<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} source={source} />
+			))}
+		</>
 	);
 };
 
