@@ -9,7 +9,7 @@ export const useCustomEmoji = () => {
 	const getCustomEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 	const result = useQuery({
 		queryKey: ['emoji-custom.list'],
-		queryFn: () => getCustomEmojis({ query: '' }),
+		queryFn: () => getCustomEmojis({}),
 	});
 
 	useEffect(() => {
