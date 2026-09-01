@@ -1,0 +1,21 @@
+apps/meteor/server/startup/migrations/v345.ts
+  s_80229c9aae3f3b::t_933029e1cf99c6 6
+apps/meteor/server/startup/migrations/index.ts
+  s_80229c9aae3f3b::t_933029e1cf99c6 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7bbf261e7422238fce641a993b419a6f0fef8ed8",
+  "prompts": {},
+  "sessions": {
+    "s_80229c9aae3f3b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6d587a4f-8bb9-4c0d-bc95-bc9bba5cfa54",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
