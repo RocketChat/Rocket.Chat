@@ -31,7 +31,7 @@ export const eraseTeamShared = async <T extends AtLeast<IUser, '_id' | 'name' | 
 	// Move every other room back to the workspace
 	await Team.unsetTeamIdOfRooms(user, team);
 
-	const room = await await Rooms.findOneById<Pick<IRoom, '_id'>>(team.roomId, { projection: { _id: 1 } });
+	const room = await Rooms.findOneById<Pick<IRoom, '_id'>>(team.roomId, { projection: { _id: 1 } });
 	if (room) {
 		await eraseRoomFn(team.roomId, user);
 	}
