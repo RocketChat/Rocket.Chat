@@ -62,26 +62,23 @@ export async function deletePrivateRoomsByName(credentials: { username: string; 
 
 	try {
 		const loginResponse = await userApi.post(`${BASE_API_URL}/login`, { data: credentials });
-		const { data } = await loginResponse.json();
-		const failures = (
-			await Promise.all(
-				roomNames.map(async (roomName) => {
-					const response = await userApi.post(`${BASE_API_URL}/groups.delete`, {
-						data: { roomName },
-						headers: {
-							'X-Auth-Token': data.authToken,
-							'X-User-Id': data.userId,
-						},
-					});
 
-					return response.ok() ? null : `${roomName}: ${response.status()} ${await response.text()}`;
-				}),
-			)
-		).filter((failure) => failure !== null);
-
-		if (failures.length > 0) {
-			throw new Error(`Failed to delete E2EE test rooms:\n${failures.join('\n')}`);
+		if (!loginResponse.ok()) {
+			return;
 		}
+
+		const { data } = await loginResponse.json();
+		await Promise.allSettled(
+			roomNames.map((roomName) =>
+				userApi.post(`${BASE_API_URL}/groups.delete`, {
+					data: { roomName },
+					headers: {
+						'X-Auth-Token': data.authToken,
+						'X-User-Id': data.userId,
+					},
+				}),
+			),
+		);
 	} finally {
 		await userApi.dispose();
 	}
