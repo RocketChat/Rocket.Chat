@@ -36,7 +36,7 @@ export const ThreadMessageItem = ({
 	const showDivider = newDay || firstUnread;
 
 	const subscription = useRoomSubscription();
-	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
+	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id) || (message as { ignored?: boolean }).ignored);
 
 	return (
 		<>
