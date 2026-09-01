@@ -4,9 +4,10 @@ import { resetOwnE2EKey } from './resetOwnE2EKey';
 import { ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { Navbar } from '../page-objects/fragments';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { ExportMessagesFlexTab } from '../page-objects/fragments/flextabs';
 import { LoginPage } from '../page-objects/login';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -20,6 +21,9 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE PDF Export', () => {
+	const createdChannels: string[] = [];
+	let createE2EEChannel: CreateE2EEChannel;
+
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -38,16 +42,20 @@ test.describe('E2EE PDF Export', () => {
 		await page.goto('/home');
 		await loginPage.waitForIt();
 		await loginPage.loginByUserState(Users.admin);
+		createE2EEChannel = new CreateE2EEChannel(page);
+	});
+
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
-		const navbar = new Navbar(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const exportMessagesTab = new ExportMessagesFlexTab(page);
 
 		const channelName = faker.string.uuid();
 
-		await navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -57,13 +65,12 @@ test.describe('E2EE PDF Export', () => {
 	});
 
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
-		const navbar = new Navbar(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const exportMessagesTab = new ExportMessagesFlexTab(page);
 
 		const channelName = faker.string.uuid();
 
-		await navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 

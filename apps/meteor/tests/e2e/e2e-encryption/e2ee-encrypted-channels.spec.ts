@@ -1,8 +1,11 @@
 import { faker } from '@faker-js/faker';
 
+import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { ToastMessages } from '../page-objects/fragments';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
+import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -16,8 +19,10 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE Encrypted Channels', () => {
+	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
 	let toastMessages: ToastMessages;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -31,7 +36,15 @@ test.describe('E2EE Encrypted Channels', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
+	});
+
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(
+			{ username: Users.userE2EE.data.username, password: DEFAULT_USER_CREDENTIALS.password },
+			createdChannels,
+		);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -39,7 +52,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -80,7 +93,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -110,7 +123,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -134,6 +147,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.navbar.createNew('Channel', channelName);
+		createE2EEChannel.store(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -161,7 +175,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel and mention user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -179,7 +193,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -201,7 +215,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -231,6 +245,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		// Create private channel
 		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });
+		createE2EEChannel.store(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await poHomeChannel.toastMessage.waitForDisplay();
@@ -275,7 +290,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -335,7 +350,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		const originalMessage = 'This is the original encrypted message';
 		const editedMessage = 'This is the edited encrypted message';
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -360,7 +375,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		const editedMessage = 'This is the edited encrypted message with a mention to @user1 and #general';
 		const displayedMessage = 'This is the edited encrypted message with a mention to user1 and general';
 
-		await poHomeChannel.navbar.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
