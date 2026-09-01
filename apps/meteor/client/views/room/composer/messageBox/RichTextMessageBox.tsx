@@ -108,7 +108,7 @@ const RichTextMessageBox = ({
 			target.innerHTML = '<br>';
 		}
 
-		setTyping(chat.composer?.text ?? '');
+		setTyping(chat.composer?.text ?? target.innerText.replace(/\n$/, ''));
 	});
 
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
