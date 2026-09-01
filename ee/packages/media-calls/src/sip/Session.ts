@@ -224,7 +224,9 @@ export class SipServerSession {
 
 	private async processInvite(req: SrfRequest, res: SrfResponse): Promise<void> {
 		if (!this.isEnabledOnSettings(this.settings)) {
-			res.send(SipErrorCodes.SERVICE_NOT_AVAILABLE);
+			if (!res.finalResponseSent) {
+				res.send(SipErrorCodes.SERVICE_NOT_AVAILABLE);
+			}
 			return;
 		}
 
@@ -237,6 +239,8 @@ export class SipServerSession {
 	}
 
 	private forwardSipExceptionToResponse(exception: unknown, res: SrfResponse): void {
+		logger.debug({ msg: 'forwardSipExceptionToResponse', err: exception });
+
 		if (!exception || typeof exception !== 'object') {
 			return;
 		}
@@ -245,7 +249,9 @@ export class SipServerSession {
 			return;
 		}
 
-		res.send(exception.sipErrorCode);
+		if (!res.finalResponseSent) {
+			res.send(exception.sipErrorCode);
+		}
 	}
 
 	private onDrachtioError(err: unknown, socket?: Socket): void {

@@ -17,6 +17,8 @@ import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 export class IncomingSipCall extends BaseSipCall {
 	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
 
+	protected createdDialog: boolean;
+
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
@@ -30,6 +32,7 @@ export class IncomingSipCall extends BaseSipCall {
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
 		this.processedEscalation = false;
+		this.createdDialog = false;
 
 		this.checkIfCallComesFromEscalatedPexipConference();
 	}
@@ -122,6 +125,23 @@ export class IncomingSipCall extends BaseSipCall {
 
 	public async createDialog(localSdp: string): Promise<void> {
 		logger.debug({ msg: 'IncomingSipCall.createDialog' });
+
+		if (this.createdDialog) {
+			logger.warn({
+				msg: 'Multiple calls to createDialog',
+				method: 'IncomingSipCall.createDialog',
+				callId: this.callId,
+				hasDialog: Boolean(this.sipDialog),
+			});
+			return;
+		}
+
+		if (this.res.finalResponseSent) {
+			logger.error({ msg: 'Final response has already been sent', method: 'IncomingSipCall.createDialog', callId: this.callId });
+			return;
+		}
+
+		this.createdDialog = true;
 
 		const uas = await this.srf.createUAS(this.req, this.res, {
 			localSdp,
@@ -222,7 +242,7 @@ export class IncomingSipCall extends BaseSipCall {
 			if (!negotiation) {
 				logger.error({ msg: 'Invalid Negotiation reference on IncomingSipCall.', localNegotiation: localNegotiation.id });
 				this.inboundRenegotiations.delete(localNegotiation.id);
-				if (localNegotiation.res) {
+				if (localNegotiation.res && !localNegotiation.res.finalResponseSent) {
 					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
 				}
 				continue;
@@ -247,10 +267,16 @@ export class IncomingSipCall extends BaseSipCall {
 
 		// If we don't have an sdp, we can't respond to it yet
 		if (!localNegotiation?.answer?.sdp) {
+			logger.debug({ msg: 'Skipping negotiations due to missing answer sdp', method: 'IncomingSipCall.processNegotiations' });
 			return;
 		}
 
-		logger.debug('IncomingSipCall.processNegotiations');
+		if (localNegotiation.res.finalResponseSent) {
+			logger.debug({ msg: 'Skipping negotiations due to response already being sent', method: 'IncomingSipCall.processNegotiations' });
+			return;
+		}
+
+		logger.debug({ msg: 'IncomingSipCall.processNegotiations', callId: call._id, negotiationId: localNegotiation.id });
 		if (localNegotiation.isFirst) {
 			return this.createDialog(localNegotiation.answer.sdp).catch((err) => {
 				logger.error({ msg: 'Failed to create incoming call dialog.', err });
