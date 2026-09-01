@@ -170,7 +170,7 @@ test.describe('video conference call window', () => {
 
 		await test.step('no call is listed in the room history', async () => {
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(page.getByRole('dialog', { name: 'Calls' }).getByText('No history')).toBeVisible();
+			await expect(page.getByRole('dialog', { name: 'Calls', exact: true }).getByText('No history')).toBeVisible();
 		});
 
 		await test.step('and nobody was offered a call', async () => {
@@ -565,6 +565,11 @@ test.describe('video conference call window', () => {
 	 * chat enabled, the mode, and a provider that declares it supports it. The window asks all three now.
 	 */
 	test('should title the chat panel after the room when persistent chat is off', async ({ api, page }) => {
+		// Said rather than assumed. The suite shares one workspace, so "off" being the registered default is not
+		// the same as it being off when this runs — and if it were on, the panel would read `Thread in …` and the
+		// failure would look like the bug this covers rather than like a setting someone else moved.
+		await setSettingValueById(api, 'VideoConf_Enable_Persistent_Chat', false);
+
 		const channel = await createSharedChannel(api);
 		const callName = `Chat panel ${faker.string.uuid()}`;
 
@@ -612,7 +617,7 @@ test.describe('video conference call window', () => {
 			await poHomeChannel.ongoingCalls.ensureOpen();
 			await poHomeChannel.ongoingCalls.getCall(secondCall).click();
 
-			const prompt = page.getByRole('dialog', { name: 'Leave the call you are in?' });
+			const prompt = page.getByRole('dialog', { name: 'Leave the call you are in?', exact: true });
 			await expect(prompt).toBeVisible();
 			await expect(prompt).toContainText(firstCall);
 
@@ -677,7 +682,7 @@ test.describe('video conference call window', () => {
 
 				// Nothing opened, so there is nothing to report either: claiming the popup was blocked would be a
 				// lie with advice attached, since allowing popups cannot make this succeed.
-				await expect(page.getByRole('dialog', { name: 'Open call in new tab' })).toHaveCount(0);
+				await expect(page.getByRole('dialog', { name: 'Open call in new tab', exact: true })).toHaveCount(0);
 				await home.waitForHome();
 
 				expect(page.context().pages()).toHaveLength(1);
