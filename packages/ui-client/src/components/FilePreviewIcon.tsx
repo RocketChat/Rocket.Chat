@@ -8,7 +8,7 @@ const FilePreviewIcon = ({ format }: FilePreviewIconProps) => {
 			width='x48'
 			height='x48'
 			borderRadius={4}
-			bg='surface-neutral'
+			backgroundColor='surface-neutral'
 			justifyContent='center'
 			display='flex'
 			flexDirection='column'

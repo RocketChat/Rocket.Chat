@@ -23,7 +23,7 @@ const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	];
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Timezone')}</FieldLabel>
 				<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>

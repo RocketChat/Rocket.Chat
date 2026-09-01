@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { unreadMessages } from '../../../app/message-mark-as-unread/server/unreadMessages';
+import { unreadMessages } from '../../lib/messaging/unread/unreadMessages';
 import { readMessages } from '../../lib/readMessages';
 import { getSubscriptions } from '../../publications/subscription';
 import { API } from '../api';

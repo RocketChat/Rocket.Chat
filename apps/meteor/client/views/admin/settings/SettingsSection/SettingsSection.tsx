@@ -13,13 +13,14 @@ export type SettingsSectionProps = {
 	groupId: string;
 	hasReset?: boolean;
 	sectionName: string;
+	sectionTitle?: string;
 	currentTab?: string;
 	solo: boolean;
 	help?: ReactNode;
 	children?: ReactNode;
 };
 
-function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
+function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
 	const { t } = useTranslation();
 
 	const editableSettings = useEditableSettings(
@@ -74,7 +75,7 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 		<AccordionItem
 			data-qa-section={sectionName}
 			noncollapsible={solo || !sectionName}
-			title={sectionName && t(sectionName as TranslationKey)}
+			title={sectionTitle || (sectionName && t(sectionName as TranslationKey))}
 		>
 			{help && (
 				<Box is='p' color='hint' fontScale='p2'>

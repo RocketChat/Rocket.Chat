@@ -47,6 +47,8 @@ export const callHangupReasonList = [
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
+export const isCallHangupReason = (reason: string): reason is CallHangupReason =>
+	(callHangupReasonList as readonly string[]).includes(reason);
 
 export const callAnswerList = [
 	'accept', // actor accepts the call

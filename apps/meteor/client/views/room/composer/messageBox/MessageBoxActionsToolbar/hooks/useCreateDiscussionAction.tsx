@@ -5,7 +5,7 @@ import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.
 
 import CreateDiscussion from '../../../../../../components/CreateDiscussion';
 
-export const useCreateDiscussionAction = (room?: IRoom): GenericMenuItemProps => {
+export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): GenericMenuItemProps => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -28,7 +28,7 @@ export const useCreateDiscussionAction = (room?: IRoom): GenericMenuItemProps =>
 		id: 'create-discussion',
 		content: t('Discussion'),
 		icon: 'discussion',
-		disabled: !allowDiscussion,
+		disabled: !allowDiscussion || disabled,
 		onClick: handleCreateDiscussion,
 	};
 };

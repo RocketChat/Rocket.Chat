@@ -108,7 +108,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			)}
 
 			{isError && !user && (
-				<ContextualbarContent pb={16}>
+				<ContextualbarContent paddingBlock={16}>
 					<Callout type='danger'>{t('User_not_found')}</Callout>
 				</ContextualbarContent>
 			)}

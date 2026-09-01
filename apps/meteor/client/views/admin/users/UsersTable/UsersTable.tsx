@@ -139,7 +139,7 @@ const UsersTable = ({
 			),
 			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
-					w='x180'
+					width='x180'
 					key='freeSwitchExtension'
 					direction={sortData?.sortDirection}
 					active={sortData?.sortBy === 'freeSwitchExtension'}
@@ -149,7 +149,7 @@ const UsersTable = ({
 					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'}>
+			<GenericTableHeaderCell key='actions' width={tab === 'pending' ? 'x204' : 'x50'}>
 				{t('Actions')}
 			</GenericTableHeaderCell>,
 		],
@@ -174,10 +174,7 @@ const UsersTable = ({
 			{isSuccess && users.length === 0 && (
 				<GenericNoResults
 					icon='user'
-					title={t('Users_Table_Generic_No_users', {
-						postProcess: 'sprintf',
-						sprintf: [tab !== 'all' ? t(tab as TranslationKey) : ''],
-					})}
+					title={t('Users_Table_Generic_No_users', { status: tab !== 'all' ? t(tab as TranslationKey) : '' })}
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}

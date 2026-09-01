@@ -3,15 +3,15 @@ import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
 import Queue from 'queue-fifo';
 
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
+import * as localCommandHandlers from './localHandlers';
+import * as peerCommandHandlers from './peerHandlers';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { callbacks } from '../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
 import { updateAuditedBySystem } from '../../../settings/lib/auditedSettingUpdates';
 import * as servers from '../servers';
-import * as localCommandHandlers from './localHandlers';
-import * as peerCommandHandlers from './peerHandlers';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');

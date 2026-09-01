@@ -1,8 +1,8 @@
 import { isPOSTLivechatOfflineMessageParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { sendOfflineMessage } from '../../../../app/livechat/server/lib/messages';
 import { i18n } from '../../../lib/i18n';
+import { sendOfflineMessage } from '../../../lib/omnichannel/messages';
 
 API.v1.addRoute(
 	'livechat/offline.message',

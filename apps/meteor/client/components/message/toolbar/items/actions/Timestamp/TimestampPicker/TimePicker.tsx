@@ -23,7 +23,7 @@ const TimePicker = ({ value, onChange }: TimePickerProps) => {
 	const timeValue = value && !isNaN(value.getTime()) ? format(value, 'HH:mm') : '';
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel htmlFor={fieldId}>{t('Time')}</FieldLabel>
 				<FieldRow>

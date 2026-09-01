@@ -38,9 +38,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent p={0} pb={12}>
+			<ContextualbarContent padding={0} paddingBlock={12}>
 				{loading && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
@@ -52,7 +52,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				)}
 
 				{!loading && !error && bannedUsers.length > 0 && (
-					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box width='full' height='full' overflow='hidden' flexShrink={1}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ height: '100%', width: '100%' }}

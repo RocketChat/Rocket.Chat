@@ -26,9 +26,9 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				flexDirection='column'
 				width='100%'
 				height='100%'
-				p={40}
+				padding={40}
 			>
-				<Box fontScale='p1' mbe={4}>
+				<Box fontScale='p1' marginBlockEnd={4}>
 					{label}
 				</Box>
 				<Box
@@ -44,11 +44,11 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 					{children}
 				</Box>
 				{error && (
-					<FieldError id={errorId} role='alert' mbs={4}>
+					<FieldError id={errorId} role='alert' marginBlockStart={4}>
 						{error}
 					</FieldError>
 				)}
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
 							{t('Exit_Full_Screen')}
@@ -75,11 +75,11 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				{children}
 			</Box>
 			{error && (
-				<FieldError id={errorId} role='alert' mbs={4}>
+				<FieldError id={errorId} role='alert' marginBlockStart={4}>
 					{error}
 				</FieldError>
 			)}
-			<Box mbs={8}>
+			<Box marginBlockStart={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>
 						{t('Full_Screen')}

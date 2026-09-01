@@ -9,8 +9,8 @@ import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../../../app/settings/server';
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';
 
 const apiServer = express();
@@ -62,7 +62,7 @@ router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
-	if (visitorToken) {
+	if (visitorToken && typeof visitorToken === 'string') {
 		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 

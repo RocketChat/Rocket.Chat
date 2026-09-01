@@ -10,7 +10,7 @@ export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 	const handleLinkClick = useExternalLink();
 
 	return (
-		<Box mb={4}>
+		<Box marginBlock={4}>
 			<ButtonGroup small>
 				{actions
 					.filter(

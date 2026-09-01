@@ -39,7 +39,7 @@ p.noCallThru().load('../../../../../server/meteor-methods/messages/deleteFileMes
 	'@rocket.chat/core-services': {
 		Upload: { canDeleteFile: canDeleteFileMock },
 	},
-	'../../../app/file-upload/server': {
+	'../../lib/media/file-upload': {
 		FileUpload: { getStore: fileUploadGetStoreMock },
 	},
 	'../../lib/messages/deleteMessage': {

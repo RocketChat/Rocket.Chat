@@ -32,6 +32,6 @@ export const sandboxRequire = (module: string) => {
 	}
 
 	// This is THE purpose of this function, we can't escape a dinamyc require call
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, import/no-dynamic-require, @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, import-x/no-dynamic-require, @typescript-eslint/no-require-imports
 	return require(normalized);
 };

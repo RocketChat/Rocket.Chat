@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { MenuOptions, MenuMoveTo } from './menu';
+import { DeleteCategoryModal, ManageCategoryModal, CreateNewCategoryModal } from './modals';
 import { expect } from '../../utils/test';
 
 export abstract class Sidebar {
@@ -19,8 +21,25 @@ export abstract class Sidebar {
 }
 
 export class RoomSidebar extends Sidebar {
+	readonly menuOptions: MenuOptions;
+
+	readonly menuMoveTo: MenuMoveTo;
+
+	readonly modals: {
+		deleteCategory: DeleteCategoryModal;
+		manageCategory: ManageCategoryModal;
+		createCategory: CreateNewCategoryModal;
+	};
+
 	constructor(protected page: Page) {
 		super(page.getByRole('navigation', { name: 'Sidebar' }));
+		this.modals = {
+			deleteCategory: new DeleteCategoryModal(page),
+			manageCategory: new ManageCategoryModal(page),
+			createCategory: new CreateNewCategoryModal(page),
+		};
+		this.menuOptions = new MenuOptions(page);
+		this.menuMoveTo = new MenuMoveTo(page);
 	}
 
 	get teamCollabFilters(): Locator {
@@ -67,7 +86,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.topChannelList.getByRole('region').first();
+		return this.topChannelList.getByRole('region').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -116,6 +135,84 @@ export class RoomSidebar extends Sidebar {
 	getSidebarListItemByName(name: string): Locator {
 		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
 	}
+
+	getCategoryCollapser(name: string): Locator {
+		return this.root.getByRole('region', { name: `Collapse ${name}`, exact: true }).first();
+	}
+
+	getCategoryKebab(name: string): Locator {
+		return this.getCategoryCollapser(name).getByRole('button', { name: 'Options', exact: true });
+	}
+
+	async openCategoryMenu(name: string): Promise<void> {
+		await this.getCategoryCollapser(name).hover();
+		await this.getCategoryKebab(name).click();
+	}
+
+	async renameCategory(name: string, newName: string): Promise<void> {
+		await this.openCategoryMenu(name);
+		await this.page.getByRole('menuitemcheckbox', { name: 'Manage', exact: true }).click();
+		await this.modals.manageCategory.rename(newName);
+	}
+
+	async deleteCategory(name: string): Promise<void> {
+		await this.openCategoryMenu(name);
+		await this.page.getByRole('menuitemcheckbox', { name: 'Delete', exact: true }).click();
+		await this.modals.deleteCategory.delete();
+	}
+
+	get moveToOption(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Move to', exact: true });
+	}
+
+	async openRoomMenu(name: string): Promise<void> {
+		const item = this.getSidebarItemByName(name);
+		await item.hover();
+		await item.focus();
+		await item.getByRole('button', { name: 'Options', exact: true }).click();
+		await this.menuOptions.waitForDisplay();
+	}
+
+	/** The open submenu keeps the first Escape, so the kebab menu itself needs a second one. */
+	async closeRoomMenu(): Promise<void> {
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.press('Escape');
+		await expect(this.moveToOption).toBeHidden();
+	}
+
+	/** Move a room into a custom category (or to "Favorites") through the kebab "Move to ▸" submenu. */
+	async moveRoomToCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.menuMoveTo.selectMenuItem(categoryName);
+	}
+
+	async removeRoomFromCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.menuMoveTo.selectMenuItem(`Remove from ${categoryName}`);
+	}
+
+	async createCategoryFromRoom(roomName: string, name: string): Promise<void> {
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.menuMoveTo.selectMenuItem('New category');
+		await this.modals.createCategory.inputName.fill(name);
+		await this.modals.createCategory.create(true);
+	}
+
+	async moveRoomToFavorites(roomName: string): Promise<void> {
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.menuMoveTo.selectMenuItem('Favorites');
+	}
+
+	async removeRoomFromFavorites(roomName: string): Promise<void> {
+		await this.openRoomMoveToSubmenu(roomName);
+		await this.menuMoveTo.selectMenuItem('Remove from Favorites');
+	}
+
+	async openRoomMoveToSubmenu(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.menuOptions.selectMenuItem('Move to', true);
+		await this.menuMoveTo.waitForDisplay();
+	}
 }
 
 export class AdminSidebar extends Sidebar {
@@ -153,67 +250,7 @@ export class OmnichannelSidebar extends Sidebar {
 		super(page.getByRole('navigation', { name: 'Omnichannel' }));
 	}
 
-	get linkDepartments(): Locator {
-		return this.root.locator('a[href="/omnichannel/departments"]');
-	}
-
-	get linkAgents(): Locator {
-		return this.root.locator('a[href="/omnichannel/agents"]');
-	}
-
-	get linkManagers(): Locator {
-		return this.root.locator('a[href="/omnichannel/managers"]');
-	}
-
-	get linkCustomFields(): Locator {
-		return this.root.locator('a[href="/omnichannel/customfields"]');
-	}
-
-	get linkCurrentChats(): Locator {
-		return this.root.locator('a[href="/omnichannel/current"]');
-	}
-
-	get linkSlaPolicies(): Locator {
-		return this.root.locator('a[href="/omnichannel/sla-policies"]');
-	}
-
-	get linkPriorities(): Locator {
-		return this.root.locator('a[href="/omnichannel/priorities"]');
-	}
-
-	get linkMonitors(): Locator {
-		return this.root.locator('a[href="/omnichannel/monitors"]');
-	}
-
-	get linkBusinessHours(): Locator {
-		return this.root.locator('a[href="/omnichannel/businessHours"]');
-	}
-
-	get linkAnalytics(): Locator {
-		return this.root.locator('a[href="/omnichannel/analytics"]');
-	}
-
-	get linkRealTimeMonitoring(): Locator {
-		return this.root.locator('a[href="/omnichannel/realtime-monitoring"]');
-	}
-
-	get linkReports(): Locator {
-		return this.root.locator('a[href="/omnichannel/reports"]');
-	}
-
-	get linkCannedResponses(): Locator {
-		return this.root.locator('a[href="/omnichannel/canned-responses"]');
-	}
-
-	get linkUnits(): Locator {
-		return this.root.locator('a[href="/omnichannel/units"]');
-	}
-
-	get linkLivechatAppearance(): Locator {
-		return this.root.locator('a[href="/omnichannel/appearance"]');
-	}
-
-	get linkTags(): Locator {
-		return this.root.locator('a[href="/omnichannel/tags"]');
+	getSidebarLinkByName(name: string): Locator {
+		return this.root.getByRole('link', { name, exact: true });
 	}
 }

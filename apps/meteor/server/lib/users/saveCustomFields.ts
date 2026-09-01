@@ -4,8 +4,8 @@ import type { ClientSession } from 'mongodb';
 
 import { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
 import { validateCustomFields } from './validateCustomFields';
-import { settings } from '../../../app/settings/server';
 import { trim } from '../../../lib/utils/stringUtils';
+import { settings } from '../../settings';
 
 export const saveCustomFields = async function (
 	userId: string,

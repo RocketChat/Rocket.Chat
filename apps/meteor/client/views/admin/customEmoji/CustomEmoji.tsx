@@ -46,10 +46,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' width='x200'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='aliases' w='x200'>
+			<GenericTableHeaderCell key='aliases' width='x200'>
 				{t('Aliases')}
 			</GenericTableHeaderCell>,
 		],

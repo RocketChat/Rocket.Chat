@@ -23,10 +23,10 @@ import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.cha
 
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { settings } from '../../settings';
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';

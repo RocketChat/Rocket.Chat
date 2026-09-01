@@ -3,5 +3,5 @@ import type { ComponentProps } from 'react';
 
 export type LabelProps = ComponentProps<typeof Box>;
 
-const Label = (props: LabelProps) => <Box mbe={8} fontScale='p2m' color='default' {...props} />;
+const Label = (props: LabelProps) => <Box marginBlockEnd={8} fontScale='p2m' color='default' {...props} />;
 export default Label;

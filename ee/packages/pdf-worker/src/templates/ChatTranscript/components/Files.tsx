@@ -1,8 +1,8 @@
 import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFFile } from '../../../types/ChatTranscriptData';
 
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 		color: colors.n700,
 		marginBottom: 16,
 		flexDirection: 'column',
-		fontSize: fontScales.c1.fontSize,
+		fontSize: fontScale.c1.fontSize,
 		width: '100%',
 	},
 	fileName: {

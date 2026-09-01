@@ -66,7 +66,7 @@ const AgentsTable = () => {
 			<GenericTableHeaderCell direction={sortDirection} sort='statusLivechat' active={sortBy === 'statusLivechat'} onClick={onHeaderClick}>
 				{t('Livechat_status')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x60'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 

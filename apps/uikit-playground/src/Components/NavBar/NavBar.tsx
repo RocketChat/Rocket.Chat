@@ -31,12 +31,12 @@ const NabBar = () => {
 					user-select: none;
 				`}
 			>
-				<Button primary onClick={() => navigate(routes.home)} mis='20px' small square>
+				<Button primary onClick={() => navigate(routes.home)} marginInlineStart='20px' small square>
 					<Icon name='home' size='x24' />
 				</Button>
 				{!isMobile && (
 					<Button
-						mis='12px'
+						marginInlineStart='12px'
 						small
 						success
 						onClick={() => {

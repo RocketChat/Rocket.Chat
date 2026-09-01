@@ -1,9 +1,9 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../app/settings/server/cached';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { settings } from '../../settings/cached';
 import { roomCoordinator } from '../rooms/roomCoordinator';
+import { getUserAvatarURL } from '../utils/getUserAvatarURL';
 
 export const attachMessage = function (
 	message: IMessage,
@@ -29,7 +29,7 @@ export const attachMessage = function (
 		author_name: getUserDisplayName(name, username, useRealName),
 		author_icon: getUserAvatarURL(username) as string,
 		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
-		attachments,
+		...(attachments && { attachments }),
 		ts,
 	};
 };

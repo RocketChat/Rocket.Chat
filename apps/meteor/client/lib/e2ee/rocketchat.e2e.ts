@@ -1,6 +1,3 @@
-import QueryString from 'querystring';
-import URL from 'url';
-
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -15,17 +12,17 @@ import { generatePassphrase } from './helper';
 import { Keychain } from './keychain';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
-import { getUserAvatarURL } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { getUserAvatarURL } from '../getUserAvatarURL';
+import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem, setStoredItem } from '../sdk/storage';
 import { settings } from '../settings';
@@ -731,15 +728,18 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = URL.parse(url);
-				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
+				// URLs come from regex-matched message content, so they may be malformed; skip those instead of throwing
+				let urlObj: URL;
+				try {
+					urlObj = new URL(url);
+				} catch (error) {
 					return;
 				}
 
-				const { msg: msgId } = QueryString.parse(urlObj.query);
+				const [msgId, ...extraMsgIds] = urlObj.searchParams.getAll('msg');
 
-				if (!msgId || Array.isArray(msgId)) {
+				// skip if the msg param is missing, empty, or duplicated
+				if (!msgId || extraMsgIds.length) {
 					return;
 				}
 

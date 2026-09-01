@@ -5,7 +5,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 

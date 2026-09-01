@@ -54,7 +54,7 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 					</SurfaceRender>
 				</Box>
 			</Box>
-			<Button onClick={clickHandler} primary mbs='15px' mbe='25px'>
+			<Button onClick={clickHandler} primary marginBlockStart='15px' marginBlockEnd='25px'>
 				Use This Template
 			</Button>
 		</>

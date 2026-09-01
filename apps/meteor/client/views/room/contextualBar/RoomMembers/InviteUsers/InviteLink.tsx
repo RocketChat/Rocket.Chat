@@ -28,13 +28,13 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 					)}
 				</FieldRow>
 				{captionText && (
-					<Box pb={8} color='annotation' fontScale='c2'>
+					<Box paddingBlock={8} color='annotation' fontScale='c2'>
 						{captionText}
 					</Box>
 				)}
 			</Field>
 			{onClickEdit && (
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>
 				</Box>
 			)}

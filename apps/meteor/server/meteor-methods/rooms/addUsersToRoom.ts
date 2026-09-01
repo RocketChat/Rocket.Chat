@@ -5,9 +5,9 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeAddUsersToRoom } from '../../lib/callbacks/beforeAddUserToRoom';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 
@@ -110,8 +110,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 				msg: i18n.t('Username_is_already_in_here', {
-					postProcess: 'sprintf',
-					sprintf: [newUser.username],
+					username: newUser.username,
 					lng: user?.language,
 				}),
 			});

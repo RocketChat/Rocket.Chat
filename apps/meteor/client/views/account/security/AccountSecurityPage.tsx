@@ -44,7 +44,7 @@ const AccountSecurityPage = () => {
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<Box maxWidth='x600' width='full' alignSelf='center' color='default'>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
@@ -58,7 +58,7 @@ const AccountSecurityPage = () => {
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
 								{require2faSetup && (
-									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
+									<Callout type='warning' title={t('Enable_two-factor_authentication')} marginBlockEnd='24px'>
 										{t('Enable_two-factor_authentication_callout_description')}
 									</Callout>
 								)}

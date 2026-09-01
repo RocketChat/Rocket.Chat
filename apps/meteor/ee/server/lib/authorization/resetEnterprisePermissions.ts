@@ -1,6 +1,6 @@
 import { Permissions } from '@rocket.chat/models';
 
-import { guestPermissions } from '../../../app/authorization/lib/guestPermissions';
+import { guestPermissions } from './guestPermissions';
 
 export const resetEnterprisePermissions = async function (): Promise<void> {
 	await Permissions.updateMany(

@@ -23,14 +23,14 @@ const FingerprintChangeModalConfirmation = ({ onConfirm, onCancel, onClose, newW
 			confirmText={newWorkspace ? t('Confirm_new_workspace') : t('Confirm_configuration_update')}
 			onClose={onClose}
 		>
-			<Box is='p' mbe={16}>
+			<Box is='p' marginBlockEnd={16}>
 				{newWorkspace ? (
 					<Trans i18nKey='Confirm_new_workspace_description' />
 				) : (
 					<Trans i18nKey='Confirm_configuration_update_description' />
 				)}
 			</Box>
-			<Box is='p' mbe={16}>
+			<Box is='p' marginBlockEnd={16}>
 				<Trans
 					i18nKey='Unique_ID_change_detected_learn_more_link'
 					components={{ a: <ExternalLink to={links.go.fingerPrintChangedFaq} /> }}

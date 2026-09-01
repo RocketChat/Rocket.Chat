@@ -39,7 +39,15 @@ const AdminUserSetRandomPasswordContent = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8} mbs={12}>
+			<Box
+				display='flex'
+				flexDirection='row'
+				alignItems='center'
+				justifyContent='space-between'
+				flexGrow={1}
+				marginBlockEnd={8}
+				marginBlockStart={12}
+			>
 				<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
 				<FieldRow>
 					<Controller

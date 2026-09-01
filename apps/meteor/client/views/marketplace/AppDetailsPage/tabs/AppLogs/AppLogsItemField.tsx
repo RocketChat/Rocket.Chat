@@ -8,7 +8,7 @@ export type AppsLogItemFieldProps = {
 
 export const AppsLogItemField = ({ field, label, ...props }: AppsLogItemFieldProps) => {
 	return (
-		<Box mb={16} display='flex' color='default' flexDirection='column' {...props}>
+		<Box marginBlock={16} display='flex' color='default' flexDirection='column' {...props}>
 			<Box fontWeight={700}>{label}</Box>
 			{field}
 		</Box>

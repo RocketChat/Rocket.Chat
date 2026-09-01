@@ -5,7 +5,7 @@ const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => voi
 	const { t } = useTranslation();
 
 	return (
-		<Box mbs={20}>
+		<Box marginBlockStart={20}>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_apps_installed')}</StatesTitle>

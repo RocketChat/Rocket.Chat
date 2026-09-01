@@ -71,7 +71,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 						</TabsItem>
 					</Tabs>
 				</Margins>
-				<PageContent mb='neg-x8'>
+				<PageContent marginBlock='neg-x8'>
 					<Margins block={8}>
 						<PermissionsTable
 							roleList={roleList}

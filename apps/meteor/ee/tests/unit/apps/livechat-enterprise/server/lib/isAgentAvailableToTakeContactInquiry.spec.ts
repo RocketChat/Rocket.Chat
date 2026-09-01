@@ -16,7 +16,7 @@ const { runIsAgentAvailableToTakeContactInquiry } = proxyquire
 	.noCallThru()
 	.load('../../../../../../server/patches/isAgentAvailableToTakeContactInquiry', {
 		'@rocket.chat/models': modelsMock,
-		'../../../app/settings/server': {
+		'../../../server/settings': {
 			settings: settingsMock,
 		},
 	});

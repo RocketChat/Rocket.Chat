@@ -38,7 +38,7 @@ const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../
 	'meteor/meteor': { Meteor: { Error: meteorErrorMock } },
 	'../callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
 	'../roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
-	'../../../app/lib/server/lib/notifyListener': {
+	'../notifyListener': {
 		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
 		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
 	},

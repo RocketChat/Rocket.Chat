@@ -2,8 +2,8 @@ import { Users } from '@rocket.chat/models';
 import { isLivechatAnalyticsAgentOverviewProps, isLivechatAnalyticsOverviewProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../../../app/livechat/server/lib/AnalyticsTyped';
-import { settings } from '../../../../app/settings/server';
+import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../../lib/omnichannel/AnalyticsTyped';
+import { settings } from '../../../settings';
 
 API.v1.addRoute(
 	'livechat/analytics/agent-overview',
@@ -49,7 +49,7 @@ API.v1.addRoute(
 				throw new Error('invalid-chart-name');
 			}
 
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1, utcOffset: 1 } });
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1, utcOffset: 1, language: 1 } });
 			const language = user?.language || settings.get('Language') || 'en';
 
 			return API.v1.success(

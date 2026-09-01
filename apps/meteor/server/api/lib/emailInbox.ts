@@ -2,7 +2,7 @@ import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, Users } from '@rocket.chat/models';
 import type { DeleteResult, Filter, InsertOneResult, Sort } from 'mongodb';
 
-import { notifyOnEmailInboxChanged } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnEmailInboxChanged } from '../../lib/notifyListener';
 
 export const findEmailInboxes = async ({
 	query = {},

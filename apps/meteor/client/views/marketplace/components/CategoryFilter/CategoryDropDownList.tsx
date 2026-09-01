@@ -5,11 +5,11 @@ import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdo
 
 const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps) => {
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
+		<Tile overflow='auto' paddingBlock={12} paddingInline={0} elevation='2' width='full' backgroundColor='light' borderRadius={2}>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (
-						<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
+						<Box paddingInline={16} paddingBlockStart={8} paddingBlockEnd={4} fontScale='micro' textTransform='uppercase' color='default'>
 							{category.label}
 						</Box>
 					)}

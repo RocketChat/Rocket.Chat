@@ -29,8 +29,13 @@ We can also provide some env vars to `test:e2e` script:
 ## Important links
 - [playwright docs](https://playwright.dev/docs/intro)
 
-## Assertions
-Checking if a element is visible
+## Assertions and waiting
+
+- Prefer Playwright web-first assertions such as `toBeVisible()` and `toHaveText()`. They retry until the expected condition is met.
+- Use Playwright's `expect` matchers instead of Node-style `assert` statements.
+- Rely on Playwright's built-in auto-waiting whenever possible.
+- When an explicit wait is necessary, wait for a specific condition with APIs such as `locator.waitFor()`, `page.waitForURL()`, or `page.waitForResponse()`.
+- Prefer waiting for observable conditions over fixed delays. If a fixed delay is unavoidable, document why no observable condition can be awaited.
 
 ```ts
  await expect(anyElement).toBeVisible();
@@ -187,11 +192,15 @@ test.describe.serial('feature example', ({ api}) => {
 
 ## General recommendations
 
+### Use descriptive test names
+
+Test names should clearly describe the behavior and expected outcome being verified.
+
 ### Use `test.describe` for grouping tests
 It can be used to group related tests into a test suite. It provides a way to organize tests logically and improve the readability and maintainability of your test code.
 ```ts
 test.describe('Feature Test', () => {
-  test('should show feature test', async ({ api}) => {
+  test('should display the feature heading after navigation', async ({ api}) => {
     // do some tests
   });
 });
@@ -201,8 +210,11 @@ test.describe('Feature Test', () => {
 Enhances test readability and provides more detailed information in test reports
 ```ts
 test.describe('Feature Test', () => {
-  test.step('should show feature test', async ({ api}) => {
-    // do some tests
+  test('should display the feature heading after navigation', async ({ page }) => {
+    await test.step('open the feature page', async () => {
+      await page.goto('/feature');
+      await expect(page.getByRole('heading', { name: 'Feature' })).toBeVisible();
+    });
   });
 });
 ```

@@ -20,7 +20,7 @@ const Preview = ({ date, format, timezone }: PreviewProps) => {
 	const tokens = parse(markup);
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Preview')}</FieldLabel>
 				<FieldRow>

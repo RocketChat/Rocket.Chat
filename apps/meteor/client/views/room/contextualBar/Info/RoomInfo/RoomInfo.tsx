@@ -57,9 +57,9 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<InfoPanel>
-					<InfoPanelSection maxWidth='x332' mi='auto'>
+					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanelAvatar>
@@ -78,7 +78,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					{archived && (
 						<InfoPanelSection>
-							<Box mb={16}>
+							<Box marginBlock={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						</InfoPanelSection>

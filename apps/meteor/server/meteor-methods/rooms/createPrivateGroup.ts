@@ -43,10 +43,10 @@ export const createPrivateGroupMethod = async (
 				method: 'createPrivateGroup',
 			});
 		}
-		if (!(await hasPermissionAsync(user._id, 'create-team-group', team.roomId))) {
+		if (!(await hasPermissionAsync(user, 'create-team-group', team.roomId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
-	} else if (!(await hasPermissionAsync(user._id, 'create-p'))) {
+	} else if (!(await hasPermissionAsync(user, 'create-p'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 

@@ -63,7 +63,7 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps) => {
 	}
 
 	return (
-		<Box className={customClass} mbs={8}>
+		<Box className={customClass} marginBlockStart={8}>
 			<Bubble role='status'>{`${percentage}% ${t('Uploading__count__file', { count })}`}</Bubble>
 		</Box>
 	);

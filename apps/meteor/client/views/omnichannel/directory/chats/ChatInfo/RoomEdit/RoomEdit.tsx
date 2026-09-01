@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
-import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../../../../lib/authorization';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import Tags from '../../../../components/Tags';
@@ -160,7 +160,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 					</Button>
 
 					<Button
-						mie='none'
+						marginInlineEnd='none'
 						flexGrow={1}
 						onClick={handleSubmit(handleSave)}
 						loading={isSubmitting}

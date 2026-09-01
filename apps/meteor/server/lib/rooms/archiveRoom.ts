@@ -2,8 +2,8 @@ import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { notifyOnRoomChanged, notifyOnSubscriptionChangedByRoomId } from '../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../callbacks';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedByRoomId } from '../notifyListener';
 
 export const archiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
 	await Rooms.archiveById(rid);

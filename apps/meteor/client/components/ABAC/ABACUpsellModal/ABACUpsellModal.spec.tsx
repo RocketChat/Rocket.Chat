@@ -16,7 +16,7 @@ jest.mock('../../GenericUpsellModal/hooks', () => ({
 }));
 
 // Mock getURL utility
-jest.mock('../../../../app/utils/client', () => ({
+jest.mock('../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 

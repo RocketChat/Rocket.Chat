@@ -1,17 +1,20 @@
 import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 
 import { extractUrlsFromMessageAST } from './extractUrlsFromMessageAST';
-import { Markdown } from '../../../app/markdown/server';
-import { settings } from '../../../app/settings/server';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { settings } from '../../settings';
+import { Markdown } from '../messaging/markdown';
 
-const prepareUrl = (url: string, previewUrls: string[] | undefined) => ({
+const prepareUrl = (url: string, previewUrls: string[] | undefined, siteUrl: string) => ({
 	url,
 	meta: {},
-	...(previewUrls && !previewUrls.includes(url) && !url.includes(settings.get('Site_Url')) && { ignoreParse: true }),
+	...(previewUrls && !previewUrls.includes(url) && !url.includes(siteUrl) && { ignoreParse: true }),
 });
 
-const prepareUrls = (urls: string[], previewUrls?: string[]) => [...new Set(urls)].map((url) => prepareUrl(url, previewUrls));
+const prepareUrls = (urls: string[], previewUrls?: string[]) => {
+	const siteUrl = settings.get<string>('Site_Url');
+	return [...new Set(urls)].map((url) => prepareUrl(url, previewUrls, siteUrl));
+};
 
 export const parseUrlsInMessage = (
 	message: AtLeast<IMessage, 'msg' | 'md'> & {

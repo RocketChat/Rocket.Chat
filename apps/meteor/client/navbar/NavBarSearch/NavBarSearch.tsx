@@ -75,7 +75,7 @@ const NavBarSearch = () => {
 
 	return (
 		<FormProvider {...methods}>
-			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
+			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} marginInline={8} position='relative'>
 				<TextInput
 					{...rest}
 					{...triggerProps}

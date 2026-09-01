@@ -29,7 +29,7 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 	const fieldErrorId = useId();
 
 	return (
-		<Field mb={-2}>
+		<Field marginBlock={-2}>
 			<FieldRow>
 				<AutoComplete
 					aria-labelledby={fieldDescriptionId}
@@ -52,7 +52,7 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 								label={
 									<Box display='flex' flexDirection='row' alignItems='center'>
 										<StatusBullet status={thisOption?.status} />
-										<Box mis={4}>{label}</Box>
+										<Box marginInlineStart={4}>{label}</Box>
 									</Box>
 								}
 								avatar={<Avatar size='x20' url={thisOption?.avatarUrl || ''} />}

@@ -1,4 +1,5 @@
 import { parse } from '../src';
+import { ALL_EMOJI, EMOJIBASE_VERSION } from './fixtures/allEmoji';
 import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers';
 
 test.each([
@@ -68,6 +69,14 @@ test.each([
 	['👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
 	['👆🏽👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
 	['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
+	['✋🏽', [bigEmoji([emojiUnicode('✋🏽')])]],
+	['✌🏽', [bigEmoji([emojiUnicode('✌🏽')])]],
+	['✍🏽', [bigEmoji([emojiUnicode('✍🏽')])]],
+	['☝🏽', [bigEmoji([emojiUnicode('☝🏽')])]],
+	['⛹🏽', [bigEmoji([emojiUnicode('⛹🏽')])]],
+	['✋🏽✌🏽', [bigEmoji([emojiUnicode('✋🏽'), emojiUnicode('✌🏽')])]],
+	['✋🏺', [bigEmoji([emojiUnicode('✋'), emojiUnicode('🏺')])]],
+	['Hi ✋🏽', [paragraph([plain('Hi '), emojiUnicode('✋🏽')])]],
 	['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
 	// Symbols and Pictographs Extended-A (U+1FA00–U+1FAFF) — Unicode 13+/14+
 	['🫠', [bigEmoji([emojiUnicode('🫠')])]],
@@ -88,6 +97,64 @@ test.each([
 	['🫱🏿‍🫲🏻', [bigEmoji([emojiUnicode('🫱🏿‍🫲🏻')])]], // v14
 	['🫩', [bigEmoji([emojiUnicode('🫩')])]], // v16
 	['🇨🇶', [bigEmoji([emojiUnicode('🇨🇶')])]], // v16
+	// ZWJ sequences anchored by an Emoticon (U+1F600-U+1F64F)
+	['😶‍🌫️', [bigEmoji([emojiUnicode('😶‍🌫️')])]],
+	['😮‍💨', [bigEmoji([emojiUnicode('😮‍💨')])]],
+	['😵‍💫', [bigEmoji([emojiUnicode('😵‍💫')])]],
+	['Hi 😶‍🌫️', [paragraph([plain('Hi '), emojiUnicode('😶‍🌫️')])]],
+	['😶‍🌫️😮‍💨', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨')])]],
+	['🙋🏽‍♂️', [bigEmoji([emojiUnicode('🙋🏽‍♂️')])]],
+	['😀', [bigEmoji([emojiUnicode('😀')])]], // standalone emoticon still matches
+	// Emoji tag sequences — England/Scotland/Wales flags
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴󠁧󠁢󠁳󠁣󠁴󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿')])]],
+	['🏴󠁧󠁢󠁷󠁬󠁳󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁷󠁬󠁳󠁿')])]],
+	['Hi 🏴󠁧󠁢󠁥󠁮󠁧󠁿', [paragraph([plain('Hi '), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴', [bigEmoji([emojiUnicode('🏴')])]], // standalone black flag still matches
+	['🏴‍☠️', [bigEmoji([emojiUnicode('🏴‍☠️')])]], // pirate flag (ZWJ, not tag sequence) still matches
+	// Consecutive sequence emojis — each sequence must be consumed whole, without stealing from its neighbor
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴󠁧󠁢󠁳󠁣󠁴󠁿🏴󠁧󠁢󠁷󠁬󠁳󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿'), emojiUnicode('🏴󠁧󠁢󠁷󠁬󠁳󠁿')])]],
+	['🏴🏴󠁧󠁢󠁥󠁮󠁧󠁿', [bigEmoji([emojiUnicode('🏴'), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴')])]],
+	['😶‍🌫️😮‍💨😵‍💫', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨'), emojiUnicode('😵‍💫')])]],
+	['😀😶‍🌫️', [bigEmoji([emojiUnicode('😀'), emojiUnicode('😶‍🌫️')])]],
+	['😶‍🌫️🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴‍☠️', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴‍☠️')])]],
+	// More than 3 emojis: no BigEmoji, plain paragraph of emoji tokens
+	['😶‍🌫️😮‍💨😵‍💫👍', [paragraph([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨'), emojiUnicode('😵‍💫'), emojiUnicode('👍')])]],
+	['England 🏴󠁧󠁢󠁥󠁮󠁧󠁿 and Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿', [paragraph([plain('England '), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), plain(' and Scotland '), emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
+});
+
+// KNOWN_UNSUPPORTED: the 26 regional indicators. Alone they're just letters, not emojis; combined
+// in a pair they form a flag (🇺 + 🇸 = 🇺🇸). Real letter emojis (🅰️ Ⓜ️) are supported. Stale check
+// below keeps the list honest.
+// prettier-ignore
+const KNOWN_UNSUPPORTED = new Set('🇦 🇧 🇨 🇩 🇪 🇫 🇬 🇭 🇮 🇯 🇰 🇱 🇲 🇳 🇴 🇵 🇶 🇷 🇸 🇹 🇺 🇻 🇼 🇽 🇾 🇿'.split(' '));
+
+function parsesWhole(input: string): boolean {
+	const nodes = parse(input);
+
+	if (!Array.isArray(nodes) || nodes.length !== 1) {
+		return false;
+	}
+
+	const [node] = nodes;
+	if (node.type !== 'BIG_EMOJI' || node.value.length !== 1) {
+		return false;
+	}
+
+	const [child] = node.value;
+	if (child.type !== 'EMOJI' || !('unicode' in child)) {
+		return false;
+	}
+
+	return child.unicode === input;
+}
+
+test(`every emoji parses as one token, except documented components (emojibase@${EMOJIBASE_VERSION})`, () => {
+	expect(ALL_EMOJI.length).toBeGreaterThan(3000);
+	const inFixture = new Set(ALL_EMOJI);
+	expect(ALL_EMOJI.filter((e) => !KNOWN_UNSUPPORTED.has(e) && !parsesWhole(e))).toEqual([]);
+	expect([...KNOWN_UNSUPPORTED].filter((e) => !inFixture.has(e) || parsesWhole(e))).toEqual([]);
 });

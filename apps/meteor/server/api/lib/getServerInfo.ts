@@ -2,10 +2,10 @@ import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 
 import { getTrimmedServerVersion } from './getTrimmedServerVersion';
-import { settings } from '../../../app/settings/server';
 import { Info, minimumClientVersions } from '../../../app/utils/rocketchat.info';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { getCachedSupportedVersionsToken, wrapPromise } from '../../lib/cloud/supportedVersionsToken/supportedVersionsToken';
+import { settings } from '../../settings';
 
 export async function getServerInfo(userId?: string): Promise<IWorkspaceInfo> {
 	const hasPermissionToViewStatistics = userId && (await hasPermissionAsync(userId, 'view-statistics'));

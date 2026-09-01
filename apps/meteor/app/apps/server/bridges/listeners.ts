@@ -174,7 +174,7 @@ type HandleFileUploadEvent = {
 	payload: [{ file: IUpload; content: Buffer | string }];
 };
 
-type HandleEvent =
+export type HandleEvent =
 	| HandleMessageEvent
 	| HandleRoomEvent
 	| HandleLivechatEvent

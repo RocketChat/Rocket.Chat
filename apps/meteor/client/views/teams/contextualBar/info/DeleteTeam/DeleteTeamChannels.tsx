@@ -33,7 +33,7 @@ const DeleteTeamChannels = ({
 			onClose={onCancel}
 			confirmText={t('Continue')}
 		>
-			<Box withRichContent mbe={16}>
+			<Box withRichContent marginBlockEnd={16}>
 				<Box is='span' color='status-font-on-danger' fontWeight='bold'>
 					{t('Team_Delete_Channel_modal_content_danger')}{' '}
 				</Box>

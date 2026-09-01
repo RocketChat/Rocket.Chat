@@ -48,7 +48,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	};
 
 	return (
-		<Box h='full' w='full' marginInline='auto' color='default' pbs={24}>
+		<Box height='full' width='full' marginInline='auto' color='default' paddingBlockStart={24}>
 			{isLoading && <AccordionLoading />}
 			{isError && (
 				<Box maxWidth='x600' alignSelf='center'>
@@ -57,7 +57,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 			)}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
 				<CustomScrollbars>
-					<GenericTable w='full'>
+					<GenericTable width='full'>
 						<GenericTableHeader>
 							<GenericTableHeaderCell key='instanceId'>{t('Workspace_instance')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>

@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,10 +9,12 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { emoji } from '../../../../app/emoji/client';
-import { slashCommands } from '../../../../app/utils/client';
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
+import { hasAtLeastOnePermission } from '../../../lib/authorization';
+import { pipe } from '../../../lib/cachedStores/pipe';
+import { emoji } from '../../../lib/emoji';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { slashCommands } from '../../../lib/slashCommand';
 import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
@@ -27,8 +28,6 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue, ComposerPopupOption } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
-import { pipe } from '../../../lib/cachedStores/pipe';
 
 const getToneRegexes = () => {
 	const exactFinalTone = new RegExp('^tone[1-5](?:-[1-5])?:*$');
@@ -36,6 +35,18 @@ const getToneRegexes = () => {
 	const seeColor = new RegExp('_t(?:o(?:n(?:e(?:[1-5](?:-[1-5]?)?)?)?)?)?:?$');
 
 	return [exactFinalTone, colorBlind, seeColor];
+};
+
+const matchesEmojiSuggestion = (id: string, key: string, filterRegex: RegExp, [exactFinalTone, colorBlind, seeColor]: RegExp[]) => {
+	if (!filterRegex.test(id)) {
+		return false;
+	}
+
+	if (emoji.list[id]?.emojiPackage === 'emojiCustom') {
+		return true;
+	}
+
+	return exactFinalTone.test(id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(id);
 };
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
@@ -209,7 +220,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					title: t('Emoji'),
 					triggerLength: 2,
 					getItemsFromLocal: async (filter: string) => {
-						const [exactFinalTone, colorBlind, seeColor] = getToneRegexes();
+						const toneRegexes = getToneRegexes();
 
 						const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 							const aExact = a._id === key ? 2 : 0;
@@ -247,10 +258,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 								const data = collection[key];
 								return { _id, data };
 							})
-							.filter(
-								({ _id }) =>
-									filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
-							)
+							.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
 							.sort(emojiSort(recents))
 							.slice(0, 10);
 					},
@@ -270,7 +278,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				suffix: ' ',
 				triggerAnywhere: false,
 				getItemsFromLocal: async (filter: string) => {
-					const [exactFinalTone, colorBlind, seeColor] = getToneRegexes();
+					const toneRegexes = getToneRegexes();
 
 					const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 						let idA = a._id;
@@ -305,10 +313,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							const data = collection[key];
 							return { _id, data };
 						})
-						.filter(
-							({ _id }) =>
-								filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
-						)
+						.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
 						.sort(emojiSort(recents))
 						.slice(0, 10);
 				},

@@ -23,6 +23,7 @@ export type MediaSignalingEvents = {
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
 	endedCall: void;
+	droppedCall: void;
 	hiddenCall: void;
 	registered: { activeCalls: IClientMediaCall['callId'][] };
 	outOfSync: { missingCalls: IClientMediaCall['callId'][] };
@@ -71,11 +72,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastRegisterTimestamp: Date | null = null;
 
-	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
+	private lastState: { mainCall: ClientMediaCall | null; hidden: boolean; busy: boolean; localCall: ClientMediaCall | null };
 
 	private sessionEnded = false;
 
 	private registration: SessionRegistration;
+
+	private _micless: boolean = false;
+
+	private shouldMuteMiclessCall = false;
 
 	public get sessionId(): string {
 		return this._sessionId;
@@ -87,6 +92,22 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public get registered(): boolean {
 		return this.registration.registered;
+	}
+
+	// FIXME: This state is controlled outside of this class. MediaSignalingSession should handle this fallback in another way so this information doesn't depend on the consumer
+	// FIXME: Consumers can still unmute the call even when this is set to true. That behaviour should be guarded at the call level to avoid representing incorrect states.
+	/* micless: used by the consumer to identify when a "fake stream" was used due to inability to retrieve a proper device. When set to true will mute the call once when it starts */
+	public set micless(micless: boolean) {
+		if (micless) {
+			this.shouldMuteMiclessCall = true;
+		} else {
+			this.shouldMuteMiclessCall = false;
+		}
+		this._micless = micless;
+	}
+
+	public get micless() {
+		return this._micless;
 	}
 
 	constructor(private config: MediaSignalingSessionConfig) {
@@ -101,7 +122,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.deviceId = null;
 		this.currentDeviceId = null;
 		this.callsToGetUserMedia = 0;
-		this.lastState = { hasCall: false, hasVisibleCall: false, hasBusyCall: false };
+		this.lastState = { mainCall: null, hidden: false, busy: false, localCall: null };
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
 		this.registration = new SessionRegistration({
@@ -239,7 +260,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal, oldCall);
 	}
 
-	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
+	public async setDeviceId(deviceId: ConstrainDOMString | null, force?: boolean): Promise<void> {
 		this.deviceId = deviceId;
 
 		if (this.switchingInputTrack) {
@@ -248,9 +269,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		// do nothing if:
 		// 1. doesn't have any input track yet
-		// 2. it's the same device id
+		// 2. it's the same device id (force flag bypasses this)
 		// 3. has no restriction on which device to use
-		if (!this.inputTrack || !deviceId || isSameDeviceId(deviceId, this.currentDeviceId)) {
+		if (!this.inputTrack || !deviceId || (isSameDeviceId(deviceId, this.currentDeviceId) && !force)) {
 			return;
 		}
 
@@ -735,12 +756,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		const hadCall = this.lastState.hasCall;
-		const hadVisibleCall = this.lastState.hasVisibleCall;
-		const hadBusyCall = this.lastState.hasBusyCall;
+		const { mainCall: oldCall, hidden: wasHidden, busy: wasBusy, localCall: oldLocalCall } = this.lastState;
 
 		if (!this.registration.active) {
-			if (hadCall) {
+			if (oldCall) {
 				this.emit('endedCall');
 			}
 			this.config.logger?.debug('skipping session events on inactive session');
@@ -748,27 +767,42 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		// Do not skip local calls if we transitioned from a different active call to it
-		const mainCall = this.getMainCall(!hadCall);
-		const hasCall = Boolean(mainCall);
-		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
-		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
+		const mainCall = this.getMainCall(!oldCall);
+		const localCall = mainCall || this.getMainCall(false);
+		const hidden = mainCall?.hidden ?? false;
+		const busy = mainCall?.busy ?? false;
 
-		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
+		this.lastState = { mainCall, hidden, busy, localCall };
 
-		if (mainCall && !hadCall) {
+		if (mainCall && !oldCall) {
 			this.emit('newCall', { call: mainCall });
 		}
-		if (mainCall && hasBusyCall && !hadBusyCall) {
+		if (mainCall && busy && !wasBusy) {
 			this.emit('acceptedCall', { call: mainCall });
 		}
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
+		if (mainCall && this.shouldMuteMiclessCall) {
+			this.shouldMuteMiclessCall = false;
+			if (!mainCall.muted) {
+				mainCall.setMuted(true);
+			}
+		}
 
-		if (hadCall && !hasCall) {
-			this.emit('endedCall');
-		} else if (hadVisibleCall && !hasVisibleCall) {
-			this.emit('hiddenCall');
+		if (oldCall) {
+			if (!mainCall) {
+				this.emit('endedCall');
+				if (!wasHidden && !oldCall.shouldSkipDroppedEvent()) {
+					this.config.logger?.debug('droppedCall');
+					this.emit('droppedCall');
+				}
+			} else if (!wasHidden && hidden) {
+				this.emit('hiddenCall');
+			}
+		} else if (oldLocalCall && !localCall && !oldLocalCall.shouldSkipDroppedEvent()) {
+			this.config.logger?.debug('droppedCall');
+			this.emit('droppedCall');
 		}
 	}
 }

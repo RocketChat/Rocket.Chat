@@ -1,11 +1,11 @@
 import type { ILivechatTag, FindTagsResult } from '@rocket.chat/core-typings';
 import { LivechatTag } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter, FindOptions } from 'mongodb';
 
 import { getDepartmentsWhichUserCanAccess } from './departments';
 import { hasPermissionAsync } from '../../../../../../server/lib/authorization/hasPermission';
-import { helperLogger } from '../../../../../app/livechat-enterprise/server/lib/logger';
+import { helperLogger } from '../../../../lib/omnichannel/logger';
 
 type FindTagsParams = {
 	userId: string;

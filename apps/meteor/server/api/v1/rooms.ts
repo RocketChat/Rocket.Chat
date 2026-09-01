@@ -2,6 +2,7 @@ import { FederationMatrix, MeteorError, Room, Team } from '@rocket.chat/core-ser
 import {
 	type IRoom,
 	type IRoomAbacRedaction,
+	type IMessage,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
@@ -37,6 +38,7 @@ import {
 	isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
 	isRoomsAutocompleteAvailableForTeamsProps,
 	isRoomsSaveRoomSettingsProps,
+	isRoomsHistoryProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
@@ -45,27 +47,25 @@ import {
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { stripABACManagedFieldsForAdmin } from '../../../app/authorization/server/lib/isABACManagedRoom';
-import { FileUpload } from '../../../app/file-upload/server';
-import { sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
-import type { NotificationFieldType } from '../../../app/push-notifications/server/methods/saveNotificationSettings';
-import { saveNotificationSettingsMethod } from '../../../app/push-notifications/server/methods/saveNotificationSettings';
-import { settings } from '../../../app/settings/server';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
+import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
+import { FileUpload } from '../../lib/media/file-upload';
+import { loadRoomHistory, type RoomHistoryResult } from '../../lib/messages/loadRoomHistory';
+import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
 import { unbanUserFromRoom } from '../../lib/unbanUserFromRoom';
 import { createDiscussion } from '../../meteor-methods/messages/createDiscussion';
+import { sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
 import { executeArchiveRoom } from '../../meteor-methods/rooms/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../meteor-methods/rooms/cleanRoomHistory';
 import { executeGetRoomRoles } from '../../meteor-methods/rooms/getRoomRoles';
@@ -76,7 +76,10 @@ import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { toggleFavoriteMethod } from '../../meteor-methods/rooms/toggleFavorite';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
+import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
+import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
 import { roomsGetMethod } from '../../publications/room';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
@@ -419,11 +422,12 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	},
 );
 
-const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string }>({
+const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string; tmid?: IMessage['_id'] }>({
 	type: 'object',
 	properties: {
 		rid: { type: 'string', minLength: 1 },
 		draft: { type: 'string' },
+		tmid: { type: 'string', minLength: 1, pattern: '^[^.$]+$' },
 	},
 	required: ['rid', 'draft'],
 	additionalProperties: false,
@@ -450,13 +454,13 @@ const roomsSaveDraftEndpoint = API.v1.post(
 		},
 	},
 	async function action() {
-		const { rid, draft } = this.bodyParams;
+		const { rid, draft, tmid } = this.bodyParams;
 
 		if (draft.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			return API.v1.failure('error-message-size-exceeded');
 		}
 
-		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined);
+		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined, tmid);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
 		}
@@ -1006,7 +1010,7 @@ API.v1.post(
 	async function action() {
 		const { rid, type } = this.bodyParams;
 
-		if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
+		if (!(await hasPermissionAsync(this.user, 'mail-messages', rid))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 		}
 
@@ -1151,7 +1155,7 @@ API.v1.get(
 			return API.v1.failure('error-room-type-not-supported');
 		}
 
-		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
 			return API.v1.unauthorized();
 		}
 
@@ -1301,7 +1305,7 @@ API.v1.post(
 			return API.v1.unauthorized();
 		}
 
-		const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 
 		if (!user) {
 			return API.v1.failure('error-invalid-user');
@@ -1418,6 +1422,27 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 		total: { type: 'number' },
 	},
 	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
+
+const roomsHistoryResponseSchema = ajv.compile<RoomHistoryResult>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		cursor: {
+			type: 'object',
+			properties: {
+				next: { type: 'string', nullable: true },
+				previous: { type: 'string', nullable: true },
+			},
+			required: ['next', 'previous'],
+			additionalProperties: false,
+		},
+		firstUnread: { $ref: '#/components/schemas/IMessage' },
+		unreadNotLoaded: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'cursor', 'success'],
 	additionalProperties: false,
 });
 
@@ -1706,7 +1731,10 @@ export const roomEndpoints = API.v1
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { cursor, totalCount } = Subscriptions.findPaginated({ rid: roomId, status: 'BANNED' as const }, { offset, count });
+			const { cursor, totalCount } = Subscriptions.findPaginated(
+				{ rid: roomId, status: 'BANNED' as const },
+				{ sort: { ts: 1 }, skip: offset, limit: count, projection: { 'u._id': 1 } },
+			);
 
 			const [bannedSubs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1722,6 +1750,58 @@ export const roomEndpoints = API.v1
 				offset,
 				total,
 			});
+		},
+	)
+	.get(
+		'rooms.history',
+		{
+			authOrAnonRequired: true,
+			query: isRoomsHistoryProps,
+			response: {
+				200: roomsHistoryResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId, next, previous, lastSeen, showThreadMessages = true } = this.queryParams;
+			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
+			// honors the API_Upper_Count_Limit cap.
+			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
+
+			const room = await Rooms.findOneById(roomId, { projection: { ...roomAccessAttributes, t: 1, sysMes: 1 } });
+
+			if (!room) {
+				return API.v1.notFound();
+			}
+
+			// Also covers anonymous reads: the auth middleware already gated on Accounts_AllowAnonymousRead.
+			if (!(await canAccessRoomAsync(room, this.user))) {
+				return API.v1.forbidden();
+			}
+
+			if (
+				this.userId &&
+				room.t === 'c' &&
+				!(await hasPermissionAsync(this.userId, 'preview-c-room')) &&
+				!(await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } }))
+			) {
+				return API.v1.forbidden();
+			}
+
+			const result = await loadRoomHistory({
+				userId: this.userId,
+				next,
+				previous,
+				lastSeen: lastSeen ? new Date(lastSeen) : undefined,
+				count,
+				showThreadMessages,
+				room,
+			});
+
+			return API.v1.success(result);
 		},
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &

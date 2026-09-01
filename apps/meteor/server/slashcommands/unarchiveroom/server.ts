@@ -4,13 +4,13 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { settings } from '../../settings';
 
 slashCommands.add({
 	command: 'unarchive',
@@ -40,8 +40,7 @@ slashCommands.add({
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
+					channelName: channel,
 					lng: settings.get('Language') || 'en',
 				}),
 			});
@@ -59,8 +58,7 @@ slashCommands.add({
 		if (!room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_already_Unarchived', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
+					channelName: channel,
 					lng: settings.get('Language') || 'en',
 				}),
 			});
@@ -71,8 +69,7 @@ slashCommands.add({
 
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t('Channel_Unarchived', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
+				channelName: channel,
 				lng: settings.get('Language') || 'en',
 			}),
 		});

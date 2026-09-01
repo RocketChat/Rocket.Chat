@@ -4,10 +4,11 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { loadMessageHistory } from '../../lib/messages/loadMessageHistory';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -30,6 +31,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
+		methodDeprecationLogger.method('loadHistory', '9.0.0', '/v1/rooms.history');
 		check(rid, String);
 		const fromUser = await Meteor.userAsync();
 
@@ -54,7 +56,7 @@ Meteor.methods<ServerMethods>({
 			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages, room });
 		}
 
-		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromUser, 'preview-c-room');
 
 		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUser._id, { projection: { _id: 1 } }))) {
 			return false;

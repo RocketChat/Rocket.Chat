@@ -15,7 +15,7 @@ import {
 	GETOutboundProviderMetadataSchema,
 	POSTOutboundMessageParams,
 	POSTOutboundMessageSuccessSchema,
-} from '../../../../app/livechat-enterprise/server/outboundcomms/rest';
+} from '../../../lib/omnichannel/outboundcomms/rest';
 
 const outboundCommsEndpoints = API.v1
 	.get(

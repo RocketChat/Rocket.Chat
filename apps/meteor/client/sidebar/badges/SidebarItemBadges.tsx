@@ -18,7 +18,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
+			{isInviteSubscription(room) && <InvitationBadge marginBlockStart={2} invitationDate={room.ts} />}
 		</>
 	);
 };

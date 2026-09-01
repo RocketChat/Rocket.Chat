@@ -10,6 +10,7 @@ export type FileAttachmentProps = {
 	url: string;
 	title: string;
 	className?: string;
+	quoted?: boolean;
 };
 
 export const FileAttachment = memo(({ url, title, className, ...messageBubbleProps }: FileAttachmentProps) => (

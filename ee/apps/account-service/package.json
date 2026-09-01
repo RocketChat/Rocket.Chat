@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/account-service",
-	"version": "0.4.58",
+	"version": "0.5.0",
 	"private": true,
 	"description": "Rocket.Chat Account service",
 	"keywords": [
@@ -21,16 +21,15 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "^0.32.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.19.17",
+		"@types/node": "~22.19.21",
 		"bcrypt": "^6.0.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
@@ -48,7 +47,7 @@
 		"@types/bcrypt": "^6.0.0",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

@@ -12,6 +12,7 @@ import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 type IncomingSipCallNegotiation = {
 	id: string;
@@ -76,6 +77,12 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
 		logger.debug({ msg: 'incoming call from', callerContact: caller });
+
+		const divertedBy = await this.getDiversionContactFromInvite(req);
+		if (divertedBy) {
+			logger.debug({ msg: 'incoming call diverted by', divertedBy });
+		}
+
 		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
 		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
@@ -98,6 +105,7 @@ export class IncomingSipCall extends BaseSipCall {
 			callerAgent,
 			calleeAgent,
 			features: SIP_CALL_FEATURES,
+			...(divertedBy && { divertedBy }),
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
@@ -130,7 +138,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!uas) {
 			logger.error({ msg: 'IncomingSipCall.createDialog - dialog creation failed', callId: this.callId });
-			void mediaCallDirector.hangupByServer(this.call, 'signaling-error');
+			this.hangupCall('signaling-error');
 			return;
 		}
 
@@ -187,7 +195,7 @@ export class IncomingSipCall extends BaseSipCall {
 		uas.on('destroy', () => {
 			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
 			this.sipDialog = null;
-			void mediaCallDirector.hangup(this.call, this.agent, 'remote');
+			this.hangupCall('remote');
 		});
 
 		this.sipDialog = uas;
@@ -197,7 +205,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		logger.info({ msg: 'The incoming SIP call was canceled by the caller', callId: this.callId });
-		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		this.hangupCall('remote');
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
@@ -259,7 +267,7 @@ export class IncomingSipCall extends BaseSipCall {
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', err });
 			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
+				this.hangupCall('signaling-error');
 			}
 			return this.processEndedCall(call);
 		}
@@ -410,7 +418,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug('IncomingSipCall.hangupPendingCall');
 
 		this.cancelPendingInvites(errorCode);
-		void mediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
+		this.hangupCall('signaling-error');
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {
@@ -445,6 +453,36 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		return null;
+	}
+
+	private static async getDiversionContactFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
+		if (!req.has('diversion')) {
+			return null;
+		}
+
+		logger.debug({ msg: 'IncomingSipCall.getDiversionContactFromInvite' });
+
+		const parsed = parseDiversionHeader(req.get('diversion'));
+		if (!parsed) {
+			logger.warn({ msg: 'IncomingSipCall.getDiversionContactFromInvite: failed to parse Diversion header', raw: req.get('diversion') });
+			return null;
+		}
+
+		const { extension, displayName } = parsed;
+
+		const defaultContactInfo: MediaCallContactInformation = {
+			sipExtension: extension,
+			displayName: displayName || extension,
+		};
+
+		const contact = await mediaCallDirector.cast.getContactForExtensionNumber(extension, { requiredType: 'sip' }, defaultContactInfo);
+
+		return {
+			...defaultContactInfo,
+			...contact,
+			type: 'sip',
+			id: extension,
+		};
 	}
 
 	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {

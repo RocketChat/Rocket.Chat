@@ -67,7 +67,7 @@ const AddToken = ({ reload }: AddTokenProps) => {
 	const nameErrorId = useId();
 
 	return (
-		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} mb={8}>
+		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} marginBlock={8}>
 			<Field>
 				<FieldRow>
 					<Margins inlineEnd={4}>

@@ -66,7 +66,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1b'>
-							<Icon name={direction === 'inbound' ? 'arrow-down-left' : 'arrow-up-right'} size={24} mie={8} />
+							<Icon name={direction === 'inbound' ? 'arrow-down-left' : 'arrow-up-right'} size={24} marginInlineEnd={8} />
 							{direction === 'inbound' ? t('Incoming_voice_call') : t('Outgoing_voice_call')}
 						</Box>
 					</InfoPanelSection>
@@ -76,7 +76,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getHistoryMessagePayload(data.state, duration).blocks} />
 							</UiKitContext.Provider>
 						</MessageBlock>
-						<Box mbs={-8}>{date}</Box>
+						<Box marginBlockStart={-8}>{date}</Box>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>
@@ -94,7 +94,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 				<ButtonGroup stretch>
 					{isCallHistoryInternalContact(contact) && directMessage && (
 						<Button onClick={directMessage}>
-							<Icon name='balloon' size='x20' mie='x4' />
+							<Icon name='balloon' size='x20' marginInlineEnd='x4' />
 							{t('Direct_message')}
 						</Button>
 					)}
@@ -105,7 +105,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 							disabled={state !== 'available'}
 							title={state !== 'available' ? t('Call_in_progress') : undefined}
 						>
-							<Icon name='phone' size='x20' mie='x4' />
+							<Icon name='phone' size='x20' marginInlineEnd='x4' />
 							{t('Call')}
 						</Button>
 					)}

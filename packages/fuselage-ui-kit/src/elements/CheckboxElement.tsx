@@ -16,9 +16,9 @@ const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementPro
 				const isChecked = value?.includes(option.value);
 
 				return (
-					<Box key={option.value} pb={4}>
+					<Box key={option.value} paddingBlock={4}>
 						<CheckBox disabled={loading} value={option.value} checked={isChecked} onChange={action} />
-						<Box is='label' pis={8}>
+						<Box is='label' paddingInlineStart={8}>
 							{surfaceRenderer.renderTextObject(option.text, 0, UiKit.BlockContext.NONE)}
 						</Box>
 					</Box>

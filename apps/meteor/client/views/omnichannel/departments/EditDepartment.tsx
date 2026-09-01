@@ -149,7 +149,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 				</PageHeader>
 				<PageScrollableContentWithShadow>
 					<FieldGroup
-						w='full'
+						width='full'
 						alignSelf='center'
 						maxWidth='x600'
 						id={formId}
@@ -299,7 +299,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<Field>
 									<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
 									<FieldRow>
-										<Box w='100%'>
+										<Box width='100%'>
 											<Controller
 												control={control}
 												name='departmentsAllowedToForward'
@@ -311,7 +311,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 														excludeId={id ?? ''}
 														value={value}
 														maxWidth='100%'
-														w='100%'
+														width='100%'
 														flexGrow={1}
 														onChange={onChange}
 													/>
@@ -417,9 +417,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
-						<Divider mb={16} />
+						<Divider marginBlock={16} />
 						<Field>
-							<FieldLabel id={agentsLabelId} mb={4}>
+							<FieldLabel id={agentsLabelId} marginBlock={4}>
 								{t('Agents')}
 							</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>

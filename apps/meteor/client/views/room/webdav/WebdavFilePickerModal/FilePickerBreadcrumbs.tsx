@@ -12,7 +12,7 @@ const FilePickerBreadcrumbs = ({ parentFolders, handleBreadcrumb, handleBack }: 
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' alignItems='center' overflowX='auto' mie={8}>
+		<Box display='flex' alignItems='center' overflowX='auto' marginInlineEnd={8}>
 			<IconButton disabled={parentFolders.length === 0} title={t('Back')} aria-label='back' icon='arrow-back' small onClick={handleBack} />
 			<IconButton title={t('Root')} aria-label='home' icon='home' small data-index={-1} onClick={handleBreadcrumb} />
 			{parentFolders?.map((parentFolder, index) => (

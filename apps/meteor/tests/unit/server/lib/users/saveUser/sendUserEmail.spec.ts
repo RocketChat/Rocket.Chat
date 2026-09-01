@@ -55,8 +55,8 @@ describe('sendUserEmail (Mocha + TS)', () => {
 		MeteorStub = stubs.MeteorStub as any;
 
 		const mod = mock.noCallThru().load('../../../../../../server/lib/users/saveUser/sendUserEmail.ts', {
-			'../../../../app/mailer/server/api': MailerStub,
-			'../../../../app/settings/server': SettingsStub,
+			'../../notifications/email/api': MailerStub,
+			'../../../settings': SettingsStub,
 			'meteor/meteor': MeteorStub,
 		}) as any;
 

@@ -99,7 +99,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	return (
 		<>
-			<Box pb={16}>
+			<Box paddingBlock={16}>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}

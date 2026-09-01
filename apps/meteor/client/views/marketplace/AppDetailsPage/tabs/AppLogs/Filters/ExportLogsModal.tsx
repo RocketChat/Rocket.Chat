@@ -101,7 +101,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box display='flex' flexDirection='column' mie={10} mbe={24} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} marginBlockEnd={24} flexGrow={1}>
 					<Label>{t('Format')}</Label>
 					<Field>
 						<FieldRow>
@@ -140,7 +140,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 						</FieldRow>
 					</Field>
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} mbe={24} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} marginBlockEnd={24} flexGrow={1}>
 					<Label>{t('Export_most_recent_logs')}</Label>
 					<Field>
 						<FieldRow>

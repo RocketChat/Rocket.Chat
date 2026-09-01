@@ -3,7 +3,7 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
-import { AudioRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/AudioRecorder';
+import { AudioRecorder } from '../../../../../../lib/AudioRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';

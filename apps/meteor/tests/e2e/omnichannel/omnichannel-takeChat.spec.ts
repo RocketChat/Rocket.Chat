@@ -78,15 +78,20 @@ test.describe('omnichannel-takeChat', () => {
 		await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
 	});
 
-	test('When a new livechat conversation starts but agent is offline, it should not be able to take the chat', async () => {
+	test('When a new livechat conversation is selected and the agent becomes offline or unavailable, they should not be able to take the chat', async ({
+		api,
+	}) => {
 		await sendLivechatMessage();
 
-		await agent.poHomeChannel.navbar.changeUserStatus('offline');
 		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
+
+		await agent.poHomeChannel.navbar.changeUserStatus('offline');
+		await expectPollUserStatus(api, 'user1', 'offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 
 		await agent.poHomeChannel.navbar.changeUserStatus('online');
+		await expectPollUserStatus(api, 'user1', 'online');
 		await agent.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();

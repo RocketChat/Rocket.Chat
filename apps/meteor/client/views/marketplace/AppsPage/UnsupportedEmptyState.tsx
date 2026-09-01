@@ -13,7 +13,7 @@ const UnsupportedEmptyState = () => {
 	const description = isAdmin ? t('Update_to_access_marketplace_description') : t('Marketplace_unavailable_description');
 
 	return (
-		<Box mbs={64}>
+		<Box marginBlockStart={64}>
 			<States>
 				<StatesIcon name='warning' />
 				<StatesTitle>{title}</StatesTitle>

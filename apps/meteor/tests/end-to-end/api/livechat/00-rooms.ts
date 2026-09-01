@@ -664,11 +664,14 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
 
-			await closeOmnichannelRoom(expectedRoom._id);
-			await closeOmnichannelRoom(expectedRoom2._id);
-			await deleteVisitor(expectedVisitor.token);
-			await deleteVisitor(expectedVisitor2.token);
-			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
+			// close both rooms before removing visitors/departments (deleting a department with an open room fails)
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), closeOmnichannelRoom(expectedRoom2._id)]);
+			await Promise.all([
+				deleteVisitor(expectedVisitor.token),
+				deleteVisitor(expectedVisitor2.token),
+				deleteDepartment(department._id),
+				deleteDepartment(department2._id),
+			]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
@@ -1787,10 +1790,12 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry).to.have.property('department', targetDepartment._id);
 				expect(inquiry).to.have.property('status', 'queued');
 
+				// the room ends queued (never taken), so close it as the visitor — room.closeByUser rejects a room that is not being served
+				await request.post(api('livechat/room.close')).send({ rid: newRoom._id, token: newVisitor.token }).expect(200);
+
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(targetDepartment._id),
-					closeOmnichannelRoom(newRoom._id),
 					deleteVisitor(newVisitor.token),
 					deleteUser(manager),
 					updateSetting('Livechat_waiting_queue', false),

@@ -4,8 +4,8 @@ import type { IReadSettingPermission } from '@rocket.chat/apps-engine/definition
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Settings } from '@rocket.chat/models';
 
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../../server/lib/notifyListener';
 import { updateAuditedByApp } from '../../../../server/settings/lib/auditedSettingUpdates';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export class AppSettingBridge extends ServerSettingBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

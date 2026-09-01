@@ -4,9 +4,9 @@ import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
+import { sdk } from './SDKClient';
 import { getDdpSdk } from './sdk/ddpSdk';
 import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 

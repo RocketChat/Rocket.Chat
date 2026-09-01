@@ -9,8 +9,7 @@ import {
 } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
-import { capitalize } from '@rocket.chat/string-helpers';
-import { normalizeLanguage } from '@rocket.chat/tools';
+import { capitalize, normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
@@ -19,9 +18,9 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { getURL } from '../../app/utils/client';
 import { i18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { getURL } from '../lib/getURL';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 import { setDateFnsLocale } from '../lib/utils/setDateFnsLocale';

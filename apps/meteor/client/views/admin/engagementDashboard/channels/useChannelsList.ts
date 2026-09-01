@@ -10,7 +10,6 @@ type UseChannelsListOptions = {
 	count: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) => {
 	const getChannelsList = useEndpoint('GET', '/v1/engagement-dashboard/channels/list');
 

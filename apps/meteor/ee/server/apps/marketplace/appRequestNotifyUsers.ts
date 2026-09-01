@@ -1,7 +1,7 @@
 import type { AppRequest, IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
@@ -22,7 +22,7 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 		return acc;
 	}, []);
 
-	const msgFn = (user: IUser): string => {
+	const msgFn = (user: Pick<IUser, 'language'>): string => {
 		const defaultLang = user.language || 'en';
 		const msg = `${i18n.t('App_request_enduser_message', { appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
 

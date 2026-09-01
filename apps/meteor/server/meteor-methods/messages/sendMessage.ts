@@ -9,15 +9,16 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { RateLimiter } from '../../../app/lib/server/lib';
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
-import { metrics } from '../../../app/metrics/server';
-import { settings } from '../../../app/settings/server';
+import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { sendMessage } from '../../lib/messages/sendMessage';
+import { metrics } from '../../lib/metrics';
+import { settings } from '../../settings';
 /**
  *
  * @param uid
@@ -136,6 +137,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message, previewUrls) {
+		methodDeprecationLogger.method('sendMessage', '9.0.0', '/v1/chat.sendMessage');
+
 		check(message, {
 			_id: Match.Maybe(String),
 			rid: Match.Maybe(String),

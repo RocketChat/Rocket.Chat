@@ -26,7 +26,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 
 	if (isPending) {
 		return (
-			<Box p={24}>
+			<Box padding={24}>
 				<FormSkeleton />
 			</Box>
 		);
@@ -34,7 +34,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 
 	if (isError) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('User_not_found')}
 			</Callout>
 		);
@@ -42,7 +42,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 
 	if (data?.user && !!data.user.federated) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}
 			</Callout>
 		);

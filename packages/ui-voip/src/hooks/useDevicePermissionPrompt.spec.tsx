@@ -22,7 +22,9 @@ const appRoot = mockAppRoot()
 		VoIP_device_permission_required: 'Mic/speaker access required',
 		VoIP_allow_and_call: 'Allow and call',
 		VoIP_allow_and_accept: 'Allow and accept',
-		VoIP_cancel_and_reject: 'Cancel and reject',
+		Continue_without_mic: 'Continue without mic',
+		Call_without_mic: 'Call without mic',
+		Accept_without_mic: 'Accept without mic',
 		Cancel: 'Cancel',
 		Allow: 'Allow',
 		VoIP_device_permission_required_description:
@@ -61,15 +63,19 @@ describe.each(types)('useDevicePermissionPrompt2 - Action: %s', (actionType) => 
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'denied' } as PermissionStatus).build(),
 		});
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			void result.current({ actionType });
+			rejectPromise = result.current({ actionType });
 		});
+		// eslint-disable-next-line jest/valid-expect
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
-		const cancel = await screen.findByText('Cancel');
+		const cancel = await screen.findByText('Continue without mic');
 		expect(cancel).toBeInTheDocument();
 
 		await userEvent.click(cancel);
 
+		await rejectionExpectation;
 		expect(cancel).not.toBeInTheDocument();
 	});
 });
@@ -90,7 +96,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		const accept = await screen.findByText('Allow and accept');
 		expect(accept).toBeInTheDocument();
-		expect(await screen.findByText('Cancel and reject')).toBeInTheDocument();
+		expect(await screen.findByText('Accept without mic')).toBeInTheDocument();
 
 		await userEvent.click(accept);
 
@@ -107,7 +113,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		// eslint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
-		const cancel = await screen.findByText('Cancel and reject');
+		const cancel = await screen.findByText('Accept without mic');
 
 		expect(cancel).toBeInTheDocument();
 		expect(await screen.findByText('Allow and accept')).toBeInTheDocument();
@@ -130,7 +136,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		const accept = await screen.findByText('Allow and call');
 		expect(accept).toBeInTheDocument();
-		expect(await screen.findByText('Cancel')).toBeInTheDocument();
+		expect(await screen.findByText('Call without mic')).toBeInTheDocument();
 
 		await userEvent.click(accept);
 
@@ -140,16 +146,20 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		jest.clearAllMocks();
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			void result.current({ actionType: 'outgoing' });
+			rejectPromise = result.current({ actionType: 'outgoing' });
 		});
+		// eslint-disable-next-line jest/valid-expect
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
-		const cancel = await screen.findByText('Cancel');
+		const cancel = await screen.findByText('Call without mic');
 
 		expect(cancel).toBeInTheDocument();
 		expect(await screen.findByText('Allow and call')).toBeInTheDocument();
 
 		await userEvent.click(cancel);
+		await rejectionExpectation;
 
 		expect(cancel).not.toBeInTheDocument();
 	});
@@ -176,9 +186,12 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		jest.clearAllMocks();
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			void result.current({ actionType: 'device-change' });
+			rejectPromise = result.current({ actionType: 'device-change' });
 		});
+		// eslint-disable-next-line jest/valid-expect
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Cancel');
 
@@ -186,6 +199,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		expect(await screen.findByText('Allow')).toBeInTheDocument();
 
 		await userEvent.click(cancel);
+		await rejectionExpectation;
 
 		expect(cancel).not.toBeInTheDocument();
 	});

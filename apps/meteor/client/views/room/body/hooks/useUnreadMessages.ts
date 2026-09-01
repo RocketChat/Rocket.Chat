@@ -3,9 +3,8 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { useRoomHistoryState } from '../../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
+import { RoomHistoryManager, useRoomHistoryState } from '../../../../lib/RoomHistoryManager';
 import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';

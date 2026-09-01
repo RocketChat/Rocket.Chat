@@ -4,8 +4,9 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadNextMessages(rid, end, limit = 20) {
+		methodDeprecationLogger.method('loadNextMessages', '9.0.0', '/v1/rooms.history');
 		check(rid, String);
 		check(limit, Number);
 

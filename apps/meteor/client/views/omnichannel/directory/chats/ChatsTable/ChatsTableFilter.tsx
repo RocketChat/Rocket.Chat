@@ -73,14 +73,14 @@ const ChatsTableFilter = () => {
 				</Button>
 				{menuItems.length > 0 && <GenericMenu placement='bottom-end' detached title={t('More')} sections={menuItems} />}
 			</FilterByText>
-			<Box display='flex' flexWrap='wrap' mbe={4}>
+			<Box display='flex' flexWrap='wrap' marginBlockEnd={4}>
 				{Object.entries(displayFilters).map(([value, label], index) => {
 					if (!label) {
 						return null;
 					}
 
 					return (
-						<Chip mie={8} mbe={8} key={index} onClick={() => removeFilter(value)}>
+						<Chip marginInlineEnd={8} marginBlockEnd={8} key={index} onClick={() => removeFilter(value)}>
 							{label}
 						</Chip>
 					);

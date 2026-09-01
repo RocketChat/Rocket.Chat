@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createLdapSettings = () =>
 	settingsRegistry.addGroup('LDAP', async function () {
@@ -7,7 +7,7 @@ export const createLdapSettings = () =>
 		const ldapOnly = { _id: 'LDAP_Server_Type', value: '' };
 
 		await this.with({ tab: 'LDAP_Connection' }, async function () {
-			await this.add('LDAP_Enable', false, { type: 'boolean', public: true });
+			await this.add('LDAP_Enable', false, { type: 'boolean', public: true, alert: 'Premium_required_from_9_0_0_alert' });
 
 			await this.add('LDAP_Server_Type', 'ad', {
 				type: 'select',

@@ -3,7 +3,7 @@ import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
