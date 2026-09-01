@@ -102,6 +102,9 @@ this file disagrees with it, this file is wrong.
 | **in-process / remote `ctx`** | the two `ctx` implementations — direct calls, or NATS RPC. **The app bundle is identical either way** | [41](rfc/41-platform-deployment-and-isolation.md) |
 | **transport** | the only thing that differs between the two: a local call or a NATS RPC | [27](rfc/27-data-host-gateways.md) |
 | **the bundler cross-check** | build-time verification that every used capability's scope is declared. Error for registered capabilities, warning for `ctx` method calls | [42](rfc/42-platform-permissions.md) |
+| **the module boundary** | the one `require` an app bundle can reach — `sandboxRequire`. Every builtin, and every bundled npm dependency, passes through it | [host 41](rfc-host/41-runtime-module-boundary.md) |
+| **the load record** | one entry per builtin specifier a bundle requires. An inventory, not a counter | [host 41](rfc-host/41-runtime-module-boundary.md) |
+| **the traffic record** | per-socket telemetry off `net.client.socket` — host asked for, address resolved, duration, bytes, and the handler call that caused it | [host 41](rfc-host/41-runtime-module-boundary.md) |
 
 ---
 
@@ -121,7 +124,7 @@ wrong one describes a component that does not exist.
 | **store** | app-private persistence, `ctx.store` ([17](rfc/17-surface-settings-persistence-lifecycle.md)) | platform data, reached through `ctx.rooms` / `ctx.messages` ([20](rfc/20-data-overview.md)); or Mongo, which is **storage**. One declared collection inside a store is a **store collection** ([host 31](rfc-host/31-store-persistence.md)) |
 | **definition** | the inert value a `define*` factory returns, app-side ([10](rfc/10-surface-composition-root.md)) | *the declaration* — `defineEntity`, host-side ([27](rfc/27-data-host-gateways.md)) |
 | **selection** | what the app asks for — `select` / `with` ([24](rfc/24-data-read-surface.md)) | the **projection** it compiles to, after the grant removes ungranted fields ([43](rfc/43-platform-field-permissions.md)) |
-| **patch** | a listener outcome that modifies the subject ([15](rfc/15-surface-event-listeners.md)) | any host-side field filtering; that is projection |
+| **patch** | a listener outcome that modifies the subject ([15](rfc/15-surface-event-listeners.md)) | any host-side field filtering; that is projection. A **monkey patch** — replacing a builtin's export or prototype — is a third thing, and one [host 41](rfc-host/41-runtime-module-boundary.md) rejects |
 | **gate** | **gate 1** — the app's grant covers the scope ([42](rfc/42-platform-permissions.md)) | **gate 2** — the principal may touch the resource ([host 10](rfc-host/10-identity-app-user.md)). Both are "the gate" only where one is unambiguous |
 
 ## Terms deliberately not used

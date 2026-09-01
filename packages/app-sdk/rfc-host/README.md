@@ -27,6 +27,7 @@ nomenclature in [`../GLOSSARY.md`](../GLOSSARY.md).
 | | Document | Scope |
 |---|---|---|
 | 40 | [Durable suspend and resume](40-runtime-continuations.md) | research report — how one `await ctx.ui.open` survives a separate request |
+| 41 | [The module boundary](41-runtime-module-boundary.md) | research report — what the host sees when an app reaches for `node:net`, and what it costs |
 
 ## Reserved ranges
 
@@ -35,7 +36,7 @@ nomenclature in [`../GLOSSARY.md`](../GLOSSARY.md).
 | 10–19 | identity and authority | 10 |
 | 20–29 | enforcement — where gate 1 runs, the scope table as data | |
 | 30–39 | storage — the data gateway (the host side of [27](../rfc/27-data-host-gateways.md)), and the store | 31 |
-| 40–49 | runtime and lifecycle — install, enable, disable, update, uninstall; audit and revocation; durable execution state | 40 |
+| 40–49 | runtime and lifecycle — install, enable, disable, update, uninstall; audit and revocation; durable execution state | 40, 41 |
 | 50–59 | wrap-up | |
 
 ## Related decisions
