@@ -81,3 +81,26 @@ describe('relative hour timestamp parsing', () => {
 		expect(parse(input)).toEqual([paragraph([node])]);
 	});
 });
+
+describe('relative hour timestamp parsing beyond the 2038 boundary', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		// The hour-only path builds its date from the current clock, so it only
+		// overflows once the machine clock is past 2038-01-19. Pin the clock to
+		// 2040 to exercise that branch (previously `| 0` wrapped it negative).
+		jest.setSystemTime(new Date('2040-01-01T00:00:00.000Z'));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+	test.each([
+		['<t:10:00+00:00>', '2209024800', 't' as const],
+		['<t:10:00:05+00:00>', '2209024805', 't' as const],
+		['<t:10:00:00+00:00:R>', '2209024800', 'R' as const],
+	])('parses %p', (input, value, format) => {
+		const node = timestampNode(value, format, [0, input.length]);
+		expect(parse(input)).toEqual([paragraph([node])]);
+	});
+});
