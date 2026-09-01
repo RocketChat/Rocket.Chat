@@ -228,7 +228,7 @@
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.1",
 		"is-svg": "^5.1.0",
-		"isolated-vm": "6.1.2",
+		"isolated-vm": "6.2.0",
 		"jschardet": "^3.1.4",
 		"jsdom": "^26.1.0",
 		"json-2-csv": "^5.5.11",
