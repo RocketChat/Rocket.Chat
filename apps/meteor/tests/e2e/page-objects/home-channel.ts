@@ -11,6 +11,7 @@ import {
 	MembersFlexTab,
 	ChannelsFlexTab,
 	NotificationPreferencesFlexTab,
+	AutoTranslateFlexTab,
 	ExportMessagesFlexTab,
 	PruneMessagesFlexTab,
 	SearchMessagesFlexTab,
@@ -44,6 +45,7 @@ export class HomeChannel {
 		editRoom: EditRoomFlexTab;
 		channels: ChannelsFlexTab;
 		notificationPreferences: NotificationPreferencesFlexTab;
+		autoTranslate: AutoTranslateFlexTab;
 		exportMessages: ExportMessagesFlexTab;
 		pruneMessages: PruneMessagesFlexTab;
 		searchMessages: SearchMessagesFlexTab;
@@ -75,6 +77,7 @@ export class HomeChannel {
 			editRoom: new EditRoomFlexTab(page.getByRole('dialog', { name: 'Edit channel' })),
 			channels: new ChannelsFlexTab(page),
 			notificationPreferences: new NotificationPreferencesFlexTab(page),
+			autoTranslate: new AutoTranslateFlexTab(page),
 			exportMessages: new ExportMessagesFlexTab(page),
 			pruneMessages: new PruneMessagesFlexTab(page),
 			searchMessages: new SearchMessagesFlexTab(page),
