@@ -18,6 +18,6 @@ export interface ICronJobItem extends IRocketChatRecord {
 	failReason?: string;
 	failCount?: number;
 	lastModifiedBy?: string;
-	data?: Record<string, any>;
+	data?: Record<string, unknown>;
 	status?: CronJobStatus;
 }
