@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { request as baseRequest } from '@playwright/test';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
@@ -56,18 +57,22 @@ export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<
 	await api.post('/rooms.delete', { roomId });
 }
 
-export async function deletePrivateRoomsByName(
-	api: BaseTest['api'],
-	credentials: { username: string; password: string },
-	roomNames: string[],
-): Promise<void> {
-	const userApi = await api.login(credentials);
+export async function deletePrivateRoomsByName(credentials: { username: string; password: string }, roomNames: string[]): Promise<void> {
+	const userApi = await baseRequest.newContext();
 
 	try {
+		const loginResponse = await userApi.post(`${BASE_API_URL}/login`, { data: credentials });
+		const { data } = await loginResponse.json();
 		const failures = (
 			await Promise.all(
 				roomNames.map(async (roomName) => {
-					const response = await userApi.post(`${BASE_API_URL}/groups.delete`, { data: { roomName } });
+					const response = await userApi.post(`${BASE_API_URL}/groups.delete`, {
+						data: { roomName },
+						headers: {
+							'X-Auth-Token': data.authToken,
+							'X-User-Id': data.userId,
+						},
+					});
 
 					return response.ok() ? null : `${roomName}: ${response.status()} ${await response.text()}`;
 				}),

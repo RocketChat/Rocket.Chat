@@ -40,9 +40,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await page.goto('/home');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await deletePrivateRoomsByName(
-			api,
 			{ username: Users.userE2EE.data.username, password: DEFAULT_USER_CREDENTIALS.password },
 			createdChannels,
 		);

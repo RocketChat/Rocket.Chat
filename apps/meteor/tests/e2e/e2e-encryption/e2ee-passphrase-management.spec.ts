@@ -202,8 +202,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await api.recreateContext();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {

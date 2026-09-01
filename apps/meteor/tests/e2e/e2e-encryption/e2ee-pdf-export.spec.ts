@@ -45,8 +45,8 @@ test.describe('E2EE PDF Export', () => {
 		createE2EEChannel = new CreateE2EEChannel(page);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {

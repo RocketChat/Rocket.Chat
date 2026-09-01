@@ -45,8 +45,8 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await loginPage.loginByUserState(Users.admin);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await deletePrivateRoomsByName(api, ADMIN_CREDENTIALS, createdChannels);
+	test.afterAll(async () => {
+		await deletePrivateRoomsByName(ADMIN_CREDENTIALS, createdChannels);
 	});
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
