@@ -408,12 +408,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						}}
 					>
 						{loading ? (
-							<li className='load-more'>
+							<div className='load-more' role='presentation'>
 								<LoadingMessagesIndicator />
-							</li>
+							</div>
 						) : null}
 						{!loading && hasPreviousPage ? (
-							<li className='load-more'>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</li>
+							<div className='load-more' role='presentation'>
+								{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
+							</div>
 						) : null}
 						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
@@ -438,9 +440,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								);
 							})}
 						{!loading && hasNextPage ? (
-							<li className='load-more'>
+							<div className='load-more' role='presentation'>
 								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-							</li>
+							</div>
 						) : null}
 					</VList>
 				</MessageListProvider>
