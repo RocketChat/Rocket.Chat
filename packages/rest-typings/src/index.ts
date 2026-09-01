@@ -39,6 +39,7 @@ import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
+import type { SetupWizardEndpoints } from './v1/setupWizard';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
@@ -69,6 +70,7 @@ export interface Endpoints
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
+		SetupWizardEndpoints,
 		UsersEndpoints,
 		AppsEndpoints,
 		OmnichannelEndpoints,
