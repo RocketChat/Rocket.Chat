@@ -199,7 +199,9 @@ export abstract class BaseSipCall extends BaseCallProvider {
 					actor: oppositeActor,
 					callId: this.call._id,
 				});
-				res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+				if (!res.finalResponseSent) {
+					res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+				}
 				return;
 			}
 
@@ -225,7 +227,9 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			logger.error({ msg: 'An unexpected error occured while processing a modify event on a SIP call dialog', err });
 
 			try {
-				res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				if (!res.finalResponseSent) {
+					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				}
 			} catch {
 				//
 			}
@@ -398,7 +402,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			if (!negotiation) {
 				logger.error({ msg: 'Invalid Negotiation reference.', localNegotiation: localNegotiation.id, type: this.constructor.name });
 				this.inboundRenegotiations.delete(localNegotiation.id);
-				if (localNegotiation.res) {
+				if (localNegotiation.res && !localNegotiation.res.finalResponseSent) {
 					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
 				}
 				continue;
