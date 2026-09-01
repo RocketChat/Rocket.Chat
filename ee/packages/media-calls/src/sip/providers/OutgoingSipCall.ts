@@ -1,7 +1,6 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
-import type Srf from 'drachtio-srf';
 import type { SrfRequest } from 'drachtio-srf';
 
 import { BaseSipCall, type SipCallNegotiation } from './BaseSipCall';
@@ -14,13 +13,9 @@ import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
 export class OutgoingSipCall extends BaseSipCall {
-	private sipDialog: Srf.Dialog | null;
-
 	private sipDialogReq: SrfRequest | null;
 
 	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
-
-	private processedTransfer: boolean;
 
 	constructor(
 		session: SipServerSession,
@@ -28,9 +23,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		protected override readonly agent: BroadcastActorAgent,
 	) {
 		super(session, call, agent);
-		this.sipDialog = null;
 		this.sipDialogReq = null;
-		this.processedTransfer = false;
 		this.inboundRenegotiations = new Map();
 	}
 
@@ -87,7 +80,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		if (call.state === 'hangup') {
-			return this.processEndedCall();
+			return this.processEndedCall(call);
 		}
 
 		if (this.lastCallState === 'none') {
@@ -195,11 +188,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - dialog created', callId: this.sipDialog.sip?.callId });
-		this.sipDialog.on('destroy', () => {
-			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
-			this.sipDialog = null;
-			this.hangupCall('remote');
-		});
+		this.sipDialog.on('destroy', () => this.onDialogDestroyed());
 
 		this.sipDialog.on('modify', (req, res) => {
 			void this.handleDialogModify(req, res);
@@ -291,52 +280,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		});
 	}
 
-	protected async processTransferredCall(call: IMediaCall): Promise<void> {
-		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
-			return;
-		}
-
-		if (!this.sipDialog || this.processedTransfer) {
-			if (call.ended) {
-				return this.processEndedCall();
-			}
-			return;
-		}
-
-		logger.debug({ msg: 'OutgoingSipCall.processTransferredCall', callId: call._id, lastCallState: this.lastCallState });
-		this.processedTransfer = true;
-
-		try {
-			// Sip targets can only be referred to other sip users
-			const newCallee = await mediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
-			if (!newCallee) {
-				throw new Error('invalid-transfer');
-			}
-
-			const referTo = this.session.geContactUri(newCallee);
-			const referredBy = this.session.geContactUri(call.transferredBy);
-
-			const res = await this.sipDialog.request({
-				method: 'REFER',
-				headers: {
-					'Refer-To': referTo,
-					'Referred-By': referredBy,
-				},
-			});
-
-			if (res.status === 202) {
-				logger.debug({ msg: 'REFER was accepted', method: 'OutgoingSipCall.processTransferredCall' });
-			}
-		} catch (err) {
-			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', err, callId: call._id });
-			if (!call.ended) {
-				this.hangupCall('signaling-error');
-			}
-			return this.processEndedCall();
-		}
-	}
-
-	protected async processEndedCall(): Promise<void> {
+	protected async processEndedCall(_call: IMediaCall): Promise<void> {
 		if (this.lastCallState === 'hangup') {
 			return;
 		}

@@ -25,6 +25,10 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected abstract inboundRenegotiations: Map<string, SipCallNegotiation>;
 
+	protected sipDialog: Srf.Dialog | null;
+
+	protected processedTransfer: boolean;
+
 	constructor(
 		protected readonly session: SipServerSession,
 		call: IMediaCall,
@@ -32,6 +36,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 	) {
 		super(call);
 		this.lastCallState = 'none';
+		this.sipDialog = null;
+		this.processedTransfer = false;
 	}
 
 	/**
@@ -110,6 +116,17 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		// no extra handling by default
 	}
 
+	protected onDialogDestroyed(): void {
+		logger.debug({
+			msg: 'SIP Dialog Destroyed',
+			type: this.constructor.name,
+			callId: this.call._id,
+		});
+
+		this.sipDialog = null;
+		this.hangupCall('remote');
+	}
+
 	public override async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		// If we already knew this call was over, there's nothing more to reflect
 		if (this.lastCallState === 'hangup') {
@@ -133,6 +150,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected abstract reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void>;
 
+	protected abstract processEndedCall(call: IMediaCall): Promise<void>;
+
 	protected async sendDTMF(dialog: Srf.Dialog, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'BaseSipCall.sendDTMF' });
 		await dialog.request({
@@ -148,5 +167,34 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		void mediaCallDirector.hangup(this.call, this.agent, hangupReason).catch((err) => {
 			logger.debug({ msg: 'Unexpected error ending call', err, type: this.constructor.name, hangupReason });
 		});
+	}
+
+	protected async processTransferredCall(call: IMediaCall): Promise<void> {
+		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
+			return;
+		}
+
+		if (!this.sipDialog || this.processedTransfer) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
+		logger.debug({ msg: 'processTransferredCall', callId: call._id, lastCallState: this.lastCallState, type: this.constructor.name });
+		this.processedTransfer = true;
+
+		try {
+			await this.session.sendReferRequest(this.sipDialog, {
+				transferredTo: call.transferredTo,
+				transferredBy: call.transferredBy,
+			});
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
+			if (!call.ended) {
+				this.hangupCall('signaling-error');
+			}
+			return this.processEndedCall(call);
+		}
 	}
 }
