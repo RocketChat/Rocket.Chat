@@ -1,7 +1,7 @@
+import { sdk } from './SDKClient';
 import { VideoConfManager } from './VideoConfManager';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
-jest.mock('../../app/utils/client/lib/SDKClient', () => ({
+jest.mock('./SDKClient', () => ({
 	sdk: {
 		rest: { post: jest.fn(() => Promise.resolve({})), get: jest.fn(() => Promise.resolve({})) },
 		publish: jest.fn(),
