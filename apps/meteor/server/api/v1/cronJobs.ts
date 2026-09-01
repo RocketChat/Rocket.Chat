@@ -1,6 +1,12 @@
 import { CronJobs } from '@rocket.chat/core-services';
 import type { CronJobStatus, ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
-import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -19,7 +25,7 @@ const isCronJobsListParams = ajvQuery.compile<{
 		searchTerm: { type: 'string', nullable: true },
 		status: {
 			type: 'string',
-			enum: ['running', 'scheduled', 'failed', 'disabled'],
+			enum: ['running', 'scheduled', 'failed', 'disabled', 'completed'],
 			nullable: true,
 		},
 	},
@@ -44,7 +50,7 @@ const isCronOmnichannelJobsListParams = ajvQuery.compile<{
 		searchTerm: { type: 'string', nullable: true },
 		status: {
 			type: 'string',
-			enum: ['running', 'scheduled', 'failed', 'disabled'],
+			enum: ['running', 'scheduled', 'failed', 'disabled', 'completed'],
 			nullable: true,
 		},
 	},
@@ -139,6 +145,39 @@ const isCronJobsActionResponse = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+async function handleJobListings(
+	queryParams: Parameters<typeof getPaginationItems>[0] & {
+		searchTerm?: string;
+		status?: CronJobStatus;
+		source?: OmnichannelJobSource;
+	},
+	fetcher: (params: {
+		offset: number;
+		count: number;
+		searchTerm?: string;
+		status?: CronJobStatus;
+		source?: OmnichannelJobSource;
+	}) => Promise<{ jobs: ICronJobItem[]; total: number }>,
+) {
+	const { offset, count } = await getPaginationItems(queryParams);
+	const searchTerm = queryParams.searchTerm?.trim();
+	const { status, source } = queryParams;
+	const { jobs, total } = await fetcher({
+		offset,
+		count,
+		...(searchTerm && { searchTerm }),
+		...(status && { status }),
+		...(source && { source }),
+	});
+
+	return API.v1.success({
+		jobs,
+		count: jobs.length,
+		offset,
+		total,
+	});
+}
+
 const cronJobsEndpoints = API.v1
 	.get(
 		'cron.jobs',
@@ -150,25 +189,11 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsListResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const searchTerm = this.queryParams.searchTerm?.trim();
-			const { status } = this.queryParams;
-			const { jobs, total } = await CronJobs.getCoreJobs({
-				offset,
-				count,
-				...(searchTerm && { searchTerm }),
-				...(status && { status }),
-			});
-
-			return API.v1.success({
-				jobs,
-				count: jobs.length,
-				offset,
-				total,
-			});
+			return handleJobListings(this.queryParams, (params) => CronJobs.getCoreJobs(params));
 		},
 	)
 	.get(
@@ -181,25 +206,11 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsListResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const searchTerm = this.queryParams.searchTerm?.trim();
-			const { status } = this.queryParams;
-			const { jobs, total } = await CronJobs.getAppJobs({
-				offset,
-				count,
-				...(searchTerm && { searchTerm }),
-				...(status && { status }),
-			});
-
-			return API.v1.success({
-				jobs,
-				count: jobs.length,
-				offset,
-				total,
-			});
+			return handleJobListings(this.queryParams, (params) => CronJobs.getAppJobs(params));
 		},
 	)
 	.get(
@@ -212,26 +223,11 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsListResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const searchTerm = this.queryParams.searchTerm?.trim();
-			const { source, status } = this.queryParams;
-			const { jobs, total } = await CronJobs.getOmnichannelJobs({
-				source,
-				offset,
-				count,
-				...(searchTerm && { searchTerm }),
-				...(status && { status }),
-			});
-
-			return API.v1.success({
-				jobs,
-				count: jobs.length,
-				offset,
-				total,
-			});
+			return handleJobListings(this.queryParams, (params) => CronJobs.getOmnichannelJobs(params as any));
 		},
 	)
 	.get(
@@ -244,6 +240,7 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -269,6 +266,7 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsHistoryResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -298,6 +296,7 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsActionResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -320,6 +319,7 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsActionResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -342,6 +342,7 @@ const cronJobsEndpoints = API.v1
 				200: isCronJobsActionResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
