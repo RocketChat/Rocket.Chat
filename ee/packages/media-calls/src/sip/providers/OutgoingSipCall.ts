@@ -245,6 +245,19 @@ export class OutgoingSipCall extends BaseSipCall {
 		const localNegotiation = await this.getPendingInboundNegotiation();
 		// If we don't have an sdp, we can't respond to it yet
 		if (!localNegotiation?.answer?.sdp) {
+			logger.debug({
+				msg: 'Skipping negotiation due to missing answer sdp',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
+			return;
+		}
+		if (localNegotiation.res.finalResponseSent) {
+			logger.debug({
+				msg: 'Final response has already been sent',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
 			return;
 		}
 
