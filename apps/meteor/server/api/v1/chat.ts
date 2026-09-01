@@ -33,7 +33,7 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -1503,10 +1503,9 @@ const chatEndpoints = API.v1
 			const messages = await Messages.findVisibleByIds(messageIds).toArray();
 
 			const rids = [...new Set(messages.map(({ rid }) => rid))];
-			const allowed = await Promise.all(rids.map((rid) => canAccessRoomIdAsync(rid, this.userId)));
 
 			// The batch spans rooms, so one unreadable room rejects the whole request.
-			if (!allowed.every(Boolean)) {
+			if (!(await canAccessRoomIdsAsync(rids, this.userId))) {
 				return API.v1.forbidden();
 			}
 
