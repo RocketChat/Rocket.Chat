@@ -216,11 +216,12 @@ describe('miscellaneous', () => {
 			]);
 
 			const connection = await MongoClient.connect(URL_MONGODB);
-			await connection
+			const updateResult = await connection
 				.db()
 				.collection('users')
 				.updateOne({ _id: userWithLeftoverFederationData._id as any }, { $set: { federation: { origin: 'example.com' } } });
 			await connection.close();
+			expect(updateResult.modifiedCount).to.equal(1);
 		});
 
 		after(async () => {
