@@ -9301,33 +9301,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.33.0":
-  version: 0.33.0
-  resolution: "@rocket.chat/css-in-js@npm:0.33.0"
+"@rocket.chat/css-in-js@npm:^0.33.0, @rocket.chat/css-in-js@npm:^0.33.1, @rocket.chat/css-in-js@workspace:packages/css-in-js, @rocket.chat/css-in-js@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/css-in-js@workspace:packages/css-in-js"
   dependencies:
     "@emotion/hash": "npm:^0.9.2"
-    "@rocket.chat/css-supports": "npm:^0.31.25"
-    "@rocket.chat/memo": "npm:^0.31.25"
-    "@rocket.chat/stylis-logical-props-middleware": "npm:^0.31.25"
-    stylis: "npm:~4.3.6"
-  checksum: 10/3604d765557c25f4471f7770f26f49287ce2725f1b9aab708e6cbad5e3c429bc0197065bf7849fe5acd68ff597374cfa61e03842404c77cb87ae4e94a0db19fd
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/css-in-js@npm:^0.33.1":
-  version: 0.33.1
-  resolution: "@rocket.chat/css-in-js@npm:0.33.1"
-  dependencies:
-    "@emotion/hash": "npm:^0.9.2"
-    "@rocket.chat/css-supports": "npm:^0.31.25"
-    "@rocket.chat/memo": "npm:^0.31.25"
-    "@rocket.chat/stylis-logical-props-middleware": "npm:^0.31.25"
+    "@rocket.chat/css-supports": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/memo": "workspace:~"
+    "@rocket.chat/stylis-logical-props-middleware": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@rollup/plugin-commonjs": "npm:~29.0.3"
+    "@rollup/plugin-json": "npm:~6.1.0"
+    "@rollup/plugin-node-resolve": "npm:~16.0.3"
+    "@rollup/plugin-terser": "npm:~1.0.0"
+    "@rollup/plugin-typescript": "npm:~12.3.0"
+    eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
+    rollup: "npm:~4.62.4"
     stylis: "npm:~4.4.0"
-  checksum: 10/82a8a4dff1ee4a54456f9e77192b9c31e502bab409b50259583bbe8601e6c97f727527a14856baac55a08d4b103060a5b7d2367eafea29195839623f97332e56
-  languageName: node
-  linkType: hard
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
 
-"@rocket.chat/css-supports@npm:^0.31.25, @rocket.chat/css-supports@workspace:packages/css-supports, @rocket.chat/css-supports@workspace:~":
+"@rocket.chat/css-supports@workspace:packages/css-supports, @rocket.chat/css-supports@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/css-supports@workspace:packages/css-supports"
   dependencies:
@@ -9668,7 +9665,7 @@ __metadata:
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -10071,6 +10068,7 @@ __metadata:
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@date-fns/tz": "npm:^1.4.1"
+    "@emotion/hash": "npm:^0.9.2"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.21.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -10100,7 +10098,8 @@ __metadata:
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/cron": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
+    "@rocket.chat/css-supports": "workspace:~"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
@@ -10153,6 +10152,7 @@ __metadata:
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/stylis-logical-props-middleware": "workspace:~"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10242,6 +10242,7 @@ __metadata:
     "@types/sinon": "npm:^10.0.20"
     "@types/speakeasy": "npm:^2.0.10"
     "@types/strict-uri-encode": "npm:^2.0.2"
+    "@types/stylis": "npm:^4.2.7"
     "@types/supertest": "npm:~6.0.3"
     "@types/supports-color": "npm:~7.2.1"
     "@types/swagger-ui-express": "npm:^4.1.8"
@@ -10427,6 +10428,7 @@ __metadata:
     stylelint-config-standard: "npm:^36.0.1"
     stylelint-order: "npm:^6.0.4"
     stylelint-selector-bem-pattern: "npm:^4.0.1"
+    stylis: "npm:~4.4.0"
     supertest: "npm:~7.1.4"
     supports-color: "npm:~7.2.0"
     swagger-ui-express: "npm:^5.0.1"
@@ -11072,7 +11074,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/stylis-logical-props-middleware@npm:^0.31.25, @rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware":
+"@rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware, @rocket.chat/stylis-logical-props-middleware@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware"
   dependencies:
@@ -11155,7 +11157,7 @@ __metadata:
   dependencies:
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11313,7 +11315,7 @@ __metadata:
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11359,7 +11361,7 @@ __metadata:
     "@playwright/test": "npm:~1.52.0"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/desktop-api": "workspace:^"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
@@ -11426,7 +11428,7 @@ __metadata:
     "@hello-pangea/dnd": "npm:^17.0.0"
     "@lezer/highlight": "npm:^1.2.3"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11464,7 +11466,7 @@ __metadata:
   resolution: "@rocket.chat/web-ui-registration@workspace:packages/web-ui-registration"
   dependencies:
     "@rocket.chat/core-typings": "workspace:~"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.87.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11639,6 +11641,20 @@ __metadata:
     rollup:
       optional: true
   checksum: 10/2331da36b60350f2c99e6deb175d8112e5986e8c48571d29b8f4c9aa20a228abf11142b6bd5facf708e5ee0f1284d01ac869283ebffe25e5e9b834caf985fb11
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-json@npm:~6.1.0":
+  version: 6.1.0
+  resolution: "@rollup/plugin-json@npm:6.1.0"
+  dependencies:
+    "@rollup/pluginutils": "npm:^5.1.0"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10/cc018d20c80242a2b8b44fae61a968049cf31bb8406218187cc7cda35747616594e79452dd65722e7da6dd825b392e90d4599d43cd4461a02fefa2865945164e
   languageName: node
   linkType: hard
 
@@ -32188,15 +32204,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:~3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10/5beac1f30b5b40162532b8e2f7c3a4eb650910a2695e9c8512a62ffdc09dae93190c29db9107fa7f26d1b6c71aad3628ecb9b5de1ecb0911191099be109434d7
-  languageName: node
-  linkType: hard
-
 "prettier@npm:~3.9.6":
   version: 3.9.6
   resolution: "prettier@npm:3.9.6"
@@ -35977,13 +35984,6 @@ __metadata:
   bin:
     stylelint: bin/stylelint.mjs
   checksum: 10/2bc1627e2681414d9c61a96e8298ca7697ce8bc78bb9ffe1c3e370e064ca81cd4d131493a3f315334195b1f039ff99ea0c900e264ca4516c93ee5c36d2e4490d
-  languageName: node
-  linkType: hard
-
-"stylis@npm:~4.3.6":
-  version: 4.3.6
-  resolution: "stylis@npm:4.3.6"
-  checksum: 10/6ebe8a37827124e0caf0704c13d39c121f6e6a8433eb8c67cfce508477b24a4434d1731198ba0b6e453655022bbf5beda93585f38ff420545e5356f925f83761
   languageName: node
   linkType: hard
 

@@ -17,7 +17,7 @@
 		"@hello-pangea/dnd": "^17.0.0",
 		"@lezer/highlight": "^1.2.3",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/css-in-js": "^0.33.1",
+		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/fuselage": "^0.87.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-toastbar": "~0.36.1",

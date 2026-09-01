@@ -1,0 +1,63 @@
+{
+	"name": "@rocket.chat/css-in-js",
+	"version": "0.33.1",
+	"description": "Toolset to transpile and use CSS on runtime",
+	"keywords": [
+		"rocket.chat",
+		"css-in-js"
+	],
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/css-in-js"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"module": "dist/index.module.js",
+	"source": "src/index.ts",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && rollup -c",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@emotion/hash": "^0.9.2",
+		"@rocket.chat/css-supports": "workspace:~",
+		"@rocket.chat/memo": "workspace:~",
+		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
+		"stylis": "~4.4.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@rollup/plugin-commonjs": "~29.0.3",
+		"@rollup/plugin-json": "~6.1.0",
+		"@rollup/plugin-node-resolve": "~16.0.3",
+		"@rollup/plugin-terser": "~1.0.0",
+		"@rollup/plugin-typescript": "~12.3.0",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"rollup": "~4.62.4",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
