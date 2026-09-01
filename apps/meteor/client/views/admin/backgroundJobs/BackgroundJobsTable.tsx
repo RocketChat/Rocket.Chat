@@ -1,3 +1,4 @@
+import type { CronJobStatus } from '@rocket.chat/core-typings';
 import { Box, Pagination, Select, Tag } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
@@ -5,8 +6,6 @@ import {
 	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePagination,
@@ -17,18 +16,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab, OmnichannelJobSource } from './BackgroundJobsPage';
-import { STATUS_LABEL, statusVariant, useTranslateInterval } from './helpers';
+import { BackgroundJobsTableHeader } from './BackgroundJobsTableHeader';
+import { STATUS_LABEL, statusVariant } from './helpers';
+import { useTranslateInterval } from './hooks/useTranslateInterval';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 
-type BackgroundJobsTableProps = {
+export type BackgroundJobsTableProps = {
 	tab: BackgroundJobsTab;
 	omnichannelSource: OmnichannelJobSource;
 };
-
-type CronJobStatus = 'running' | 'scheduled' | 'failed' | 'disabled';
 
 const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
@@ -130,17 +129,7 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 			)}
 			{isLoading && (
 				<GenericTable>
-					<GenericTableHeader>
-						<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell width='x120'>{t('Status')}</GenericTableHeaderCell>
-						{isDesktopOrLarger && (
-							<>
-								<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
-								<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
-							</>
-						)}
-						<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-					</GenericTableHeader>
+					<BackgroundJobsTableHeader isDesktopOrLarger={isDesktopOrLarger} />
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={isDesktopOrLarger ? 5 : 3} />
 					</GenericTableBody>
@@ -149,17 +138,7 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 			{isSuccess && jobs.length > 0 && (
 				<>
 					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell width='x120'>{t('Status')}</GenericTableHeaderCell>
-							{isDesktopOrLarger && (
-								<>
-									<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
-									<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
-								</>
-							)}
-							<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-						</GenericTableHeader>
+						<BackgroundJobsTableHeader isDesktopOrLarger={isDesktopOrLarger} />
 						<GenericTableBody>
 							{jobs.map((job) => (
 								<GenericTableRow key={job._id} tabIndex={0} role='link' action onClick={() => handleClick(job.name)}>
