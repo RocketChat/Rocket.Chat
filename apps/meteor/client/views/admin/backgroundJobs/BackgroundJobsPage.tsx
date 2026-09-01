@@ -18,15 +18,13 @@ import BackgroundJobsTable from './BackgroundJobsTable';
 import RecentHistoryTable from './RecentHistoryTable';
 
 export type BackgroundJobsTab = 'history' | 'system' | 'apps' | 'omnichannel';
-export type { OmnichannelJobSource };
 
 const BackgroundJobsPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
+	const tab = (useRouteParameter('tab') as BackgroundJobsTab) || 'history';
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
-
-	const [tab, setTab] = useState<BackgroundJobsTab>('history');
 	const [omnichannelSource, setOmnichannelSource] = useState<OmnichannelJobSource>('auto-close');
 
 	const handleClose = useCallback(() => {
@@ -37,7 +35,10 @@ const BackgroundJobsPage = () => {
 	}, [router]);
 
 	const handleTabChange = (nextTab: BackgroundJobsTab): void => {
-		setTab(nextTab);
+		router.navigate({
+			name: 'admin-background-jobs',
+			params: { tab: nextTab },
+		});
 		if (nextTab === 'omnichannel') {
 			setOmnichannelSource('auto-close');
 		}
