@@ -1,4 +1,4 @@
-import type { CronJobStatus } from '@rocket.chat/core-typings';
+import type { CronJobStatus, OmnichannelJobSource } from '@rocket.chat/core-typings';
 import { Box, Pagination, Select, Tag } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { BackgroundJobsTab, OmnichannelJobSource } from './BackgroundJobsPage';
+import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import { BackgroundJobsTableHeader } from './BackgroundJobsTableHeader';
 import { STATUS_LABEL, statusVariant } from './helpers';
 import { useTranslateInterval } from './hooks/useTranslateInterval';

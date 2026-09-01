@@ -1,4 +1,4 @@
-import type { ICronHistoryItem, Serialized } from '@rocket.chat/core-typings';
+import type { ICronHistoryItem, Serialized, CronJobStatus } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, Icon, Tag } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const isRunning = !entry.finishedAt;
 	const [showError, setShowError] = useState(false);
 
-	let status: 'running' | 'failed' | 'completed' = 'completed';
+	let status: CronJobStatus = 'completed';
 	if (isRunning) {
 		status = 'running';
 	} else if (hasError) {
