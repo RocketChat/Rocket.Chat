@@ -78,8 +78,14 @@ test.describe.serial('Message Attachment Collapse', () => {
 			await postAttachmentMessage(api, targetChannel, { text: textA });
 			await postAttachmentMessage(api, targetChannel, { text: textB });
 
+			const messageA = poHomeChannel.content.messageListItems.filter({ hasText: textA });
+			const messageB = poHomeChannel.content.messageListItems.filter({ hasText: textB });
+
+			await expect(messageA).toBeVisible();
+			await expect(messageB).toBeVisible();
+
 			// Collapse only the most recent message's attachment (textB).
-			await poHomeChannel.content.mainMessageList.getByRole('button', { name: 'Collapse' }).last().click();
+			await messageB.getByRole('button', { name: 'Collapse' }).click();
 
 			await expect(poHomeChannel.content.mainMessageList.getByText(textA)).toBeVisible();
 			await expect(poHomeChannel.content.mainMessageList.getByText(textB)).toBeHidden();
