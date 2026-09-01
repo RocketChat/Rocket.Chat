@@ -1,9 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { QueryClient } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import AddParticipantsModal from './AddParticipantsModal';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
+import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
 import { Rooms } from '../../../../stores';
 
 // The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
@@ -140,4 +142,24 @@ it('adds without ringing when ringing is turned off', async () => {
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
 	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'], ring: false }));
+});
+
+// The window learns about other people's changes from the conference stream. Its own are not other people's:
+// leaning on that left the panel this was opened from still listing the call as it was before the add.
+it('has the call read again, so the panel it was opened from is not left stale', async () => {
+	const invalidateQueries = jest.spyOn(QueryClient.prototype, 'invalidateQueries');
+
+	renderModal();
+
+	await selectOutsider();
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(addParticipants).toHaveBeenCalled());
+	// The conference query is what the members panel reads, so invalidating it is what sends the panel back to
+	// the server for the roster it is showing.
+	await waitFor(() =>
+		expect(invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: videoConferenceQueryKeys.conference('call-id') })),
+	);
+
+	invalidateQueries.mockRestore();
 });
