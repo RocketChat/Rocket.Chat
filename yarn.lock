@@ -9327,14 +9327,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/css-supports@npm:0.31.25"
+"@rocket.chat/css-supports@npm:^0.31.25, @rocket.chat/css-supports@workspace:packages/css-supports":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/css-supports@workspace:packages/css-supports"
   dependencies:
-    "@rocket.chat/memo": "npm:^0.31.25"
-  checksum: 10/fb7fde175475af41a77c105bacbc10b56d883b75046eb1c15c65d977a2388166d927afa4953296a133037a78eae41c628c376ca4a155a0254930b64a9b3bc12b
-  languageName: node
-  linkType: hard
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/memo": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client, @rocket.chat/ddp-client@workspace:~":
   version: 0.0.0-use.local
@@ -9878,7 +9882,6 @@ __metadata:
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
     "@types/react": "npm:~19.2.18"
     "@types/webpack-env": "npm:~1.18.8"
-    "@types/whatwg-fetch": "npm:~0.0.33"
     ajv: "npm:^8.20.0"
     ajv-formats: "npm:^3.0.1"
     autoprefixer: "npm:^10.5.4"
@@ -15623,22 +15626,6 @@ __metadata:
   version: 1.18.8
   resolution: "@types/webpack-env@npm:1.18.8"
   checksum: 10/f3932f3d6c2530f644cfc898eda1ab8182d6ae57f555c2f0179d813549b639078671b71e4041831fc306c5ebe61f5cdac794fe4ceae281fce8bf67e23661a488
-  languageName: node
-  linkType: hard
-
-"@types/whatwg-fetch@npm:~0.0.33":
-  version: 0.0.33
-  resolution: "@types/whatwg-fetch@npm:0.0.33"
-  dependencies:
-    "@types/whatwg-streams": "npm:*"
-  checksum: 10/431c407a72f5d5098e55361f159027137239df495c930d3f35f231d7375d34423d015d0cc1e391bf73af4dafb757e80a8ff33951972325e402dbea3b4934f6a0
-  languageName: node
-  linkType: hard
-
-"@types/whatwg-streams@npm:*":
-  version: 0.0.7
-  resolution: "@types/whatwg-streams@npm:0.0.7"
-  checksum: 10/63ffdd1493cfcaf6f5ce99f865d9a7b921335c046ef8b8f0e37aacfa17672174606321da0f8d9ab9e4bfa26bd90c80529463f3651f1b202028debabdadf13fe8
   languageName: node
   linkType: hard
 
