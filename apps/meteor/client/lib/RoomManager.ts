@@ -4,7 +4,6 @@ import { useMemo, useSyncExternalStore } from 'react';
 
 import { LegacyRoomManager } from './LegacyRoomManager';
 import { RoomHistoryManager } from './RoomHistoryManager';
-import { MAX_TOGGLED_COLLAPSIBLES_PER_ROOM } from './constants';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
@@ -54,14 +53,6 @@ class RoomStore extends Emitter<{
 			this.toggledCollapsibles.delete(key);
 			this.emit(getCollapsibleEventKey(key));
 			return;
-		}
-
-		if (this.toggledCollapsibles.size >= MAX_TOGGLED_COLLAPSIBLES_PER_ROOM) {
-			const oldest = this.toggledCollapsibles.values().next().value;
-			if (oldest !== undefined) {
-				this.toggledCollapsibles.delete(oldest);
-				this.emit(getCollapsibleEventKey(oldest));
-			}
 		}
 
 		this.toggledCollapsibles.add(key);
