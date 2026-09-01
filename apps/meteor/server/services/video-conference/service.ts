@@ -1012,19 +1012,29 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
+		// Someone arriving changes which calls are worth offering — a call nobody has joined is not offered at
+		// all, and the list of calls to join is what the window's own flow is reached through. So the arrival is
+		// announced wherever that list exists, whatever runs the media: to the room, whose members may now have
+		// a call to join, and to the arriver's own other sessions, which is how the window they just joined in
+		// stops the app behind it thinking they are free to join something else.
+		//
+		// Deliberately not limited to embedded providers, which is what it was: a call handed to a provider's own
+		// page is still held in a window of ours, and the list still had to wait out its 20-second poll to notice
+		// anyone had arrived — long enough for the same user to be walked into a second call without being asked.
+		if (user && this.runsInOurCallWindow(call.providerName)) {
+			await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
+				callId: call._id,
+				rid: call.rid,
+				uid: call.createdBy._id,
+			});
+
+			this.notifyUser(user._id, 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
+
 		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
 		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
 		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike.
 		if (this.isEmbeddedProvider(call.providerName)) {
-			if (user) {
-				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
-					callId: call._id,
-					rid: call.rid,
-					uid: call.createdBy._id,
-				});
-
-				this.notifyUser(user._id, 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
-			}
 			return '';
 		}
 
