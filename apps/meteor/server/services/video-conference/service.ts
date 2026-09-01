@@ -515,6 +515,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * is one signal rather than three: the call window needs it to know whether it is still waiting on anyone, and
 	 * a participant's chat panel needs it to follow the chat.
 	 */
+	/**
+	 * Whether the provider runs the call inside Rocket.Chat rather than at a page of its own.
+	 *
+	 * A question asked all over this file — of a call, of a provider name, positively and negatively — and one
+	 * worth asking through a name, because "embedded" is a claim about where the media runs and half the rules
+	 * here turn on it.
+	 */
+	private isEmbeddedProvider(providerName: string): boolean {
+		return videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+	}
+
+	/** Whether the provider supports a chat that outlives the call — see `maybeCreateDiscussion`. */
+	private supportsPersistentChat(providerName: string): boolean {
+		return videoConfProviders.getProviderCapabilities(providerName)?.persistentChat === true;
+	}
+
 	private notifyConferenceUpdate(callId: VideoConference['_id']): void {
 		void api.broadcast('video-conference.updated', { callId });
 	}
@@ -529,7 +545,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			await this.notifyUsersOfRoom(call.rid, '', 'end', {
 				callId: call._id,
 				rid: call.rid,
@@ -622,7 +638,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Enabled + URL + API key + secret). Their presence in the registry
 		// IS the "fully configured" signal. Going through the apps-engine
 		// manager would fail because there's no app behind them.
-		if (videoConfProviders.getProviderCapabilities(providerName)?.embedded) {
+		if (this.isEmbeddedProvider(providerName)) {
 			return;
 		}
 		const manager = await this.getProviderManager();
@@ -800,7 +816,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runNewVideoConferenceEvent(callId);
 
-		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		const isEmbedded = this.isEmbeddedProvider(providerName);
 
 		// Being called makes you a member, exactly as being added to a group conference does. Without this the
 		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
@@ -908,7 +924,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// no URL handoff. Skip both URL generation and ringing notifications:
 		// the call shows up as an "active call" banner in the room and other
 		// participants tap to join. No incoming-call sound/modal.
-		const isEmbedded = videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
+		const isEmbedded = this.isEmbeddedProvider(providerName);
 		if (!isEmbedded) {
 			const url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(callId, url);
@@ -979,7 +995,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
 		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
 		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike.
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			if (user) {
 				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
 					callId: call._id,
@@ -1127,7 +1143,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Embedded (built-in) providers have no apps-engine app behind them,
 		// so the provider-manager dispatch would be a no-op at best and
 		// throw at worst. Skip the lifecycle hook for them.
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			return;
 		}
 
@@ -1149,7 +1165,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			return;
 		}
 
@@ -1171,7 +1187,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			return;
 		}
 
@@ -1191,7 +1207,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The whole join-side lifecycle below only exists for embedded providers. A non-embedded call (Jitsi,
 		// Meet, ...) has no leave, no heartbeat and no sweep — nothing would ever undo what gets claimed here —
 		// so for those a join must do what it always did: record the member, and nothing else.
-		const isEmbedded = videoConfProviders.getProviderCapabilities(call.providerName)?.embedded === true;
+		const isEmbedded = this.isEmbeddedProvider(call.providerName);
 
 		// A user is in one call at a time, and this is where that becomes true rather than hoped for. A window that
 		// dies without reporting its departure — a crash, a killed tab — otherwise leaves its user counted as
@@ -1551,7 +1567,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
 
-		if (videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(call.providerName)) {
 			// Only the leaver's own devices are told 'end', so their other windows stop showing a call they are no
 			// longer in. Never the room: one member leaving is not the call ending — a reload fires a leave too —
 			// and a room-wide 'end' from here would dismiss everyone else's ringing popup and silence the caller's
@@ -1641,7 +1657,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		if (videoConfProviders.getProviderCapabilities(renewal.providerName)?.embedded) {
+		if (this.isEmbeddedProvider(renewal.providerName)) {
 			await this.claimBusyForCall(uid);
 		}
 		this.notifyConferenceUpdate(callId);
@@ -1668,7 +1684,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// Non-embedded providers (Jitsi, Meet, Pexip) open in an iframe/popup we don't control — no heartbeat
 				// is sent, so every lease would look expired and the sweep would end every call after 3 minutes.
 				// Those calls are cleaned up by the 24-hour TTL cron instead, exactly as they were before leases existed.
-				if (!videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
+				if (!this.isEmbeddedProvider(call.providerName)) {
 					continue;
 				}
 
@@ -1952,7 +1968,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Same rule as `maybeCreateDiscussion`: persistent chat is only acted on for a provider that declares
 		// support for it — a Jitsi call must not start following threads because the setting is on.
-		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
+		if (!this.supportsPersistentChat(call.providerName)) {
 			return;
 		}
 
@@ -1975,7 +1991,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// Same rule as `maybeCreateDiscussion`: only for a provider that declares persistent chat support.
-		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
+		if (!this.supportsPersistentChat(call.providerName)) {
 			return;
 		}
 
@@ -2004,7 +2020,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// If the call provider does not explicitly support persistent chat, do not create discussions
-		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
+		if (!this.supportsPersistentChat(call.providerName)) {
 			return;
 		}
 

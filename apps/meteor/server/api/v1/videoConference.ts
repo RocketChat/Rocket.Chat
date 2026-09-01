@@ -592,7 +592,9 @@ API.v1.get(
 	'video-conference.joinable',
 	{
 		authRequired: true,
-		// Polled by the sidebar, so it has to tolerate a steady trickle.
+		// Discovery is event-driven: a per-user `video-conference` event — a ring, an arrival, a call ending —
+		// is what sends a client back here. The poll behind it is a fallback for what an event cannot cover,
+		// a missed message or a reconnection, so this has to tolerate a steady trickle as well as bursts.
 		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
 		response: {
 			200: joinableResponseSchema,
