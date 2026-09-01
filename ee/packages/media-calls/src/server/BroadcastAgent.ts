@@ -15,14 +15,17 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public provider: BaseCallProvider | null = null;
 
 	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallAccepted', callId: call._id, role: this.role });
 		this.reportCallUpdated({ callId: call._id });
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallEnded', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallActive', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
@@ -32,18 +35,21 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, _negotiationId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallTransferred', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
-	public async onCallUpdated(_callId: string): Promise<void> {
-		//
+	public async onCallUpdated(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallUpdated', callId, role: this.role });
 	}
 
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onDTMF', callId, role: this.role });
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
 
