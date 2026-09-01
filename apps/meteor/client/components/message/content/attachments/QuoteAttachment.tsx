@@ -37,9 +37,11 @@ const quoteStyles = css`
 export type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
 	source?: AudioAttachmentSource;
+	/** This quote's own path, used to prefix its nested attachments' collapse-state keys. */
+	path?: string;
 };
 
-export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) => {
+export const QuoteAttachment = ({ attachment, source, path }: QuoteAttachmentProps) => {
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -72,6 +74,7 @@ export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) =>
 								attachments={attachment.attachments}
 								id={attachment.attachments[0]?.title_link}
 								source={source && { rid: source.rid, mid: source.mid, name: attachment.author_name }}
+								keyPrefix={path}
 							/>
 						</AttachmentInner>
 					)}
