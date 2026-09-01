@@ -444,7 +444,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
-		return this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
+		// pipeline with $setUnion instead of $addToSet because legacy inquiries can have `v.activity: null`;
+		// goes through this.col since BaseRaw's setUpdatedAt doesn't support pipeline updates
+		return this.col.findOneAndUpdate({ rid }, [
+			{ $set: { 'v.activity': { $setUnion: [{ $ifNull: ['$v.activity', []] }, [period]] }, '_updatedAt': '$$NOW' } },
+		]);
 	}
 
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
