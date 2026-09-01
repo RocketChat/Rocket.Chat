@@ -98,52 +98,52 @@ export class DDPStreamer extends ServiceClass {
 	}, CONNECTION_COUNT_REPORT_INTERVAL_MS);
 
 	override async created(): Promise<void> {
-		if (!this.context) {
+		const nodeID = this.context?.nodeID;
+		if (!nodeID) {
+			// presence is recorded per node, and the login handler below is what sends a
+			// client its own user document, so there is nothing safe to do without one
+			console.error('DDPStreamer has no broker context: presence and post login user data are disabled');
 			return;
 		}
 
-		const { broker, nodeID } = this.context;
-		if (!broker || !nodeID) {
-			return;
+		// metrics are optional - a broker that does not collect them must not stop the
+		// lifecycle handlers below from being registered
+		const metrics = this.context?.broker?.metrics;
+
+		if (metrics) {
+			metrics.register({
+				name: 'rocketchat_subscription',
+				type: 'histogram',
+				labelNames: ['subscription'],
+				description: 'Client subscriptions to Rocket.Chat',
+				unit: 'millisecond',
+				quantiles: true,
+			});
+
+			metrics.register({
+				name: 'users_connected',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users connected by streamer',
+			});
+
+			metrics.register({
+				name: 'users_logged',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users logged by streamer',
+			});
+
+			this.server.setMetrics(metrics);
 		}
-
-		const { metrics } = broker;
-		if (!metrics) {
-			return;
-		}
-
-		metrics.register({
-			name: 'rocketchat_subscription',
-			type: 'histogram',
-			labelNames: ['subscription'],
-			description: 'Client subscriptions to Rocket.Chat',
-			unit: 'millisecond',
-			quantiles: true,
-		});
-
-		metrics.register({
-			name: 'users_connected',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users connected by streamer',
-		});
-
-		metrics.register({
-			name: 'users_logged',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users logged by streamer',
-		});
-
-		this.server.setMetrics(metrics);
 
 		this.lifecycle.on('connected', ({ connection }) => {
-			metrics.increment('users_connected', { nodeID }, 1);
+			metrics?.increment('users_connected', { nodeID }, 1);
 			void this.api?.broadcast('socket.connected', connection);
 		});
 
 		this.lifecycle.on('loggedIn', (session) => {
-			metrics.increment('users_logged', { nodeID }, 1);
+			metrics?.increment('users_logged', { nodeID }, 1);
 			void this.onLoggedIn(session, nodeID);
 		});
 
@@ -160,9 +160,9 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.lifecycle.on('disconnected', ({ userId, connection }) => {
-			metrics.decrement('users_connected', { nodeID }, 1);
+			metrics?.decrement('users_connected', { nodeID }, 1);
 			if (userId) {
-				metrics.decrement('users_logged', { nodeID }, 1);
+				metrics?.decrement('users_logged', { nodeID }, 1);
 			}
 
 			void this.api?.broadcast('socket.disconnected', connection);

@@ -94,7 +94,9 @@ every non-internal service.
 sends the stream itself as `ctx.params` — the only shape Moleculer's stream
 detection recognises — and moves the remaining fields into `meta`. The action
 handler reassembles `{ streamParam, details }` on the far side. This exists for
-`Upload.uploadFileFromStream` and nothing else.
+`Upload.uploadFileFromStream` and nothing else. `NatsBroker` takes a different
+route: it carries a stream wherever one appears in the payload, in either
+direction — see [streams are chunked over a dedicated subject](#4-streams-are-chunked-over-a-dedicated-subject).
 
 > One sharp edge: when a call is made outside an existing Moleculer context and the
 > target service is not in `$node.services`, `call()` **returns** an `Error`
@@ -205,26 +207,63 @@ paths if that attempt failed. Its priming only fills in values that are still
 unknown and leaves an already chosen PDP alone: settings events arrive
 independently of the read, so whatever they delivered is newer.
 
-#### 4. Streaming is not implemented
+#### 4. Streams are chunked over a dedicated subject
 
-**This is an open gap.** There is no equivalent of Moleculer's `streamParam`
-convention, so `Upload.uploadFileFromStream` fails with
-`streamParam.pipe is not a function`. Buffering the payload instead is not viable:
-NATS caps a message at 1MB by default and transcripts exceed that. The likely shape
-is pull based chunking over a dedicated subject — the sender subscribes before
-issuing the call, and the receiver's `Readable` requests the next chunk — which
-gives backpressure and avoids a subscribe/publish race.
+A `Readable` cannot be serialised, so `NatsBroker` never puts one in a payload.
+`ee/packages/network-broker/src/streams.ts` walks every outgoing payload — call
+arguments and replies alike — replaces each stream with a `__rcStream` marker
+naming a fresh inbox subject, and leaves a chunk server subscribed there. The far
+side turns the marker back into a `Readable` whose `_read` requests one chunk from
+that subject.
+
+Pulling, rather than the sender publishing as fast as it reads, is what gives
+backpressure, and it removes the subscribe/publish race: the consumer only asks for
+a chunk once its own subscription is in place. Node will not call `_read` again
+until a `push` lands, so a single chunk is in flight at a time without an explicit
+gate. Chunks are capped at 256KB, well under the 1MB `max_payload` NATS defaults
+to — buffering the whole payload into one message was never an option, transcripts
+exceed that on their own.
+
+Both directions are covered by the same walk, so `Upload.uploadFileFromStream`
+(stream in) and `Upload.streamUploadedFile` (stream out) work over NATS.
+
+A consumer that goes away — its process dies, or the call it was an argument to
+failed before the handler read anything — would strand the subscription and the
+source stream, so a chunk server that is not pulled from within `REQUEST_TIMEOUT`
+unsubscribes and destroys its stream.
+
+**A stream is consumed once.** Two calls sharing one `Readable` used to work under
+Moleculer, which attaches `on('data')` listeners and so tees to every consumer.
+Chunking distributes the chunks between them instead, so
+`OmnichannelTranscript.uploadFiles` — which uploads the same transcript to two
+rooms — now pipes the render into one `PassThrough` per upload. Piping to several
+destinations writes every chunk to all of them and pauses the source when any one
+falls behind, so the pdf is teed rather than held in memory; `renderToStream` is a
+real incremental render and buffering it would give that up.
 
 Note that [the apps-engine migration](./apps-engine-migration.md) is separately
 restructuring the upload flow so that file contents do not have to cross NATS at
 all.
 
-#### 5. No tracing or async context propagation
+#### 5. Async context propagation
 
-`LocalBroker` and `MoleculerBroker` both wrap handlers in `asyncLocalStorage.run`
-and a tracer span. `NatsBroker` does neither, on either the local or the remote
-path. Nothing currently reads `ServiceClass.context`, so this is latent, but it
-should be added to both paths together.
+`ServiceClass.context` is not decoration. ddp-streamer's `created()` reads it for
+the broker's node id and returns early without one — and that method body is what
+registers the `LOGGED` handler that sends a client its own user document and
+records its presence. `NatsBroker` originally invoked lifecycle hooks and method
+handlers directly, so under NATS every login left the client without user data.
+
+Lifecycle hooks, remote handlers and locally dispatched calls now all run inside
+`asyncLocalStorage.run`, so `context` is populated on both paths.
+
+The same `created()` also gave up when the broker exposed no metrics, which
+`NatsBroker` does not. Metrics registration is now conditional rather than a guard
+clause in front of the DDP handlers — a second instance of the same mistake as
+[priming at boot](#3-service-dependencies-are-not-honoured-lifecycle-failures-are-not-fatal): an optional concern
+was gating the thing the service exists to do.
+
+**Tracing is still missing.** `LocalBroker` and `MoleculerBroker` wrap handlers in a
+tracer span as well; `NatsBroker` does not.
 
 ## What crosses a process boundary
 
@@ -238,7 +277,7 @@ Both network brokers use EJSON, which is quieter about failure than it looks:
 | value                         | round-trips as                  |                                  |
 | ----------------------------- | ------------------------------- | -------------------------------- |
 | mongo cursor                  | **throws** — circular structure | fatal, loud                      |
-| Node stream                   | `{}`                            | fatal, silent                    |
+| Node stream                   | carried out of band, not by EJSON | handled                        |
 | `Map` / `Set`                 | `{}`                            | fatal, silent                    |
 | function                      | `{}`                            | fatal, silent                    |
 | class instance                | plain object, methods gone      | fatal, silent                    |
@@ -246,15 +285,6 @@ Both network brokers use EJSON, which is quieter about failure than it looks:
 | `Date`, `RegExp`, `undefined` | intact                          | fine                             |
 
 The calls below pass or return something in that table.
-
-### Broken now — the caller already runs in its own container
-
-| call                                                     | site                                                                |
-| -------------------------------------------------------- | ------------------------------------------------------------------- |
-| `Upload.uploadFileFromStream({ streamParam: Readable })` | `ee/packages/omnichannel-services/src/OmnichannelTranscript.ts:475` |
-| `Upload.streamUploadedFile() → Promise<Readable>`        | `ee/packages/omnichannel-services/src/OmnichannelTranscript.ts:304` |
-
-Both cross omnichannel-transcript → monolith, and are the streaming gap above.
 
 ### Latent — masked by local dispatch, break on extraction
 

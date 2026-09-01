@@ -109,6 +109,19 @@ describe('DDPStreamer lifecycle handling', () => {
 		expect(lifecycle.has('loggedOut')).toBe(false);
 	});
 
+	it('still handles logins and disconnects when the broker collects no metrics', async () => {
+		const { service, lifecycle, metrics } = makeService();
+
+		await asyncLocalStorage.run({ id: 'ctx', requestID: 'req', broker: {} as IBroker, nodeID: 'node1' }, () => service.created());
+		const session = makeSession();
+		lifecycle.emit('loggedIn', session);
+		lifecycle.emit('disconnected', session);
+
+		expect(metrics.register).not.toHaveBeenCalled();
+		expect(Presence.newConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
+		expect(Presence.removeConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
+	});
+
 	it('registers the subscription histogram and the connection gauges', async () => {
 		const { metrics } = await createService();
 

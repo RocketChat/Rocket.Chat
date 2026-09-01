@@ -1,3 +1,7 @@
+import { Readable } from 'node:stream';
+import { buffer } from 'node:stream/consumers';
+
+import type { IServiceContext } from '@rocket.chat/core-services';
 import { MeteorError, ServiceClass } from '@rocket.chat/core-services';
 import { connect } from 'nats';
 
@@ -14,6 +18,16 @@ const onAccountsLogin = jest.fn();
 
 class Accounts extends ServiceClass {
 	protected name = 'accounts';
+
+	contextInCreated?: IServiceContext;
+
+	override async created(): Promise<void> {
+		this.contextInCreated = this.context;
+	}
+
+	async whereAmI(): Promise<string | undefined> {
+		return this.context?.nodeID;
+	}
 
 	async login(params: unknown): Promise<unknown> {
 		return loginStub(params);
@@ -33,6 +47,26 @@ class Broken extends ServiceClass {
 
 	override async started(): Promise<void> {
 		throw new Error('settings unreachable');
+	}
+}
+
+class Files extends ServiceClass {
+	protected name = 'files';
+
+	async upload({ streamParam, details }: { streamParam: Readable; details: { name: string } }): Promise<{ name: string; size: number }> {
+		return { name: details.name, size: (await buffer(streamParam)).byteLength };
+	}
+
+	async download(body: string): Promise<Readable> {
+		return Readable.from([body]);
+	}
+
+	async downloadBroken(): Promise<Readable> {
+		return new Readable({
+			read(): void {
+				this.destroy(new Error('store unreachable'));
+			},
+		});
 	}
 }
 
@@ -62,14 +96,16 @@ const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
 	}
 	const accounts = new Accounts();
 	const deviceManagement = new DeviceManagement();
+	const files = new Files();
 
 	await broker.createService(accounts);
 	await broker.createService(deviceManagement);
+	await broker.createService(files);
 	await broker.start();
 
-	running.push({ broker, services: [accounts, deviceManagement] });
+	running.push({ broker, services: [accounts, deviceManagement, files] });
 
-	return { broker, nc, accounts, deviceManagement };
+	return { broker, nc, accounts, deviceManagement, files };
 };
 
 beforeEach(() => {
@@ -285,6 +321,7 @@ describe('NatsBroker discovery', () => {
 		await expect(broker.call('$node.services', {})).resolves.toEqual([
 			{ name: 'accounts', nodes: ['node-a', 'node-b'] },
 			{ name: 'device-management', nodes: ['node-a'] },
+			{ name: 'files', nodes: ['node-a'] },
 		]);
 	});
 
@@ -388,5 +425,87 @@ describe('NatsBroker.broadcastLocal', () => {
 
 		expect(onAccountsLogin).toHaveBeenCalledWith({ userId: 'uid' });
 		expect(nc.requested).toEqual([]);
+	});
+});
+
+describe('NatsBroker streaming', () => {
+	const overOneChunk = 700 * 1024;
+
+	const openListeners = (nc: FakeNatsConnection): number =>
+		[...nc.subscriptions.values()].reduce((total, listeners) => total + listeners.size, 0);
+
+	it('should carry a stream argument across the wire in chunks', async () => {
+		const { broker, nc } = await start('node-a', { localRouting: false });
+
+		await expect(
+			broker.call('files.upload', [{ streamParam: Readable.from(['x'.repeat(overOneChunk)]), details: { name: 'transcript.pdf' } }]),
+		).resolves.toEqual({ name: 'transcript.pdf', size: overOneChunk });
+
+		// the payload never travels as one message: 700KB is three 256KB chunks plus
+		// the pull that reports the end
+		const pulls = nc.requested.filter((subject) => subject.startsWith('_INBOX.'));
+		expect(pulls).toHaveLength(4);
+	});
+
+	it('should rebuild a stream returned by the far side', async () => {
+		const { broker } = await start('node-a', { localRouting: false });
+
+		const stream = (await broker.call('files.download', ['hello'])) as Readable;
+
+		await expect(buffer(stream)).resolves.toEqual(Buffer.from('hello'));
+	});
+
+	it('should surface a failure of the source stream to the consumer', async () => {
+		const { broker } = await start('node-a', { localRouting: false });
+
+		const stream = (await broker.call('files.downloadBroken', [])) as Readable;
+
+		await expect(buffer(stream)).rejects.toThrow('store unreachable');
+	});
+
+	it('should tear the chunk server down once the stream ends', async () => {
+		const { broker, nc } = await start('node-a', { localRouting: false });
+		const before = openListeners(nc);
+
+		await broker.call('files.upload', [{ streamParam: Readable.from(['payload']), details: { name: 'transcript.pdf' } }]);
+
+		expect(openListeners(nc)).toBe(before);
+	});
+
+	it('should not open a chunk server for a call that carries no stream', async () => {
+		const { broker, nc } = await start('node-a', { localRouting: false });
+		const before = openListeners(nc);
+
+		await broker.call('accounts.login', [{ resume: 'token' }]);
+
+		expect(openListeners(nc)).toBe(before);
+	});
+
+	it('should hand a stream over by reference when the service is local', async () => {
+		const { broker, nc } = await start();
+
+		await broker.call('files.upload', [{ streamParam: Readable.from(['payload']), details: { name: 'transcript.pdf' } }]);
+
+		expect(nc.requested).toEqual([]);
+	});
+});
+
+describe('NatsBroker async context', () => {
+	it('should run a lifecycle hook inside the service context', async () => {
+		const { accounts } = await start();
+
+		expect(accounts.contextInCreated).toMatchObject({ nodeID: 'node-a' });
+	});
+
+	it('should run a method answered over the wire inside the service context', async () => {
+		const { broker } = await start('node-a', { localRouting: false });
+
+		await expect(broker.call('accounts.whereAmI', [])).resolves.toBe('node-a');
+	});
+
+	it('should run a method answered locally inside the service context', async () => {
+		const { broker } = await start();
+
+		await expect(broker.call('accounts.whereAmI', [])).resolves.toBe('node-a');
 	});
 });

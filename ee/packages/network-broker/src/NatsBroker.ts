@@ -1,11 +1,12 @@
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
-import { LocalServiceRegistry, MeteorError, getCallableMethods, isMeteorError } from '@rocket.chat/core-services';
+import { LocalServiceRegistry, MeteorError, asyncLocalStorage, getCallableMethods, isMeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
 import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } from 'nats';
 
 import type { ServiceNodes } from './licenseEnforcement';
 import { startLicenseEnforcement } from './licenseEnforcement';
+import { consumeStreams, serveStreams } from './streams';
 
 export { connect } from 'nats';
 
@@ -189,6 +190,16 @@ export class NatsBroker implements IBroker {
 	}
 
 	/**
+	 * Everything a service runs through this broker sees the same context, on the
+	 * local and the remote path alike. `ServiceClass.context` is not decoration:
+	 * ddp-streamer's `created()` returns early without it, which silently disables
+	 * the handler that sends a client its own user document after login.
+	 */
+	private runInContext<T>(fn: () => Promise<T>): Promise<T> {
+		return asyncLocalStorage.run({ id: '', nodeID: this.nodeID, requestID: null, broker: this }, fn);
+	}
+
+	/**
 	 * Endpoints are registered before any hook runs, so a service whose `created`
 	 * or `started` throws still answers - with whatever defaults it holds. Letting
 	 * the rejection escape would instead reject `api.start()` and take down the
@@ -196,7 +207,7 @@ export class NatsBroker implements IBroker {
 	 */
 	private async runLifecycleHook(instance: IServiceClass, hook: 'created' | 'started'): Promise<void> {
 		try {
-			await instance[hook]();
+			await this.runInContext(() => instance[hook]());
 		} catch (err) {
 			console.error(`Service ${instance.getName()} failed to run ${hook}()`, err);
 		}
@@ -237,7 +248,10 @@ export class NatsBroker implements IBroker {
 		for (const method of getCallableMethods(instance)) {
 			const respond = async (msg: ServiceMsg): Promise<void> => {
 				try {
-					msg.respond(encodePayload(await serviceInstance[method](...decodeParams(msg.data))));
+					const args = consumeStreams(nc, decodeParams(msg.data), requestTimeout) as unknown[];
+					const result = await this.runInContext(() => serviceInstance[method](...args));
+
+					msg.respond(encodePayload(serveStreams(nc, result, requestTimeout)));
 				} catch (e) {
 					// nats only turns *synchronous* throws into an error reply, so an async
 					// handler has to answer explicitly or the caller waits for the timeout
@@ -289,20 +303,20 @@ export class NatsBroker implements IBroker {
 		if (!options?.nodeID || toSubjectToken(options.nodeID) === this.nodeID) {
 			const local = this.localRegistry?.resolve(method);
 			if (local) {
-				return local(data ?? []);
+				return this.runInContext(() => local(data ?? []));
 			}
 		}
 
 		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
 
-		const msg = await this.request(this.nc, subject, encodePayload(data));
+		const msg = await this.request(this.nc, subject, encodePayload(serveStreams(this.nc, data, requestTimeout)));
 
 		const serviceError = ServiceError.toServiceError(msg);
 		if (serviceError) {
 			throw restoreError(msg, serviceError);
 		}
 
-		return decodePayload(msg.data);
+		return consumeStreams(this.nc, decodePayload(msg.data), requestTimeout);
 	}
 
 	private async request(nc: NatsConnection, subject: string, payload: Uint8Array): Promise<Msg> {
