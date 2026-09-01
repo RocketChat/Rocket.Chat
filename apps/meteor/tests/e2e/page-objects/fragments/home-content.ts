@@ -114,6 +114,14 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
+	get lastIgnoredThreadMessage(): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name: 'This message was ignored' });
+	}
+
+	get ignoredThreadMessages(): Locator {
+		return this.threadMessageListItems.getByRole('button', { name: 'This message was ignored' });
+	}
+
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;
