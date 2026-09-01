@@ -1,5 +1,11 @@
 # @rocket.chat/media-signaling
 
+## 1.2.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
 ## 1.2.0-rc.0
 
 ### Minor Changes
