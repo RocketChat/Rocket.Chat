@@ -83,9 +83,7 @@ describe('GraphTokenClient', () => {
 			serverFetch.mockResolvedValue(jsonResponse(200, { access_token: 'the-token', expires_in: 3600 }));
 
 			const client = new GraphTokenClient(config);
-
-			const token = await client.getAccessToken();
-			await expect(token).resolves.toBe('the-token');
+			await expect(client.getAccessToken()).resolves.toBe('the-token');
 
 			const [url, options] = serverFetch.mock.calls[0];
 			expect(url).toBe(client.tokenEndpoint);
