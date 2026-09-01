@@ -1,0 +1,66 @@
+apps/meteor/server/api/index.ts
+  s_3d1c0567645465::t_fd57903777ebb4 34
+packages/rest-typings/src/v1/cloud.ts
+  s_3d1c0567645465::t_0d551c1e7d29b7 100-102
+.changeset/rest-cloud-workspace-register-data.md
+  s_3d1c0567645465::t_e60953c93e5e93 1-5
+  h_4c386397e672f4 6
+apps/meteor/tests/end-to-end/api/setupWizard.ts
+  s_3d1c0567645465::t_24a9182e97ca58 1-49
+packages/ui-client/src/views/setupWizard/hooks/useParameters.ts
+  s_3d1c0567645465::t_4c5edeb3545277 2,12,16
+packages/rest-typings/src/v1/setupWizard.ts
+  s_3d1c0567645465::t_00ba7b0d235435 1-10
+apps/meteor/server/meteor-methods/settings/getSetupWizardParameters.ts
+  s_3d1c0567645465::t_c710b5231d556b 5-6,19-22,24,26
+.changeset/rest-setup-wizard-parameters.md
+  s_3d1c0567645465::t_38e61995a9299f 1-5
+  h_4c386397e672f4 6
+apps/meteor/server/api/v1/cloud.ts
+  s_3d1c0567645465::t_74728f35f4a60f 87-96
+  s_3d1c0567645465::t_649d0331d08d00 221
+  s_3d1c0567645465::t_d914a1fbdef4d1 14
+  s_3d1c0567645465::t_a8fea22b7baaa6 222-238
+packages/rest-typings/src/index.ts
+  s_3d1c0567645465::t_b9b9e626405a6d 73
+  s_3d1c0567645465::t_a0e6d9cd31a368 42
+apps/meteor/tests/end-to-end/api/cloud.ts
+  s_3d1c0567645465::t_cc533d48133c5b 238-286
+apps/meteor/server/api/v1/setupWizard.ts
+  s_3d1c0567645465::t_7d0fa0a36f660b 19
+  s_3d1c0567645465::t_3c562cd4364cfe 1-18,20-32
+packages/ui-client/src/views/setupWizard/providers/SetupWizardProvider.tsx
+  s_3d1c0567645465::t_354359a293ee86 112
+  s_3d1c0567645465::t_3e203ab21bbb46 53
+  s_3d1c0567645465::t_dd824cdfbbdf2f 85-91
+apps/meteor/server/lib/getSetupWizardParameters.ts
+  s_3d1c0567645465::t_85e4f307d6051d 1-14
+apps/meteor/server/meteor-methods/platform/cloud.ts
+  s_3d1c0567645465::t_9393f919a3d876 61-64,66
+packages/ui-client/src/views/setupWizard/steps/RegisterServerStep.tsx
+  s_3d1c0567645465::t_0e698fefe9d50a 37,43
+  s_3d1c0567645465::t_057eceb3dd6868 2
+.changeset/ddp-migrate-setup-wizard-callers.md
+  s_3d1c0567645465::t_24f6fd0144cb80 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "72f5c7d8880e13b8481357692efe1619a4859837",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3d1c0567645465": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fc9ba911-8ab0-4202-8427-ddc8683cf685",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
