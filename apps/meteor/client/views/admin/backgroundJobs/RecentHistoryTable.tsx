@@ -15,15 +15,9 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { formatDuration, statusVariant } from './helpers';
+import { formatDuration, STATUS_LABEL, statusVariant } from './helpers';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-
-const HISTORY_RESULT_LABELS = {
-	running: 'Background_Job_Status_running',
-	completed: 'Background_Job_Status_completed',
-	failed: 'Background_Job_Status_failed',
-} as const;
 
 const HISTORY_TYPE_LABELS = {
 	system: 'System',
@@ -31,7 +25,7 @@ const HISTORY_TYPE_LABELS = {
 	omnichannel: 'Omnichannel',
 } as const;
 
-const deriveResult = (entry: Serialized<ICronHistoryItem>): keyof typeof HISTORY_RESULT_LABELS => {
+const deriveResult = (entry: Serialized<ICronHistoryItem>): 'running' | 'completed' | 'failed' => {
 	if (entry.error) {
 		return 'failed';
 	}
@@ -110,7 +104,7 @@ const RecentHistoryTable = () => {
 										</GenericTableCell>
 										<GenericTableCell>
 											<Box display='flex'>
-												<Tag variant={statusVariant(entryResult)}>{t(HISTORY_RESULT_LABELS[entryResult])}</Tag>
+												<Tag variant={statusVariant(entryResult)}>{t(STATUS_LABEL[entryResult])}</Tag>
 											</Box>
 										</GenericTableCell>
 										{isDesktopOrLarger && (
