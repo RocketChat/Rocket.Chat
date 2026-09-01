@@ -11,14 +11,13 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab, OmnichannelJobSource } from './BackgroundJobsPage';
-import { statusVariant, useTranslateInterval } from './helpers';
+import { STATUS_LABEL, statusVariant, useTranslateInterval } from './helpers';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -45,10 +44,10 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 	const statusOptions: SelectOption[] = useMemo(
 		() => [
 			['all', t('All')],
-			['running', t('Background_Job_Status_running')],
-			['scheduled', t('Background_Job_Status_scheduled')],
-			['failed', t('Background_Job_Status_failed')],
-			['disabled', t('Background_Job_Status_disabled')],
+			['running', t(STATUS_LABEL.running)],
+			['scheduled', t(STATUS_LABEL.scheduled)],
+			['failed', t(STATUS_LABEL.failed)],
+			['disabled', t(STATUS_LABEL.disabled)],
 		],
 		[t],
 	);
@@ -112,7 +111,7 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 					<Select
 						options={statusOptions}
 						value={status}
-						onChange={(value) => setStatus(value as CronJobStatus | 'all')}
+						onChange={(value) => setStatus(value)}
 						placeholder={t('Status')}
 						aria-label={t('Status')}
 						width='100%'
@@ -169,9 +168,7 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 									</GenericTableCell>
 									<GenericTableCell>
 										<Box display='flex'>
-											<Tag variant={statusVariant(job.status)}>
-												{job.status ? t(`Background_Job_Status_${job.status}` as TranslationKey) : t('Unknown')}
-											</Tag>
+											<Tag variant={statusVariant(job.status)}>{job.status ? t(STATUS_LABEL[job.status]) : t('Unknown')}</Tag>
 										</Box>
 									</GenericTableCell>
 									{isDesktopOrLarger && (

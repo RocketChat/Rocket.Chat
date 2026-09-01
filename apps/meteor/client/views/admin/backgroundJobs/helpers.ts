@@ -1,5 +1,6 @@
 import type { CronJobStatus } from '@rocket.chat/core-typings';
 import type { Tag } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import cronstrue from 'cronstrue/i18n';
 import type { ComponentProps } from 'react';
@@ -57,3 +58,11 @@ export const formatDuration = (startedAt?: Date | string, finishedAt?: Date | st
 	}
 	return `${(diffMs / 1000).toFixed(1)}s`;
 };
+
+export const STATUS_LABEL = {
+	running: 'Background_Job_Status_running',
+	scheduled: 'Background_Job_Status_scheduled',
+	completed: 'Background_Job_Status_completed',
+	failed: 'Background_Job_Status_failed',
+	disabled: 'Background_Job_Status_disabled',
+} satisfies Record<CronJobStatus, TranslationKey>;
