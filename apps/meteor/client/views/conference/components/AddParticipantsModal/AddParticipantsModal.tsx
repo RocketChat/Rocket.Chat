@@ -1,11 +1,12 @@
 import { Box, CheckBox, Field, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
+import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
 import { Rooms } from '../../../../stores';
 import { useCallRingPreference } from '../../hooks/useCallPreferences';
 
@@ -17,6 +18,7 @@ type AddParticipantsModalProps = {
 
 const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [selected, setSelected] = useState<string[]>([]);
@@ -73,6 +75,14 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 					? { type: 'success', message: t('Users_added') }
 					: { type: 'info', message: t('Selected_users_are_already_in_the_call') },
 			);
+
+			// Read the call again rather than waiting to be told about our own doing: the window is watching the
+			// conference for changes other people make, and leaning on that for a change made *here* left the
+			// members panel — the very panel this was opened from — still listing who was in the call before.
+			if (added.length) {
+				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+			}
+
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
