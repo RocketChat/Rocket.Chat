@@ -8,7 +8,7 @@ import type { Response } from 'supertest';
 import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
+import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -5289,6 +5289,112 @@ describe('Threads', () => {
 						expect(res.body.errorType).to.be.equal('error-not-allowed');
 					});
 			});
+		});
+	});
+
+	describe('[/chat.getMessages]', () => {
+		let firstRoom: IRoom;
+		let secondRoom: IRoom;
+		let privateRoom: IRoom;
+		let firstMessageId: IMessage['_id'];
+		let secondMessageId: IMessage['_id'];
+		let privateMessageId: IMessage['_id'];
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+
+		before(async () => {
+			firstRoom = (await createRoom({ type: 'c', name: `chat.getMessages-first-${Date.now()}` })).body.channel;
+			secondRoom = (await createRoom({ type: 'c', name: `chat.getMessages-second-${Date.now()}` })).body.channel;
+			privateRoom = (await createRoom({ type: 'p', name: `chat.getMessages-private-${Date.now()}` })).body.group;
+
+			const [first, second, priv] = await Promise.all([
+				sendMessage({ message: { rid: firstRoom._id, msg: 'first room message' } }),
+				sendMessage({ message: { rid: secondRoom._id, msg: 'second room message' } }),
+				sendMessage({ message: { rid: privateRoom._id, msg: 'private room message' } }),
+			]);
+
+			firstMessageId = first.body.message._id;
+			secondMessageId = second.body.message._id;
+			privateMessageId = priv.body.message._id;
+
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'c', roomId: firstRoom._id }),
+				deleteRoom({ type: 'c', roomId: secondRoom._id }),
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(outsider),
+			]);
+		});
+
+		it('should return the requested messages', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(credentials)
+				.send({ messageIds: [firstMessageId] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.have.lengthOf(1);
+			expect(res.body.messages[0]).to.have.property('_id', firstMessageId);
+			expect(res.body.messages[0]).to.have.property('msg', 'first room message');
+		});
+
+		it('should resolve a batch spanning several rooms in a single request', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(credentials)
+				.send({ messageIds: [firstMessageId, secondMessageId] })
+				.expect(200);
+
+			expect(res.body.messages.map((message: IMessage) => message._id)).to.have.members([firstMessageId, secondMessageId]);
+		});
+
+		it('should omit ids that do not resolve to a message', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(credentials)
+				.send({ messageIds: [firstMessageId, 'does-not-exist'] })
+				.expect(200);
+
+			expect(res.body.messages.map((message: IMessage) => message._id)).to.deep.equal([firstMessageId]);
+		});
+
+		it('should reject the whole batch when any message belongs to an unreadable room', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(outsiderCredentials)
+				.send({ messageIds: [firstMessageId, privateMessageId] })
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should resolve the readable subset for the same user when the unreadable id is dropped', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(outsiderCredentials)
+				.send({ messageIds: [firstMessageId] })
+				.expect(200);
+
+			expect(res.body.messages).to.have.lengthOf(1);
+		});
+
+		it('should fail when messageIds is empty', async () => {
+			const res = await request.post(api('chat.getMessages')).set(credentials).send({ messageIds: [] }).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should fail when unauthenticated', async () => {
+			await request
+				.post(api('chat.getMessages'))
+				.send({ messageIds: [firstMessageId] })
+				.expect(401);
 		});
 	});
 });
