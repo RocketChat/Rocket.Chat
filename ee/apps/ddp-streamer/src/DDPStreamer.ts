@@ -103,59 +103,59 @@ export class DDPStreamer extends ServiceClass {
 	}, 30000);
 
 	override async created(): Promise<void> {
-		if (!this.context) {
+		const nodeID = this.context?.nodeID;
+		if (!nodeID) {
+			// presence is recorded per node, and the login handler below is what sends a
+			// client its own user document, so there is nothing safe to do without one
+			console.error('DDPStreamer has no broker context: presence and post login user data are disabled');
 			return;
 		}
 
-		const { broker, nodeID } = this.context;
-		if (!broker || !nodeID) {
-			return;
+		// metrics are optional - a broker that does not collect them must not stop the
+		// DDP handlers below from being registered
+		const metrics = this.context?.broker?.metrics;
+
+		if (metrics) {
+			metrics.register({
+				name: 'rocketchat_subscription',
+				type: 'histogram',
+				labelNames: ['subscription'],
+				description: 'Client subscriptions to Rocket.Chat',
+				unit: 'millisecond',
+				quantiles: true,
+			});
+
+			metrics.register({
+				name: 'users_connected',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users connected by streamer',
+			});
+
+			metrics.register({
+				name: 'users_logged',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users logged by streamer',
+			});
+
+			server.setMetrics(metrics);
+
+			server.on(DDP_EVENTS.CONNECTED, () => {
+				metrics.increment('users_connected', { nodeID }, 1);
+			});
+
+			server.on(DDP_EVENTS.LOGGED, () => {
+				metrics.increment('users_logged', { nodeID }, 1);
+			});
+
+			server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
+				metrics.decrement('users_connected', { nodeID }, 1);
+				if (userId) {
+					metrics.decrement('users_logged', { nodeID }, 1);
+				}
+			});
 		}
-
-		const { metrics } = broker;
-		if (!metrics) {
-			return;
-		}
-
-		metrics.register({
-			name: 'rocketchat_subscription',
-			type: 'histogram',
-			labelNames: ['subscription'],
-			description: 'Client subscriptions to Rocket.Chat',
-			unit: 'millisecond',
-			quantiles: true,
-		});
-
-		metrics.register({
-			name: 'users_connected',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users connected by streamer',
-		});
-
-		metrics.register({
-			name: 'users_logged',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users logged by streamer',
-		});
-
-		server.setMetrics(metrics);
-
-		server.on(DDP_EVENTS.CONNECTED, () => {
-			metrics.increment('users_connected', { nodeID }, 1);
-		});
-
-		server.on(DDP_EVENTS.LOGGED, () => {
-			metrics.increment('users_logged', { nodeID }, 1);
-		});
-
-		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
-			metrics.decrement('users_connected', { nodeID }, 1);
-			if (userId) {
-				metrics.decrement('users_logged', { nodeID }, 1);
-			}
-		});
 
 		async function sendUserData(client: Client, userId: string) {
 			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
