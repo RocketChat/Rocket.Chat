@@ -57,10 +57,7 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 	const headerLabel = tmid ? t('Thread') : t('Chat');
 	const title = roomName ? (
 		<>
-			{/* Labelled as a whole, because the icon between the words otherwise lands in the middle of the name. */}
-			<Box is='span' aria-label={`${tmid ? t('Thread_in') : t('Chat_in')} ${roomName}`}>
-				{tmid ? t('Thread_in') : t('Chat_in')} <Icon name={roomTypeIcon(roomType)} size='x16' /> {roomName}
-			</Box>
+			{tmid ? t('Thread_in') : t('Chat_in')} <Icon name={roomTypeIcon(roomType)} size='x16' /> {roomName}
 		</>
 	) : (
 		headerLabel
@@ -68,7 +65,8 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 
 	return (
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} height='full'>
-			<CallPanelHeader title={title} onClose={onClose}>
+			{/* The icon sits between the words, so the heading's name is given rather than assembled from them. */}
+			<CallPanelHeader title={title} titleLabel={`${tmid ? t('Thread_in') : t('Chat_in')} ${roomName}`} onClose={onClose}>
 				{presentWithoutAccess > 0 && chatAccess && (
 					<IconButton
 						icon='balloon-exclamation'
