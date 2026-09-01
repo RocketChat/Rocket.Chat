@@ -130,6 +130,8 @@ const RichTextMessageBox = ({
 
 	const messageComposerRef = useRef<HTMLElement>(null);
 
+	const clearedBySendFlowRef = useRef(false);
+
 	const subscription = useRoomSubscription();
 	const { initialValue, persistLocal, flushDraft } = useDraft(
 		room._id,
@@ -162,12 +164,19 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(
-				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
-					rid: room._id,
-					tmid,
-				}),
-			);
+
+			const composer = createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
+				rid: room._id,
+				tmid,
+			});
+
+			const { clear } = composer;
+			composer.clear = () => {
+				clearedBySendFlowRef.current = true;
+				clear();
+			};
+
+			chat.setComposerAPI(composer);
 		},
 		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
 	);
@@ -195,21 +204,31 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useStableCallback(() => {
+	const handleSendMessage = useStableCallback(async () => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
 
-		const text = chat.composer?.text ?? '';
-		chat.composer?.clear();
+		const { composer } = chat;
+		const text = composer?.text ?? '';
+
+		composer?.clear();
+		clearedBySendFlowRef.current = false;
 		popup.clear();
 
-		onSend?.({
-			value: text,
-			tshow,
-			previewUrls,
-			isSlashCommandAllowed,
-		});
+		try {
+			await onSend?.({
+				value: text,
+				tshow,
+				previewUrls,
+				isSlashCommandAllowed,
+			});
+		} finally {
+			if (composer && text && !clearedBySendFlowRef.current && chat.composer === composer && !composer.text) {
+				composer.setText(text);
+				composer.setCursorToEnd();
+			}
+		}
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
