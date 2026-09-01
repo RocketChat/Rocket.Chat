@@ -25,19 +25,10 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 	private state: LoadState = 'none';
 
 	private config: Record<string, Partial<LoginService>> = {
-		'apple': { title: 'Apple', icon: 'apple' },
-		'facebook': { title: 'Facebook', icon: 'facebook' },
-		'twitter': { title: 'Twitter', icon: 'twitter' },
-		'google': { title: 'Google', icon: 'google' },
-		'github': { title: 'Github', icon: 'github' },
-		'github_enterprise': { title: 'Github Enterprise', icon: 'github' },
-		'gitlab': { title: 'Gitlab', icon: 'gitlab' },
-		'dolphin': { title: 'Dolphin', icon: 'dophin' },
-		'drupal': { title: 'Drupal', icon: 'drupal' },
-		'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-		'meteor-developer': { title: 'Meteor', icon: 'meteor' },
-		'wordpress': { title: 'WordPress', icon: 'wordpress' },
-		'linkedin': { title: 'Linkedin', icon: 'linkedin' },
+		google: { title: 'Google', icon: 'google' },
+		github: { title: 'Github', icon: 'github' },
+		github_enterprise: { title: 'Github Enterprise', icon: 'github' },
+		gitlab: { title: 'Gitlab', icon: 'gitlab' },
 	};
 
 	private setServices(state: LoadState, services: LoginServiceConfiguration[]) {

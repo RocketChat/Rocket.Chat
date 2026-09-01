@@ -89,14 +89,10 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					});
 				}),
 			loginWithService: <T extends LoginServiceConfiguration>(serviceConfig: T): (() => Promise<true>) => {
-				const loginMethods: Record<string, string | undefined> = {
-					'meteor-developer': 'MeteorDeveloperAccount',
-				};
-
 				const { service: serviceName } = serviceConfig;
 				const clientConfig = ('clientConfig' in serviceConfig && serviceConfig.clientConfig) || {};
 
-				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
+				const loginWithService = `loginWith${capitalize(String(serviceName || ''))}`;
 
 				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService];
 

@@ -162,29 +162,6 @@ Accounts.emailTemplates.enrollAccount.html = function (user = {} /* , url*/) {
 	});
 };
 
-const getLinkedInName = ({ firstName, lastName }) => {
-	const { preferredLocale, localized: firstNameLocalized } = firstName;
-	const { localized: lastNameLocalized } = lastName;
-
-	// LinkedIn new format
-	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
-		const locale = `${preferredLocale.language}_${preferredLocale.country}`;
-
-		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
-			return `${firstNameLocalized[locale]} ${lastNameLocalized[locale]}`;
-		}
-		if (firstNameLocalized[locale]) {
-			return firstNameLocalized[locale];
-		}
-	}
-
-	// LinkedIn old format
-	if (!lastName) {
-		return firstName;
-	}
-	return `${firstName} ${lastName}`;
-};
-
 const validateEmailDomain = (user) => {
 	if (user.type === 'visitor') {
 		return true;
@@ -221,13 +198,8 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	if (!user.name) {
-		if (options.profile) {
-			if (options.profile.name) {
-				user.name = options.profile.name;
-			} else if (options.profile.firstName) {
-				// LinkedIn format
-				user.name = getLinkedInName(options.profile);
-			}
+		if (options.profile?.name) {
+			user.name = options.profile.name;
 		}
 	}
 
