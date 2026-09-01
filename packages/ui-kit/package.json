@@ -8,7 +8,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ui-kit"
 	},
 	"license": "MIT",
 	"author": {
@@ -34,7 +35,7 @@
 		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "^0.48.0",
+		"@rocket.chat/icons": "^0.49.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
@@ -52,8 +53,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"publishConfig": {
-		"access": "public"
 	}
 }

@@ -2,7 +2,7 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
 export const filterBusinessHoursThatMustBeOpened = async (
-	businessHours: Omit<ILivechatBusinessHour, '_updatedAt'>[],
+	businessHours: Pick<ILivechatBusinessHour, '_id' | 'type' | 'active' | 'workHours'>[],
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
 	const currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss');
 

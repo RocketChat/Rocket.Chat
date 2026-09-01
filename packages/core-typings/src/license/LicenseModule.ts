@@ -25,6 +25,7 @@ export const CoreModules = [
 	'outbound-messaging',
 	'abac',
 	'fips',
+	'experimental-enterprise-features',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];

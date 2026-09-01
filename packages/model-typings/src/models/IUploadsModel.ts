@@ -1,8 +1,9 @@
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import type { FindCursor, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
+import type { FindCursor, WithId, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import type { FindPaginated } from './IBaseModel';
 import type { IBaseUploadsModel } from './IBaseUploadsModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
@@ -19,5 +20,8 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 
 	setFederationRoomInfo(fileId: IUpload['_id'], rid: IRoom['_id'], mrid: string): Promise<UpdateResult>;
 
-	findAllByOriginalFileId(originalFileId: string, options?: FindOptions<IUpload>): FindCursor<IUpload>;
+	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

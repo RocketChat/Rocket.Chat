@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import type { ILivechatDepartmentModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { LivechatDepartmentRaw } from '@rocket.chat/models';
 import type { Collection, Document, FindCursor, FindOptions, UpdateResult, Db, AggregationCursor } from 'mongodb';
 
@@ -33,7 +33,10 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	override findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
+	override findActiveByUnitIds<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(unitIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			enabled: true,
 			numAgents: { $gt: 0 },
@@ -43,7 +46,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 			},
 		};
 
-		return this.find<T>(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	override findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(

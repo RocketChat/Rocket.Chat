@@ -12,9 +12,6 @@
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -26,7 +23,9 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",

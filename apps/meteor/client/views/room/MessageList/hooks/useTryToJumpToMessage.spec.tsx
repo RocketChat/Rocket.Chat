@@ -4,11 +4,11 @@ import type { MutableRefObject } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
 import useTryToJumpToMessage from './useTryToJumpToMessage';
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { RoomContext } from '../../contexts/RoomContext';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-jest.mock('../../../../../app/ui-utils/client', () => ({
+jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {
 		getSurroundingChannelMessages: jest.fn().mockResolvedValue(undefined),
 	},

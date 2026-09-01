@@ -19,7 +19,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
-import { getURL } from '../../../../../app/utils/client';
+import { getURL } from '../../../../lib/getURL';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';

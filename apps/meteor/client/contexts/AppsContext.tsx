@@ -4,7 +4,8 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
-import type { IAppExternalURL, ICategory } from '../apps/@types/IOrchestrator';
+import type { IAppExternalURL } from '../definitions/IAppExternalURL';
+import type { ICategory } from '../definitions/ICategory';
 import type { App } from '../views/marketplace/types';
 
 export interface IAppsOrchestrator {

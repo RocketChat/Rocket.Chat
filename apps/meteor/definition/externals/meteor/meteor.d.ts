@@ -37,7 +37,8 @@ declare module 'meteor/meteor' {
 		}
 
 		interface Device {
-			isDesktop: () => boolean;
+			isDesktop(): boolean;
+			isPhone(): boolean;
 		}
 
 		const server: {
@@ -177,6 +178,15 @@ declare module 'meteor/meteor' {
 			queueTask(arg0: () => void): void;
 
 			drain(): unknown;
+		}
+
+		interface UserServices {
+			totp?: {
+				enabled: boolean;
+				hashedBackup: string[];
+				secret: string;
+				tempSecret?: string;
+			};
 		}
 	}
 

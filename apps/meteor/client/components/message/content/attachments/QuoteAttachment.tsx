@@ -15,6 +15,7 @@ import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
 import AttachmentMessageLink from './structure/AttachmentMessageLink';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
@@ -74,7 +75,7 @@ export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) =>
 							/>
 						</AttachmentInner>
 					)}
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
+					<MessageContentBody md={attachment.md ?? toPlainTextRoot(attachment.text)} />
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>

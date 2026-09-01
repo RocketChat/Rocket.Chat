@@ -12,7 +12,7 @@ const loadCodeMirror = (): Promise<CodeMirrorModule> => {
 	if (!codeMirrorPromise) {
 		codeMirrorPromise = Promise.all([
 			import('codemirror'),
-			import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+			import('../../../../../../lib/codeMirror'),
 			import('codemirror/addon/edit/matchbrackets'),
 			import('codemirror/addon/edit/closebrackets'),
 			import('codemirror/addon/edit/matchtags'),

@@ -1,6 +1,6 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { Collection, Filter, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { IEmojiCustomModel, InsertionModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, Filter, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -14,7 +14,10 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// find
-	findByNameOrAlias(emojiName: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAlias<T extends Document = IEmojiCustom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emojiName: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
@@ -25,25 +28,33 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 			$or: [{ name }, { aliases: name }],
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findOneByNamesOrAliases(names: string[], exceptId?: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
+	findOneByNamesOrAliases<T extends Document = IEmojiCustom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		names: string[],
+		exceptId?: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IEmojiCustom> = {
 			...(exceptId && { _id: { $nin: [exceptId] } }),
 			$or: [{ name: { $in: names } }, { aliases: { $in: names } }],
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	findByNameOrAliasExceptID(name: string, except: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAliasExceptID<T extends Document = IEmojiCustom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		except: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	// update
@@ -101,7 +112,10 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// TODO: convert name: string to branded type using to enforce validation also replace this type cross the models/apis
-	findOneByName(name: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
-		return this.findOne({ name }, options);
+	findOneByName<T extends Document = IEmojiCustom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ name }, options);
 	}
 }

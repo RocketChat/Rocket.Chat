@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../../../../app/highlight-words/client/helper';
+import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../../../../client/lib/highlightWords';
 
 describe('helper', () => {
 	describe('highlightWords', () => {

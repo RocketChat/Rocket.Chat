@@ -1,7 +1,7 @@
 import type { IEmojiPackEntry } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type EmojiPackage = {
+type EmojiPackage = {
 	emojiCategories: Array<{ key: string; i18n: TranslationKey }>;
 	categoryIndex?: number;
 	emojisByCategory: Record<string, string[]>;
@@ -16,10 +16,6 @@ export type EmojiPackage = {
 };
 
 export type EmojiPackages = {
-	packages: {
-		[key: string]: EmojiPackage;
-	};
-	list: {
-		[key: keyof NonNullable<EmojiPackages['packages']>]: IEmojiPackEntry;
-	};
+	packages: Record<string, EmojiPackage>;
+	list: Record<string, IEmojiPackEntry>;
 };
