@@ -5,10 +5,16 @@ import sinon from 'sinon';
 
 const Rooms = {
 	findDefaultRoomsForTeam: sinon.stub(),
+	findOneById: sinon.stub(),
+	unsetTeamId: sinon.stub(),
 };
 
 const Users = {
 	findActiveByIds: sinon.stub(),
+};
+
+const Message = {
+	saveSystemMessage: sinon.stub(),
 };
 
 const addUserToRoom = sinon.stub();
@@ -17,7 +23,7 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'@rocket.chat/core-services': {
 		Room: {},
 		Authorization: {},
-		Message: {},
+		Message,
 		ServiceClassInternal: class {},
 		api: {},
 	},
@@ -64,7 +70,10 @@ describe('Team service', () => {
 	beforeEach(() => {
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();
+		Rooms.findOneById.reset();
+		Rooms.unsetTeamId.reset();
 		Users.findActiveByIds.reset();
+		Message.saveSystemMessage.reset();
 	});
 
 	it('should wait for default room membership operations to finish', async function () {
@@ -114,5 +123,28 @@ describe('Team service', () => {
 		).to.be.rejectedWith('room-add-failed');
 
 		expect(addUserToRoom.callCount).to.equal(1);
+	});
+
+	describe('unsetTeamIdOfRooms', () => {
+		const user = { _id: 'user-1', username: 'user-1', name: 'User One' };
+		const team = { _id: 'team-id', roomId: 'team-room' };
+
+		it('should announce the conversion on the main room and move the remaining rooms back to the workspace', async () => {
+			Rooms.findOneById.resolves({ _id: 'team-room', name: 'team-room-name' });
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			expect(Message.saveSystemMessage.calledOnceWith('user-converted-to-channel', 'team-room', 'team-room-name', user)).to.be.true;
+			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+		});
+
+		it('should move the remaining rooms back to the workspace when the main room no longer exists', async () => {
+			Rooms.findOneById.resolves(null);
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			expect(Message.saveSystemMessage.called).to.be.false;
+			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+		});
 	});
 });
