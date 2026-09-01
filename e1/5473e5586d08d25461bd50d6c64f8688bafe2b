@@ -1,0 +1,21 @@
+apps/meteor/tests/end-to-end/api/cloud.ts
+  s_3d1c0567645465::t_a0be5cdba7f25c 3
+apps/meteor/tests/end-to-end/api/setupWizard.ts
+  s_3d1c0567645465::t_11382a072fa41c 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e15473e5586d08d25461bd50d6c64f8688bafe2b",
+  "prompts": {},
+  "sessions": {
+    "s_3d1c0567645465": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fc9ba911-8ab0-4202-8427-ddc8683cf685",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
