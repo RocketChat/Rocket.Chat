@@ -3,7 +3,7 @@ import { Box, Card, CardBody, Icon, Tag } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatDuration, statusVariant } from './helpers';
+import { formatDuration, STATUS_LABEL, statusVariant } from './helpers';
 
 type BackgroundJobHistoryCardProps = {
 	entry: Serialized<ICronHistoryItem>;
@@ -17,14 +17,12 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const [showError, setShowError] = useState(false);
 
 	let status: 'running' | 'failed' | 'completed' = 'completed';
-	let statusText = t('Background_Job_Status_completed');
 	if (isRunning) {
 		status = 'running';
-		statusText = t('Background_Job_Status_running');
 	} else if (hasError) {
 		status = 'failed';
-		statusText = t('Background_Job_Status_failed');
 	}
+	const statusText = t(STATUS_LABEL[status]);
 
 	const duration = formatDuration(entry.startedAt, entry.finishedAt);
 
