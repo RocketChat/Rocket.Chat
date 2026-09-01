@@ -5,9 +5,9 @@
 // When using window.crypto.getRandomValues() or alea, the primitive is fraction
 // and we use that to construct hex string.
 
-import { BrowserRandomGenerator } from './BrowserRandomGenerator';
-import type { RandomGenerator } from './RandomGenerator';
-import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
+import { BrowserRandomGenerator } from './BrowserRandomGenerator.js';
+import type { RandomGenerator } from './RandomGenerator.js';
+import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator.js';
 
 let generator: RandomGenerator;
 if (typeof window !== 'undefined' && !!window.crypto?.getRandomValues) {
