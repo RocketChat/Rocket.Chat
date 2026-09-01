@@ -1260,6 +1260,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
+		// And the room, which every other change to the roster tells — declining, adding, ending. Arriving was
+		// the one that didn't, so the call's own block in the room went on showing the count from before.
+		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
 		// heartbeat sweep or by the call ending, and a non-embedded call has none of those — the claim would
@@ -1520,6 +1523,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
 		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
 		this.notifyConferenceUpdate(callId);
+		this.notifyVideoConfUpdate(rid, callId);
 
 		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
 		// reaches someone who isn't looking at the app.
