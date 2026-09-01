@@ -2,7 +2,6 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
-import { Table } from '../fragments/table';
 
 class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -18,21 +17,16 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelSlaPoliciesTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'SLA Policies' }));
-	}
-}
-
 export class OmnichannelSlaPolicies extends OmnichannelAdmin {
-	readonly manageSlaPolicy: OmnichannelManageSlaPolicyFlexTab;
+	protected readonly route = 'sla-policies';
 
-	readonly table: OmnichannelSlaPoliciesTable;
+	protected readonly title = 'SLA Policies';
+
+	readonly manageSlaPolicy: OmnichannelManageSlaPolicyFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.manageSlaPolicy = new OmnichannelManageSlaPolicyFlexTab(page);
-		this.table = new OmnichannelSlaPoliciesTable(page);
 	}
 
 	btnRemove(name: string) {
@@ -46,9 +40,5 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 
 	async createNew() {
 		await this.getButtonByType('SLA policy').click();
-	}
-
-	get txtEmptyState() {
-		return this.page.locator('div >> text="No results found"');
 	}
 }

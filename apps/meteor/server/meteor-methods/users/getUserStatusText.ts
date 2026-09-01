@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { getStatusText } from '../../lib/users/getStatusText';
 
 declare module '@rocket.chat/ddp-client' {
@@ -19,6 +20,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserStatusText' });
 		}
 
-		return getStatusText(userId);
+		const hidden = await getUsersHiddenFrom(currentUserId);
+
+		return hidden?.has(userId) ? undefined : getStatusText(userId);
 	},
 });

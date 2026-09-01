@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.65.1",
+	"version": "1.66.0-rc.0",
 	"description": "The public API and type definitions for Rocket.Chat App development.",
 	"keywords": [
 		"rocket.chat",
@@ -13,7 +13,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/apps-engine"
 	},
 	"license": "MIT",
 	"author": {
@@ -66,18 +67,15 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/ui-kit": "workspace:~",
-		"@types/node": "~22.19.17",
-		"eslint": "~9.39.4",
+		"@types/node": "~22.19.21",
+		"eslint": "~9.39.5",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^6.0.1",
-		"typedoc": "~0.28.10",
+		"typedoc": "~0.28.20",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"

@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 class OmnichannelEditTagFlexTab extends FlexTab {
 	readonly listbox: Listbox;
@@ -22,23 +21,22 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 		await this.inputDepartments.fill(name);
 		await this.listbox.selectOption(name);
 	}
-}
 
-class OmnichannelTagsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Tags' }));
+	findSelectedDepartment(name: string) {
+		return this.root.getByLabel('Departments').getByRole('option', { name });
 	}
 }
 
 export class OmnichannelTags extends OmnichannelAdmin {
-	readonly editTag: OmnichannelEditTagFlexTab;
+	protected readonly route = 'tags';
 
-	readonly table: OmnichannelTagsTable;
+	protected readonly title = 'Tags';
+
+	readonly editTag: OmnichannelEditTagFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.editTag = new OmnichannelEditTagFlexTab(page);
-		this.table = new OmnichannelTagsTable(page);
 	}
 
 	async createNew() {

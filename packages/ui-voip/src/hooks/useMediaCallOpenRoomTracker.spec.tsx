@@ -1,30 +1,14 @@
-import { Emitter } from '@rocket.chat/emitter';
 import { renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import { useMediaCallOpenRoomTracker } from './useMediaCallOpenRoomTracker';
-import type { Signals } from '../context/MediaCallInstanceContext';
-import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider';
 
 const setOpenRoomIdMock = jest.fn();
 
 const createWrapper = () => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
-		<MediaCallInstanceContext.Provider
-			value={{
-				currentViews: [],
-				registerView: () => undefined,
-				unregisterView: () => undefined,
-				instance: undefined,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: setOpenRoomIdMock,
-				getAutocompleteOptions: () => Promise.resolve([]),
-			}}
-		>
-			{children}
-		</MediaCallInstanceContext.Provider>
+		<MockedInstanceProvider setOpenRoomId={setOpenRoomIdMock}>{children}</MockedInstanceProvider>
 	);
 	return wrapper;
 };

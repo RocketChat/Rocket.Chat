@@ -1,5 +1,5 @@
 import { View } from '@react-pdf/renderer';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
 import InlineElements from '../elements/InlineElements';
@@ -10,7 +10,7 @@ type HeadingBlockProps = {
 };
 
 const Header = ({ items = [], level = 1 }: HeadingBlockProps) => (
-	<View style={{ fontSize: fontScales[`h${level}`].fontSize, fontWeight: fontScales[`h${level}`].fontWeight }}>
+	<View style={{ fontSize: fontScale[`h${level}`].fontSize, fontWeight: fontScale[`h${level}`].fontWeight }}>
 		<InlineElements>{items}</InlineElements>
 	</View>
 );

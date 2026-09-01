@@ -407,7 +407,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 			expect(json(await converter.convertContact(contact as any))).to.deep.equal(json(contact));
 		});
 
-		it('convertAppContact deep-maps an app contact back, bucketing unmapped fields at each level', async () => {
+		it('convertAppContact deep-maps an app contact back, dropping unmapped fields at each level', async () => {
 			const appContact = {
 				_id: 'contact-1',
 				_updatedAt: updated,
@@ -440,11 +440,11 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				_id: 'contact-1',
 				_updatedAt: '2024-02-02T00:00:00.000Z',
 				name: 'Jane',
-				phones: [{ phoneNumber: '+15550000', _unmappedProperties_: { extra: 'drop-me' } }],
-				emails: [{ address: 'jane@example.com', _unmappedProperties_: {} }],
+				phones: [{ phoneNumber: '+15550000' }],
+				emails: [{ address: 'jane@example.com' }],
 				contactManager: 'mgr-1',
 				unknown: false,
-				conflictingFields: [{ field: 'name', value: 'Janet', _unmappedProperties_: {} }],
+				conflictingFields: [{ field: 'name', value: 'Janet' }],
 				customFields: { tier: 'gold' },
 				channels: [
 					{
@@ -452,8 +452,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 						verified: true,
 						visitor: {
 							visitorId: 'visitor-1',
-							source: { type: 'sms', id: 'sms-1', _unmappedProperties_: {} },
-							_unmappedProperties_: {},
+							source: { type: 'sms', id: 'sms-1' },
 						},
 						blocked: false,
 						field: 'phone',
@@ -467,16 +466,13 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 							sidebarIcon: 'i',
 							defaultIcon: 'd',
 							destination: 'x',
-							_unmappedProperties_: {},
 						},
-						lastChat: { _id: 'room-1', ts: '2024-01-01T00:00:00.000Z', _unmappedProperties_: {} },
-						_unmappedProperties_: {},
+						lastChat: { _id: 'room-1', ts: '2024-01-01T00:00:00.000Z' },
 					},
 				],
 				createdAt: '2024-01-01T00:00:00.000Z',
-				lastChat: { _id: 'room-1', ts: '2024-01-01T00:00:00.000Z', _unmappedProperties_: {} },
+				lastChat: { _id: 'room-1', ts: '2024-01-01T00:00:00.000Z' },
 				importIds: ['imp-1'],
-				_unmappedProperties_: {},
 			});
 		});
 	});
@@ -541,6 +537,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				description: 'a file',
 				store: 'GridFS',
 				etag: 'etag-1',
+				path: '/path',
 				complete: true,
 				uploading: false,
 				progress: 1,
@@ -575,6 +572,19 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				visitorToken: 'tok-abc',
 				extraUpload: true,
 			});
+		});
+
+		it('convertToRocketChat does not throw when the app upload has no room (e.g. deleted room)', () => {
+			const appUpload = {
+				id: 'up-1',
+				name: 'file.png',
+				user: { id: 'user-1' },
+			};
+
+			const result = json(converter.convertToRocketChat(appUpload as any)) as Record<string, unknown>;
+
+			expect(result).to.deep.equal({ _id: 'up-1', name: 'file.png', userId: 'user-1' });
+			expect(result).to.not.have.property('rid');
 		});
 	});
 });

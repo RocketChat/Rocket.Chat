@@ -236,9 +236,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		try {
 			const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 			for await (const event of eventsStartingNow) {
-				if (event.busy === false) {
-					continue;
-				}
 				await this.processEventStart(event);
 			}
 		} catch (err) {
@@ -248,7 +245,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await this.doSetupNextStatusChange();
 	}
 
-	private async processEventStart(event: ICalendarEvent): Promise<void> {
+	private async processEventStart(event: Pick<ICalendarEvent, '_id' | 'uid' | 'endTime'>): Promise<void> {
 		// no endTime → no expiry to set, so the claim could never auto-clear
 		if (!event.endTime) {
 			return;

@@ -6,6 +6,7 @@ import sinon from 'sinon';
 describe('Message Broadcast Tests', () => {
 	let getSettingValueByIdStub: sinon.SinonStub;
 	let usersFindOneStub: sinon.SinonStub;
+	let usersFindByUsernamesStub: sinon.SinonStub;
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
 	let getMessageToBroadcast: any;
@@ -29,6 +30,7 @@ describe('Message Broadcast Tests', () => {
 		},
 		Users: {
 			findOne: usersFindOneStub,
+			findByUsernames: usersFindByUsernamesStub,
 		},
 		Settings: {
 			getValueById: getSettingValueByIdStub,
@@ -44,6 +46,7 @@ describe('Message Broadcast Tests', () => {
 	beforeEach(() => {
 		getSettingValueByIdStub = sinon.stub();
 		usersFindOneStub = sinon.stub();
+		usersFindByUsernamesStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
@@ -98,6 +101,44 @@ describe('Message Broadcast Tests', () => {
 				hideSystemMessages: [],
 				useRealName: true,
 				expectedResult: { ...sampleMessage, u: { ...sampleMessage.u, name: 'Real User' } },
+			},
+			{
+				description: 'should return the message with reactions real names if useRealName is true',
+				message: {
+					...sampleMessage,
+					t: undefined,
+					reactions: {
+						':smile:': { usernames: ['user1', 'user2'] },
+						':heart:': { usernames: ['user1', 'user3'] },
+					},
+				},
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: {
+					...sampleMessage,
+					t: undefined,
+					u: { ...sampleMessage.u, name: 'Real User' },
+					reactions: {
+						':smile:': { usernames: ['user1', 'user2'], names: ['Real User', 'Name for user2'] },
+						':heart:': { usernames: ['user1', 'user3'], names: ['Real User', 'Name for user3'] },
+					},
+				},
+			},
+			{
+				description: 'should return the message with empty reactions without querying users if useRealName is true',
+				message: {
+					...sampleMessage,
+					t: undefined,
+					reactions: {},
+				},
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: {
+					...sampleMessage,
+					t: undefined,
+					u: { ...sampleMessage.u, name: 'Real User' },
+					reactions: {},
+				},
 			},
 			{
 				description: 'should return the message with mentions real name if useRealName is true',
@@ -184,17 +225,37 @@ describe('Message Broadcast Tests', () => {
 				getSettingValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
 				if (useRealName) {
-					const realNames =
-						message.mentions && message.mentions.length > 0
-							? [message.u.name, ...message.mentions.map((mention) => mention.name)]
-							: [message.u.name];
+					const realNames: (string | undefined)[] = [message.u.name];
+
+					if (message.mentions) {
+						message.mentions.forEach((mention) => realNames.push(mention.name));
+					}
 
 					realNames.forEach((user, index) => usersFindOneStub.onCall(index).resolves({ name: user }));
+
+					if (message.reactions) {
+						const allUsernames = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
+						const users = allUsernames.map((username) => ({
+							username,
+							name: username === message.u.username ? message.u.name : `Name for ${username}`,
+						}));
+						usersFindByUsernamesStub.returns({ toArray: () => Promise.resolve(users) });
+					}
 				}
 
 				const result = await getMessageToBroadcast({ id: '123' });
 
 				expect(result).to.deep.equal(expectedResult);
+
+				if (useRealName && message.reactions && Object.keys(message.reactions).length) {
+					const deduplicated = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
+					expect(usersFindByUsernamesStub.calledOnce).to.be.true;
+					expect(usersFindByUsernamesStub.calledWith(deduplicated, { projection: { username: 1, name: 1 } })).to.be.true;
+				}
+
+				if (useRealName && message.reactions && !Object.keys(message.reactions).length) {
+					expect(usersFindByUsernamesStub.called).to.be.false;
+				}
 			});
 		});
 	});

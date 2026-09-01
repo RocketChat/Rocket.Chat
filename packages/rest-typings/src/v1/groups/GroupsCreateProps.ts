@@ -28,6 +28,10 @@ const GroupsCreatePropsSchema = {
 			type: 'boolean',
 			nullable: true,
 		},
+		excludeSelf: {
+			type: 'boolean',
+			nullable: true,
+		},
 		customFields: {
 			type: 'object',
 			nullable: true,

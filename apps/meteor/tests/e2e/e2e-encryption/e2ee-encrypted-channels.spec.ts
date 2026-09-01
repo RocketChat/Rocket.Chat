@@ -372,7 +372,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.content.btnOptionEditMessage.click();
 		await poHomeChannel.composer.inputMessage.fill(editedMessage);
 
-		await page.keyboard.press('Enter');
+		await poHomeChannel.composer.btnSend.click();
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(displayedMessage);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();

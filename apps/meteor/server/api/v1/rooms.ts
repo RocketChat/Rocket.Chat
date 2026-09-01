@@ -2,12 +2,14 @@ import { FederationMatrix, MeteorError, Room, Team } from '@rocket.chat/core-ser
 import {
 	type IRoom,
 	type IRoomAbacRedaction,
+	type IMessage,
 	type IUpload,
 	type RequiredField,
 	type RoomAdminFieldsType,
 	isPrivateRoom,
 	isPublicRoom,
 	type IUser,
+	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -60,6 +62,7 @@ import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { unbanUserFromRoom } from '../../lib/unbanUserFromRoom';
 import { createDiscussion } from '../../meteor-methods/messages/createDiscussion';
 import { sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
@@ -419,11 +422,12 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	},
 );
 
-const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string }>({
+const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string; tmid?: IMessage['_id'] }>({
 	type: 'object',
 	properties: {
 		rid: { type: 'string', minLength: 1 },
 		draft: { type: 'string' },
+		tmid: { type: 'string', minLength: 1, pattern: '^[^.$]+$' },
 	},
 	required: ['rid', 'draft'],
 	additionalProperties: false,
@@ -450,13 +454,13 @@ const roomsSaveDraftEndpoint = API.v1.post(
 		},
 	},
 	async function action() {
-		const { rid, draft } = this.bodyParams;
+		const { rid, draft, tmid } = this.bodyParams;
 
 		if (draft.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			return API.v1.failure('error-message-size-exceeded');
 		}
 
-		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined);
+		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined, tmid);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
 		}
@@ -1168,7 +1172,8 @@ API.v1.get(
 
 		const { members, total } = await findUsersOfRoomOrderedByRole({
 			rid: findResult._id,
-			...(status && { status: { $in: status } }),
+			...(status && { status: status as UserStatus[] }),
+			hidden: await getUsersHiddenFrom(this.userId),
 			skip,
 			limit,
 			filter,

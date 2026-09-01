@@ -1,13 +1,11 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor, act } from '@testing-library/react';
 
 import type { PeerInfo } from './definitions';
 import type { PeerAutocompleteOptions } from '../components';
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
 import { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAutocomplete';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
@@ -21,23 +19,7 @@ const mockOnSelectPeer = jest.fn();
 
 const appRoot = () =>
 	mockAppRoot()
-		.wrap((children) => (
-			<MediaCallInstanceContext.Provider
-				value={{
-					currentViews: [],
-					registerView: () => undefined,
-					unregisterView: () => undefined,
-					instance: undefined,
-					signalEmitter: new Emitter<Signals>(),
-					audioElement: undefined,
-					openRoomId: undefined,
-					setOpenRoomId: () => undefined,
-					getAutocompleteOptions: mockGetAutocompleteOptions,
-				}}
-			>
-				{children}
-			</MediaCallInstanceContext.Provider>
-		))
+		.wrap((children) => <MockedInstanceProvider getAutocompleteOptions={mockGetAutocompleteOptions}>{children}</MockedInstanceProvider>)
 		.build();
 
 beforeEach(() => {

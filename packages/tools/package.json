@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/tools",
-	"version": "0.3.0",
+	"version": "0.4.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},

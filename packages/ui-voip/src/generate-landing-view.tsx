@@ -99,8 +99,8 @@ function LandingView() {
 	return (
 		<div style={containerStyle}>
 			<States>
-				<StatesIcon name='phone-off' />
-				<StatesTitle data-i18n='Call_ended'>Call ended</StatesTitle>
+				<StatesIcon name='phone' />
+				<StatesTitle data-i18n='Call_window'>Call window</StatesTitle>
 				<StatesSubtitle data-i18n='You_can_close_this_window'>You can close this window.</StatesSubtitle>
 			</States>
 		</div>

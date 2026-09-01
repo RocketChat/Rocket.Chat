@@ -104,7 +104,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 							rules={{
 								maxLength: {
 									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+									message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
 								},
 							}}
 							render={({ field }) => (

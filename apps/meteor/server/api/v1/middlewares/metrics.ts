@@ -2,11 +2,11 @@ import type { MiddlewareHandler } from 'hono';
 import type { Gauge, Histogram, Summary } from 'prom-client';
 
 import type { CachedSettings } from '../../../settings/CachedSettings';
-import type { APIClass } from '../../ApiClass';
 
 export const metricsMiddleware =
 	({
 		basePathRegex,
+		excludePathRegex,
 		api,
 		settings,
 		endpointTimeSummary,
@@ -15,7 +15,8 @@ export const metricsMiddleware =
 		activeRequestsGauge,
 	}: {
 		basePathRegex?: RegExp;
-		api: APIClass;
+		excludePathRegex?: RegExp;
+		api: { version?: string };
 		settings: CachedSettings;
 		endpointTimeSummary: Summary;
 		endpointTimeHistogram: Histogram;
@@ -23,6 +24,17 @@ export const metricsMiddleware =
 		activeRequestsGauge: Gauge;
 	}): MiddlewareHandler =>
 	async (c, next) => {
+		// Several metrics middlewares share the same `/api` mount (v1, experimental, apps, default), so
+		// each one has to ignore the paths that belong to the others or a request gets sampled more than
+		// once. The versioned ones opt in by prefix; the catch-all opts out of the prefixes it does not own.
+		if (basePathRegex && !basePathRegex.test(c.req.path)) {
+			return next();
+		}
+
+		if (excludePathRegex?.test(c.req.path)) {
+			return next();
+		}
+
 		const rocketchatRestApiEnd = endpointTimeSummary.startTimer();
 		const rocketchatRestApiHistEnd = endpointTimeHistogram.startTimer();
 

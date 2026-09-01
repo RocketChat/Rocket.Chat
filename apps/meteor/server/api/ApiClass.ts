@@ -2,7 +2,7 @@ import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import { Users } from '@rocket.chat/models';
+import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
@@ -18,7 +18,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { checkPermissions, parseDeprecation } from './api.helpers';
+import { canBypassRateLimit, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -27,6 +27,7 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
+	RateLimiterOptions,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -45,7 +46,6 @@ import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { isObject } from '../../lib/utils/isObject';
 import { checkCodeForUser } from '../lib/2fa/code';
-import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { getNestedProp } from '../lib/getNestedProp';
 import { notifyOnUserChangeAsync } from '../lib/notifyListener';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
@@ -126,11 +126,6 @@ interface IAPIDefaultFieldsToExclude {
 	settings: number;
 	inviteToken: number;
 }
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-};
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -420,7 +415,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
+			!(userId && (await canBypassRateLimit(userId, rateLimiterDictionary[route].options.bypassPermissions)))
 		);
 	}
 
@@ -454,6 +449,40 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			);
 		}
+	}
+
+	public registerRateLimiterForRoute({
+		route,
+		rateLimiterOptions = defaultRateLimiterOptions,
+		methods,
+	}: {
+		route: string;
+		rateLimiterOptions?: RateLimiterOptions;
+		methods: string[];
+	}): void {
+		if (!this.shouldAddRateLimitToRoute({ rateLimiterOptions })) {
+			return;
+		}
+
+		this.addRateLimiterRuleForRoutes({ routes: [route], rateLimiterOptions, endpoints: methods });
+	}
+
+	public enforceRateLimitForRoute({
+		route,
+		method,
+		request,
+		response,
+		requestIp,
+		userId,
+	}: {
+		route: string;
+		method: string;
+		request: Request;
+		response: Response;
+		requestIp: string;
+		userId?: string;
+	}): Promise<void> {
+		return this.enforceRateLimit({ IPAddr: requestIp, route: this.getFullRouteName(route, method) }, request, response, userId);
 	}
 
 	public reloadRoutesToRefreshRateLimiter(): void {
@@ -1135,8 +1164,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			);
 
-			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
-			// instead of having to listen to every watch.users event
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: hashedToken, userId: this.userId });
 			void notifyOnUserChangeAsync(async () => {
 				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {

@@ -22,6 +22,7 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
+		process.env.GITHUB_ACTIONS === 'true' && ['github'],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/rocketchat.ts',
 			{

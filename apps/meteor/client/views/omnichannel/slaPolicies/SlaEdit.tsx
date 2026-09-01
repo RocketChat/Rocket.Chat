@@ -1,16 +1,6 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
-import {
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	TextInput,
-	Button,
-	NumberInput,
-	ButtonGroup,
-	ContextualbarFooter,
-} from '@rocket.chat/fuselage';
-import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, NumberInput, ButtonGroup } from '@rocket.chat/fuselage';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';

@@ -17,4 +17,10 @@ export class SearchMessagesFlexTab extends FlexTab {
 	async getResultItem(messageText: string) {
 		return this.root.getByRole('listitem', { name: messageText });
 	}
+
+	async jumpToMessage(messageText: string) {
+		const message = (await this.getResultItem(messageText)).first();
+		await message.hover();
+		await message.getByRole('button', { name: 'Jump to message' }).click();
+	}
 }

@@ -2,7 +2,8 @@
 
 ## Status
 
-In progress — Phase 0 landed (PR #41205). Phases 1–5 pending.
+In progress (PR #41205). Phases 0–5 landed; `transformMappedData` removed. See the per-phase
+notes below, including the messages/threads deviation in Phase 4.
 
 ## Problem
 
@@ -191,16 +192,40 @@ and exercises the enum codecs with the `console.warn` side effects preserved in 
 `uploads`, then `rooms`. Introduces the codec-factory pattern, `z.decodeAsync` / `z.encodeAsync`,
 `isPartial` handled in the class layer, and `secureFieldsMapper` integration.
 
-### Phase 4 — Async + memoized + shared sub-schemas
+### Phase 4 — Async + memoized + nested (done)
 
-`messages` + `threads` together — extract one shared **attachment codec** to remove the duplicated
-`_convertAttachmentsToApp` map — plus `contacts` (deep nested `list` maps → nested codecs). Highest
-risk; done last.
+`messages`, `threads` and `contacts`. `contacts` became a clean bidirectional `ContactCodec`
+(`decode` clones; `encode` maps every attribute via the nested field map). `mappedDecodeAsync` was
+extended with the nested `{ from, map, list }` branch so it fully reproduces `transformMappedData`.
 
-### Phase 5 — Cleanup
+**Deviation — messages and threads are not standalone codecs.** Unlike every other converter, these
+two were migrated by swapping their `transformMappedData` calls for the shared `mappedDecodeAsync`
+helper *in place*, rather than being wrapped in `create*Codec` factories. Reasons:
 
-Once every converter is on codecs, delete `transformMappedData.ts` (and relocate/retire its
-importer-located spec) and consolidate `cachedFunction` if memoization has moved into the factories.
+1. **Test harness.** `messages.tests.js` uses `proxyquire` to stub `@rocket.chat/models`,
+   `@rocket.chat/random` and `@rocket.chat/core-typings` (`isMessageFromVisitor`) on the `messages.ts`
+   module. `proxyquire` only replaces a module's *own* `require`s, so moving `convertAppMessage`'s
+   model/`Random` usage into a separate `codecs/messages.ts` module would bypass the stubs and break
+   the test (real `Rooms.findOneById` → no `GENERAL` room → the "proper schema"/"invalid room" cases
+   fail). Keeping that usage in the class preserves the harness without editing it.
+2. **Poor fit for the codec shape.** `convertMessage` builds its field map per call, closing over a
+   per-message memoization cache (`WeakMap` + `cachedFunction`), the source `msgObj`
+   (`isMessageFromVisitor`) and `mainFile`; `convertAppMessage` adds an `isPartial` flag and
+   `Random.id`/`new Date()` defaults. None of this expresses cleanly as a static bidirectional
+   `z.codec`, and forcing it would add casts and risk for no real gain.
+
+The migration goal for these two is therefore narrower but still met: the `transformMappedData`
+dependency is removed and the mapping logic is the shared, tested `mappedDecodeAsync`. The
+attachment sub-maps stayed per-converter because messages' and threads' variants differ (threads has
+extra `author`/`timestamp`/`fileId` guards) — sharing them would change behaviour. Wrapping messages
+in a codec later remains possible (e.g. via `proxyquire`'s `@global` stubs) if desired.
+
+### Phase 5 — Cleanup (done)
+
+Every converter is off `transformMappedData`, so `transformMappedData.ts` was deleted and its
+(previously importer-located) spec was retired — its coverage now lives in the `mappedDecodeAsync`
+tests under `tests/unit/app/apps/server/codecs/`. `cachedFunction` stays: it is still used by the
+messages and threads memoization, which remained in the class layer (see the Phase 4 deviation).
 
 ## Testing strategy
 
@@ -223,6 +248,35 @@ importer-located spec) and consolidate `cachedFunction` if memoization has moved
   still be spiked before committing to Phase 3.
 - **Test rewrite** — the existing tests use `proxyquire.noCallThru()` against module paths; codec-ing
   each converter means updating those loaders.
+
+## Type strategy for the mapping helpers
+
+The mapping helpers in `converters/codecs/mappedData.ts` are split by how well the source type is
+known, which is what makes generic typing worthwhile in some cases and not others:
+
+- **Sync string maps → fully generic and inferred.** `mappedDecode<Source>(fieldMap)` and
+  `createMappedCodec<Source>(fieldMap)` are generic over the source document type. The field map is
+  typed `FieldMap<Source> = Record<string, Extract<keyof Source, string>>`, so a renamed or
+  misspelled source field is a **compile error** (a `@ts-expect-error` test locks this). The decode
+  result is the inferred `Decoded<Source, Map>` — each renamed target as an optional property plus the
+  `_unmappedProperties_` bucket typed as `Omit<Source, mappedKeys>` — rather than `Record<string, any>`.
+  `mappedEncode` is the inverse and returns `Partial<Source>`. `Source` defaults to a loose record, so
+  untyped call sites (e.g. tests) still work. Consumers with clean document types (`visitors`,
+  `departments`, `roles`) pass their `Source` and get the typo-safety for free.
+
+- **Async/function/nested maps → loose map, generic result.** `mappedDecodeAsync` keeps its
+  `AsyncFieldMap` loosely typed on purpose: its consumers (`rooms`, `messages`, `uploads`, `contacts`)
+  map many optional/livechat-only fields that are *not* on the base document types (which is why the
+  original converters used dynamic access), and the return shape depends on arbitrary function/nested
+  entries. Fully inferring that would resurrect the large conditional type the old helper avoided. It
+  does take a `Result` type parameter — `mappedDecodeAsync<IAppsUpload>(data, map)` — so call sites
+  assert the produced shape once instead of trailing every call with `as unknown as Promise<…>`.
+
+- **Each apps-type boundary keeps a single, documented cast.** The Apps-Engine interfaces
+  (`IAppsVisitor`, …) are hand-authored and don't structurally equal the produced `Decoded`/mapped
+  shape, so each affected codec boundary — supplied role, department, user and visitor — retains one
+  localized `as unknown as <AppsType>` where the codec meets that interface. Those casts are the
+  deliberate loose-validation seams (see design decision 7), not incidental looseness.
 
 ## Non-goals
 

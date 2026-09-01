@@ -751,7 +751,6 @@ export const createAccountSettings = () =>
 				'Open_Livechats',
 				'On_Hold_Chats',
 				'Unread',
-				'Drafts',
 				'Favorites',
 				'Teams',
 				'Discussions',
@@ -771,6 +770,17 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
 				type: 'string',
 				public: true,
+			});
+		});
+
+		await this.section('Privacy', async function () {
+			await this.add('Accounts_StatusVisibility_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
 			});
 		});
 

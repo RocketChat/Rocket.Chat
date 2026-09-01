@@ -4,15 +4,21 @@ import type { ReactElement } from 'react';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 import GenericGroupPage from '../settings/groups/GenericGroupPage';
 
-export type AISettingsSectionName = 'Intelligent_Search' | 'AI_LLM_Provider';
+export type AISettingsSectionName = 'Intelligent_Search' | 'AI_LLM_Provider' | 'MCP';
 
 export type AISettingsSectionProps = {
 	section: AISettingsSectionName;
 };
 
+const sectionTitles: Record<AISettingsSectionName, string> = {
+	Intelligent_Search: 'Intelligent_Search',
+	AI_LLM_Provider: 'AI_Center_LLM_Providers',
+	MCP: 'MCP',
+};
+
 const AISettingsSection = ({ section }: AISettingsSectionProps): ReactElement => {
 	const router = useRouter();
-	const title = section === 'Intelligent_Search' ? 'Intelligent_Search' : 'AI_Center_LLM_Providers';
+	const title = sectionTitles[section];
 
 	return (
 		<EditableSettingsProvider>

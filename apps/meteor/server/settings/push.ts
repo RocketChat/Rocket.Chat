@@ -66,14 +66,18 @@ export const createPushSettings = () =>
 			alert: 'Push_Setting_Requires_Restart_Alert',
 			enableQuery: pushEnabledWithoutGateway,
 		});
-		await this.add('Push_test_push', 'push_test', {
-			type: 'action',
-			actionText: 'Send_a_test_push_to_my_user',
-			enableQuery: {
-				_id: 'Push_enable',
-				value: true,
+		await this.add(
+			'Push_test_push',
+			{ method: 'POST', path: '/v1/push.test' },
+			{
+				type: 'action',
+				actionText: 'Send_a_test_push_to_my_user',
+				enableQuery: {
+					_id: 'Push_enable',
+					value: true,
+				},
 			},
-		});
+		);
 		await this.section('Certificates_and_Keys', async function () {
 			await this.add('Push_apn_passphrase', '', {
 				type: 'string',

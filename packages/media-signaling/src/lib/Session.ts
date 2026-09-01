@@ -77,6 +77,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private registration: SessionRegistration;
 
+	private _micless: boolean = false;
+
+	private shouldMuteMiclessCall = false;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -87,6 +91,22 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public get registered(): boolean {
 		return this.registration.registered;
+	}
+
+	// FIXME: This state is controlled outside of this class. MediaSignalingSession should handle this fallback in another way so this information doesn't depend on the consumer
+	// FIXME: Consumers can still unmute the call even when this is set to true. That behaviour should be guarded at the call level to avoid representing incorrect states.
+	/* micless: used by the consumer to identify when a "fake stream" was used due to inability to retrieve a proper device. When set to true will mute the call once when it starts */
+	public set micless(micless: boolean) {
+		if (micless) {
+			this.shouldMuteMiclessCall = true;
+		} else {
+			this.shouldMuteMiclessCall = false;
+		}
+		this._micless = micless;
+	}
+
+	public get micless() {
+		return this._micless;
 	}
 
 	constructor(private config: MediaSignalingSessionConfig) {
@@ -239,7 +259,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal, oldCall);
 	}
 
-	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
+	public async setDeviceId(deviceId: ConstrainDOMString | null, force?: boolean): Promise<void> {
 		this.deviceId = deviceId;
 
 		if (this.switchingInputTrack) {
@@ -248,9 +268,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		// do nothing if:
 		// 1. doesn't have any input track yet
-		// 2. it's the same device id
+		// 2. it's the same device id (force flag bypasses this)
 		// 3. has no restriction on which device to use
-		if (!this.inputTrack || !deviceId || isSameDeviceId(deviceId, this.currentDeviceId)) {
+		if (!this.inputTrack || !deviceId || (isSameDeviceId(deviceId, this.currentDeviceId) && !force)) {
 			return;
 		}
 
@@ -764,6 +784,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
+		if (mainCall && this.shouldMuteMiclessCall) {
+			this.shouldMuteMiclessCall = false;
+			if (!mainCall.muted) {
+				mainCall.setMuted(true);
+			}
+		}
 
 		if (hadCall && !hasCall) {
 			this.emit('endedCall');

@@ -9,20 +9,19 @@ import type {
 } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
-import type { UploadResult } from '@rocket.chat/ui-contexts';
+import type { ServerContextValue, UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
 import { useSyncExternalStore } from 'react';
 
-import { host } from '../components/App';
 import { useStore } from '../store';
 import { useSDK } from './SDKProvider';
 
-export type ServerProviderProps = { children: ComponentChildren };
+export type ServerProviderProps = { children: ComponentChildren; serverURL: string };
 
-const ServerProvider = ({ children }: ServerProviderProps) => {
+const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 	const sdk = useSDK();
 
 	const { token } = useStore();
@@ -70,16 +69,20 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 
 			switch (method) {
 				case 'GET':
-					return sdk.rest.get(compiledPath, params as any) as any;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					return sdk.rest.get(compiledPath, params) as any;
 
 				case 'POST':
-					return sdk.rest.post(compiledPath, params as any) as any;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					return sdk.rest.post(compiledPath, params) as any;
 
 				case 'PUT':
-					return sdk.rest.put(compiledPath, params as never) as never;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					return sdk.rest.put(compiledPath, params as never) as any;
 
 				case 'DELETE':
-					return sdk.rest.delete(compiledPath, params as any) as any;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					return sdk.rest.delete(compiledPath, params) as any;
 
 				default:
 					throw new Error('Invalid HTTP method');
@@ -96,7 +99,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			},
 		): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
 			return (eventName, callback): (() => void) => {
-				return sdk.stream(streamName, [eventName, { visitorToken: token, token }], callback as (...args: any[]) => void).stop;
+				return sdk.stream(streamName, [eventName, { visitorToken: token, token }], callback).stop;
 			};
 		};
 
@@ -152,10 +155,10 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			getStream,
 			getSingleStream,
 			reconnect: () => sdk.connection.reconnect(),
-		};
+		} as unknown as ServerContextValue; // FIXME
 
 		return contextValue;
-	}, [sdk, status, token]);
+	}, [host, sdk, status, token]);
 
 	return <ServerContext.Provider value={contextValue}>{children}</ServerContext.Provider>;
 };

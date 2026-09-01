@@ -9,8 +9,7 @@ import {
 } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
-import { capitalize } from '@rocket.chat/string-helpers';
-import { normalizeLanguage } from '@rocket.chat/tools';
+import { capitalize, normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';

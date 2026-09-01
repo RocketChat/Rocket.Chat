@@ -27,18 +27,20 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
+import { readThread } from '../../lib/messaging/threads/functions';
 import { reportMessage } from '../../lib/moderation/reportMessage';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { followMessage } from '../../meteor-methods/messages/followMessage';
@@ -163,6 +165,24 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type ChatReadThread = {
+	tmid: IMessage['_id'];
+};
+
+const ChatReadThreadSchema = {
+	type: 'object',
+	properties: {
+		tmid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['tmid'],
+	additionalProperties: false,
+};
+
+const isChatReadThreadProps = ajv.compile<ChatReadThread>(ChatReadThreadSchema);
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -232,6 +252,59 @@ const chatEndpoints = API.v1
 			}
 
 			await unpinMessage(this.userId, msg);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.readThread',
+		{
+			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
+			body: isChatReadThreadProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			if (!settings.get<boolean>('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+
+			const { tmid } = this.bodyParams;
+
+			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			if (!thread?.rid) {
+				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+			}
+
+			const [user, room] = await Promise.all([
+				Users.findOneById(this.userId),
+				Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } }),
+			]);
+
+			if (!room) {
+				throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist');
+			}
+
+			if (!user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+
+			await callbacks.run('beforeReadMessages', room._id, user._id);
+			await readThread({ user, room, tmid });
 
 			return API.v1.success();
 		},
@@ -637,7 +710,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+			const { roomId, lastUpdate, fromTs, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
 				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
@@ -653,6 +726,7 @@ const chatEndpoints = API.v1
 
 			const getMessagesQuery = {
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(fromTs && { fromTs: new Date(fromTs) }),
 				...(next && { next }),
 				...(previous && { previous }),
 				...(count && { count }),
@@ -822,6 +896,7 @@ const chatEndpoints = API.v1
 		'chat.sendMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 1000, bypassPermissions: ['send-many-messages'] },
 			body: isChatSendMessageProps,
 			response: {
 				200: ajv.compile<{ message: IMessage }>({
@@ -984,6 +1059,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadsListProps,
 			response: {
 				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
@@ -1112,6 +1188,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadMessages',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadMessagesProps,
 			response: {
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
@@ -1131,7 +1208,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { tmid } = this.queryParams;
+			const { tmid, aroundId } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -1149,11 +1226,28 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
+
+			let resolvedOffset = offset;
+			let resolvedSort = sort || { ts: 1 };
+			if (aroundId) {
+				resolvedSort = { ts: 1 };
+				if (aroundId === tmid) {
+					resolvedOffset = 0;
+				} else {
+					const target = await Messages.findOneById(aroundId, { projection: { ts: 1, tmid: 1 } });
+					if (target?.tmid !== tmid || !target.ts) {
+						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
+					}
+					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
+					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
+				}
+			}
+
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid },
+				{ ...query, tmid, _hidden: { $ne: true } },
 				{
-					sort: sort || { ts: 1 },
-					skip: offset,
+					sort: resolvedSort,
+					skip: resolvedOffset,
 					limit: count,
 					projection: fields,
 				},
@@ -1164,7 +1258,7 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				messages,
 				count: messages.length,
-				offset,
+				offset: resolvedOffset,
 				total,
 			});
 		},

@@ -18,9 +18,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
-
-		await page.goto('/omnichannel');
-		await poOmnichannelDepartments.sidebar.linkDepartments.click();
+		await poOmnichannelDepartments.goTo();
 	});
 
 	test('OC - Manage Departments (CE) - Create department', async () => {
@@ -29,7 +27,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 			await poOmnichannelDepartments.createDepartment(departmentName, faker.internet.email());
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentName)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toBeVisible();
 		});
 
 		await test.step('expect to not be possible adding a second department ', async () => {

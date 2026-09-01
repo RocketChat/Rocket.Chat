@@ -1,8 +1,9 @@
 import type { IAppServerOrchestrator, IAppVisitorsConverter, IAppsVisitor } from '@rocket.chat/apps';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
+import * as z from 'zod';
 
-import { transformMappedData } from './transformMappedData';
+import { VisitorCodec } from './codecs';
 
 // TODO: check if functions from this converter can be async
 export class AppVisitorsConverter implements IAppVisitorsConverter {
@@ -33,22 +34,7 @@ export class AppVisitorsConverter implements IAppVisitorsConverter {
 			return undefined;
 		}
 
-		const map = {
-			id: '_id',
-			username: 'username',
-			name: 'name',
-			department: 'department',
-			updatedAt: '_updatedAt',
-			token: 'token',
-			phone: 'phone',
-			visitorEmails: 'visitorEmails',
-			livechatData: 'livechatData',
-			status: 'status',
-			activity: 'activity',
-			externalIds: 'externalIds',
-		} as const;
-
-		return transformMappedData(visitor, map) as unknown as Promise<IAppsVisitor>;
+		return z.decode(VisitorCodec, visitor);
 	}
 
 	convertAppVisitor(visitor: undefined | null): undefined;
@@ -62,22 +48,6 @@ export class AppVisitorsConverter implements IAppVisitorsConverter {
 			return undefined;
 		}
 
-		const newVisitor = {
-			_id: visitor.id,
-			username: visitor.username,
-			name: visitor.name,
-			token: visitor.token,
-			phone: visitor.phone,
-			livechatData: visitor.livechatData,
-			status: visitor.status || 'online',
-			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
-			...(visitor.department && { department: visitor.department }),
-			...(visitor.externalIds && { externalIds: visitor.externalIds }),
-		};
-
-		return Object.assign(
-			newVisitor,
-			(visitor as { _unmappedProperties_?: Record<string, unknown> })._unmappedProperties_,
-		) as unknown as ILivechatVisitor;
+		return z.encode(VisitorCodec, visitor);
 	}
 }

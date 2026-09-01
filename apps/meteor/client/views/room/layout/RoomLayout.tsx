@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.json';
+import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
@@ -9,6 +9,7 @@ import { Suspense, useMemo } from 'react';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 
 export type RoomLayoutProps = {
+	classificationBanner?: ReactNode;
 	header?: ReactNode;
 	body?: ReactNode;
 	footer?: ReactNode;
@@ -22,9 +23,9 @@ const useBreakpointsElement = () => {
 
 	const breakpoints = useMemo(
 		() =>
-			breakpointsDefinitions
-				.filter(({ minViewportWidth }) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
-				.map(({ name }) => name),
+			Object.entries(breakpointsDefinitions)
+				.filter(([, { minViewportWidth }]) => minViewportWidth && borderBoxSize.inlineSize && borderBoxSize.inlineSize >= minViewportWidth)
+				.map(([name]) => name),
 		[borderBoxSize],
 	);
 
@@ -34,7 +35,7 @@ const useBreakpointsElement = () => {
 	};
 };
 
-const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) => {
+const RoomLayout = ({ classificationBanner, header, body, footer, aside, ...props }: RoomLayoutProps) => {
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
@@ -58,6 +59,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) 
 			)}
 		>
 			<Box height='full' width='full' display='flex' flexDirection='column' backgroundColor='room' {...props} ref={ref}>
+				{classificationBanner}
 				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 					<Box display={hideBody ? 'none' : 'flex'} flexDirection='column' flexGrow={1} minWidth={0}>

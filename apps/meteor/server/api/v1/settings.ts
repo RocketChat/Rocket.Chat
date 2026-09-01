@@ -26,10 +26,13 @@ import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { refreshLoginServices } from '../../lib/refreshLoginServices';
 import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
+import type { FetchedSetting } from '../../settings/SettingsRegistry';
 import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
@@ -43,7 +46,7 @@ async function fetchSettings(
 	offset: FindOptions<ISetting>['skip'],
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
-): Promise<{ settings: ISetting[]; totalCount: number }> {
+): Promise<{ settings: FetchedSetting[]; totalCount: number }> {
 	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
@@ -57,7 +60,7 @@ async function fetchSettings(
 	return { settings: settingsList, totalCount: total };
 }
 
-const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -87,7 +90,7 @@ const addCustomOAuthBodySchema = ajv.compile<{ name: string }>({
 	additionalProperties: false,
 });
 
-const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
@@ -195,11 +198,14 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+				if (service.service && ['cas', 'ldap'].includes(service.service)) {
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+				if (
+					(service as OAuthConfiguration).custom ||
+					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
+				) {
 					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
@@ -226,6 +232,9 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
 		body: addCustomOAuthBodySchema,
 		response: {
 			200: ajv.compile<void>({
@@ -234,13 +243,9 @@ API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -251,6 +256,65 @@ API.v1.post(
 
 		await addOAuthServiceMethod(this.userId, name);
 
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.removeCustomOAuth',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		body: addCustomOAuthBodySchema,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { name } = this.bodyParams;
+		if (!name?.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		await removeCustomOAuthSettings(name);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.refreshOAuthServices',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await refreshLoginServices();
 		return API.v1.success();
 	},
 );
