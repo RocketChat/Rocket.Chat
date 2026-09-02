@@ -8,6 +8,8 @@ export type SetupWizardParameters = {
 	serverAlreadyRegistered: boolean;
 };
 
+export const isSetupWizardCompleted = (): boolean => settings.get('Show_Setup_Wizard') === 'completed';
+
 export const getSetupWizardParameters = async (): Promise<SetupWizardParameters> => ({
 	settings: await Settings.findSetupWizardSettings().toArray(),
 	serverAlreadyRegistered: !!settings.get('Cloud_Workspace_Client_Id') || process.env.DEPLOY_PLATFORM === 'rocket-cloud',
