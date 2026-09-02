@@ -7,7 +7,6 @@ import { notifyOnMessageChange } from '../../notifyListener';
 type DiscussionRoom = Pick<IRoom, '_id' | 'msgs' | 'lm' | 'sysMes'>;
 
 /**
- * Resolves a hidden system messages setting value into the set of message types it discounts.
  * `mute_unmute` is a single option covering two different message types, and `rm` is filtered
  * out because it's already discounted when the message is deleted.
  */
@@ -53,10 +52,8 @@ const notifyParentMessage = (parentMessage: IMessage | null): void => {
 };
 
 /**
- * Recounts the messages of a discussion from scratch, copies its metadata (messages count and
- * last message timestamp) to the message which links to it on the parent room, and notifies the
- * change to the clients. Only meant for when the set of hidden system message types changes;
- * on regular message activity use `incrementAndNotifyParentRoomWithParentMessage` instead.
+ * Only meant for when the set of hidden system message types changes; regular message activity
+ * goes through `incrementAndNotifyParentRoomWithParentMessage` instead.
  */
 export const updateAndNotifyParentRoomWithParentMessage = async (room: DiscussionRoom): Promise<void> => {
 	const msgs = await getDiscussionMessagesCount(room);
@@ -64,11 +61,6 @@ export const updateAndNotifyParentRoomWithParentMessage = async (room: Discussio
 	notifyParentMessage(await Messages.refreshDiscussionMetadata({ ...room, msgs }));
 };
 
-/**
- * Applies the metadata changes of a single discussion message (sent, edited or deleted) to the
- * message which links to it on the parent room, and notifies the change to the clients. The
- * count only moves if the message is visible, so hidden system messages never enter it.
- */
 export const incrementAndNotifyParentRoomWithParentMessage = async (
 	room: Pick<IRoom, '_id' | 'lm' | 'sysMes'>,
 	messageType: IMessage['t'],
