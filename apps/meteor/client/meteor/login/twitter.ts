@@ -38,7 +38,10 @@ const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, Log
 	},
 );
 
-const loginWithTwitterForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
+const loginWithTwitter = createOAuthLoginFunctionForMeteor(requestCredential);
 
-Object.assign(Accounts._loginFuncs, { twitter: loginWithTwitterForMeteor });
-Object.assign(Meteor, { loginWithTwitter: loginWithTwitterForMeteor });
+Accounts.oauth.registerService('twitter');
+Accounts.registerClientLoginFunction('twitter', loginWithTwitter);
+Object.assign(Meteor, {
+	loginWithTwitter: (...args: Parameters<typeof loginWithTwitter>) => Accounts.applyLoginFunction('twitter', args),
+});
