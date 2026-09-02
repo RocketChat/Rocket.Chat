@@ -130,7 +130,7 @@ const RichTextMessageBox = ({
 
 	const messageComposerRef = useRef<HTMLElement>(null);
 
-	const clearedBySendFlowRef = useRef(false);
+	const composerClearCountRef = useRef(0);
 
 	const subscription = useRoomSubscription();
 	const { initialValue, persistLocal, flushDraft } = useDraft(
@@ -172,7 +172,7 @@ const RichTextMessageBox = ({
 
 			const { clear } = composer;
 			composer.clear = () => {
-				clearedBySendFlowRef.current = true;
+				composerClearCountRef.current += 1;
 				clear();
 			};
 
@@ -213,7 +213,7 @@ const RichTextMessageBox = ({
 		const text = composer?.text ?? '';
 
 		composer?.clear();
-		clearedBySendFlowRef.current = false;
+		const clearCountAtSend = composerClearCountRef.current;
 		popup.clear();
 
 		try {
@@ -224,7 +224,7 @@ const RichTextMessageBox = ({
 				isSlashCommandAllowed,
 			});
 		} finally {
-			if (composer && text && !clearedBySendFlowRef.current && chat.composer === composer && !composer.text) {
+			if (composer && text && composerClearCountRef.current === clearCountAtSend && chat.composer === composer && !composer.text) {
 				composer.setText(text);
 				composer.setCursorToEnd();
 			}
