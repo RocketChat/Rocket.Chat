@@ -276,6 +276,11 @@ async executePreMessageSentModify(msg, builder): Promise<MessageModifyEventResul
   in the object literal is then an excess property. This needs the author to *declare* the return
   type — an `implements` clause alone does not contextually type a method body — so the handler
   signature must spell out `Promise<MediaCallCreateEventResult>`.
+- An author who declares no return type leaves `T` unresolved at `unknown`, and `Partial<unknown>`
+  collapses to `{}`, which satisfies every patch type. `PatchEventResult` therefore carries a
+  phantom `__patchedType?: () => T`. Nothing reads it and it never crosses the wire; it puts `T` in
+  a covariant position so `PatchEventResult<unknown>` no longer satisfies a concrete patch type, and
+  the `implements` clause rejects the handler. Hosts strip the phantom in `UnmarkEvent`.
 - **Tradeoff accepted:** typing `EventResult.` lists all four variants in autocomplete; disallowed
   ones simply fail to typecheck at the `return`.
 
