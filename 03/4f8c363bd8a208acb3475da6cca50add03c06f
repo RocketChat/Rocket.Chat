@@ -1,0 +1,13 @@
+apps/meteor/tests/unit/app/markdown/hljs.tests.ts
+  ai_agent 1-212
+apps/meteor/tests/unit/app/markdown/markdown.mocks.ts
+  ai_agent 1-111
+apps/meteor/tests/unit/app/markdown/markdown.tests.ts
+  ai_agent 1-242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "034f8c363bd8a208acb3475da6cca50add03c06f",
+  "prompts": {}
+}
