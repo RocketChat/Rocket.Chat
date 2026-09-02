@@ -1,0 +1,14 @@
+packages/core-services/src/types/IAuthorization.ts
+  h_4c386397e672f4 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "033af95d78febb31f879f1f2b55bd43b222cff93",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
