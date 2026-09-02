@@ -1,5 +1,27 @@
 # JSON-RPC bridge benchmark results
 
+> **Outcome.** Option 1 below was taken: the codec's JSON-RPC extension is gone.
+> The envelope is a plain object, it goes on the wire as a plain msgpack map, and
+> the receiver categorizes it with the type guards in `src/lib/jsonrpc.ts`. The
+> in-house types stay, because that is where the win over `jsonrpc-lite` sits.
+>
+> A re-run after the change confirms it. The wire form is now byte-for-byte equal
+> across all three pipelines, and the `vs in-house, no ext` totals read the noise
+> floor - build 0.99x, encode 1.00x, receive 0.99x, round-trip 1.01x - which is
+> the check that the extension is really gone. Against `jsonrpc-lite`: build
+> 2,780x, receive 11.66x, round-trip 10.41x, and encode recovers from 0.90x to
+> 1.00x-1.07x. The 64 KiB upload no longer pays a double copy.
+>
+> One thing follows that no table shows: `meta` now crosses the process
+> boundary. The extension's tuple had no slot for it; a map carries the key for
+> free.
+>
+> The error payload keeps a class, `JsonRpcError`, because the runtime's main
+> loop tests it with `instanceof` to tell a failed handler from a successful one,
+> and a shape test cannot do that safely. Its wire shape has its own name,
+> `SerializedJsonRpcError`. The classes were never the cost measured here - the
+> `in-house, no ext` column used them throughout and won.
+
 Run of `yarn workspace @rocket.chat/apps bench:jsonrpc` on top of commit
 `d9d8467f86`, with the three-contender benchmark in the working tree.
 

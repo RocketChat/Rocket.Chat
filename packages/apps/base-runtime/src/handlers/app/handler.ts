@@ -10,7 +10,7 @@ import handleOnUninstall from './handleOnUninstall';
 import handleOnUpdate from './handleOnUpdate';
 import handleSetStatus from './handleSetStatus';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { isOneOf } from '../lib/assertions';
 import handleListener from '../listener/handler';
@@ -92,13 +92,13 @@ export default async function handleApp(request: RequestContext): Promise<Define
 		}
 
 		if (typeof result === 'undefined') {
-			throw new JsonRpcError(`Unknown method "${appMethod}"`, -32601);
+			throw new JsonRpcError(`Unknown method "${appMethod}"`, METHOD_NOT_FOUND);
 		}
 
 		return await result.then(formatResult);
 	} catch (e: unknown) {
 		if (!(e instanceof Error)) {
-			return new JsonRpcError('Unknown error', -32000, e);
+			return new JsonRpcError('Unknown error', SERVER_ERROR, e);
 		}
 
 		if ((e.cause as string)?.includes('invalid_param_type')) {
@@ -109,6 +109,6 @@ export default async function handleApp(request: RequestContext): Promise<Define
 			return JsonRpcError.internalError({ message: 'App unavailable' });
 		}
 
-		return new JsonRpcError(e.message, -32000, e);
+		return new JsonRpcError(e.message, SERVER_ERROR, e);
 	}
 }

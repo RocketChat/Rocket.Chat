@@ -2,7 +2,7 @@ import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/vid
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../lib/jsonrpc';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
@@ -15,7 +15,7 @@ export default async function videoConferenceHandler(request: RequestContext): P
 	const provider = AppObjectRegistry.get<IVideoConfProvider>(`videoConfProvider:${providerName}`);
 
 	if (!provider) {
-		return new JsonRpcError(`Provider ${providerName} not found`, -32000);
+		return new JsonRpcError(`Provider ${providerName} not found`, SERVER_ERROR);
 	}
 
 	const method = provider[methodName as keyof IVideoConfProvider];
@@ -47,6 +47,6 @@ export default async function videoConferenceHandler(request: RequestContext): P
 		return result;
 	} catch (e) {
 		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
-		return new JsonRpcError(e.message, -32000);
+		return new JsonRpcError(e.message, SERVER_ERROR);
 	}
 }
