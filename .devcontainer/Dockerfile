@@ -1,3 +1,5 @@
+ARG DENO_VERSION
+
 FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu
 
 COPY package.json /tmp/package.json
@@ -21,7 +23,7 @@ RUN echo "export NVM_DIR=$NVM_DIR" >> /etc/bash.bashrc && \
 
 ENV DENO_INSTALL=/usr/local/deno
 RUN mkdir -p $DENO_INSTALL && \
-    curl -fsSL https://deno.land/install.sh | sh
+    curl -fsSL https://deno.land/install.sh | sh -s -- $DENO_VERSION
 
 ENV DENO_INSTALL="/usr/local/deno"
 ENV PATH="$DENO_INSTALL/bin:$PATH"
