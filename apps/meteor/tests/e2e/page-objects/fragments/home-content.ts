@@ -503,14 +503,6 @@ export class HomeContent {
 		return this.videoConfMessageBlock.last().getByRole('button', { name: 'Join', exact: true });
 	}
 
-	get videoConfCallsPanel(): Locator {
-		return this.page.getByRole('dialog', { name: 'Calls' });
-	}
-
-	get btnJoinCallInCallsPanel(): Locator {
-		return this.videoConfCallsPanel.getByRole('button', { name: 'Join call' });
-	}
-
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}

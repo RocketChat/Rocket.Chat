@@ -20,6 +20,7 @@ import {
 	UserInfoFlexTab,
 	FilesFlexTab,
 } from './fragments';
+import { VideoconfCallsFlexTab } from './fragments/flextabs/videoconf-calls-flextab';
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
@@ -49,6 +50,7 @@ export class HomeChannel {
 		searchMessages: SearchMessagesFlexTab;
 		threads: ThreadsFlexTab;
 		files: FilesFlexTab;
+		videoconfCalls: VideoconfCallsFlexTab;
 	};
 
 	readonly roomToolbar: RoomToolbar;
@@ -80,6 +82,7 @@ export class HomeChannel {
 			searchMessages: new SearchMessagesFlexTab(page),
 			threads: new ThreadsFlexTab(page),
 			files: new FilesFlexTab(page),
+			videoconfCalls: new VideoconfCallsFlexTab(page),
 		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
