@@ -6,7 +6,7 @@ import type { Db } from 'mongodb';
 
 const logger = new Logger('Cron');
 
-const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
+const runCronJobFunctionAndPersistResult = async (fn: () => Promise<unknown>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
 		_id: Random.id(),
 		intendedAt: new Date(),
@@ -25,14 +25,13 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobNam
 				},
 			},
 		);
-		return result;
-	} catch (error: any) {
+	} catch (error: unknown) {
 		await CronHistory.updateOne(
 			{ _id: insertedId },
 			{
 				$set: {
 					finishedAt: new Date(),
-					error: error?.stack ? error.stack : error,
+					error: error instanceof Error && error.stack ? error.stack : String(error),
 				},
 			},
 		);
@@ -42,7 +41,7 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobNam
 
 type ReservedJob = {
 	name: string;
-	callback: () => any | Promise<any>;
+	callback: () => unknown | Promise<unknown>;
 } & (
 	| {
 			schedule: string;
@@ -101,7 +100,9 @@ export class AgendaCronJobs {
 			});
 
 			if (!job.attrs.nextRunAt) {
-				void CronJobs.deleteOne({ _id: job.attrs._id });
+				CronJobs.deleteOne({ _id: job.attrs._id }).catch((err) => {
+					logger.error({ msg: 'Failed to delete completed cron job', err, jobId: job.attrs._id });
+				});
 				return;
 			}
 
@@ -151,7 +152,7 @@ export class AgendaCronJobs {
 		this.reservedJobs = [];
 	}
 
-	public async add(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
+	public async add(name: string, schedule: string, callback: () => unknown | Promise<unknown>): Promise<void> {
 		if (!this.scheduler) {
 			return this.reserve({ name, schedule, callback, timestamped: false });
 		}
@@ -162,7 +163,7 @@ export class AgendaCronJobs {
 		logger.debug({ msg: `Cron job "${name}" scheduled`, jobName: name, schedule });
 	}
 
-	public async addAtTimestamp(name: string, when: Date, callback: () => any | Promise<any>): Promise<void> {
+	public async addAtTimestamp(name: string, when: Date, callback: () => unknown | Promise<unknown>): Promise<void> {
 		if (!this.scheduler) {
 			return this.reserve({ name, when, callback, timestamped: true });
 		}
@@ -255,7 +256,7 @@ export class AgendaCronJobs {
 		this.reservedJobs = this.reservedJobs.filter(({ name }) => name !== jobName);
 	}
 
-	private async define(jobName: string, callback: () => any | Promise<any>): Promise<void> {
+	private async define(jobName: string, callback: () => unknown | Promise<unknown>): Promise<void> {
 		if (!this.scheduler) {
 			throw new Error('Scheduler is not running.');
 		}

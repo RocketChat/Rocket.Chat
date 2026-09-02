@@ -17,21 +17,6 @@ import type { Filter } from 'mongodb';
 import { buildHistoryQuery } from './buildHistoryQuery';
 import { deriveStatus } from './deriveStatus';
 
-const resolveStatus = (job: ICronJobItem): CronJobStatus => {
-	if (job.disabled) {
-		return 'disabled';
-	}
-
-	if (job.status === 'running') {
-		const derived = deriveStatus(job);
-		if (derived !== 'running') {
-			return derived;
-		}
-	}
-
-	return job.status ?? deriveStatus(job);
-};
-
 export class CronJobsService extends ServiceClassInternal implements ICronJobsService {
 	protected name = 'cron-jobs';
 
@@ -72,23 +57,16 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 	}
 
 	async getJob(jobName: string): Promise<ICronJobItem | null> {
-		let job = await CronJobs.findOne({ name: jobName });
+		const filter = { name: jobName };
+		const [cronJob, appJob, autoCloseJob, autoTransferJob, queueInactivityJob] = await Promise.all([
+			CronJobs.findOne(filter),
+			AppScheduler.findOne(filter),
+			OmnichannelAutoCloseScheduler.findOne(filter),
+			OmnichannelAutoTransferScheduler.findOne(filter),
+			OmnichannelQueueInactivityScheduler.findOne(filter),
+		]);
 
-		if (!job) {
-			job = await AppScheduler.findOne({ name: jobName });
-		}
-
-		if (!job) {
-			job = await OmnichannelAutoCloseScheduler.findOne({ name: jobName });
-		}
-
-		if (!job) {
-			job = await OmnichannelAutoTransferScheduler.findOne({ name: jobName });
-		}
-
-		if (!job) {
-			job = await OmnichannelQueueInactivityScheduler.findOne({ name: jobName });
-		}
+		const job = cronJob ?? appJob ?? autoCloseJob ?? autoTransferJob ?? queueInactivityJob;
 
 		if (!job) {
 			return null;
@@ -96,7 +74,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		return {
 			...job,
-			status: resolveStatus(job),
+			status: deriveStatus(job),
 		};
 	}
 
@@ -156,7 +134,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 			const filtered = (await model.find(query, { sort: { name: 1 } }).toArray())
 				.map((job) => ({
 					...job,
-					status: resolveStatus(job),
+					status: deriveStatus(job),
 				}))
 				.filter((job) => job.status === status);
 
@@ -180,7 +158,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		const jobs = allJobs.map((job) => ({
 			...job,
-			status: resolveStatus(job),
+			status: deriveStatus(job),
 		}));
 
 		return {
