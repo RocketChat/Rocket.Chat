@@ -130,10 +130,8 @@ settings.onReady(() => {
 });
 
 /**
- * The set of globally hidden system message types is an input of the incrementally maintained
- * discussion messages counts, so when it changes the stored counts have to be refreshed. Only
- * the discussions containing messages of the types whose visibility actually changed need a
- * recount.
+ * The globally hidden system message types are an input of the incrementally maintained
+ * discussion message counts, so changing them requires refreshing the stored counts.
  */
 settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
 	const previousTypes = hiddenSystemMessageTypes;
