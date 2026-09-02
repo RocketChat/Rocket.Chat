@@ -15,7 +15,6 @@ export const useTranslateInterval = () => {
 				return interval.toString();
 			}
 			try {
-
 				return cronstrue.toString(interval, { locale });
 			} catch {
 				return interval;
