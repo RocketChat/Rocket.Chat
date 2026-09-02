@@ -34,7 +34,10 @@ test.describe.serial('auto-translate', () => {
 		await connection
 			.db()
 			.collection('rocketchat_message')
-			.updateOne({ rid: channel._id, msg: ORIGINAL_MESSAGE }, { $set: { u: Users.user1.data, translations: { de: TRANSLATED_MESSAGE } } });
+			.updateOne(
+				{ rid: channel._id, msg: ORIGINAL_MESSAGE },
+				{ $set: { u: { _id: Users.user1.data._id, username: Users.user1.data.username }, translations: { de: TRANSLATED_MESSAGE } } },
+			);
 
 		await api.post('/autotranslate.saveSettings', { roomId: channel._id, field: 'autoTranslateLanguage', value: 'de' });
 	});
