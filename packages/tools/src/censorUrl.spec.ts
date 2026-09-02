@@ -7,10 +7,28 @@ describe('censorUrl', () => {
 		expect(censorUrl(input)).toBe(input);
 	});
 
-	it('returns relative URLs unchanged when no base is provided', () => {
-		const input = '/path/to/resource?query=secret&access_token=token';
+	it('redacts sensitive query parameters in relative URLs', () => {
+		const input = '/path/to/resource?query=secret&access_token=token&foo=bar';
 
-		expect(censorUrl(input)).toBe(input);
+		expect(censorUrl(input)).toBe('/path/to/resource?query=*Redacted*&access_token=*Redacted*&foo=bar');
+	});
+
+	it('preserves non-sensitive relative URLs without modification', () => {
+		const input = '/path/to/resource?foo=bar&page=2';
+
+		expect(censorUrl(input)).toBe('/path/to/resource?foo=bar&page=2');
+	});
+
+	it('redacts query-only relative URLs', () => {
+		const input = '?token=secret123&foo=bar';
+
+		expect(censorUrl(input)).toBe('?token=*Redacted*&foo=bar');
+	});
+
+	it('preserves hash anchors in relative URLs while redacting parameters', () => {
+		const input = '/api/v1/users?token=secret123#profile';
+
+		expect(censorUrl(input)).toBe('/api/v1/users?token=*Redacted*#profile');
 	});
 
 	it('does not change URLs without sensitive parts', () => {
@@ -34,6 +52,22 @@ describe('censorUrl', () => {
 	it('redacts access_token even when query is absent', () => {
 		expect(censorUrl('https://example.com/path?access_token=token&foo=bar')).toBe(
 			'https://example.com/path?access_token=*Redacted*&foo=bar',
+		);
+	});
+
+	it('redacts additional sensitive parameters (token, secret, password, apiKey, auth_token, authorization, code)', () => {
+		expect(
+			censorUrl(
+				'https://example.com/api?token=tok123&secret=sec456&password=pass789&apiKey=key0&auth_token=auth1&authorization=Bearer123&code=oauthcode&userId=user1',
+			),
+		).toBe(
+			'https://example.com/api?token=*Redacted*&secret=*Redacted*&password=*Redacted*&apiKey=*Redacted*&auth_token=*Redacted*&authorization=*Redacted*&code=*Redacted*&userId=user1',
+		);
+	});
+
+	it('redacts sensitive query parameters case-insensitively', () => {
+		expect(censorUrl('https://example.com/api?TOKEN=tok123&PASSWORD=pass&ApiKey=key0&SECRET=sec')).toBe(
+			'https://example.com/api?TOKEN=*Redacted*&PASSWORD=*Redacted*&ApiKey=*Redacted*&SECRET=*Redacted*',
 		);
 	});
 
