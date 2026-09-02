@@ -1,4 +1,5 @@
 import type { IEmailDescriptor, IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
+import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type {
@@ -8,6 +9,7 @@ import type {
 	IVisitor,
 } from '@rocket.chat/apps-engine/definition/livechat';
 import type { ILivechatDepartmentEventContext } from '@rocket.chat/apps-engine/definition/livechat/ILivechatEventContext';
+import type { IPreMediaCallCreatedContext } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import type {
 	IMessage,
 	IMessageDeleteContext,
@@ -33,6 +35,9 @@ import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from
 
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
+import { isEventResult, makeHostEventResult } from '../eventResult';
+import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
+import { getMediaCallCreatePatch } from '../mediaCalls';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 
@@ -241,6 +246,13 @@ export interface IListenerExecutor {
 	[AppInterface.IPostUserStatusChanged]: {
 		args: [IUserStatusContext];
 		result: void;
+	};
+	// Media calls
+	// Every media-call event shares this entry: the envelope's `method` selects
+	// which of `IMediaCallHandler`'s optional methods to dispatch to.
+	[AppInterface.IMediaCallHandler]: {
+		args: [MediaCallEvent];
+		result: PreMediaCallCreatedOutcome | void;
 	};
 }
 
@@ -466,6 +478,9 @@ export class AppListenerManager {
 				return this.executePostUserLoggedOut(data as IUser);
 			case AppInterface.IPostUserStatusChanged:
 				return this.executePostUserStatusChanged(data as IUserStatusContext);
+			// Media calls
+			case AppInterface.IMediaCallHandler:
+				return this.executeMediaCallEvent(data as MediaCallEvent);
 			default:
 				console.warn('An invalid listener was called');
 		}
@@ -1279,5 +1294,90 @@ export class AppListenerManager {
 
 			await app.call(AppMethod.EXECUTE_POST_USER_STATUS_CHANGED, data);
 		}
+	}
+
+	// Media calls
+	private async executeMediaCallEvent(event: MediaCallEvent): Promise<PreMediaCallCreatedOutcome | void> {
+		if (event.method === AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED) {
+			return this.executePreMediaCallCreated(event.context);
+		}
+
+		// Post events must not add latency to call signaling, so they are not awaited
+		void this.executePostMediaCallEvent(event);
+	}
+
+	private async executePreMediaCallCreated(data: IPreMediaCallCreatedContext): Promise<PreMediaCallCreatedOutcome> {
+		let patchAccumulator = data;
+		let outcome: PreMediaCallCreatedOutcome = { type: 'pass' };
+
+		for (const appId of this.listeners.get(AppInterface.IMediaCallHandler)) {
+			const app = this.manager.getOneById(appId);
+
+			const result = await app.call(AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED, patchAccumulator).catch((error) => {
+				// Every method of IMediaCallHandler is optional: an app may implement the
+				// interface for the post events alone
+				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+					return undefined;
+				}
+
+				// Anything else fails the call rather than allowing it: an app asked to decide and
+				// could not, so there is no decision to honour. Note that this only covers what
+				// `ProxiedApp.call` lets through - a request that times out is swallowed there and
+				// arrives here as `undefined`, which allows the call. See ADR 0003.
+				throw error;
+			});
+
+			if (!isEventResult(result)) {
+				continue;
+			}
+
+			switch (result.type) {
+				case 'prevent':
+					return makeHostEventResult(app, result);
+				case 'patch':
+					patchAccumulator = { ...patchAccumulator, ...getMediaCallCreatePatch(appId, result.patch) };
+
+					outcome = { type: 'patch', patch: patchAccumulator };
+					break;
+				case 'pass':
+					break;
+				default:
+					// Unreachable for a well-formed app: the cases above cover every variant
+					// the type declares. It still has to fail open, because what arrives here
+					// is a JSON-RPC payload the types never got to check.
+					console.warn(
+						`App ${appId} returned an unsupported EventResult from ${AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED}: ${
+							(result as MarkedEventResult).type
+						}`,
+					);
+			}
+		}
+
+		return outcome;
+	}
+
+	private async executePostMediaCallEvent(
+		event: Exclude<MediaCallEvent, { method: AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED }>,
+	): Promise<void> {
+		const dispatched: Promise<void>[] = [];
+
+		for (const appId of this.listeners.get(AppInterface.IMediaCallHandler)) {
+			const app = this.manager.getOneById(appId);
+
+			// Nothing is waiting on these events, so one app must not keep the others from being
+			// notified - not even by not implementing the method at all, and not by stalling until
+			// its own call times out. Every handler is started before any of them is awaited.
+			dispatched.push(
+				app.call(event.method, event.context).catch((error) => {
+					if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+						return;
+					}
+
+					console.error(`App ${appId} failed to handle ${event.method}`, error);
+				}),
+			);
+		}
+
+		await Promise.all(dispatched);
 	}
 }
