@@ -338,7 +338,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			promise: new Promise((resolve, reject) => {
 				const eventName = `result:${req.id}`;
 
-				const responseCallback = (result: unknown, error: jsonrpc.JsonRpcError | Error) => {
+				const responseCallback = (result: unknown, error: jsonrpc.SerializedJsonRpcError | Error) => {
 					this.off(eventName, responseCallback);
 					clearTimeout(timeoutId);
 
@@ -439,7 +439,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			);
 		} catch (error) {
 			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
+			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, error);
 			return jsonrpc.error(id, jsonRpcError);
 		}
 
@@ -496,10 +496,10 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		const { id } = message;
 
 		let result: unknown;
-		let error: jsonrpc.JsonRpcError | undefined;
+		let error: jsonrpc.SerializedJsonRpcError | undefined;
 		let logs: ILoggerStorageEntry;
 
-		if (message instanceof jsonrpc.SuccessObject) {
+		if (jsonrpc.isSuccessObject(message)) {
 			const params = message.result as { value: unknown; logs?: ILoggerStorageEntry };
 			result = params.value;
 			logs = params.logs;
@@ -529,16 +529,16 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 					this.emit('heartbeat');
 
-					// The codec's JSON-RPC extension rebuilds the envelope classes on decode,
-					// so we dispatch straight off the decoded instance - no parse step.
-					if (message instanceof jsonrpc.RequestObject || message instanceof jsonrpc.NotificationObject) {
+					// A message arrives as the plain map the codec decoded, so we categorize it
+					// here and dispatch - there is no separate parse step.
+					if (jsonrpc.isRequestObject(message) || jsonrpc.isNotificationObject(message)) {
 						this.handleIncomingMessage(message).catch((reason) =>
 							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
 						);
 						continue;
 					}
 
-					if (message instanceof jsonrpc.SuccessObject || message instanceof jsonrpc.ErrorObject) {
+					if (jsonrpc.isSuccessObject(message) || jsonrpc.isErrorObject(message)) {
 						this.handleResultMessage(message).catch((reason) =>
 							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
 						);
