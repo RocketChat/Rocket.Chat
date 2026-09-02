@@ -5,7 +5,7 @@ import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashco
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import type { AppAccessors } from '../lib/accessors/mod';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../lib/jsonrpc';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import createRoom from '../lib/roomFactory';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
@@ -19,7 +19,7 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 	const command = AppObjectRegistry.get<ISlashCommand>(`slashcommand:${commandName}`);
 
 	if (!command) {
-		return new JsonRpcError(`Slashcommand ${commandName} not found`, -32000);
+		return new JsonRpcError(`Slashcommand ${commandName} not found`, SERVER_ERROR);
 	}
 
 	let result: Awaited<ReturnType<typeof handleExecutor>>;
@@ -32,14 +32,14 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 		} else if (method === 'executePreviewItem') {
 			result = await handlePreviewItem({ AppAccessorsInstance, request }, command, params);
 		} else {
-			return new JsonRpcError(`Method ${method} not found on slashcommand ${commandName}`, -32000);
+			return new JsonRpcError(`Method ${method} not found on slashcommand ${commandName}`, SERVER_ERROR);
 		}
 
 		logger.debug({ msg: `Command was successfully executed.`, commandName, method });
 	} catch (error) {
 		logger.debug({ msg: `Command was unsuccessful.`, commandName, method, err: error });
 
-		return new JsonRpcError(error.message, -32000);
+		return new JsonRpcError(error.message, SERVER_ERROR);
 	}
 
 	return result;

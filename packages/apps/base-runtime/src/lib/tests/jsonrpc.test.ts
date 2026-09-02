@@ -71,6 +71,30 @@ describe('jsonrpc', () => {
 		});
 	});
 
+	describe('JsonRpcError', () => {
+		it('should not accept a successful result that happens to look like an error payload', () => {
+			// The runtime's main loop picks a success response over an error response with
+			// this exact test, and an app controls the shape of its own return value. An
+			// API endpoint that answers `{ status, message, code }` must stay a success.
+			const apiResponse = { status: 200, message: 'created', code: 0 };
+
+			assert.strictEqual(apiResponse instanceof jsonrpc.JsonRpcError, false);
+		});
+
+		it('should accept a payload it built itself', () => {
+			assert.ok(jsonrpc.JsonRpcError.invalidParams(null) instanceof jsonrpc.JsonRpcError);
+			assert.ok(new jsonrpc.JsonRpcError('boom', jsonrpc.SERVER_ERROR) instanceof jsonrpc.JsonRpcError);
+		});
+
+		it('should expose message and code as own enumerable properties, so msgpack keeps them', () => {
+			// This is why the class does not extend `Error`: an `Error`'s `message` is
+			// non-enumerable, and msgpack would drop it at the process boundary.
+			const payload = new jsonrpc.JsonRpcError('boom', jsonrpc.SERVER_ERROR);
+
+			assert.deepStrictEqual(Object.keys(payload), ['message', 'code']);
+		});
+	});
+
 	describe('error', () => {
 		it('should keep the meta it receives', () => {
 			const message = jsonrpc.error(1, jsonrpc.JsonRpcError.internalError('cause'), meta);
