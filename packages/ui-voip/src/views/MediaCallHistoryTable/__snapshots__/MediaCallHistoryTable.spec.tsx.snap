@@ -512,15 +512,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -599,11 +599,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -676,15 +676,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Ended
                        - 
                       02:00
                     </div>
@@ -785,15 +785,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -866,15 +866,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Failed
                        - 
                       02:00
                     </div>
@@ -949,15 +949,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -1056,15 +1056,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Transferred
                        - 
                       02:00
                     </div>
@@ -1139,15 +1139,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Ended
                     </div>
                   </td>
                   <td
@@ -1220,15 +1220,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Not answered
                        - 
                       02:00
                     </div>
@@ -1329,15 +1329,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Failed
                     </div>
                   </td>
                   <td
@@ -1410,15 +1410,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -1493,15 +1493,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -1604,11 +1604,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Ended
                        - 
                       02:00
                     </div>
@@ -1683,15 +1683,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -1764,15 +1764,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Failed
                        - 
                       02:00
                     </div>
@@ -1881,7 +1881,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       >
                         
                       </i>
-                      Failed
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -2308,15 +2308,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -2421,11 +2421,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -2498,15 +2498,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Ended
                        - 
                       02:00
                     </div>
@@ -2581,15 +2581,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -2688,15 +2688,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Failed
                        - 
                       02:00
                     </div>
@@ -2771,15 +2771,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -2852,15 +2852,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Transferred
                        - 
                       02:00
                     </div>
@@ -2961,15 +2961,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Ended
                     </div>
                   </td>
                   <td
@@ -3042,15 +3042,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Not answered
                        - 
                       02:00
                     </div>
@@ -3125,15 +3125,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Failed
                     </div>
                   </td>
                   <td
@@ -3232,15 +3232,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -3315,15 +3315,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -3400,11 +3400,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Ended
                        - 
                       02:00
                     </div>
@@ -3505,15 +3505,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -3586,15 +3586,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Failed
                        - 
                       02:00
                     </div>
@@ -3677,7 +3677,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       >
                         
                       </i>
-                      Failed
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -4130,15 +4130,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -4217,11 +4217,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -4320,15 +4320,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Ended
                        - 
                       02:00
                     </div>
@@ -4403,15 +4403,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -4484,15 +4484,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Failed
                        - 
                       02:00
                     </div>
@@ -4593,15 +4593,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -4674,15 +4674,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Transferred
                        - 
                       02:00
                     </div>
@@ -4757,15 +4757,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Ended
                     </div>
                   </td>
                   <td
@@ -4864,15 +4864,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Not answered
                        - 
                       02:00
                     </div>
@@ -4947,15 +4947,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Failed
                     </div>
                   </td>
                   <td
@@ -5028,15 +5028,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -5137,15 +5137,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -5222,11 +5222,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Ended
                        - 
                       02:00
                     </div>
@@ -5301,15 +5301,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -5408,15 +5408,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Failed
                        - 
                       02:00
                     </div>
@@ -5499,7 +5499,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       >
                         
                       </i>
-                      Failed
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -5952,15 +5952,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -6039,11 +6039,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -6116,15 +6116,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Ended
                        - 
                       02:00
                     </div>
@@ -6225,15 +6225,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -6306,15 +6306,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Failed
                        - 
                       02:00
                     </div>
@@ -6389,15 +6389,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -6496,15 +6496,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Transferred
                        - 
                       02:00
                     </div>
@@ -6579,15 +6579,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Ended
                     </div>
                   </td>
                   <td
@@ -6660,15 +6660,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Not answered
                        - 
                       02:00
                     </div>
@@ -6769,15 +6769,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Failed
                     </div>
                   </td>
                   <td
@@ -6850,15 +6850,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -6933,15 +6933,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -7044,11 +7044,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Ended
                        - 
                       02:00
                     </div>
@@ -7123,15 +7123,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -7204,15 +7204,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Failed
                        - 
                       02:00
                     </div>
@@ -7321,7 +7321,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       >
                         
                       </i>
-                      Failed
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -7748,15 +7748,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -7861,11 +7861,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -7938,15 +7938,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Ended
                        - 
                       02:00
                     </div>
@@ -8021,15 +8021,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -8128,15 +8128,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Failed
                        - 
                       02:00
                     </div>
@@ -8211,15 +8211,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Prevented
                     </div>
                   </td>
                   <td
@@ -8292,15 +8292,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Transferred
                        - 
                       02:00
                     </div>
@@ -8401,15 +8401,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Ended
                     </div>
                   </td>
                   <td
@@ -8482,15 +8482,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Not answered
                        - 
                       02:00
                     </div>
@@ -8565,15 +8565,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Failed
                     </div>
                   </td>
                   <td
@@ -8672,15 +8672,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Prevented
                        - 
                       02:00
                     </div>
@@ -8755,15 +8755,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-5ivbb"
+                      class="rcx-box rcx-box--full rcx-css-pyq58a"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Failed
+                      Transferred
                     </div>
                   </td>
                   <td
@@ -8840,11 +8840,11 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
                       >
-                        
+                        
                       </i>
-                      Transferred
+                      Ended
                        - 
                       02:00
                     </div>
@@ -8945,15 +8945,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-pyq58a"
+                      class="rcx-box rcx-box--full rcx-css-14i2vds"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-pehr1f"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
                       >
-                        
+                        
                       </i>
-                      Ended
+                      Not answered
                     </div>
                   </td>
                   <td
@@ -9026,15 +9026,15 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-table__cell"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14i2vds"
+                      class="rcx-box rcx-box--full rcx-css-5ivbb"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-phone-question-mark rcx-icon rcx-css-qebwuo"
+                        class="rcx-box rcx-box--full rcx-icon--name-phone-issue rcx-icon rcx-css-n5z8to"
                       >
-                        
+                        
                       </i>
-                      Not answered
+                      Failed
                        - 
                       02:00
                     </div>
@@ -9117,7 +9117,7 @@ exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
                       >
                         
                       </i>
-                      Failed
+                      Prevented
                     </div>
                   </td>
                   <td
