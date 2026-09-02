@@ -28,6 +28,7 @@ const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInpu
 			paddingBlock={16}
 			borderWidth={0}
 			is='textarea'
+			dir='auto'
 			{...props}
 		/>
 	);
