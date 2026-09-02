@@ -1,6 +1,5 @@
+import { DEFAULT_LOCK_LIFETIME } from '@rocket.chat/agenda';
 import type { ICronJobItem, CronJobStatus } from '@rocket.chat/core-typings';
-
-const DEFAULT_LOCK_LIFETIME_MS = 10 * 60 * 1000;
 
 export function deriveStatus(job: ICronJobItem): CronJobStatus {
 	if (job.disabled) {
@@ -8,7 +7,7 @@ export function deriveStatus(job: ICronJobItem): CronJobStatus {
 	}
 
 	if (job.lockedAt) {
-		const lockExpiry = new Date(job.lockedAt.getTime() + DEFAULT_LOCK_LIFETIME_MS);
+		const lockExpiry = new Date(job.lockedAt.getTime() + DEFAULT_LOCK_LIFETIME);
 		if (lockExpiry > new Date()) {
 			return 'running';
 		}
