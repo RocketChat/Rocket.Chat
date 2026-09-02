@@ -2,7 +2,14 @@ declare module 'meteor/rate-limit' {
 	type RateLimiterOptionsToCheck = {
 		IPAddr: string;
 		route: string;
+		userId?: string;
 	};
+
+	type RateLimiterMatcher = (input: string) => unknown;
+
+	type RateLimiterRule = {
+		route: string;
+	} & ({ IPAddr: RateLimiterMatcher } | { userId: RateLimiterMatcher });
 
 	type RateLimiterCheckResult = {
 		allowed: boolean;
@@ -15,11 +22,6 @@ declare module 'meteor/rate-limit' {
 
 		public increment(input: RateLimiterOptionsToCheck);
 
-		public addRule(
-			rule: { IPAddr: (input: any) => any; route: string },
-			numRequestsAllowed: number,
-			intervalTime: number,
-			callback?: () => void,
-		): void;
+		public addRule(rule: RateLimiterRule, numRequestsAllowed: number, intervalTime: number, callback?: () => void): void;
 	}
 }

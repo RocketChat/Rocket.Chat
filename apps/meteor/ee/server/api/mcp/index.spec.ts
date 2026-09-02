@@ -29,7 +29,8 @@ jest.mock('../../../../server/api', () => ({
 	API: {
 		v1: {
 			registerRateLimiterForRoute: jest.fn(),
-			enforceRateLimitForRoute: jest.fn(),
+			resolveRateLimiter: jest.fn(),
+			canBypassRateLimit: jest.fn(),
 			router: {
 				getHonoRouter: jest.fn(() => ({ use: jest.fn(), post: jest.fn(), get: jest.fn() })),
 			},
@@ -67,71 +68,77 @@ describe('MCP HTTP route', () => {
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(true);
 		jest.mocked(handleRpcMessage).mockReset();
-		jest.mocked(API.v1.enforceRateLimitForRoute).mockReset().mockResolvedValue(undefined);
+		jest.mocked(API.v1.resolveRateLimiter).mockReset().mockReturnValue(undefined);
+		jest.mocked(API.v1.canBypassRateLimit).mockReset().mockResolvedValue(false);
 		jest
 			.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId)
 			.mockReset()
 			.mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
-	it('applies the API rate limiter before handling MCP requests', async () => {
+	const callMiddleware = async (next: jest.Mock) => {
 		const middleware = mockRouter.use.mock.calls[0]?.[2];
-		expect(middleware).toBeDefined();
 		if (!middleware) {
 			throw new Error('MCP rate-limit middleware was not registered');
 		}
 
-		const request = new Request('http://localhost/api/v1/mcp', {
-			method: 'POST',
-			headers: { 'x-user-id': 'user-id' },
-		});
-		const response = new Response();
-		const next = jest.fn().mockResolvedValue(undefined);
-		await middleware(
+		const request = new Request('http://localhost/api/v1/mcp', { method: 'POST', headers: { 'x-user-id': 'user-id' } });
+		const res = new Response();
+
+		return middleware(
 			{
 				req: { method: 'POST', raw: request, header: (name: string) => request.headers.get(name) ?? undefined },
-				res: response,
-				get: () => '192.0.2.1',
+				res,
+				get: (key: string) => (key === 'user' ? { _id: 'user-id' } : '192.0.2.1'),
+				json: (body: unknown, status: number) => new Response(JSON.stringify(body), { status, headers: res.headers }),
 			},
 			next,
 		);
+	};
 
-		expect(API.v1.enforceRateLimitForRoute).toHaveBeenCalledWith({
-			route: 'mcp',
-			method: 'post',
-			request,
-			response,
-			requestIp: '192.0.2.1',
-			userId: 'user-id',
-		});
+	const limiterAllowing = (numInvocationsLeft: number) => ({
+		key: 'mcp',
+		options: { numRequestsAllowed: 60, intervalTimeInMS: 60_000 },
+		rateLimiter: {
+			increment: jest.fn(),
+			check: jest.fn().mockResolvedValue({ allowed: numInvocationsLeft > 0, numInvocationsLeft, timeToReset: 30_000 }),
+		},
+	});
+
+	it('sits between authentication and the permission gate', () => {
+		const [path, auth, rateLimit, permissions] = mockRouter.use.mock.calls[0] ?? [];
+
+		expect(path).toBe('/mcp');
+		expect(auth).toBe(jest.mocked(authenticationMiddlewareForHono).mock.results[0]?.value);
+		expect(rateLimit).toEqual(expect.any(Function));
+		expect(permissions).toBe(jest.mocked(permissionsMiddleware).mock.results[0]?.value);
+	});
+
+	it('lets MCP requests through while the caller is within the allowance', async () => {
+		jest.mocked(API.v1.resolveRateLimiter).mockReturnValue(limiterAllowing(59) as never);
+		const next = jest.fn().mockResolvedValue(undefined);
+
+		await callMiddleware(next);
+
 		expect(next).toHaveBeenCalledTimes(1);
 	});
 
 	it('returns a JSON-RPC error with rate-limit headers when the limit is exceeded', async () => {
-		const middleware = mockRouter.use.mock.calls[0]?.[2];
-		expect(middleware).toBeDefined();
-		if (!middleware) {
-			throw new Error('MCP rate-limit middleware was not registered');
-		}
+		jest.mocked(API.v1.resolveRateLimiter).mockReturnValue(limiterAllowing(0) as never);
+		const next = jest.fn();
 
-		jest.mocked(API.v1.enforceRateLimitForRoute).mockImplementationOnce(async ({ response }: { response: Response }) => {
-			response.headers.set('X-RateLimit-Remaining', '0');
-			throw Object.assign(new Error('Please slow down'), { error: 'error-too-many-requests', reason: 'Please slow down' });
-		});
-		const request = new Request('http://localhost/api/v1/mcp', { method: 'POST', headers: { 'x-user-id': 'user-id' } });
-		const result = await middleware(
-			{
-				req: { method: 'POST', raw: request, header: (name: string) => request.headers.get(name) ?? undefined },
-				res: new Response(),
-				get: () => '192.0.2.1',
-			},
-			jest.fn(),
-		);
+		const result = await callMiddleware(next);
 
+		expect(next).not.toHaveBeenCalled();
 		expect(result).toBeInstanceOf(Response);
 		expect(result?.status).toBe(429);
 		expect(result?.headers.get('X-RateLimit-Remaining')).toBe('0');
-		await expect(result?.json()).resolves.toMatchObject({ error: { message: 'Please slow down' } });
+		await expect(result?.json()).resolves.toEqual({
+			jsonrpc: '2.0',
+			id: null,
+			// The wait hint has to survive: MCP clients use it to schedule the retry.
+			error: { code: -32000, message: expect.stringContaining('You must wait 30 seconds') },
+		});
 	});
 
 	it('registers the endpoint with authentication, permission, and license gates', () => {

@@ -2,7 +2,6 @@ import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import type { MiddlewareHandler } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 import { Accounts } from 'meteor/accounts-base';
 
@@ -13,6 +12,7 @@ import { API } from '../../../../server/api';
 import type { TypedOptions } from '../../../../server/api/definition';
 import { authenticationMiddlewareForHono } from '../../../../server/api/v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from '../../../../server/api/v1/middlewares/permissions';
+import { rateLimiterMiddleware } from '../../../../server/api/v1/middlewares/rateLimiter';
 import { settings } from '../../../../server/settings/cached';
 import { license } from '../v1/middlewares/license';
 
@@ -183,37 +183,15 @@ const sendResponse = (response: McpHttpResponse): Response => {
 	return new Response(response.body === undefined ? null : JSON.stringify(response.body), { status: response.statusCode, headers });
 };
 
-const isRateLimitError = (error: unknown): error is { error: 'error-too-many-requests'; reason?: string } =>
-	typeof error === 'object' && error !== null && 'error' in error && error.error === 'error-too-many-requests';
-
-const rateLimitMiddleware: MiddlewareHandler = async (c, next) => {
-	try {
-		await API.v1.enforceRateLimitForRoute({
-			route: MCP_ROUTE,
-			method: c.req.method.toLowerCase(),
-			request: c.req.raw,
-			response: c.res,
-			requestIp: c.get('remoteAddress'),
-			userId: c.req.header('x-user-id'),
-		});
-	} catch (error) {
-		if (!isRateLimitError(error)) {
-			throw error;
-		}
-
-		return sendResponse({
-			statusCode: 429,
-			body: { jsonrpc: '2.0', id: null, error: { code: -32000, message: error.reason ?? 'Too many requests' } },
-			headers: Object.fromEntries([...c.res.headers].filter(([name]) => name.toLowerCase().startsWith('x-ratelimit-'))),
-		});
-	}
-
-	const rateLimitHeaders = [...c.res.headers].filter(([name]) => name.toLowerCase().startsWith('x-ratelimit-'));
-	await next();
-	for (const [name, value] of rateLimitHeaders) {
-		c.res.headers.set(name, value);
-	}
-};
+const rateLimitMiddleware = rateLimiterMiddleware({
+	settings,
+	resolve: (c) => API.v1.resolveRateLimiter(c, MCP_ROUTE, c.req.method.toLowerCase()),
+	canBypass: (userId) => API.v1.canBypassRateLimit(userId),
+	reject: (reason) => ({
+		statusCode: 429,
+		body: { jsonrpc: '2.0', id: null, error: { code: -32000, message: reason } },
+	}),
+});
 
 const router = API.v1.router.getHonoRouter();
 API.v1.registerRateLimiterForRoute({ route: MCP_ROUTE, rateLimiterOptions: MCP_RATE_LIMIT_OPTIONS, methods: ['post'] });
