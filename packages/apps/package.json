@@ -27,7 +27,8 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
+		"typecheck:types": "tsc -p tsconfig-types-test.json",
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
