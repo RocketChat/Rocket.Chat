@@ -48,5 +48,9 @@ declare module 'meteor/oauth' {
 		function _fetch(url: string, method: 'GET' | 'POST', options?: Record<string, any>): Promise<Response>;
 
 		function _stateFromQuery(query: Record<string, any>): Record<string, any> | null;
+
+		function sealSecret(secret: string): string;
+
+		function _addValuesToQueryParams(params: Record<string, any>): URLSearchParams;
 	}
 }
