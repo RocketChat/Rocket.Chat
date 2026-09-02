@@ -1,0 +1,19 @@
+apps/meteor/tests/e2e/auto-translate.spec.ts
+  s_e6b1783b7f4f2b::t_8cfd5bf762ee8c 37-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ec06bb0c9f8ed47858f04d364054e0a3e07c0935",
+  "prompts": {},
+  "sessions": {
+    "s_e6b1783b7f4f2b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d4f9d405-bed6-460e-91fa-83975a669835",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
