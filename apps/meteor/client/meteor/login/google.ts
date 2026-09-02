@@ -51,7 +51,10 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	},
 );
 
-const loginWithGoogleForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
+const loginWithGoogle = createOAuthLoginFunctionForMeteor(requestCredential);
 
-Object.assign(Accounts._loginFuncs, { google: loginWithGoogleForMeteor });
-Object.assign(Meteor, { loginWithGoogle: loginWithGoogleForMeteor });
+Accounts.oauth.registerService('google');
+Accounts.registerClientLoginFunction('google', loginWithGoogle);
+Object.assign(Meteor, {
+	loginWithGoogle: (...args: Parameters<typeof loginWithGoogle>) => Accounts.applyLoginFunction('google', args),
+});
