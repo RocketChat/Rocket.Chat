@@ -114,7 +114,7 @@ test.describe('Admin Device Management Page - unauthorized access', () => {
 
 	test('should not access device-management when user has no view-device-management permission', async ({ page }) => {
 		const user2DeviceManagement = new AdminDeviceManagement(page);
-		await user2DeviceManagement.goto();
+		await user2DeviceManagement.gotoExpecting(user2DeviceManagement.notAuthorizedMessage);
 		await expect(user2DeviceManagement.notAuthorizedMessage).toBeVisible();
 		await expect(user2DeviceManagement.pageContent).not.toBeVisible();
 	});

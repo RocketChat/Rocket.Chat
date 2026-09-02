@@ -14,12 +14,11 @@ test.describe.serial('Presence', () => {
 		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
-
-		await poHomeChannel.goto();
 	});
 
 	test.describe('Login using default settings', () => {
 		test('should user be online after log in', async () => {
+			await poLogin.goto();
 			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
@@ -29,6 +28,10 @@ test.describe.serial('Presence', () => {
 	test.describe('Custom status', () => {
 		const customStatus = faker.string.alpha(10);
 		test.use({ storageState: Users.admin.state });
+
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
 
 		test('should user custom status be reactive', async ({ browser }) => {
 			await test.step('user1 custom status should be empty', async () => {
@@ -105,6 +108,10 @@ test.describe.serial('Presence', () => {
 
 	test.describe('Status expiration', () => {
 		test.use({ storageState: Users.admin.state });
+
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
 
 		test('should toggle custom date/time inputs when selecting duration', async () => {
 			await poHomeChannel.navbar.openEditStatusModal();

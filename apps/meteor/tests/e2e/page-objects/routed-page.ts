@@ -34,6 +34,10 @@ export abstract class RoutedPage {
 	/** Waits until the route has finished rendering and the page is usable, without navigating. */
 	abstract waitForReady(): Promise<void>;
 
+	get notAuthorizedMessage(): Locator {
+		return this.page.getByText('You are not authorized to view this page.', { exact: true });
+	}
+
 	/**
 	 * Navigates to one of the page's routes and waits until it is ready.
 	 *

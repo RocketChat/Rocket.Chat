@@ -30,10 +30,6 @@ export class AdminDeviceManagement extends Admin {
 		return this.page.getByRole('dialog', { name: 'Device management' });
 	}
 
-	get notAuthorizedMessage(): Locator {
-		return this.page.getByRole('main').getByText('You are not authorized to view this page');
-	}
-
 	get emptyState(): Locator {
 		return this.pageContent.getByRole('heading', { name: 'No results found', exact: true });
 	}

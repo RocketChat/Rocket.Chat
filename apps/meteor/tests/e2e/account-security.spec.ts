@@ -23,8 +23,7 @@ test.describe.serial('account-security', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		poAccountSecurity = new AccountSecurity(page);
-		await poAccountSecurity.goto();
-		await page.locator('#main-content').waitFor();
+		await poAccountSecurity.gotoExpecting(poAccountSecurity.securityHeader.or(poAccountSecurity.notAuthorizedMessage));
 		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 	});
 
@@ -70,11 +69,9 @@ test.describe.serial('account-security', () => {
 			]);
 		});
 
-		test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
-			const securityTab = poAccountSecurity.sidebar.linkSecurity;
-			await expect(securityTab).not.toBeVisible();
-			const mainContent = page.locator('#main-content').getByText('You are not authorized to view this page.').first();
-			await expect(mainContent).toBeVisible();
+		test('security tab is invisible when password change, 2FA and E2E are disabled', async () => {
+			await expect(poAccountSecurity.sidebar.linkSecurity).not.toBeVisible();
+			await expect(poAccountSecurity.notAuthorizedMessage).toBeVisible();
 		});
 	});
 

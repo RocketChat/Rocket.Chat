@@ -251,6 +251,7 @@ Enhances test readability and provides more detailed information in test reports
 test.describe('Feature Test', () => {
   test('should display the feature heading after navigation', async ({ page }) => {
     await test.step('open the feature page', async () => {
+      const poFeature = new FeaturePage(page);
       await poFeature.goto();
       await expect(page.getByRole('heading', { name: 'Feature' })).toBeVisible();
     });

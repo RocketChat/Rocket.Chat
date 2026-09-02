@@ -47,7 +47,7 @@ test.describe('Account Manage Devices Page', () => {
 		const accountDevices2 = new AccountManageDevices(page2);
 
 		await test.step('should login same user in another session', async () => {
-			await accountDevices2.goto();
+			await loginPage2.goto('/account/manage-devices');
 			await loginPage2.login('user1', 'password');
 			await expect(accountDevices2.pageContent).toBeVisible();
 		});

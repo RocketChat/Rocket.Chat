@@ -76,7 +76,7 @@ export abstract class Admin extends RoutedPage {
 	}
 
 	get btnSaveChanges(): Locator {
-		return this.page.getByRole('button', { name: 'Save changes' });
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
 	get btnDelete(): Locator {
