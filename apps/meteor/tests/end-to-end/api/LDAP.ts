@@ -162,17 +162,20 @@ describe('LDAP', function () {
 		});
 
 		after(async () => {
-			await deleteLdapUser();
-
 			if (!originalSettings) {
+				await deleteLdapUser();
 				return;
 			}
 
 			const originalEnabled = Boolean(originalSettings.find(({ _id }) => _id === 'LDAP_Enable')?.value);
-			await applyLdapSettings(
-				originalSettings.filter(({ _id }) => _id !== 'LDAP_Enable'),
-				originalEnabled,
-			);
+
+			await Promise.all([
+				deleteLdapUser(),
+				applyLdapSettings(
+					originalSettings.filter(({ _id }) => _id !== 'LDAP_Enable'),
+					originalEnabled,
+				),
+			]);
 		});
 
 		it('should connect to LDAP successfully', async () => {
