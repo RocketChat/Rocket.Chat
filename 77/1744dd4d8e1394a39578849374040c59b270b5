@@ -1,0 +1,19 @@
+apps/meteor/client/lib/RoomHistoryManager.ts
+  s_8998b0686d0f5a::t_7ae413f49a80d6 345-354,366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "771744dd4d8e1394a39578849374040c59b270b5",
+  "prompts": {},
+  "sessions": {
+    "s_8998b0686d0f5a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1eb4ba6-bb29-4651-a5d0-a7f88b362991",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
