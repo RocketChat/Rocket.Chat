@@ -798,6 +798,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find<T, O>(query, options);
 	}
 
+	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]> {
+		return this.col
+			.aggregate<{ _id: IRoom['_id'] }>([
+				{ $match: { t: { $in: types } } },
+				{ $group: { _id: '$rid' } },
+				{
+					$lookup: {
+						from: 'rocketchat_room',
+						localField: '_id',
+						foreignField: '_id',
+						pipeline: [{ $match: { prid: { $exists: true } } }, { $project: { _id: 1 } }],
+						as: 'discussion',
+					},
+				},
+				{ $match: { discussion: { $ne: [] } } },
+			])
+			.map(({ _id }) => _id)
+			.toArray();
+	}
+
 	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number> {
 		const query: Filter<IMessage> = {
 			_hidden: {
@@ -1648,6 +1668,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					dcount,
 					...(dlm && { dlm }),
 				},
+			},
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>> {
+		const { _id: drid, lm: dlm } = room;
+
+		if (!dcountInc && !dlm) {
+			return null;
+		}
+
+		const query = {
+			drid,
+			$or: [{ dlm: { $exists: false } }, ...(dlm ? [{ dlm: { $lte: dlm } }] : [])],
+		};
+
+		return this.findOneAndUpdate(
+			query,
+			{
+				...(dcountInc && { $inc: { dcount: dcountInc } }),
+				...(dlm && { $set: { dlm } }),
 			},
 			{ returnDocument: 'after' },
 		);
