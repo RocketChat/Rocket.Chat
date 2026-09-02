@@ -26,6 +26,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -1495,12 +1496,16 @@ const chatEndpoints = API.v1
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
 			},
 		},
 		async function action() {
 			const { messageIds } = this.bodyParams;
 
 			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+			if (!messages.length) {
+				return API.v1.notFound();
+			}
 
 			const rids = [...new Set(messages.map(({ rid }) => rid))];
 

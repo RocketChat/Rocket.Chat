@@ -27,6 +27,10 @@ Meteor.methods<ServerMethods>({
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
 
+		if (!msgs.length) {
+			return msgs;
+		}
+
 		if (
 			!(await canAccessRoomIdsAsync(
 				msgs.map((m) => m.rid),
