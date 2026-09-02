@@ -36,7 +36,10 @@ const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, Lo
 	},
 );
 
-const loginWithFacebookForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
+const loginWithFacebook = createOAuthLoginFunctionForMeteor(requestCredential);
 
-Object.assign(Accounts._loginFuncs, { facebook: loginWithFacebookForMeteor });
-Object.assign(Meteor, { loginWithFacebook: loginWithFacebookForMeteor });
+Accounts.oauth.registerService('facebook');
+Accounts.registerClientLoginFunction('facebook', loginWithFacebook);
+Object.assign(Meteor, {
+	loginWithFacebook: (...args: Parameters<typeof loginWithFacebook>) => Accounts.applyLoginFunction('facebook', args),
+});
