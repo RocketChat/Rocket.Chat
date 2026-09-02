@@ -94,6 +94,11 @@ export class HomeContent {
 		return this.messageListItems.nth(index);
 	}
 
+	/** One message of the list, by its id, for a message whose id is known from elsewhere. */
+	messageById(mid: string): Locator {
+		return this.mainMessageList.locator(`[role="listitem"][data-mid="${mid}"]`);
+	}
+
 	get lastUserMessageBody(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
