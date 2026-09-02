@@ -43,7 +43,7 @@ test.describe.serial('auto-translate', () => {
 			await setSettingValueById(api, 'AutoTranslate_Enabled', true);
 		});
 
-		test('should keep translation enabled after reopening the room', async () => {
+		test('should keep translation enabled after reloading the page', async () => {
 			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.roomToolbar.openMoreOptions();
 			await poHomeChannel.roomToolbar.menuItemAutoTranslate.click();
@@ -56,18 +56,26 @@ test.describe.serial('auto-translate', () => {
 			await expect(poHomeChannel.tabs.autoTranslate.checkboxAutomaticTranslation).toBeChecked();
 		});
 
-		test('should warn and block the toggle in an encrypted room', async ({ api }) => {
-			const encryptedChannel = await createTargetChannel(api, { extraData: { encrypted: true } });
+		test.describe('in an encrypted room', () => {
+			let encryptedChannel: string;
 
-			await poHomeChannel.gotoChannel(encryptedChannel);
-			await poHomeChannel.roomToolbar.openMoreOptions();
-			await poHomeChannel.roomToolbar.menuItemAutoTranslate.click();
-			await poHomeChannel.tabs.autoTranslate.waitForDisplay();
+			test.beforeAll(async ({ api }) => {
+				encryptedChannel = await createTargetChannel(api, { extraData: { encrypted: true } });
+			});
 
-			await expect(poHomeChannel.tabs.autoTranslate.calloutEncryptedRoom).toBeVisible();
-			await expect(poHomeChannel.tabs.autoTranslate.checkboxAutomaticTranslation).toBeDisabled();
+			test.afterAll(async ({ api }) => {
+				await deleteChannel(api, encryptedChannel);
+			});
 
-			await deleteChannel(api, encryptedChannel);
+			test('should warn and block the toggle', async () => {
+				await poHomeChannel.gotoChannel(encryptedChannel);
+				await poHomeChannel.roomToolbar.openMoreOptions();
+				await poHomeChannel.roomToolbar.menuItemAutoTranslate.click();
+				await poHomeChannel.tabs.autoTranslate.waitForDisplay();
+
+				await expect(poHomeChannel.tabs.autoTranslate.calloutEncryptedRoom).toBeVisible();
+				await expect(poHomeChannel.tabs.autoTranslate.checkboxAutomaticTranslation).toBeDisabled();
+			});
 		});
 	});
 });
