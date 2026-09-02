@@ -206,8 +206,8 @@ export class HomeChannel extends RoutedPage {
 		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
 	}
 
-	get btnJoinChannel() {
-		return this.page.getByRole('button', { name: 'Join channel' });
+	get btnJoinChannel(): Locator {
+		return this.content.btnJoinChannel;
 	}
 
 	getEmojiPickerTabByName(name: string) {

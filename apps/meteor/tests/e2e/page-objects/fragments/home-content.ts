@@ -570,13 +570,22 @@ export class HomeContent {
 		return messageLocator;
 	}
 
+	get btnJoinChannel(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Join channel' });
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
-		await messageList.waitFor();
 
-		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+		// a room the user cannot preview renders a join screen instead of the header and message list
+		await this.mainMessageList.or(this.btnJoinChannel).first().waitFor();
+
+		if (await this.btnJoinChannel.isVisible()) {
+			return;
+		}
+
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await expect(this.mainMessageList).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async waitForThread(): Promise<void> {

@@ -192,7 +192,6 @@ test.describe.parallel('register', () => {
 			});
 
 			test('should expect a invalid page informing that the secret password is invalid', async () => {
-				await poRegistration.waitForCalloutPage();
 				await expect(poRegistration.registrationInvalidUrlCallout).toBeVisible();
 			});
 		});

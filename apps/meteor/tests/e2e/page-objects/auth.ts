@@ -100,10 +100,6 @@ export class Registration extends Main {
 		super(page.getByRole('main'));
 	}
 
-	async waitForCalloutPage(): Promise<void> {
-		await this.page.getByRole('status').waitFor();
-	}
-
 	get btnSendInstructions(): Locator {
 		return this.page.locator('role=button[name="Send instructions"]');
 	}
