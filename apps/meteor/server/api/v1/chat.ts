@@ -1505,7 +1505,7 @@ const chatEndpoints = API.v1
 			const rids = [...new Set(messages.map(({ rid }) => rid))];
 
 			// The batch spans rooms, so one unreadable room rejects the whole request.
-			if (!(await canAccessRoomIdsAsync(rids, this.userId))) {
+			if (!(await canAccessRoomIdsAsync(rids, this.user))) {
 				return API.v1.forbidden();
 			}
 
