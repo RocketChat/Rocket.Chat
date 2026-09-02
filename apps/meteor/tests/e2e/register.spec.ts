@@ -188,7 +188,7 @@ test.describe.parallel('register', () => {
 
 		test.describe('Using an invalid secret password', async () => {
 			test.beforeEach(async () => {
-				await poRegistration.gotoWithSecret('invalid_secret');
+				await poRegistration.gotoWithSecret('invalid_secret', poRegistration.registrationInvalidUrlCallout);
 			});
 
 			test('should expect a invalid page informing that the secret password is invalid', async () => {
@@ -197,9 +197,8 @@ test.describe.parallel('register', () => {
 			});
 		});
 
-		test('should register a user if the right secret password is provided', async ({ page }) => {
-			await poRegistration.gotoWithSecret('secret');
-			await page.waitForSelector('role=form');
+		test('should register a user if the right secret password is provided', async () => {
+			await poRegistration.gotoWithSecret('secret', poRegistration.inputName);
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
 			await poRegistration.username.fill(faker.internet.userName());
@@ -218,8 +217,7 @@ test.describe.parallel('register', () => {
 		});
 
 		test('should show an invalid page informing that the url is not valid', async () => {
-			await poRegistration.gotoWithSecret('secret');
-			await poRegistration.waitForCalloutPage();
+			await poRegistration.gotoWithSecret('secret', poRegistration.registrationInvalidUrlCallout);
 			await expect(poRegistration.registrationInvalidUrlCallout).toBeVisible();
 		});
 	});

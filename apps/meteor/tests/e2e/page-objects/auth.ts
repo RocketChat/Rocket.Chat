@@ -177,14 +177,19 @@ export class Registration extends Main {
 		await this.goto(`/invite/${inviteId}`);
 	}
 
-	/** Opens the secret registration url, e.g. `/register/<secret>`. */
-	async gotoWithSecret(secret: string): Promise<void> {
-		await this.goto(`/register/${secret}`);
+	/**
+	 * Opens the secret registration url, e.g. `/register/<secret>`.
+	 *
+	 * Depending on `Accounts_RegistrationForm` the page settles on the register form or on an
+	 * invalid-secret callout, and neither renders a `main` landmark - so the caller says which it expects.
+	 */
+	async gotoWithSecret(secret: string, until: Locator): Promise<void> {
+		await this.goto(`/register/${secret}`, until);
 	}
 
 	/** Opens the password reset url for a token. */
 	async gotoResetPassword(token: string): Promise<void> {
-		await this.goto(`/reset-password/${token}`);
+		await this.goto(`/reset-password/${token}`, this.inputPassword);
 	}
 
 	get registrationInvalidUrlCallout(): Locator {
