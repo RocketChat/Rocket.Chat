@@ -4,7 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
@@ -25,9 +25,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
-		const rids = await Promise.all([...new Set(msgs.map((m) => m.rid))].map((_id) => canAccessRoomIdAsync(_id, uid)));
 
-		if (!rids.every(Boolean)) {
+		if (!(await canAccessRoomIdsAsync([...new Set(msgs.map((m) => m.rid))], this.userId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 
