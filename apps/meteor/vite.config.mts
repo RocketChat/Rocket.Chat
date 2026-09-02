@@ -122,6 +122,7 @@ export default defineConfig(async () => {
 				'react-aria': path.resolve('./node_modules/react-aria'),
 				'swiper': path.resolve('./node_modules/swiper'),
 				// Rocket.Chat Packages
+				'@rocket.chat/ai-search': path.resolve('../../packages/ai-search/src/index.ts'),
 				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
 				'@rocket.chat/apps-engine': path.resolve('../../packages/apps-engine/src'),
 				'@rocket.chat/apps/dist': path.resolve('../../packages/apps/src'),
