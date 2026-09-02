@@ -78,6 +78,7 @@ export const callRejectedReasonList = [
 	'busy', // the actor who requested the call is supposedly busy
 	'invalid-call-params', // something is wrong with the params (eg. no valid route between caller and callee)
 	'forbidden', // one of the actors on the call doesn't have permission for it
+	'prevented', // an installed app refused the call before it was created
 ] as const;
 
 export type CallRejectedReason = (typeof callRejectedReasonList)[number];
