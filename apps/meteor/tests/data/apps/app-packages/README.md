@@ -478,6 +478,7 @@ export class MessageUpdaterTestApp extends App {
     }
 }
 ```
+</details>
 
 #### UIKit Room Context Test
 
