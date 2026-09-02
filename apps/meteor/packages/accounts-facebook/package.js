@@ -9,8 +9,8 @@ Package.onUse((api) => {
 	// Export Accounts (etc) to packages using this one.
 	api.imply('accounts-base', 'server');
 	api.use('accounts-oauth', 'server');
-	api.use('facebook-oauth');
-	api.imply('facebook-oauth');
+	api.use('facebook-oauth', 'server');
+	api.imply('facebook-oauth', 'server');
 
 	api.addFiles('facebook.ts', 'server');
 });

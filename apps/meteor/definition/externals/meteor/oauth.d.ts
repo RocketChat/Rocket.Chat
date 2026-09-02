@@ -22,7 +22,7 @@ declare module 'meteor/oauth' {
 	namespace OAuth {
 		function _retrievePendingCredential(key: string, ...args: string[]): Promise<string | Error | void>;
 		function openSecret(secret: string): string;
-		function retrieveCredential(credentialToken: string, credentialSecret: string);
+		function retrieveCredential(credentialToken: string, credentialSecret: string): unknown;
 		function _retrieveCredentialSecret(credentialToken: string): string | null;
 		// luckily we don't have any reference to this collection on the client code, so let's type it according to what can be used on the server
 		const _pendingCredentials: MeteorServerMongoCollection<IOauthCredentials>;
@@ -36,5 +36,17 @@ declare module 'meteor/oauth' {
 		): string;
 
 		function _loginStyle(serviceName: string, config: { loginStyle?: string }, options?: Meteor.LoginWithExternalServiceOptions): string;
+
+		// server-side only
+		function registerService(
+			serviceName: string,
+			version: number,
+			options: Record<string, any> | null,
+			handler: (query: Record<string, any>) => Promise<any>,
+		): void;
+
+		function _fetch(url: string, method: 'GET' | 'POST', options?: Record<string, any>): Promise<Response>;
+
+		function _stateFromQuery(query: Record<string, any>): Record<string, any> | null;
 	}
 }

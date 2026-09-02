@@ -43,7 +43,7 @@ declare module 'meteor/accounts-base' {
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
-		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
+		function registerLoginHandler(name: string | null, handler: (options: any) => undefined | object): void;
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 
