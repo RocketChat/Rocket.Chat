@@ -31,7 +31,11 @@ const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, L
 	},
 );
 
-const loginWithMeteorDeveloperAccountForMeteor = createOAuthLoginFunctionForMeteor(requestCredential);
+const loginWithMeteorDeveloperAccount = createOAuthLoginFunctionForMeteor(requestCredential);
 
-Object.assign(Accounts._loginFuncs, { 'meteor-developer': loginWithMeteorDeveloperAccountForMeteor });
-Object.assign(Meteor, { loginWithMeteorDeveloperAccount: loginWithMeteorDeveloperAccountForMeteor });
+Accounts.oauth.registerService('meteor-developer');
+Accounts.registerClientLoginFunction('meteor-developer', loginWithMeteorDeveloperAccount);
+Object.assign(Meteor, {
+	loginWithMeteorDeveloperAccount: (...args: Parameters<typeof loginWithMeteorDeveloperAccount>) =>
+		Accounts.applyLoginFunction('meteor-developer', args),
+});
