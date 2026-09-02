@@ -1771,8 +1771,6 @@ export const roomEndpoints = API.v1
 		async function action() {
 			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
 
-			// Malformed request shape must be rejected before any data resolution, so the response
-			// does not flip to 404 when `aroundId` happens to point at a missing message.
 			if ([next, previous, aroundId].filter(Boolean).length > 1) {
 				throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
 			}
@@ -1803,7 +1801,6 @@ export const roomEndpoints = API.v1
 
 			let around: IMessage | undefined;
 			if (aroundId) {
-				// Hidden messages (e.g. deleted with Message_KeepHistory) must not resurface as the anchor.
 				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
 				if (!message) {
 					return API.v1.notFound();
