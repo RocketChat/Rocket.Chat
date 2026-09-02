@@ -11,7 +11,7 @@ import {
 	useUserId,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { CallPreferences } from './useCallPreferences';
 import { departureFor } from './useLeaveConferenceOnClose';
@@ -82,6 +82,8 @@ export const useConferenceEmbedded = (callId: string) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const subscribeToVideoConference = useStream('video-conference');
+	/** Bumped every time this window starts watching the call, so the catch-up read below happens once per go. */
+	const [watchingSince, setWatchingSince] = useState(0);
 	const { connected } = useConnectionStatus();
 	const queryClient = useQueryClient();
 	const uid = useUserId();
@@ -122,22 +124,39 @@ export const useConferenceEmbedded = (callId: string) => {
 	//   socket, leaves the window watching nothing — silently, since a stream reports neither. So this re-subscribes
 	//   on every connection, and re-reads the conference when it does, because whatever moved while this window was
 	//   away was announced to nobody here.
-	const subscribedTo = useRef<string | undefined>(undefined);
 	useEffect(() => {
 		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
 			return;
 		}
 
-		// Not on the first subscription for a call — that one is the same read the query is already making.
-		if (subscribedTo.current === callId) {
-			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-		}
-		subscribedTo.current = callId;
-
-		return subscribeToVideoConference(`${callId}/updated`, () => {
+		const stop = subscribeToVideoConference(`${callId}/updated`, () => {
 			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 		});
+
+		setWatchingSince((epoch) => epoch + 1);
+
+		return stop;
 	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
+
+	// And read the call again once something is listening, once per subscription.
+	//
+	// The read that filled this window happened *before* the subscription existed, and the gap between the two
+	// is not empty: subscribing is a round trip. Whatever changed while it was in flight was announced once, to
+	// nobody here — so nothing brings it back, and the window waits for a *next* event that may never come while
+	// showing the call as it was. Seen in CI: the `sub` went out two seconds after the call was read, the callee
+	// declined in between, and the window kept the pre-decline roster for the rest of the test.
+	//
+	// After the first read has settled, because invalidating one still in flight achieves nothing — the fetch
+	// already running is the one that returns, stale answer and all.
+	const caughtUpAt = useRef(0);
+	useEffect(() => {
+		if (!watchingSince || isInfoPending || caughtUpAt.current === watchingSince) {
+			return;
+		}
+
+		caughtUpAt.current = watchingSince;
+		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+	}, [watchingSince, isInfoPending, callId, queryClient]);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.

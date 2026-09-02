@@ -122,6 +122,32 @@ describe('watching the conference', () => {
 		expect(streamRef.controller?.has(`${callId}/updated`)).toBe(false);
 	});
 
+	// Subscribing is a round trip, and the read the query already made happened before it. Whatever changed in
+	// between was announced once, to nobody — so the catch-up read is the only thing that recovers it, and CI
+	// caught a window sitting on a pre-decline roster for the rest of a test for want of it.
+	it('reads the call again once something is listening', async () => {
+		let reads = 0;
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => {
+					reads += 1;
+					return buildInfo([]);
+				})
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+
+		// Twice: the read that filled the panel, and the one that covers the gap before anything was listening.
+		await waitFor(() => expect(reads).toBeGreaterThan(1));
+	});
+
 	it('starts watching as soon as the call is real', async () => {
 		const { result, streamRef, rerender } = renderFor('new');
 
