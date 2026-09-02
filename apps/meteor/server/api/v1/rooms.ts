@@ -1803,9 +1803,9 @@ export const roomEndpoints = API.v1
 
 			let around: IMessage | undefined;
 			if (aroundId) {
-				const message = await Messages.findOneById(aroundId);
 				// Hidden messages (e.g. deleted with Message_KeepHistory) must not resurface as the anchor.
-				if (!message || message.rid !== roomId || message._hidden) {
+				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				if (!message) {
 					return API.v1.notFound();
 				}
 				around = message;
