@@ -11,11 +11,11 @@ export class AutoTranslateFlexTab extends FlexTab {
 		return this.root.getByRole('checkbox', { name: 'Automatic Translation' });
 	}
 
-	get toggleAutomaticTranslation(): Locator {
-		return this.root.locator('label[for="automatic-translation"]');
+	get textAutomaticTranslation(): Locator {
+		return this.root.getByText('Automatic Translation', { exact: true });
 	}
 
-	get calloutEncryptedRoom(): Locator {
+	get textEncryptedRoomCallout(): Locator {
 		return this.root.getByText('Automatic translation not available');
 	}
 
@@ -23,6 +23,6 @@ export class AutoTranslateFlexTab extends FlexTab {
 		if ((await this.checkboxAutomaticTranslation.isChecked()) === enabled) {
 			return;
 		}
-		await this.toggleAutomaticTranslation.click();
+		await this.textAutomaticTranslation.click();
 	}
 }
