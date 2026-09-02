@@ -4,15 +4,15 @@ import { before, after, describe, it } from 'mocha';
 import sharp from 'sharp';
 import type { Response } from 'supertest';
 
+import { retry } from './helpers/retry';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { getSettingValueById, updatePermission } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 const ldapUsername = 'ldap.e2e';
+const ldapAvatarRgb = [0, 102, 203];
 
-type Setting = {
-	_id: ISetting['_id'];
-	value: ISetting['value'];
-};
+type Setting = Pick<ISetting, '_id' | 'value'>;
 
 const ldapSettings: Setting[] = [
 	{ _id: 'Accounts_ManuallyApproveNewUsers', value: false },
@@ -42,20 +42,21 @@ const applyLdapSettings = (settings: Setting[], enabled: boolean) =>
 
 const deleteLdapUser = () => request.post(api('users.delete')).set(credentials).send({ username: ldapUsername });
 
-const waitForLdapConnection = async () => {
-	const timeoutAt = Date.now() + 15_000;
-
-	do {
-		const response = await request.post(api('ldap.testConnection')).set(credentials);
-		if (response.ok && response.body.success) {
-			return;
-		}
-
-		await new Promise((resolve) => setTimeout(resolve, 250));
-	} while (Date.now() < timeoutAt);
-
-	throw new Error('LDAP settings did not propagate to the running server');
-};
+const waitForLdapConnection = () =>
+	retry(
+		'LDAP settings propagation',
+		async () => {
+			await request
+				.post(api('ldap.testConnection'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		},
+		{ retries: 20, delayMs: 250 },
+	);
 
 describe('LDAP', function () {
 	this.retries(0);
@@ -65,7 +66,7 @@ describe('LDAP', function () {
 		it('should throw an error containing totp-required error when not running EE', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (process.env.IS_EE) {
+			if (IS_EE) {
 				this.skip();
 			}
 			await request
@@ -80,7 +81,7 @@ describe('LDAP', function () {
 		});
 
 		it('should throw an error of LDAP disabled when running EE', async function () {
-			if (!process.env.IS_EE) {
+			if (!IS_EE) {
 				this.skip();
 			}
 			await request
@@ -144,9 +145,7 @@ describe('LDAP', function () {
 		});
 	});
 
-	(process.env.IS_EE ? describe : describe.skip)('configured LDAP integration', function () {
-		this.timeout(30_000);
-
+	(IS_EE ? describe : describe.skip)('configured LDAP integration', () => {
 		let originalSettings: Setting[] | undefined;
 
 		before(async () => {
@@ -215,16 +214,16 @@ describe('LDAP', function () {
 			});
 			expect(loginResponse.body.data.me.emails.map(({ address }: { address: string }) => address)).to.include('ldap.e2e@space.air');
 
-			const avatarResponse = await request.get(`/avatar/${ldapUsername}`).expect('Content-Type', 'image/jpeg').expect(200);
+			const avatarResponse = await request.get(`/avatar/${ldapUsername}`).buffer(true).expect('Content-Type', 'image/jpeg').expect(200);
 			const metadata = await sharp(avatarResponse.body as Buffer).metadata();
 			const stats = await sharp(avatarResponse.body as Buffer).stats();
+			const avatarChannels = stats.channels.slice(0, 3);
 
-			expect(metadata).to.include({ format: 'jpeg', width: 200, height: 200 });
-			expect(stats.channels.slice(0, 3).map(({ min, max }) => ({ min, max }))).to.deep.equal([
-				{ min: 0, max: 0 },
-				{ min: 102, max: 102 },
-				{ min: 203, max: 203 },
-			]);
+			expect(metadata.format).to.equal('jpeg');
+			expect(metadata.width).to.equal(200);
+			expect(metadata.height).to.equal(200);
+			expect(avatarChannels.map(({ min }) => min)).to.deep.equal(ldapAvatarRgb);
+			expect(avatarChannels.map(({ max }) => max)).to.deep.equal(ldapAvatarRgb);
 		});
 	});
 });
