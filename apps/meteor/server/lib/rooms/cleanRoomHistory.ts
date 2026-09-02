@@ -13,8 +13,8 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../not
 const FILE_CLEANUP_BATCH_SIZE = 1000;
 
 async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise<void> {
-	const room = await Rooms.findOneById(rid, { projection: { prid: 1, msgs: 1, lm: 1, sysMes: 1 } });
-	if (!room?.prid) {
+	const room = await Rooms.findOneDiscussionById(rid, { projection: { msgs: 1, lm: 1, sysMes: 1 } });
+	if (!room) {
 		return;
 	}
 
