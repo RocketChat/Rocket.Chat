@@ -46,6 +46,7 @@ export const defaultSessionState: SessionState = {
 	callId: undefined,
 	startedAt: undefined,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	confirmed: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
