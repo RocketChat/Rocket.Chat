@@ -176,8 +176,19 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getState(skipLocal = false): (AnyMediaCallData & { call: IClientMediaCall }) | null {
-		const call = this.getMainCall(skipLocal);
+	/**
+	 * The data of the call this session currently reports.
+	 *
+	 * A call this session places exists here before the server knows about it, and the server can
+	 * still refuse it. Such a call stays out of the state until the server confirms it, so a call
+	 * that never happens never reaches the consumer. This is the same rule `onSessionStateChange`
+	 * applies to the `newCall` event: a local call still counts while the session already reports
+	 * another call, because the consumer must keep showing one.
+	 *
+	 * Pass `skipLocal` to override the rule.
+	 */
+	public getState(skipLocal?: boolean): (AnyMediaCallData & { call: IClientMediaCall }) | null {
+		const call = this.getMainCall(skipLocal ?? !this.lastState.mainCall);
 		if (!call) {
 			return null;
 		}
