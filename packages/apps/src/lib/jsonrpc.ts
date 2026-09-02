@@ -15,21 +15,24 @@
  * `Buffer`s, circular-free but large graphs) that msgpack handles fine. The
  * factory helpers below simply construct the objects.
  *
- * The wire form is owned by the msgpack codecs on each side of the boundary
- * (`src/server/runtime/base/codec` and `base-runtime/src/lib/codec`): a
- * dedicated extension tags each of these classes on encode and rebuilds the
- * exact instance on decode. There is therefore no separate parse/
- * categorization step - the decoder yields ready-to-use instances on both
- * sides, and callers distinguish them with `instanceof`.
+ * An envelope is a plain object, and it goes on the wire as a plain msgpack map
+ * of its own properties. Receivers categorize it with the type guards below.
+ * A codec extension used to tag each envelope and rebuild a class instance on
+ * decode; `benchmarks/jsonrpc/RESULTS.md` measured it as a net loss (0.88x
+ * encode, 0.92x round-trip, for 0.4% of the wire) and it is gone. Every
+ * TypeScript JSON-RPC implementation surveyed models the envelope this way, and
+ * none of them rebuilds it on receive.
+ *
+ * The error payload is the one exception, because it is the one place where an
+ * exact identity test earns its keep. So there are two names for it, the way
+ * `vscode-jsonrpc`, `@metamask/rpc-errors`, `json-rpc-2.0` and tRPC each split
+ * theirs. THE RULE: build a {@link JsonRpcError} in process and test it with
+ * `instanceof`; read a payload that came off the wire as
+ * {@link SerializedJsonRpcError}, and never test that one with `instanceof`.
  *
  * Every message also carries an optional `meta` bag, analogous to HTTP headers
- * (see {@link JsonRpcMeta}).
- *
- * CAVEAT: `meta` does not cross the process boundary yet. Those codecs encode
- * each message as a positional tuple, and neither of them knows about the slot,
- * so a `meta` set on a message is dropped on encode. The two codecs are copies
- * of each other; the slot is added once they are unified into a single
- * definition. Until then `meta` is an in-process API only.
+ * (see {@link JsonRpcMeta}). A map carries the key for free, so `meta` crosses
+ * the process boundary like any other property.
  */
 
 export type ID = string | number | null;
@@ -55,154 +58,215 @@ export type JsonRpcMeta = {
 	[key: string]: Defined | undefined;
 };
 
-const JSONRPC_VERSION = '2.0';
+export const JSONRPC_VERSION = '2.0';
+
+/** The five error codes JSON-RPC 2.0 reserves. */
+export const INVALID_REQUEST = -32600;
+export const METHOD_NOT_FOUND = -32601;
+export const INVALID_PARAMS = -32602;
+export const INTERNAL_ERROR = -32603;
+export const PARSE_ERROR = -32700;
+
+/** The generic code this bridge uses for an error raised by app or bridge code. */
+export const SERVER_ERROR = -32000;
 
 /**
- * A JSON-RPC 2.0 error payload. Intentionally NOT an `Error` subclass: its
- * `message`/`code`/`data` must be own, enumerable properties so msgpack
- * serializes them across the process boundary (an `Error`'s `message` is
- * non-enumerable and would be dropped).
+ * The shape an error payload has on the wire. A decoded payload is one of these
+ * and nothing more: msgpack rebuilds it as a plain map, so it carries no identity
+ * of its own.
  */
-export class JsonRpcError {
+export type SerializedJsonRpcError = {
+	message: string;
+
+	code: number;
+
+	// `any` (rather than `unknown`) mirrors `jsonrpc-lite` and keeps call sites that
+	// read/augment `data` (e.g. `error.data?.logs`, `data.logs = ...`) type-checking.
+	data?: any;
+};
+
+/**
+ * An error payload, as a handler builds one. The class earns its place in exactly
+ * one way: the runtime's main loop tests the value a handler returned to decide
+ * between a success response and an error response. `instanceof` answers that
+ * exactly. A shape test cannot - a successful result could carry a string
+ * `message` next to a numeric `code` by accident, and the bridge would report a
+ * failure the app never raised.
+ *
+ * Intentionally NOT an `Error` subclass: its `message`/`code`/`data` must be own,
+ * enumerable properties so msgpack serializes them across the process boundary (an
+ * `Error`'s `message` is non-enumerable and would be dropped). That is also why
+ * this class needs no `toJson()`, unlike its counterparts in `vscode-jsonrpc` and
+ * `@metamask/rpc-errors`, which convert because they extend `Error`.
+ */
+export class JsonRpcError implements SerializedJsonRpcError {
 	public message: string;
 
 	public code: number;
 
-	// `any` (rather than `unknown`) mirrors `jsonrpc-lite` and keeps call sites that
-	// read/augment `data` (e.g. `error.data?.logs`, `data.logs = ...`) type-checking.
 	public declare data?: any;
 
 	constructor(message: string, code: number, data?: any) {
 		this.message = message;
 		this.code = code;
 
+		// `data` must stay ABSENT rather than present-and-undefined: msgpack
+		// distinguishes the two.
 		if (data !== undefined && data !== null) {
 			this.data = data;
 		}
 	}
 
 	static invalidRequest(data?: any): JsonRpcError {
-		return new JsonRpcError('Invalid request', -32600, data);
+		return new JsonRpcError('Invalid request', INVALID_REQUEST, data);
 	}
 
 	static methodNotFound(data?: any): JsonRpcError {
-		return new JsonRpcError('Method not found', -32601, data);
+		return new JsonRpcError('Method not found', METHOD_NOT_FOUND, data);
 	}
 
 	static invalidParams(data?: any): JsonRpcError {
-		return new JsonRpcError('Invalid params', -32602, data);
+		return new JsonRpcError('Invalid params', INVALID_PARAMS, data);
 	}
 
 	static internalError(data?: any): JsonRpcError {
-		return new JsonRpcError('Internal error', -32603, data);
+		return new JsonRpcError('Internal error', INTERNAL_ERROR, data);
 	}
 
 	static parseError(data?: any): JsonRpcError {
-		return new JsonRpcError('Parse error', -32700, data);
+		return new JsonRpcError('Parse error', PARSE_ERROR, data);
 	}
 }
 
-export class RequestObject {
-	public jsonrpc = JSONRPC_VERSION;
+export type RequestObject = {
+	jsonrpc: typeof JSONRPC_VERSION;
+	id: ID;
+	method: string;
+	params?: RpcParams;
+	meta?: JsonRpcMeta;
+};
 
-	public id: ID;
+export type NotificationObject = {
+	jsonrpc: typeof JSONRPC_VERSION;
+	/**
+	 * A notification has no `id`. Declaring the slot as `undefined` keeps a
+	 * `RequestObject` from being assignable here - it is otherwise a structural
+	 * supertype, and narrowing the union by {@link isNotificationObject} would
+	 * then discard `RequestObject` too.
+	 */
+	id?: undefined;
+	method: string;
+	params?: RpcParams;
+	meta?: JsonRpcMeta;
+};
 
-	public method: string;
+export type SuccessObject = {
+	jsonrpc: typeof JSONRPC_VERSION;
+	id: ID;
+	result: Defined;
+	/** A success never carries an error. Declaring the slot makes the union narrow. */
+	error?: undefined;
+	meta?: JsonRpcMeta;
+};
 
-	public declare params?: RpcParams;
-
-	public declare meta?: JsonRpcMeta;
-
-	constructor(id: ID, method: string, params?: RpcParams, meta?: JsonRpcMeta) {
-		this.id = id;
-		this.method = method;
-
-		if (params !== undefined) {
-			this.params = params;
-		}
-
-		if (meta !== undefined) {
-			this.meta = meta;
-		}
-	}
-}
-
-export class NotificationObject {
-	public jsonrpc = JSONRPC_VERSION;
-
-	public method: string;
-
-	public declare params?: RpcParams;
-
-	public declare meta?: JsonRpcMeta;
-
-	constructor(method: string, params?: RpcParams, meta?: JsonRpcMeta) {
-		this.method = method;
-
-		if (params !== undefined) {
-			this.params = params;
-		}
-
-		if (meta !== undefined) {
-			this.meta = meta;
-		}
-	}
-}
-
-export class SuccessObject {
-	public jsonrpc = JSONRPC_VERSION;
-
-	public id: ID;
-
-	public result: Defined;
-
-	public declare meta?: JsonRpcMeta;
-
-	constructor(id: ID, result: Defined, meta?: JsonRpcMeta) {
-		this.id = id;
-		this.result = result;
-
-		if (meta !== undefined) {
-			this.meta = meta;
-		}
-	}
-}
-
-export class ErrorObject {
-	public jsonrpc = JSONRPC_VERSION;
-
-	public id: ID;
-
-	public error: JsonRpcError;
-
-	public declare meta?: JsonRpcMeta;
-
-	constructor(id: ID, error: JsonRpcError, meta?: JsonRpcMeta) {
-		this.id = id;
-		this.error = error;
-
-		if (meta !== undefined) {
-			this.meta = meta;
-		}
-	}
-}
+export type ErrorObject = {
+	jsonrpc: typeof JSONRPC_VERSION;
+	id: ID;
+	error: SerializedJsonRpcError;
+	/** An error never carries a result. Declaring the slot makes the union narrow. */
+	result?: undefined;
+	meta?: JsonRpcMeta;
+};
 
 export type JsonRpc = RequestObject | NotificationObject | SuccessObject | ErrorObject;
 
 export function request(id: ID, method: string, params?: RpcParams, meta?: JsonRpcMeta): RequestObject {
-	return new RequestObject(id, method, params, meta);
+	const message: RequestObject = { jsonrpc: JSONRPC_VERSION, id, method };
+
+	// The optional slots must stay ABSENT rather than present-and-undefined, here
+	// and in every factory below: msgpack distinguishes the two.
+	if (params !== undefined) {
+		message.params = params;
+	}
+
+	if (meta !== undefined) {
+		message.meta = meta;
+	}
+
+	return message;
 }
 
 export function notification(method: string, params?: RpcParams, meta?: JsonRpcMeta): NotificationObject {
-	return new NotificationObject(method, params, meta);
+	const message: NotificationObject = { jsonrpc: JSONRPC_VERSION, method };
+
+	if (params !== undefined) {
+		message.params = params;
+	}
+
+	if (meta !== undefined) {
+		message.meta = meta;
+	}
+
+	return message;
 }
 
 export function success(id: ID, result: Defined, meta?: JsonRpcMeta): SuccessObject {
-	return new SuccessObject(id, result, meta);
+	const message: SuccessObject = { jsonrpc: JSONRPC_VERSION, id, result };
+
+	if (meta !== undefined) {
+		message.meta = meta;
+	}
+
+	return message;
 }
 
-export function error(id: ID, err: JsonRpcError, meta?: JsonRpcMeta): ErrorObject {
-	return new ErrorObject(id, err, meta);
+export function error(id: ID, err: SerializedJsonRpcError, meta?: JsonRpcMeta): ErrorObject {
+	const message: ErrorObject = { jsonrpc: JSONRPC_VERSION, id, error: err };
+
+	if (meta !== undefined) {
+		message.meta = meta;
+	}
+
+	return message;
+}
+
+/**
+ * Structural, and deliberately not exported. It only ever runs on the `error` slot
+ * of a decoded envelope, where the payload has lost its identity and a shape test
+ * is the only thing left. Use `instanceof JsonRpcError` in process.
+ */
+function isSerializedJsonRpcError(value: unknown): value is SerializedJsonRpcError {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		typeof (value as SerializedJsonRpcError).message === 'string' &&
+		typeof (value as SerializedJsonRpcError).code === 'number'
+	);
+}
+
+/** The `jsonrpc` property is the gate: one property read rejects a foreign object. */
+function isEnvelope(message: unknown): message is JsonRpc {
+	return typeof message === 'object' && message !== null && (message as JsonRpc).jsonrpc === JSONRPC_VERSION;
+}
+
+export function isRequestObject(message: unknown): message is RequestObject {
+	return isEnvelope(message) && typeof (message as RequestObject).method === 'string' && 'id' in message;
+}
+
+export function isNotificationObject(message: unknown): message is NotificationObject {
+	return isEnvelope(message) && typeof (message as NotificationObject).method === 'string' && !('id' in message);
+}
+
+export function isSuccessObject(message: unknown): message is SuccessObject {
+	return isEnvelope(message) && 'result' in message;
+}
+
+export function isErrorObject(message: unknown): message is ErrorObject {
+	return isEnvelope(message) && isSerializedJsonRpcError((message as ErrorObject).error);
+}
+
+export function isJsonRpc(message: unknown): message is JsonRpc {
+	return isRequestObject(message) || isNotificationObject(message) || isSuccessObject(message) || isErrorObject(message);
 }
 
 const jsonrpc = {
@@ -211,6 +275,11 @@ const jsonrpc = {
 	notification,
 	success,
 	error,
+	isRequestObject,
+	isNotificationObject,
+	isSuccessObject,
+	isErrorObject,
+	isJsonRpc,
 };
 
 export default jsonrpc;

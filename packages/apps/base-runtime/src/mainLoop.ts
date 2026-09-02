@@ -7,7 +7,7 @@ import handleScheduler from './handlers/scheduler-handler';
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
 import { decoder } from './lib/codec';
-import { JsonRpcError, NotificationObject, type SuccessObject } from './lib/jsonrpc';
+import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
 import { sendMetrics } from './lib/metricsCollector';
@@ -37,7 +37,7 @@ async function requestRouter(message: Messenger.JsonRpcRequest): Promise<void> {
 	};
 
 	// We're not handling notifications at the moment
-	if (message instanceof NotificationObject) {
+	if (isNotificationObject(message)) {
 		return Messenger.sendInvalidRequestError();
 	}
 

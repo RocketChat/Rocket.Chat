@@ -1,8 +1,8 @@
-import { ErrorObject } from '../jsonrpc';
+import { isErrorObject } from '../jsonrpc';
 
 // deno-lint-ignore no-explicit-any -- that is the type we get from `catch`
 export const formatErrorResponse = (error: any): Error => {
-	if (error instanceof ErrorObject || typeof error?.error?.message === 'string') {
+	if (isErrorObject(error) || typeof error?.error?.message === 'string') {
 		return new Error(error.error.message);
 	}
 

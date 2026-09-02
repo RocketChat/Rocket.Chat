@@ -15,15 +15,16 @@
  *   `jsonrpc-lite`      - the pipeline as it was: the library's factories, a
  *                         codec without a JSON-RPC extension, and `parseObject()`
  *                         on receive
- *   `in-house, no ext`  - the in-house types over that same extension-less codec.
- *                         The envelope goes on the wire as a plain map and a
- *                         small `hydrate()` rebuilds the class on receive
+ *   `in-house, no ext`  - the in-house types over a verbatim copy of the codec at
+ *                         `origin/develop`
  *   `in-house`          - the pipeline as it ships: the in-house types over the
- *                         codec's JSON-RPC extension, which tags the envelope as
- *                         a positional tuple and returns the instance directly
+ *                         real codec
  *
- * The first two differ only in the types. The last two differ only in the
- * extension, which is what isolates its cost.
+ * The first two differ only in the types, which is where the win over
+ * `jsonrpc-lite` sits. The last two differ only in which codec file they import.
+ * The codec's JSON-RPC extension is gone (`RESULTS.md` measured it as a net
+ * loss), so that pair now reads the harness noise floor - which is the check
+ * that it is really gone.
  *
  * Every contender gets its own encoder/decoder pair, exactly like the runtime
  * gives each subprocess its own (see the note in either `codec.ts`).
@@ -131,58 +132,24 @@ function buildInHouse(fixture: Fixture): unknown {
 }
 
 function normalizeInHouse(received: unknown): Normalized {
-	if (received instanceof jsonrpc.RequestObject) {
+	if (jsonrpc.isRequestObject(received)) {
 		return { kind: 'request', id: received.id, method: received.method, params: received.params };
 	}
 
-	if (received instanceof jsonrpc.NotificationObject) {
+	if (jsonrpc.isNotificationObject(received)) {
 		return { kind: 'notification', method: received.method, params: received.params };
 	}
 
-	if (received instanceof jsonrpc.SuccessObject) {
+	if (jsonrpc.isSuccessObject(received)) {
 		return { kind: 'success', id: received.id, result: received.result };
 	}
 
-	if (received instanceof jsonrpc.ErrorObject) {
+	if (jsonrpc.isErrorObject(received)) {
 		const { id, error } = received;
 		return { kind: 'error', id, error: { message: error.message, code: error.code, data: error.data } };
 	}
 
 	throw new Error('the decoder returned something that is not a JSON-RPC message');
-}
-
-/**
- * What the receiver needs without the codec extension: the decoded value is a
- * plain map, and the dispatch sites branch with `instanceof`, so the envelope
- * class has to be rebuilt here.
- *
- * This is the cheapest form that still hands back the same instances - one field
- * test per branch, no validation, no copy of `params`. `jsonrpc-lite`'s
- * `parseObject()` does considerably more. What the extension does not beat here,
- * it does not beat at all.
- */
-function hydrate(value: unknown): jsonrpc.JsonRpc {
-	const message = value as {
-		id?: jsonrpc.ID;
-		method?: string;
-		params?: jsonrpc.RpcParams;
-		result?: jsonrpc.Defined;
-		error?: { message: string; code: number; data?: unknown };
-	};
-
-	if (message.method !== undefined) {
-		return 'id' in message
-			? new jsonrpc.RequestObject(message.id, message.method, message.params)
-			: new jsonrpc.NotificationObject(message.method, message.params);
-	}
-
-	if (message.error !== undefined) {
-		const { message: text, code, data } = message.error;
-
-		return new jsonrpc.ErrorObject(message.id, new jsonrpc.JsonRpcError(text, code, data));
-	}
-
-	return new jsonrpc.SuccessObject(message.id, message.result);
 }
 
 export function createNoExtensionContender(): Contender {
@@ -199,7 +166,7 @@ export function createNoExtensionContender(): Contender {
 		},
 
 		receive(bytes) {
-			return hydrate(decoder.decode(bytes));
+			return decoder.decode(bytes);
 		},
 
 		normalize: normalizeInHouse,
@@ -219,8 +186,8 @@ export function createInHouseContender(): Contender {
 			return encoder.encode(message);
 		},
 
-		// The codec's JSON-RPC extension rebuilds the envelope class, so the decoded
-		// value is already the dispatch-ready message. There is no parse step.
+		// The decoded value is the plain map the sender built; the guards in
+		// `normalize` categorize it, so there is no parse step.
 		receive(bytes) {
 			return decoder.decode(bytes);
 		},

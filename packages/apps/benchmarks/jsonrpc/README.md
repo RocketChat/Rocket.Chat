@@ -9,33 +9,35 @@ yarn workspace @rocket.chat/apps bench:jsonrpc
 
 ## What it compares
 
-| contender          | types           | wire form                                   | receive                                    |
-| ------------------ | --------------- | ------------------------------------------- | ------------------------------------------ |
-| `jsonrpc-lite`     | `jsonrpc-lite`  | plain msgpack map of the object's properties | decode, then `parseObject()` to rebuild and re-validate |
-| `in-house, no ext` | in-house        | plain msgpack map of the object's properties | decode, then `hydrate()` to rebuild the class |
-| `in-house`         | in-house        | positional tuple behind the codec extension  | decode; the envelope class comes back      |
+| contender          | types           | codec                                        | receive                                                 |
+| ------------------ | --------------- | -------------------------------------------- | ------------------------------------------------------- |
+| `jsonrpc-lite`     | `jsonrpc-lite`  | copy of the codec at `origin/develop`         | decode, then `parseObject()` to rebuild and re-validate |
+| `in-house, no ext` | in-house        | copy of the codec at `origin/develop`         | decode; the type guards categorize at the dispatch site |
+| `in-house`         | in-house        | the real `src/server/runtime/base/codec.ts`   | decode; the type guards categorize at the dispatch site |
 
-The first two rows differ only in the types, so their gap is what the in-house
-types bought. The last two rows differ only in the codec extension, so their gap
-is what the extension buys - that is the `vs in-house, no ext` column.
+Every pipeline puts the message on the wire as a plain msgpack map of its own
+properties. The first two rows differ only in the types, so their gap is what
+the in-house types bought.
+
+The last two rows differ only in which codec file they import. There used to be
+a real difference there - a JSON-RPC extension that tagged the envelope as a
+positional tuple and handed back a class instance on decode - and `RESULTS.md`
+measured it as a net loss (0.88x encode, 0.92x round-trip, for 0.4% of the
+wire). It is gone, so the `vs in-house, no ext` column now reads the harness
+noise floor. That is the check that it is really gone.
 
 All three cover the same three steps of a message's life, so none gets a head
 start:
 
-| step        | `jsonrpc-lite`                                  | in-house                    |
-| ----------- | ----------------------------------------------- | --------------------------- |
+| step        | `jsonrpc-lite`                                            | in-house                    |
+| ----------- | --------------------------------------------------------- | --------------------------- |
 | **build**   | factory call, validated with a throwaway `JSON.stringify` | factory call, no validation |
-| **encode**  | `Encoder#encode`                                | `Encoder#encode`            |
-| **receive** | `Decoder#decode` plus the categorization step above | same                    |
+| **encode**  | `Encoder#encode`                                          | `Encoder#encode`            |
+| **receive** | `Decoder#decode` plus the categorization step above       | same                        |
 
 `noExtensionCodec.ts` is a verbatim copy of `src/server/runtime/base/codec.ts`
 at `origin/develop`, so the two "no extension" columns run the real pre-change
 codec, not an approximation of it.
-
-`hydrate()` in `contenders.ts` is the cheapest categorization that still returns
-the same instances: one field test per branch, no validation, no copy of
-`params`. It is deliberately generous to the no-extension side. What the
-extension does not beat there, it does not beat at all.
 
 ## The corpus
 

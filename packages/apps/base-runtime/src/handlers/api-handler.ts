@@ -2,7 +2,7 @@ import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiE
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../lib/jsonrpc';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
@@ -16,13 +16,13 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 	const { logger } = request.context;
 
 	if (!endpoint) {
-		return new JsonRpcError(`Endpoint ${path} not found`, -32000);
+		return new JsonRpcError(`Endpoint ${path} not found`, SERVER_ERROR);
 	}
 
 	const method = endpoint[httpMethod as keyof IApiEndpoint];
 
 	if (typeof method !== 'function') {
-		return new JsonRpcError(`${path}'s ${httpMethod} not exists`, -32000);
+		return new JsonRpcError(`${path}'s ${httpMethod} not exists`, SERVER_ERROR);
 	}
 
 	const [requestData, endpointInfo] = params as Array<unknown>;
@@ -45,6 +45,6 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 		return result;
 	} catch (e) {
 		logger.debug(`${path}'s ${call} was unsuccessful.`);
-		return new JsonRpcError(e.message || 'Internal server error', -32000);
+		return new JsonRpcError(e.message || 'Internal server error', SERVER_ERROR);
 	}
 }

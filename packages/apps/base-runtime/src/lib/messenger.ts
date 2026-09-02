@@ -16,15 +16,17 @@ export type JsonRpcRequest = jsonrpc.RequestObject | jsonrpc.NotificationObject;
 export type JsonRpcResponse = jsonrpc.SuccessObject | jsonrpc.ErrorObject;
 
 export function isRequest(message: jsonrpc.JsonRpc): message is JsonRpcRequest {
-	return message instanceof jsonrpc.RequestObject || message instanceof jsonrpc.NotificationObject;
+	return jsonrpc.isRequestObject(message) || jsonrpc.isNotificationObject(message);
 }
 
 export function isResponse(message: jsonrpc.JsonRpc): message is JsonRpcResponse {
-	return message instanceof jsonrpc.SuccessObject || message instanceof jsonrpc.ErrorObject;
+	return jsonrpc.isSuccessObject(message) || jsonrpc.isErrorObject(message);
 }
 
-export function isErrorResponse(message: jsonrpc.JsonRpc): message is jsonrpc.ErrorObject {
-	return message instanceof jsonrpc.ErrorObject;
+// Takes `unknown` because `parseMessage` throws an `ErrorObject`, so the main loop
+// tests a caught value with this.
+export function isErrorResponse(message: unknown): message is jsonrpc.ErrorObject {
+	return jsonrpc.isErrorObject(message);
 }
 
 const COMMAND_PONG = '_zPONG';
@@ -98,14 +100,9 @@ export function setTransport(newTransport: Transport): void {
 }
 
 export function parseMessage(message: unknown): jsonrpc.JsonRpc {
-	// The codec's JSON-RPC extension has already rebuilt the envelope classes on decode;
-	// anything that is not one of them is not a valid message for this bridge.
-	if (
-		message instanceof jsonrpc.RequestObject ||
-		message instanceof jsonrpc.NotificationObject ||
-		message instanceof jsonrpc.SuccessObject ||
-		message instanceof jsonrpc.ErrorObject
-	) {
+	// A message arrives as the plain map the codec decoded; anything that does not
+	// categorize as one of the four envelopes is not a valid message for this bridge.
+	if (jsonrpc.isJsonRpc(message)) {
 		return message;
 	}
 
