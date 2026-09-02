@@ -431,25 +431,21 @@ test.describe('video conference call window', () => {
 	 * Qase case 17 step 3, case 18 steps 2 and 4, and case 47 step 2 — the caller's own window following a call
 	 * as other people arrive, turn it down and go.
 	 *
-	 * `test.fixme` because the code is wrong and *why* is still open. What is established:
+	 * Runs instrumented: on failure it attaches the call window's DDP frames, because the two explanations left
+	 * are indistinguishable from the outside and traces carry no WebSocket frames.
 	 *
-	 * - The stream itself works. Driven against a live workspace, a `/conference/<id>` page subscribes, the
-	 *   `<callId>/updated` frame arrives, and the conference is read again. So "the event never reaches the
-	 *   window" — the first diagnosis — is false.
-	 * - It is the window specifically that does not react. From run 33563153775: the decline lands at
-	 *   22:26:34.243; the caller's **main app page** refetches `video-conference.info` 14ms later; the caller's
-	 *   **call window** — the frame that did `start`, `join` and `heartbeat` — never refetches at all. Its last
-	 *   read was two seconds earlier.
-	 * - Waiting for the user id before subscribing did not fix it (this run has that fix), so a subscription
-	 *   refused for want of an authenticated connection is not the explanation either.
+	 * What is ruled out, driven against a live workspace on this branch with LiveKit as the provider and the
+	 * window setting on: the window subscribes and is ready, before joining and after; a change made by someone
+	 * else (an add, which rings) delivers `<callId>/updated`; and the conference is read again each time. The
+	 * whole chain works there.
 	 *
-	 * The difference between the window that works and the one that doesn't is how it got there: the live probe
-	 * navigated straight to `/conference/<id>`, while a real call window is opened by `window.open`, starts on
-	 * `/conference/new` and moves to the call once it exists. That transition is the next thing to look at, and
-	 * the run recorded no WebSocket frames, so the DDP side of it is still unseen — capturing those would settle
-	 * it in one look.
+	 * What remains different about CI is the provider. Its calls are served by the tester app, whose join URL is
+	 * *relative*, so the window renders an iframe that loads the Rocket.Chat client a second time inside itself —
+	 * visible in the run's console output as a third client booting. An embedded provider like LiveKit renders no
+	 * iframe at all, which is why the local run cannot see this. The frames will say whether the window's
+	 * subscription was refused, never made, or made and then silent.
 	 */
-	test.fixme('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
+	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
 		await poHomeChannel.navbar.openChat('user2');
@@ -470,7 +466,17 @@ test.describe('video conference call window', () => {
 			await user2.poHomeChannel.ongoingCalls.btnDecline.click();
 
 			await expect(callWindow.textNotInTheCall).toBeVisible();
-			await expect(callWindow.getMemberStatus('Declined')).toBeVisible();
+			try {
+				await expect(callWindow.getMemberStatus('Declined')).toBeVisible();
+			} catch (error) {
+				// The window not reacting and the window never having asked to are indistinguishable from the
+				// outside, and traces carry no WebSocket frames — so when this fails, say which it was.
+				await test.info().attach('call-window-ddp', {
+					body: callWindow.streamFrames().join('\n') || '(no frame mentions this stream)',
+					contentType: 'text/plain',
+				});
+				throw error;
+			}
 			// Turned down is exactly when ringing back is the point.
 			await expect(callWindow.getBtnRingMember('user2')).toBeVisible();
 		});
