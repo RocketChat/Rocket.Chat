@@ -1,13 +1,15 @@
-import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription } from '@rocket.chat/core-typings';
+import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription, type UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Document, FilterOperators } from 'mongodb';
+import type { Document } from 'mongodb';
 
 import { settings } from '../settings';
+import { effectiveStatusExpression, effectiveStatusFilter } from './statusVisibility/effectiveStatus';
 
 type FindUsersParam = {
 	rid: string;
-	status?: FilterOperators<string>;
+	status?: UserStatus[];
+	hidden?: Set<IUser['_id']>;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -23,6 +25,7 @@ type UserWithRoleAndSubscriptionData = IUser & {
 export async function findUsersOfRoomOrderedByRole({
 	rid,
 	status,
+	hidden,
 	skip = 0,
 	limit = 0,
 	filter = '',
@@ -55,12 +58,14 @@ export async function findUsersOfRoomOrderedByRole({
 					$exists: true,
 					...(exceptions.length > 0 && { $nin: exceptions }),
 				},
-				...(status && { status }),
 				...(filter && orStmt.length > 0 && { $or: orStmt }),
 			},
+			...(status ? [effectiveStatusFilter(status, hidden)] : []),
 			...extraQuery,
 		],
 	};
+
+	const visibleStatus = hidden?.size ? effectiveStatusExpression(hidden) : '$status';
 
 	const membersResult = Users.col.aggregate<UserWithRoleAndSubscriptionData>(
 		[
@@ -73,13 +78,13 @@ export async function findUsersOfRoomOrderedByRole({
 					name: 1,
 					username: 1,
 					nickname: 1,
-					status: 1,
+					status: visibleStatus,
 					avatarETag: 1,
 					_updatedAt: 1,
 					federated: 1,
 					statusSortKey: {
 						// Adding this because offline users should come last
-						$cond: [{ $eq: ['$status', 'offline'] }, null, '$status'],
+						$cond: [{ $eq: [visibleStatus, 'offline'] }, null, visibleStatus],
 					},
 					rolePriority: {
 						$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],

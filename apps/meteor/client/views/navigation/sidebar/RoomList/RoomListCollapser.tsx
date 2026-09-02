@@ -1,5 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import { Badge, SidebarCollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
 	return (
-		<SidebarV2CollapseGroup
+		<SidebarCollapseGroup
 			title={t(groupTitle)}
 			expanded={!collapsedGroups.includes(group)}
 			badge={

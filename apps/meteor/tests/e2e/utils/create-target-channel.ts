@@ -84,6 +84,10 @@ export async function deletePrivateRoomsByName(credentials: { username: string; 
 	}
 }
 
+export async function markRoomAsRead(api: BaseTest['api'], roomId: string): Promise<void> {
+	await api.post('/subscriptions.read', { rid: roomId });
+}
+
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
 	const name = faker.string.uuid();
 	await api.post('/groups.create', { name, ...options });

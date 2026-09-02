@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "33.0.0",
+	"version": "34.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -27,7 +27,7 @@
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "^0.33.1",
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/fuselage": "^0.87.0",
+		"@rocket.chat/fuselage": "^0.88.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"@rocket.chat/icons": "^0.49.0",

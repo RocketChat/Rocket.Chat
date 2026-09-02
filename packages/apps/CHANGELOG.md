@@ -1,5 +1,39 @@
 # @rocket.chat/apps
 
+## 0.9.0
+
+### Minor Changes
+
+- ([#41474](https://github.com/RocketChat/Rocket.Chat/pull/41474)) Changes the default apps-engine runtime backend from `deno` to `node`. The previous behavior can be restored by setting the environment variable `APPS_ENGINE_RUNTIME_BACKEND='deno'`
+
+### Patch Changes
+
+- ([#41653](https://github.com/RocketChat/Rocket.Chat/pull/41653)) Bumps patch-level dependency updates: `react`, `react-dom` and `react-is` to 19.2.8, `ws` to 8.21.3, `nodemailer` to 9.0.5, `mailparser` to 3.9.15, `google-libphonenumber` to 3.2.46, `twitter-api-v2` to 1.29.1, `ip-range-check` to 0.2.1, `esbuild` to 0.28.2, `@octokit/core` to 7.0.7 and `@octokit/plugin-throttling` to 11.0.5, plus build and test tooling (`@swc/core`, `ts-jest`, `rollup`, `html-webpack-plugin`, `@vitejs/plugin-react`, `@testing-library/user-event`, and the `@types/*` packages). No behavior changes are expected.
+
+- <details><summary>Updated dependencies [126e446ca50ee6ae17abf0b31f4f1917c72e5a2f, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9]:</summary>
+
+  - @rocket.chat/apps-engine@1.66.0
+  - @rocket.chat/model-typings@2.5.0
+  - @rocket.chat/core-typings@8.8.0
+  </details>
+
+## 0.9.0-rc.0
+
+### Minor Changes
+
+- ([#41474](https://github.com/RocketChat/Rocket.Chat/pull/41474)) Changes the default apps-engine runtime backend from `deno` to `node`. The previous behavior can be restored by setting the environment variable `APPS_ENGINE_RUNTIME_BACKEND='deno'`
+
+### Patch Changes
+
+- ([#41653](https://github.com/RocketChat/Rocket.Chat/pull/41653)) Bumps patch-level dependency updates: `react`, `react-dom` and `react-is` to 19.2.8, `ws` to 8.21.3, `nodemailer` to 9.0.5, `mailparser` to 3.9.15, `google-libphonenumber` to 3.2.46, `twitter-api-v2` to 1.29.1, `ip-range-check` to 0.2.1, `esbuild` to 0.28.2, `@octokit/core` to 7.0.7 and `@octokit/plugin-throttling` to 11.0.5, plus build and test tooling (`@swc/core`, `ts-jest`, `rollup`, `html-webpack-plugin`, `@vitejs/plugin-react`, `@testing-library/user-event`, and the `@types/*` packages). No behavior changes are expected.
+
+- <details><summary>Updated dependencies [126e446ca50ee6ae17abf0b31f4f1917c72e5a2f, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9]:</summary>
+
+  - @rocket.chat/apps-engine@1.66.0-rc.0
+  - @rocket.chat/model-typings@2.5.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  </details>
+
 ## 0.8.0
 
 ### Minor Changes

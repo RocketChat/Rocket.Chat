@@ -1,5 +1,39 @@
 # @rocket.chat/core-typings
 
+## 8.8.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#40560](https://github.com/RocketChat/Rocket.Chat/pull/40560) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for call diversion handling in voice calls
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+## 8.8.0-rc.2
+
+## 8.8.0-rc.1
+
+## 8.8.0-rc.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#40560](https://github.com/RocketChat/Rocket.Chat/pull/40560) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for call diversion handling in voice calls
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/message-parser@0.32.0
+  - @rocket.chat/ui-kit@1.1.0
+  </details>
+
+## 8.7.1
+
 ## 8.7.0
 
 ### Minor Changes

@@ -33,6 +33,7 @@ import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWi
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
@@ -681,7 +682,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
-					settings: user.settings,
+					settings: omitStatusVisibilityConfig(user.settings),
 				},
 				roles: record.roles,
 				createdBy: {

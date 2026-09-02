@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/uikit-playground",
-	"version": "0.7.15",
+	"version": "0.7.16",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -18,7 +18,7 @@
 		"@lezer/highlight": "^1.2.3",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "^0.33.1",
-		"@rocket.chat/fuselage": "^0.87.0",
+		"@rocket.chat/fuselage": "^0.88.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-toastbar": "~0.36.1",
 		"@rocket.chat/fuselage-tokens": "^0.34.0",

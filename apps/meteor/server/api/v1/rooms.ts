@@ -9,6 +9,7 @@ import {
 	isPrivateRoom,
 	isPublicRoom,
 	type IUser,
+	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -63,6 +64,7 @@ import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { unbanUserFromRoom } from '../../lib/unbanUserFromRoom';
 import { createDiscussion } from '../../meteor-methods/messages/createDiscussion';
 import { sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
@@ -1172,7 +1174,8 @@ API.v1.get(
 
 		const { members, total } = await findUsersOfRoomOrderedByRole({
 			rid: findResult._id,
-			...(status && { status: { $in: status } }),
+			...(status && { status: status as UserStatus[] }),
+			hidden: await getUsersHiddenFrom(this.userId),
 			skip,
 			limit,
 			filter,

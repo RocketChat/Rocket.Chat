@@ -1,5 +1,48 @@
 # @rocket.chat/ui-voip
 
+## 24.0.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/ui-client@34.0.0
+  - @rocket.chat/media-signaling@1.2.0
+  - @rocket.chat/fuselage-ui-kit@34.0.0
+  - @rocket.chat/ui-avatar@30.0.0
+  - @rocket.chat/ui-contexts@34.0.0
+  </details>
+
+## 24.0.0-rc.1
+
+### Minor Changes
+
+- ([#41954](https://github.com/RocketChat/Rocket.Chat/pull/41954)) Promotes Voice Call Screen Sharing to stable by removing the `beta` alert from its setting and enabling the "In-Room" call interface for every call regardless of screen-share availability.
+
+## 24.0.0-rc.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/ui-client@34.0.0-rc.0
+  - @rocket.chat/media-signaling@1.2.0-rc.0
+  - @rocket.chat/ui-contexts@34.0.0-rc.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/fuselage-ui-kit@34.0.0-rc.0
+  - @rocket.chat/ui-avatar@30.0.0-rc.0
+  </details>
+
 ## 23.0.0
 
 ### Patch Changes

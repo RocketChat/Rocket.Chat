@@ -262,6 +262,7 @@ const chatEndpoints = API.v1
 		'chat.readThread',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			body: isChatReadThreadProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -897,6 +898,7 @@ const chatEndpoints = API.v1
 		'chat.sendMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 1000, bypassPermissions: ['send-many-messages'] },
 			body: isChatSendMessageProps,
 			response: {
 				200: ajv.compile<{ message: IMessage }>({
@@ -1059,6 +1061,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadsListProps,
 			response: {
 				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
@@ -1187,6 +1190,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadMessages',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadMessagesProps,
 			response: {
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({

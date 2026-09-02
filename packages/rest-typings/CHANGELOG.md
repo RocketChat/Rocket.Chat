@@ -1,5 +1,108 @@
 # @rocket.chat/rest-typings
 
+## 8.8.0
+
+### Minor Changes
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+- ([#40737](https://github.com/RocketChat/Rocket.Chat/pull/40737)) Adds two new REST endpoints completing the Custom OAuth admin surface:
+
+  - `POST /v1/settings.removeCustomOAuth` body `{ name }` → removes all `Accounts_OAuth_Custom-<Name>-*` setting documents (replaces the deprecated `removeOAuthService` DDP method).
+  - `POST /v1/settings.refreshOAuthServices` (no body) → re-reads ServiceConfiguration entries from settings (replaces the deprecated `refreshOAuthService` DDP method).
+
+  Both endpoints reuse the `add-oauth-service` permission and `twoFactorRequired` gates that the DDP methods already enforced. `addOAuthService` was already covered by the existing `POST /v1/settings.addCustomOAuth` — its DDP method now also logs a deprecation. The three legacy DDP methods remain registered until 9.0.0.
+
+- ([#40734](https://github.com/RocketChat/Rocket.Chat/pull/40734)) Adds five new REST endpoints covering the TOTP 2FA flows that previously only existed as DDP methods:
+
+  - `POST /v1/users.enableTotp` → `{ secret, url }` (replaces `2fa:enable`)
+  - `POST /v1/users.disableTotp` body `{ code }` → `{ disabled }` (replaces `2fa:disable`)
+  - `POST /v1/users.validateTotp` body `{ code }` → `{ codes }` (replaces `2fa:validateTempToken`; also rotates non-PAT login tokens server-side)
+  - `POST /v1/users.regenerateTotpCodes` body `{ code }` → `{ codes }` (replaces `2fa:regenerateCodes`)
+  - `GET /v1/users.totpCodesRemaining` → `{ remaining }` (replaces `2fa:checkCodesRemaining`)
+
+  `users.enableTotp` and `users.validateTotp` require two-factor verification (`twoFactorRequired`) so enrolling a new TOTP device confirms the account owner's identity first — closing a 2FA-enrollment bypass where a hijacked session could register an attacker-controlled TOTP without verifying the existing 2FA. All five endpoints are rate-limited.
+
+  The legacy DDP methods stay registered with deprecation logs pointing at the new routes until 9.0.0 removes them.
+
+- ([#41715](https://github.com/RocketChat/Rocket.Chat/pull/41715)) Adds an optional `fromTs` query parameter to `chat.syncMessages`, so it can be used as a replacement for the deprecated `loadMissedMessages` DDP method. It bounds the sync window and must be used together with `lastUpdate`; sending it with cursor pagination is rejected instead of being ignored.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/core-typings@8.8.0
+  </details>
+
+## 8.8.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.8.0-rc.2
+  </details>
+
+## 8.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.8.0-rc.1
+  </details>
+
+## 8.8.0-rc.0
+
+### Minor Changes
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+- ([#40737](https://github.com/RocketChat/Rocket.Chat/pull/40737)) Adds two new REST endpoints completing the Custom OAuth admin surface:
+
+  - `POST /v1/settings.removeCustomOAuth` body `{ name }` → removes all `Accounts_OAuth_Custom-<Name>-*` setting documents (replaces the deprecated `removeOAuthService` DDP method).
+  - `POST /v1/settings.refreshOAuthServices` (no body) → re-reads ServiceConfiguration entries from settings (replaces the deprecated `refreshOAuthService` DDP method).
+
+  Both endpoints reuse the `add-oauth-service` permission and `twoFactorRequired` gates that the DDP methods already enforced. `addOAuthService` was already covered by the existing `POST /v1/settings.addCustomOAuth` — its DDP method now also logs a deprecation. The three legacy DDP methods remain registered until 9.0.0.
+
+- ([#40734](https://github.com/RocketChat/Rocket.Chat/pull/40734)) Adds five new REST endpoints covering the TOTP 2FA flows that previously only existed as DDP methods:
+
+  - `POST /v1/users.enableTotp` → `{ secret, url }` (replaces `2fa:enable`)
+  - `POST /v1/users.disableTotp` body `{ code }` → `{ disabled }` (replaces `2fa:disable`)
+  - `POST /v1/users.validateTotp` body `{ code }` → `{ codes }` (replaces `2fa:validateTempToken`; also rotates non-PAT login tokens server-side)
+  - `POST /v1/users.regenerateTotpCodes` body `{ code }` → `{ codes }` (replaces `2fa:regenerateCodes`)
+  - `GET /v1/users.totpCodesRemaining` → `{ remaining }` (replaces `2fa:checkCodesRemaining`)
+
+  `users.enableTotp` and `users.validateTotp` require two-factor verification (`twoFactorRequired`) so enrolling a new TOTP device confirms the account owner's identity first — closing a 2FA-enrollment bypass where a hijacked session could register an attacker-controlled TOTP without verifying the existing 2FA. All five endpoints are rate-limited.
+
+  The legacy DDP methods stay registered with deprecation logs pointing at the new routes until 9.0.0 removes them.
+
+- ([#41715](https://github.com/RocketChat/Rocket.Chat/pull/41715)) Adds an optional `fromTs` query parameter to `chat.syncMessages`, so it can be used as a replacement for the deprecated `loadMissedMessages` DDP method. It bounds the sync window and must be used together with `lastUpdate`; sending it with cursor pagination is rejected instead of being ignored.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/message-parser@0.32.0
+  - @rocket.chat/ui-kit@1.1.0
+  </details>
+
+## 8.7.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.7.1
+  </details>
+
 ## 8.7.0
 
 ### Minor Changes

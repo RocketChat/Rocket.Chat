@@ -350,28 +350,25 @@ class RoomHistoryManagerClass extends Emitter {
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
 
-		this.clear(message.rid);
-
 		if (!result) {
 			this.updateRoom(message.rid, { isLoading: false });
+			if (!this.isLoaded(message.rid)) {
+				await this.getMore(message.rid);
+			}
 			return;
 		}
-		const { messages = [] } = result;
 
-		if (messages.length > 0) {
-			room.oldestTs = messages[messages.length - 1].ts;
-		}
+		this.clear(message.rid);
+		this.updateRoom(message.rid, { isLoading: true });
 
 		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		this.emit('loaded-messages');
-		this.updateRoom(message.rid, { isLoading: false });
 
-		if (!room.loaded) {
-			room.loaded = 0;
-		}
-		room.loaded += result.messages.length;
 		this.updateRoom(message.rid, {
+			isLoading: false,
+			oldestTs: result.messages.at(-1)?.ts,
+			loaded: (room.loaded ?? 0) + result.messages.length,
 			hasMore: result.moreBefore,
 			hasMoreNext: result.moreAfter,
 		});

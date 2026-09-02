@@ -41,6 +41,10 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
+					if (clientHeight === 0) {
+						return;
+					}
+
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
 					const hasMore = RoomHistoryManager.hasMore(rid);

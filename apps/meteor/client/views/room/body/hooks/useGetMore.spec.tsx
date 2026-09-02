@@ -66,6 +66,44 @@ describe('useGetMore', () => {
 		});
 	});
 
+	it('should not call getMore when the container has no size (hidden behind the contextual bar)', async () => {
+		const root = mockAppRoot();
+
+		const Test = () => {
+			const [atBottom] = useState(false);
+			const { innerRef } = useGetMore('room-id', atBottom);
+			return (
+				<div style={{ display: 'none' }}>
+					<div ref={innerRef as any} style={{ height: '100px', overflowY: 'scroll' }} data-testid='scrollable-element'>
+						<div style={{ height: '800px' }}></div>
+					</div>
+				</div>
+			);
+		};
+		(RoomHistoryManager.isLoading as jest.Mock).mockReturnValue(false);
+		(RoomHistoryManager.hasMore as jest.Mock).mockReturnValue(true);
+		(RoomHistoryManager.hasMoreNext as jest.Mock).mockReturnValue(false);
+		(RoomHistoryManager.getMore as jest.Mock).mockClear();
+
+		(getBoundingClientRect as jest.Mock).mockReturnValue({
+			scrollTop: 0,
+			clientHeight: 0,
+			scrollHeight: 0,
+		});
+
+		render(<Test />, {
+			wrapper: root.build(),
+		});
+
+		const scrollableElement = screen.getByTestId('scrollable-element');
+		scrollableElement.dispatchEvent(new Event('wheel'));
+		scrollableElement.dispatchEvent(new Event('scroll'));
+
+		await new Promise((resolve) => setTimeout(resolve, 150));
+
+		expect(RoomHistoryManager.getMore).not.toHaveBeenCalled();
+	});
+
 	it('should call getMoreNext when scrolling near bottom and hasMoreNext is true', () => {
 		const root = mockAppRoot();
 		(RoomHistoryManager.isLoading as jest.Mock).mockReturnValue(false);
