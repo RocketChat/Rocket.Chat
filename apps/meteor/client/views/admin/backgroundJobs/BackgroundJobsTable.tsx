@@ -68,6 +68,7 @@ const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProp
 		router.navigate({
 			name: 'admin-background-jobs',
 			params: {
+				tab,
 				context: 'info',
 				id: jobName,
 			},

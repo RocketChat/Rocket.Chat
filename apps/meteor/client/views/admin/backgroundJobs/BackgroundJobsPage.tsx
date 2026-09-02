@@ -30,9 +30,9 @@ const BackgroundJobsPage = () => {
 	const handleClose = useCallback(() => {
 		router.navigate({
 			name: 'admin-background-jobs',
-			params: {},
+			params: { tab },
 		});
-	}, [router]);
+	}, [router, tab]);
 
 	const handleTabChange = (nextTab: BackgroundJobsTab): void => {
 		router.navigate({
