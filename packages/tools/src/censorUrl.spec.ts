@@ -13,6 +13,24 @@ describe('censorUrl', () => {
 		expect(censorUrl(input)).toBe('/path/to/resource?query=*Redacted*&access_token=*Redacted*&foo=bar');
 	});
 
+	it('redacts path-relative URLs without a leading slash', () => {
+		expect(censorUrl('users?token=secret')).toBe('users?token=*Redacted*');
+		expect(censorUrl('next?token=secret')).toBe('next?token=*Redacted*');
+		expect(censorUrl('api/v1/users?token=secret&foo=bar')).toBe('api/v1/users?token=*Redacted*&foo=bar');
+	});
+
+	it('redacts and preserves protocol-relative URLs', () => {
+		expect(censorUrl('//example.com/path?token=secret')).toBe('//example.com/path?token=*Redacted*');
+		expect(censorUrl('//user:pass@example.com/path?token=secret')).toBe(
+			'//*Redacted*:*Redacted*@example.com/path?token=*Redacted*',
+		);
+	});
+
+	it('redacts and preserves dot-relative URLs', () => {
+		expect(censorUrl('./users?token=secret')).toBe('./users?token=*Redacted*');
+		expect(censorUrl('../../users?token=secret&foo=bar')).toBe('../../users?token=*Redacted*&foo=bar');
+	});
+
 	it('preserves non-sensitive relative URLs without modification', () => {
 		const input = '/path/to/resource?foo=bar&page=2';
 
