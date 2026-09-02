@@ -52,5 +52,17 @@ declare module 'meteor/oauth' {
 		function sealSecret(secret: string): string;
 
 		function _addValuesToQueryParams(params: Record<string, any>): URLSearchParams;
+
+		interface OAuthBinding {
+			accessToken: string;
+			accessTokenSecret: string;
+		}
+
+		function _queryParamsWithAuthTokenUrl(
+			url: string,
+			oauthBinding: OAuthBinding,
+			params: Record<string, any>,
+			validParams: string[],
+		): string;
 	}
 }
