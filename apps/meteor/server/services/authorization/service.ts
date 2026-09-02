@@ -106,27 +106,28 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.canAccessRoom(room, { _id: user });
 	}
 
-	async canAccessRoomIds(rids: IRoom['_id'][], uid: IUser['_id']): Promise<boolean> {
+	async canAccessRoomIds(rids: IRoom['_id'][], user: UserWithRoles): Promise<boolean> {
 		const uniqueRids = [...new Set(rids)];
 
 		if (!uniqueRids.length) {
-			return true;
+			return false;
 		}
 
-		const [user, rooms] = await Promise.all([
-			Users.findOneById(uid),
-			Rooms.findByIds<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(uniqueRids, {
-				projection: {
-					_id: 1,
-					t: 1,
-					teamId: 1,
-					prid: 1,
-					abacAttributes: 1,
-				},
-			}).toArray(),
-		]);
+		if (!user) {
+			return false;
+		}
 
-		if (!user || rooms.length !== uniqueRids.length) {
+		const rooms = await Rooms.findByIds<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(uniqueRids, {
+			projection: {
+				_id: 1,
+				t: 1,
+				teamId: 1,
+				prid: 1,
+				abacAttributes: 1,
+			},
+		}).toArray();
+
+		if (rooms.length !== uniqueRids.length) {
 			return false;
 		}
 
