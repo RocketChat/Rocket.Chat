@@ -1,7 +1,7 @@
 # JSON-RPC bridge benchmark
 
-Measures `jsonrpc-lite@2.2.0` against the in-house JSON-RPC types on the traffic
-the Apps-Engine bridge really carries.
+Measures three pipelines against each other on the traffic the Apps-Engine
+bridge really carries.
 
 ```bash
 yarn workspace @rocket.chat/apps bench:jsonrpc
@@ -9,18 +9,33 @@ yarn workspace @rocket.chat/apps bench:jsonrpc
 
 ## What it compares
 
-Both contenders cover the same three steps of a message's life, so neither gets
-a head start:
+| contender          | types           | wire form                                   | receive                                    |
+| ------------------ | --------------- | ------------------------------------------- | ------------------------------------------ |
+| `jsonrpc-lite`     | `jsonrpc-lite`  | plain msgpack map of the object's properties | decode, then `parseObject()` to rebuild and re-validate |
+| `in-house, no ext` | in-house        | plain msgpack map of the object's properties | decode, then `hydrate()` to rebuild the class |
+| `in-house`         | in-house        | positional tuple behind the codec extension  | decode; the envelope class comes back      |
 
-| step         | `jsonrpc-lite`                                                 | in-house                                       |
-| ------------ | -------------------------------------------------------------- | ---------------------------------------------- |
-| **build**    | factory call, validated with a throwaway `JSON.stringify`        | factory call, no validation                    |
-| **encode**   | msgpack the object as a plain map of its properties              | msgpack through the JSON-RPC codec extension   |
-| **receive**  | msgpack decode, then `parseObject()` to rebuild and re-validate  | msgpack decode; the envelope class comes back  |
+The first two rows differ only in the types, so their gap is what the in-house
+types bought. The last two rows differ only in the codec extension, so their gap
+is what the extension buys - that is the `vs in-house, no ext` column.
 
-`legacyCodec.ts` is a verbatim copy of `src/server/runtime/base/codec.ts` at
-`origin/develop`, so the "before" column is the real pipeline, not an
-approximation of it.
+All three cover the same three steps of a message's life, so none gets a head
+start:
+
+| step        | `jsonrpc-lite`                                  | in-house                    |
+| ----------- | ----------------------------------------------- | --------------------------- |
+| **build**   | factory call, validated with a throwaway `JSON.stringify` | factory call, no validation |
+| **encode**  | `Encoder#encode`                                | `Encoder#encode`            |
+| **receive** | `Decoder#decode` plus the categorization step above | same                    |
+
+`noExtensionCodec.ts` is a verbatim copy of `src/server/runtime/base/codec.ts`
+at `origin/develop`, so the two "no extension" columns run the real pre-change
+codec, not an approximation of it.
+
+`hydrate()` in `contenders.ts` is the cheapest categorization that still returns
+the same instances: one field test per branch, no validation, no copy of
+`params`. It is deliberately generous to the no-extension side. What the
+extension does not beat there, it does not beat at all.
 
 ## The corpus
 
@@ -29,24 +44,30 @@ with the real `IParseAppPackageResult` of the test app under
 `tests/test-data/apps/`, `bridges:*` requests as `bridgeCall()` emits them, the
 `{ value, logs }` result envelope, a `log` notification, an error carrying its
 log entries, and a 64 KiB upload. Message size on this bridge spans three orders
-of magnitude, and the two implementations do not rank the same at both ends, so
-the report is per fixture rather than one average.
+of magnitude, and the implementations do not rank the same at both ends, so the
+report is per fixture rather than one average.
 
 ## Reading the report
 
-- **Correctness** runs first. Every fixture must come out of both pipelines
+- **Correctness** runs first. Every fixture must come out of all three pipelines
   field-for-field identical, or the benchmark stops.
 - **Wire size** is deterministic: bytes msgpack writes to the pipe.
-- **Speed** is ns per message, the median of `BENCH_SAMPLES` samples. `speedup`
-  is `jsonrpc-lite / in-house`, so above `1.00x` means the in-house types win.
+- **Speed** is ns per message, the median of `BENCH_SAMPLES` samples.
 - **GC pressure** counts collections and total pause time per million messages.
   It is process-wide, so read it as a trend across fixtures, not an exact figure.
 - **Retained heap** adds `external` to `heapUsed`, because a decoded `Buffer`
   lives off the JS heap and would otherwise not show up at all.
 
+Every table carries one value column per contender, then one `vs` column per
+other contender. A `vs` column always reads *the last contender against that
+column*: on the speed tables it is a speedup, so above `1.00x` means `in-house`
+wins; everywhere else it is a signed percentage, so below `0%` means `in-house`
+uses less.
+
 Environment overrides: `BENCH_SAMPLES` (default 7), `BENCH_TARGET_MS` (default
-50, the time one sample should take), and `BENCH_FILTER` to run a subset by
-fixture name.
+50, the time one sample should take), `BENCH_FILTER` to run a subset by fixture
+name, and `BENCH_CONTENDERS` to run a subset of the pipelines by name, e.g.
+`BENCH_CONTENDERS='no ext,in-house'` to answer only the extension question.
 
 ## The `jsonrpc-lite` dependency
 
