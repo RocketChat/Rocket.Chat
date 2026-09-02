@@ -6,6 +6,12 @@ apps/meteor/server/api/v1/rooms.ts
   s_fe5d9308f20250::t_c19786057864c4 1805
 packages/model-typings/src/models/IMessagesModel.ts
   s_fe5d9308f20250::t_29d77c341367b3 293-297
+packages/core-typings/package.json
+  h_4c386397e672f4 5-9
+packages/ddp-client/package.json
+  h_4c386397e672f4 4-8
+packages/rest-typings/package.json
+  h_4c386397e672f4 4-8
 ---
 {
   "schema_version": "authorship/3.0.0",
