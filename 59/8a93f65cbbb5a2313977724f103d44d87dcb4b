@@ -1,0 +1,27 @@
+apps/meteor/server/meteor-methods/messages/getMessages.ts
+  s_2c32790c4a8b21::t_a02af7a18872b9 30-33
+apps/meteor/server/api/v1/chat.ts
+  h_4c386397e672f4 29,1499,1507
+  s_2c32790c4a8b21::t_774adcd319e0f9 1506,1508
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "598a93f65cbbb5a2313977724f103d44d87dcb4b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_2c32790c4a8b21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7f26b5c-eeab-4df8-9f25-d6a62a50f081",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
