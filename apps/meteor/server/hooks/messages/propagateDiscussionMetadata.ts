@@ -2,6 +2,7 @@ import type { MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../lib/callbacks';
+import { SystemLogger } from '../../lib/logger/system';
 import {
 	expandHiddenSystemMessageTypes,
 	incrementAndNotifyParentRoomWithParentMessage,
@@ -136,19 +137,23 @@ settings.onReady(() => {
 settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
 	const previousTypes = hiddenSystemMessageTypes;
 	const currentTypes = expandHiddenSystemMessageTypes(value);
-	hiddenSystemMessageTypes = currentTypes;
 
 	const changedTypes = previousTypes && [...previousTypes.symmetricDifference(currentTypes)];
 	if (!changedTypes?.length) {
+		hiddenSystemMessageTypes = currentTypes;
 		return;
 	}
 
-	const rids = await Messages.findDiscussionRoomIdsContainingTypes(changedTypes);
-	if (!rids.length) {
-		return;
-	}
+	try {
+		const rids = await Messages.findDiscussionRoomIdsContainingTypes(changedTypes);
 
-	for await (const room of Rooms.findDiscussionsByIds(rids, { projection: { msgs: 1, lm: 1, sysMes: 1 } })) {
-		await updateAndNotifyParentRoomWithParentMessage(room);
+		for await (const room of Rooms.findDiscussionsByIds(rids, { projection: { msgs: 1, lm: 1, sysMes: 1 } })) {
+			await updateAndNotifyParentRoomWithParentMessage(room);
+		}
+
+		// only committed after a successful refresh so the next change retries any failed diff
+		hiddenSystemMessageTypes = currentTypes;
+	} catch (err) {
+		SystemLogger.error({ msg: 'Failed to refresh discussion message counts after hidden system messages change', err });
 	}
 });
