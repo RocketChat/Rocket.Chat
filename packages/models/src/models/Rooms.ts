@@ -1165,6 +1165,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<T, O>({ _id: { $in: roomIds }, prid: { $exists: true } }, options);
 	}
 
+	findOneDiscussionById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ _id, prid: { $exists: true } }, options);
+	}
+
 	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		type: IRoom['t'],
 		options?: O,

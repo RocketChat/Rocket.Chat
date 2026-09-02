@@ -3,33 +3,32 @@ import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/cached';
 import { notifyOnMessageChange } from '../../notifyListener';
+import { expandSystemMessageOptions, shouldHideSystemMessage } from '../../systemMessage/hideSystemMessage';
 
 type DiscussionRoom = Pick<IRoom, '_id' | 'msgs' | 'lm' | 'sysMes'>;
 
 /**
- * `mute_unmute` is a single option covering two different message types, and `rm` is filtered
- * out because it's already discounted when the message is deleted.
+ * `rm` is excluded from the discount because it's already discounted when the message is deleted.
  */
-export const expandHiddenSystemMessageTypes = (types: unknown): Set<MessageTypesValues> =>
-	new Set(
-		(Array.isArray(types) ? (types as MessageTypesValues[]) : [])
-			.flatMap<MessageTypesValues>((type) => (type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type]))
-			.filter((type) => type !== 'rm'),
-	);
+export const expandHiddenSystemMessageTypes = (types: unknown): Set<MessageTypesValues> => {
+	const expanded = expandSystemMessageOptions(Array.isArray(types) ? (types as MessageTypesValues[]) : []);
+	expanded.delete('rm');
+
+	return expanded;
+};
 
 /**
  * Both the system messages hidden globally and the ones hidden on the room itself are
  * filtered out from the room history, so the count has to consider both of them.
  */
-const getHiddenTypesToDiscount = (room: Pick<IRoom, 'sysMes'>): MessageTypesValues[] => {
+const getRawHiddenTypes = (room: Pick<IRoom, 'sysMes'>): MessageTypesValues[] => {
 	const globalHiddenTypes = settings.get<MessageTypesValues[]>('Hide_System_Messages');
-	const roomHiddenTypes = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	return [...expandHiddenSystemMessageTypes([...(Array.isArray(globalHiddenTypes) ? globalHiddenTypes : []), ...roomHiddenTypes])];
+	return [...(Array.isArray(globalHiddenTypes) ? globalHiddenTypes : []), ...(Array.isArray(room.sysMes) ? room.sysMes : [])];
 };
 
 const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number> => {
-	const hiddenMessageTypes = getHiddenTypesToDiscount(room);
+	const hiddenMessageTypes = [...expandHiddenSystemMessageTypes(getRawHiddenTypes(room))];
 
 	if (!hiddenMessageTypes.length) {
 		return room.msgs;
@@ -66,7 +65,7 @@ export const incrementAndNotifyParentRoomWithParentMessage = async (
 	messageType: IMessage['t'],
 	countDelta: number,
 ): Promise<void> => {
-	const isHidden = !!messageType && getHiddenTypesToDiscount(room).includes(messageType);
+	const isHidden = !!messageType && shouldHideSystemMessage(messageType, getRawHiddenTypes(room));
 
 	notifyParentMessage(await Messages.incDiscussionMetadata(room, isHidden ? 0 : countDelta));
 };

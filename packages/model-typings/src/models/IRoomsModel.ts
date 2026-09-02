@@ -301,6 +301,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		rids: string[],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findOneDiscussionById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		type: IRoom['t'],
 		options?: O,
