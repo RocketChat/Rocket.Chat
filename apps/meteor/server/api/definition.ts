@@ -8,6 +8,14 @@ import type { ValidateFunction } from 'ajv';
 import type { ITwoFactorOptions } from '../lib/2fa/code';
 import type { DeprecationLoggerNextPlannedVersion } from '../lib/deprecationWarningLogger';
 
+export type RateLimiterSubject = 'ip' | 'user';
+
+export type RateLimiterOptions = {
+	numRequestsAllowed?: number;
+	intervalTimeInMS?: number;
+	per?: RateLimiterSubject;
+};
+
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
 export type RedirectStatusCodes = Exclude<Range<308>, Range<300>>;
@@ -112,12 +120,7 @@ export type SharedOptions<TMethod extends string> = (
 			authRequired?: boolean;
 			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 			queryOperations?: string[];
 			queryFields?: string[];
 	  }
@@ -132,12 +135,7 @@ export type SharedOptions<TMethod extends string> = (
 			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 
 			queryOperations?: string[];
 			queryFields?: string[];

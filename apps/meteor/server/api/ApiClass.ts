@@ -13,7 +13,6 @@ import { DDP } from 'meteor/ddp';
 // eslint-disable-next-line import-x/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 // eslint-disable-next-line import-x/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
@@ -38,10 +37,12 @@ import type {
 	GenericRouteExecutionContext,
 	TooManyRequestsResult,
 	SuccessStatusCodes,
+	RateLimiterOptions,
 } from './definition';
 import { getUserInfo } from './lib/getUserInfo';
 import { parseJsonQuery } from './lib/parseJsonQuery';
-import type { APIActionContext } from './router';
+import { buildRateLimiterRule } from './rateLimiterKey';
+import type { APIActionContext, HonoContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { isObject } from '../../lib/utils/isObject';
 import { checkCodeForUser } from '../lib/2fa/code';
@@ -51,6 +52,7 @@ import { notifyOnUserChangeAsync } from '../lib/notifyListener';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from './v1/middlewares/permissions';
+import { rateLimiterMiddleware, type ResolvedRateLimiter } from './v1/middlewares/rateLimiter';
 import { license } from '../../ee/server/api/v1/middlewares/license';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
@@ -126,11 +128,6 @@ interface IAPIDefaultFieldsToExclude {
 	settings: number;
 	inviteToken: number;
 }
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-};
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -415,45 +412,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return rateLimiterDictionary[route];
 	}
 
-	protected async shouldVerifyRateLimit(route: string, userId?: string): Promise<boolean> {
-		return (
-			rateLimiterDictionary.hasOwnProperty(route) &&
-			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
-		);
+	public resolveRateLimiter(_c: HonoContext, route: string, method: string): ResolvedRateLimiter | undefined {
+		const key = this.getFullRouteName(route, method);
+		const entry = rateLimiterDictionary[key];
+
+		return entry && { key, ...entry };
 	}
 
-	protected async enforceRateLimit(
-		objectForRateLimitMatch: RateLimiterOptionsToCheck,
-		_: any,
-		response: Response,
-		userId?: string,
-	): Promise<void> {
-		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
-			return;
-		}
-
-		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
-		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.headers.set(
-			'X-RateLimit-Limit',
-			String(rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? ''),
-		);
-		response.headers.set('X-RateLimit-Remaining', String(attemptResult.numInvocationsLeft));
-		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
-
-		if (!attemptResult.allowed) {
-			throw new Meteor.Error(
-				'error-too-many-requests',
-				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
-				{
-					timeToReset: attemptResult.timeToReset,
-					seconds: timeToResetAttempsInSeconds,
-				},
-			);
-		}
+	public async canBypassRateLimit(userId: string): Promise<boolean> {
+		return hasPermissionAsync(userId, 'api-bypass-rate-limit');
 	}
 
 	public registerRateLimiterForRoute({
@@ -470,24 +437,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 
 		this.addRateLimiterRuleForRoutes({ routes: [route], rateLimiterOptions, endpoints: methods });
-	}
-
-	public enforceRateLimitForRoute({
-		route,
-		method,
-		request,
-		response,
-		requestIp,
-		userId,
-	}: {
-		route: string;
-		method: string;
-		request: Request;
-		response: Response;
-		requestIp: string;
-		userId?: string;
-	}): Promise<void> {
-		return this.enforceRateLimit({ IPAddr: requestIp, route: this.getFullRouteName(route, method) }, request, response, userId);
 	}
 
 	public reloadRoutesToRefreshRateLimiter(): void {
@@ -530,12 +479,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					rateLimiter: new RateLimiter(),
 					options: rateLimiterOptions,
 				};
-				const rateLimitRule = {
-					IPAddr: (input: any) => input,
-					route,
-				};
 				rateLimiterDictionary[route].rateLimiter.addRule(
-					rateLimitRule,
+					buildRateLimiterRule(route, rateLimiterOptions.per),
 					rateLimiterOptions.numRequestsAllowed as number,
 					rateLimiterOptions.intervalTimeInMS as number,
 				);
@@ -879,11 +824,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						const authToken = this.request.headers.get('x-auth-token');
 						this.token = Accounts._hashLoginToken(String(authToken))!;
 
-						const objectForRateLimitMatch = {
-							IPAddr: this.requestIp,
-							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
-						};
-
 						let result;
 
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
@@ -893,8 +833,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							if (options.deprecation) {
 								parseDeprecation(this, options.deprecation);
 							}
-
-							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 							if (_options.validateParams) {
 								const requestMethod = this.request.method as Method;
@@ -930,8 +868,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
-									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
 										if (applyBreakingChanges) {
@@ -964,6 +900,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						authOrAnonRequired: options.authOrAnonRequired,
 						userWithoutUsername: options.userWithoutUsername,
 						logger,
+					}),
+					rateLimiterMiddleware({
+						settings,
+						resolve: (c) => api.resolveRateLimiter(c, route, method.toLowerCase()),
+						canBypass: (userId) => api.canBypassRateLimit(userId),
 					}),
 					permissionsMiddleware(_options as TypedOptions),
 					license(_options as TypedOptions, License),
