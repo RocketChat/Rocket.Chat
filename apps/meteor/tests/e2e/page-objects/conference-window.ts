@@ -28,9 +28,34 @@ export class ConferenceWindow {
 		await action();
 
 		const opened = await opening;
+		const window = new ConferenceWindow(opened);
+		window.recordDdp();
 		await opened.waitForLoadState('domcontentloaded');
 
-		return new ConferenceWindow(opened);
+		return window;
+	}
+
+	/**
+	 * The DDP frames this window sends and receives, for a test that needs to say *why* the window did not
+	 * react — a subscription refused, or one never asked for, looks exactly like one that simply went quiet.
+	 *
+	 * Recorded from the moment the window is handed over, since the subscription it is opened for is made during
+	 * load. Traces do not carry WebSocket frames, so a test that wants them has to keep them itself.
+	 */
+	readonly ddp: string[] = [];
+
+	private recordDdp(): void {
+		this.page.on('websocket', (ws) => {
+			this.ddp.push(`>>> open ${ws.url()}`);
+			ws.on('framesent', ({ payload }) => this.ddp.push(`>>> ${String(payload).slice(0, 400)}`));
+			ws.on('framereceived', ({ payload }) => this.ddp.push(`<<< ${String(payload).slice(0, 400)}`));
+			ws.on('close', () => this.ddp.push('>>> closed'));
+		});
+	}
+
+	/** The frames that mention this call's stream, which is the handful worth reading. */
+	streamFrames(): string[] {
+		return this.ddp.filter((frame) => frame.includes('video-conference'));
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
