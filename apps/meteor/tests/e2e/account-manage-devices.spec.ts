@@ -5,6 +5,7 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
 import { Login } from './page-objects';
+import { AccountSectionsHref } from './page-objects/account';
 import { AccountManageDevices } from './page-objects/account.manage-devices';
 import { test, expect } from './utils/test';
 
@@ -47,9 +48,8 @@ test.describe('Account Manage Devices Page', () => {
 		const accountDevices2 = new AccountManageDevices(page2);
 
 		await test.step('should login same user in another session', async () => {
-			await loginPage2.goto();
+			await loginPage2.goto(AccountSectionsHref.manageDevices);
 			await loginPage2.login('user1', 'password');
-			await accountDevices2.goto();
 			await expect(accountDevices2.pageContent).toBeVisible();
 		});
 

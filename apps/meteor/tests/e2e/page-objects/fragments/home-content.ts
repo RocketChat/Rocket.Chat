@@ -571,7 +571,7 @@ export class HomeContent {
 	}
 
 	get btnJoinChannel(): Locator {
-		return this.page.getByRole('main').getByRole('button', { name: 'Join channel' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Join channel', exact: true });
 	}
 
 	async waitForChannel(): Promise<void> {
