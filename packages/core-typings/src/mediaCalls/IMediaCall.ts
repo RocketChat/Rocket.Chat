@@ -32,6 +32,25 @@ export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActor
 /* The list of call states that may actually be stored on the collection is smaller than the list of call states that may be computed by the client class */
 type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
+/**
+ * What refused a call, and what it said. Nothing ever reads the words without the app that
+ * wrote them, so this is one type: the two members are told apart by `'key' in record`.
+ *
+ * `appName` is the app's name as of the moment it acted; an uninstalled app cannot be asked
+ * for it. Either member carries the words in `text`. A record that names no key carries only
+ * `text`. One that names a key carries `text` too: the app's own wording in the workspace's
+ * default language, captured while the app was still installed, read as a fallback once the app
+ * is gone. Either way it is capped at 200 characters.
+ *
+ * `ns` is always `app-<appId>` today and so derivable from the field beside it. It is stored
+ * anyway because this record has to still read years after the app is gone: a stored
+ * namespace survives a change to that convention, a derived one does not.
+ */
+export type CallPreventionRecord = { appId: string; appName: string } & (
+	| { text: string }
+	| { text: string; key: string; ns: string; args?: Record<string, string | number> }
+);
+
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
@@ -66,6 +85,15 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	/** The party whose line was diverted at the SIP level (from the Diversion header) */
 	divertedBy?: MediaCallContact;
+
+	/**
+	 * Set only on a call an app refused. The call is `ended` from the moment it is written, so it
+	 * never rang and never connected.
+	 *
+	 * Anything that comes to count calls, bill for them or report on them has to exclude these:
+	 * the collection holds call attempts that got as far as routing, not calls that happened.
+	 */
+	preventedBy?: CallPreventionRecord;
 
 	uids: IUser['_id'][];
 
