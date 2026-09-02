@@ -1,0 +1,81 @@
+apps/meteor/server/api/v1/im.ts
+  ai_agent 30-31,556,559,600
+apps/meteor/client/navbar/NavBarSettingsToolbar/UserMenu/hooks/useStatusItems.tsx
+  ai_agent 78,80-82,89,96-98,186
+.changeset/presence-disable-workspace.md
+  ai_agent 1-5
+apps/meteor/server/meteor-methods/users/getUserStatusText.ts
+  ai_agent 5-6,24,26
+apps/meteor/server/api/v1/rooms.ts
+  ai_agent 65,1176
+packages/core-services/src/types/IStatusVisibilityService.ts
+  s_453d8d6e1aa7b9::t_24c4deafde84f9 3-14,16
+eslint.config.mjs
+  s_453d8d6e1aa7b9::t_276a86bc16282a 483-497
+apps/meteor/client/views/admin/customUserStatus/CustomUserStatusDisabledModal.tsx
+  ai_agent 4,16-19,22,28
+apps/meteor/client/views/admin/users/UsersTable/UsersTable.tsx
+  ai_agent 14,86-88,124-127,159
+apps/meteor/client/views/account/profile/AccountProfileForm.tsx
+  ai_agent 50-51,293-297
+apps/meteor/server/api/v1/groups.ts
+  ai_agent 44,1128,1133,1143,1301,1309
+apps/meteor/server/publications/spotlight.ts
+  ai_agent 7,70,72
+apps/meteor/server/api/v1/channels.ts
+  ai_agent 54,1663,1668,1678,1738,1744
+apps/meteor/server/api/v1/teams.ts
+  ai_agent 36-37,520,530,536-537
+apps/meteor/server/lib/statusVisibility/effectiveStatus.ts
+  ai_agent 5-16,21-31,34,37-40,42-55,57
+apps/meteor/ee/server/api/audit.ts
+  ai_agent 18,191,195,223
+apps/meteor/server/settings/accounts.ts
+  ai_agent 784-793
+apps/meteor/server/lib/statusVisibility/presenceScope.ts
+  ai_agent 1-16
+apps/meteor/client/views/admin/users/hooks/useChangePresenceDisabledAction.ts
+  ai_agent 2,18-19,34
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 1,19-20,35-38,50-52,55,57-62,66-71,75,79,117-118,121-130,138-141,173-178,180
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  ai_agent 10,41-43,71,80,83-94,105-107,110
+apps/meteor/server/lib/statusVisibility/hiddenUsers.ts
+  ai_agent 5-6,10-17,20,23-28,30-31
+apps/meteor/server/services/statusVisibility/service.spec.ts
+  ai_agent 2,9,30,40-43,51,56,66-67,74-75,81,87,133,166,173-175,182-183,193,200,208,217,263,274,278-321
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 6,11-15,24-42,63-66,76,80-83,94-95,97
+apps/meteor/server/lib/users/getFullUserData.ts
+  ai_agent 7-8,157,159
+packages/core-services/src/index.ts
+  s_453d8d6e1aa7b9::t_ad52104f0d50ca 210-211
+apps/meteor/server/meteor-methods/users/getUsersOfRoom.ts
+  ai_agent 10,56,61,69
+apps/meteor/server/lib/findUsersOfRoom.ts
+  ai_agent 9-10,15,25,31-32,35-36,58
+apps/meteor/server/api/v1/users.ts
+  ai_agent 53-54,790,792-802,862,921,925,1656,1663,1676,1685,1820,1822-1831,1836,2065,2068,2211-2212
+apps/meteor/server/lib/statusVisibility/effectiveStatus.spec.ts
+  ai_agent 5-9,13-16,20,26,30-49,54,58-65,70-71,75-78
+apps/meteor/server/lib/findUsersOfRoomOrderedByRole.ts
+  ai_agent 8-9,14,30,65,70
+packages/i18n/src/locales/en.i18n.json
+  s_453d8d6e1aa7b9::t_ccbbdd85f15f97 457-458,4406-4407
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fa80a8944f6563a09a51d2c6334ca8bee0f4a538",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

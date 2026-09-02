@@ -1,0 +1,18 @@
+apps/meteor/server/api/webhooks.ts
+  h_a14d455b9c5e4f 14,22,398-399,402,414-417,419-420
+apps/meteor/server/api/v1/middlewares/rateLimiter.ts
+  h_a14d455b9c5e4f 1-69
+apps/meteor/server/api/v1/middlewares/rateLimiter.spec.ts
+  h_a14d455b9c5e4f 1-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "252da557d8dc9a49d15151b768653cecf3742629",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
