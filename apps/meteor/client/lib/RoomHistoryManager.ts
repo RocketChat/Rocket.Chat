@@ -154,6 +154,12 @@ class RoomHistoryManagerClass extends Emitter {
 
 			await this.queue();
 
+			// A `clear` may have run while queued (jump to message, jump to recent): the window this
+			// cursor belonged to is gone, and a rebuild may already have installed a different one.
+			if (generation !== this.generation(rid)) {
+				return;
+			}
+
 			let ls = undefined;
 
 			const subscription = Subscriptions.state.find((record) => record.rid === rid);
@@ -258,8 +264,12 @@ class RoomHistoryManagerClass extends Emitter {
 
 			await this.queue();
 
-			// `clear` may have run while queued (jump to message, jump to recent):
-			// the window this cursor belonged to is gone, so there is nothing to page from.
+			// A `clear` may have run while queued (jump to message, jump to recent): the window this
+			// cursor belonged to is gone, and a rebuild may already have installed a different one.
+			if (generation !== this.generation(rid)) {
+				return;
+			}
+
 			const { cursorNext: next } = room;
 			if (!next) {
 				return;
@@ -275,8 +285,7 @@ class RoomHistoryManagerClass extends Emitter {
 				showThreadMessages: showThreadsInMainChannel,
 			});
 
-			// The queued-cursor check above only covers a `clear` that ran before dispatch;
-			// this one covers a `clear` that landed while the request was on the wire.
+			// Covers a `clear` that landed while the request was on the wire.
 			if (generation !== this.generation(rid)) {
 				return;
 			}
