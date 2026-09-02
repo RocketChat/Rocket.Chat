@@ -326,7 +326,7 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-empty-function': 'off',
-			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+			'@typescript-eslint/no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
 			'new-cap': 'off',
 		},
 	},
