@@ -14,7 +14,10 @@ import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type {
 	IMediaCallServer,
 	IMediaCallServerSettings,
+	MediaCallHooks,
 	MediaCallServerEvents,
+	PreCallCreatedHookParams,
+	PreCallCreatedHookResult,
 	VoipPushNotificationEventType,
 } from '../definition/IMediaCallServer';
 import { CallRejectedError } from '../definition/common';
@@ -34,6 +37,8 @@ export class MediaCallServer implements IMediaCallServer {
 	private signalProcessor: GlobalSignalProcessor;
 
 	private settings: IMediaCallServerSettings;
+
+	private hooks: MediaCallHooks = {};
 
 	public emitter: Emitter<MediaCallServerEvents>;
 
@@ -90,6 +95,7 @@ export class MediaCallServer implements IMediaCallServer {
 			await this.createCall(fullParams);
 		} catch (error) {
 			let rejectionReason: CallRejectedReason = 'unsupported';
+
 			if (error && typeof error === 'object' && error instanceof CallRejectedError) {
 				rejectionReason = error.callRejectedReason;
 			} else {
@@ -140,6 +146,22 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'Media Server Configuration' });
 		this.session.configure(settings);
 		this.settings = settings;
+	}
+
+	public setHooks(hooks: MediaCallHooks): void {
+		this.hooks = hooks;
+	}
+
+	/**
+	 * Runs the host's pre-call-created hook, if there is one. Errors are not caught:
+	 * a hook that fails to decide must not let the call through.
+	 */
+	public async runPreCallCreatedHook(params: PreCallCreatedHookParams): Promise<PreCallCreatedHookResult> {
+		if (!this.hooks.onPreCallCreated) {
+			return { prevented: false };
+		}
+
+		return this.hooks.onPreCallCreated(params);
 	}
 
 	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
