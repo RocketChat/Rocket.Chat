@@ -3,7 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { RefObject } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
-import { formattingButtons } from './messageBoxFormatting';
+import { formattingButtons, isLinePrefixButton } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { settings } from '../../../../client/lib/settings';
@@ -38,6 +38,7 @@ type ComposerAPICoreParams = {
 	setText: SetText;
 	focus: ComposerAPI['focus'];
 	prepareQuotedMessage?: (message: IMessage) => IMessage;
+	richText?: boolean;
 };
 
 type ComposerAPICore = Pick<
@@ -74,6 +75,7 @@ export const createComposerAPICore = ({
 	setText,
 	focus,
 	prepareQuotedMessage = (message) => message,
+	richText = false,
 }: ComposerAPICoreParams): ComposerAPICore => {
 	const emitter = new Emitter<{
 		quotedMessagesUpdate: void;
@@ -198,7 +200,9 @@ export const createComposerAPICore = ({
 		let actions: FormattingButton[] = [];
 
 		const recompute = (): void => {
-			actions = formattingButtons.filter(({ condition }) => !condition || condition());
+			actions = formattingButtons.filter(
+				(button) => (richText || !isLinePrefixButton(button)) && (!button.condition || button.condition()),
+			);
 			emitter.emit('formatting');
 		};
 		recompute();

@@ -81,6 +81,7 @@ export const createRichTextComposerAPI = (
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
+		richText: true,
 	});
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
