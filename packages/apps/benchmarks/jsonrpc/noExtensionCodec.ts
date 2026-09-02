@@ -3,11 +3,14 @@
  * verbatim copy of `src/server/runtime/base/codec.ts` at `origin/develop`, with
  * only the `SecureFields` import path adjusted for this folder.
  *
- * It has no JSON-RPC extension: a `jsonrpc-lite` message is encoded as a plain
- * msgpack map of its own properties (`jsonrpc`, `id`, `method`, `params`), and
- * comes back out of the decoder as a plain object that still has to go through
- * `jsonrpc.parseObject()`. That asymmetry is exactly what the benchmark
- * measures, so the copy must stay verbatim - do not "fix" it.
+ * It has no JSON-RPC extension: a message is encoded as a plain msgpack map of
+ * its own properties (`jsonrpc`, `id`, `method`, `params`), and comes back out
+ * of the decoder as a plain object that the receiver still has to categorize.
+ *
+ * Two contenders share it. `jsonrpc-lite` categorizes with `parseObject()`, and
+ * `in-house, no ext` with the small `hydrate()` in `contenders.ts`. That is what
+ * isolates the cost of the extension itself from the cost of the types. Keep the
+ * copy verbatim - do not "fix" it.
  */
 import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
 
