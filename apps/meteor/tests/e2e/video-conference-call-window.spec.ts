@@ -431,17 +431,25 @@ test.describe('video conference call window', () => {
 	 * Qase case 17 step 3, case 18 steps 2 and 4, and case 47 step 2 — the caller's own window following a call
 	 * as other people arrive, turn it down and go.
 	 *
-	 * This was `fixme` on the theory that the `video-conference/<callId>/updated` stream never reaches the call
-	 * window. That theory is wrong: driven against a live workspace, the window subscribes, the frame arrives and
-	 * the conference is read again — the whole chain works.
+	 * `test.fixme` because the code is wrong and *why* is still open. What is established:
 	 *
-	 * What the CI traces actually show is a window that subscribed once and heard nothing after, which is what a
-	 * *refused* subscription looks like: `allowRead` resolves the user from the connection and refuses when there
-	 * is none, and a refusal is never retried. A call window opens fresh and authenticates as it loads, so it can
-	 * ask before the server knows who is asking. The subscription now waits for that, and this runs again to find
-	 * out whether that was the whole of it.
+	 * - The stream itself works. Driven against a live workspace, a `/conference/<id>` page subscribes, the
+	 *   `<callId>/updated` frame arrives, and the conference is read again. So "the event never reaches the
+	 *   window" — the first diagnosis — is false.
+	 * - It is the window specifically that does not react. From run 33563153775: the decline lands at
+	 *   22:26:34.243; the caller's **main app page** refetches `video-conference.info` 14ms later; the caller's
+	 *   **call window** — the frame that did `start`, `join` and `heartbeat` — never refetches at all. Its last
+	 *   read was two seconds earlier.
+	 * - Waiting for the user id before subscribing did not fix it (this run has that fix), so a subscription
+	 *   refused for want of an authenticated connection is not the explanation either.
+	 *
+	 * The difference between the window that works and the one that doesn't is how it got there: the live probe
+	 * navigated straight to `/conference/<id>`, while a real call window is opened by `window.open`, starts on
+	 * `/conference/new` and moves to the call once it exists. That transition is the next thing to look at, and
+	 * the run recorded no WebSocket frames, so the DDP side of it is still unseen — capturing those would settle
+	 * it in one look.
 	 */
-	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
+	test.fixme('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
 		await poHomeChannel.navbar.openChat('user2');

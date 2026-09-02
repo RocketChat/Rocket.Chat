@@ -7,16 +7,20 @@ import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hook
 import PageLoading from '../root/PageLoading';
 
 /**
- * Whether this is somewhere to go, rather than something to run.
+ * Whether this is a call to open: an absolute `http(s)` address, and nothing else.
  *
  * The address arrives in a query parameter, so it is whatever the link that opened this page said — and this
- * page hands it to `window.open`. A `javascript:` or `data:` "URL" is not a location: it executes, in a window
- * we opened. Resolved against this origin, so a provider that answers with a relative address still passes —
- * refusing those would turn away calls that work today, which is a different question from this one.
+ * page hands it to `window.open`. Two things have to be turned away. A `javascript:` or `data:` "URL" is not a
+ * location at all: it executes, in a window we opened. And a *relative* one is not a call either — it resolves
+ * against this origin, so `?callUrl=/admin/settings` would open the workspace in a call window.
+ *
+ * Parsed with no base, which is what makes the second one fail. Our own conference URLs are built with
+ * `absoluteUrl`, so none of them is turned away; a provider that answers with a relative address reaches
+ * `handleOpenCall` from the room, not from a link into this page.
  */
-const isSafeCallUrl = (candidate: string): boolean => {
+const isCallUrl = (candidate: string): boolean => {
 	try {
-		const { protocol } = new URL(candidate, window.location.origin);
+		const { protocol } = new URL(candidate);
 		return protocol === 'https:' || protocol === 'http:';
 	} catch {
 		return false;
@@ -28,7 +32,7 @@ const getQueryParams = () => {
 	const urlParams = new URLSearchParams(queryString);
 	const callUrlParam = urlParams.get('callUrl');
 
-	return { callUrlParam: callUrlParam && isSafeCallUrl(callUrlParam) ? callUrlParam : null };
+	return { callUrlParam };
 };
 
 const ConferencePage = () => {
@@ -46,7 +50,12 @@ const ConferencePage = () => {
 			return;
 		}
 
-		handleOpenCall(callUrl);
+		// Only an address is opened; anything else is simply not opened. Either way this page has done its job
+		// and sends the user home, which is what it has always done once the call is out of its hands — an error
+		// screen here would be a new answer to a question that already had one.
+		if (isCallUrl(callUrl)) {
+			handleOpenCall(callUrl);
+		}
 
 		defaultRoute.push();
 	}, [setModal, defaultRoute, callUrl, handleOpenCall, userDisplayName]);
