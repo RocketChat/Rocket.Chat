@@ -108,7 +108,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<Box is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Box>
 					</Box>
 					<Field>
-						<FieldRow justifyContent='initial'>
+						<FieldRow justifyContent='start' style={{ gap: '8px' }}>
 							<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
 								<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
 									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
