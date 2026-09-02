@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import type {
+	CallPreventionRecord,
 	IMediaCall,
 	IMediaCallNegotiation,
 	MediaCallContact,
@@ -13,8 +14,10 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
+import { SIP_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import { CallRejectedError } from '../definition/common';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
@@ -26,8 +29,68 @@ export type CreateCallParams = InternalCallParams & {
 	calleeAgent: IMediaCallAgent;
 };
 
+/** Everything it takes to say which call attempt this is, before anyone knows whether it happens. */
+type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
+	createdBy: MediaCallContact;
+	service: IMediaCall['service'];
+};
+
+/**
+ * What is left of a call request once an app has refused it: the parties, what the request said,
+ * and what refused it. No agent, because neither side is ever going to be signalled.
+ */
+export type PreventedCallParams = CallIdentityParams & {
+	preventedBy: CallPreventionRecord;
+};
+
 // expiration checks by call id
 const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>();
+
+/**
+ * The fields that identify a call attempt, whether or not the call goes on to happen. What
+ * separates a call that rings from one an app refused is its lifecycle - the state, the expiration
+ * and the features - and none of that is here.
+ */
+function getCallIdentity(params: CallIdentityParams) {
+	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
+
+	return {
+		// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
+		_id: randomUUID(),
+		service,
+		kind: 'direct' as const,
+
+		createdBy,
+		createdAt: new Date(),
+
+		caller,
+		callee,
+
+		uids: [
+			// add actor ids to uids field if their type is 'user', to make it easy to identify any call an user was part of
+			...(caller.type === 'user' ? [caller.id] : []),
+			...(callee.type === 'user' ? [callee.id] : []),
+		],
+
+		...(requestedCallId && { callerRequestedId: requestedCallId }),
+		...(parentCallId && { parentCallId }),
+		...(divertedBy && { divertedBy }),
+	};
+}
+
+/**
+ * What the transport can carry is not up for negotiation: a call that goes through the PBX only
+ * ever has the features SIP supports, whoever asked for the others. The providers already clamp
+ * the request, but an app may change the feature list afterwards, so the clamp is applied again
+ * on the way out of the hook.
+ */
+function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
+	if (caller.type !== 'sip' && callee.type !== 'sip') {
+		return features;
+	}
+
+	return features.filter((feature) => SIP_CALL_FEATURES.includes(feature));
+}
 
 class MediaCallDirector {
 	public async hangup(call: IMediaCall, actorAgent: IMediaCallAgent, reason: CallHangupReason): Promise<void> {
@@ -47,14 +110,14 @@ class MediaCallDirector {
 	public async activate(call: IMediaCall, actorAgent: IMediaCallAgent): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.activateCall', role: actorAgent.role });
 
-		const stateResult = await MediaCalls.activateCallById(call._id, this.getNewExpirationTime());
-		if (!stateResult.modifiedCount) {
+		const activatedCall = await MediaCalls.activateCallById(call._id, this.getNewExpirationTime());
+		if (!activatedCall) {
 			return;
 		}
 
 		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
-		getMediaCallServer().emitter.emit('callActivated', { callId: call._id, uids: call.uids });
+		getMediaCallServer().emitter.emit('callActivated', { call: activatedCall });
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
 
@@ -71,20 +134,16 @@ class MediaCallDirector {
 
 		const { webrtcAnswer, ...acceptData } = data;
 
-		const stateResult = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
-		// If nothing changed, the call was no longer ringing
-		if (!stateResult.modifiedCount) {
+		const updatedCall = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
+		// Nothing came back: the call was no longer ringing
+		if (!updatedCall) {
 			return false;
 		}
 
 		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
-		const updatedCall = await MediaCalls.findOneById(call._id);
-		if (!updatedCall) {
-			logger.error({ msg: 'Unable to find up to date call data', callId: call._id });
-			return false;
-		}
+		getMediaCallServer().emitter.emit('callAccepted', { call: updatedCall });
 
 		await calleeAgent.onCallAccepted(updatedCall);
 		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
@@ -181,9 +240,48 @@ class MediaCallDirector {
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 	}
 
+	/**
+	 * Writes down a call an app refused. Nobody's device rang and no audio path was ever opened,
+	 * but the workspace still keeps a record of the attempt, and every surface that reports one
+	 * reads an `IMediaCall`.
+	 *
+	 * The row is inserted already ended and already expired, in one write. Every scan of the
+	 * collection filters on `ended: false`, so an unended row - or one ended in a second write
+	 * that fails - would leave both parties permanently unable to place or receive a call, with
+	 * no expiry to rescue them.
+	 */
+	private async recordPreventedCall(params: PreventedCallParams): Promise<void> {
+		const { preventedBy } = params;
+
+		const now = new Date();
+		const call: Omit<IMediaCall, '_updatedAt'> = {
+			...getCallIdentity(params),
+
+			state: 'hangup',
+
+			ended: true,
+			endedBy: { type: 'server', id: 'server' },
+			endedAt: now,
+			expiresAt: now,
+
+			// No feature was ever negotiated, and none may be used on a call that will not happen
+			features: [],
+
+			preventedBy,
+		};
+
+		logger.debug({ msg: 'recording a prevented call', call });
+
+		const insertResult = await MediaCalls.insertOne(call);
+		if (!insertResult.insertedId) {
+			throw new Error('failed-to-record-prevented-call');
+		}
+
+		getMediaCallServer().updateCallHistory({ callId: insertResult.insertedId });
+	}
+
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features, divertedBy } =
-			params;
+		const { caller, callee, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features, divertedBy } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -208,31 +306,40 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const createdBy = requestedBy || caller;
+
+		// Last look before the call exists: the host may still block it or change the requested features
+		const hookResult = await getMediaCallServer().runPreCallCreatedHook({ caller, callee, createdBy, features, parentCallId, divertedBy });
+
+		if (hookResult.prevented) {
+			logger.info({
+				msg: 'Call creation was prevented',
+				reason: hookResult.reason,
+				callerType: caller.type,
+				calleeType: callee.type,
+			});
+
+			// The record is a consequence of the refusal, not a part of it: the caller is told the
+			// same thing whether or not it lands.
+			await this.recordPreventedCall({
+				...params,
+				createdBy,
+				service,
+				preventedBy: hookResult.preventedBy,
+			}).catch((err) => logger.error({ msg: 'Failed to record a prevented call', err, callerType: caller.type, calleeType: callee.type }));
+
+			throw new CallRejectedError('prevented', hookResult.reason);
+		}
+
+		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
+		const allowedFeatures = requestedFeatures.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
 		const call: Omit<IMediaCall, '_updatedAt'> = {
-			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
-			_id: randomUUID(),
-			service,
-			kind: 'direct',
+			...getCallIdentity({ ...params, createdBy, service }),
+
 			state: 'none',
 
-			createdBy: requestedBy || caller,
-			createdAt: new Date(),
-
-			caller,
-			callee,
-
-			expiresAt: this.getNewExpirationTime(),
-			uids: [
-				// add actor ids to uids field if their type is 'user', to make it easy to identify any call an user was part of
-				...(caller.type === 'user' ? [caller.id] : []),
-				...(callee.type === 'user' ? [callee.id] : []),
-			],
 			ended: false,
-
-			...(requestedCallId && { callerRequestedId: requestedCallId }),
-			...(parentCallId && { parentCallId }),
-			...(divertedBy && { divertedBy }),
+			expiresAt: this.getNewExpirationTime(),
 
 			features: allowedFeatures,
 		};
@@ -387,7 +494,7 @@ class MediaCallDirector {
 			...(endedBy && { endedBy }),
 		};
 
-		const result = await MediaCalls.hangupCallById(callId, cleanedParams).catch((err) => {
+		const endedCall = await MediaCalls.hangupCallById(callId, cleanedParams).catch((err) => {
 			logger.error({
 				msg: 'Failed to hangup a call.',
 				callId,
@@ -398,17 +505,16 @@ class MediaCallDirector {
 			throw err;
 		});
 
-		const ended = Boolean(result.modifiedCount);
-		if (ended) {
-			logger.info({ msg: 'Call was flagged as ended', callId, reason: params?.reason });
-			getMediaCallServer().updateCallHistory({ callId });
-			const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'uids'>>(callId, { projection: { uids: 1 } });
-			if (call) {
-				getMediaCallServer().emitter.emit('callEnded', { callId, uids: call.uids });
-			}
+		// Nothing came back: the call had already ended
+		if (!endedCall) {
+			return false;
 		}
 
-		return ended;
+		logger.info({ msg: 'Call was flagged as ended', callId, reason: params?.reason });
+		getMediaCallServer().updateCallHistory({ callId });
+		getMediaCallServer().emitter.emit('callEnded', { call: endedCall });
+
+		return true;
 	}
 
 	public async hangupCallByIdAndNotifyAgents(
