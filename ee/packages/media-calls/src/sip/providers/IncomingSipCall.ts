@@ -6,6 +6,7 @@ import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
+import { CallRejectedError } from '../../definition/common';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -99,14 +100,24 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
-		const call = await mediaCallDirector.createCall({
-			caller,
-			callee,
-			callerAgent,
-			calleeAgent,
-			features: SIP_CALL_FEATURES,
-			...(divertedBy && { divertedBy }),
-		});
+		const call = await mediaCallDirector
+			.createCall({
+				caller,
+				callee,
+				callerAgent,
+				calleeAgent,
+				features: SIP_CALL_FEATURES,
+				...(divertedBy && { divertedBy }),
+			})
+			.catch((err) => {
+				// An incoming invite needs an answer, and only SipErrors are forwarded to it
+				if (err instanceof CallRejectedError) {
+					logger.debug({ msg: 'incoming sip call was rejected', reason: err.callRejectedReason });
+					throw new SipError(SipErrorCodes.FORBIDDEN, err.message);
+				}
+
+				throw err;
+			});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
