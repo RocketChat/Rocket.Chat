@@ -208,9 +208,9 @@ test.describe('video conference - join button visibility', () => {
 			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeHidden();
 
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(poHomeChannel.content.videoConfCallsPanel).toBeVisible();
-			await expect(poHomeChannel.content.videoConfCallsPanel).toHaveText(/You're unable to join/i);
-			await expect(poHomeChannel.content.btnJoinCallInCallsPanel).toBeHidden();
+			await expect(poHomeChannel.tabs.videoconfCalls.content).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.content).toHaveText(/You're unable to join/i);
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeHidden();
 		});
 
 		test('should show the Join button in the message block and the Calls panel when Accounts_AllowAnonymousRead is enabled', async ({
@@ -222,7 +222,7 @@ test.describe('video conference - join button visibility', () => {
 			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
 
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(poHomeChannel.content.btnJoinCallInCallsPanel).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeVisible();
 		});
 	});
 
@@ -242,7 +242,7 @@ test.describe('video conference - join button visibility', () => {
 			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
 
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(poHomeChannel.content.btnJoinCallInCallsPanel).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeVisible();
 		});
 	});
 
@@ -262,7 +262,7 @@ test.describe('video conference - join button visibility', () => {
 			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
 
 			await poHomeChannel.roomToolbar.openCalls();
-			await expect(poHomeChannel.content.btnJoinCallInCallsPanel).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeVisible();
 		});
 	});
 });

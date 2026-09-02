@@ -22,6 +22,7 @@ import {
 	UserInfoFlexTab,
 	FilesFlexTab,
 } from './fragments';
+import { VideoconfCallsFlexTab } from './fragments/flextabs/videoconf-calls-flextab';
 import { SidebarRail } from './fragments/siderail';
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
@@ -56,6 +57,7 @@ export class HomeChannel extends RoutedPage {
 		searchMessages: SearchMessagesFlexTab;
 		threads: ThreadsFlexTab;
 		files: FilesFlexTab;
+		videoconfCalls: VideoconfCallsFlexTab;
 	};
 
 	readonly roomToolbar: RoomToolbar;
@@ -92,6 +94,7 @@ export class HomeChannel extends RoutedPage {
 			searchMessages: new SearchMessagesFlexTab(page),
 			threads: new ThreadsFlexTab(page),
 			files: new FilesFlexTab(page),
+			videoconfCalls: new VideoconfCallsFlexTab(page),
 		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
