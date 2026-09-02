@@ -214,6 +214,8 @@ blocks. Paragraphs are `<span>` + a literal `'\n'`, never `<div>`/`<br>`.
 | QUOTE | ComposerMarkup | `> ` prefix per line, left border |
 | SPOILER_BLOCK | ComposerMarkup | tinted background |
 | CODE | ComposerCodeBlock | rebuilds the whole fenced block as text inside `<code>` |
+| UNORDERED_LIST | ComposerUnorderedList | inline `<span>` per item, a `-` marker plus a space kept as literal text and emphasized like `.rcx-message-body ul li:before` (bold, `0.5rem` inline-start padding) |
+| ORDERED_LIST | ComposerOrderedList | same shape, the marker is `${item.number}` followed by `.` and a space; the typed numbers are echoed, never renumbered, matching `ol li:before { content: attr(value) "." }` in the message list |
 | LINE_BREAK | ComposerMarkup | `\n` |
 | BOLD / ITALIC / STRIKE | ComposerBold/Italic/StrikeSpan | markers + `<strong>`/`<em>`/`<del>`; mutually nestable |
 | SPOILER | ComposerSpoilerSpan | |
@@ -262,8 +264,14 @@ order matters, `callbackRef` is what creates/releases the composer API and flush
    before the composer swaps
    ([message-composer-history.spec.ts:13](apps/meteor/tests/e2e/message-composer-history.spec.ts#L13)).
    Must be unskipped before GA.
-4. Unhandled AST nodes drop their text silently (section 9) — lists/tasks themselves are out of
-   scope, the silent loss is not.
+4. The marker a list item was typed with is not in the AST — `listItem()` keeps only the item's
+   inline value and, for ordered lists, `parseInt` of the digits — so the renderers rebuild it as
+   `-` / `${number}.`, each followed by a space. Anything else fails the text guard in
+   `renderComposerContent`, which drops the **whole** render back to plain text: an asterisk list
+   (`* x`), any spacing other than a single space (`-  x`, `-\tx`, `1.  x`), or a padded number
+   (`01. x`). Text survives, styling does not.
+   Fixing it means carrying the literal marker on `LIST_ITEM`, the way `HORIZONTAL_RULE`/`TABLE`
+   carry `fallback` source ranges. Tasks have the same gap and are still unstyled.
 5. Loose ends: `setMdLines` state is written and never read; commented-out `textareaRef`/`style`
    lines; `/* eslint-disable complexity */` at the top of `RichTextMessageBox`; `getCursorSelectionInfo`
    is exported but unused; the hint chip text `"Experiment: Real Time Composer"` is hardcoded English.
@@ -461,7 +469,8 @@ Everything in group A should be exercised on every build.
 
 | Symptom | Status |
 | --- | --- |
-| Typing a **list** (`- item`, `1. item`) or a **task** (`- [ ] x`) makes the text vanish as you type | Lists/tasks are out of scope; the renderer has no case for those AST nodes and drops them. Report the *text loss* only, once. |
+| An **asterisk list** (`* item`), a list with irregular spacing (`-  item`, `-\titem`, `1.  item`), or a padded number (`01. item`) shows no marker emphasis — and while it is on screen the rest of the message renders unstyled too | Known — the AST does not carry the typed marker, so the render fails the text guard and falls back to plain text for the whole composer. No text is lost. |
+| A **task** (`- [ ] x`) renders as plain text | Known — only unordered and ordered lists are styled so far. |
 | A message consisting of **only emoji** vanishes (parser emits `BIG_EMOJI`, renderer has no case) | Same root cause as above. |
 | With `Katex_Enabled`, typing KaTeX (`$$x^2$$`) vanishes; the KaTeX toolbar button inserts text that disappears | Same root cause. KaTeX is intentionally not rendered in the composer. |
 | Colour codes and timestamp syntax vanish | Same root cause. |

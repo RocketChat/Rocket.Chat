@@ -1,5 +1,6 @@
 import { createRichTextComposerAPI } from './createRichTextComposerAPI';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, toggleLinePrefix } from './toggleLinePrefix';
 
 jest.mock('../../../../client/lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
@@ -37,6 +38,8 @@ afterAll(() => {
 	}
 });
 
+const stripLineEnd = (text: string | null): string => (text ?? '').replace(/\n$/, '');
+
 const setupComposer = (initialValue: string, cursor: { start: number; end: number }) => {
 	const input = document.createElement('div');
 	input.contentEditable = 'true';
@@ -70,8 +73,17 @@ describe('RichText Composer API - replaceText', () => {
 
 		composer.replaceText('@john ', { start: 0, end: 2 });
 
-		expect(input.textContent).toBe('@john hello');
+		expect(stripLineEnd(input.textContent)).toBe('@john hello');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('renders multi-line markup instead of leaving it raw until the next keystroke', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 0 });
+
+		composer.replaceText('- one\n- two', { start: 0, end: 7 });
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- two');
+		expect(Array.from(input.querySelectorAll('span[style]')).map((span) => span.textContent)).toEqual(['- ', '- ']);
 	});
 
 	it('places the caret after a mention inserted in the middle', () => {
@@ -79,8 +91,179 @@ describe('RichText Composer API - replaceText', () => {
 
 		composer.replaceText('@john ', { start: 3, end: 5 });
 
-		expect(input.textContent).toBe('hi @john there');
+		expect(stripLineEnd(input.textContent)).toBe('hi @john there');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 9, selectionEnd: 9 });
+	});
+
+	it('leaves the caret after the replacement when the user had text selected', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		composer.replaceText('- one\n- two', { start: 0, end: 7 });
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 11, selectionEnd: 11 });
+	});
+});
+
+describe('RichText Composer API - toggleLinePrefix', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it.each([
+		['bullets', UNORDERED_LINE_PREFIX, '- one\n- two'],
+		['numbers', ORDERED_LINE_PREFIX, '1. one\n2. two'],
+	])('applies %s to every selected line and leaves the caret at the end of the block', (_label, prefix, expected) => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, prefix);
+
+		expect(stripLineEnd(input.innerText)).toBe(expected);
+		expect(getSelectionRange(input)).toEqual({ selectionStart: expected.length, selectionEnd: expected.length });
+	});
+
+	it('does not leave the caret inside the marker when the selection starts mid-line', () => {
+		const { composer, input } = setupComposer('one\ntwo\nthree', { start: 1, end: 9 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- two\n- three');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 19, selectionEnd: 19 });
+	});
+
+	it('keeps typing inside the list instead of sending it to the top of the composer', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+		composer.insertText('X');
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n- twoX');
+	});
+
+	it('strips the markers and leaves the caret at the end when toggling off', () => {
+		const { composer, input } = setupComposer('- one\n- two', { start: 0, end: 11 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+
+		expect(stripLineEnd(input.innerText)).toBe('one\ntwo');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 7, selectionEnd: 7 });
+	});
+});
+
+describe('RichText Composer API - insertNewLine', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it.each([
+		['carries the bullet onto the new line', '- one', '- one\n- '],
+		['carries the next number onto the new line', '1. one', '1. one\n2. '],
+	])('%s', (_label, initial, expected) => {
+		const { composer, input } = setupComposer(initial, { start: initial.length, end: initial.length });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe(expected);
+	});
+
+	it('inserts a bare newline outside a list', () => {
+		const { composer, input } = setupComposer('hello', { start: 5, end: 5 });
+
+		composer.insertNewLine();
+
+		expect(input.innerText).toBe('hello\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('leaves the caret after the inserted marker', () => {
+		const { composer, input } = setupComposer('- one', { start: 5, end: 5 });
+
+		composer.insertNewLine();
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 8, selectionEnd: 8 });
+	});
+
+	it('leaves the list when the item holds only a marker', () => {
+		const { composer, input } = setupComposer('- one\n- ', { start: 8, end: 8 });
+
+		composer.insertNewLine();
+
+		expect(input.innerText).toBe('- one\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 6, selectionEnd: 6 });
+	});
+
+	it('leaves the list when a numbered item holds only a marker', () => {
+		const { composer, input } = setupComposer('1. one\n2. ', { start: 10, end: 10 });
+
+		composer.insertNewLine();
+
+		expect(input.innerText).toBe('1. one\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 7, selectionEnd: 7 });
+	});
+
+	it('empties the composer when the only line is a bare marker', () => {
+		const { composer, input } = setupComposer('- ', { start: 2, end: 2 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('');
+	});
+
+	it('pushes a bare marker down instead of deleting it when the caret sits before it', () => {
+		const { composer, input } = setupComposer('- ', { start: 0, end: 0 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('\n- ');
+	});
+
+	it('keeps a bare marker on a later line when the caret sits at its start', () => {
+		const { composer, input } = setupComposer('- one\n- ', { start: 6, end: 6 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n\n- ');
+	});
+
+	it('continues rather than leaves when content sits after the caret', () => {
+		const { composer, input } = setupComposer('- text', { start: 2, end: 2 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- \n- text');
+	});
+
+	it('continues the list from the line the caret sits on', () => {
+		const { composer, input } = setupComposer('intro\n- one', { start: 11, end: 11 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('intro\n- one\n- ');
+	});
+
+	it('replaces the selected text instead of only dropping a bare marker', () => {
+		const { composer, input } = setupComposer('- \nabc', { start: 0, end: 6 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('');
+	});
+
+	it('replaces a selection that spans a bare marker mid-list', () => {
+		const { composer, input } = setupComposer('- one\n- \n- three', { start: 6, end: 16 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one\n');
+	});
+
+	it('continues the list from the selection start when text is selected', () => {
+		const { composer, input } = setupComposer('- one two', { start: 6, end: 9 });
+
+		composer.insertNewLine();
+
+		expect(stripLineEnd(input.innerText)).toBe('- one \n- ');
 	});
 });
 
