@@ -55,7 +55,7 @@ const waitForLdapConnection = () =>
 					expect(res.body).to.have.property('success', true);
 				});
 		},
-		{ retries: 20, delayMs: 250 },
+		{ delayMs: 1_000 },
 	);
 
 describe('LDAP', function () {
