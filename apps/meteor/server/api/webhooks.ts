@@ -4,7 +4,6 @@ import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
@@ -12,7 +11,7 @@ import { APIClass } from './ApiClass';
 import type { RateLimiterOptions } from './api';
 import { API, defaultRateLimiterOptions } from './api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from './definition';
-import type { APIActionContext } from './router';
+import type { APIActionContext, HonoContext } from './router';
 import { isPlainObject } from '../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { IsolatedVMScriptEngine } from '../lib/integrations/lib/isolated-vm/isolated-vm';
@@ -20,6 +19,7 @@ import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
 import { loggerMiddleware } from './v1/middlewares/logger';
 import { metricsMiddleware } from './v1/middlewares/metrics';
+import type { ResolvedRateLimiter } from './v1/middlewares/rateLimiter';
 import { tracerSpanMiddleware } from './v1/middlewares/tracer';
 import { incomingLogger, integrationLogger } from '../lib/integrations/logger';
 import type { WebhookResponseItem } from '../lib/messages/processWebhookMessage';
@@ -395,22 +395,11 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		);
 	}
 
-	override async shouldVerifyRateLimit(): Promise<boolean> {
-		return (
-			settings.get('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-		);
-	}
-
-	override async enforceRateLimit(
-		objectForRateLimitMatch: RateLimiterOptionsToCheck,
-		request: Request,
-		response: Response,
-		userId: string,
-	): Promise<void> {
-		const { method, url } = request;
+	override resolveRateLimiter(c: HonoContext, _route: string, _method: string): ResolvedRateLimiter | undefined {
+		const { method, url } = c.req.raw;
 		const route = url.replace(`/${this.apiPath}`, '');
 		const nameRoute = this.getFullRouteName(route, method.toLowerCase());
+
 		if (!this.getRateLimiter(nameRoute)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: [route],
@@ -422,10 +411,13 @@ class WebHookAPI extends APIClass<'/hooks'> {
 			});
 		}
 
-		const integrationForRateLimitMatch = objectForRateLimitMatch;
-		integrationForRateLimitMatch.route = nameRoute;
+		const entry = this.getRateLimiter(nameRoute);
 
-		await super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
+		return entry && { key: nameRoute, ...entry };
+	}
+
+	override async canBypassRateLimit(): Promise<boolean> {
+		return false;
 	}
 }
 

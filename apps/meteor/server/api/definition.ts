@@ -8,6 +8,15 @@ import type { ValidateFunction } from 'ajv';
 import type { ITwoFactorOptions } from '../lib/2fa/code';
 import type { DeprecationLoggerNextPlannedVersion } from '../lib/deprecationWarningLogger';
 
+export type RateLimiterSubject = 'ip' | 'user';
+
+export type RateLimiterOptions = {
+	numRequestsAllowed?: number;
+	intervalTimeInMS?: number;
+	per?: RateLimiterSubject;
+	bypassPermissions?: string[];
+};
+
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
 export type RedirectStatusCodes = Exclude<Range<308>, Range<300>>;
@@ -97,12 +106,6 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorRequired: true;
 	permissionsRequired?: string[] | { [key in Method]: string[] } | { [key in Method]: { operation: TOperation; permissions: string[] } };
 	twoFactorOptions: ITwoFactorOptions;
-};
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-	bypassPermissions?: string[];
 };
 
 export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
