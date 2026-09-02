@@ -17,12 +17,18 @@ import _ from 'underscore';
 import type { OutgoingRequestData } from './ScriptEngine';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
+import { shortnameToUnicode } from '../../../../app/emoji-native/lib/shortnameToUnicode';
 import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
 import { settings } from '../../../settings';
 import { processWebhookMessage } from '../../messages/processWebhookMessage';
 import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 import { outgoingLogger } from '../logger';
+
+function getTriggerWordVariants(triggerWord: string): string[] {
+	const unicode = shortnameToUnicode(triggerWord);
+	return unicode !== triggerWord ? [triggerWord, unicode] : [triggerWord];
+}
 
 type Trigger = Record<string, Record<string, any>>;
 
@@ -510,10 +516,11 @@ class RocketChatIntegrationHandler {
 		if (event && outgoingEvents[event].use.triggerWords) {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
-					if (!trigger.triggerWordAnywhere && message?.msg.indexOf(triggerWord) === 0) {
+					const variants = getTriggerWordVariants(triggerWord);
+					if (!trigger.triggerWordAnywhere && variants.some((variant) => message?.msg.startsWith(variant))) {
 						word = triggerWord;
 						break;
-					} else if (trigger.triggerWordAnywhere && message?.msg.includes(triggerWord)) {
+					} else if (trigger.triggerWordAnywhere && variants.some((variant) => message?.msg.includes(variant))) {
 						word = triggerWord;
 						break;
 					}
