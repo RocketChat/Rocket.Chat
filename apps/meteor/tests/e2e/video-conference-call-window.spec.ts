@@ -431,19 +431,14 @@ test.describe('video conference call window', () => {
 	 * Qase case 17 step 3, case 18 steps 2 and 4, and case 47 step 2 — the caller's own window following a call
 	 * as other people arrive, turn it down and go.
 	 *
-	 * Runs instrumented: on failure it attaches the call window's DDP frames, because the two explanations left
-	 * are indistinguishable from the outside and traces carry no WebSocket frames.
+	 * This is the case that found the gap between reading a call and subscribing to it. The window's own DDP
+	 * frames, captured by the run that failed, showed the `sub` for `<callId>/updated` going out two seconds
+	 * after the call had been read; the callee declined in between; the event was announced to nobody here, and
+	 * nothing brought it back. The window now reads the call again once it is watching, so anything announced in
+	 * that gap is picked up.
 	 *
-	 * What is ruled out, driven against a live workspace on this branch with LiveKit as the provider and the
-	 * window setting on: the window subscribes and is ready, before joining and after; a change made by someone
-	 * else (an add, which rings) delivers `<callId>/updated`; and the conference is read again each time. The
-	 * whole chain works there.
-	 *
-	 * What remains different about CI is the provider. Its calls are served by the tester app, whose join URL is
-	 * *relative*, so the window renders an iframe that loads the Rocket.Chat client a second time inside itself —
-	 * visible in the run's console output as a third client booting. An embedded provider like LiveKit renders no
-	 * iframe at all, which is why the local run cannot see this. The frames will say whether the window's
-	 * subscription was refused, never made, or made and then silent.
+	 * The frames are still attached on failure — this window's silence has had three different explanations so
+	 * far, and telling them apart from the outside is not possible.
 	 */
 	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
