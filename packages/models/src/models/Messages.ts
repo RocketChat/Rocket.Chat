@@ -1680,17 +1680,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return null;
 		}
 
-		const query = {
-			drid,
-			$or: [{ dlm: { $exists: false } }, ...(dlm ? [{ dlm: { $lte: dlm } }] : [])],
-		};
-
+		// dlm stays monotonic via $max instead of a query guard — a non-matching guard would silently drop the count delta
 		return this.findOneAndUpdate(
-			query,
-			{
-				...(dcountInc && { $inc: { dcount: dcountInc } }),
-				...(dlm && { $set: { dlm } }),
-			},
+			{ drid },
+			[
+				{
+					$set: {
+						dcount: { $max: [0, { $add: [{ $ifNull: ['$dcount', 0] }, dcountInc] }] },
+						...(dlm && { dlm: { $max: ['$dlm', dlm] } }),
+					},
+				},
+			],
 			{ returnDocument: 'after' },
 		);
 	}

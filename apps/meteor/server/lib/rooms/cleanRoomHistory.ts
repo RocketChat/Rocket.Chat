@@ -5,10 +5,25 @@ import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive } fro
 import { deleteRoom } from './deleteRoom';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../i18n';
+import { SystemLogger } from '../logger/system';
 import { FileUpload } from '../media/file-upload';
+import { updateAndNotifyParentRoomWithParentMessage } from '../messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../notifyListener';
 
 const FILE_CLEANUP_BATCH_SIZE = 1000;
+
+async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise<void> {
+	const room = await Rooms.findOneById(rid, { projection: { prid: 1, msgs: 1, lm: 1, sysMes: 1 } });
+	if (!room?.prid) {
+		return;
+	}
+
+	try {
+		await updateAndNotifyParentRoomWithParentMessage(room);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+	}
+}
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -152,6 +167,8 @@ export async function cleanRoomHistory({
 		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 
 		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
+		await refreshDiscussionMetadataOnParentRoom(rid);
 
 		void notifyOnRoomChangedById(rid);
 
