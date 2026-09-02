@@ -2509,7 +2509,7 @@
   "error-extension-not-assigned": "Extension not assigned",
   "error-extension-not-available": "Extension not available",
   "error-failed-to-delete-department": "Failed to delete department",
-  "error-field-unavailable": "<strong>{{field}}</strong> is already in use :(",
+  "error-field-unavailable": "{{field}} is already in use :(",
   "error-file-too-large": "File is too large",
   "error-forwarding-chat": "Something went wrong while forwarding the chat, Please try again later.",
   "error-forwarding-chat-same-department": "The selected department and the current room department are the same",
