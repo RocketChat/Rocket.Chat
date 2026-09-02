@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import ConferencePage from './ConferencePage';
 
@@ -30,20 +30,16 @@ it('opens the call the link names', () => {
 	expect(handleOpenCall).toHaveBeenCalledWith(expect.stringContaining('https://meet.example/room-1'));
 });
 
-// A provider is free to answer with a relative address, and those work today: this guard is not about them.
-it('opens a relative address, which is still somewhere to go', () => {
-	renderAt('?callUrl=%2Fchannel%2Fgeneral');
+// `javascript:`/`data:` are not locations — they execute, in a window this page opened. A relative path is not
+// a call either: it resolves against this origin, so it would open the workspace itself in a call window.
+it.each([
+	['javascript:alert(1)', 'a script'],
+	['data:text/html,<script>alert(1)</script>', 'a document'],
+	['vbscript:msgbox(1)', 'a script'],
+	['/admin/settings', 'a page of our own'],
+	['//evil.example/x', 'a protocol-relative address'],
+])('opens nothing for %s, being %s rather than a call', (candidate) => {
+	renderAt(`?callUrl=${encodeURIComponent(candidate)}`);
 
-	expect(handleOpenCall).toHaveBeenCalledWith(expect.stringContaining('/channel/general'));
+	expect(handleOpenCall).not.toHaveBeenCalled();
 });
-
-// Not a location — it executes, in a window this page opened.
-it.each(['javascript:alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)'])(
-	'refuses %s rather than opening it',
-	(candidate) => {
-		renderAt(`?callUrl=${encodeURIComponent(candidate)}`);
-
-		expect(handleOpenCall).not.toHaveBeenCalled();
-		expect(screen.getByText('Call_not_found')).toBeInTheDocument();
-	},
-);
