@@ -126,7 +126,12 @@ const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 			text={text}
 			setText={handleTextChange}
 			setType={setType}
-			members={data?.pages?.flatMap((page) => page.members) ?? []}
+			members={data?.pages?.flatMap((page) => page.members.sort((a, b) => {
+					const usernameA = a.username || ''; // Default to empty string if undefined
+					const usernameB = b.username || ''; // Default to empty string if undefined
+					return usernameA.localeCompare(usernameB);
+					})) ?? []
+				}
 			total={data?.pages[data.pages.length - 1].total ?? 0}
 			onClickClose={closeTab}
 			onClickView={openUserInfo}
