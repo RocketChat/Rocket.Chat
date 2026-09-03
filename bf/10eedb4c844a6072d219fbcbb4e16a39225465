@@ -1,0 +1,15 @@
+apps/meteor/server/services/authorization/service.ts
+  h_4c386397e672f4 109,113,116-117,120,128,130
+  h_4c386397e672f4 114-115,121-127,129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bf10eedb4c844a6072d219fbcbb4e16a39225465",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+apps/meteor/server/meteor-methods/messages/getMessages.ts
+  h_4c386397e672f4 7,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bdea007609cc421b2ac04714a8d9ba92644ad774",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
