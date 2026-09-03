@@ -10,30 +10,17 @@ export type MediaCallActorType = 'user' | 'sip';
 export type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 /**
- * How a call reaches the outside world, and which side opened it. A call between
- * two workspace users is `'internal'` unless the workspace routes internal calls
- * through the PBX, in which case the leg Rocket.Chat sends out is
- * `'sip-outbound'` like any other external call.
+ * internal - a call between two workspace users
+ * sip-outbound - a workspace user is calling someone via sip
+ * sip-inbound - a workspace user is receiving a call from someone via sip
  */
 export type MediaCallOrigin = 'internal' | 'sip-outbound' | 'sip-inbound';
 
-/**
- * Whoever acted on a call. `'server'` covers the transitions that have no human
- * actor behind them — expiration, internal errors and forced hangups.
- */
 export interface IMediaCallActor {
 	type: MediaCallActorType | 'server';
 	id: string;
 }
 
-/**
- * One of the two sides of a call. Either side may be an external SIP endpoint
- * instead of a workspace user, so always check `type` before treating `id` as a
- * user id.
- *
- * The per-session signing token of the contact is deliberately absent: it is a
- * credential, and it never crosses into an app.
- */
 export interface IMediaCallContact {
 	type: MediaCallActorType;
 	id: string;
@@ -44,8 +31,7 @@ export interface IMediaCallContact {
 
 /**
  * A media call — the 1:1 direct audio/video calls between two contacts, as
- * opposed to a video conference. Read-only snapshot of the call as it was when
- * the event was emitted.
+ * opposed to a video conference.
  */
 export interface IMediaCall {
 	id: string;
@@ -72,7 +58,7 @@ export interface IMediaCall {
 	ended: boolean;
 	endedAt?: Date;
 	endedBy?: IMediaCallActor;
-	/** Why the call ended. The known values are not exhaustive — see {@link MediaCallHangupReason}. */
+	/** Why the call ended. Known values are not exhaustive */
 	hangupReason?: MediaCallHangupReason;
 
 	/** When the callee accepted the call. */
@@ -86,9 +72,7 @@ export interface IMediaCall {
 	/**
 	 * The party whose line diverted the call, when the call reached its callee
 	 * because the PBX forwarded it. A diversion is not a transfer: the call has no
-	 * `parentCallId`, because there is no earlier call it replaced. Clients label a
-	 * diverted call as transferred by this contact, so an app that reconciles what
-	 * the user sees should read it the same way.
+	 * `parentCallId`, because there is no earlier call it replaced.
 	 */
 	divertedBy?: IMediaCallContact;
 }

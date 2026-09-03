@@ -23,12 +23,6 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	startRingingById(callId: string, expiresAt: Date): Promise<UpdateResult>;
-	/**
-	 * The three state transitions below return the call as it is once the transition has been
-	 * applied, or `null` when the call was no longer in a state the transition applies to. Whoever
-	 * reports the transition must describe the call as it was when it happened, and a separate read
-	 * would already see the next transition.
-	 */
 	acceptCallById(
 		callId: string,
 		data: { calleeContractId: string; supportedFeatures: string[] },
