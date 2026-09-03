@@ -38,12 +38,14 @@ jest.mock('./RoomToolbox', () => {
 	};
 });
 
+const MockTabComponent = () => <div>tab</div>;
+
 const mockActions: RoomToolboxActionConfig[] = [
-	{ id: 'thread', icon: 'thread', title: 'Threads' as any, groups: ['channel'] },
-	{ id: 'members-list', icon: 'members', title: 'Members' as any, groups: ['channel'] },
-	{ id: 'discussions', icon: 'discussion', title: 'Discussions' as any, groups: ['channel'] },
-	{ id: 'files', icon: 'clip', title: 'Files' as any, groups: ['channel'] },
-	{ id: 'pinned-messages', icon: 'pin', title: 'Pinned Messages' as any, groups: ['channel'] },
+	{ id: 'thread', icon: 'thread', title: 'Threads' as any, groups: ['channel'], tabComponent: MockTabComponent },
+	{ id: 'members-list', icon: 'members', title: 'Members' as any, groups: ['channel'], tabComponent: MockTabComponent },
+	{ id: 'discussions', icon: 'discussion', title: 'Discussions' as any, groups: ['channel'], tabComponent: MockTabComponent },
+	{ id: 'files', icon: 'clip', title: 'Files' as any, groups: ['channel'], tabComponent: MockTabComponent },
+	{ id: 'pinned-messages', icon: 'pin', title: 'Pinned Messages' as any, groups: ['channel'], tabComponent: MockTabComponent },
 ];
 
 const mockLayoutConfig = JSON.stringify({

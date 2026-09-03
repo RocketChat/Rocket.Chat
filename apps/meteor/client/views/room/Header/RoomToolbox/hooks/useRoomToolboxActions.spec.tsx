@@ -6,6 +6,8 @@ import { renderHook } from '@testing-library/react';
 import { useRoomToolboxActions } from './useRoomToolboxActions';
 import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 
+const MockTabComponent = () => <div>tab</div>;
+
 describe('useRoomToolboxActions', () => {
 	it('should return an empty array if there are no actions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: [], openTab: () => undefined }), {
@@ -168,52 +170,109 @@ describe('useRoomToolboxActions', () => {
 			expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
 		});
 
-		it('should handle unexpanded layout properly (roomToolboxExpanded = false)', () => {
-			const mockLayoutContextValue: LayoutContextValue = {
-				isEmbedded: false,
-				showTopNavbarEmbeddedLayout: false,
-				isTablet: false,
-				isMobile: false,
-				roomToolboxExpanded: false,
-				navbar: {
-					searchExpanded: false,
-				},
-				sidebar: {
-					overlayed: false,
-					setOverlayed: () => undefined,
-					isCollapsed: false,
-					shouldToggle: false,
-					toggle: () => undefined,
-					collapse: () => undefined,
-					expand: () => undefined,
-					close: () => undefined,
-				},
-				sidePanel: {
-					displaySidePanel: true,
-					closeSidePanel: () => undefined,
-					openSidePanel: () => undefined,
-				},
-				size: {
-					sidebar: '240px',
-					contextualBar: '380px',
-				},
-				contextualBarPosition: 'relative',
-				contextualBarExpanded: false,
-				hiddenActions: {
-					roomToolbox: [],
-					messageToolbox: [],
-					composerToolbox: [],
-					userToolbox: [],
-				},
-			};
+		const collapsedLayoutContextValue: LayoutContextValue = {
+			isEmbedded: false,
+			showTopNavbarEmbeddedLayout: false,
+			isTablet: false,
+			isMobile: false,
+			roomToolboxExpanded: false,
+			navbar: {
+				searchExpanded: false,
+			},
+			sidebar: {
+				overlayed: false,
+				setOverlayed: () => undefined,
+				isCollapsed: false,
+				shouldToggle: false,
+				toggle: () => undefined,
+				collapse: () => undefined,
+				expand: () => undefined,
+				close: () => undefined,
+			},
+			sidePanel: {
+				displaySidePanel: true,
+				closeSidePanel: () => undefined,
+				openSidePanel: () => undefined,
+			},
+			size: {
+				sidebar: '240px',
+				contextualBar: '380px',
+			},
+			contextualBarPosition: 'relative',
+			contextualBarExpanded: false,
+			hiddenActions: {
+				roomToolbox: [],
+				messageToolbox: [],
+				composerToolbox: [],
+				userToolbox: [],
+			},
+		};
 
+		describe('when a demoted action can not render as a menu item', () => {
+			// mirrors useAppsRoomStarActions: renders itself, has no `action` and no `tabComponent`
+			const renderOnlyAction = {
+				id: 'ai-actions',
+				title: 'AI_Actions',
+				icon: 'stars',
+				groups: ['channel'],
+				featured: true,
+				order: 3,
+				renderToolboxItem: () => null,
+			} as unknown as RoomToolboxActionConfig;
+
+			const demotingConfig = JSON.stringify({
+				maxVisibleNormal: 1,
+				items: [
+					{ id: 'team-info', featured: false, order: 1 },
+					{ id: 'ai-actions', featured: false, order: 2 },
+				],
+			});
+
+			it('should not offer it in the kebab menu', () => {
+				const openTab = jest.fn();
+				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
+					wrapper: mockAppRoot()
+						.withSetting('Accounts_AllowFeaturePreview', true)
+						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
+						.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+						.build(),
+				});
+
+				expect(result.current.featuredActions.map((a) => a.id)).not.toContain('ai-actions');
+
+				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+				expect(hiddenIds).not.toContain('ai-actions');
+			});
+
+			it('should not offer it in the kebab menu when the toolbox is collapsed', () => {
+				const openTab = jest.fn();
+				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
+					wrapper: mockAppRoot()
+						.withSetting('Accounts_AllowFeaturePreview', true)
+						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
+						.wrap((children) => (
+							<LayoutContext.Provider value={collapsedLayoutContextValue}>
+								<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
+							</LayoutContext.Provider>
+						))
+						.build(),
+				});
+
+				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+				expect(hiddenIds).not.toContain('ai-actions');
+			});
+		});
+
+		it('should handle unexpanded layout properly (roomToolboxExpanded = false)', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
 					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
 					.wrap((children) => (
-						<LayoutContext.Provider value={mockLayoutContextValue}>
+						<LayoutContext.Provider value={collapsedLayoutContextValue}>
 							<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
 						</LayoutContext.Provider>
 					))
@@ -249,7 +308,7 @@ const appsActions: RoomToolboxActionConfig[] = [
 	},
 ];
 
-const actions: RoomToolboxActionConfig[] = [
+const baseActions: RoomToolboxActionConfig[] = [
 	{
 		id: 'team-info',
 		groups: ['team'],
@@ -358,3 +417,6 @@ const actions: RoomToolboxActionConfig[] = [
 		type: 'customization',
 	},
 ];
+
+// real toolbox actions open a contextual bar or run an action; keep fixtures faithful to that
+const actions: RoomToolboxActionConfig[] = baseActions.map((action) => ({ tabComponent: MockTabComponent, ...action }));

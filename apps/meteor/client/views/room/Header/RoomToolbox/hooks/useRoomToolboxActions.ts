@@ -49,11 +49,13 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 		) {
 			return null;
 		}
-		return parsed as RoomToolboxLayoutConfig;
+		return parsed;
 	} catch {
 		return null;
 	}
 };
+
+const canRenderAsMenuItem = (item: RoomToolboxActionConfig): boolean => Boolean(item.action ?? item.tabComponent);
 
 const actionToMenuItem = (
 	item: RoomToolboxBaseAction,
@@ -106,7 +108,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			const orderedOverflowActions = [
 				...typedVisible,
 				...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[]),
-			].filter((item) => !item.disabled);
+			].filter((item) => !item.disabled && canRenderAsMenuItem(item));
 
 			const sectionsMap = new Map<string, MenuSection>();
 			for (const item of orderedOverflowActions) {
@@ -133,7 +135,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 				id: section.id,
 				title: section.id === 'apps' ? t('Apps') : '',
 				items: (section.items as RoomToolboxActionConfig[])
-					.filter((item) => !item.disabled)
+					.filter((item) => !item.disabled && canRenderAsMenuItem(item))
 					.map((item) => actionToMenuItem(item, openTab, t)),
 			}))
 			.filter((section) => section.items.length > 0);
