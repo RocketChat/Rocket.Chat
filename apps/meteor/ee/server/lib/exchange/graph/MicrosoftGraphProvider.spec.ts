@@ -181,12 +181,43 @@ describe('MicrosoftGraphProvider', () => {
 			expect(page.items[0].externalId).toBe('z');
 		});
 
-		it('reports more pages when Graph sends a nextLink', async () => {
-			mockTokenThen(graphResponse({ 'value': [], '@odata.nextLink': 'https://graph.microsoft.com/next' }));
+		it('walks the nextLink pages itself so one call is one whole answer', async () => {
+			mockTokenThen(
+				graphResponse({
+					'value': [{ id: 'a', start: { dateTime: '2026-08-21T10:00:00' } }],
+					'@odata.nextLink': 'https://graph.microsoft.com/page2',
+				}),
+				graphResponse({
+					'value': [{ id: 'b', start: { dateTime: '2026-08-21T11:00:00' } }],
+					'@odata.deltaLink': 'https://graph.microsoft.com/delta',
+				}),
+			);
 
 			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
 
-			expect(page).toMatchObject({ cursor: 'https://graph.microsoft.com/next', hasMore: true });
+			expect(serverFetch.mock.calls[2][0]).toBe('https://graph.microsoft.com/page2');
+			expect(page.items.map(({ externalId }) => externalId)).toEqual(['a', 'b']);
+			expect(page).toMatchObject({ cursor: 'https://graph.microsoft.com/delta', hasMore: false });
+		});
+
+		it('calls a no-cursor read complete for the window, which is what lets the caller prune', async () => {
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
+
+			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
+
+			expect(page.isCompleteForWindow).toBe(true);
+		});
+
+		it('never calls a resumed delta complete: it carries changes, not the window', async () => {
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
+
+			const page = await new MicrosoftGraphProvider(config).listEvents(
+				'user@contoso.com',
+				timeWindow,
+				'https://graph.microsoft.com/v1.0/users/u/calendarView/delta?$deltatoken=abc',
+			);
+
+			expect(page.isCompleteForWindow).toBe(false);
 		});
 	});
 
