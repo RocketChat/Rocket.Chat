@@ -66,6 +66,11 @@ export const incrementAndNotifyParentRoomWithParentMessage = async (
 	countDelta: number,
 ): Promise<void> => {
 	const isHidden = !!messageType && shouldHideSystemMessage(messageType, getRawHiddenTypes(room));
+	const dcountInc = isHidden ? 0 : countDelta;
 
-	notifyParentMessage(await Messages.incDiscussionMetadata(room, isHidden ? 0 : countDelta));
+	if (!dcountInc && !room.lm) {
+		return;
+	}
+
+	notifyParentMessage(await Messages.incDiscussionMetadata(room, dcountInc));
 };
