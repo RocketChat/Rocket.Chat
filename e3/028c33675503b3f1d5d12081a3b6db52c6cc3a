@@ -1,0 +1,29 @@
+apps/meteor/client/lib/RoomHistoryManager.ts
+  s_0916648fed0b58::t_82ac2c1bb63db6 203-206,224-227
+  s_0916648fed0b58::t_927ee13a9b17ea 335,341
+  s_0916648fed0b58::t_b146bc28112312 254-255
+  s_0916648fed0b58::t_5c6097b6f32cef 392-393,395,409-411
+  s_0916648fed0b58::t_a49718148b5a3b 68-71,74-76
+  s_0916648fed0b58::t_ef88f3d642504f 178-181
+  s_0916648fed0b58::t_c4f9c57d0034dc 379-380,394,433-435
+  s_0916648fed0b58::t_35d3fe96d896e1 150-151
+  s_0916648fed0b58::t_01178984235527 278-283,291-294,307-309
+  s_0916648fed0b58::t_ea621194c675d3 77
+  s_0916648fed0b58::t_68903d5257510f 412
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e3028c33675503b3f1d5d12081a3b6db52c6cc3a",
+  "prompts": {},
+  "sessions": {
+    "s_0916648fed0b58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c852748e-0469-4644-8ca3-49b590175345",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
