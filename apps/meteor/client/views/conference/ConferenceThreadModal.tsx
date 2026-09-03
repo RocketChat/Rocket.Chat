@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import ConferenceRoomPanel from './ConferenceRoomPanel';
+import { CONFERENCE_THEMED_CLASS } from './panelStyles';
 
 type ConferenceThreadModalProps = {
 	rid: string;
@@ -26,7 +27,9 @@ const ConferenceThreadModal = ({ rid, tmid, onClose }: ConferenceThreadModalProp
 
 	return createPortal(
 		<ModalBackdrop onDismiss={onClose}>
-			<Modal aria-labelledby={titleId} width='x480'>
+			{/* A thread is the chat panel's content one step further out, so it is read in the same theme the panel
+			    is — not in the window's dark, which is what a modal portalled to the body would otherwise take. */}
+			<Modal className={CONFERENCE_THEMED_CLASS} aria-labelledby={titleId} width='x480'>
 				<ModalHeader>
 					<ModalHeaderText>
 						<ModalTitle id={titleId}>{t('Thread')}</ModalTitle>
