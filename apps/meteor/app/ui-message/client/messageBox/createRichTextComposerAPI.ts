@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
-import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
+import { createComposerRenderer, renderComposerContent } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -56,7 +56,7 @@ export const createRichTextComposerAPI = (
 			input.innerHTML = escapeHTML(text);
 		}
 
-		// The events below are synthetic, so resolveComposerBox ignores them and the markup would stay
+		// The events below are synthetic, so the input renderer ignores them and the markup would stay
 		// unrendered. Skip it while empty: rendering '' yields the renderer's trailing newline, which would
 		// leave `clear()` with a composer that is no longer empty.
 		if (input.innerText !== '') {
@@ -70,9 +70,7 @@ export const createRichTextComposerAPI = (
 		!skipFocus && focus();
 	};
 
-	const rerender = (event: Event): void => resolveComposerBox(event, parseOptions);
-
-	input.addEventListener('input', rerender);
+	const renderer = createComposerRenderer(input, parseOptions);
 
 	const core = createComposerAPICore({
 		input,
@@ -208,7 +206,7 @@ export const createRichTextComposerAPI = (
 		...core,
 		release: () => {
 			core.release();
-			input.removeEventListener('input', rerender);
+			renderer.release();
 		},
 		setText,
 		insertNewLine,

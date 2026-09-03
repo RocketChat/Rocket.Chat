@@ -41,3 +41,75 @@ export const resolveComposerBox = (event: Event, parseOptions: Options) => {
 	// the cursor is restored to the correct position
 	renderComposerContent(target, parseOptions, getSelectionRange(target));
 };
+
+// Rendering replaces the composer's innerHTML and re-anchors the DOM selection, and both abort an
+// in-flight IME composition (dead keys, CJK input, mobile predictive text): the browser loses the
+// text node its marked text was attached to, so `˜` then `a` commits as `˜a` instead of `ã`. Hold
+// the render back until the composition commits.
+export const createComposerRenderer = (input: HTMLDivElement, parseOptions: Options): { release: () => void } => {
+	let composing = false;
+	let pendingFrame: number | undefined;
+
+	const cancelPending = (): void => {
+		if (pendingFrame === undefined) {
+			return;
+		}
+		cancelAnimationFrame(pendingFrame);
+		pendingFrame = undefined;
+	};
+
+	const onInput = (event: Event): void => {
+		if (!event.isTrusted) {
+			return;
+		}
+
+		if (composing || (event as InputEvent).isComposing) {
+			return;
+		}
+
+		// Chrome fires a composition's last `input` before `compositionend` and Firefox after it, so
+		// whichever arrives first renders and drops the other's scheduled work.
+		cancelPending();
+		resolveComposerBox(event, parseOptions);
+	};
+
+	const onCompositionStart = (): void => {
+		composing = true;
+		cancelPending();
+	};
+
+	const onCompositionEnd = (): void => {
+		composing = false;
+		cancelPending();
+		pendingFrame = requestAnimationFrame(() => {
+			pendingFrame = undefined;
+
+			// A new composition already started (fast dead-key sequences); it renders on its own end.
+			if (composing) {
+				return;
+			}
+
+			// The composer can be cleared between the commit and this frame (Safari sends the keydown of
+			// the key that confirmed the composition, so Enter both commits and sends). Rendering '' yields
+			// the renderer's trailing newline, which would leave the cleared composer non-empty.
+			if (input.innerText === '') {
+				return;
+			}
+
+			renderComposerContent(input, parseOptions, getSelectionRange(input));
+		});
+	};
+
+	input.addEventListener('input', onInput);
+	input.addEventListener('compositionstart', onCompositionStart);
+	input.addEventListener('compositionend', onCompositionEnd);
+
+	return {
+		release: (): void => {
+			cancelPending();
+			input.removeEventListener('input', onInput);
+			input.removeEventListener('compositionstart', onCompositionStart);
+			input.removeEventListener('compositionend', onCompositionEnd);
+		},
+	};
+};
