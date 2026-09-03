@@ -233,6 +233,25 @@ is also what the conference shows while joining, making startup one continuous s
 
 Because it has no `MainContent` ancestor to inherit height from, `ConferenceRoute` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { standalone: true })`, which drops the global banner and cloud-announcement regions.
 
+### The window is dark, the panels are not
+
+A call surface is dark wherever calls are drawn, and this window is drawn as one: black behind the video, light
+text in its bars. Only the palette was missing, so everything Fuselage drew inside it — the mic, camera, screen
+and hang-up buttons, and the device pickers behind them — came out light for a reader whose theme is light.
+
+The route therefore pins the palette: `appLayout.wrap(..., { theme: 'dark' })`, which `AppLayoutThemeWrapper`
+turns into the window's root `PaletteStyleTag`. Pinning at the **root** rather than on the call area is the point
+— a device picker or a menu over a video tile is portalled to the document body, so a palette scoped to the call
+subtree would reach the buttons but not the menus they open.
+
+What the panels beside the call hold is room UI: a chat, a members list, a thread. Those are read in the theme
+the rest of Rocket.Chat is read in, so `CallPanel` — and `ConferenceThreadModal`, which is the chat panel's own
+content one portal further out — wears `CONFERENCE_THEMED_CLASS`, and `ConferenceViewport` emits the reader's
+own palette scoped to that class.
+
+High contrast is the one preference the pin gives way to. Unlike light and dark it answers a legibility need
+rather than a taste, so `AppLayoutThemeWrapper` lets it through even where a layout pins its own look.
+
 ### Call chrome
 
 The conference is a column: a top bar carrying the call's name and its controls, then a row holding the call and the chat panel.
