@@ -443,10 +443,13 @@ class RoomHistoryManagerClass extends Emitter {
 			room.loaded += messages.length;
 		} catch (error) {
 			// The target may have been deleted since the link was created; no window to build then.
-			if (error instanceof Response && error.status === 404) {
-				return;
+			if (!(error instanceof Response && error.status === 404)) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-			dispatchToastMessage({ type: 'error', message: error });
+
+			if (!this.isLoaded(message.rid)) {
+				await this.getMore(message.rid);
+			}
 		} finally {
 			if (generation === this.generation(message.rid)) {
 				this.updateRoom(message.rid, { isLoading: false });
