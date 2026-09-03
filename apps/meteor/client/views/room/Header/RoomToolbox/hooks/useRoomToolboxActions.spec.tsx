@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { LayoutContext } from '@rocket.chat/ui-contexts';
 import type { LayoutContextValue, RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
 import { useRoomToolboxActions } from './useRoomToolboxActions';
 import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
@@ -220,70 +221,65 @@ describe('useRoomToolboxActions', () => {
 				renderToolboxItem: () => null,
 			} as unknown as RoomToolboxActionConfig;
 
-			const demotingConfig = JSON.stringify({
-				maxVisibleNormal: 1,
-				items: [
-					{ id: 'team-info', featured: false, order: 1 },
-					{ id: 'ai-actions', featured: false, order: 2 },
-				],
-			});
+			const renderWithConfig = (config: object, layoutContextValue?: LayoutContextValue) => {
+				const withLayout = (children: ReactNode) =>
+					layoutContextValue ? <LayoutContext.Provider value={layoutContextValue}>{children}</LayoutContext.Provider> : children;
 
-			it('should not offer it in the kebab menu', () => {
-				const openTab = jest.fn();
-				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
+				return renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab: () => undefined }), {
 					wrapper: mockAppRoot()
 						.withSetting('Accounts_AllowFeaturePreview', true)
 						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
-						.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+						.withSetting('Room_Toolbox_Layout_Public', JSON.stringify(config))
+						.wrap((children) => withLayout(<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>))
 						.build(),
 				});
+			};
+
+			const hiddenIdsOf = (result: { hiddenActions: { items: { id?: string }[] }[] }) =>
+				result.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+
+			it('should keep it in the visible row when it fits, honouring the configured order', () => {
+				const { result } = renderWithConfig({
+					maxVisibleNormal: 3,
+					items: [
+						{ id: 'team-info', featured: false, order: 2 },
+						{ id: 'ai-actions', featured: false, order: 1 },
+					],
+				});
+
+				expect(result.current.visibleActions.map((a) => a.id).slice(0, 2)).toEqual(['ai-actions', 'team-info']);
+				expect(result.current.featuredActions.map((a) => a.id)).not.toContain('ai-actions');
+				expect(hiddenIdsOf(result.current)).not.toContain('ai-actions');
+			});
+
+			it('should pull it back into the visible row when it would overflow into the kebab', () => {
+				const { result } = renderWithConfig({
+					maxVisibleNormal: 1,
+					items: [
+						{ id: 'team-info', featured: false, order: 1 },
+						{ id: 'ai-actions', featured: false, order: 2 },
+					],
+				});
+
+				expect(result.current.visibleActions.map((a) => a.id)).toContain('ai-actions');
+				expect(hiddenIdsOf(result.current)).not.toContain('ai-actions');
+			});
+
+			it('should pin it to the featured row when the toolbox is collapsed and the visible row is gone', () => {
+				const { result } = renderWithConfig(
+					{
+						maxVisibleNormal: 1,
+						items: [
+							{ id: 'team-info', featured: false, order: 1 },
+							{ id: 'ai-actions', featured: false, order: 2 },
+						],
+					},
+					collapsedLayoutContextValue,
+				);
 
 				expect(result.current.featuredActions.map((a) => a.id)).toContain('ai-actions');
-				expect(result.current.visibleActions.map((a) => a.id)).not.toContain('ai-actions');
-
-				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
-				expect(hiddenIds).not.toContain('ai-actions');
-			});
-
-			it('should not offer it in the kebab menu when the toolbox is collapsed', () => {
-				const openTab = jest.fn();
-				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
-					wrapper: mockAppRoot()
-						.withSetting('Accounts_AllowFeaturePreview', true)
-						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
-						.wrap((children) => (
-							<LayoutContext.Provider value={collapsedLayoutContextValue}>
-								<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
-							</LayoutContext.Provider>
-						))
-						.build(),
-				});
-
-				expect(result.current.featuredActions.map((a) => a.id)).toContain('ai-actions');
-
-				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
-				expect(hiddenIds).not.toContain('ai-actions');
-			});
-
-			it('should still be reachable somewhere in the toolbox', () => {
-				const openTab = jest.fn();
-				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
-					wrapper: mockAppRoot()
-						.withSetting('Accounts_AllowFeaturePreview', true)
-						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
-						.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
-						.build(),
-				});
-
-				const renderedIds = [
-					...result.current.featuredActions.map((a) => a.id),
-					...result.current.visibleActions.map((a) => a.id),
-					...result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id)),
-				];
-				expect(renderedIds).toContain('ai-actions');
+				expect(result.current.visibleActions).toEqual([]);
+				expect(hiddenIdsOf(result.current)).not.toContain('ai-actions');
 			});
 		});
 

@@ -103,18 +103,14 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
 
-		const demotedSelfRendering = actions.filter(
-			(action) => isSelfRendering(action) && !featuredActions.some((featured) => featured.id === action.id),
-		);
-
-		const typedFeatured = [...(featuredActions as RoomToolboxActionConfig[]), ...demotedSelfRendering];
-		const typedVisible = (engineVisible as RoomToolboxActionConfig[]).filter((item) => !isSelfRendering(item));
+		const typedFeatured = featuredActions as RoomToolboxActionConfig[];
+		const typedVisible = engineVisible as RoomToolboxActionConfig[];
+		const overflowActions = engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[]);
 
 		if (!roomToolboxExpanded) {
-			const orderedOverflowActions = [
-				...typedVisible,
-				...engineSections.flatMap((section) => section.items as RoomToolboxActionConfig[]),
-			].filter((item) => !item.disabled && canRenderAsMenuItem(item));
+			const pinnedSelfRendering = [...typedVisible, ...overflowActions].filter(isSelfRendering);
+
+			const orderedOverflowActions = [...typedVisible, ...overflowActions].filter((item) => !item.disabled && canRenderAsMenuItem(item));
 
 			const sectionsMap = new Map<string, MenuSection>();
 			for (const item of orderedOverflowActions) {
@@ -133,7 +129,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			}
 			const hiddenActions = Array.from(sectionsMap.values());
 
-			return { featuredActions: typedFeatured, visibleActions: [], hiddenActions };
+			return { featuredActions: [...typedFeatured, ...pinnedSelfRendering], visibleActions: [], hiddenActions };
 		}
 
 		const hiddenActions = engineSections
@@ -146,7 +142,9 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 			}))
 			.filter((section) => section.items.length > 0);
 
-		return { featuredActions: typedFeatured, visibleActions: typedVisible, hiddenActions };
+		const rescuedFromOverflow = overflowActions.filter(isSelfRendering);
+
+		return { featuredActions: typedFeatured, visibleActions: [...typedVisible, ...rescuedFromOverflow], hiddenActions };
 	}
 
 	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');
