@@ -130,10 +130,6 @@ settings.onReady(() => {
 	hiddenSystemMessageTypes = expandHiddenSystemMessageTypes(settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 });
 
-/**
- * The globally hidden system message types are an input of the incrementally maintained
- * discussion message counts, so changing them requires refreshing the stored counts.
- */
 settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
 	const previousTypes = hiddenSystemMessageTypes;
 	const currentTypes = expandHiddenSystemMessageTypes(value);
@@ -151,7 +147,6 @@ settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
 			await updateAndNotifyParentRoomWithParentMessage(room);
 		}
 
-		// only committed after a successful refresh so the next change retries any failed diff
 		hiddenSystemMessageTypes = currentTypes;
 	} catch (err) {
 		SystemLogger.error({ msg: 'Failed to refresh discussion message counts after hidden system messages change', err });
