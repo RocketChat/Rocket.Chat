@@ -52,6 +52,8 @@ const successSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const isServerManaged = (): boolean => settings.get<string>('Outlook_Calendar_Mode') === 'server';
+
 API.v1.get(
 	'calendar-events.list',
 	{
@@ -115,6 +117,10 @@ API.v1.post(
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
+		if (externalId && isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
+		}
+
 		const id = await Calendar.create({
 			uid,
 			startTime: new Date(startTime),
@@ -146,10 +152,8 @@ API.v1.post(
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
-		// Refusing here is the only place the server can guarantee that server-side
-		// sync and the legacy per-user sync never both write to `calendar_event`.
-		if (settings.get<string>('Outlook_Calendar_Mode') === 'server') {
-			return API.v1.failure('error-calendar-import-disabled-in-server-mode');
+		if (isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
 		}
 
 		const id = await Calendar.import({
@@ -189,6 +193,10 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
+		if (event.externalId && isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
+		}
+
 		await Calendar.update(eventId, {
 			startTime: new Date(startTime),
 			...(endTime && { endTime: new Date(endTime) }),
@@ -222,6 +230,10 @@ API.v1.post(
 
 		if (event?.uid !== userId) {
 			throw new Error('invalid-calendar-event');
+		}
+
+		if (event.externalId && isServerManaged()) {
+			return API.v1.failure('error-calendar-managed-by-server-sync');
 		}
 
 		await Calendar.delete(eventId);

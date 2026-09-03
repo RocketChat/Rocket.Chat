@@ -76,16 +76,28 @@ const MIN_SYNC_WINDOW_HOURS = 1;
 // 30 days. Wider than this, a daily series expands past the item cap `CalendarView` requests
 const MAX_SYNC_WINDOW_HOURS = 720;
 
+/**
+ * The start is floored to this, so every run inside the same step asks for the identical window. That is
+ * what keeps a Graph delta link usable
+ */
+export const SYNC_WINDOW_ANCHOR_MS = 60 * 60 * 1000;
+
+/**
+ * Anchored rather than starting at `now`, and one anchor step wider so the end is never closer than the
+ * configured hours.
+ */
 export const getSyncWindow = (from: Date = new Date()): DateRange => {
 	const configured = Math.trunc(settings.get<number>('Outlook_Calendar_Server_Sync_Window_Hours')) || DEFAULT_SYNC_WINDOW_HOURS;
 	const hours = Math.min(Math.max(configured, MIN_SYNC_WINDOW_HOURS), MAX_SYNC_WINDOW_HOURS);
 
-	return { start: from, end: new Date(from.getTime() + hours * 60 * 60 * 1000) };
+	const start = new Date(Math.floor(from.getTime() / SYNC_WINDOW_ANCHOR_MS) * SYNC_WINDOW_ANCHOR_MS);
+
+	return { start, end: new Date(start.getTime() + hours * 60 * 60 * 1000 + SYNC_WINDOW_ANCHOR_MS) };
 };
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
 
-export const registerExchangeProviderWatchers = (): void => {
+export const registerExchangeProviderWatchers = () =>
 	settings.watchMultiple(WATCHED_SETTINGS, () => {
 		try {
 			current = buildExchangeProvider();
@@ -97,4 +109,8 @@ export const registerExchangeProviderWatchers = (): void => {
 
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
 	});
+
+/** Without this a license downgrade leaves a live, credentialed provider behind. */
+export const detachExchangeProvider = (): void => {
+	current = undefined;
 };

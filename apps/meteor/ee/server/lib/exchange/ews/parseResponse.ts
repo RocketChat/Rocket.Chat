@@ -17,7 +17,7 @@ const RESPONSE_CODE_TO_ERROR: Record<string, { code: ExchangeErrorCode; message:
 	ErrorImpersonationDenied: { code: 'authorization-failed', message: 'Impersonation was denied by the Exchange server' },
 	ErrorNonExistentMailbox: { code: 'mailbox-not-found', message: 'The mailbox does not exist on this Exchange server' },
 	ErrorNameResolutionNoResults: { code: 'mailbox-not-found', message: 'Exchange could not resolve the mailbox address' },
-	ErrorInvalidSyncStateData: { code: 'unexpected-response', message: 'The stored sync state is no longer valid and must be reset' },
+	ErrorInvalidSyncStateData: { code: 'sync-state-invalid', message: 'The stored sync state is no longer valid and must be reset' },
 };
 
 const parseXml = (xml: string): Document => {

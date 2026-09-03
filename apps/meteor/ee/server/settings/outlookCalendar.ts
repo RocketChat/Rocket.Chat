@@ -26,6 +26,7 @@ export function addSettings(): void {
 					type: 'select',
 					public: true,
 					invalidValue: 'legacy',
+					alert: 'Outlook_Calendar_Mode_Legacy_Warning',
 					values: [
 						{ key: 'legacy', i18nLabel: 'Outlook_Calendar_Mode_Legacy' },
 						{ key: 'server', i18nLabel: 'Outlook_Calendar_Mode_Server' },

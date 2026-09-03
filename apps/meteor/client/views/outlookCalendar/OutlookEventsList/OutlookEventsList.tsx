@@ -10,7 +10,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
@@ -29,7 +29,9 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
-	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
+	const isServerManaged = useSetting('Outlook_Calendar_Mode', 'legacy') === 'server';
+
+	const hasOutlookMethods = isServerManaged || !(isError && error instanceof NotOnDesktopError);
 
 	const syncOutlookCalendar = useMutationOutlookCalendarSync();
 
@@ -85,7 +87,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
+					{(authEnabled || isServerManaged) && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 					{outlookUrl && (
 						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
 							{t('Open_Outlook')}
@@ -96,7 +98,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
-								{authEnabled ? t('Sync') : t('Log_in_to_sync')}
+								{authEnabled || isServerManaged ? t('Sync') : t('Log_in_to_sync')}
 							</Button>
 						</ButtonGroup>
 					</Box>

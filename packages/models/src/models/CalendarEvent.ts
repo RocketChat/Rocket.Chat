@@ -1,6 +1,7 @@
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ICalendarEventModel } from '@rocket.chat/model-typings';
-import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import type { CalendarBulkUpsertResult, ICalendarEventModel, ImportedCalendarEvent } from '@rocket.chat/model-typings';
+import type { DeleteResult, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -16,6 +17,9 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			},
 			{
 				key: { reminderTime: -1, notificationSent: 1 },
+			},
+			{
+				key: { uid: 1, externalId: 1 },
 			},
 		];
 	}
@@ -183,6 +187,96 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					startTime: 1,
 					endTime: 1,
 				},
+			},
+		);
+	}
+
+	/**
+	 * Through `this.col`, so the string `_id` and `_updatedAt` that `BaseRaw` adds are set by hand. Mongo
+	 * would supply an ObjectId, which no lookup by string id would ever match.
+	 */
+	public async bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult> {
+		if (!events.length) {
+			return { matchedCount: 0, modifiedCount: 0, upsertedCount: 0 };
+		}
+
+		const now = new Date();
+
+		const result = await this.col.bulkWrite(
+			events.map(({ uid, externalId, ...fields }) => ({
+				updateOne: {
+					filter: { uid, externalId },
+					update: {
+						$set: { ...fields, _updatedAt: now },
+						$setOnInsert: { _id: new ObjectId().toHexString(), uid, externalId, notificationSent: false },
+					},
+					upsert: true,
+				},
+			})),
+			{ ordered: false },
+		);
+
+		return {
+			matchedCount: result.matchedCount,
+			modifiedCount: result.modifiedCount,
+			upsertedCount: result.upsertedCount,
+		};
+	}
+
+	public reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult> {
+		return this.col.updateMany(
+			{ uid, externalId: { $in: externalIds }, notificationSent: true, reminderTime: { $gt: new Date() } },
+			{ $set: { notificationSent: false, _updatedAt: new Date() } },
+		);
+	}
+
+	public deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], now: Date): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			externalId: { $in: externalIds },
+			$or: [{ endTime: { $gt: now } }, { endTime: { $exists: false }, startTime: { $gt: now } }],
+		});
+	}
+
+	public deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			externalId: { $type: 'string', $nin: keepExternalIds },
+			startTime: { $lt: end },
+			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }],
+		});
+	}
+
+	/** The rows `deleteImportedOutsideSet` would remove, so a caller can inspect them before they are gone. */
+	public findImportedOutsideSet(
+		uid: IUser['_id'],
+		start: Date,
+		end: Date,
+		keepExternalIds: string[],
+	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>> {
+		return this.find(
+			{
+				uid,
+				externalId: { $type: 'string', $nin: keepExternalIds },
+				startTime: { $lt: end },
+				$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }],
+			},
+			{
+				projection: { startTime: 1, endTime: 1, busy: 1 },
+			},
+		);
+	}
+
+	/** The rows `deleteUnfinishedByExternalIdsAndUserId` would remove, so a caller can inspect them first. */
+	public findUnfinishedByExternalIdsAndUserId(
+		uid: IUser['_id'],
+		externalIds: string[],
+		now: Date,
+	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>> {
+		return this.find(
+			{ uid, externalId: { $in: externalIds }, $or: [{ endTime: { $gt: now } }, { endTime: { $exists: false }, startTime: { $gt: now } }] },
+			{
+				projection: { startTime: 1, endTime: 1, busy: 1 },
 			},
 		);
 	}

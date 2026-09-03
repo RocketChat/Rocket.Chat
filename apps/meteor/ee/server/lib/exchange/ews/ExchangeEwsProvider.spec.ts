@@ -291,7 +291,7 @@ describe('ExchangeEwsProvider', () => {
 			['ErrorAccessDenied', 'authorization-failed'],
 			['ErrorImpersonateUserDenied', 'authorization-failed'],
 			['ErrorNonExistentMailbox', 'mailbox-not-found'],
-			['ErrorInvalidSyncStateData', 'unexpected-response'],
+			['ErrorInvalidSyncStateData', 'sync-state-invalid'],
 		])('maps the per-item ResponseCode %s to %s', async (responseCode, code) => {
 			const transport = new FakeTransport([
 				soap(`<m:ResponseMessages><m:ResponseCode>${responseCode}</m:ResponseCode></m:ResponseMessages>`),

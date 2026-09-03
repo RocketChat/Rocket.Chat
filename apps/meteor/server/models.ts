@@ -16,6 +16,7 @@ import {
 	EmailInboxRaw,
 	EmailMessageHistoryRaw,
 	EmojiCustomRaw,
+	ExchangeSyncStateRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	ImportDataRaw,
@@ -90,6 +91,7 @@ registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
+registerModel('IExchangeSyncStateModel', new ExchangeSyncStateRaw(db));
 registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
