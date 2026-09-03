@@ -739,7 +739,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-call-target');
 		}
 
-		const userCanBeCalled = await Authorization.hasAtLeastOnePermission(calleeId, ['call-management', 'videoconf-allow-join']);
+		const userCanBeCalled = await Authorization.hasAtLeastOnePermission(calleeId, ['call-management', 'videoconf-join-call']);
 
 		if (!userCanBeCalled) {
 			throw new Error('invalid-call-target');

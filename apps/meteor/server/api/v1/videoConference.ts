@@ -17,6 +17,7 @@ import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
+import { settings } from '../../settings';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -194,9 +195,10 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		// If anonymous read is enabled, external users can join conferences, so we only check permissions if the user exists
-		// otherwise `authOrAnonRequired: true` already blocks the request if needed
-		if (userId && !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid))) {
+		if (
+			!settings.get<boolean>('Accounts_AllowAnonymousRead') &&
+			(!userId || !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid)))
+		) {
 			return API.v1.forbidden('Not allowed');
 		}
 
