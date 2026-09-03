@@ -8,18 +8,6 @@ html {
 	overflow-y: auto;
 	height: 100%;
 
-	/*
-	 * Paint the root canvas so mobile browsers fill the overscroll/safe-area regions
-	 * (and tint their toolbars) with the theme background instead of falling back to white.
-	 * Once the palette is injected this follows the active theme; the media query is only
-	 * the pre-hydration fallback, matching the .page-loading screen.
-	 */
-	background-color: var(--rcx-color-surface-tint, #f7f8fa);
-
-	@media (prefers-color-scheme: dark) {
-		background-color: var(--rcx-color-surface-tint, #1f2329);
-	}
-
 	&.noscroll {
 		overflow: hidden;
 	}
