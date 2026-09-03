@@ -5,11 +5,13 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type TimePickerProps = {
-	value: Date;
-	onChange: (date: Date) => void;
+	'value': Date;
+	'onChange': (date: Date) => void;
+	'aria-describedby'?: string;
+	'aria-invalid'?: boolean;
 };
 
-const TimePicker = ({ value, onChange }: TimePickerProps) => {
+const TimePicker = ({ value, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid }: TimePickerProps) => {
 	const { t } = useTranslation();
 	const fieldId = useId();
 
@@ -27,7 +29,14 @@ const TimePicker = ({ value, onChange }: TimePickerProps) => {
 			<Field>
 				<FieldLabel htmlFor={fieldId}>{t('Time')}</FieldLabel>
 				<FieldRow>
-					<InputBox id={fieldId} type='time' value={timeValue} onChange={handleTimeChange} />
+					<InputBox
+						id={fieldId}
+						type='time'
+						value={timeValue}
+						onChange={handleTimeChange}
+						aria-describedby={ariaDescribedBy}
+						aria-invalid={ariaInvalid}
+					/>
 				</FieldRow>
 			</Field>
 		</Box>

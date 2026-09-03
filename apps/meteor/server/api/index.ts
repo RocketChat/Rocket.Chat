@@ -30,6 +30,7 @@ import './v1/presence';
 import './v1/push';
 import './v1/roles';
 import './v1/rooms';
+import './v1/scheduledMessages';
 import './v1/settings';
 import './v1/stats';
 import './v1/subscriptions';

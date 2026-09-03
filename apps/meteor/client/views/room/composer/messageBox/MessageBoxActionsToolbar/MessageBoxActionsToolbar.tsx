@@ -10,6 +10,7 @@ import { memo } from 'react';
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
+import { useScheduleMessageAction } from './hooks/useScheduleMessageAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
@@ -63,6 +64,7 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
 	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
+	const scheduleMessageAction = useScheduleMessageAction(disableBasicActions, room, chatContext.composer, tmid);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -74,6 +76,7 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+		...(scheduleMessageAction && !isHidden(hiddenActions, scheduleMessageAction) && { scheduleMessageAction }),
 		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
 
@@ -81,11 +84,16 @@ const MessageBoxActionsToolbar = ({
 	const createNew = [];
 	const share = [];
 	const insert = [];
+	const schedule = [];
 
 	createNew.push(allActions.createDiscussionAction);
 
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);
+	}
+
+	if (allActions.scheduleMessageAction) {
+		schedule.push(allActions.scheduleMessageAction);
 	}
 
 	if (variant === 'small') {
@@ -135,6 +143,7 @@ const MessageBoxActionsToolbar = ({
 	const createNewFiltered = createNew.filter(isTruthy);
 	const shareFiltered = share.filter(isTruthy);
 	const insertFiltered = insert.filter(isTruthy);
+	const scheduleFiltered = schedule.filter(isTruthy);
 
 	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
 		if (!icon) {
@@ -157,6 +166,7 @@ const MessageBoxActionsToolbar = ({
 					{ title: t('Create_new'), items: createNewFiltered },
 					{ title: t('Share'), items: shareFiltered },
 					...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
+					...(scheduleFiltered.length > 0 ? [{ title: t('Schedule'), items: scheduleFiltered }] : []),
 					...messageBoxActions,
 				]}
 				title={t('More_actions')}

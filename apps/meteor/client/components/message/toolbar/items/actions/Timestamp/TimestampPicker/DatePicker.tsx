@@ -1,15 +1,18 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import { format } from 'date-fns';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, Ref } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type DatePickerProps = {
-	value: Date;
-	onChange: (date: Date) => void;
+	'value': Date;
+	'onChange': (date: Date) => void;
+	'ref'?: Ref<HTMLInputElement>;
+	'aria-describedby'?: string;
+	'aria-invalid'?: boolean;
 };
 
-const DatePicker = ({ value, onChange }: DatePickerProps) => {
+const DatePicker = ({ value, onChange, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid }: DatePickerProps) => {
 	const { t } = useTranslation();
 	const fieldId = useId();
 
@@ -27,7 +30,15 @@ const DatePicker = ({ value, onChange }: DatePickerProps) => {
 			<Field>
 				<FieldLabel htmlFor={fieldId}>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<InputBox id={fieldId} type='date' value={dateValue} onChange={handleDateChange} />
+					<InputBox
+						ref={ref}
+						id={fieldId}
+						type='date'
+						value={dateValue}
+						onChange={handleDateChange}
+						aria-describedby={ariaDescribedBy}
+						aria-invalid={ariaInvalid}
+					/>
 				</FieldRow>
 			</Field>
 		</Box>
