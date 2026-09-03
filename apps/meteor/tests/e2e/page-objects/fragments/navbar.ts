@@ -48,7 +48,7 @@ export class Navbar {
 	}
 
 	get btnContactCenter(): Locator {
-		return this.omnichannelGroup.getByRole('button', { name: 'Contact Center' });
+		return this.omnichannelGroup.getByRole('button', { name: 'Contact center' });
 	}
 
 	get voiceCallGroup(): Locator {

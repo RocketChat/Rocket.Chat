@@ -158,11 +158,11 @@ export class HomeChannel extends RoutedPage {
 	}
 
 	get roomHeaderToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]');
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.locator('role=menuitem[name="Mark unread"]');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {
