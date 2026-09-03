@@ -124,6 +124,30 @@ callbacks.add(
 	'CleanDiscussionMessage',
 );
 
+const refreshDiscussionsContainingTypes = async (types: MessageTypesValues[]): Promise<boolean> => {
+	try {
+		const rids = await Messages.findDiscussionRoomIdsContainingTypes(types);
+		const results = [];
+
+		for await (const room of Rooms.findDiscussionsByIds(rids, { projection: { msgs: 1, lm: 1, sysMes: 1 } })) {
+			results.push(
+				await updateAndNotifyParentRoomWithParentMessage(room).then(
+					() => true,
+					(err) => {
+						SystemLogger.error({ msg: 'Failed to refresh the message count of a discussion', err, rid: room._id });
+						return false;
+					},
+				),
+			);
+		}
+
+		return results.every(Boolean);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Failed to refresh discussion message counts after hidden system messages change', err });
+		return false;
+	}
+};
+
 let hiddenSystemMessageTypes: Set<MessageTypesValues> | undefined;
 
 settings.onReady(() => {
@@ -140,15 +164,11 @@ settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
 		return;
 	}
 
-	try {
-		const rids = await Messages.findDiscussionRoomIdsContainingTypes(changedTypes);
+	const refreshed = await refreshDiscussionsContainingTypes(changedTypes);
 
-		for await (const room of Rooms.findDiscussionsByIds(rids, { projection: { msgs: 1, lm: 1, sysMes: 1 } })) {
-			await updateAndNotifyParentRoomWithParentMessage(room);
-		}
-
+	// the baseline only advances when the refresh fully succeeded and no newer change already moved it,
+	// so the next change retries any missed diff instead of computing against a wrong baseline
+	if (refreshed && hiddenSystemMessageTypes === previousTypes) {
 		hiddenSystemMessageTypes = currentTypes;
-	} catch (err) {
-		SystemLogger.error({ msg: 'Failed to refresh discussion message counts after hidden system messages change', err });
 	}
 });
