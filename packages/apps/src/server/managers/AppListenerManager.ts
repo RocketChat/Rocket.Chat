@@ -248,8 +248,6 @@ export interface IListenerExecutor {
 		result: void;
 	};
 	// Media calls
-	// Every media-call event shares this entry: the envelope's `method` selects
-	// which of `IMediaCallHandler`'s optional methods to dispatch to.
 	[AppInterface.IMediaCallHandler]: {
 		args: [MediaCallEvent];
 		result: PreMediaCallCreatedOutcome | void;
@@ -1302,7 +1300,6 @@ export class AppListenerManager {
 			return this.executePreMediaCallCreated(event.context);
 		}
 
-		// Post events must not add latency to call signaling, so they are not awaited
 		void this.executePostMediaCallEvent(event);
 	}
 
@@ -1314,16 +1311,10 @@ export class AppListenerManager {
 			const app = this.manager.getOneById(appId);
 
 			const result = await app.call(AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED, patchAccumulator).catch((error) => {
-				// Every method of IMediaCallHandler is optional: an app may implement the
-				// interface for the post events alone
 				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
 					return undefined;
 				}
 
-				// Anything else fails the call rather than allowing it: an app asked to decide and
-				// could not, so there is no decision to honour. Note that this only covers what
-				// `ProxiedApp.call` lets through - a request that times out is swallowed there and
-				// arrives here as `undefined`, which allows the call. See ADR 0003.
 				throw error;
 			});
 
@@ -1364,9 +1355,6 @@ export class AppListenerManager {
 		for (const appId of this.listeners.get(AppInterface.IMediaCallHandler)) {
 			const app = this.manager.getOneById(appId);
 
-			// Nothing is waiting on these events, so one app must not keep the others from being
-			// notified - not even by not implementing the method at all, and not by stalling until
-			// its own call times out. Every handler is started before any of them is awaited.
 			dispatched.push(
 				app.call(event.method, event.context).catch((error) => {
 					if (error?.code === JSONRPC_METHOD_NOT_FOUND) {

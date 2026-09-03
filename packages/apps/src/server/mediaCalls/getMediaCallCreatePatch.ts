@@ -2,10 +2,6 @@ import type { MediaCallCreatePatch } from '@rocket.chat/apps-engine/definition/m
 
 /**
  * Contacts are the outcome of routing and of permission checks, so only features may be patched.
- *
- * `isEventResult` only recognizes the marker, so the payload under it is still whatever the app
- * sent over JSON-RPC: it has a type here, but nothing ever checked it. A patch that carries
- * nothing usable changes nothing, exactly like `pass`.
  */
 export function getMediaCallCreatePatch(appId: string, patch: unknown): Partial<MediaCallCreatePatch> {
 	if (typeof patch !== 'object' || patch === null) {

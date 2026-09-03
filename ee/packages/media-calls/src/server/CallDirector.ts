@@ -29,16 +29,11 @@ export type CreateCallParams = InternalCallParams & {
 	calleeAgent: IMediaCallAgent;
 };
 
-/** Everything it takes to say which call attempt this is, before anyone knows whether it happens. */
 type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
 	createdBy: MediaCallContact;
 	service: IMediaCall['service'];
 };
 
-/**
- * What is left of a call request once an app has refused it: the parties, what the request said,
- * and what refused it. No agent, because neither side is ever going to be signalled.
- */
 export type PreventedCallParams = CallIdentityParams & {
 	preventedBy: CallPreventionRecord;
 };
@@ -47,9 +42,7 @@ export type PreventedCallParams = CallIdentityParams & {
 const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>();
 
 /**
- * The fields that identify a call attempt, whether or not the call goes on to happen. What
- * separates a call that rings from one an app refused is its lifecycle - the state, the expiration
- * and the features - and none of that is here.
+ * The fields that identify a call attempt, whether or not the call goes on to happen.
  */
 function getCallIdentity(params: CallIdentityParams) {
 	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
@@ -78,12 +71,6 @@ function getCallIdentity(params: CallIdentityParams) {
 	};
 }
 
-/**
- * What the transport can carry is not up for negotiation: a call that goes through the PBX only
- * ever has the features SIP supports, whoever asked for the others. The providers already clamp
- * the request, but an app may change the feature list afterwards, so the clamp is applied again
- * on the way out of the hook.
- */
 function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
 	if (caller.type !== 'sip' && callee.type !== 'sip') {
 		return features;
@@ -240,16 +227,6 @@ class MediaCallDirector {
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 	}
 
-	/**
-	 * Writes down a call an app refused. Nobody's device rang and no audio path was ever opened,
-	 * but the workspace still keeps a record of the attempt, and every surface that reports one
-	 * reads an `IMediaCall`.
-	 *
-	 * The row is inserted already ended and already expired, in one write. Every scan of the
-	 * collection filters on `ended: false`, so an unended row - or one ended in a second write
-	 * that fails - would leave both parties permanently unable to place or receive a call, with
-	 * no expiry to rescue them.
-	 */
 	private async recordPreventedCall(params: PreventedCallParams): Promise<void> {
 		const { preventedBy } = params;
 
@@ -264,7 +241,6 @@ class MediaCallDirector {
 			endedAt: now,
 			expiresAt: now,
 
-			// No feature was ever negotiated, and none may be used on a call that will not happen
 			features: [],
 
 			preventedBy,
@@ -308,7 +284,6 @@ class MediaCallDirector {
 
 		const createdBy = requestedBy || caller;
 
-		// Last look before the call exists: the host may still block it or change the requested features
 		const hookResult = await getMediaCallServer().runPreCallCreatedHook({ caller, callee, createdBy, features, parentCallId, divertedBy });
 
 		if (hookResult.prevented) {
@@ -319,8 +294,6 @@ class MediaCallDirector {
 				calleeType: callee.type,
 			});
 
-			// The record is a consequence of the refusal, not a part of it: the caller is told the
-			// same thing whether or not it lands.
 			await this.recordPreventedCall({
 				...params,
 				createdBy,

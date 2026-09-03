@@ -33,17 +33,12 @@ export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActor
 type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 /**
- * What refused a call, and what it said. Nothing ever reads the words without the app that
- * wrote them, so the app that acted is named beside them.
+ * What app refused a call, and what it said about it.
  *
  * `appName` is the app's name as of the moment it acted; an uninstalled app cannot be asked
  * for it.
  *
- * `text` always carries words a reader can read on its own. An app that wrote its own words
- * gets them stored here. An app that named an i18n key gets its own wording for that key in the
- * workspace's default language, captured while the app was still installed, and read as a
- * fallback once the app is gone. Either way it is capped by whatever writes the record: what an
- * app says goes to the database, so it cannot grow without a bound.
+ * `text` always carries words a reader can read on its own.
  *
  * `i18n.ns` is always `app-<appId>` today and so derivable from `appId`. It is stored anyway
  * because this record has to still read years after the app is gone: a stored namespace
@@ -91,13 +86,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	/** The party whose line was diverted at the SIP level (from the Diversion header) */
 	divertedBy?: MediaCallContact;
 
-	/**
-	 * Set only on a call an app refused. The call is `ended` from the moment it is written, so it
-	 * never rang and never connected.
-	 *
-	 * Anything that comes to count calls, bill for them or report on them has to exclude these:
-	 * the collection holds call attempts that got as far as routing, not calls that happened.
-	 */
+	/** Set only on a call an app refused */
 	preventedBy?: CallPreventionRecord;
 
 	uids: IUser['_id'][];

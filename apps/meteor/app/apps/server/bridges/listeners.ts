@@ -168,8 +168,6 @@ type HandleDefaultEvent =
 			event: AppInterface.IPreEmailSent;
 			payload: [IPreEmailSentContext];
 	  }
-	// Media call payloads are already app-shaped when they get here — see
-	// apps/meteor/server/services/media-call/appEvents.ts
 	| {
 			event: AppInterface.IMediaCallHandler;
 			payload: [MediaCallEvent];
