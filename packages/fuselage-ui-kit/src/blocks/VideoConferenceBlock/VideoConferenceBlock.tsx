@@ -16,7 +16,7 @@ import {
 	VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler } from 'react';
-import { useContext, memo, useMemo } from 'react';
+import { useContext, memo, useMemo, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../..';
@@ -144,17 +144,20 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	const endedFooter = [
 		data.type === 'direct' && canManageConference && (
-			<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
+			<VideoConfMessageButton onClick={callAgainHandler} key='call-action'>
+				{isUserCaller ? t('Call_again') : t('Call_back')}
+			</VideoConfMessageButton>
 		),
 		data.type !== 'direct' && data.users.length > 0 && (
-			<>
+			<Fragment key='user-stack'>
 				<VideoConfMessageUserStack users={data.users} />
 				<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
-			</>
+			</Fragment>
 		),
-		[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
-			<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
-		),
+		(data.type === 'direct' || data.users.length === 0) &&
+			[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
+				<VideoConfMessageFooterText key='not-answered'>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
+			),
 	].filter(Boolean);
 
 	if ('endedAt' in data) {
