@@ -13,12 +13,12 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../not
 const FILE_CLEANUP_BATCH_SIZE = 1000;
 
 async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise<void> {
-	const room = await Rooms.findOneDiscussionById(rid, { projection: { msgs: 1, lm: 1, sysMes: 1 } });
-	if (!room) {
-		return;
-	}
-
 	try {
+		const room = await Rooms.findOneDiscussionById(rid, { projection: { msgs: 1, lm: 1, sysMes: 1 } });
+		if (!room) {
+			return;
+		}
+
 		await updateAndNotifyParentRoomWithParentMessage(room);
 	} catch (err) {
 		SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
