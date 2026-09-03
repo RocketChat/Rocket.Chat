@@ -2,6 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
+import { CONFERENCE_THEMED_CLASS } from '../panelStyles';
+
 type CallPanelProps = {
 	visible: boolean;
 	/** Float over the call instead of taking width from it — used on viewports too narrow to split. */
@@ -33,6 +35,9 @@ const CLOSE_MS = 200;
  */
 const CallPanel = ({ visible, overlay = false, children }: CallPanelProps) => (
 	<Contextualbar
+		// What the panel holds is room UI, so it is read in the reader's own theme rather than in the dark the
+		// window around it is pinned to.
+		className={CONFERENCE_THEMED_CLASS}
 		width={visible ? PANEL_INLINE_SIZE : 0}
 		minWidth={visible ? PANEL_INLINE_SIZE : 0}
 		borderBlockWidth='default'

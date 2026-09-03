@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { lazy } from 'react';
 
 const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
@@ -8,6 +8,8 @@ const ModalRegion = lazy(() => import('@rocket.chat/ui-client').then(({ ModalReg
 const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
 const AppLayoutThemeWrapper = lazy(() => import('../components/AppLayoutThemeWrapper'));
 const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
+
+type AppLayoutThemeWrapperProps = ComponentProps<typeof AppLayoutThemeWrapper>;
 
 class AppLayoutSubscription extends Emitter<{ update: void }> {
 	private descriptor: ReactNode = null;
@@ -33,10 +35,16 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 	 * Deliberately not called `embedded`: that already means Rocket.Chat rendered inside someone else's page
 	 * (`layout=embedded`), which is still the workspace and still wants its banners. Embedded chats reach this
 	 * through the ordinary room route and never pass this option.
+	 *
+	 * `theme` pins the palette for a route whose look is part of what it is, rather than following the reader's
+	 * appearance preference.
 	 */
-	wrap(element: ReactNode, { standalone = false }: { standalone?: boolean } = {}): ReactNode {
+	wrap(
+		element: ReactNode,
+		{ standalone = false, theme }: { standalone?: boolean; theme?: AppLayoutThemeWrapperProps['theme'] } = {},
+	): ReactNode {
 		return (
-			<AppLayoutThemeWrapper>
+			<AppLayoutThemeWrapper theme={theme}>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
 				{!standalone && <CloudAnnouncementsRegion />}
