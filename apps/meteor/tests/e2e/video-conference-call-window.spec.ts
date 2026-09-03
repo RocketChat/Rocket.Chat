@@ -431,14 +431,21 @@ test.describe('video conference call window', () => {
 	 * Qase case 17 step 3, case 18 steps 2 and 4, and case 47 step 2 — the caller's own window following a call
 	 * as other people arrive, turn it down and go.
 	 *
-	 * This is the case that found the gap between reading a call and subscribing to it. The window's own DDP
-	 * frames, captured by the run that failed, showed the `sub` for `<callId>/updated` going out two seconds
-	 * after the call had been read; the callee declined in between; the event was announced to nobody here, and
-	 * nothing brought it back. The window now reads the call again once it is watching, so anything announced in
-	 * that gap is picked up.
+	 * Runs instrumented: on failure it attaches the call window's DDP frames.
 	 *
-	 * The frames are still attached on failure — this window's silence has had three different explanations so
-	 * far, and telling them apart from the outside is not possible.
+	 * What the frames have already ruled out. The window *does* subscribe — `sub stream-video-conference` for
+	 * `<callId>/updated` goes out, after two `notify-user` events have already been received on the same socket,
+	 * so the connection is alive and authenticated. Nothing for that stream ever comes back. Reading the call
+	 * again once the subscription is made did not help either, and could not: it covers what changed *during*
+	 * the subscribe round trip, while the decline happens a couple of seconds after it.
+	 *
+	 * So the question left is whether the server accepted that subscription at all, and the previous capture
+	 * could not answer it — it filtered on the stream name, and a `ready` or a `nosub` carries only the
+	 * subscription's id. It keeps everything now.
+	 *
+	 * Not reproducible locally: with LiveKit the call renders in our own window, while CI's tester app answers
+	 * with a *relative* URL, so the window carries an iframe running a second Rocket.Chat client on the same
+	 * origin — visible in the run's console output.
 	 */
 	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
@@ -467,7 +474,7 @@ test.describe('video conference call window', () => {
 				// The window not reacting and the window never having asked to are indistinguishable from the
 				// outside, and traces carry no WebSocket frames — so when this fails, say which it was.
 				await test.info().attach('call-window-ddp', {
-					body: callWindow.streamFrames().join('\n') || '(no frame mentions this stream)',
+					body: callWindow.ddpFrames().join('\n') || '(no frames recorded)',
 					contentType: 'text/plain',
 				});
 				throw error;
