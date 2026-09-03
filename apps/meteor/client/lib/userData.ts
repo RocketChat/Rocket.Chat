@@ -4,6 +4,7 @@ import { create } from 'zustand';
 
 import { sdk } from './SDKClient';
 import { Users } from '../stores';
+import { clearStoredCredentials } from './sdk/ddpSdk';
 
 export const useUserDataSyncReady = create(() => false);
 
@@ -78,6 +79,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 			case 'removed':
 				Users.state.delete(uid);
+				clearStoredCredentials();
 				break;
 		}
 	});
