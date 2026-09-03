@@ -53,9 +53,16 @@ export class ConferenceWindow {
 		});
 	}
 
-	/** The frames that mention this call's stream, which is the handful worth reading. */
-	streamFrames(): string[] {
-		return this.ddp.filter((frame) => frame.includes('video-conference'));
+	/**
+	 * Every frame, unfiltered.
+	 *
+	 * Filtering on the stream name is what hid the answer last time: a `ready` or a `nosub` names only the
+	 * subscription's id, never the stream, and those two are the whole difference between a subscription that
+	 * was refused and one that was accepted and then stayed silent. Frames are already capped at 400 characters
+	 * each, so keeping all of them costs little and cannot leave out the line that matters.
+	 */
+	ddpFrames(): string[] {
+		return this.ddp;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
