@@ -25,15 +25,6 @@ function makeEventResultMeta(app: ProxiedApp, i18nKey?: string): EventResultMeta
 /**
  * Turns what an app returned into what the apps platform reports to the host: the app's own
  * payload, plus everything about the app that only the engine can supply.
- *
- * The engine holds the `ProxiedApp` and the host does not, so the engine answers here rather
- * than leaving each host to look the app up a second time - and `docs/apps-engine-migration.md`
- * is in the process of turning any such lookup into a NATS call. A host reads a
- * `HostEventResult` and never a `MarkedEventResult`.
- *
- * Everything the engine adds is built from the `ProxiedApp` alone and never merged with what the
- * app returned: `isEventResult` only recognizes the marker, so an app can put anything -
- * including a `meta` - under it.
  */
 export function makeHostEventResult<T extends MarkedEventResult<any>>(app: ProxiedApp, result: T): HostEventResult<T> {
 	const { '@kind': _, ...rest } = result;

@@ -5,9 +5,6 @@
  * `@ts-expect-error` below fails the build if the line under it ever starts to
  * compile again. Each negative test sits beside a positive control, so a test
  * cannot pass because of some unrelated mistake in the same line.
- *
- * The reasoning behind these rules is in
- * docs/adr/0002-unified-event-result-for-pre-events.md.
  */
 
 import { EventResult } from '../../src/definition/eventResult';

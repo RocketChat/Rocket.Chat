@@ -19,16 +19,7 @@ import { logger } from './logger';
 import { i18n } from '../../lib/i18n';
 import { settings } from '../../settings';
 
-/**
- * Maps media calls onto the shapes apps see and dispatches the media-call
- * lifecycle events to the Apps-Engine.
- *
- * Every event travels under the single `IMediaCallHandler` interface; the
- * `method` on the envelope is what tells the listener manager which of the
- * handler's optional methods to call.
- */
-
-/** Contacts carry a per-session signing token, which is a credential: only these fields may reach an app. */
+// Contacts carry a per-session signing token, which is a credential and shouldn't go to apps
 function toAppContact(contact: MediaCallContact): IAppsMediaCallContact {
 	return {
 		type: contact.type,
@@ -39,15 +30,6 @@ function toAppContact(contact: MediaCallContact): IAppsMediaCallContact {
 	};
 }
 
-/**
- * The two contacts are the origin: a sip caller means the call arrived from the
- * PBX, a sip callee means it was placed out through it, and neither means it never
- * leaves the workspace. Both contacts are final before any event is built, so
- * apps do not have to reimplement the routing rules to tell the cases apart.
- *
- * A sip/sip pair cannot occur: an external callee requires a user caller, and an
- * inbound INVITE requires a user callee.
- */
 function getCallOrigin(caller: MediaCallContact, callee: MediaCallContact): MediaCallOrigin {
 	if (caller.type === 'sip') {
 		return 'sip-inbound';
@@ -91,13 +73,6 @@ function toAppMediaCall(call: IMediaCall): IAppsMediaCall {
 	};
 }
 
-/**
- * Each post event promises the apps one timestamp on the call it carries. The
- * event is dispatched after the write that sets it, so the timestamp is there.
- * A call that arrives without it cannot keep the promise, and an app that acts on
- * a made-up time is worse off than an app that never hears about the call, so the
- * event is dropped instead.
- */
 function getEventTimestamp(call: IMediaCall, field: 'activatedAt' | 'acceptedAt' | 'endedAt'): Date | undefined {
 	if (!call[field]) {
 		logger.warn({ msg: 'Skipped a media call event for a call that carries no timestamp for it', callId: call._id, field });
@@ -124,7 +99,6 @@ function toAppEndedMediaCall(call: IMediaCall): IAppsEndedMediaCall | undefined 
 	return endedAt && { ...toAppMediaCall(call), ended: true, endedAt };
 }
 
-/** `0` for a call that never became active, and never negative. */
 function getCallDurationInMs(activatedAt: Date | undefined, endedAt: Date): number {
 	if (!activatedAt) {
 		return 0;
@@ -141,12 +115,6 @@ async function triggerMediaCallEvent(event: MediaCallEvent): Promise<unknown> {
 	return Apps.self?.triggerEvent(AppEvents.IMediaCallHandler, event);
 }
 
-/**
- * Every post event is reported from the call as it was when the event happened. The call is never
- * read again on the way here: by then it may already have moved on, and an app that is told about
- * an accepted call has to be told about the call that was accepted. A workspace with no apps
- * skips the work.
- */
 export async function notifyAppsOfMediaCallStarted(call: IMediaCall): Promise<void> {
 	if (!Apps.self) {
 		return;
@@ -154,7 +122,6 @@ export async function notifyAppsOfMediaCallStarted(call: IMediaCall): Promise<vo
 
 	const activeCall = toAppActiveMediaCall(call);
 	if (!activeCall) {
-		// `getEventTimestamp` already logged what the call is missing
 		return;
 	}
 
@@ -194,16 +161,10 @@ export async function notifyAppsOfMediaCallEnded(call: IMediaCall): Promise<void
 	});
 }
 
-/**
- * The bound on what a prevention record may put in the database. It is not a UI measure: the
- * stored copy is the only copy of what an app said once the app is gone, and nothing else stops
- * an app from writing without a limit.
- */
 const MAX_PREVENTION_LENGTH = 1000;
 
-/** Keeps the words inside the budget and marks where they were cut, rather than stopping dead. */
+// Keeps the words inside the budget and marks where they were cut
 function capText(text: string): string {
-	// One character for the marker, so it costs almost nothing of the budget
 	return text.length <= MAX_PREVENTION_LENGTH ? text : `${text.slice(0, MAX_PREVENTION_LENGTH - 1)}\u2026`;
 }
 
@@ -217,18 +178,7 @@ function preventedByAppText(appName: string): string {
 }
 
 /**
- * What a reader sees once the app is uninstalled and takes its i18n namespace with it: the app's
- * own wording for the key it named, in the language the workspace runs in, ready to read on its
- * own. An app that ships no translation for that key has nothing to snapshot, so the workspace
- * answers for it - a raw key is never what a reader is left with.
- *
- * The lookup always misses: an app's namespace is never registered on the server, so `t` falls
- * through to the wording and interpolates that instead. Escaping stays off to match the client,
- * which renders through React and turns it off too - otherwise an `&` in an argument would read
- * differently before and after the app is uninstalled.
- *
- * Plural suffixes are not consulted, so an explanation whose wording changes with a number reads
- * in the form the app shipped under the bare key.
+ * Resolves an app's translation key to plain text, so the text survives the app's uninstall.
  */
 function resolveFallbackText(app: EventResultMeta['app'], key: string, args?: Record<string, string | number>): string {
 	const lng = getWorkspaceLanguage();
@@ -254,9 +204,6 @@ function resolveFallbackText(app: EventResultMeta['app'], key: string, args?: Re
 
 /**
  * Turns what an app said about a call it prevented into the record kept on the call.
- *
- * An app that names a key gets the key stored, so that a reader sees the explanation in their own
- * language for as long as the app is installed, and a snapshot stored beside it for after that.
  */
 function toPreventionRecord(outcome: Extract<PreMediaCallCreatedOutcome, { type: 'prevent' }>): CallPreventionRecord {
 	const { app } = outcome.meta;
@@ -278,8 +225,7 @@ function toPreventionRecord(outcome: Extract<PreMediaCallCreatedOutcome, { type:
 /**
  * Runs the pre-media-call-created event and translates its outcome back into
  * something the media call server understands. Apps may block the call or change
- * the features it was requested with; anything else they try to patch is dropped
- * by the listener manager.
+ * the features it was requested with
  */
 export async function runPreMediaCallCreatedAppHook(params: PreCallCreatedHookParams): Promise<PreCallCreatedHookResult> {
 	if (!Apps.self) {
@@ -322,7 +268,7 @@ export async function runPreMediaCallCreatedAppHook(params: PreCallCreatedHookPa
 		};
 	}
 
-	// Apps are free to ask for features that don't exist; only the known ones move on
+	// Drop potentially unknown features the app might have added
 	const features = outcome.type === 'patch' && outcome.patch.features ? outcome.patch.features.filter(isCallFeature) : params.features;
 
 	return { prevented: false, features };

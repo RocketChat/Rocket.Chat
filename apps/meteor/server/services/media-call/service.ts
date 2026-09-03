@@ -157,15 +157,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return signals;
 	}
 
-	/**
-	 * Apps observe calls, they don't take part in them: never let one delay or break call
-	 * signaling. The event carries the call as it was when the event happened, so a notification
-	 * that waits still describes the transition it belongs to.
-	 *
-	 * One call's events reach an app in the order they happened, and nothing here has to arrange
-	 * that: `setImmediate` runs the notifications in the order they were queued, and a notification
-	 * awaits nothing between here and the JSON-RPC request the app receives.
-	 */
 	private notifyApps(call: IMediaCall, notify: (call: IMediaCall) => Promise<void>): void {
 		setImmediate(() => {
 			notify(call).catch((err) => logger.error({ msg: 'Failed to notify apps about a media call event', err, callId: call._id }));
@@ -279,8 +270,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			...this.getContactDataForInternalHistory(call.caller),
 		} as const;
 
-		// A prevented call leaves an entry for the caller only. The callee's device never rang and
-		// they were never told, so nothing appears in their history (spec §3).
+		// A prevented call leaves an entry for the caller only.
 		const historyItems = call.preventedBy ? [outboundHistoryItem] : [outboundHistoryItem, inboundHistoryItem];
 
 		await CallHistory.insertMany(historyItems).catch((err: unknown) =>
@@ -337,8 +327,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private getCallHistoryItemState(call: IMediaCall): CallHistoryItemState {
-		// An app refused the call before it existed. This wins over every other state: the call never
-		// rang, so it can be neither transferred, answered nor failed.
 		if (call.preventedBy) {
 			return 'prevented';
 		}

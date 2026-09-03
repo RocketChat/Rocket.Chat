@@ -29,7 +29,7 @@ const meta = {
 				Direct_Message: 'Direct Message',
 				User_info: 'User info',
 			})
-			// The app's own namespace, so the i18n-key reason renders in the reader's language (spec §6).
+			// The app's own namespace
 			.withTranslations('en', 'app-call-policy', {
 				call_prevented_for_callee: 'Calls to {{callee}} are not allowed by this workspace',
 			})
@@ -117,7 +117,7 @@ export const PreventedWithReason: Story = {
 	},
 };
 
-// An app that named a translation key. The reason renders in the app namespace (spec §6).
+// An app that named a translation key. The reason renders in the app namespace
 export const PreventedWithTranslatedReason: Story = {
 	args: {
 		onClose: noop,
@@ -136,7 +136,7 @@ export const PreventedWithTranslatedReason: Story = {
 };
 
 // A malformed record that named neither a reason nor a key. The card's own second line reads
-// "Prevented by {app name}", so it is not repeated below (spec §4, §7).
+// "Prevented by {app name}", so it is not repeated below
 export const PreventedWithoutReason: Story = {
 	args: {
 		onClose: noop,
