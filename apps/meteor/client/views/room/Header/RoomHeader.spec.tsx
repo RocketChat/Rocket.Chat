@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { LayoutContext, RoomToolboxContext } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig, LayoutContextValue } from '@rocket.chat/ui-contexts';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import RoomHeader from './RoomHeader';
@@ -180,6 +180,14 @@ describe('RoomHeader', () => {
 			);
 		};
 
+		const getToolbarSequence = () => {
+			const toolbar = within(screen.getByRole('toolbar', { name: 'Toolbox_room_actions' }));
+
+			return [...toolbar.getAllByRole('button'), ...toolbar.queryAllByRole('separator')]
+				.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))
+				.map((element) => element.getAttribute('title') ?? 'divider');
+		};
+
 		const roomScenarios = [
 			{ type: 'c', name: 'public-channel', title: 'Public Channel' },
 			{ type: 'p', name: 'private-group', title: 'Private Group' },
@@ -203,6 +211,26 @@ describe('RoomHeader', () => {
 					expect(screen.getByTitle('Discussions')).toBeInTheDocument();
 					expect(screen.queryByTitle('Files')).not.toBeInTheDocument();
 					expect(screen.getByTitle('Options')).toBeInTheDocument();
+
+					expect(getToolbarSequence()).toEqual(['Threads', 'divider', 'Members', 'Discussions', 'Options']);
+				});
+
+				it('should order featured and visible actions by their configured order instead of their declaration order', () => {
+					renderWithLayout(testRoom, undefined, {
+						[settingKeyForRoom(type)]: JSON.stringify({
+							maxVisibleNormal: 2,
+							items: [
+								{ id: 'thread', featured: true, order: 2 },
+								{ id: 'pinned-messages', featured: true, order: 1 },
+								{ id: 'members-list', featured: false, order: 3 },
+								{ id: 'discussions', featured: false, order: 2 },
+								{ id: 'files', featured: false, order: 1 },
+							],
+						}),
+					});
+
+					expect(getToolbarSequence()).toEqual(['Pinned Messages', 'Threads', 'divider', 'Files', 'Discussions', 'Options']);
+					expect(screen.queryByTitle('Members')).not.toBeInTheDocument();
 				});
 
 				it('should collapse normal actions into kebab menu when roomToolboxExpanded is false (mobile viewport)', () => {
@@ -213,6 +241,8 @@ describe('RoomHeader', () => {
 					expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
 					expect(screen.queryByTitle('Files')).not.toBeInTheDocument();
 					expect(screen.getByTitle('Options')).toBeInTheDocument();
+
+					expect(getToolbarSequence()).toEqual(['Threads', 'divider', 'Options']);
 				});
 
 				describe('Soft Fallbacks', () => {

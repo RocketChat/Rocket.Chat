@@ -133,6 +133,34 @@ describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 		expect(result.featuredActions).toHaveLength(0);
 		expect(result.visibleActions.map((a) => a.id)).toEqual(['start-video-call', 'thread']);
 	});
+	it('should keep configured actions ahead of unconfigured ones even when the configured order is very large', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'discussions' }, { id: 'clean-history' }];
+		const config = {
+			maxVisibleNormal: 6,
+			items: [{ id: 'clean-history', featured: false, order: 10000 }],
+		};
+		const result = processRoomActions(actionsBase, config);
+		expect(result.visibleActions.map((a) => a.id)).toEqual(['clean-history', 'thread', 'discussions']);
+	});
+	it('should keep unconfigured actions in their incoming order', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'discussions' }, { id: 'clean-history' }, { id: 'mentions' }];
+		const result = processRoomActions(actionsBase, { maxVisibleNormal: 6, items: [] });
+		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread', 'discussions', 'clean-history', 'mentions']);
+	});
+	it('should sort featured items with an omitted order after the ones that declare it', () => {
+		const actionsBase = [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }];
+		const config = {
+			maxVisibleNormal: 6,
+			items: [
+				{ id: 'a', featured: true },
+				{ id: 'b', featured: true, order: 3 },
+				{ id: 'c', featured: true, order: 1 },
+				{ id: 'd', featured: true, order: 2 },
+			],
+		};
+		const result = processRoomActions(actionsBase, config);
+		expect(result.featuredActions.map((x) => x.id)).toEqual(['c', 'd', 'b', 'a']);
+	});
 	it('should sort featuredActions by order when multiple featured items exist', () => {
 		const actionsBase = [{ id: 'start-call' }, { id: 'thread' }, { id: 'search' }];
 		const config = {

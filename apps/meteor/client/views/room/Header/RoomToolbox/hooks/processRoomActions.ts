@@ -1,7 +1,7 @@
 export type RoomToolboxLayoutItem = {
 	id: string;
-	featured: boolean;
-	order: number;
+	featured?: boolean;
+	order?: number;
 };
 
 export type RoomToolboxLayoutConfig = {
@@ -20,6 +20,8 @@ export type RoomToolboxHiddenSection = {
 	id: string;
 	items: RoomToolboxBaseAction[];
 };
+
+const compareByOrder = (a: { order: number }, b: { order: number }): number => (a.order === b.order ? 0 : a.order - b.order);
 
 const groupActionsByType = (actions: RoomToolboxBaseAction[]): RoomToolboxHiddenSection[] => {
 	const sectionsMap = new Map<string, RoomToolboxHiddenSection>();
@@ -59,15 +61,15 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 		(acc, action) => {
 			const configItem = itemMap.get(action.id);
 			const isFeatured = configItem?.featured ?? action.featured ?? false;
-			const order = configItem?.order ?? 9999;
+			const order = configItem?.order ?? Number.POSITIVE_INFINITY;
 			acc[isFeatured ? 0 : 1].push({ action, order });
 			return acc;
 		},
 		[[], []],
 	);
 
-	featuredWithOrder.sort((a, b) => a.order - b.order);
-	normalWithOrder.sort((a, b) => a.order - b.order);
+	featuredWithOrder.sort(compareByOrder);
+	normalWithOrder.sort(compareByOrder);
 
 	const maxVisible = Math.max(0, Math.floor(config.maxVisibleNormal ?? 6));
 	const visibleActions = normalWithOrder.slice(0, maxVisible).map((n) => n.action);
