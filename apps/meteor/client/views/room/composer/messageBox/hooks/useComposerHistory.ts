@@ -20,7 +20,7 @@ export const useComposerHistory = (parseOptions: Options) =>
 					applyState: ({ text, selectionStart, selectionEnd }) => {
 						input.innerText = text;
 						renderComposerContent(input, parseOptions, { selectionStart, selectionEnd });
-						// Untrusted events: skipped by resolveComposerBox (no rerender loop),
+						// Untrusted events: skipped by the input renderer (no rerender loop),
 						// but keep draft persistence and the React typing state in sync.
 						triggerEvent(input, 'input');
 						triggerEvent(input, 'change');
