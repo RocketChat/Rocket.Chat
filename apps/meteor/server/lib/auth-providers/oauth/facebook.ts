@@ -12,7 +12,7 @@ const whitelisted = ['id', 'email', 'name', 'first_name', 'last_name', 'link', '
 const FB_API_VERSION = 'v2.9';
 const FB_URL = 'https://graph.facebook.com';
 
-const getIdentity = async function (accessToken, fields, secret) {
+const getIdentity = async function (accessToken: string, fields: string[], secret: string) {
 	const hmac = crypto.createHmac('sha256', OAuth.openSecret(secret));
 	hmac.update(accessToken);
 
@@ -23,6 +23,7 @@ const getIdentity = async function (accessToken, fields, secret) {
 				appsecret_proof: hmac.digest('hex'),
 				fields: fields.join(','),
 			},
+			ignoreSsrfValidation: true,
 		});
 
 		if (!request.ok) {
@@ -31,13 +32,13 @@ const getIdentity = async function (accessToken, fields, secret) {
 
 		return request.json();
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${err.message}`), {
-			response: err.message,
+		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${(err as Error).message}`), {
+			response: (err as Error).message,
 		});
 	}
 };
 
-registerAccessTokenService('facebook', async (options) => {
+registerAccessTokenService('facebook', async (options: { accessToken: string; secret: string; expiresIn: number }) => {
 	check(
 		options,
 		Match.ObjectIncluding({
@@ -51,7 +52,7 @@ registerAccessTokenService('facebook', async (options) => {
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
+		expiresAt: +new Date() + 1000 * options.expiresIn,
 	};
 
 	const fields = _.pick(identity, whitelisted);

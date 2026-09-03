@@ -64,5 +64,11 @@ declare module 'meteor/oauth' {
 			params: Record<string, any>,
 			validParams: string[],
 		): string;
+
+		function _endOfPopupResponseTemplate(): Promise<string>;
+		function _endOfRedirectResponseTemplate(): Promise<string>;
+		function _endOfLoginResponse(res: any, options: any): Promise<void>;
+		function _checkRedirectUrlOrigin(redirectUrl: string): boolean;
+		function _isCordovaFromQuery(query: Record<string, any>): boolean;
 	}
 }
