@@ -112,6 +112,27 @@ describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread']);
 		expect(result.hiddenActions).toMatchObject([{ id: 'apps', items: [{ id: 'app-x' }] }]);
 	});
+	it('should keep actions flagged as featured by themselves when the config does not mention them', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'start-video-call', featured: true }, { id: 'ai-actions', featured: true }];
+		const config = {
+			maxVisibleNormal: 6,
+			items: [{ id: 'thread', featured: false, order: 1 }],
+		};
+		const result = processRoomActions(actionsBase, config);
+		expect(result.featuredActions.map((a) => a.id)).toEqual(['start-video-call', 'ai-actions']);
+		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread']);
+		expect(result.hiddenActions).toHaveLength(0);
+	});
+	it('should let the config demote an action flagged as featured by itself', () => {
+		const actionsBase = [{ id: 'thread' }, { id: 'start-video-call', featured: true }];
+		const config = {
+			maxVisibleNormal: 6,
+			items: [{ id: 'start-video-call', featured: false, order: 1 }],
+		};
+		const result = processRoomActions(actionsBase, config);
+		expect(result.featuredActions).toHaveLength(0);
+		expect(result.visibleActions.map((a) => a.id)).toEqual(['start-video-call', 'thread']);
+	});
 	it('should sort featuredActions by order when multiple featured items exist', () => {
 		const actionsBase = [{ id: 'start-call' }, { id: 'thread' }, { id: 'search' }];
 		const config = {

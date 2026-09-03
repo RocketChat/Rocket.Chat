@@ -12,6 +12,7 @@ export type RoomToolboxLayoutConfig = {
 export type RoomToolboxBaseAction = {
 	id: string;
 	type?: string;
+	featured?: boolean;
 	[key: string]: unknown;
 };
 
@@ -57,11 +58,9 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 	>(
 		(acc, action) => {
 			const configItem = itemMap.get(action.id);
-			if (configItem?.featured) {
-				acc[0].push({ action, order: configItem.order });
-			} else {
-				acc[1].push({ action, order: configItem?.order ?? 9999 });
-			}
+			const isFeatured = configItem?.featured ?? action.featured ?? false;
+			const order = configItem?.order ?? 9999;
+			acc[isFeatured ? 0 : 1].push({ action, order });
 			return acc;
 		},
 		[[], []],

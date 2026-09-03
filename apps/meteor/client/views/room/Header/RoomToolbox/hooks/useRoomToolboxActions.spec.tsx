@@ -72,7 +72,7 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 
 			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['team-info', 'discussions']);
 
@@ -93,7 +93,7 @@ describe('useRoomToolboxActions', () => {
 					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'p' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 		});
 
 		it('should use the direct layout config for direct message rooms', () => {
@@ -110,6 +110,27 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['discussions']);
+		});
+
+		it('should keep actions flagged as featured by themselves out of the visible row and the kebab menu', () => {
+			const configWithoutStartCall = JSON.stringify({
+				maxVisibleNormal: 1,
+				items: [{ id: 'team-info', featured: false, order: 1 }],
+			});
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Public', configWithoutStartCall)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+					.build(),
+			});
+
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+			expect(result.current.visibleActions.map((a) => a.id)).not.toContain('start-call');
+
+			const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
+			expect(hiddenIds).not.toContain('start-call');
 		});
 
 		it.each([
@@ -199,7 +220,7 @@ describe('useRoomToolboxActions', () => {
 					.build(),
 			});
 
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 
 			expect(result.current.visibleActions).toEqual([]);
 
