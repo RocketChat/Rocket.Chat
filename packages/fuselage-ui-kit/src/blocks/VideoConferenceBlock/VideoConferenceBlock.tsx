@@ -17,7 +17,7 @@ import {
 	VideoConfContext,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler } from 'react';
-import { useContext, memo, useMemo } from 'react';
+import { useContext, memo, useMemo, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../..';
@@ -171,14 +171,15 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 			</VideoConfMessageButton>
 		),
 		data.type !== 'direct' && joinedUsers.length > 0 && (
-			<>
+			<Fragment key='user-stack'>
 				<VideoConfMessageUserStack users={joinedUsers} />
 				<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
-			</>
+			</Fragment>
 		),
-		!joinedUsers.length && [VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
-			<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
-		),
+		(data.type === 'direct' || data.users.length === 0) &&
+			[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
+				<VideoConfMessageFooterText key='not-answered'>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
+			),
 	].filter(Boolean);
 
 	if ('endedAt' in data) {
