@@ -72,6 +72,9 @@ export class NtlmEwsTransport implements IEwsTransport {
 
 	private readonly agent: Agent | undefined;
 
+	/** Serialises the NTLM sequences, never the bodies. */
+	private ntlmTurn: Promise<void> = Promise.resolve();
+
 	private readonly configError: ExchangeError | undefined;
 
 	/** Must be the certificate of the connection actually carrying the handshake, not a separate lookup. */
@@ -123,8 +126,9 @@ export class NtlmEwsTransport implements IEwsTransport {
 			}
 		};
 
-		if (socket.encrypted) {
+		if (socket.getProtocol?.()) {
 			read();
+			return;
 		}
 
 		socket.once('secureConnect', read);
@@ -134,8 +138,20 @@ export class NtlmEwsTransport implements IEwsTransport {
 		if (this.config.authMethod === 'basic') {
 			return this.postWithBasic(soapEnvelope);
 		}
+		// NTLM authenticates the connection, not the request, and the agent holds a single socket. Two
+		// handshakes interleaving on it means one of them answers the other's challenge, which Exchange
+		// rejects as bad credentials. `maxSockets: 1` already serialised the requests, not the sequences.
+		const result = this.ntlmTurn.then(
+			() => this.postWithNtlm(soapEnvelope),
+			() => this.postWithNtlm(soapEnvelope),
+		);
 
-		return this.postWithNtlm(soapEnvelope);
+		this.ntlmTurn = result.then(
+			() => undefined,
+			() => undefined,
+		);
+
+		return result;
 	}
 
 	private async postWithBasic(soapEnvelope: string): Promise<string> {
