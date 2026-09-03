@@ -18,7 +18,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { checkPermissions, parseDeprecation } from './api.helpers';
+import { canBypassRateLimit, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -27,6 +27,7 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
+	RateLimiterOptions,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -45,7 +46,6 @@ import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { isObject } from '../../lib/utils/isObject';
 import { checkCodeForUser } from '../lib/2fa/code';
-import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { getNestedProp } from '../lib/getNestedProp';
 import { notifyOnUserChangeAsync } from '../lib/notifyListener';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
@@ -126,11 +126,6 @@ interface IAPIDefaultFieldsToExclude {
 	settings: number;
 	inviteToken: number;
 }
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-};
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -420,7 +415,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
+			!(userId && (await canBypassRateLimit(userId, rateLimiterDictionary[route].options.bypassPermissions)))
 		);
 	}
 

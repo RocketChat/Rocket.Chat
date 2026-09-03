@@ -1,7 +1,8 @@
 import type { IMessage, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
@@ -19,9 +20,11 @@ const mockVirtualizerHandle = {
 };
 
 jest.mock('virtua', () => {
-	const { forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
+	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
 
 	return {
+		// `virtua` renders a plain container and wraps every child in a `div` of its own, so the list markup
+		// under test cannot rely on `ul`/`li` semantics.
 		VList: forwardRef(
 			(
 				{
@@ -40,9 +43,9 @@ jest.mock('virtua', () => {
 			) => {
 				useImperativeHandle(ref, () => mockVirtualizerHandle);
 				return (
-					<ul data-testid='thread-message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
-						{children}
-					</ul>
+					<div data-testid='thread-message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
+						{Children.map(children, (child) => (child ? <div>{child}</div> : child))}
+					</div>
 				);
 			},
 		),
@@ -107,7 +110,7 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 }));
 
 jest.mock('./ThreadMessageItem', () => ({
-	ThreadMessageItem: ({ message }: { message: IMessage }) => <li>{message._id}</li>,
+	ThreadMessageItem: ({ message }: { message: IMessage }) => <div role='listitem'>{message._id}</div>,
 }));
 
 jest.mock('../../../BubbleDate', () => ({
@@ -173,5 +176,67 @@ describe('ThreadMessageList', () => {
 		await user.pointer({ keys: '[/MouseLeft]' });
 
 		expect(fetchPreviousPage).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('ThreadMessageList accessibility', () => {
+	const mainMessage = createFakeMessage<IThreadMainMessage>({
+		_id: 'thread-id',
+		rid: room._id,
+		msg: 'main message',
+		tcount: 1,
+		u: {
+			_id: 'user-id',
+			username: 'user',
+			name: 'User',
+		},
+	});
+
+	const mockThreadMessagesQuery = (overrides: Record<string, unknown> = {}) => {
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [createThreadMessage(1), createThreadMessage(2)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: false,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn(),
+			...overrides,
+		});
+	};
+
+	const renderThreadMessageList = () =>
+		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
+		});
+
+	it('should render a labelled list exposing every message as a list item', () => {
+		mockThreadMessagesQuery();
+
+		renderThreadMessageList();
+
+		const list = screen.getByRole('list');
+
+		expect(list).toHaveAccessibleName();
+		// the two replies plus the main message
+		expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+	});
+
+	const states: [string, Record<string, unknown>][] = [
+		['default', {}],
+		['loading', { isLoading: true, data: undefined }],
+		['loading previous messages', { hasPreviousPage: true, isFetchingPreviousPage: true }],
+		['loading next messages', { hasNextPage: true, isFetchingNextPage: true }],
+		['able to load next messages', { hasNextPage: true }],
+	];
+
+	it.each(states)('should have no accessibility violations when %s', async (_state, overrides) => {
+		mockThreadMessagesQuery(overrides);
+
+		const { container } = renderThreadMessageList();
+
+		expect(await axe(container)).toHaveNoViolations();
 	});
 });

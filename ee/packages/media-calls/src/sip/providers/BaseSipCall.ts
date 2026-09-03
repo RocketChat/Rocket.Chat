@@ -1,11 +1,12 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
+import type { CallHangupReason, ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
 import { logger } from '../../logger';
 import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
+import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 
 export abstract class BaseSipCall extends BaseCallProvider {
@@ -51,6 +52,12 @@ export abstract class BaseSipCall extends BaseCallProvider {
 				'Content-Type': 'application/dtmf-relay',
 			},
 			body: `Signal=${dtmf}\r\nDuration=${duration}`,
+		});
+	}
+
+	protected hangupCall(hangupReason: CallHangupReason): void {
+		void mediaCallDirector.hangup(this.call, this.agent, hangupReason).catch((err) => {
+			logger.debug({ msg: 'Unexpected error ending call', err, type: this.constructor.name, hangupReason });
 		});
 	}
 }

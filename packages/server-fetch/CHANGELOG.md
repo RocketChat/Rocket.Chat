@@ -1,5 +1,25 @@
 # @rocket.chat/server-fetch
 
+## 0.2.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/models@2.5.0
+  - @rocket.chat/tools@0.4.0
+  </details>
+
+## 0.2.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/models@2.5.0-rc.0
+  - @rocket.chat/tools@0.4.0-rc.0
+  </details>
+
 ## 0.2.3
 
 ### Patch Changes

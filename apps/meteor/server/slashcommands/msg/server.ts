@@ -32,6 +32,7 @@ slashCommands.add({
 			const user = await Users.findOneById(userId, { projection: { language: 1 } });
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
+					interpolation: { escapeValue: false },
 					username: targetUsernameOrig,
 					lng: user?.language || settings.get('Language') || 'en',
 				}),

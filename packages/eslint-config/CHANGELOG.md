@@ -1,5 +1,17 @@
 # @rocket.chat/eslint-config
 
+## 0.9.0
+
+### Minor Changes
+
+- ([#41509](https://github.com/RocketChat/Rocket.Chat/pull/41509)) Upgrades ESLint to v10 and bumps plugins
+
+## 0.9.0-rc.0
+
+### Minor Changes
+
+- ([#41509](https://github.com/RocketChat/Rocket.Chat/pull/41509)) Upgrades ESLint to v10 and bumps plugins
+
 ## 0.8.0
 
 ### Minor Changes

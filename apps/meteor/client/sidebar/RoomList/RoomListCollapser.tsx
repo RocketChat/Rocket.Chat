@@ -1,4 +1,4 @@
-import { Badge, IconButton, SidebarV2CollapseGroup, SidebarV2CollapseGroupMenu } from '@rocket.chat/fuselage';
+import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
 
 	return (
-		<SidebarV2CollapseGroup
+		<SidebarCollapseGroup
 			title={title}
 			expanded={!group.collapsed}
 			badge={
@@ -44,7 +44,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onPointerEnter={requestMount}
 			menu={
 				hasLicenseModule ? (
-					<SidebarV2CollapseGroupMenu onClick={preventPropagation}>
+					<SidebarCollapseGroupMenu onClick={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
 								category={group.category}
@@ -59,7 +59,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 						) : (
 							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
 						)}
-					</SidebarV2CollapseGroupMenu>
+					</SidebarCollapseGroupMenu>
 				) : undefined
 			}
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}

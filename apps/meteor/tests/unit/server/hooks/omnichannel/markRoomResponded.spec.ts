@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach } from 'mocha';
+import moment from 'moment';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
@@ -111,6 +112,36 @@ describe('markRoomResponded', () => {
 		await markRoomResponded(message, room, {});
 
 		expect(models.LivechatInquiry.markInquiryActiveForPeriod.calledOnce).to.be.true;
+	});
+
+	it('should pass the current activity to getVisitorActiveForPeriodUpdateQuery so a null value can be healed', async () => {
+		const message = {};
+		const room = { v: { _id: '1234', activity: null } };
+		const roomUpdater = {};
+
+		models.LivechatInquiry.markInquiryActiveForPeriod.resolves({});
+
+		await markRoomResponded(message, room, roomUpdater);
+
+		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.calledOnce).to.be.true;
+		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.getCall(0).args).to.be.deep.equal([
+			moment().format('YYYY-MM'),
+			roomUpdater,
+			null,
+		]);
+	});
+
+	it('should not coerce an absent activity to null so it still gets the $addToSet treatment', async () => {
+		const message = {};
+		const room = { v: { _id: '1234' } };
+		const roomUpdater = {};
+
+		models.LivechatInquiry.markInquiryActiveForPeriod.resolves({});
+
+		await markRoomResponded(message, room, roomUpdater);
+
+		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.calledOnce).to.be.true;
+		expect(models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.getCall(0).args[2]).to.be.undefined;
 	});
 
 	it('should return room.responseBy when room is not waiting for response', async () => {

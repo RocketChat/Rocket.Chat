@@ -19,6 +19,14 @@ import { notifyOnMessageChange } from '../notifyListener';
 
 const translationLogger = new Logger('AutoTranslate');
 
+// Constant tokenizer patterns, compiled once instead of on every message.
+// Safe to share with /g flags because String.prototype.replace resets
+// lastIndex on each call.
+const urlSchemes = 'http,https';
+const markdownLinkRegex = new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${urlSchemes}):\\/\\/[^\\)]+\\))`, 'gm');
+const pipedLinkRegex = new RegExp(`((?:<|&lt;)(?:${urlSchemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm');
+const wrappedParagraphRegex = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
+
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');
 
@@ -168,47 +176,39 @@ export abstract class AutoTranslate {
 	tokenizeURLs(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
 
-		const schemes = 'http,https';
-
 		// Support ![alt text](http://image url) and [text](http://link)
-		message.msg = message.msg.replace(
-			new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'),
-			(_match, pre, text, post) => {
-				const pretoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens?.push({
-					token: pretoken,
-					text: pre,
-				});
+		message.msg = message.msg.replace(markdownLinkRegex, (_match, pre, text, post) => {
+			const pretoken = `<i class=notranslate>{${count++}}</i>`;
+			message.tokens?.push({
+				token: pretoken,
+				text: pre,
+			});
 
-				const posttoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens?.push({
-					token: posttoken,
-					text: post,
-				});
+			const posttoken = `<i class=notranslate>{${count++}}</i>`;
+			message.tokens?.push({
+				token: posttoken,
+				text: post,
+			});
 
-				return pretoken + text + posttoken;
-			},
-		);
+			return pretoken + text + posttoken;
+		});
 
 		// Support <http://link|Text>
-		message.msg = message.msg.replace(
-			new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'),
-			(_match, pre, text, post) => {
-				const pretoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens?.push({
-					token: pretoken,
-					text: pre,
-				});
+		message.msg = message.msg.replace(pipedLinkRegex, (_match, pre, text, post) => {
+			const pretoken = `<i class=notranslate>{${count++}}</i>`;
+			message.tokens?.push({
+				token: pretoken,
+				text: pre,
+			});
 
-				const posttoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens?.push({
-					token: posttoken,
-					text: post,
-				});
+			const posttoken = `<i class=notranslate>{${count++}}</i>`;
+			message.tokens?.push({
+				token: posttoken,
+				text: post,
+			});
 
-				return pretoken + text + posttoken;
-			},
-		);
+			return pretoken + text + posttoken;
+		});
 
 		return message;
 	}
@@ -219,8 +219,7 @@ export abstract class AutoTranslate {
 		message = Markdown.parseMessageNotEscaped(message);
 
 		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
-		const regexWrappedParagraph = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
-		message.msg = message.msg.replace(regexWrappedParagraph, '');
+		message.msg = message.msg.replace(wrappedParagraphRegex, '');
 
 		for (const [tokenIndex, value] of message.tokens?.entries() ?? []) {
 			const { token } = value;

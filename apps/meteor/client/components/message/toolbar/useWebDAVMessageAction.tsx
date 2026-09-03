@@ -1,9 +1,9 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 
-import { getURL } from '../../../../app/utils/client';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
+import { getURL } from '../../../lib/getURL';
 import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
 
 export const useWebDAVMessageAction = (

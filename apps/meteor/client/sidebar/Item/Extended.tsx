@@ -1,12 +1,12 @@
 import {
-	SidebarV2Item,
-	SidebarV2ItemAvatarWrapper,
-	SidebarV2ItemCol,
-	SidebarV2ItemRow,
-	SidebarV2ItemTitle,
-	SidebarV2ItemTimestamp,
-	SidebarV2ItemContent,
-	SidebarV2ItemMenu,
+	SidebarItem,
+	SidebarItemAvatarWrapper,
+	SidebarItemCol,
+	SidebarItemRow,
+	SidebarItemTitle,
+	SidebarItemTimestamp,
+	SidebarItemContent,
+	SidebarItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
@@ -53,31 +53,31 @@ const Extended = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
-			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
-			<SidebarV2ItemCol>
-				<SidebarV2ItemRow>
+		<SidebarItem href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
+			<SidebarItemCol>
+				<SidebarItemRow>
 					{icon}
-					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
-				</SidebarV2ItemRow>
-				<SidebarV2ItemRow>
-					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
+					{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
+				</SidebarItemRow>
+				<SidebarItemRow>
+					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>
 					{titleIcon}
 					{badges}
 					{actions}
 					{menu && (
-						<SidebarV2ItemMenu>
+						<SidebarItemMenu>
 							{menuVisibility ? (
 								menu()
 							) : (
-								<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' onPointerDown={mountNow} />
+								<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' onPointerDown={mountNow} />
 							)}
-						</SidebarV2ItemMenu>
+						</SidebarItemMenu>
 					)}
-				</SidebarV2ItemRow>
-			</SidebarV2ItemCol>
-		</SidebarV2Item>
+				</SidebarItemRow>
+			</SidebarItemCol>
+		</SidebarItem>
 	);
 };
 

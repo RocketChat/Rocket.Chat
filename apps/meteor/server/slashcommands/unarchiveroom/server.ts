@@ -40,6 +40,7 @@ slashCommands.add({
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
+					interpolation: { escapeValue: false },
 					channelName: channel,
 					lng: settings.get('Language') || 'en',
 				}),
@@ -58,6 +59,7 @@ slashCommands.add({
 		if (!room.archived) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_already_Unarchived', {
+					interpolation: { escapeValue: false },
 					channelName: channel,
 					lng: settings.get('Language') || 'en',
 				}),
@@ -69,6 +71,7 @@ slashCommands.add({
 
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t('Channel_Unarchived', {
+				interpolation: { escapeValue: false },
 				channelName: channel,
 				lng: settings.get('Language') || 'en',
 			}),

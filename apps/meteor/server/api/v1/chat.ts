@@ -11,6 +11,7 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
+	isChatGetMessagesProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -26,6 +27,7 @@ import {
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -260,6 +262,7 @@ const chatEndpoints = API.v1
 		'chat.readThread',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			body: isChatReadThreadProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -895,6 +898,7 @@ const chatEndpoints = API.v1
 		'chat.sendMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 1000, bypassPermissions: ['send-many-messages'] },
 			body: isChatSendMessageProps,
 			response: {
 				200: ajv.compile<{ message: IMessage }>({
@@ -1057,6 +1061,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadsListProps,
 			response: {
 				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
@@ -1185,6 +1190,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadMessages',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadMessagesProps,
 			response: {
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
@@ -1469,6 +1475,42 @@ const chatEndpoints = API.v1
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });
+		},
+	)
+	.post(
+		'chat.getMessages',
+		{
+			authRequired: true,
+			body: isChatGetMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[] }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { messageIds } = this.bodyParams;
+
+			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+
+			const rids = [...new Set(messages.map(({ rid }) => rid))];
+			const allowed = await Promise.all(rids.map((rid) => canAccessRoomIdAsync(rid, this.userId)));
+
+			// The batch spans rooms, so one unreadable room rejects the whole request.
+			if (!allowed.every(Boolean)) {
+				return API.v1.forbidden();
+			}
+
+			return API.v1.success({ messages: await normalizeMessagesForUser(messages, this.userId) });
 		},
 	);
 

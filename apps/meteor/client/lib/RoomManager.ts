@@ -8,8 +8,13 @@ import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
+type CollapsibleKey = `collapsibleToggled-${string}`;
+
+export const getCollapsibleEventKey = (key: string): CollapsibleKey => `collapsibleToggled-${key}`;
+
 class RoomStore extends Emitter<{
 	changed: undefined;
+	[key: CollapsibleKey]: undefined;
 }> {
 	lastTime?: Date;
 
@@ -18,6 +23,8 @@ class RoomStore extends Emitter<{
 	lm?: Date;
 
 	atBottom = true;
+
+	private readonly toggledCollapsibles = new Set<string>();
 
 	constructor(readonly rid: string) {
 		super();
@@ -39,6 +46,21 @@ class RoomStore extends Emitter<{
 		if (scroll || lastTime) {
 			this.emit('changed');
 		}
+	}
+
+	toggleCollapsible(key: string): void {
+		if (this.toggledCollapsibles.has(key)) {
+			this.toggledCollapsibles.delete(key);
+			this.emit(getCollapsibleEventKey(key));
+			return;
+		}
+
+		this.toggledCollapsibles.add(key);
+		this.emit(getCollapsibleEventKey(key));
+	}
+
+	isCollapsibleToggled(key: string): boolean {
+		return this.toggledCollapsibles.has(key);
 	}
 }
 

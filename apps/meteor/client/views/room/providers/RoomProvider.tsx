@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
@@ -7,12 +8,12 @@ import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useRoomRolesQuery } from '../../../hooks/useRoomRolesQuery';
 import { RoomHistoryManager, useRoomHistoryState } from '../../../lib/RoomHistoryManager';
 import { RoomManager } from '../../../lib/RoomManager';
+import { UserAction } from '../../../lib/UserAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import { Rooms, Subscriptions } from '../../../stores';
@@ -28,6 +29,8 @@ export type RoomProviderProps = {
 
 const RoomProvider = ({ rid, children }: RoomProviderProps) => {
 	const room = Rooms.use((state) => state.get(rid));
+
+	const messageJumpParam = useSearchParameter('msg');
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
@@ -85,14 +88,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps) => {
 	// Prefetch first batch of history in parallel with room metadata fetches, instead of waiting
 	// for RoomBody's scroll/resize observer in useGetMore to fire.
 	useEffect(() => {
-		if (!room) {
-			return;
-		}
-		if (RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
+		if (!room || messageJumpParam || RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
 			return;
 		}
 		void RoomHistoryManager.getMore(rid);
-	}, [rid, room]);
+	}, [rid, room, messageJumpParam]);
 
 	// Prefetch room roles alongside history so message rendering doesn't trigger a late fetch.
 	useRoomRolesQuery(rid, { enabled: !!room });

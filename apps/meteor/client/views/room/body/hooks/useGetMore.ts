@@ -3,9 +3,9 @@ import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
+import { getBoundingClientRect } from '../../../../lib/scrolling';
 
 export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const msgId = useSearchParameter('msg');
@@ -40,6 +40,10 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					}
 
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
+
+					if (clientHeight === 0) {
+						return;
+					}
 
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
