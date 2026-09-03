@@ -154,21 +154,19 @@ settings.onReady(() => {
 	hiddenSystemMessageTypes = expandHiddenSystemMessageTypes(settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 });
 
-settings.change<MessageTypesValues[]>('Hide_System_Messages', async (value) => {
-	const previousTypes = hiddenSystemMessageTypes;
-	const currentTypes = expandHiddenSystemMessageTypes(value);
+// sweeps are serialized so each one diffs against the baseline left by the previous one;
+// a failed sweep keeps the baseline, so the next change re-sweeps the missed diff
+let pendingSweep = Promise.resolve();
 
-	const changedTypes = previousTypes && [...previousTypes.symmetricDifference(currentTypes)];
-	if (!changedTypes?.length) {
+settings.change<MessageTypesValues[]>('Hide_System_Messages', (value) => {
+	pendingSweep = pendingSweep.then(async () => {
+		const currentTypes = expandHiddenSystemMessageTypes(value);
+		const changedTypes = hiddenSystemMessageTypes && [...hiddenSystemMessageTypes.symmetricDifference(currentTypes)];
+
+		if (changedTypes?.length && !(await refreshDiscussionsContainingTypes(changedTypes))) {
+			return;
+		}
+
 		hiddenSystemMessageTypes = currentTypes;
-		return;
-	}
-
-	const refreshed = await refreshDiscussionsContainingTypes(changedTypes);
-
-	// the baseline only advances when the refresh fully succeeded and no newer change already moved it,
-	// so the next change retries any missed diff instead of computing against a wrong baseline
-	if (refreshed && hiddenSystemMessageTypes === previousTypes) {
-		hiddenSystemMessageTypes = currentTypes;
-	}
+	});
 });
