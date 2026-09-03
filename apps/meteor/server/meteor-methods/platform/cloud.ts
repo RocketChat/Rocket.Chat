@@ -58,7 +58,12 @@ Meteor.methods<ServerMethods>({
 
 		return retrieveRegistrationStatus();
 	},
+	/**
+	 * @deprecated this method is deprecated and will be removed soon.
+	 * Prefer using cloud.workspaceRegisterData rest api.
+	 */
 	async 'cloud:getWorkspaceRegisterData'() {
+		methodDeprecationLogger.method('cloud:getWorkspaceRegisterData', '9.0.0', '/v1/cloud.workspaceRegisterData');
 		const uid = Meteor.userId();
 
 		if (!uid) {

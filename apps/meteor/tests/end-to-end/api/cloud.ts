@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
@@ -231,6 +232,55 @@ describe('[Cloud]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('registrationStatus');
+				});
+		});
+	});
+
+	describe('[/cloud.workspaceRegisterData]', () => {
+		before(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		after(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		it('should fail if user is not authenticated', async () => {
+			return request
+				.get(api('cloud.workspaceRegisterData'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+			return request
+				.get(api('cloud.workspaceRegisterData'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return a base64 encoded registration payload when user has the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', ['admin']);
+			return request
+				.get(api('cloud.workspaceRegisterData'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('registerData').that.is.a('string');
+
+					const decoded = JSON.parse(Buffer.from(res.body.registerData, 'base64').toString());
+					expect(decoded).to.have.property('uniqueId');
+					expect(decoded).to.have.property('workspaceId');
 				});
 		});
 	});
