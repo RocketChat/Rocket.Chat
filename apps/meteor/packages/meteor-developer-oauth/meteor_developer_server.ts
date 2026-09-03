@@ -33,7 +33,7 @@ OAuth.registerService('meteor-developer', 2, null, async (query) => {
 		username?: string;
 	} = {
 		accessToken: OAuth.sealSecret(accessToken),
-		expiresAt: +new Date() + 1000 * response.expiresIn,
+		expiresAt: Date.now() + 1000 * response.expiresIn,
 	};
 
 	Object.assign(serviceData, identity);

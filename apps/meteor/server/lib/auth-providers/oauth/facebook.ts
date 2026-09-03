@@ -52,7 +52,7 @@ registerAccessTokenService('facebook', async (options: { accessToken: string; se
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + 1000 * options.expiresIn,
+		expiresAt: Date.now() + 1000 * options.expiresIn,
 	};
 
 	const fields = _.pick(identity, whitelisted);

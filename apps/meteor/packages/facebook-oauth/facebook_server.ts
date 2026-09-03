@@ -48,7 +48,7 @@ Accounts.registerLoginHandler(null, async (request) => {
 	if (request.facebookSignIn !== true) {
 		return;
 	}
-	const facebookData = await Facebook.handleAuthFromAccessToken(request.accessToken, +new Date() + 1000 * request.expirationTime);
+	const facebookData = await Facebook.handleAuthFromAccessToken(request.accessToken, Date.now() + 1000 * request.expirationTime);
 	if (!facebookData) return;
 	return Accounts.updateOrCreateUserFromExternalService('facebook', facebookData.serviceData, facebookData.options);
 });
@@ -58,7 +58,7 @@ OAuth.registerService('facebook', 2, null, async (query) => {
 	const { accessToken } = response;
 	const { expiresIn } = response;
 
-	return Facebook.handleAuthFromAccessToken(accessToken, +new Date() + 1000 * expiresIn);
+	return Facebook.handleAuthFromAccessToken(accessToken, Date.now() + 1000 * expiresIn);
 });
 
 function getAbsoluteUrlOptions(query: Record<string, any>) {
