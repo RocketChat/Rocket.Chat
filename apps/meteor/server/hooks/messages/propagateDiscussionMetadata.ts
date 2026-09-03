@@ -155,18 +155,22 @@ settings.onReady(() => {
 });
 
 // sweeps are serialized so each one diffs against the baseline left by the previous one;
-// a failed sweep keeps the baseline, so the next change re-sweeps the missed diff
+// types whose sweep failed stay pending and join the next diff, so they are retried even
+// if the setting rolls back to the previous value in the meantime
 let pendingSweep = Promise.resolve();
+let typesPendingRefresh = new Set<MessageTypesValues>();
 
 settings.change<MessageTypesValues[]>('Hide_System_Messages', (value) => {
 	pendingSweep = pendingSweep.then(async () => {
+		const previousTypes = hiddenSystemMessageTypes;
 		const currentTypes = expandHiddenSystemMessageTypes(value);
-		const changedTypes = hiddenSystemMessageTypes && [...hiddenSystemMessageTypes.symmetricDifference(currentTypes)];
+		hiddenSystemMessageTypes = currentTypes;
 
-		if (changedTypes?.length && !(await refreshDiscussionsContainingTypes(changedTypes))) {
+		const changedTypes = previousTypes?.symmetricDifference(currentTypes).union(typesPendingRefresh);
+		if (!changedTypes?.size) {
 			return;
 		}
 
-		hiddenSystemMessageTypes = currentTypes;
+		typesPendingRefresh = (await refreshDiscussionsContainingTypes([...changedTypes])) ? new Set() : changedTypes;
 	});
 });
