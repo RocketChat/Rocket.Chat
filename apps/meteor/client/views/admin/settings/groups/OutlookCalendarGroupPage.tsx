@@ -5,24 +5,11 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
+import { getEndpointErrorMessage } from '../../../../lib/errorHandling';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
 export type OutlookCalendarGroupPageProps = ISetting & {
 	onClickBack?: () => void;
-};
-
-const readErrorKey = async (error: unknown): Promise<string | undefined> => {
-	if (!(error instanceof Response)) {
-		return undefined;
-	}
-
-	const body: unknown = await error.json().catch(() => undefined);
-
-	if (typeof body === 'object' && body !== null && 'error' in body && typeof body.error === 'string') {
-		return body.error;
-	}
-
-	return undefined;
 };
 
 function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: OutlookCalendarGroupPageProps) {
@@ -41,8 +28,7 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
-			const key = (await readErrorKey(error)) ?? 'Outlook_Calendar_Test_Connection_failed';
-			dispatchToastMessage({ type: 'error', message: t(key) });
+			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_Calendar_Test_Connection_failed') });
 		}
 	};
 

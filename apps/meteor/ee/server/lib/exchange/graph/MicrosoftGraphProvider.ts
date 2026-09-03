@@ -11,6 +11,9 @@ import { logger } from '../logger';
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
 
+// One window's worth of `@odata.nextLink` hops. A mailbox needing more is not one this can reconcile
+const MAX_DELTA_PAGES = 50;
+
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
 
@@ -85,23 +88,30 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
-		const url = cursor ?? this.calendarViewDeltaUrl(mailbox, window);
+		const fullRead = !cursor;
+		const items: ExchangeEvent[] = [];
 
-		const payload = await this.requestJson<GraphDeltaResponse>(url, { headers: { Prefer: PREFER_UTC } });
+		let url = cursor ?? this.calendarViewDeltaUrl(mailbox, window);
 
-		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
-		const items = raw.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined);
+		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
+			const payload = await this.requestJson<GraphDeltaResponse>(url, { headers: { Prefer: PREFER_UTC } });
 
-		const nextLink = asString(payload['@odata.nextLink']);
-		const deltaLink = asString(payload['@odata.deltaLink']);
+			const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
+			items.push(...raw.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined));
 
-		return {
-			items,
-			cursor: nextLink ?? deltaLink,
-			hasMore: Boolean(nextLink),
-			// Graph reports removals explicitly, so the caller never has to infer them from absence.
-			isCompleteForWindow: false,
-		};
+			const nextLink = asString(payload['@odata.nextLink']);
+
+			if (!nextLink) {
+				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteForWindow: fullRead };
+			}
+
+			url = nextLink;
+		}
+
+		// Out of pages with the window only partly read, so it is not a complete set and must not prune.
+		logger.warn({ msg: 'Graph calendar view paged out before the window was fully read', pages: MAX_DELTA_PAGES });
+
+		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
 	}
 
 	private calendarViewDeltaUrl(mailbox: string, window: DateRange): string {

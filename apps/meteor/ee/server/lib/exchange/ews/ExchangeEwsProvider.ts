@@ -1,6 +1,6 @@
 import type { IEwsTransport } from './IEwsTransport';
 import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
-import { findFolderRequest, findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
+import { findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
@@ -13,7 +13,11 @@ export const parseEwsDateTime = (value: string | undefined): Date | undefined =>
 		return undefined;
 	}
 
-	const parsed = new Date(value);
+	// We ask for UTC through `TimeZoneContext`, so a value arriving without a zone is still UTC. Reading it
+	// as local time would shift the event by the host offset, silently
+	const hasZone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value);
+	const parsed = new Date(hasZone ? value : `${value}Z`);
+
 	return Number.isNaN(parsed.getTime()) ? undefined : parsed;
 };
 
@@ -22,7 +26,6 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
 		supportsDelta: true,
-		// EWS has push notifications, but they need Exchange to reach us, and some deployments are firewalled.
 		supportsWebhooks: false,
 		supportsContacts: false,
 	};
@@ -30,8 +33,6 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private readonly transport: IEwsTransport;
 
 	private readonly serviceAccountAddress: string;
-
-	private readonly folderIdCache = new Map<string, string>();
 
 	constructor(transport: IEwsTransport, serviceAccountAddress = '') {
 		this.transport = transport;
@@ -54,10 +55,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
-		const folderId = await this.resolveFolderId(mailbox, 'calendar');
-
-		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, folderId, cursor)));
-
+		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, cursor)));
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
 		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
 		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
@@ -68,7 +66,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 
 		return {
-			items: await this.snapshotWindow(mailbox, folderId, window),
+			items: await this.snapshotWindow(mailbox, window),
 			cursor: syncState,
 			hasMore: !includesLastItem,
 			isCompleteForWindow: true,
@@ -81,32 +79,14 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	 * from a series is not reported at all. So once anything was modified, Exchange expands the whole window
 	 * and the caller reconciles against a complete set, which is what the desktop integration has always done.
 	 */
-	private async snapshotWindow(mailbox: string, folderId: string, window: DateRange): Promise<ExchangeEvent[]> {
-		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, folderId, window.start, window.end)));
+	private async snapshotWindow(mailbox: string, window: DateRange): Promise<ExchangeEvent[]> {
+		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, window.start, window.end)));
 
 		const ids = allByTag(doc, TYPES_NS, 'CalendarItem')
 			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
 			.filter((id): id is string => Boolean(id));
 
 		return ids.length ? this.loadItems(mailbox, ids) : [];
-	}
-
-	private async resolveFolderId(mailbox: string, folder: 'calendar' | 'contacts'): Promise<string> {
-		const cacheKey = `${mailbox}:${folder}`;
-		const cached = this.folderIdCache.get(cacheKey);
-		if (cached) {
-			return cached;
-		}
-
-		const doc = parseEwsResponse(await this.transport.post(findFolderRequest(mailbox, folder)));
-		const folderId = firstByTag(doc, TYPES_NS, 'FolderId')?.getAttribute('Id');
-
-		if (!folderId) {
-			throw new ExchangeError('unexpected-response', `Exchange did not return a ${folder} folder id for the mailbox`);
-		}
-
-		this.folderIdCache.set(cacheKey, folderId);
-		return folderId;
 	}
 
 	private async loadItems(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
