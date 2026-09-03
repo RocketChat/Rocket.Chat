@@ -154,9 +154,7 @@ settings.onReady(() => {
 	hiddenSystemMessageTypes = expandHiddenSystemMessageTypes(settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 });
 
-// sweeps are serialized so each one diffs against the baseline left by the previous one;
-// types whose sweep failed stay pending and join the next diff, so they are retried even
-// if the setting rolls back to the previous value in the meantime
+// failed types stay pending because a rollback to the previous value alone diffs to empty and would never retry them
 let pendingSweep = Promise.resolve();
 let typesPendingRefresh = new Set<MessageTypesValues>();
 
