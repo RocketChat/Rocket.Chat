@@ -15,12 +15,12 @@ export class RoomToolbar extends Toolbar {
 	readonly menu: MenuOptions;
 
 	constructor(page: Page) {
-		super(page.getByRole('toolbar', { name: 'Primary Room actions' }));
+		super(page.getByRole('toolbar', { name: 'Primary room actions' }));
 		this.menu = new MenuOptions(page);
 	}
 
 	get btnRoomInfo() {
-		return this.root.getByRole('button', { name: 'Room Information' });
+		return this.root.getByRole('button', { name: 'Room information' });
 	}
 
 	get btnMembers() {
@@ -36,7 +36,7 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get btnUserInfo(): Locator {
-		return this.root.getByRole('button', { name: 'User Info' });
+		return this.root.getByRole('button', { name: 'User info' });
 	}
 
 	get btnDiscussion(): Locator {
@@ -56,7 +56,7 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get btnSearchMessages(): Locator {
-		return this.root.getByRole('button', { name: 'Search Messages' });
+		return this.root.getByRole('button', { name: 'Search messages' });
 	}
 
 	get btnDisableE2EEncryption(): Locator {
@@ -72,19 +72,19 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get menuItemStarredMessages(): Locator {
-		return this.menu.getMenuItem('Starred Messages');
+		return this.menu.getMenuItem('Starred messages');
 	}
 
 	get menuItemPinnedMessages(): Locator {
-		return this.menu.getMenuItem('Pinned Messages');
+		return this.menu.getMenuItem('Pinned messages');
 	}
 
 	get menuItemPruneMessages(): Locator {
-		return this.menu.getMenuItem('Prune Messages');
+		return this.menu.getMenuItem('Prune messages');
 	}
 
 	get menuItemNotificationsPreferences(): Locator {
-		return this.menu.getMenuItem('Notifications Preferences');
+		return this.menu.getMenuItem('Notifications preferences');
 	}
 
 	get menuItemDisableE2EEncryption(): Locator {
@@ -116,7 +116,7 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	private get btnTeamChannels(): Locator {
-		return this.root.getByRole('button', { name: 'Team Channels' });
+		return this.root.getByRole('button', { name: 'Team channels' });
 	}
 
 	async openTeamChannels() {
@@ -130,7 +130,7 @@ export class RoomToolbar extends Toolbar {
 
 export class TeamToolbar extends RoomToolbar {
 	private get menuItemTeamMembers() {
-		return this.menu.getMenuItem('Teams Members');
+		return this.menu.getMenuItem('Teams members');
 	}
 
 	private get btnTeamInfo() {
@@ -150,11 +150,11 @@ export class EncryptedRoomToolbar extends RoomToolbar {}
 
 export class OmnichannelRoomToolbar extends RoomToolbar {
 	private get btnContactInfo(): Locator {
-		return this.root.getByRole('button', { name: 'Contact Information' });
+		return this.root.getByRole('button', { name: 'Contact information' });
 	}
 
 	private get btnCannedResponses(): Locator {
-		return this.root.getByRole('button', { name: 'Canned Responses' });
+		return this.root.getByRole('button', { name: 'Canned responses' });
 	}
 
 	async openContactInfo() {
@@ -172,7 +172,7 @@ export class OmnichannelQuickActionsRoomToolbar extends Toolbar {
 	private onHoldModal: OmnichannelOnHoldModal;
 
 	constructor(page: Page) {
-		super(page.getByRole('toolbar', { name: 'Omnichannel Quick Actions' }));
+		super(page.getByRole('toolbar', { name: 'Omnichannel quick actions' }));
 		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.onHoldModal = new OmnichannelOnHoldModal(page);
 	}

@@ -15,7 +15,7 @@ export class AccountManageDevices extends Account {
 	}
 
 	get devicesPageContent(): Locator {
-		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Manage Devices' }) });
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Manage devices' }) });
 	}
 
 	async getNthDeviceId(nth: number): Promise<string> {

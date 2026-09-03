@@ -24,7 +24,7 @@ class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
 export class OmnichannelCustomFields extends OmnichannelAdmin {
 	protected readonly route = 'customfields';
 
-	protected readonly title = 'Custom Fields';
+	protected readonly title = 'Custom fields';
 
 	readonly manageCustomFields: OmnichannelManageCustomFieldsFlexTab;
 

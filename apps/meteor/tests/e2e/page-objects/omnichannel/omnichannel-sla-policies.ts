@@ -5,7 +5,7 @@ import { FlexTab } from '../fragments/flextabs/flextab';
 
 class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'SLA Policy' }));
+		super(page.getByRole('dialog', { name: 'SLA policy' }));
 	}
 
 	get inputDescription(): Locator {
@@ -20,7 +20,7 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	protected readonly route = 'sla-policies';
 
-	protected readonly title = 'SLA Policies';
+	protected readonly title = 'SLA policies';
 
 	readonly manageSlaPolicy: OmnichannelManageSlaPolicyFlexTab;
 

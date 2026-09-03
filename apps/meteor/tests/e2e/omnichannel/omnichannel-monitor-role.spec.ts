@@ -137,14 +137,14 @@ test.describe('OC - Monitor Role', () => {
 
 	test('OC - Monitor Role - Basic permissions', async () => {
 		await test.step('expect agent to not have access to omnichannel administration', async () => {
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact Center')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact center')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Analytics')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time Monitoring')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time monitoring')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Agents')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Departments')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business Hours')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business hours')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Reports')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned Responses')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned responses')).toBeVisible();
 		});
 
 		// await test.step('expect to be able to see contact center', async () => {});
