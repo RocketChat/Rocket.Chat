@@ -101,6 +101,14 @@ const RichTextMessageBox = ({
 
 	const handleInput = useStableCallback((event: FormEvent<HTMLElement>) => {
 		const target = event.target as HTMLDivElement;
+
+		// Touching the DOM mid-composition aborts it, so only the derived React state is updated while
+		// an IME composition (dead keys, CJK input, predictive text) is still in flight.
+		if ((event.nativeEvent as InputEvent).isComposing) {
+			setTyping(chat.composer?.text ?? target.innerText.replace(/\n$/, ''));
+			return;
+		}
+
 		const { childNodes } = target;
 
 		// Normalize <div><br></div> to just <br>
@@ -312,6 +320,15 @@ const RichTextMessageBox = ({
 
 	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
 		if (disabled) {
+			return;
+		}
+
+		// While an IME composition is open the keys belong to it: Enter confirms the candidate and the
+		// arrows move through it, so acting on them here would send the message or leave the room instead.
+		// keyCode 229 is the placeholder some browsers report for keys consumed by the IME, which is every
+		// key of a composition on Windows, so the typing indicator still has to be notified here.
+		if (event.isComposing || event.keyCode === 229) {
+			onTyping?.();
 			return;
 		}
 
