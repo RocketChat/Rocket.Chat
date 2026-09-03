@@ -39,28 +39,15 @@ export const envelope = (body: string, impersonatedMailbox?: string): string => 
 	].join('');
 };
 
-export const findFolderRequest = (mailbox: string, wellKnownFolder: 'calendar' | 'contacts'): string =>
-	envelope(
-		[
-			'<m:FindFolder Traversal="Shallow">',
-			'<m:FolderShape><t:BaseShape>IdOnly</t:BaseShape></m:FolderShape>',
-			`<m:ParentFolderIds><t:DistinguishedFolderId Id="${wellKnownFolder}">`,
-			`<t:Mailbox><t:EmailAddress>${escapeXml(mailbox)}</t:EmailAddress></t:Mailbox>`,
-			'</t:DistinguishedFolderId></m:ParentFolderIds>',
-			'</m:FindFolder>',
-		].join(''),
-		mailbox,
-	);
-
 /**
  * The EWS delta query. `syncState` is the resume token; omit it for an initial sync.
  */
-export const syncFolderItemsRequest = (mailbox: string, folderId: string, syncState?: string, maxChanges = 100): string =>
+export const syncFolderItemsRequest = (mailbox: string, syncState?: string, maxChanges = 100): string =>
 	envelope(
 		[
 			'<m:SyncFolderItems>',
 			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape></m:ItemShape>',
-			`<m:SyncFolderId><t:FolderId Id="${escapeXml(folderId)}"/></m:SyncFolderId>`,
+			'<m:SyncFolderId><t:DistinguishedFolderId Id="calendar"/></m:SyncFolderId>',
 			syncState ? `<m:SyncState>${escapeXml(syncState)}</m:SyncState>` : '',
 			`<m:MaxChangesReturned>${maxChanges}</m:MaxChangesReturned>`,
 			'<m:SyncScope>NormalItems</m:SyncScope>',
@@ -111,13 +98,13 @@ export const resolveNamesRequest = (mailbox: string): string =>
  * patterns and their originating timezones out of our code. `IdOnly` because FindItem never returns a
  * body: detail comes from the GetItem that follows.
  */
-export const findItemCalendarViewRequest = (mailbox: string, folderId: string, start: Date, end: Date, maxEntries = 500): string =>
+export const findItemCalendarViewRequest = (mailbox: string, start: Date, end: Date, maxEntries = 500): string =>
 	envelope(
 		[
 			'<m:FindItem Traversal="Shallow">',
 			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape></m:ItemShape>',
 			`<m:CalendarView StartDate="${toEwsDateTime(start)}" EndDate="${toEwsDateTime(end)}" MaxEntriesReturned="${maxEntries}"/>`,
-			`<m:ParentFolderIds><t:FolderId Id="${escapeXml(folderId)}"/></m:ParentFolderIds>`,
+			'<m:ParentFolderIds><t:DistinguishedFolderId Id="calendar"/></m:ParentFolderIds>',
 			'</m:FindItem>',
 		].join(''),
 		mailbox,
