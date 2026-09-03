@@ -26,6 +26,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -33,7 +34,7 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -1495,18 +1496,21 @@ const chatEndpoints = API.v1
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
 			},
 		},
 		async function action() {
 			const { messageIds } = this.bodyParams;
 
 			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+			if (!messages.length) {
+				return API.v1.notFound();
+			}
 
 			const rids = [...new Set(messages.map(({ rid }) => rid))];
-			const allowed = await Promise.all(rids.map((rid) => canAccessRoomIdAsync(rid, this.userId)));
 
 			// The batch spans rooms, so one unreadable room rejects the whole request.
-			if (!allowed.every(Boolean)) {
+			if (!(await canAccessRoomIdsAsync(rids, this.user))) {
 				return API.v1.forbidden();
 			}
 

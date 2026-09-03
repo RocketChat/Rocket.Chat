@@ -16,6 +16,7 @@ export interface IAuthorization {
 	canAccessRoom: RoomAccessValidator;
 	canReadRoom: RoomAccessValidator;
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;
+	canAccessRoomIds(rids: IRoom['_id'][], user: UserWithRoles): Promise<boolean>;
 	getUsersFromPublicRoles(): Promise<Pick<Required<IUser>, '_id' | 'username' | 'roles'>[]>;
 	hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
 }
