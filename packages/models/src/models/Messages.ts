@@ -1676,10 +1676,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	async incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>> {
 		const { _id: drid, lm: dlm } = room;
 
-		if (!dcountInc && !dlm) {
-			return null;
-		}
-
 		// dlm stays monotonic via $max instead of a query guard — a non-matching guard would silently drop the count delta
 		return this.findOneAndUpdate(
 			{ drid },
