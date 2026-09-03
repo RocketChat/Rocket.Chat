@@ -15,6 +15,32 @@ test.use({ storageState: Users.user1.state });
 type Session = { page: Page; poHomeChannel: HomeChannel };
 
 /**
+ * How light one of a page's palette tokens is, 0 to 1.
+ *
+ * A palette is read off the document root as CSS custom properties, so this is the only way to ask a page which
+ * palette it ended up with — and asking in luminance rather than in hex means a case can say "this surface is
+ * dark" without being a copy of Fuselage's colour values.
+ */
+const rootTokenLuminance = async (page: Page, token: string): Promise<number> => {
+	// The palette is written by a style tag the app mounts, so on a window that has only just loaded there is a
+	// moment where the token is not there yet. Waiting for it is a wait on a condition, not a pause.
+	await page.waitForFunction((name) => !!getComputedStyle(document.documentElement).getPropertyValue(name).trim(), token);
+
+	return page.evaluate((name) => {
+		const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+		const channels = value.replace('#', '').match(/../g);
+
+		if (!channels || channels.length < 3) {
+			throw new Error(`${name} is ${value || 'unset'}, which is not a hex colour this can weigh`);
+		}
+
+		const [r, g, b] = channels.map((channel) => parseInt(channel, 16) / 255);
+
+		return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	}, token);
+};
+
+/**
  * The flow `VideoConf_Conference_Window_Enabled` turns on: a conference is placed, answered, joined and left in a
  * window of its own, and an incoming call is a row in the navbar's ongoing-calls list rather than a popup that
  * takes over the callee's screen.
@@ -514,6 +540,14 @@ test.describe('video conference call window', () => {
 		await test.step('the window carries none of the app around the call', async () => {
 			await expect(callWindow.appNavigation).toHaveCount(0);
 			await expect(callWindow.frameProvider).toBeVisible();
+		});
+
+		await test.step('and is dark, whichever theme the app around it is read in', async () => {
+			// Not a colour value, which the palette is free to tune, but the relationship a dark surface has:
+			// light text over a dark surface. A light theme inverts exactly this, and used to — the window is
+			// pinned dark by its route, which is the one link in that chain no unit test can reach.
+			expect(await rootTokenLuminance(callWindow.page, '--rcx-color-font-default')).toBeGreaterThan(0.5);
+			expect(await rootTokenLuminance(callWindow.page, '--rcx-color-surface-light')).toBeLessThan(0.5);
 		});
 
 		await test.step('its own bar carries the timer, the name and exactly two controls', async () => {
