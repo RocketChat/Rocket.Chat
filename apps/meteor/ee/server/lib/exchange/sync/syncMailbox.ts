@@ -75,7 +75,6 @@ const collectPages = async (
 	for (;;) {
 		const page = await provider.listEvents(mailbox, window, cursor);
 		pages++;
-
 		const pageUpserts: ExchangeEventUpsert[] = [];
 
 		for (const item of page.items) {

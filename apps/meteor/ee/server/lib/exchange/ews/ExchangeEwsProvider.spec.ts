@@ -9,9 +9,6 @@ const soap = (body: string) =>
 
 const okResponse = (inner: string) => soap(`<m:ResponseMessages><m:ResponseCode>NoError</m:ResponseCode>${inner}</m:ResponseMessages>`);
 
-const findFolderOk = (folderId = 'FOLDER-1') =>
-	okResponse(`<m:RootFolder><t:Folders><t:CalendarFolder><t:FolderId Id="${folderId}"/></t:CalendarFolder></t:Folders></m:RootFolder>`);
-
 const calendarViewOk = (...ids: string[]) =>
 	okResponse(
 		`<m:RootFolder><t:Items>${ids.map((id) => `<t:CalendarItem><t:ItemId Id="${id}"/></t:CalendarItem>`).join('')}</t:Items></m:RootFolder>`,
@@ -38,6 +35,10 @@ const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('202
 describe('parseEwsDateTime', () => {
 	it('parses the EWS UTC format', () => {
 		expect(parseEwsDateTime('2026-08-21T10:00:00Z')?.toISOString()).toBe('2026-08-21T10:00:00.000Z');
+	});
+
+	it('respects an explicit offset when one is present', () => {
+		expect(parseEwsDateTime('2026-08-21T10:00:00+02:00')?.toISOString()).toBe('2026-08-21T08:00:00.000Z');
 	});
 
 	it('returns undefined rather than epoch for junk', () => {
@@ -79,7 +80,7 @@ describe('ExchangeEwsProvider', () => {
 
 	describe('impersonation', () => {
 		it('sends an ExchangeImpersonation header naming the target mailbox', async () => {
-			const transport = new FakeTransport([findFolderOk(), okResponse('<m:Changes/>')]);
+			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
 			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
@@ -88,7 +89,7 @@ describe('ExchangeEwsProvider', () => {
 		});
 
 		it('escapes the mailbox so a stray ampersand cannot break the envelope', async () => {
-			const transport = new FakeTransport([findFolderOk(), okResponse('<m:Changes/>')]);
+			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
 			await new ExchangeEwsProvider(transport).listEvents('a&b@corp.example', timeWindow);
 
@@ -97,7 +98,7 @@ describe('ExchangeEwsProvider', () => {
 		});
 
 		it('pins the request server version and asks for UTC', async () => {
-			const transport = new FakeTransport([findFolderOk(), okResponse('<m:Changes/>')]);
+			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
 			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
@@ -107,9 +108,8 @@ describe('ExchangeEwsProvider', () => {
 	});
 
 	describe('listEvents', () => {
-		it('resolves the calendar folder once and reuses it', async () => {
+		it('addresses the calendar directly, with no folder lookup of its own', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse('<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 				okResponse('<m:SyncState>S2</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 			]);
@@ -118,21 +118,22 @@ describe('ExchangeEwsProvider', () => {
 			await provider.listEvents('user@corp.example', timeWindow);
 			await provider.listEvents('user@corp.example', timeWindow, 'S1');
 
-			expect(transport.sent).toHaveLength(3);
-			expect(transport.sent[2]).toContain('<m:SyncState>S1</m:SyncState>');
+			expect(transport.sent).toHaveLength(2);
+			expect(transport.sent[0]).not.toContain('<m:FindFolder');
+			expect(transport.sent[0]).toContain('<m:SyncFolderId><t:DistinguishedFolderId Id="calendar"/></m:SyncFolderId>');
+			expect(transport.sent[1]).toContain('<m:SyncState>S1</m:SyncState>');
 		});
 
 		it('omits SyncState on an initial sync', async () => {
-			const transport = new FakeTransport([findFolderOk(), okResponse('<m:Changes/>')]);
+			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
 			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
-			expect(transport.sent[1]).not.toContain('<m:SyncState>');
+			expect(transport.sent[0]).not.toContain('<m:SyncState>');
 		});
 
 		it('returns the sync state as the cursor and inverts IncludesLastItemInRange', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse('<m:SyncState>TOKEN</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes/>'),
 			]);
 
@@ -143,7 +144,6 @@ describe('ExchangeEwsProvider', () => {
 
 		it('takes a full window snapshot once anything changed, deletions included', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse(
 					'<m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes><t:Delete><t:ItemId Id="GONE"/></t:Delete></m:Changes>',
 				),
@@ -162,20 +162,18 @@ describe('ExchangeEwsProvider', () => {
 
 		it('reports nothing and skips the snapshot when the delta is empty', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse('<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 			]);
 
 			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
 			expect(page).toMatchObject({ items: [], cursor: 'S1', isCompleteForWindow: false });
-			// FindFolder plus the probe. An empty delta must not cost a window fetch.
-			expect(transport.sent).toHaveLength(2);
+			// Just the probe. An empty delta must not cost a window fetch.
+			expect(transport.sent).toHaveLength(1);
 		});
 
 		it('fetches detail for created and updated items and normalizes them', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse(
 					'<m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes><t:Create><t:CalendarItem><t:ItemId Id="ITEM-1"/></t:CalendarItem></t:Create></m:Changes>',
 				),
@@ -222,7 +220,6 @@ describe('ExchangeEwsProvider', () => {
 			['Busy', true],
 		])('treats LegacyFreeBusyStatus %s as busy=%s, matching the Graph provider', async (status, expected) => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse(
 					'<m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes><t:Create><t:CalendarItem><t:ItemId Id="I"/></t:CalendarItem></t:Create></m:Changes>',
 				),
@@ -247,7 +244,6 @@ describe('ExchangeEwsProvider', () => {
 
 		it('stores the expanded occurrences, never the master', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse('<m:Changes><t:Update><t:ItemId Id="MASTER-1"/></t:Update></m:Changes>'),
 				calendarViewOk('OCC-1', 'OCC-2'),
 				okResponse(
@@ -258,13 +254,12 @@ describe('ExchangeEwsProvider', () => {
 			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
 			expect(page.items.map((event) => 'externalId' in event && event.externalId)).toEqual(['OCC-1', 'OCC-2']);
-			expect(transport.sent[2]).toContain('<m:CalendarView StartDate="2026-08-24T00:00:00Z" EndDate="2026-08-31T00:00:00Z"');
-			expect(transport.sent[2]).toContain('<t:FolderId Id="FOLDER-1"/>');
+			expect(transport.sent[1]).toContain('<m:CalendarView StartDate="2026-08-24T00:00:00Z" EndDate="2026-08-31T00:00:00Z"');
+			expect(transport.sent[1]).toContain('<t:DistinguishedFolderId Id="calendar"/>');
 		});
 
 		it('drops a master that reaches the detail fetch, since its Start is only the first occurrence', async () => {
 			const transport = new FakeTransport([
-				findFolderOk(),
 				okResponse('<m:Changes><t:Update><t:ItemId Id="MASTER-1"/></t:Update></m:Changes>'),
 				calendarViewOk('MASTER-1', 'OCC-1'),
 				okResponse(
