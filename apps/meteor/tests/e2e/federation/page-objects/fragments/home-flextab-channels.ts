@@ -8,7 +8,7 @@ export class FederationHomeFlextabChannels {
 	}
 
 	get btnAddExisting(): Locator {
-		return this.page.locator('button >> text="Add Existing"');
+		return this.page.locator('button >> text="Add existing"');
 	}
 
 	get inputChannels(): Locator {
