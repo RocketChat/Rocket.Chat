@@ -1,24 +1,5 @@
 /**
  * The reasons Rocket.Chat records when a call ends.
- *
- * This list is a **copy** of `callHangupReasonList` in
- * `@rocket.chat/media-signaling`. The Apps-Engine ships the app-facing SDK on its
- * own and must not depend on an internal package, so the values are duplicated
- * here. `appEvents.spec.ts` asserts that this copy still matches the original
- * exactly.
- *
- * The copy adds `'expired'`, which the server still writes through
- * `hangupByServer`.
- *
- * It also keeps `'sip-refer-failed'` and the `sip-error-<code>` family. Rocket.Chat
- * no longer writes either one: PR #41964 replaced them with `'signaling-error'`.
- * `hangupReason` is a stored field, so call history written before that change
- * still holds those values. An app that reads older history must recognise them.
- *
- * `@rocket.chat/media-signaling` also exports `isCallHangupReason`. That helper is
- * deliberately stricter: it covers only the client list, so it rejects `'expired'`
- * and every SIP code. The two helpers serve different audiences, so neither one
- * should call the other.
  */
 export const mediaCallHangupReasonList = [
 	/** A user explicitly hung up. */
@@ -56,7 +37,6 @@ export const mediaCallHangupReasonList = [
 ] as const;
 
 /**
- * A reason Rocket.Chat is known to record, or was known to record before PR #41964.
  * The SIP failures carry the response code they came from, e.g. `'sip-error-486'`.
  * Rocket.Chat writes no new SIP code, but stored call history from earlier versions
  * still contains them.

@@ -6,16 +6,14 @@ import type { ProxiedApp } from '../ProxiedApp';
  */
 
 /**
- * The i18n namespace the app's translations resolve in. An app names a key and nothing else,
- * and that key resolves to nothing on its own: it lives in a namespace of the app's own.
+ * The i18n namespace the app's translations resolve in.
  */
 export function getAppTranslationNamespace(appId: string): string {
 	return `app-${appId}`;
 }
 
 /**
- * The app's own translations of one key, per language. Not the whole catalogue: that is every key
- * in every language, and it would cross the boundary on every result that names a key.
+ * The app's own translations of one single key, per language.
  *
  * Languages that don't define the key are skipped, and `undefined` comes back when none of them
  * does - the host has a fallback for a key it cannot resolve, and an empty object would not

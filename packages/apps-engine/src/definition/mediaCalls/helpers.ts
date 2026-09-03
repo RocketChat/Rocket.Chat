@@ -6,12 +6,11 @@ type WithCall<TContext extends { call: unknown }, TCall> = Omit<TContext, 'call'
 type EndedCall = IMediaCallEndedContext['call'];
 
 /**
- * An ended call the callee never joined. `acceptedAt` is absent, and because a
- * call only activates out of the `accepted` state, `durationMs` is `0`.
+ * An ended call the callee never joined.
  */
 export type IUnansweredMediaCallEndedContext = WithCall<IMediaCallEndedContext, Omit<EndedCall, 'acceptedAt'> & { acceptedAt?: undefined }>;
 
-/** An ended call the callee joined. `acceptedAt` is the moment they accepted. */
+/** An ended call the callee joined. */
 export type IAnsweredMediaCallEndedContext = WithCall<IMediaCallEndedContext, Omit<EndedCall, 'acceptedAt'> & { acceptedAt: Date }>;
 
 /** An ended call the callee actively declined. */
