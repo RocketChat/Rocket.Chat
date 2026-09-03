@@ -57,6 +57,8 @@ const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
 
 const canRenderAsMenuItem = (item: RoomToolboxActionConfig): boolean => Boolean(item.action ?? item.tabComponent);
 
+const isSelfRendering = (item: RoomToolboxActionConfig): boolean => Boolean(item.renderToolboxItem) && !canRenderAsMenuItem(item);
+
 const actionToMenuItem = (
 	item: RoomToolboxBaseAction,
 	openTab: RoomToolboxContextValue['openTab'],
@@ -101,8 +103,12 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);
 
-		const typedFeatured = featuredActions as RoomToolboxActionConfig[];
-		const typedVisible = engineVisible as RoomToolboxActionConfig[];
+		const demotedSelfRendering = actions.filter(
+			(action) => isSelfRendering(action) && !featuredActions.some((featured) => featured.id === action.id),
+		);
+
+		const typedFeatured = [...(featuredActions as RoomToolboxActionConfig[]), ...demotedSelfRendering];
+		const typedVisible = (engineVisible as RoomToolboxActionConfig[]).filter((item) => !isSelfRendering(item));
 
 		if (!roomToolboxExpanded) {
 			const orderedOverflowActions = [

@@ -239,7 +239,8 @@ describe('useRoomToolboxActions', () => {
 						.build(),
 				});
 
-				expect(result.current.featuredActions.map((a) => a.id)).not.toContain('ai-actions');
+				expect(result.current.featuredActions.map((a) => a.id)).toContain('ai-actions');
+				expect(result.current.visibleActions.map((a) => a.id)).not.toContain('ai-actions');
 
 				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
 				expect(hiddenIds).not.toContain('ai-actions');
@@ -260,8 +261,29 @@ describe('useRoomToolboxActions', () => {
 						.build(),
 				});
 
+				expect(result.current.featuredActions.map((a) => a.id)).toContain('ai-actions');
+
 				const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
 				expect(hiddenIds).not.toContain('ai-actions');
+			});
+
+			it('should still be reachable somewhere in the toolbox', () => {
+				const openTab = jest.fn();
+				const { result } = renderHook(() => useRoomToolboxActions({ actions: [...actions, renderOnlyAction], openTab }), {
+					wrapper: mockAppRoot()
+						.withSetting('Accounts_AllowFeaturePreview', true)
+						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+						.withSetting('Room_Toolbox_Layout_Public', demotingConfig)
+						.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+						.build(),
+				});
+
+				const renderedIds = [
+					...result.current.featuredActions.map((a) => a.id),
+					...result.current.visibleActions.map((a) => a.id),
+					...result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id)),
+				];
+				expect(renderedIds).toContain('ai-actions');
 			});
 		});
 
