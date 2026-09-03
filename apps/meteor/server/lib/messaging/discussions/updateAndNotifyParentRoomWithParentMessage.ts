@@ -17,10 +17,6 @@ export const expandHiddenSystemMessageTypes = (types: unknown): Set<MessageTypes
 	return expanded;
 };
 
-/**
- * Both the system messages hidden globally and the ones hidden on the room itself are
- * filtered out from the room history, so the count has to consider both of them.
- */
 const getRawHiddenTypes = (room: Pick<IRoom, 'sysMes'>): MessageTypesValues[] => {
 	const globalHiddenTypes = settings.get<MessageTypesValues[]>('Hide_System_Messages');
 
@@ -50,10 +46,6 @@ const notifyParentMessage = (parentMessage: IMessage | null): void => {
 	});
 };
 
-/**
- * Only meant for when the set of hidden system message types changes; regular message activity
- * goes through `incrementAndNotifyParentRoomWithParentMessage` instead.
- */
 export const updateAndNotifyParentRoomWithParentMessage = async (room: DiscussionRoom): Promise<void> => {
 	const msgs = await getDiscussionMessagesCount(room);
 
