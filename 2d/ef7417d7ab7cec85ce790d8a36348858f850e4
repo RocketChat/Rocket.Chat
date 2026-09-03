@@ -3,6 +3,7 @@ packages/rest-typings/src/v1/rooms.ts
   s_8998b0686d0f5a::t_81afff51c4707c 1091-1092
 apps/meteor/client/lib/RoomHistoryManager.ts
   s_8998b0686d0f5a::t_189a5947f5b881 155,238,335-340,342-343,345,347,354-355,357-361
+  h_4c386397e672f4 351-353
 apps/meteor/tests/end-to-end/api/rooms.ts
   s_8998b0686d0f5a::t_f18263a0ed9aed 5470-5561
 .changeset/rest-rooms-history-around.md
@@ -26,6 +27,11 @@ apps/meteor/server/lib/messages/loadRoomHistory.ts
   "git_ai_version": "1.7.0",
   "base_commit_sha": "2def7417d7ab7cec85ce790d8a36348858f850e4",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_8998b0686d0f5a": {
       "agent_id": {
