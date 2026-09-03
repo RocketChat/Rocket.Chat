@@ -46,3 +46,11 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 
 	return getErrorMessage(defaultMessage);
 }
+
+export async function getEndpointErrorMessage(error: unknown, defaultMessage: string): Promise<string> {
+	if (!(error instanceof Response)) {
+		return getErrorMessage(error, defaultMessage);
+	}
+
+	return getErrorMessage(await error.json().catch(() => undefined), defaultMessage);
+}
