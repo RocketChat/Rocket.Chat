@@ -1,0 +1,21 @@
+apps/meteor/tests/unit/server/services/push/service.spec.ts
+  s_80229c9aae3f3b::t_5e1f2c1f4c7e54 44-46,49,55-63
+apps/meteor/server/services/push/service.ts
+  s_80229c9aae3f3b::t_92ab6ec88dcfe8 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "9a12a47aeebc88c9fcc22d7d00a3a6eb45aeabb5",
+  "prompts": {},
+  "sessions": {
+    "s_80229c9aae3f3b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6d587a4f-8bb9-4c0d-bc95-bc9bba5cfa54",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
