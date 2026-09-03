@@ -16,7 +16,7 @@
 		"colors": "^1.4.0",
 		"diff": "^5.1.0",
 		"semver": "^7.5.4",
-		"@xmldom/xmldom": "^0.8.13"
+		"@xmldom/xmldom": "^0.8.15"
 	},
 	"overrides": {
 		"undici": "6.28.0"
