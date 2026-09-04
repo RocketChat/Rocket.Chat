@@ -1,10 +1,12 @@
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
+import { Messages } from '../../stores';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
 
@@ -27,6 +29,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const userId = useUserId();
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
@@ -101,6 +104,78 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	});
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
+	const subscribeToNotifyRoom = useStream('notify-room');
+	const subscribeToNotifyUser = useStream('notify-user');
+
+	//For hard message delete, when Message Message_ShowDeletedStatus is off
+	useEffect(() => {
+		if (!track) {
+			return;
+		}
+
+		const { rid, mid } = track;
+
+		if (!rid || !mid) {
+			return;
+		}
+
+		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id }) => {
+			if (_id === mid) {
+				close();
+			}
+		});
+
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, ({ ids }) => {
+			if (ids?.includes(mid)) {
+				close();
+			}
+		});
+
+		return () => {
+			unsubscribeFromDeleteMessage();
+			unsubscribeFromDeleteMessageBulk();
+		};
+	}, [track, subscribeToNotifyRoom, close]);
+
+	//For soft message delete, when Message_ShowDeletedStatus is on and server updates message.t to rm
+	useEffect(() => {
+		if (!track) {
+			return;
+		}
+
+		const unsub = Messages.use.subscribe((state, prevState) => {
+			const { mid } = track;
+			if (!mid) {
+				return;
+			}
+
+			const message = state.records.get(mid);
+
+			if (message && message !== prevState.records.get(mid) && message.t === 'rm') {
+				close();
+			}
+		});
+
+		return unsub;
+	}, [track, close]);
+
+	useEffect(() => {
+		if (!track || !userId) {
+			return;
+		}
+
+		const { rid } = track;
+
+		if (!rid) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, subscription) => {
+			if (event === 'removed' && subscription.rid === rid) {
+				close();
+			}
+		});
+	}, [userId, subscribeToNotifyUser, track, close]);
 
 	const value = useMemo<MediaPlayerContextValue>(
 		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
