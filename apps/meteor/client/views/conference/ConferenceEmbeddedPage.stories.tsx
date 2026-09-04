@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { userEvent, within } from 'storybook/test';
 
 import ConferenceEmbeddedPage from './ConferenceEmbeddedPage';
-import { conferenceAppRoot, withCallProviders } from './storyFixtures';
+import { conferenceAppRoot, onPhone, withCallProviders } from './storyFixtures';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 
 /**
@@ -104,8 +104,10 @@ const meta = {
 	parameters: { layout: 'fullscreen' },
 	args: { callId },
 	decorators: [
+		// `100dvh` and no minimum: a floor propped the window up to a height the phone stories don't have, which
+		// is the very thing they exist to show. Desktop stories are unaffected — their viewport was always taller.
 		(Story) => (
-			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', minHeight: 560 }}>
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
 				<Story />
 			</div>
 		),
@@ -166,4 +168,40 @@ export const PanelsClosed: Story = {
 export const ChatNotSharedWithYou: Story = {
 	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')], ['john.doe']))],
 	play: openChat,
+};
+
+/**
+ * The call window on a phone held upright, with the people panel open.
+ *
+ * The panel is a **sheet**: it rises over the whole window instead of docking beside the call, because splitting
+ * a 393px screen left the call a sliver and the panel too narrow to use. Look for the call showing through above
+ * it and down both sides — the sheet is inset, which is what says it is laid over the call rather than being the
+ * window's new contents.
+ */
+export const MobilePortraitPanelSheet: Story = {
+	...onPhone('phonePortrait'),
+	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	play: openMembers,
+};
+
+/**
+ * The same sheet on a phone turned sideways.
+ *
+ * This is the shape that used to dock: 852px is past `md`, so the panel took its 400px and left the call a third
+ * of a short screen with the chat's message list two lines tall above its own composer. The sheet is chosen on
+ * the window being too small to split in *either* direction, so it appears here too.
+ */
+export const MobileLandscapePanelSheet: Story = {
+	...onPhone('phoneLandscape'),
+	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	play: openMembers,
+};
+
+/**
+ * Landscape with every panel shut — the call chrome alone on a short screen: the top bar with the timer, name,
+ * member count and chat toggle, the call filling what is left, and the provider's own controls along the bottom.
+ */
+export const MobileLandscapePanelsClosed: Story = {
+	...onPhone('phoneLandscape'),
+	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
 };
