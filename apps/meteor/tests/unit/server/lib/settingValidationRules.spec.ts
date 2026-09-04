@@ -7,6 +7,7 @@ import {
 	positiveOrDisabled,
 	notGreaterThanSetting,
 	notLowerThanSetting,
+	mustBeDisabledWhileSettingIsEnabled,
 } from '../../../../server/settings/functions/validationRuleBuilders';
 
 const settingsGetMock = sinon.stub();
@@ -192,6 +193,58 @@ describe('validateSettingRules', () => {
 			});
 
 			expect(() => validateSettingRules([{ _id: 'Js_Code', value: 'not json {' }])).to.not.throw();
+		});
+	});
+
+	describe('mustBeDisabledWhileSettingIsEnabled (ABAC-P4/D10)', () => {
+		beforeEach(() => {
+			settingsGetSettingMock.withArgs('Discussion_enabled').returns({
+				_id: 'Discussion_enabled',
+				type: 'boolean',
+				validation: JSON.stringify([mustBeDisabledWhileSettingIsEnabled('ABAC_Enforce_All_Rooms')]),
+			});
+		});
+
+		it('refuses to enable the setting while the gating setting is on', () => {
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(true);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.throw('Discussion_enabled_Invalid');
+		});
+
+		it('allows the setting to be saved as false while the gating setting is on', () => {
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(true);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: false }])).to.not.throw();
+		});
+
+		it('allows the setting to be enabled once the gating setting is off', () => {
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(false);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+		});
+
+		// The constraint that matters: `ABAC_Enforce_All_Rooms` is registered only while the `abac`
+		// licence module is on, so on a CE workspace it does not exist at all. A rule referencing an
+		// absent setting must pass, or every CE workspace silently loses the ability to enable
+		// discussions.
+		it('passes when the gating setting does not exist at all (CE)', () => {
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(undefined);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: false }])).to.not.throw();
+		});
+
+		it('is evaluated against the value in the same batch, not the stored one', () => {
+			// Enforcement stored as off, but being switched on in this very batch.
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(false);
+			settingsGetSettingMock.withArgs('ABAC_Enforce_All_Rooms').returns({ _id: 'ABAC_Enforce_All_Rooms', type: 'boolean' });
+
+			expect(() =>
+				validateSettingRules([
+					{ _id: 'ABAC_Enforce_All_Rooms', value: true },
+					{ _id: 'Discussion_enabled', value: true },
+				]),
+			).to.throw('Discussion_enabled_Invalid');
 		});
 	});
 });

@@ -12,6 +12,7 @@ import { links } from '../../../../lib/links';
 import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
+import { useSettingFeatureLock } from '../hooks/useSettingFeatureLock';
 
 const PRICING_URL = links.go.pricing;
 
@@ -106,15 +107,21 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 
-	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
+	const featureLock = useSettingFeatureLock(_id);
+	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery) || featureLock.locked;
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
-	const hint = useMemo(
-		() => (i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined),
-		[i18n, i18nDescription, t],
-	);
+	const hint = useMemo(() => {
+		// When another feature is holding this setting, say so — that is more use to an admin than
+		// the setting's own description, which cannot explain why the field is greyed out.
+		if (featureLock.hintKey) {
+			return <MarkdownText variant='inline' content={t(featureLock.hintKey)} />;
+		}
+
+		return i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined;
+	}, [featureLock.hintKey, i18n, i18nDescription, t]);
 
 	const callout = useMemo(
 		() =>

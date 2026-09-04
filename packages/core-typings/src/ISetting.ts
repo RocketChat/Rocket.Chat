@@ -58,6 +58,7 @@ export interface ISettingBase extends IRocketChatRecord {
 		| 'group'
 		| 'date'
 		| 'lookup'
+		| 'multiLookup'
 		| 'range'
 		| 'timespan';
 	public: boolean;
