@@ -3,6 +3,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
@@ -22,6 +23,8 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'rate-limited': 'Outlook_Calendar_Test_Connection_rate_limited',
 	'unexpected-response': 'Outlook_Calendar_Test_Connection_unexpected_response',
 };
+
+const TEST_CONNECTION_SERVER_FAULTS: ReadonlySet<ExchangeErrorCode> = new Set(['unexpected-response']);
 
 const testConnectionResponse = {
 	type: 'object',
@@ -44,6 +47,7 @@ API.v1.post(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
+			500: validateInternalErrorResponse,
 		},
 	},
 	async function action() {
@@ -58,7 +62,13 @@ API.v1.post(
 		} catch (err) {
 			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
 
-			return API.v1.failure(isExchangeError(err) ? ERROR_MESSAGES[err.code] : 'Outlook_Calendar_Test_Connection_failed');
+			if (!isExchangeError(err)) {
+				return API.v1.internalError('Outlook_Calendar_Test_Connection_failed');
+			}
+
+			return TEST_CONNECTION_SERVER_FAULTS.has(err.code)
+				? API.v1.internalError(ERROR_MESSAGES[err.code])
+				: API.v1.failure(ERROR_MESSAGES[err.code]);
 		}
 
 		return API.v1.success({
