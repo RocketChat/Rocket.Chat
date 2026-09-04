@@ -6,11 +6,13 @@ import type { FindCursor, FindOptions } from 'mongodb';
 
 import { settings } from '../settings';
 import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibility/effectiveStatus';
+import type { PresenceScope } from './statusVisibility/presenceScope';
+import { NOTHING_HIDDEN, hiddenIds, scopeHidesAnyone } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;
 	status?: UserStatus[] | 'not-offline';
-	hidden?: Set<IUser['_id']>;
+	scope?: PresenceScope;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -20,16 +22,17 @@ type FindUsersParam = {
 export async function findUsersOfRoom({
 	rid,
 	status,
-	hidden,
+	scope = NOTHING_HIDDEN,
 	skip = 0,
 	limit = 0,
 	filter = '',
 	sort,
 }: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
-	const hiddenCanAppear = Boolean(hidden?.size) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
+	const hiddenCanAppear = scopeHidesAnyone(scope) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
 	const hiddenInRoom =
 		hiddenCanAppear &&
-		(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: [...(hidden ?? [])] } })) > 0;
+		(scope.hideAll ||
+			(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: hiddenIds(scope) } })) > 0);
 
 	const options: FindOptions<IUser> = {
 		projection: {
@@ -51,7 +54,7 @@ export async function findUsersOfRoom({
 
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	const statusFilter = Array.isArray(status) ? effectiveStatusFilter(status, hidden) : status && excludingOfflineFilter(hidden);
+	const statusFilter = Array.isArray(status) ? effectiveStatusFilter(status, scope) : status && excludingOfflineFilter(scope);
 
 	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, searchFields, [
 		{ __rooms: rid },

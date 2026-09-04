@@ -36,6 +36,7 @@ import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
+import AdminUserStatusField from './AdminUserStatusField';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
@@ -57,7 +58,7 @@ export type AdminUserFormProps = {
 export type UserFormProps = Omit<
 	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
 	'fields'
->;
+> & { userStatusEnabled?: boolean };
 
 const getInitialValue = ({
 	data,
@@ -84,6 +85,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	userStatusEnabled: data?.presenceDisabledByAdmin !== true,
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
@@ -171,10 +173,16 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, userStatusEnabled, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
-			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
+			return handleUpdateUser.mutateAsync({
+				userId: userData._id,
+				data: {
+					...userFormData,
+					...(userStatusEnabled !== undefined && { presenceDisabledByAdmin: !userStatusEnabled }),
+				},
+			});
 		}
 
 		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
@@ -418,6 +426,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
+					{!isNewUserPage && <AdminUserStatusField control={control} />}
 					{isNewUserPage && (
 						<Field>
 							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>

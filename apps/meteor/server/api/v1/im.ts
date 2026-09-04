@@ -27,7 +27,8 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
-import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { getPresenceScope } from '../../lib/statusVisibility/hiddenUsers';
+import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
@@ -552,10 +553,10 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		);
 		const { status, filter } = this.queryParams;
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 		const extraQuery: Record<string, unknown> = {
 			_id: { $in: room.uids },
-			...(status && effectiveStatusFilter(status as UserStatus[], hidden)),
+			...(status && effectiveStatusFilter(status as UserStatus[], scope)),
 		};
 
 		const options: FindOptions<IUser> = {
@@ -598,7 +599,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...(hidden?.has(member._id) ? redactStatus(member) : member),
+				...(isHiddenFor(scope, member._id) ? redactStatus(member) : member),
 				subscription,
 			};
 		});

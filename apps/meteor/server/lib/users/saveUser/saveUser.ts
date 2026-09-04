@@ -1,7 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError } from '@rocket.chat/core-services';
+import { MeteorError, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -52,6 +53,7 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+	presenceDisabledByAdmin?: boolean;
 
 	freeSwitchExtension?: string;
 };
@@ -192,6 +194,19 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const presenceChanged =
+			typeof userData.presenceDisabledByAdmin === 'boolean' &&
+			License.hasModule('unlimited-presence') &&
+			userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
+
+		if (presenceChanged) {
+			if (userData.presenceDisabledByAdmin) {
+				updater.set('presenceDisabledByAdmin', true);
+			} else {
+				updater.unset('presenceDisabledByAdmin');
+			}
+		}
+
 		if (userData.customFields) {
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
@@ -207,6 +222,10 @@ const _saveUser = (session?: ClientSession) =>
 				}
 				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
 				void options.auditStore.commitAuditEvent();
+			}
+
+			if (presenceChanged) {
+				void StatusVisibility.invalidate([userData._id], { allViewers: true });
 			}
 
 			// App IPostUserUpdated event hook

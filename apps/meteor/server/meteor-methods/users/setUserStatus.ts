@@ -1,4 +1,4 @@
-import { Presence } from '@rocket.chat/core-services';
+import { Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
@@ -18,6 +18,12 @@ export const setUserStatusMethod = async (
 	statusType: IUser['status'],
 	statusText: IUser['statusText'],
 ): Promise<void> => {
+	if (await StatusVisibility.isPresenceDisabledFor(user._id)) {
+		throw new Meteor.Error('error-presence-disabled', 'Presence is disabled for this user', {
+			method: 'setUserStatus',
+		});
+	}
+
 	if (statusText != null && !settings.get('Accounts_AllowUserStatusMessageChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'setUserStatus',

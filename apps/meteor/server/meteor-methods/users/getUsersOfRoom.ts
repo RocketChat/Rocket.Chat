@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
-import { getUsersHiddenFrom, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { getPresenceScope, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,12 +53,12 @@ Meteor.methods<ServerMethods>({
 		// TODO this is currently counting deactivated users
 		const total = await Subscriptions.countByRoomIdWhenUsernameExists(rid);
 
-		const hidden = await getUsersHiddenFrom(userId);
+		const scope = await getPresenceScope(userId);
 
 		const { cursor } = await findUsersOfRoom({
 			rid,
 			...(!showAll && { status: 'not-offline' as const }),
-			hidden,
+			scope,
 			limit,
 			skip,
 			filter,
@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 
 		return {
 			total,
-			records: redactHiddenUsers(await cursor.toArray(), hidden),
+			records: redactHiddenUsers(await cursor.toArray(), scope),
 		};
 	},
 });

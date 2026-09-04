@@ -351,6 +351,167 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('[presenceDisabledByAdmin]', () => {
+		const setPresenceDisabled = (userId: string, disabled: boolean, overrideCredentials = credentials) =>
+			request
+				.post(api('users.update'))
+				.set(overrideCredentials)
+				.send({ userId, data: { presenceDisabledByAdmin: disabled } });
+
+		const statusSeenBy = async (overrideCredentials: Credentials, userId: string) => {
+			const { body } = await request.get(api('users.getStatus')).set(overrideCredentials).query({ userId }).expect(200);
+
+			return body.status;
+		};
+
+		after(async () => {
+			await setPresenceDisabled(bystander._id, false).expect(200);
+		});
+
+		it('should hide the target from a viewer they never blocked', async () => {
+			await setUserStatus(bystanderCredentials, UserStatus.ONLINE);
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
+
+			await setPresenceDisabled(bystander._id, true).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(await statusSeenBy(hiderCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+		});
+
+		it('should keep the target visible to themselves', async () => {
+			await request
+				.get(api('users.getStatus'))
+				.set(bystanderCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.status).to.be.equal(UserStatus.ONLINE);
+				});
+		});
+
+		it('should refuse a status change from a disabled user', async () => {
+			await request.post(api('users.setStatus')).set(bystanderCredentials).send({ status: UserStatus.BUSY }).expect(400);
+		});
+
+		it('should refuse a status visibility change from a disabled user', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(bystanderCredentials)
+				.send({ data: { statusVisibilityDenied: [viewer.username] } })
+				.expect(400);
+		});
+
+		it('should refuse the call from a user who cannot edit other users', async () => {
+			await setPresenceDisabled(hider._id, true, viewerCredentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.errorType).to.be.equal('error-action-not-allowed');
+				});
+		});
+
+		it('should restore the real status once the admin re-enables it', async () => {
+			await setPresenceDisabled(bystander._id, false).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
+		});
+
+		it('should not touch the per-user choices of the CORE-2522 axis', async () => {
+			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(await statusSeenBy(bystanderCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
+		});
+	});
+
+	describe('[Accounts_UserStatus_Enabled]', () => {
+		const statusSeenBy = async (overrideCredentials: Credentials, userId: string) => {
+			const { body } = await request.get(api('users.getStatus')).set(overrideCredentials).query({ userId }).expect(200);
+
+			return body.status;
+		};
+
+		before(async () => {
+			await setUserStatus(bystanderCredentials, UserStatus.ONLINE);
+			await setUserStatus(viewerCredentials, UserStatus.BUSY);
+			await updateEESetting('Accounts_UserStatus_Enabled', false);
+		});
+
+		after(async () => {
+			await updateEESetting('Accounts_UserStatus_Enabled', true);
+		});
+
+		it('should hide everyone from everyone, not only the users who chose to hide', async () => {
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(await statusSeenBy(bystanderCredentials, hider._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(await statusSeenBy(hiderCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+		});
+
+		it('should return nobody when a member list filters by a non-offline status', async () => {
+			await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(bystanderCredentials)
+				.query({ 'roomId': channel._id, 'status[]': UserStatus.ONLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.members).to.have.lengthOf(0);
+				});
+		});
+
+		it('should return every member when a member list filters by offline', async () => {
+			await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(bystanderCredentials)
+				.query({ 'roomId': channel._id, 'status[]': UserStatus.OFFLINE })
+				.expect(200)
+				.expect((res) => {
+					expect(usernamesOf(res.body.members)).to.include(hider.username);
+					expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.OFFLINE);
+				});
+		});
+
+		it('should not leak a real status through the members projection', async () => {
+			await request
+				.get(api('channels.members'))
+				.set(bystanderCredentials)
+				.query({ roomId: channel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.members.every((member: { status?: string }) => member.status === UserStatus.OFFLINE)).to.be.true;
+				});
+		});
+
+		it('should drop everyone from the online-only lists', async () => {
+			await request
+				.get(api('channels.online'))
+				.set(bystanderCredentials)
+				.query({ _id: channel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.online).to.have.lengthOf(0);
+				});
+		});
+
+		it('should refuse a status change from anyone', async () => {
+			await request.post(api('users.setStatus')).set(bystanderCredentials).send({ status: UserStatus.BUSY }).expect(400);
+		});
+
+		it('should not order users.list by the real status it redacts', async () => {
+			const usernamesSortedBy = async (status: 1 | -1) => {
+				const { body } = await request
+					.get(api('users.list'))
+					.set(bystanderCredentials)
+					.query({ sort: JSON.stringify({ status }), count: 50 })
+					.expect(200);
+
+				expect(body.users.every((user: { status?: string }) => user.status === UserStatus.OFFLINE)).to.be.true;
+
+				return usernamesOf(body.users);
+			};
+
+			const ascending = await usernamesSortedBy(1);
+
+			expect(ascending.length).to.be.greaterThan(1);
+			expect(ascending).to.be.deep.equal(await usernamesSortedBy(-1));
+		});
+	});
+
 	describe('[/im.members]', () => {
 		let dm: IRoom;
 
