@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
 import { bumpBannerConfigToV2 } from './lib/bumpBannerConfigToV2';
+import { addMigration } from '../../lib/migrations';
 
 const SETTING_ID = 'ABAC_Classification_Banners_Config';
 
