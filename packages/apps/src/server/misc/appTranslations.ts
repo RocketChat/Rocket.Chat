@@ -20,10 +20,6 @@ export function getAppTranslationNamespace(appId: string): string {
  * Languages that don't define the key are skipped, and `undefined` comes back when none of them
  * does - the host has a fallback for a key it cannot resolve, and an empty object would not
  * trigger it.
- *
- * The package parser lowercases the name of every `i18n/*.json` file, so an app that ships
- * `pt-BR.json` is stored under `pt-br`. A host looks a language up by the code the workspace runs
- * in, which keeps the region uppercase, so the keys are normalized back on the way out.
  */
 export function getAppTranslationsForKey(app: ProxiedApp, key: string): Record<string, string> | undefined {
 	const { languageContent } = app.getStorageItem();
