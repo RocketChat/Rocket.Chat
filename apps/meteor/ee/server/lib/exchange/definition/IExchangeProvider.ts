@@ -16,10 +16,10 @@ export interface IExchangeProvider {
 	testConnection(): Promise<void>;
 
 	/**
-	 * `window` bounds the range, and is what EWS expands a changed recurring series over.
+	 * `timeWindow` bounds the range, and is what EWS expands a changed recurring series over.
 	 * `cursor` is an opaque delta token, omitted for an initial sync.
 	 */
-	listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
+	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
 
 	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
 

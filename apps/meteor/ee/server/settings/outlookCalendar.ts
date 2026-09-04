@@ -101,10 +101,10 @@ export function addSettings(): void {
 						invalidValue: 15,
 					});
 
-					await this.add('Outlook_Calendar_Server_Sync_Window_Hours', 48, {
+					await this.add('Outlook_Calendar_Server_Sync_Window_Days', 2, {
 						type: 'int',
 						enableQuery: serverOnly,
-						invalidValue: 48,
+						invalidValue: 2,
 					});
 
 					// Empty means the verified Rocket.Chat email, matching `getUserCalendar`.

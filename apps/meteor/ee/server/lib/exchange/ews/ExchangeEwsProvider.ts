@@ -54,7 +54,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 	}
 
-	public async listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
+	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
 		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, cursor)));
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
 		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
@@ -66,7 +66,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 
 		return {
-			items: await this.snapshotWindow(mailbox, window),
+			items: await this.snapshotWindow(mailbox, timeWindow),
 			cursor: syncState,
 			hasMore: !includesLastItem,
 			isCompleteForWindow: true,
@@ -79,8 +79,8 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	 * from a series is not reported at all. So once anything was modified, Exchange expands the whole window
 	 * and the caller reconciles against a complete set, which is what the desktop integration has always done.
 	 */
-	private async snapshotWindow(mailbox: string, window: DateRange): Promise<ExchangeEvent[]> {
-		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, window.start, window.end)));
+	private async snapshotWindow(mailbox: string, timeWindow: DateRange): Promise<ExchangeEvent[]> {
+		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, timeWindow.start, timeWindow.end)));
 
 		const ids = allByTag(doc, TYPES_NS, 'CalendarItem')
 			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
