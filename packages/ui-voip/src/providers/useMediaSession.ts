@@ -112,6 +112,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
+						confirmed: instanceState.confirmed,
 					},
 				});
 				return;
@@ -144,6 +145,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						callId,
 						startedAt,
 						supportedFeatures,
+						confirmed: instanceState.confirmed,
 					},
 				});
 				return;
@@ -178,6 +180,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					callId,
 					startedAt,
 					supportedFeatures,
+					confirmed: instanceState.confirmed,
 				},
 			});
 		};

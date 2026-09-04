@@ -45,7 +45,9 @@
 		"dev": "yarn build:default --watch",
 		"gen-doc": "typedoc",
 		"lint": "yarn eslint .",
-		"typecheck": "tsc -p tsconfig.json --noEmit"
+		"typecheck": "run-s typecheck:default typecheck:types",
+		"typecheck:default": "tsc -p tsconfig.json --noEmit",
+		"typecheck:types": "tsc -p tsconfig-types-test.json"
 	},
 	"nyc": {
 		"all": true,

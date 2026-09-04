@@ -21,6 +21,12 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
+import {
+	notifyAppsOfMediaCallEnded,
+	notifyAppsOfMediaCallParticipantJoined,
+	notifyAppsOfMediaCallStarted,
+	runPreMediaCallCreatedAppHook,
+} from './appEvents';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { i18n } from '../../lib/i18n';
@@ -35,11 +41,17 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
-		callServer.emitter.on('callActivated', ({ callId, uids }) => this.setPresenceForUsers(uids, callId));
-		callServer.emitter.on('callEnded', ({ callId, uids }) => this.clearPresenceForUsers(uids, callId));
+		callServer.emitter.on('callActivated', ({ call }) => this.setPresenceForUsers(call.uids, call._id));
+		callServer.emitter.on('callEnded', ({ call }) => this.clearPresenceForUsers(call.uids, call._id));
 		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
 		callServer.emitter.on('pushNotificationRequest', ({ callId, event }) => sendVoipPushNotification(callId, event));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
+
+		// Apps-Engine media call events
+		callServer.emitter.on('callAccepted', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallParticipantJoined));
+		callServer.emitter.on('callActivated', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallStarted));
+		callServer.emitter.on('callEnded', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallEnded));
+		callServer.setHooks({ onPreCallCreated: runPreMediaCallCreatedAppHook });
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id.startsWith('VoIP_TeamCollab_')) {
@@ -143,6 +155,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		return signals;
+	}
+
+	private notifyApps(call: IMediaCall, notify: (call: IMediaCall) => Promise<void>): void {
+		setImmediate(() => {
+			notify(call).catch((err) => logger.error({ msg: 'Failed to notify apps about a media call event', err, callId: call._id }));
+		});
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
@@ -252,7 +270,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			...this.getContactDataForInternalHistory(call.caller),
 		} as const;
 
-		await CallHistory.insertMany([outboundHistoryItem, inboundHistoryItem]).catch((err: unknown) =>
+		// A prevented call leaves an entry for the caller only.
+		const historyItems = call.preventedBy ? [outboundHistoryItem] : [outboundHistoryItem, inboundHistoryItem];
+
+		await CallHistory.insertMany(historyItems).catch((err: unknown) =>
 			logger.error({ msg: 'Failed to insert items into Call History', err }),
 		);
 
@@ -280,7 +301,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user.language) }) : '';
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration, call._id, msg);
+		const record = getHistoryMessagePayload({ state, duration, callId: call._id, msg, preventedBy: call.preventedBy });
 
 		try {
 			const message = await sendMessage(user, record, room, { skipNotifications });
@@ -306,6 +327,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private getCallHistoryItemState(call: IMediaCall): CallHistoryItemState {
+		if (call.preventedBy) {
+			return 'prevented';
+		}
+
 		if (call.transferredBy) {
 			return 'transferred';
 		}
