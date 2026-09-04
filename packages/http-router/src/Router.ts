@@ -1,6 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
-import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
@@ -8,6 +7,8 @@ import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import type { OpenAPIDocsOptions, Route } from './openapi';
+import { buildOperation, toOpenAPIPath } from './openapi';
 import { parseQueryParams } from './parseQueryParams';
 
 const logger = new Logger('HttpRouter');
@@ -40,39 +41,6 @@ function coerceDatesToStrings(obj: unknown): unknown {
 	}
 	return obj;
 }
-
-export type Route = {
-	responses: Record<
-		number,
-		{
-			description: string;
-			content: {
-				'application/json': {
-					schema: AnySchema;
-				};
-			};
-		}
-	>;
-	parameters?: {
-		schema: AnySchema;
-		in: 'query';
-		name: 'query';
-		required: true;
-	}[];
-	requestBody?: {
-		required: true;
-		content: {
-			'application/json': {
-				schema: AnySchema;
-			};
-		};
-	};
-	security?: {
-		userId: [];
-		authToken: [];
-	}[];
-	tags?: string[];
-};
 
 export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>> {
 	protected abstract convertActionToHandler(action: TActionCallback, logger: Logger): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
@@ -108,50 +76,10 @@ export class Router<
 		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
 	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.base}/${subpath}`.replaceAll('//', '/') as TPathPattern;
+		const documentedPath = toOpenAPIPath(path);
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[path] || {};
-		const { query, response = {}, authRequired, body, tags, ...rest } = options;
-		this.typedRoutes[path][method.toLowerCase()] = {
-			responses: Object.fromEntries(
-				Object.entries(response).map(([status, schema]) => [
-					parseInt(status, 10),
-					{
-						description: '',
-						content: {
-							'application/json': { schema: 'schema' in schema ? schema.schema : schema },
-						},
-					},
-				]),
-			),
-			...(query && {
-				parameters: [
-					{
-						schema: query.schema,
-						in: 'query',
-						name: 'query',
-						required: true,
-					},
-				],
-			}),
-			...(body && {
-				requestBody: {
-					required: true,
-					content: {
-						'application/json': { schema: body.schema },
-					},
-				},
-			}),
-			...(authRequired && {
-				...rest,
-				security: [
-					{
-						userId: [],
-						authToken: [],
-					},
-				],
-			}),
-			tags,
-		};
+		this.typedRoutes[documentedPath] = this.typedRoutes[documentedPath] || {};
+		this.typedRoutes[documentedPath][method.toLowerCase()] = buildOperation(method, path, options as OpenAPIDocsOptions);
 	}
 
 	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
@@ -408,10 +336,13 @@ export class Router<
 
 	use(innerRouter: unknown): any {
 		if (innerRouter instanceof Router) {
-			this.typedRoutes = {
-				...this.typedRoutes,
-				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
-			};
+			for (const [path, routes] of Object.entries(innerRouter.typedRoutes)) {
+				const documentedPath = toOpenAPIPath(`${this.base}${path}`);
+
+				// merged per path: normalizing the keys can bring two distinct paths onto the same one, and
+				// replacing the map would drop the methods the other router documented
+				this.typedRoutes[documentedPath] = { ...this.typedRoutes[documentedPath], ...routes };
+			}
 
 			this.innerRouter.route(innerRouter.base, innerRouter.innerRouter);
 		}

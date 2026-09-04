@@ -495,7 +495,7 @@ const pwGetPolicyResponseSchema = ajv.compile<{ enabled: boolean; policy: [strin
 	type: 'object',
 	properties: {
 		enabled: { type: 'boolean' },
-		policy: { type: 'array', items: { type: 'array' } },
+		policy: { type: 'array', items: { type: 'array', items: {} } },
 	},
 	additionalProperties: true,
 });

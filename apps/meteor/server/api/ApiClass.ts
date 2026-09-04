@@ -1,11 +1,10 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
-import type { Route, Router } from '@rocket.chat/http-router';
+import type { Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
@@ -156,8 +155,6 @@ export const generateConnection = (
 });
 
 export class APIClass<TBasePath extends string = '', TOperations extends Record<string, unknown> = Record<string, never>> {
-	public typedRoutes: Record<string, Record<string, Route>> = {};
-
 	protected apiPath?: string;
 
 	readonly version?: string;
@@ -577,104 +574,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return routeActions.map((action) => this.getFullRouteName(route, action));
 	}
 
-	private registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
-		method: Method,
-		subpath: TSubPathPattern,
-		options: TOptions,
-	): void {
-		const { authRequired, validateParams } = options;
-
-		const opt = {
-			authRequired,
-			...(validateParams &&
-				method.toLowerCase() === 'get' &&
-				('GET' in validateParams
-					? { query: validateParams.GET }
-					: {
-							query: validateParams as ValidateFunction<any>,
-						})),
-
-			...(validateParams &&
-				method.toLowerCase() === 'post' &&
-				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
-
-			...(validateParams &&
-				method.toLowerCase() === 'put' &&
-				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
-			...(validateParams &&
-				method.toLowerCase() === 'delete' &&
-				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
-
-			tags: ['Missing Documentation'],
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success'],
-				}),
-			},
-		};
-
-		this.registerTypedRoutes(method, subpath, opt);
-	}
-
-	private registerTypedRoutes<
-		TSubPathPattern extends string,
-		TOptions extends TypedOptions,
-		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
-	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
-		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
-		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[path] || {};
-		const { query, authRequired, response, body, tags, ...rest } = options;
-		this.typedRoutes[path][method.toLowerCase()] = {
-			...(response && {
-				responses: Object.fromEntries(
-					Object.entries(response).map(([status, schema]) => [
-						status,
-						{
-							description: '',
-							content: {
-								'application/json': 'schema' in schema ? { schema: schema.schema } : schema,
-							},
-						},
-					]),
-				),
-			}),
-			...(query && {
-				parameters: [
-					{
-						schema: query.schema,
-						in: 'query',
-						name: 'query',
-						required: true,
-					},
-				],
-			}),
-			...(body && {
-				requestBody: {
-					required: true,
-					content: {
-						'application/json': { schema: body.schema },
-					},
-				},
-			}),
-			...(authRequired && {
-				...rest,
-				security: [
-					{
-						userId: [],
-						authToken: [],
-					},
-				],
-			}),
-			tags,
-		};
-	}
-
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		method: MinimalRoute['method'],
 		subpath: TSubPathPattern,
@@ -691,7 +590,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
-		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
 
@@ -968,11 +866,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					path: route,
 					options: _options,
 					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as unknown as Record<string, string>,
-				});
-
-				this.registerTypedRoutesLegacy(method as Method, route, {
-					...options,
-					...operations[method as keyof Operations<TPathPattern, TOptions>],
 				});
 			});
 		});

@@ -134,7 +134,15 @@ const channelInfoResponseSchema = ajv.compile<{ channel: IRoom }>({
 	type: 'object',
 	properties: {
 		channel: {
-			anyOf: [{ $ref: '#/components/schemas/IRoom' }, { type: 'object', required: ['_id', 't'], additionalProperties: true }],
+			anyOf: [
+				{ $ref: '#/components/schemas/IRoom' },
+				{
+					type: 'object',
+					properties: { _id: { type: 'string' }, t: { type: 'string' } },
+					required: ['_id', 't'],
+					additionalProperties: true,
+				},
+			],
 		},
 		success: { type: 'boolean', enum: [true] },
 	},
