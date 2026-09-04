@@ -9,6 +9,7 @@
 @import url('imports/components/flex-nav.css');
 @import url('imports/components/emoji.css');
 @import url('imports/components/loading.css');
+@import url('imports/components/message-system.css');
 
 /* Legacy theming */
 @import url('imports/general/theme_old.css');
