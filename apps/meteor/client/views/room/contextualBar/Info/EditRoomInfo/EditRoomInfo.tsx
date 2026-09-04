@@ -33,13 +33,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useEndpoint,
-	usePermission,
-	useSetting,
-	useToastMessageDispatch,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
