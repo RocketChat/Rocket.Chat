@@ -108,7 +108,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			url = nextLink;
 		}
 
-		// Out of pages with the window only partly read, so it is not a complete set and must not prune.
 		logger.warn({ msg: 'Graph calendar view paged out before the window was fully read', pages: MAX_DELTA_PAGES });
 
 		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
