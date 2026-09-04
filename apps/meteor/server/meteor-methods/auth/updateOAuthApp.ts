@@ -42,9 +42,9 @@ export const updateOAuthApp = async (
 		});
 	}
 
-	const redirectUri = parseUriList(application.redirectUri);
+	const redirectUris = parseUriList(application.redirectUri);
 
-	if (redirectUri.length === 0) {
+	if (redirectUris.length === 0) {
 		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
 			method: 'updateOAuthApp',
 		});
@@ -53,7 +53,7 @@ export const updateOAuthApp = async (
 	const updatedApplication = await OAuthApps.updateById(applicationId, {
 		name: application.name,
 		active: application.active,
-		redirectUri,
+		redirectUri: redirectUris.join(','),
 		_updatedBy: await Users.findOneById(userId, {
 			projection: {
 				username: 1,
