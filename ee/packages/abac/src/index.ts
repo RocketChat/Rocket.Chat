@@ -931,7 +931,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const byId = new Map(subjects.map((subject) => [subject._id, subject]));
-		const roles = rid ? await this.fetchRoomRoleTags(rid, subjects.map(({ _id }) => _id)) : new Map<string, AbacRoomRoleTag[]>();
+		const roles = rid
+			? await this.fetchRoomRoleTags(
+					rid,
+					subjects.map(({ _id }) => _id),
+				)
+			: new Map<string, AbacRoomRoleTag[]>();
 
 		const toMembers = (ids: string[]): AbacPreviewMember[] =>
 			ids.slice(offset, offset + count).map((_id) => ({
@@ -965,12 +970,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const TAGS: AbacRoomRoleTag[] = ['owner', 'moderator', 'leader'];
 
-		return new Map(
-			subscriptions.map((subscription) => [
-				subscription.u._id,
-				TAGS.filter((tag) => subscription.roles?.includes(tag)),
-			]),
-		);
+		return new Map(subscriptions.map((subscription) => [subscription.u._id, TAGS.filter((tag) => subscription.roles?.includes(tag))]));
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {

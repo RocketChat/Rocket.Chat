@@ -738,7 +738,11 @@ describe('VirtruPDP.evaluateSubjectsAgainstAttributes (ABAC-P4 §7.2)', () => {
 		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_UNSPECIFIED']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		const result = await pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })], attrs, 'r1');
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'r1',
+		);
 
 		expect(result.inconclusiveUserIds).toEqual(['u1']);
 		expect(result.compliantUserIds).toEqual([]);
@@ -749,7 +753,11 @@ describe('VirtruPDP.evaluateSubjectsAgainstAttributes (ABAC-P4 §7.2)', () => {
 		const apiCall = jest.fn().mockResolvedValue(perSubject([undefined]));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		const result = await pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })], attrs, 'r1');
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'r1',
+		);
 
 		expect(result.inconclusiveUserIds).toEqual(['u1']);
 		expect(result.compliantUserIds).toEqual([]);
@@ -774,7 +782,11 @@ describe('VirtruPDP.evaluateSubjectsAgainstAttributes (ABAC-P4 §7.2)', () => {
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		const result = await pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'a', emails: [] }), user({ _id: 'b', emails: [] })], attrs, 'r1');
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'a', emails: [] }), user({ _id: 'b', emails: [] })],
+			attrs,
+			'r1',
+		);
 
 		expect(result.nonCompliantUserIds).toEqual(['a', 'b']);
 		expect(apiCall).not.toHaveBeenCalled();
@@ -793,10 +805,13 @@ describe('VirtruPDP.evaluateSubjectsAgainstAttributes (ABAC-P4 §7.2)', () => {
 		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_PERMIT']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		await pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })], attrs, 'draft-room-42');
+		await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'draft-room-42',
+		);
 
 		const sent = (apiCall.mock.calls[0][1] as any).decisionRequests[0];
 		expect(sent.resources[0].ephemeralId).toBe('draft-room-42');
 	});
 });
-

@@ -38,7 +38,7 @@ describe('LocalAttributeStore', () => {
 	// ABAC-P4/D12 — this used to return an empty map as an "everything allowed" sentinel, which
 	// made "assign only attributes you possess" unenforceable for the local store. It now reports
 	// the actor's own subject attributes.
-	it('entitlementsOf reports the actor\'s own subject attributes', async () => {
+	it("entitlementsOf reports the actor's own subject attributes", async () => {
 		usersFindOneById.mockResolvedValue({
 			_id: 'u',
 			abacAttributes: [
