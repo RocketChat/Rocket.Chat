@@ -4,7 +4,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { IPolicyDecisionPoint, ReevaluationUser } from './types';
+import type { EvaluableSubject, IPolicyDecisionPoint, MemberEvaluation, ReevaluationUser } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -39,10 +39,48 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return { granted: true };
 	}
 
+	async evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		_resourceId: string,
+	): Promise<MemberEvaluation> {
+		const allIds = subjects.map(({ _id }) => _id);
+
+		// A resource carrying no attributes places no requirement on any subject, so everyone is
+		// compliant. Guarded explicitly because `buildNonCompliantConditions([])` yields `[]`, and
+		// `$or: []` is not a legal query.
+		if (!subjects.length || !attributes.length) {
+			return { compliantUserIds: allIds, nonCompliantUserIds: [], inconclusiveUserIds: [] };
+		}
+
+		const nonCompliantUserIds = await Users.find(
+			{
+				_id: { $in: allIds },
+				$or: buildNonCompliantConditions(attributes),
+			},
+			{ projection: { _id: 1 } },
+		)
+			.map(({ _id }) => _id)
+			.toArray();
+
+		const nonCompliant = new Set(nonCompliantUserIds);
+
+		return {
+			compliantUserIds: allIds.filter((id) => !nonCompliant.has(id)),
+			nonCompliantUserIds,
+			// The local PDP is a database query: it always answers.
+			inconclusiveUserIds: [],
+		};
+	}
+
 	async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<IUser[]> {
+		// Deliberately not routed through `evaluateSubjectsAgainstAttributes`: for the local PDP the
+		// decision rule *is* `buildNonCompliantConditions`, which both paths share, so the rule is
+		// already single-sourced (§7.2). Expressing it as one indexed query here — rather than
+		// loading every member, evaluating, then re-fetching — keeps eviction on a large room cheap.
 		const query = {
 			__rooms: room._id,
 			$or: buildNonCompliantConditions(newAttributes),

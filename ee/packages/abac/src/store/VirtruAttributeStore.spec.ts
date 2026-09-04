@@ -106,6 +106,32 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(1);
 	});
 
+	// ABAC-P4 Scenario 4 — the denial has to name the offending attribute, not merely refuse.
+	it('validateAssignable names the offending attribute and the disallowed values', async () => {
+		const apiCall = jest
+			.fn()
+			.mockResolvedValue({ entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }] });
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+
+		await expect(store.validateAssignable([{ key: 'clearance', values: ['secret', 'topsecret'] }], actor)).rejects.toMatchObject({
+			code: 'error-invalid-attribute-values',
+			// only the value actually refused, not the whole selection
+			details: { key: 'clearance', values: ['topsecret'] },
+		});
+	});
+
+	it('validateAssignable names an attribute key the actor possesses nothing of', async () => {
+		const apiCall = jest
+			.fn()
+			.mockResolvedValue({ entitlements: [{ actionsPerAttributeValueFqn: { 'https://example.com/attr/clearance/value/secret': {} } }] });
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+
+		await expect(store.validateAssignable([{ key: 'mission', values: ['alpha'] }], actor)).rejects.toMatchObject({
+			code: 'error-invalid-attribute-values',
+			details: { key: 'mission', values: ['alpha'] },
+		});
+	});
+
 	it('validateAssignable rejects (fail-closed) with PdpUnavailable when Virtru is unreachable', async () => {
 		const apiCall = jest.fn();
 		const store = new VirtruAttributeStore(mkClient({ isAvailable: jest.fn().mockResolvedValue(false), apiCall }));

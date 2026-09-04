@@ -2,6 +2,9 @@ import { api, Authorization, License, Room, ServiceClass, Settings } from '@rock
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
+	AbacMembershipPreview,
+	AbacPreviewMember,
+	AbacRoomRoleTag,
 	IAbacAttribute,
 	IAbacAttributeDefinition,
 	IRoom,
@@ -48,6 +51,15 @@ import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttribu
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
+
+// Members returned per preview page. The designs show 15; production rooms hold thousands, so the
+// preview pages server-side rather than shipping the whole membership.
+const PREVIEW_PAGE_SIZE = 50;
+
+// Above this many members the preview reports exact counts but stops enumerating (§7.2).
+// TODO(ABAC-P4/N3): confirm whether this should be its own setting or reuse `API_User_Limit`,
+// which already caps the comparable bulk-membership path at a default of 500.
+const PREVIEW_ENUMERATION_THRESHOLD = 500;
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -535,6 +547,45 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		await store.validateAssignable(attrs, actor);
+		await this.enforceOwnedAttributesOnly(store, attrs, actor);
+	}
+
+	/**
+	 * ABAC-P4/D12 — restrict an actor to assigning only attributes they themselves possess.
+	 *
+	 * Applied here rather than inside a store so the policy has exactly one home. It is only
+	 * meaningful for the local PDP: the Virtru store's `validateAssignable` already compares against
+	 * that subject's entitlements, which *is* this rule, so applying it twice would be redundant.
+	 */
+	private async enforceOwnedAttributesOnly(store: IAttributeStore, attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (this.pdpTypeSetting !== 'local' || !(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'))) {
+			return;
+		}
+
+		const owned = await store.entitlementsOf(actor);
+
+		for (const attribute of attrs) {
+			const allowed = owned.get(attribute.key);
+			if (!allowed) {
+				throw new AbacInvalidAttributeValuesError({ key: attribute.key, values: attribute.values });
+			}
+
+			const disallowed = attribute.values.filter((value) => !allowed.has(value));
+			if (disallowed.length) {
+				throw new AbacInvalidAttributeValuesError({ key: attribute.key, values: disallowed });
+			}
+		}
+	}
+
+	/**
+	 * Answers "may this actor instantiate exactly these attributes?" without creating anything —
+	 * the PDP creator-authority check the creation flow runs before a room exists (ABAC-P4 M2).
+	 * Reuses the same validation the commit path applies, so the two cannot disagree.
+	 */
+	async assertCanAssignAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
+		const store = await this.resolveAttributeStore();
+		await this.enforceStoreValidation(store, attributes, actor);
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
@@ -796,6 +847,126 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		return decision.granted;
+	}
+
+	/**
+	 * The single member-evaluation entry point (ABAC-P4 §7.2). Backs creation Step 4, the room
+	 * Edit-channel preview and the admin Edit-room preview.
+	 *
+	 * `target` is either an existing room or an explicit member list, because at creation time the
+	 * room does not exist yet. Nothing is committed here — this is strictly a dry run, and must stay
+	 * that way: `setRoomAbacAttributes` is what commits, and committing evicts.
+	 */
+	async previewMembersAgainstAttributes(
+		target: { rid: string } | { memberIds: string[] } | { memberUsernames: string[] },
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		page?: { offset?: number; count?: number },
+	): Promise<AbacMembershipPreview> {
+		const offset = Math.max(0, page?.offset ?? 0);
+		const count = Math.min(Math.max(1, page?.count ?? PREVIEW_PAGE_SIZE), PREVIEW_PAGE_SIZE);
+
+		const rid = 'rid' in target ? target.rid : undefined;
+
+		// The creation flow holds usernames (that is what the member picker yields), while the edit
+		// surfaces hold a room. Both are accepted so neither surface has to resolve ids itself.
+		const subjectFilter = ((): Record<string, unknown> => {
+			if ('rid' in target) {
+				return { __rooms: target.rid };
+			}
+			if ('memberUsernames' in target) {
+				return { username: { $in: target.memberUsernames } };
+			}
+			return { _id: { $in: target.memberIds } };
+		})();
+		const subjects = await Users.find(subjectFilter, {
+			projection: { _id: 1, username: 1, name: 1, emails: 1 },
+		}).toArray();
+
+		const empty: AbacMembershipPreview = {
+			loses: [],
+			retains: [],
+			inconclusive: [],
+			counts: { total: 0, losing: 0, retaining: 0, inconclusive: 0 },
+			actorLosesAccess: false,
+			summarisedOnly: false,
+			offset,
+			count: 0,
+		};
+
+		if (!subjects.length) {
+			return empty;
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+		await this.ensurePdpAvailable();
+
+		// One batched round trip for every subject, never one per subject.
+		const evaluation = await this.pdp.evaluateSubjectsAgainstAttributes(
+			subjects,
+			attributes,
+			// A room that does not exist yet still needs a stable resource id for the decision.
+			rid ?? `draft:${actor._id}`,
+		);
+
+		const counts = {
+			total: subjects.length,
+			losing: evaluation.nonCompliantUserIds.length,
+			retaining: evaluation.compliantUserIds.length,
+			inconclusive: evaluation.inconclusiveUserIds.length,
+		};
+
+		const actorLosesAccess = evaluation.nonCompliantUserIds.includes(actor._id);
+
+		// Above the threshold the counts are still exact, but enumerating thousands of members is
+		// neither renderable nor useful, so the surface summarises instead (§7.2).
+		if (counts.total > PREVIEW_ENUMERATION_THRESHOLD) {
+			return { ...empty, counts, actorLosesAccess, summarisedOnly: true };
+		}
+
+		const byId = new Map(subjects.map((subject) => [subject._id, subject]));
+		const roles = rid ? await this.fetchRoomRoleTags(rid, subjects.map(({ _id }) => _id)) : new Map<string, AbacRoomRoleTag[]>();
+
+		const toMembers = (ids: string[]): AbacPreviewMember[] =>
+			ids.slice(offset, offset + count).map((_id) => ({
+				_id,
+				username: byId.get(_id)?.username,
+				name: byId.get(_id)?.name,
+				roles: roles.get(_id) ?? [],
+			}));
+
+		const loses = toMembers(evaluation.nonCompliantUserIds);
+		const retains = toMembers(evaluation.compliantUserIds);
+		const inconclusive = toMembers(evaluation.inconclusiveUserIds);
+
+		return {
+			loses,
+			retains,
+			inconclusive,
+			counts,
+			actorLosesAccess,
+			summarisedOnly: false,
+			offset,
+			count: loses.length + retains.length + inconclusive.length,
+		};
+	}
+
+	/** Room-scoped role tags for the given members, used only to label the returned page. */
+	private async fetchRoomRoleTags(rid: string, userIds: string[]): Promise<Map<string, AbacRoomRoleTag[]>> {
+		const subscriptions = await Subscriptions.findByRoomIdAndUserIds(rid, userIds, {
+			projection: { 'u._id': 1, 'roles': 1 },
+		}).toArray();
+
+		const TAGS: AbacRoomRoleTag[] = ['owner', 'moderator', 'leader'];
+
+		return new Map(
+			subscriptions.map((subscription) => [
+				subscription.u._id,
+				TAGS.filter((tag) => subscription.roles?.includes(tag)),
+			]),
+		);
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {

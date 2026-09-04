@@ -116,8 +116,15 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const owned = await this.entitlementsOf(actor);
 		for (const a of attrs) {
 			const allowed = owned.get(a.key);
-			if (!allowed || !a.values.every((v) => allowed.has(v))) {
-				throw new AbacInvalidAttributeValuesError();
+			if (!allowed) {
+				// ABAC-P4 Scenario 4 — the denial has to name what was refused, not just that
+				// something was.
+				throw new AbacInvalidAttributeValuesError({ key: a.key, values: a.values });
+			}
+
+			const disallowed = a.values.filter((v) => !allowed.has(v));
+			if (disallowed.length) {
+				throw new AbacInvalidAttributeValuesError({ key: a.key, values: disallowed });
 			}
 		}
 	}
