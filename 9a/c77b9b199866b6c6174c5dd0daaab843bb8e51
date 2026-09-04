@@ -1,0 +1,26 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_43869f63631212::t_3e61d68f1b08dd 5542,5547-5549
+  s_43869f63631212::t_7bff739cfbdde6 5590
+  s_43869f63631212::t_b652c7f0f9b1e8 5593-5601
+  s_43869f63631212::t_061ffccaf9c91e 5591-5592
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_43869f63631212::t_e1ea6e3ad66173 1
+  s_43869f63631212::t_d59906652a2ac1 31,37
+  s_43869f63631212::t_5fd071ac889042 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9ac77b9b199866b6c6174c5dd0daaab843bb8e51",
+  "prompts": {},
+  "sessions": {
+    "s_43869f63631212": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "81acf668-74c4-4702-b7c8-068032a2997f",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
