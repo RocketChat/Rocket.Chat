@@ -54,6 +54,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
+	const checkUsernameAvailabilityEndpoint = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
@@ -68,6 +69,18 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			return true;
 		},
 		[t],
+	);
+
+	const checkUsernameAvailability = useCallback(
+		async (username: string): Promise<boolean> => {
+			try {
+				const { result } = await checkUsernameAvailabilityEndpoint({ username });
+				return result;
+			} catch {
+				return false;
+			}
+		},
+		[checkUsernameAvailabilityEndpoint],
 	);
 
 	const registerAdminUser = useCallback(
@@ -214,6 +227,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			saveOrganizationData,
 			completeSetupWizard,
 			maxSteps: data.serverAlreadyRegistered ? 2 : 4,
+			checkUsernameAvailability,
 		}),
 		[
 			setupWizardData,
@@ -231,6 +245,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
+			checkUsernameAvailability,
 		],
 	);
 
