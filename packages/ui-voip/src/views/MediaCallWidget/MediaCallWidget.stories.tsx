@@ -9,6 +9,10 @@ import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
 		New_Call: 'New call',
+		Transferring_call_incoming: 'Incoming call transfer',
+		Transferring_call_incoming__from_: 'From {{from}}',
+		Transferred_call__from__to: '{{from}} transferred call to',
+		Transferring_call: 'Transferring call',
 		Incoming_call: 'Incoming call',
 		Enter_username_or_number: 'Enter username or number',
 		meteor_status_connecting: 'Connecting...',
@@ -86,6 +90,14 @@ export const IncomingCallTransfer: Story = {
 	},
 };
 
+export const IncomingCallTransferConnecting: Story = {
+	args: {
+		state: 'ringing',
+		transferredBy: 'Jason',
+		connectionState: 'CONNECTING',
+	},
+};
+
 export const OutgoingCall: Story = {
 	args: {
 		state: 'calling',
@@ -103,6 +115,14 @@ export const OutgoingCallTransfer: Story = {
 	args: {
 		state: 'calling',
 		transferredBy: 'Joy',
+	},
+};
+
+export const OutgoingCallTransferConnecting: Story = {
+	args: {
+		state: 'calling',
+		transferredBy: 'Joy',
+		connectionState: 'CONNECTING',
 	},
 };
 
