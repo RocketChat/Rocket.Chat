@@ -3,10 +3,10 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import MessageListTab from './MessageListTab';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
+import MessageListTab from './MessageListTab';
 
 const PinnedMessagesTab = () => {
 	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');
