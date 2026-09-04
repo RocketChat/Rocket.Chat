@@ -3,7 +3,7 @@ import { action } from 'storybook/actions';
 import { userEvent, within } from 'storybook/test';
 
 import ConferencePreflight from './ConferencePreflight';
-import { allCapabilities, conferenceAppRoot, storeCallPreferences, withCallProviders } from './storyFixtures';
+import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withCallProviders } from './storyFixtures';
 
 /**
  * The screen a call actually starts on: what the camera will do on arrival, and what the call is called.
@@ -24,8 +24,11 @@ const meta = {
 		onCancel: action('onCancel'),
 	},
 	decorators: [
+		// `100dvh` and no minimum: a floor here would have propped the screen up to a height the phone stories
+		// don't have, which is exactly the case they exist to show. Desktop stories are unaffected — their
+		// viewport is taller than the floor ever was.
 		(Story) => (
-			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', minHeight: 520 }}>
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
 				<Story />
 			</div>
 		),
@@ -105,4 +108,35 @@ export const Confirming: Story = {
 
 		await userEvent.click(await canvas.findByRole('button', { name: 'Call Ada Lovelace' }));
 	},
+};
+
+/**
+ * The preflight on a phone held upright: one column, preview first, and everything down to Cancel fitting
+ * without a scroll.
+ */
+export const MobilePortrait: Story = {
+	...onPhone('phonePortrait'),
+	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync' },
+};
+
+/**
+ * The same phone turned sideways — the shape that was broken.
+ *
+ * 852px wide is past `md`, so width alone said "desktop" while 393px of height said otherwise: the screen
+ * stacked, a full-width 16:9 preview took more height than the whole viewport, and the name field and the call
+ * button sat below the fold with the preview clipped at the top. It should now be two columns with the preview
+ * capped, and the primary button on screen.
+ */
+export const MobileLandscape: Story = {
+	...onPhone('phoneLandscape'),
+	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync' },
+};
+
+/**
+ * Landscape with the camera on, which is the tightest the screen gets: the preview carries a line of its own
+ * under the icon, and both have to stay clear of the mic and camera toggles floating over the tile's bottom edge.
+ */
+export const MobileLandscapeCameraOn: Story = {
+	...onPhone('phoneLandscape'),
+	beforeEach: storeCallPreferences({ cam: true }),
 };

@@ -137,3 +137,22 @@ export const members: Record<'joined' | 'ringing' | 'declined' | 'left', Confere
 	// Left, so they *did* join — `joined` records that they were there and never goes back.
 	left: buildConferenceMember({ _id: 'left', name: 'Katherine Johnson', username: 'katherine', leftAt: new Date() }),
 };
+
+/**
+ * The two shapes a phone gives a call: a tall, narrow window and a short, wide one.
+ *
+ * Declared here rather than taken from Storybook's built-in set so the numbers are the ones the layout actually
+ * turns on — 393x852 is an iPhone's own viewport, and the landscape entry is the case the conference window and
+ * the preflight both got wrong: wide enough to pass for a desktop (852px is past the `md` breakpoint) while far
+ * too short to stack anything.
+ */
+export const PHONE_VIEWPORTS = {
+	phonePortrait: { name: 'Phone — portrait', styles: { width: '393px', height: '852px' } },
+	phoneLandscape: { name: 'Phone — landscape', styles: { width: '852px', height: '393px' } },
+} as const;
+
+/** Pins a story to one of the phone shapes above, toolbar still free to change it. */
+export const onPhone = (value: keyof typeof PHONE_VIEWPORTS) => ({
+	parameters: { viewport: { options: PHONE_VIEWPORTS } },
+	globals: { viewport: { value, isRotated: false } },
+});
