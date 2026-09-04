@@ -34,6 +34,18 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 
 export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 
+// Methods come in many shapes (`livechat:foo`, `meteor.loginWithPassword`, `sendMessage`).
+// Bucketing by the prefix before `:` or `.` keeps Prometheus label cardinality bounded by
+// the number of namespaces (~30) instead of the number of distinct method names (~200+).
+const methodNamespace = (method: string | undefined): string => {
+	if (!method) {
+		return 'unknown';
+	}
+	const idx = method.search(/[:.]/);
+	const head = idx === -1 ? method : method.slice(0, idx);
+	return head.slice(0, 50) || 'unknown';
+};
+
 export class Server extends EventEmitter {
 	private _subscriptions = new Map<string, SubscriptionFn>();
 
@@ -45,11 +57,11 @@ export class Server extends EventEmitter {
 
 	serialize = ejson.stringify;
 
-	parse = (data: WebSocket.Data, isBinary: boolean): IPacket => {
-		if (isBinary) {
-			throw new MeteorError(500, 'Binary data not supported');
-		}
-		const packet = data.toString();
+	parse = (data: WebSocket.Data, _isBinary: boolean): IPacket => {
+		// Some clients (Sockette, browser ArrayBuffer paths) deliver UTF-8 JSON in binary
+		// frames. Decode rather than reject — DDP itself is text-only, so a non-UTF-8 payload
+		// will fail at JSON.parse below and trip the protocol-error close.
+		const packet = Buffer.isBuffer(data) ? data.toString('utf8') : data.toString();
 
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
@@ -64,10 +76,12 @@ export class Server extends EventEmitter {
 		if (client.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
+		const namespace = methodNamespace(packet.method);
 		try {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
 				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
+				this.metrics?.increment('ddp_method_total', { namespace, status: 'ok' }, 1);
 				return this.result(client, packet, result.result);
 			}
 
@@ -77,8 +91,10 @@ export class Server extends EventEmitter {
 			}
 
 			const result = await fn.apply(client, packet.params);
+			this.metrics?.increment('ddp_method_total', { namespace, status: 'ok' }, 1);
 			return this.result(client, packet, result);
 		} catch (err: unknown) {
+			this.metrics?.increment('ddp_method_total', { namespace, status: 'error' }, 1);
 			return this.result(client, packet, null, handleInternalException(err, 'Method call error'));
 		}
 	}

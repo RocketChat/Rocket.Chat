@@ -35,6 +35,7 @@ export const DDP_EVENTS = {
 export const WS_ERRORS = {
 	CLOSE_PROTOCOL_ERROR: 1002,
 	UNSUPPORTED_DATA: 1007,
+	SLOW_CONSUMER: 1013,
 
 	TIMEOUT: 4000,
 };
@@ -42,7 +43,12 @@ export const WS_ERRORS = {
 export const WS_ERRORS_MESSAGES = {
 	CLOSE_PROTOCOL_ERROR: 'CLOSE_PROTOCOL_ERROR',
 	UNSUPPORTED_DATA: 'UNSUPPORTED_DATA',
+	SLOW_CONSUMER: 'SLOW_CONSUMER',
 	TIMEOUT: 'TIMEOUT',
 };
 
 export const TIMEOUT = 1000 * 30; // 30 seconds
+
+// Maximum bytes allowed in the WS send buffer before the client is considered a slow consumer
+// and disconnected. Defaults to 4 MiB.
+export const MAX_BUFFERED_BYTES = parseInt(process.env.DDP_MAX_BUFFERED_BYTES || '') || 4 * 1024 * 1024;

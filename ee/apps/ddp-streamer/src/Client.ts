@@ -3,14 +3,17 @@ import type { IncomingMessage } from 'http';
 
 import { Presence } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
 import { SERVER_ID } from './Server';
 import { server } from './configureServer';
-import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
+import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT, MAX_BUFFERED_BYTES } from './constants';
 import type { IPacket } from './types/IPacket';
+
+const logger = new Logger('DDP-Streamer-Client');
 
 // TODO why localhost not as 127.0.0.1?
 // based on Meteor's implementation (link)
@@ -61,7 +64,9 @@ export const clientMap = new WeakMap<WebSocket, Client>();
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
 
-	protected timeout: NodeJS.Timeout;
+	protected idleTimer?: NodeJS.Timeout;
+
+	protected pongTimer?: NodeJS.Timeout;
 
 	public readonly session = uuidv1();
 
@@ -75,11 +80,13 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
+	public closeCode?: number;
+
 	private updatePresence = throttle(
 		() => {
 			if (this.userId) {
 				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-					console.error('Error updating connection presence:', err);
+					logger.error({ msg: 'Error updating connection presence', err });
 				});
 			}
 		},
@@ -104,17 +111,18 @@ export class Client extends EventEmitter {
 			httpHeaders: req.headers,
 		};
 
-		this.renewTimeout(TIMEOUT / 1000);
+		this.armIdleTimer();
 		this.ws.on('message', this.handler);
-		this.ws.on('close', (...args) => {
+		this.ws.on('close', (code: number, ...rest: unknown[]) => {
+			this.closeCode = code;
 			server.emit(DDP_EVENTS.DISCONNECTED, this);
-			this.emit('close', ...args);
+			this.emit('close', code, ...rest);
 			this.subscriptions.clear();
-			clearTimeout(this.timeout);
+			this.clearTimers();
 		});
 
 		this.ws.on('error', (err) => {
-			console.error('Unexpected error:', err);
+			logger.error({ msg: 'Unexpected WebSocket error', err });
 			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 		});
 
@@ -124,7 +132,9 @@ export class Client extends EventEmitter {
 
 		server.emit(DDP_EVENTS.CONNECTED, this);
 
-		this.ws.on('message', () => this.renewTimeout(TIMEOUT));
+		// Any inbound traffic resets the idle window. The pong timer, when armed, is only
+		// cleared by an actual PONG (handled in `process`).
+		this.ws.on('message', () => this.armIdleTimer());
 
 		this.once('message', ({ msg }) => {
 			if (msg !== DDP_EVENTS.CONNECT) {
@@ -157,6 +167,9 @@ export class Client extends EventEmitter {
 		switch (action) {
 			case DDP_EVENTS.PING:
 				this.pong(packet.id);
+				break;
+			case DDP_EVENTS.PONG:
+				this.handlePong();
 				break;
 			case DDP_EVENTS.METHOD:
 				if (!packet.method) {
@@ -203,12 +216,35 @@ export class Client extends EventEmitter {
 
 	handleIdle = (): void => {
 		this.ping();
-		this.timeout = setTimeout(this.closeTimeout, TIMEOUT);
+		// Only the actual PONG clears this; other inbound messages do NOT.
+		clearTimeout(this.pongTimer);
+		this.pongTimer = setTimeout(this.closeTimeout, TIMEOUT);
 	};
 
-	renewTimeout(timeout = TIMEOUT): void {
-		clearTimeout(this.timeout);
-		this.timeout = setTimeout(this.handleIdle, timeout);
+	handlePong(): void {
+		clearTimeout(this.pongTimer);
+		this.pongTimer = undefined;
+		// Resume the normal idle cycle. The 'message' listener that runs alongside us is
+		// guarded by `pongTimer`, so it skipped re-arming while we were awaiting PONG.
+		this.armIdleTimer();
+	}
+
+	armIdleTimer(timeout = TIMEOUT): void {
+		// Liveness during the PING/PONG window is governed strictly by `pongTimer`.
+		// Other inbound traffic must NOT extend the deadline — that would mask a broken
+		// client that keeps sending data but never replies to PING.
+		if (this.pongTimer) {
+			return;
+		}
+		clearTimeout(this.idleTimer);
+		this.idleTimer = setTimeout(this.handleIdle, timeout);
+	}
+
+	clearTimers(): void {
+		clearTimeout(this.idleTimer);
+		clearTimeout(this.pongTimer);
+		this.idleTimer = undefined;
+		this.pongTimer = undefined;
 	}
 
 	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
@@ -221,7 +257,7 @@ export class Client extends EventEmitter {
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {
-			console.error(err);
+			logger.error({ msg: 'Failed to handle inbound DDP frame', err });
 			return this.ws.close(WS_ERRORS.UNSUPPORTED_DATA, WS_ERRORS_MESSAGES.UNSUPPORTED_DATA);
 		}
 	};
@@ -234,6 +270,13 @@ export class Client extends EventEmitter {
 	}
 
 	send(payload: string): void {
+		// Drop slow consumers deterministically: if the OS-level write buffer is past the
+		// configured threshold the client cannot keep up. Closing here prevents heap blow-up
+		// on the streamer pod when a single peer stalls.
+		if (this.ws.bufferedAmount > MAX_BUFFERED_BYTES) {
+			this.ws.close(WS_ERRORS.SLOW_CONSUMER, WS_ERRORS_MESSAGES.SLOW_CONSUMER);
+			return;
+		}
 		return this.ws.send(this.encodePayload(payload));
 	}
 }
