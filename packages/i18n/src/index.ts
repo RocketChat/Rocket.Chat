@@ -149,3 +149,20 @@ export const applyCustomTranslations = (
 		}
 	}
 };
+
+export const defaultFallbackLng = {
+	'zh-TW': ['zh-HK', 'en'],
+	'zh-HK': ['zh-TW', 'en'],
+	'zh-Hant': ['zh-TW', 'zh-HK', 'en'],
+	'zh-Hans': ['zh', 'en'],
+	'zh-CN': ['zh', 'en'],
+	'zh-SG': ['zh', 'en'],
+	'zh-MO': ['zh-HK', 'zh-TW', 'en'],
+	'pt-BR': ['pt', 'en'],
+	'de-AT': ['de', 'en'],
+	'de-IN': ['de', 'en'],
+	'bn-BD': ['bn-IN', 'en'],
+	'bn-IN': ['bn-BD', 'en'],
+	'hi-IN': ['hi', 'en'],
+	'default': ['en'],
+};
