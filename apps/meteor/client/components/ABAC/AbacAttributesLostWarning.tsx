@@ -11,10 +11,13 @@ export type AbacAttributesLostWarningProps = {
 /**
  * Warns that an operation will discard the room's ABAC attributes (ABAC-P4 M4).
  *
- * Converting a channel to a team, a team back to a channel, moving a channel into a team, or
- * converting a discussion to a channel all drop the room's attributes, which leaves the resulting
- * room locked until someone reassigns them. That is expensive to discover afterwards, so it is
- * said before the operation rather than after.
+ * Converting a channel or private group to a team, converting a team back to a channel, and moving
+ * a channel into a team all drop the room's attributes, leaving the result locked until someone
+ * reassigns them. That is expensive to discover afterwards, so it is said before the operation.
+ *
+ * The brief also lists "converting a discussion to a channel", but no such conversion exists in the
+ * product — the only convert endpoints are `channels.convertToTeam`, `groups.convertToTeam` and
+ * `teams.convertToChannel` — so there is nothing to warn on there.
  *
  * Renders nothing when the room has no attributes to lose, so it can be dropped into any of those
  * confirmations unconditionally.

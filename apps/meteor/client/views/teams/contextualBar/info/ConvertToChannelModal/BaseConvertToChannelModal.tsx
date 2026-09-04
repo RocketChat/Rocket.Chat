@@ -16,6 +16,8 @@ export type BaseConvertToChannelModalProps = {
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	currentStep?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
+	/** The team's main room, so the confirmation can warn about losing its ABAC attributes. */
+	teamRoom?: Pick<IRoom, 'abacAttributes'>;
 };
 
 const BaseConvertToChannelModal = ({
@@ -23,6 +25,7 @@ const BaseConvertToChannelModal = ({
 	onCancel,
 	onConfirm,
 	rooms,
+	teamRoom,
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_CONVERT : STEPS.LIST_ROOMS,
 }: BaseConvertToChannelModalProps) => {
 	const [step, setStep] = useState(currentStep);
@@ -58,6 +61,7 @@ const BaseConvertToChannelModal = ({
 				onCancel={rooms && rooms.length > 0 ? onReturn : onCancel}
 				deletedRooms={selectedRooms}
 				rooms={rooms}
+				teamRoom={teamRoom}
 			/>
 		);
 	}
