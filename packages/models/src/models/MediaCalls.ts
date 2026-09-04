@@ -145,6 +145,36 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async flagAsEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedAt: new Date(),
+				},
+			},
+		);
+	}
+
+	public async flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedByPeerAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedByPeerAt: new Date(),
+				},
+			},
+		);
+	}
+
 	public async setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult> {
 		return this.updateOne(
 			{
@@ -208,6 +238,25 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public findAllNotOverByOppositeSipExtension<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(sipExtension: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				ended: false,
+				expiresAt: {
+					$gt: new Date(),
+				},
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension, 'callee.type': 'sip' },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension, 'caller.type': 'sip' },
+				],
+			},
+			options,
+		);
+	}
+
 	public async hasUnfinishedCalls(): Promise<boolean> {
 		const count = await this.countDocuments({ ended: false }, { limit: 1 });
 		return count > 0;
@@ -219,6 +268,47 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				ended: false,
 				uids: uid,
 				...(exceptCallId && { _id: { $ne: exceptCallId } }),
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
+	public async isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				uids: uid,
+				_id: { $in: callIds },
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
+	public findAllPendingEscalationByUidAndCallIds<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(uid: IUser['_id'], callIds: string[], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				ended: false,
+				uids: uid,
+				_id: { $in: callIds },
+				escalatedAt: { $exists: false },
+				escalatedByPeerAt: { $exists: true },
+			},
+			options,
+		);
+	}
+
+	public async isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				_id: { $in: callIds },
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension },
+				],
 			},
 			{ limit: 1 },
 		);
@@ -241,5 +331,18 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				...(callee && { callee }),
 			},
 		});
+	}
+
+	public findAllNotOverByCallIds<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		callIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				ended: false,
+				_id: { $in: callIds },
+			},
+			options,
+		);
 	}
 }
