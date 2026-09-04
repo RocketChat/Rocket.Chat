@@ -131,7 +131,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}

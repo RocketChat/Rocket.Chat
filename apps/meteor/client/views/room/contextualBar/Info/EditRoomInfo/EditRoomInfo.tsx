@@ -33,12 +33,19 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	usePermission,
+	useSetting,
+	useToastMessageDispatch,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import AbacRoomAttributesSection from './AbacRoomAttributesSection';
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
@@ -49,6 +56,7 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { useIsABACAvailable } from '../../../../admin/ABAC/hooks/useIsABACAvailable';
 import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
@@ -232,9 +240,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionIgnoreThreads = useId();
 
 	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+	const canEditAbacAttributes = usePermission('edit-room-abac-attributes', room._id);
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
 
-	const showAccordion = showAdvancedSettings || showRetentionPolicy;
+	// ABAC-P4 M3 — the section decides for itself whether it applies (licence + entitlement); this
+	// only has to keep the accordion from being hidden when it is the sole item.
+	const showAbacAttributes = useIsABACAvailable() && canEditAbacAttributes;
+
+	const showAccordion = showAdvancedSettings || showRetentionPolicy || showAbacAttributes;
 
 	return (
 		<ContextualbarDialog>
@@ -363,6 +376,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					</FieldGroup>
 					{showAccordion && (
 						<Accordion>
+							{showAbacAttributes && (
+								<AccordionItem title={t('ABAC_Room_attributes_section')}>
+									<AbacRoomAttributesSection room={room} />
+								</AccordionItem>
+							)}
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									<FieldGroup>
