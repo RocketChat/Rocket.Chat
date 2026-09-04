@@ -1,3 +1,4 @@
+import type { IAppCallHistoryConverter } from './IAppCallHistoryConverter';
 import type { IAppContactsConverter } from './IAppContactsConverter';
 import type { IAppDepartmentsConverter } from './IAppDepartmentsConverter';
 import type { IAppMessagesConverter } from './IAppMessagesConverter';
@@ -11,6 +12,7 @@ import type { IAppVideoConferencesConverter } from './IAppVideoConferencesConver
 import type { IAppVisitorsConverter } from './IAppVisitorsConverter';
 
 type AppConverters = {
+	callHistory: IAppCallHistoryConverter;
 	contacts: IAppContactsConverter;
 	departments: IAppDepartmentsConverter;
 	messages: IAppMessagesConverter;

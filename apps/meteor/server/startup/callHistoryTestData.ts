@@ -9,7 +9,9 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 	const extraCallId1 = 'rocketchat.extra.call.test.1';
 	const extraCallId2 = 'rocketchat.extra.call.test.2';
 
-	await CallHistory.deleteMany({ uid });
+	// Both users' rows are cleaned: the fixtures below deliberately include the callee's
+	// side of an internal call, which belongs to `extraUid`.
+	await CallHistory.deleteMany({ uid: { $in: [uid, extraUid] } });
 	await MediaCalls.deleteMany({ _id: { $in: [callId1, callId2, callId3, callId4] } });
 
 	await CallHistory.insertMany([
@@ -98,6 +100,24 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			uid,
 			direction: 'inbound',
 			contactExtension: '1002',
+		},
+		// The callee's side of `callId1`. A real internal call writes one row per participant,
+		// so this is what the collection actually looks like -- and it gives the tests a call
+		// with two rows, and history belonging to more than one user.
+		{
+			_id: 'rocketchat.internal.history.test.inbound.contact',
+			ts: new Date(),
+			callId: callId1,
+			state: 'ended',
+			type: 'media-call',
+			duration: 10,
+			endedAt: new Date(),
+			external: false,
+			uid: extraUid,
+			contactId: uid,
+			direction: 'inbound',
+			contactName: 'Pineapple',
+			contactUsername: 'fruit-001',
 		},
 	]);
 

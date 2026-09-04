@@ -1,3 +1,4 @@
+import type { ICallHistoryRead } from './ICallHistoryRead';
 import type { ICloudWorkspaceRead } from './ICloudWorkspaceRead';
 import type { IContactRead } from './IContactRead';
 import type { IEnvironmentRead } from './IEnvironmentRead';
@@ -54,4 +55,7 @@ export interface IRead {
 	getContactReader(): IContactRead;
 
 	getExperimentalReader(): IExperimentalRead;
+
+	/** Gets the ICallHistoryRead instance, for reading calls that have finished. */
+	getCallHistoryReader(): ICallHistoryRead;
 }

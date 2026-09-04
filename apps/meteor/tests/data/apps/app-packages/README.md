@@ -667,3 +667,109 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 ```
 
 </details>
+
+#### Call History Reader Test
+
+File name: `call-history-reader-test_0.0.1.zip`
+
+An app that exposes three public API endpoints, one per method of the `ICallHistoryRead` accessor:
+
+- `GET /read-by-id?historyId=<id>` → `{ entry: <ICallHistoryEntry | null> }`
+- `GET /read-by-call-id?callId=<id>` → `{ entries: ICallHistoryEntry[] }`
+- `GET /find?uid=&direction=&states=&count=&offset=&from=&to=` → the `ICallHistoryPage` verbatim.
+  `states` is comma-separated; `from`/`to` are parsed with `new Date(...)`, so pass ISO strings.
+
+Used by `apps/meteor/tests/end-to-end/apps/app-call-history-reader.ts`, against the history seeded
+at boot by `apps/meteor/server/startup/callHistoryTestData.ts`.
+
+<details>
+<summary>App source code</summary>
+
+**app.json** (relevant excerpt)
+
+```json
+{ "permissions": [{ "name": "media-call.history" }, { "name": "api" }] }
+```
+
+> Declaring `api` alongside `media-call.history` is **required**, not redundant. Granted permissions
+> *replace* the defaults rather than adding to them — `AppManager.getPermissionsGranted` returns
+> `permissionsGranted || defaultPermissions` — so an app installed with an explicit permission list
+> holds only what that list names. Omit `api` and the app installs and enables cleanly, but its HTTP
+> endpoints never mount and every request to them answers 404.
+
+**CallHistoryReaderTestApp.ts**
+
+```typescript
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { ApiEndpoint, ApiSecurity, ApiVisibility, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { IAppAccessors, IConfigurationExtend, IEnvironmentRead, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { ILogger } from '@rocket.chat/apps-engine/definition/accessors';
+
+class ReadByIdEndpoint extends ApiEndpoint {
+    public path = 'read-by-id';
+
+    public async get(request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+        const { historyId } = request.query;
+        if (!historyId) {
+            return { status: 400, content: { error: 'historyId query parameter is required' } };
+        }
+
+        const entry = await read.getCallHistoryReader().getById(historyId);
+
+        return { status: 200, content: { entry: entry || null } };
+    }
+}
+
+class ReadByCallIdEndpoint extends ApiEndpoint {
+    public path = 'read-by-call-id';
+
+    public async get(request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+        const { callId } = request.query;
+        if (!callId) {
+            return { status: 400, content: { error: 'callId query parameter is required' } };
+        }
+
+        const entries = await read.getCallHistoryReader().getByCallId(callId);
+
+        return { status: 200, content: { entries } };
+    }
+}
+
+class FindEndpoint extends ApiEndpoint {
+    public path = 'find';
+
+    public async get(request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+        const { uid, direction, states, count, offset, from, to } = request.query;
+
+        const query: Record<string, unknown> = {};
+        if (uid) { query.uid = uid; }
+        if (direction) { query.direction = direction; }
+        if (states) { query.states = states.split(','); }
+        if (count) { query.count = Number(count); }
+        if (offset) { query.offset = Number(offset); }
+        if (from) { query.from = new Date(from); }
+        if (to) { query.to = new Date(to); }
+
+        const page = await read.getCallHistoryReader().find(query);
+
+        return { status: 200, content: page };
+    }
+}
+
+export class CallHistoryReaderTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    public async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [new ReadByIdEndpoint(this), new ReadByCallIdEndpoint(this), new FindEndpoint(this)],
+        });
+    }
+}
+```
+
+</details>

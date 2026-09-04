@@ -904,6 +904,7 @@
   "Apps_Permissions_livechat-status_read": "Access Livechat status information",
   "Apps_Permissions_livechat-visitor_read": "Access Livechat visitor information",
   "Apps_Permissions_livechat-visitor_write": "Modify Livechat visitor information",
+  "Apps_Permissions_media-call_history": "Read the history of finished voice and video calls",
   "Apps_Permissions_message_read": "Access messages",
   "Apps_Permissions_message_write": "Send and modify messages",
   "Apps_Permissions_networking": "Access to this server network",

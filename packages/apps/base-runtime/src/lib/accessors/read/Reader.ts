@@ -12,6 +12,7 @@ import type {
 	IUserRead,
 	IVideoConferenceRead,
 } from '@rocket.chat/apps-engine/definition/accessors';
+import type { ICallHistoryRead } from '@rocket.chat/apps-engine/definition/accessors/ICallHistoryRead';
 import type { IContactRead } from '@rocket.chat/apps-engine/definition/accessors/IContactRead';
 import type { IOAuthAppsReader } from '@rocket.chat/apps-engine/definition/accessors/IOAuthAppsReader';
 import type { IRoleRead } from '@rocket.chat/apps-engine/definition/accessors/IRoleRead';
@@ -34,6 +35,7 @@ export class Reader implements IRead {
 		private thread: IThreadRead,
 		private role: IRoleRead,
 		private experimental: IExperimentalRead,
+		private callHistory: ICallHistoryRead,
 	) {}
 
 	public getEnvironmentReader(): IEnvironmentRead {
@@ -94,5 +96,9 @@ export class Reader implements IRead {
 
 	public getExperimentalReader(): IExperimentalRead {
 		return this.experimental;
+	}
+
+	public getCallHistoryReader(): ICallHistoryRead {
+		return this.callHistory;
 	}
 }
