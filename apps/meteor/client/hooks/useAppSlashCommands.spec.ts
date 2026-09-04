@@ -263,6 +263,57 @@ describe('useAppSlashCommands', () => {
 		});
 	});
 
+	it('should fetch all commands when the server returns fewer items than requested', async () => {
+		const serverPageSizeLimit = 20;
+
+		const largeMockCommands: SlashCommand[] = Array.from({ length: 120 }, (_, i) => ({
+			command: `/command${i + 1}`,
+			description: `Description for command ${i + 1}`,
+			params: '',
+			clientOnly: false,
+			providesPreview: false,
+			appId: `app-${i + 1}`,
+			permission: undefined,
+		}));
+
+		mockGetSlashCommands.mockImplementation(({ offset, count }) => {
+			return Promise.resolve({
+				commands: largeMockCommands.slice(offset, offset + Math.min(count, serverPageSizeLimit)),
+				total: largeMockCommands.length,
+				appsLoaded: true,
+			});
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withJohnDoe().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).build(),
+		});
+
+		await waitFor(() => {
+			expect(Object.keys(slashCommands.commands)).toHaveLength(largeMockCommands.length);
+		});
+
+		expect(mockGetSlashCommands).toHaveBeenCalledTimes(largeMockCommands.length / serverPageSizeLimit);
+	});
+
+	it('should stop paginating when a page comes back empty', async () => {
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [],
+			total: 10,
+			appsLoaded: true,
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withJohnDoe().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).build(),
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalled();
+		});
+
+		expect(mockGetSlashCommands).toHaveBeenCalledTimes(1);
+		expect(Object.keys(slashCommands.commands)).toHaveLength(0);
+	});
+
 	it('should not load commands when apps are not loaded', async () => {
 		mockGetSlashCommands.mockResolvedValue({
 			commands: [],
