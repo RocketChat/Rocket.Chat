@@ -42,8 +42,16 @@ export type PassEventResult = Marker & { type: 'pass' };
 /** Branded variant returned by `EventResult.patch()`. */
 export type PatchEventResult<T> = Marker & { type: 'patch'; patch: Partial<T>; [PATCH_PHANTOM_KEY]?: () => T };
 
+/**
+ * What a `prevent` says about the block: a sentence the app wrote, or a key the app ships a
+ * translation for. The two are exclusive, and `never` on the absent one is what says so: a bare
+ * union of the two members lets an object literal carry both, because the excess-property check
+ * admits any property that one member declares.
+ */
+export type PreventReason = { reason: string; i18n?: never } | { i18n: I18nMessage; reason?: never };
+
 /** Branded variant returned by `EventResult.prevent()`. */
-export type PreventEventResult = Marker & { type: 'prevent' } & ({ reason: string } | { i18n: I18nMessage });
+export type PreventEventResult = Marker & { type: 'prevent' } & PreventReason;
 
 export type MarkedEventResult<T = unknown> = PassEventResult | PatchEventResult<T> | PreventEventResult;
 
@@ -59,7 +67,7 @@ export const EventResult = {
 		return { '@kind': EVENT_RESULT_KIND, 'type': 'patch', 'patch': patch as Partial<T> };
 	},
 
-	prevent(input: { reason: string } | { i18n: I18nMessage }): PreventEventResult {
+	prevent(input: PreventReason): PreventEventResult {
 		return { '@kind': EVENT_RESULT_KIND, 'type': 'prevent', ...input };
 	},
 };
