@@ -185,7 +185,7 @@ test.describe('OC - Monitor Role', () => {
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
-				`Chat On Hold: The chat was manually placed On Hold by ${MONITOR}`,
+				`Chat on hold: The chat was manually placed on hold by ${MONITOR}`,
 			);
 			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnResume).toBeVisible();
