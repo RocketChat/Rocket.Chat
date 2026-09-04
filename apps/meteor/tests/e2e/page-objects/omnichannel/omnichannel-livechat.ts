@@ -3,15 +3,20 @@ import fs from 'fs/promises';
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../../utils/test';
+import { RoutedPage } from '../routed-page';
 
-export class OmnichannelLiveChat {
-	readonly page: Page;
+export class OmnichannelLiveChat extends RoutedPage {
+	protected readonly route = '/livechat';
 
 	constructor(
 		page: Page,
 		private readonly api: { get(url: string): Promise<APIResponse> },
 	) {
-		this.page = page;
+		super(page);
+	}
+
+	async waitForReady(): Promise<void> {
+		await this.btnOpenLiveChat.waitFor({ state: 'visible' });
 	}
 
 	btnOpenOnlineLiveChat(label: string): Locator {

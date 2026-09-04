@@ -34,8 +34,7 @@ test.describe.serial('OC - Livechat', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 
-		await page.goto('/');
-		await page.locator('#main-content').waitFor();
+		await poHomeOmnichannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -274,7 +273,7 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
-		await poLiveChat.page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async () => {
@@ -331,7 +330,7 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await poLiveChat.page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

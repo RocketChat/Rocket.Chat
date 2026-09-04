@@ -42,7 +42,7 @@ test.describe('video conference', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('should create video conference in targetChannel using keyboard', async ({ page }) => {

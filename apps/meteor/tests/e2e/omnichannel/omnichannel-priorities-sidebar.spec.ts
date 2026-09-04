@@ -31,9 +31,8 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 		poHomeChannel = new HomeOmnichannel(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/');
-		await page.locator('#main-content').waitFor();
+	test.beforeEach(async () => {
+		await poHomeChannel.goto();
 	});
 
 	test.beforeEach(async ({ api }) => {

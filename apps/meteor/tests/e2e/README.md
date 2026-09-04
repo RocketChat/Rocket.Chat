@@ -109,11 +109,11 @@ A change in the DOM structure can break the test.
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
 - They make it easier to write tests that are more readable and maintainable.
 - Always make sure to use the most restricted scope possible - not the whole page to avoid multiple matches.
+- Page objects own navigation - see [Navigation](#navigation-goto-owns-the-wait).
 
 If you are writing a new test, make sure to look at the existing page-objects to see if there is a suitable one for your use case.
 
 If not, evaluate if creating a reusable getter/method is worth it and create the ones you need in the respective context.
-
 
 E.g.:
 Writing a new test for a sidebar behavior.
@@ -145,12 +145,52 @@ Usage example:
 
   test('should display sidebar items', async ({ page }) => {
       poHomeChannel = new HomeChannel(page);
-      await page.goto('/home');
+      await poHomeChannel.goto();
       const targetChannel = 'channel-test';
 
       await expect(poHomeChannel.sidebar.getSearchRoomByName(targetChannel)).toBeVisible();
   });
 ```
+
+## Navigation: `goto()` owns the wait
+
+`page.goto()` resolves as soon as the document loads, long before the SPA has rendered - the next
+locator then races the app. So page objects own navigation: `goto()` navigates *and* waits.
+
+```ts
+poAdminUsers = new AdminUsers(page);
+await poAdminUsers.goto(); // the next line can act on the page
+```
+
+Never call `page.goto()` from a test. If the page you need has no page object, add one - under
+`Admin`, `Account` or `OmnichannelAdmin` it is usually two lines:
+
+```ts
+export class AdminThirdPartyLogin extends Admin {
+	protected readonly route = AdminSectionsHref.thirdPartyLogin;
+
+	protected readonly title = 'Third-party login';
+}
+```
+
+`title` is the page's heading, matched with `exact: true` - copy it from
+`packages/i18n/src/locales/en.i18n.json` rather than guessing the casing. It also scopes
+`pageContent`, the `main` region to hang the page's other locators off.
+
+Anything else extends `RoutedPage` directly and implements `waitForReady()`. Override it when the
+heading is not enough - `AdminUsers` waits for its search box, `OmnichannelAdmin` for its table.
+
+Two more hooks:
+
+- `gotoExpecting(until)` - the route settles on something else, e.g. an upsell dialog on CE.
+- `navigateTo(route, until?)` - build extra `gotoSomething()` methods when a page object owns more
+  than one route (`gotoGeneral()`, `gotoChannel(name)`). `until` takes a `Locator` or an async waiter.
+
+Auth screens (`Login`, `Registration`, `Authenticated`) take the url to navigate to, since an
+anonymous visitor asking for `/home` lands somewhere else.
+
+A raw `page.goto()` is still right for external urls, urls derived from `page.url()`, and tests that
+must not wait for the route to settle.
 
 ## Cleanup after tests
 - Remember to delete all users, channels, rooms, etc, created during the tests.
@@ -211,7 +251,8 @@ Enhances test readability and provides more detailed information in test reports
 test.describe('Feature Test', () => {
   test('should display the feature heading after navigation', async ({ page }) => {
     await test.step('open the feature page', async () => {
-      await page.goto('/feature');
+      const poFeature = new FeaturePage(page);
+      await poFeature.goto();
       await expect(page.getByRole('heading', { name: 'Feature' })).toBeVisible();
     });
   });
@@ -241,7 +282,7 @@ Do **not** apply when the setup UI is the actual subject of the test (`create-di
 
 ### Pattern 2 — share the browser context across a serial suite
 
-For suites already using `test.describe.serial`, move `browser.newContext()`, `page.goto()` and the initial room navigation from `beforeEach` to `beforeAll`.
+For suites already using `test.describe.serial`, move `browser.newContext(), pageObject.goto()` and the initial room navigation from `beforeEach` to `beforeAll`.
 
 Why: bootstrapping a Playwright context plus hydrating the Meteor app costs ~1.5–2.5s per test. In a serial suite the isolation cost is already paid — collecting the speed benefit is free.
 
@@ -257,7 +298,7 @@ Do **not** apply when:
 
 ### Pattern 3 — navigate to a known room by URL, not by search
 
-When a test already knows the room it needs (a channel created via API, `general`, etc.), open it directly with `poHomeChannel.gotoChannel(name)` instead of `page.goto('/home')` + `navbar.openChat(name)`.
+When a test already knows the room it needs (a channel created via API, `general`, etc.), open it directly with `poHomeChannel.gotoChannel(name)` instead of going home and searching for it.
 
 ```ts
 // ❌ fragile — three independent things must align before the combobox `fill` resolves
@@ -362,7 +403,8 @@ Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
 
 - `poHomeChannel.content.sendMessage(...)` used inside `beforeEach` or `beforeAll` — that is setup, should be `sendMessage(api, ...)`.
 - Opening meatball menus or modals purely to create a discussion, thread, or DM as a setup step.
-- `test.describe.serial` combined with `beforeEach(async ({ page }) => { await page.goto(...) })` — the context should be shared in `beforeAll`.
-- `page.goto('/home')` + `navbar.openChat(name)` to reach a room the test already knows — use `poHomeChannel.gotoChannel(name)` (see Pattern 3). Searching a just-created channel races the search index and hangs until timeout.
+- `test.describe.serial` that builds a fresh context and navigates in `beforeEach` — both should be shared in `beforeAll`.
+- Any raw `page.goto(...)` in a spec — use the page object's `goto()` (see [Navigation](#navigation-goto-owns-the-wait)).
+- `goto()` + `navbar.openChat(name)` to reach a room the test already knows — use `poHomeChannel.gotoChannel(name)` (see Pattern 3). Searching a just-created channel races the search index and hangs until timeout.
 - New non-serial suites whose tests still each carry >3s of UI setup.
 - Inline `api.post('/im.create', …)` / `api.post('/chat.sendMessage', …)` in a spec instead of extending the helpers in `utils/`.

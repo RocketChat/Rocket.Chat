@@ -20,7 +20,7 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		channelPage = new HomeChannel(page);
-		await page.goto('/home');
+		await channelPage.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

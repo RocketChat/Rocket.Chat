@@ -12,7 +12,7 @@ test.describe('Omnichannel - Livechat Widget Embedded', () => {
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
-			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+			await poLiveChat.goto();
 		});
 
 		test.afterAll(async () => {

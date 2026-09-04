@@ -7,7 +7,7 @@ test.describe.parallel('Forgot Password', () => {
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
 
-		await page.goto('/home');
+		await poRegistration.goto();
 		await poRegistration.btnForgotPassword.click();
 	});
 

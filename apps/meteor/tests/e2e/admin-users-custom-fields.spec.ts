@@ -56,7 +56,7 @@ test.describe('Admin users custom fields', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAdmin = new AdminUsers(page);
-		await page.goto('/admin/users');
+		await poAdmin.goto();
 	});
 
 	test('should allow admin to add user custom fields', async () => {

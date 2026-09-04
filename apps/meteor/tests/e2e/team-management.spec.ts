@@ -24,10 +24,9 @@ test.describe('teams-management-permissions', () => {
 		]);
 	});
 
-	test('should not allow to create public team if user does not have the create-c permission', async ({ page, api }) => {
+	test('should not allow to create public team if user does not have the create-c permission', async ({ api }) => {
 		await updatePermissions(api, [{ _id: 'create-c', roles: [] }]);
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -35,10 +34,9 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).toBeChecked();
 	});
 
-	test('should not allow to create private team if user does not have the create-p permission', async ({ page, api }) => {
+	test('should not allow to create private team if user does not have the create-p permission', async ({ api }) => {
 		await updatePermissions(api, [{ _id: 'create-p', roles: [] }]);
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.openCreate('Team');
 
@@ -46,13 +44,12 @@ test.describe('teams-management-permissions', () => {
 		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
 	});
 
-	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ page, api }) => {
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
 		await updatePermissions(api, [
 			{ _id: 'create-p', roles: [] },
 			{ _id: 'create-c', roles: [] },
 		]);
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 
 		await poHomeTeam.navbar.btnCreateNew.click();
 		await expect(poHomeTeam.navbar.createNewMenu).toBeVisible();
@@ -93,8 +90,7 @@ test.describe.serial('teams-management', () => {
 		poHomeTeam = new HomeTeam(page);
 		newChannelModal = new CreateNewChannelModal(page);
 
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 	});
 
 	test('should create targetTeam private', async ({ page }) => {
@@ -488,8 +484,7 @@ test.describe('teams-management-remove-member-channel-selection', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
 
-		await page.goto('/home');
-		await poHomeTeam.waitForHome();
+		await poHomeTeam.goto();
 	});
 
 	test('should load the channel selection modal when removing a member that belongs to team channels', async ({ api }) => {

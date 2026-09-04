@@ -46,8 +46,7 @@ test.describe.serial('sidebar custom categories', () => {
 		await setUserPreferences(api, { sidebarCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test.describe('create (+) menu', () => {

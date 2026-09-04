@@ -11,7 +11,7 @@ test.describe.serial('Private apps upload', () => {
 	test.beforeEach(async ({ page }) => {
 		poMarketplace = new Marketplace(page);
 
-		await page.goto('/marketplace/private');
+		await poMarketplace.goto();
 	});
 
 	test.describe('Premium', () => {
@@ -48,7 +48,7 @@ test.describe.serial('Private apps upload', () => {
 			await poMarketplace.btnConfirmAppUpdate.click();
 			await page.getByRole('button', { name: 'Agree' }).click();
 
-			await page.goto('/marketplace/private');
+			await poMarketplace.goto();
 			await poMarketplace.lastAppRow.click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
 		});
@@ -78,7 +78,7 @@ test.describe.serial('Private apps upload', () => {
 			await poMarketplace.btnConfirmAppUpdate.click();
 			await page.getByRole('button', { name: 'Agree' }).click();
 
-			await page.goto('/marketplace/private');
+			await poMarketplace.goto();
 			await poMarketplace.lastAppRow.click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 		});

@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AdminSettings } from './page-objects';
-import { test, expect } from './utils/test';
+import { test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
@@ -9,11 +9,8 @@ test.describe.serial('settings-int', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
-		const pageTitle = page.getByRole('main').getByRole('heading', { level: 1, name: 'Message', exact: true });
-		await page.goto('/admin/settings/Message');
 
-		await pageTitle.waitFor();
-		await expect(pageTitle).toBeVisible();
+		await poAdminSettings.gotoSection('Message');
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {

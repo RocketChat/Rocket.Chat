@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
 
@@ -79,7 +79,7 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 }
 
 export class OmnichannelTriggers extends OmnichannelAdmin {
-	protected readonly route = 'triggers';
+	protected readonly route = OmnichannelSectionsHref.triggers;
 
 	protected readonly title = 'Livechat Triggers';
 

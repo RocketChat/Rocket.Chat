@@ -55,7 +55,7 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
