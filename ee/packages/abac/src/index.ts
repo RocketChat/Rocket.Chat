@@ -1002,9 +1002,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	): Promise<void> {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
-			...(options?.skipSystemMessage
-				? { skipSystemMessage: true }
-				: { customSystemMessage: 'abac-removed-user-from-room' as const }),
+			...(options?.skipSystemMessage ? { skipSystemMessage: true } : { customSystemMessage: 'abac-removed-user-from-room' as const }),
 		})
 			.then(
 				() =>
