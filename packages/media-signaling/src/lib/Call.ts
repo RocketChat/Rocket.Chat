@@ -262,6 +262,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			return {
 				confirmed: false,
+				hidden: this.hidden,
 				tempCallId: this.tempCallId,
 				state: this.state,
 				title: this.contact.displayName || number || 'unknown',
