@@ -1,4 +1,4 @@
-import { CredentialTokens } from '@rocket.chat/models';
+import { CredentialTokens, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -27,7 +27,6 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
-	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
@@ -43,8 +42,23 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		const updatedUser = await SAML.insertOrUpdateSAMLUser(userObject);
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
+		// Store the credential token on the user so the 2FA callback can clean it up
+		// after verification. This prevents the token from being deleted before the
+		// second method.callAnon/login call (which carries the TOTP code) arrives.
+		await Users.updateOne(
+			{ _id: updatedUser.userId },
+			{
+				$set: {
+					'services.saml.pendingCredentialToken': loginRequest.credentialToken,
+					'services.saml.pendingCredentialExpiresAt': new Date(Date.now() + 300000),
+				},
+			},
+		);
+
 		return updatedUser;
 	} catch (err: any) {
+		// Clean up the credential on error since the 2FA callback won't run
+		await CredentialTokens.removeById(loginRequest.credentialToken);
 		SystemLogger.error({ err });
 
 		let message = err.toString();
