@@ -33,26 +33,30 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 		[setLocalDraft],
 	);
 
-	const flushDraft = useCallback(() => {
-		if (draftRef.current === null) {
-			return;
-		}
+	const flushDraft = useCallback(
+		(value?: string) => {
+			const draft = value ?? draftRef.current;
 
-		const draft = draftRef.current;
-		draftRef.current = null;
+			if (draft === null) {
+				return;
+			}
 
-		if (tmid && !threadExistsRef.current && draft) {
-			return;
-		}
+			draftRef.current = null;
 
-		if (draft === serverValueRef.current) {
-			return;
-		}
+			if (tmid && !threadExistsRef.current && draft) {
+				return;
+			}
 
-		serverValueRef.current = draft;
+			if (draft === serverValueRef.current) {
+				return;
+			}
 
-		void saveDraft({ rid, draft, ...(tmid && { tmid }) }).then(() => setLocalDraft());
-	}, [saveDraft, rid, tmid, setLocalDraft]);
+			serverValueRef.current = draft;
+
+			void saveDraft({ rid, draft, ...(tmid && { tmid }) }).then(() => setLocalDraft());
+		},
+		[saveDraft, rid, tmid, setLocalDraft],
+	);
 
 	return {
 		initialValue: initialValueRef.current,
