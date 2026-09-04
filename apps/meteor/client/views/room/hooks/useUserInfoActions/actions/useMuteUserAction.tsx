@@ -14,29 +14,10 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { getUserIsMuted } from './getUserIsMuted';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
-
-const getUserIsMuted = (
-	user: Pick<IUser, '_id' | 'username'>,
-	room: IRoom | undefined,
-	userCanPostReadonly: boolean,
-): boolean | undefined => {
-	if (room?.ro) {
-		if (Array.isArray(room.unmuted) && room.unmuted.indexOf(user.username ?? '') !== -1) {
-			return false;
-		}
-
-		if (userCanPostReadonly) {
-			return Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') !== -1;
-		}
-
-		return true;
-	}
-
-	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
-};
 
 export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
