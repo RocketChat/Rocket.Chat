@@ -5,12 +5,12 @@ import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 describe('isRelativeURL', () => {
 	const testCases = [
 		['/', false],
-		['test', false], // TODO: should be true?
+		['test', true],
 		['test/test', true],
-		['.', false], // TODO: should be true?
+		['.', true],
 		['./test', true],
 		['https://rocket.chat', false],
-		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', true], // TODO: should be false?
+		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', false],
 	] as const;
 
 	testCases.forEach(([parameter, expectedResult]) => {
