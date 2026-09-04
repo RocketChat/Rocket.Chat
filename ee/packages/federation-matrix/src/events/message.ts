@@ -88,7 +88,7 @@ export function message() {
 						...originalMessage,
 						content: {
 							algorithm: event.content.algorithm,
-						ciphertext: event.content.ciphertext,
+							ciphertext: event.content.ciphertext,
 						},
 					},
 					user,
