@@ -63,7 +63,7 @@ A genuinely external inbound call can look like the inbound leg, so apps cannot 
 
 - **No `IMediaCallRead`:** apps cannot read calls by ID or query whether a user is currently on a call.
 - **Loop-back legs remain unlinked.**
-- **Pre-event timeouts fail open:** a timeout results in no prevention and no record. This matches the engine's current pre-event behavior and is deferred because fail-closed behavior could block calls when an app is slow.
+- **Pre-event timeouts and app errors fail open:** a timeout, and an error thrown inside the app's own handler, both result in no prevention and no record. `ProxiedApp.call` swallows every JSON-RPC error outside `AppsEngineException` and `-32601` (`packages/apps/src/server/ProxiedApp.ts:64-86`) and resolves `undefined`, which `executePreMediaCallCreated` reads the same way it reads an app that does not implement the method: as a pass. This matches the engine's current behavior for every one of its 16 pre-events, and is deferred because fail-closed behavior could block calls when an app is slow or broken. Only an `AppsEngineException`, and an error raised by the listener manager itself, propagate and fail the call closed. A fix belongs in `ProxiedApp.call`, where it would change every pre-event at once, not in this hook.
 - **Ordering is per instance:** events are ordered within one instance but not guaranteed across instances; introducing an `await` in the dispatch path could also change ordering.
 - **Only app prevention currently sounds the end-of-call tone.** Other caller-facing refusal reasons should eventually use the same mechanism; protocol-level refusals should remain silent.
 

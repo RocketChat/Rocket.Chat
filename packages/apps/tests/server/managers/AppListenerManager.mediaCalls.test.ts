@@ -331,11 +331,15 @@ describe('AppListenerManager media call events', () => {
 
 		/**
 		 * The pre event is the one thing standing between an app's policy and a call
-		 * being created, so an app that fails is not passed over the way it is on the
-		 * post events: the rejection travels up to `MediaCallServer.requestCall`, which
-		 * turns it into a refused call.
+		 * being created, so an error that reaches the manager is not passed over the way
+		 * it is on the post events: the rejection travels up to `MediaCallServer.requestCall`,
+		 * which turns it into a refused call.
+		 *
+		 * Only two errors reach it. `ProxiedApp.call` rethrows an `AppsEngineException` and a
+		 * method-not-found, and swallows every other JSON-RPC error - which is what an app's own
+		 * handler throws through - so this mock stands for the first case alone.
 		 */
-		it('fails closed when an app handler throws', async () => {
+		it('fails closed when an app handler throws an error the runtime propagates', async () => {
 			await assert.rejects(
 				runPreCallCreated([
 					mockApp('failing', {
@@ -346,6 +350,18 @@ describe('AppListenerManager media call events', () => {
 				]),
 				/app blew up/,
 			);
+		});
+
+		/**
+		 * The other case, and the common one: `ProxiedApp.call` logged the app's error and resolved
+		 * `undefined`, so the manager cannot tell a broken app from one that implements no handler
+		 * and the call goes through. Every pre event in the engine behaves this way, and a timeout
+		 * takes the same path - see ADR 0003, "Deliberate gaps in Phase 1".
+		 */
+		it('lets the call through when the runtime swallowed the app error', async () => {
+			const outcome = await runPreCallCreated([mockApp('failing', { [AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED]: () => undefined })]);
+
+			assert.deepStrictEqual(outcome, { type: 'pass' });
 		});
 	});
 
