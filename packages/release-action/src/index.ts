@@ -7,6 +7,7 @@ import { bumpNextVersion } from './bumpNextVersion';
 import { setupGitUser } from './gitUtils';
 import { publishRelease } from './publishRelease';
 import { startPatchRelease } from './startPatchRelease';
+import { syncDevelopWithMaster } from './syncDevelop';
 import { updatePRDescription } from './updatePRDescription';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
@@ -48,6 +49,8 @@ import { updatePRDescription } from './updatePRDescription';
 		await startPatchRelease({ baseRef, githubToken, mainPackagePath });
 	} else if (action === 'update-pr-description') {
 		await updatePRDescription({ githubToken, mainPackagePath });
+	} else if (action === 'sync-develop') {
+		await syncDevelopWithMaster({ githubToken });
 	}
 })().catch((err) => {
 	core.error(err);
