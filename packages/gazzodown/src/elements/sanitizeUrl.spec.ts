@@ -106,4 +106,18 @@ describe('sanitizeUrl', () => {
 	it('allows bare domain names', () => {
 		expect(sanitizeUrl('example.com/page')).toBe('//example.com/page');
 	});
+
+	it('preserves relative paths', () => {
+		expect(sanitizeUrl('/channel/general')).toBe('/channel/general');
+		expect(sanitizeUrl('./docs/getting-started')).toBe('./docs/getting-started');
+		expect(sanitizeUrl('../help')).toBe('../help');
+	});
+
+	it('preserves hash fragments', () => {
+		expect(sanitizeUrl('#section')).toBe('#section');
+	});
+
+	it('preserves query-only links', () => {
+		expect(sanitizeUrl('?tab=files')).toBe('?tab=files');
+	});
 });
