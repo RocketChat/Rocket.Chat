@@ -92,3 +92,28 @@ export const buildClassificationBanner = (
 		color: readableTextColor(backgroundColor),
 	};
 };
+
+/**
+ * The banner for a room that carries no ABAC attributes (ABAC-P4 M4).
+ *
+ * Returns null when the configuration does not describe one, which is how a v1 document — and any
+ * v2 document that leaves `nonAbacBanner` out — keeps its existing behaviour of showing nothing in
+ * these rooms.
+ */
+export const buildNonAbacClassificationBanner = (config: ClassificationBannersConfig): ClassificationBannerPayload | null => {
+	const nonAbac = config.nonAbacBanner;
+
+	if (!nonAbac?.enabled || !nonAbac.text || !nonAbac.color) {
+		return null;
+	}
+
+	return {
+		style: config.banner.style,
+		uppercase: config.banner.uppercase,
+		monospace: config.banner.monospace,
+		text: nonAbac.text,
+		segments: [],
+		backgroundColor: nonAbac.color,
+		color: readableTextColor(nonAbac.color),
+	};
+};

@@ -86,6 +86,7 @@
   "ABAC_Attributes_not_assignable": "You are not entitled to assign this combination of attributes.",
   "ABAC_Attributes_Redacted": "Room attributes hidden",
   "ABAC_Attributes_Redacted_Description": "You don't have the required attributes.",
+  "ABAC_Attributes_will_be_lost": "This room\u2019s ABAC attributes will be lost, and the room will be locked until an authorized member reassigns them.",
   "ABAC_automatically_disabled_callout": "ABAC automatically disabled",
   "ABAC_automatically_disabled_callout_description": "Renew your license to continue using all <1>ABAC capabilities without restriction</1>.",
   "ABAC_Back_to_editing": "Back to editing",

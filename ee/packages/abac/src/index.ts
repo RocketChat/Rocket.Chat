@@ -586,6 +586,22 @@ export class AbacService extends ServiceClass implements IAbacService {
 	 * the PDP creator-authority check the creation flow runs before a room exists (ABAC-P4 M2).
 	 * Reuses the same validation the commit path applies, so the two cannot disagree.
 	 */
+	/**
+	 * Records the attributes a room was created with (ABAC-P4 M4).
+	 *
+	 * Creation writes the attributes as part of the insert so a room is never briefly locked, which
+	 * means the usual `setRoomAbacAttributes` audit path is not taken. This closes that gap. There
+	 * is no membership to re-evaluate: the room was created with these attributes, and its initial
+	 * members were already filtered against them by the creation flow.
+	 */
+	async auditRoomAttributesAtCreation(room: AtLeast<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
+			return;
+		}
+
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, [], room.abacAttributes, 'created', actor);
+	}
+
 	async assertCanAssignAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const store = await this.resolveAttributeStore();

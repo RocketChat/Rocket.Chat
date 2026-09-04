@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://rocket.chat/schemas/classification-banners/v1.json",
+  "$id": "https://rocket.chat/schemas/classification-banners/v2.json",
   "title": "Rocket.Chat Classification Banners configuration",
   "type": "object",
   "required": ["version", "enabled", "banner", "attributes"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
-    "version": { "const": 1 },
+    "version": { "const": 2 },
     "enabled": { "type": "boolean" },
     "banner": {
       "type": "object",
@@ -21,6 +21,17 @@
         "colorMode": { "enum": ["highest", "attribute"] },
         "fallbackText": { "type": "string", "minLength": 1 },
         "fallbackColor": { "$ref": "#/$defs/hexColor" }
+      }
+    },
+    "nonAbacBanner": {
+      "type": "object",
+      "description": "Banner shown in rooms that carry no ABAC attributes — DMs, Group DMs, discussions and federated rooms. The attributes[] model derives text and colour from a room's attributes and so cannot describe these rooms; this behaves like fallbackText/fallbackColor. Optional: when absent, those rooms show no banner, which is the pre-v2 behaviour.",
+      "required": ["enabled", "text", "color"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "text": { "type": "string", "minLength": 1 },
+        "color": { "$ref": "#/$defs/hexColor" }
       }
     },
     "attributes": {

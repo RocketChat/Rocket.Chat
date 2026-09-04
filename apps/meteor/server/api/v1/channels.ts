@@ -51,6 +51,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -1041,6 +1042,7 @@ async function createChannel(
 		extraData?: Record<string, any>;
 		readOnly?: boolean;
 		excludeSelf?: boolean;
+		abacAttributes?: Record<string, string[]>;
 	},
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
@@ -1050,7 +1052,11 @@ async function createChannel(
 		params.members ? params.members : [],
 		readOnly,
 		params.customFields,
-		params.extraData,
+		// ABAC-P4 M4 — attributes travel with the room so it is never briefly locked. They arrive as
+		// their own top-level parameter, because `extraData` is closed at the API boundary against
+		// callers writing room fields directly; the creation callbacks validate the actor's
+		// authority to instantiate them before the insert.
+		{ ...params.extraData, ...toAbacAttributeDefinitions(params.abacAttributes) },
 		params.excludeSelf,
 	);
 
