@@ -87,16 +87,16 @@ function ImportOperationSummary({
 
 	const props = hasAction
 		? {
-				tabIndex: 0,
-				role: 'link',
-				action: true,
-				onClick: handleClick,
-			}
+			tabIndex: 0,
+			role: 'link',
+			action: true,
+			onClick: handleClick,
+		}
 		: {};
 
 	return (
 		<TableRow {...props}>
-			<TableCell>{type}</TableCell>
+			<TableCell>{typeof type === 'string' ? type : JSON.stringify(type)}</TableCell>
 			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
@@ -106,7 +106,7 @@ function ImportOperationSummary({
 					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
 					<TableCell align='center'>{messages}</TableCell>
-					<TableCell align='center'>{total}</TableCell>
+					<TableCell align='center'>{typeof total === 'object'?JSON.stringify(total):total}</TableCell>
 				</>
 			)}
 		</TableRow>
