@@ -1,4 +1,5 @@
 import type {
+	AbacMembershipPreview,
 	IAbacAttribute,
 	IAbacAttributeDefinition,
 	IAuditServerActor,
@@ -260,6 +261,119 @@ export const GETAbacAuditEventsResponseSchema = ajv.compile<{
 	offset: number;
 	total: number;
 }>(GetAbacAuditEventsResponseSchemaObject);
+
+// PDP creator-authority check (ABAC-P4 M2) — asks whether the actor may instantiate exactly this
+// attribute combination, before any room exists.
+const PostAbacAttributeAssignabilityBody = {
+	type: 'object',
+	properties: {
+		attributes: {
+			type: 'object',
+			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
+			minProperties: 1,
+			maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
+			additionalProperties: {
+				type: 'array',
+				items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
+				maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+				uniqueItems: true,
+			},
+		},
+	},
+	required: ['attributes'],
+	additionalProperties: false,
+};
+
+export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(
+	PostAbacAttributeAssignabilityBody,
+);
+
+// Membership-impact preview (ABAC-P4 §7.2). `rid` for an existing room, `memberIds` for a room
+// that does not exist yet — exactly one of the two.
+const PostAbacMembershipPreviewBody = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string', minLength: 1 },
+		memberIds: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			maxItems: 5000,
+			uniqueItems: true,
+		},
+		memberUsernames: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			maxItems: 5000,
+			uniqueItems: true,
+		},
+		attributes: {
+			type: 'object',
+			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
+			maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
+			additionalProperties: {
+				type: 'array',
+				items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
+				maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+				uniqueItems: true,
+			},
+		},
+		offset: { type: 'integer', minimum: 0 },
+		count: { type: 'integer', minimum: 1 },
+	},
+	required: ['attributes'],
+	oneOf: [{ required: ['rid'] }, { required: ['memberIds'] }, { required: ['memberUsernames'] }],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{
+	rid?: string;
+	memberIds?: string[];
+	memberUsernames?: string[];
+	attributes: Record<string, string[]>;
+	offset?: number;
+	count?: number;
+}>(PostAbacMembershipPreviewBody);
+
+const PreviewMember = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		username: { type: 'string' },
+		name: { type: 'string' },
+		roles: { type: 'array', items: { type: 'string', enum: ['owner', 'moderator', 'leader'] } },
+	},
+	required: ['_id', 'roles'],
+	additionalProperties: false,
+};
+
+const PostAbacMembershipPreviewResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		loses: { type: 'array', items: PreviewMember },
+		retains: { type: 'array', items: PreviewMember },
+		inconclusive: { type: 'array', items: PreviewMember },
+		counts: {
+			type: 'object',
+			properties: {
+				total: { type: 'integer' },
+				losing: { type: 'integer' },
+				retaining: { type: 'integer' },
+				inconclusive: { type: 'integer' },
+			},
+			required: ['total', 'losing', 'retaining', 'inconclusive'],
+			additionalProperties: false,
+		},
+		actorLosesAccess: { type: 'boolean' },
+		summarisedOnly: { type: 'boolean' },
+		offset: { type: 'integer' },
+		count: { type: 'integer' },
+	},
+	required: ['loses', 'retains', 'inconclusive', 'counts', 'actorLosesAccess', 'summarisedOnly', 'offset', 'count'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewResponseSchema = ajv.compile<AbacMembershipPreview>(PostAbacMembershipPreviewResponse);
 
 const PostRoomAbacAttributesBody = {
 	type: 'object',

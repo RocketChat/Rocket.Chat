@@ -13,6 +13,10 @@ type ABACAttributeAutocompleteProps = {
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
 	required?: boolean;
 	disabled?: boolean;
+	/** The attribute key is fixed and cannot be changed — used for workspace-required attributes. */
+	lockKey?: boolean;
+	/** Whether this row may be removed. Workspace-required attributes may not (ABAC-P4 M2). */
+	removable?: boolean;
 };
 
 const RoomFormAttributeField = ({
@@ -22,6 +26,8 @@ const RoomFormAttributeField = ({
 	attributeList,
 	required = false,
 	disabled = false,
+	lockKey = false,
+	removable = true,
 }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
@@ -79,7 +85,7 @@ const RoomFormAttributeField = ({
 					marginBlockEnd={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
-					disabled={disabled}
+					disabled={disabled || lockKey}
 					onChange={(value) => {
 						keyField.onChange(value);
 						resetField(`attributes.${index}.values`, { defaultValue: [] });
@@ -111,7 +117,7 @@ const RoomFormAttributeField = ({
 					{valuesFieldState.error.message}
 				</FieldError>
 			)}
-			{index !== 0 && (
+			{index !== 0 && removable && (
 				<Button onClick={onRemove} title={t('Remove')} marginBlockStart={8} disabled={disabled}>
 					{t('Remove')}
 				</Button>

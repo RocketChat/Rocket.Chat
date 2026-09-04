@@ -9,9 +9,14 @@ export type RoomFormAttributeFieldsProps = {
 	fields: { id: string }[];
 	remove: (index: number) => void;
 	disabled?: boolean;
+	/**
+	 * Number of leading rows whose attribute key is fixed and which cannot be removed — the
+	 * workspace-required attributes, pre-filled by the creation flow (ABAC-P4 M2).
+	 */
+	lockedLeadingCount?: number;
 };
 
-const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormAttributeFieldsProps) => {
+const RoomFormAttributeFields = ({ fields, remove, disabled = false, lockedLeadingCount = 0 }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
 	const isExternalAttributeStore = useIsExternalAttributeStore();
 
@@ -30,18 +35,20 @@ const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormA
 			)}
 			{fields.map((field, index) => (
 				<Field key={field.id}>
-					<FieldLabel id={field.id} required={index === 0}>
+					<FieldLabel id={field.id} required={index === 0 || index < lockedLeadingCount}>
 						{t('Attribute')}
 					</FieldLabel>
 					<RoomFormAttributeField
 						labelId={field.id}
 						attributeList={attributeList.attributes}
-						required={index === 0}
+						required={index === 0 || index < lockedLeadingCount}
 						onRemove={() => {
 							remove(index);
 						}}
 						index={index}
 						disabled={disabled}
+						lockKey={index < lockedLeadingCount}
+						removable={index >= lockedLeadingCount}
 					/>
 				</Field>
 			))}

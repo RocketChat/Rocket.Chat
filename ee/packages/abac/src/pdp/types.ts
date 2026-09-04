@@ -30,6 +30,23 @@ export interface IGetDecisionBulkResponse {
 
 export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
+/** A subject considered for evaluation against a set of room attributes. */
+export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails'>;
+
+/**
+ * Partitioned result of evaluating subjects against room attributes (ABAC-P4 §7.2).
+ *
+ * `inconclusive` exists because an external PDP can answer neither PERMIT nor DENY. For the
+ * eviction path that is treated as "do not evict" (unchanged Phase 3 behaviour), but a preview must
+ * never fold it into `compliant` — telling an operator nobody is affected when the PDP simply did
+ * not answer is the failure mode this partition prevents.
+ */
+export type MemberEvaluation = {
+	compliantUserIds: string[];
+	nonCompliantUserIds: string[];
+	inconclusiveUserIds: string[];
+};
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -46,6 +63,20 @@ export interface IPolicyDecisionPoint {
 	): Promise<{ granted: boolean; userToRemove?: IUser }>;
 
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+
+	/**
+	 * The single member-evaluation primitive (ABAC-P4 §7.2). Backs creation Step 4, the end-user
+	 * edit preview, the admin edit preview and — via `onRoomAttributesChanged` — the eviction that
+	 * follows a committed change, so a preview cannot disagree with what the commit then does.
+	 *
+	 * One PDP round trip for N subjects, never N round trips. `resourceId` identifies the resource
+	 * being decided against; for a room that does not exist yet, any stable synthetic id will do.
+	 */
+	evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		resourceId: string,
+	): Promise<MemberEvaluation>;
 
 	onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,

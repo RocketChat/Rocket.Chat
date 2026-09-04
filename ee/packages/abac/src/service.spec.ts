@@ -6,6 +6,7 @@ import { LocalAttributeStore, VirtruAttributeStore } from './store';
 const mockSettingsGet = jest.fn();
 const mockHasModule = jest.fn();
 const mockHasPermission = jest.fn();
+const mockEntitlementsOf = jest.fn();
 
 jest.mock('./store', () => {
 	const { ensureAttributeDefinitionsExist } = jest.requireActual('./helper');
@@ -14,6 +15,7 @@ jest.mock('./store', () => {
 			assertCanModifyRoom: jest.fn().mockResolvedValue(undefined),
 			validateAssignable: (attrs: any[], _actor: any) => ensureAttributeDefinitionsExist(attrs),
 			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
+			entitlementsOf: (...args: any[]) => mockEntitlementsOf(...args),
 		})),
 		VirtruAttributeStore: jest.fn().mockImplementation(() => ({
 			onStoreSelected: jest.fn(),
@@ -2027,6 +2029,116 @@ describe('AbacService (unit)', () => {
 
 			expect(mockLdapSyncByIds).not.toHaveBeenCalled();
 			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+		});
+	});
+
+	/**
+	 * ABAC-P4/D12 — "assign only attributes you possess", on by default and meaningful only for the
+	 * local PDP.
+	 *
+	 * Where it applies is as much of the rule as what it does. It governs an actor assigning
+	 * attributes in their own right, which is the room-creation flow; the administrative room
+	 * endpoints are entitled by `manage-abac-admin-rooms` and ABAC-P4/D11 says not to change their
+	 * behaviour, so an operator who carries no subject attributes must still be able to configure a
+	 * room. Both halves are asserted here.
+	 */
+	describe('assign only attributes you possess (D12)', () => {
+		const entitled = (entries: Record<string, string[]>) => new Map(Object.entries(entries).map(([key, values]) => [key, new Set(values)]));
+
+		beforeEach(async () => {
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockHasPermission.mockResolvedValue(false);
+			mockSettingsGet.mockImplementation(async (id: string) => {
+				switch (id) {
+					case 'ABAC_PDP_Type':
+					case 'ABAC_Attribute_Store':
+						return 'local';
+					case 'ABAC_Restrict_To_Owned_Attributes':
+					case 'ABAC_Enabled':
+						return true;
+					default:
+						return undefined;
+				}
+			});
+
+			// `started` is what sets the PDP-type the rule keys off; going through it keeps the test
+			// on the same wiring the server uses.
+			await service.started();
+		});
+
+		it('refuses an attribute the actor does not hold, naming it', async () => {
+			mockEntitlementsOf.mockResolvedValue(entitled({}));
+
+			// ABAC-P4 Scenario 4 — the denial has to identify what was refused, which is what the
+			// creation flow renders back into the step the user is standing in.
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng'] }], fakeActor)).rejects.toMatchObject({
+				message: 'error-invalid-attribute-values',
+				details: { key: 'dept', values: ['eng'] },
+			});
+		});
+
+		it('refuses only the values the actor does not hold', async () => {
+			mockEntitlementsOf.mockResolvedValue(entitled({ dept: ['eng'] }));
+
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng', 'sales'] }], fakeActor)).rejects.toMatchObject({
+				details: { key: 'dept', values: ['sales'] },
+			});
+		});
+
+		it('permits a combination the actor holds in full', async () => {
+			mockEntitlementsOf.mockResolvedValue(entitled({ dept: ['eng', 'sales'] }));
+
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng', 'sales'] }], fakeActor)).resolves.toBeUndefined();
+		});
+
+		it('does not apply while the setting is off', async () => {
+			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? false : 'local'));
+			mockEntitlementsOf.mockResolvedValue(entitled({}));
+
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng'] }], fakeActor)).resolves.toBeUndefined();
+			expect(mockEntitlementsOf).not.toHaveBeenCalled();
+		});
+
+		it('does not apply under a Virtru PDP, which performs the equivalent filtering itself', async () => {
+			mockSettingsGet.mockImplementation(async (id: string) => {
+				switch (id) {
+					case 'ABAC_PDP_Type':
+						return 'virtru';
+					case 'ABAC_Attribute_Store':
+						return 'local';
+					case 'ABAC_Restrict_To_Owned_Attributes':
+					case 'ABAC_Enabled':
+						return true;
+					default:
+						// The Virtru client's own settings, which `started` reads and interpolates.
+						return '';
+				}
+			});
+			await service.started();
+			(service as any).virtruClient.isAvailable.mockResolvedValue(true);
+			mockEntitlementsOf.mockResolvedValue(entitled({}));
+
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng'] }], fakeActor)).resolves.toBeUndefined();
+		});
+
+		it('yields to the bypass permission', async () => {
+			mockHasPermission.mockResolvedValue(true);
+			mockEntitlementsOf.mockResolvedValue(entitled({}));
+
+			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng'] }], fakeActor)).resolves.toBeUndefined();
+		});
+
+		it('leaves the administrative room endpoints alone (D11)', async () => {
+			// The regression this pins: applying D12 here stopped any administrator without subject
+			// attributes of their own from setting room attributes at all.
+			mockEntitlementsOf.mockResolvedValue(entitled({}));
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
+			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
+
+			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor);
+
+			expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng'] }]);
+			expect(mockEntitlementsOf).not.toHaveBeenCalled();
 		});
 	});
 });

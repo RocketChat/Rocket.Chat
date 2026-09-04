@@ -5,10 +5,12 @@ import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
 import type {
+	EvaluableSubject,
 	IPolicyDecisionPoint,
 	IGetDecisionBulkRequest,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
+	MemberEvaluation,
 	NonCompliantPair,
 	ReevaluationUser,
 } from './types';
@@ -258,6 +260,76 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 	}
 
+	async evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		resourceId: string,
+	): Promise<MemberEvaluation> {
+		const allIds = subjects.map(({ _id }) => _id);
+
+		// No attributes means no requirement on any subject.
+		if (!subjects.length || !attributes.length) {
+			return { compliantUserIds: allIds, nonCompliantUserIds: [], inconclusiveUserIds: [] };
+		}
+
+		const config = this.client.getConfig();
+		const fqns = buildAttributeFqns(config.attributeNamespace, attributes);
+
+		const nonCompliantUserIds: string[] = [];
+		const decisionRequests: IGetDecisionBulkRequest[] = [];
+		const requestIndex: EvaluableSubject[] = [];
+
+		for (const subject of subjects) {
+			const entityKey = getUserEntityKey(config.defaultEntityKey, subject);
+			if (!entityKey) {
+				pdpLogger.warn({
+					msg: 'Subject has no entity key for Virtru PDP evaluation, treating as non-compliant',
+					userId: subject._id,
+				});
+				nonCompliantUserIds.push(subject._id);
+				continue;
+			}
+
+			requestIndex.push(subject);
+			decisionRequests.push({
+				entityIdentifier: {
+					entityChain: {
+						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
+					},
+				},
+				action: { name: 'read' },
+				resources: [{ ephemeralId: resourceId, attributeValues: { fqns } }],
+			});
+		}
+
+		// One batched round trip for every subject that has an entity key (§7.2).
+		const responses = decisionRequests.length ? await this.getDecisionBulk(decisionRequests) : [];
+
+		const compliantUserIds: string[] = [];
+		const inconclusiveUserIds: string[] = [];
+
+		requestIndex.forEach((subject, index) => {
+			const decisions = responses[index]?.resourceDecisions ?? [];
+
+			if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
+				nonCompliantUserIds.push(subject._id);
+				return;
+			}
+
+			if (decisions.length && decisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+				compliantUserIds.push(subject._id);
+				return;
+			}
+
+			// Neither permitted nor denied. Reported separately so a caller can say the impact is
+			// unknown rather than implying the subject keeps access.
+			pdpLogger.warn({ msg: 'Inconclusive PDP decision', resourceId, userId: subject._id });
+			inconclusiveUserIds.push(subject._id);
+		});
+
+		return { compliantUserIds, nonCompliantUserIds, inconclusiveUserIds };
+	}
+
 	async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
@@ -266,48 +338,26 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const users = Users.findActiveByRoomIds([room._id]);
-
-		const config = this.client.getConfig();
-		const nonCompliantUsers: IUser[] = [];
-		const decisionRequests: IGetDecisionBulkRequest[] = [];
-		const requestIndex: Array<{ user: IUser; room: typeof room }> = [];
-		const fqns = buildAttributeFqns(config.attributeNamespace, newAttributes);
-
-		for await (const user of users) {
-			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
-			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
-				nonCompliantUsers.push(user);
-				continue;
-			}
-
-			requestIndex.push({ user, room });
-			decisionRequests.push({
-				entityIdentifier: {
-					entityChain: {
-						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
-					},
-				},
-				action: { name: 'read' },
-				resources: [
-					{
-						ephemeralId: room._id,
-						attributeValues: { fqns },
-					},
-				],
-			});
+		// Iterated rather than `.toArray()`d because `findActiveByRoomIds` is consumed as an async
+		// iterable elsewhere in this class. Fetched unprojected, as before, because the returned
+		// users are handed to `Room.removeUserFromRoom`.
+		const members: IUser[] = [];
+		for await (const member of Users.findActiveByRoomIds([room._id])) {
+			members.push(member);
 		}
 
-		if (!decisionRequests.length) {
-			return nonCompliantUsers;
+		// Routed through the shared primitive (§7.2) so the eviction that follows a committed change
+		// cannot disagree with the preview the operator confirmed. Inconclusive decisions are not
+		// evicted, which is the Phase 3 behaviour this preserves.
+		const { nonCompliantUserIds } = await this.evaluateSubjectsAgainstAttributes(members, newAttributes, room._id);
+
+		if (!nonCompliantUserIds.length) {
+			return [];
 		}
 
-		const responses = await this.getDecisionBulk(decisionRequests);
-
-		nonCompliantUsers.push(...getDeniedSubjects(responses, requestIndex).map(({ user }) => user));
-
-		return nonCompliantUsers;
+		// The member documents are already in hand, so no second query is needed to return them.
+		const nonCompliant = new Set(nonCompliantUserIds);
+		return members.filter(({ _id }) => nonCompliant.has(_id));
 	}
 
 	async evaluateUserRooms(

@@ -666,3 +666,152 @@ describe('VirtruPDP.getHealthStatus', () => {
 		expect((authCall?.[1] as any).headers.Authorization).toBe('Bearer hc-tok');
 	});
 });
+
+describe('VirtruPDP.evaluateSubjectsAgainstAttributes (ABAC-P4 §7.2)', () => {
+	const attrs = [{ key: 'clearance', values: ['secret'] }];
+
+	// One decisionResponse per request, since the primitive sends one request per subject.
+	const perSubject = (decisions: (Decision | undefined)[]) => ({
+		decisionResponses: decisions.map((decision) => ({
+			resourceDecisions: decision ? [{ ephemeralResourceId: 'r1', decision }] : [],
+		})),
+	});
+
+	it('returns everyone compliant and makes no PDP call when there are no attributes', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'u1' }), user({ _id: 'u2' })], [], 'r1');
+
+		expect(result).toEqual({ compliantUserIds: ['u1', 'u2'], nonCompliantUserIds: [], inconclusiveUserIds: [] });
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('returns empty partitions and makes no PDP call when there are no subjects', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes([], attrs, 'r1');
+
+		expect(result).toEqual({ compliantUserIds: [], nonCompliantUserIds: [], inconclusiveUserIds: [] });
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('partitions permits and denies', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_PERMIT', 'DECISION_DENY', 'DECISION_PERMIT']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[
+				user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] }),
+				user({ _id: 'u2', emails: [{ address: 'b@x.com', verified: true }] }),
+				user({ _id: 'u3', emails: [{ address: 'c@x.com', verified: true }] }),
+			],
+			attrs,
+			'r1',
+		);
+
+		expect(result.compliantUserIds).toEqual(['u1', 'u3']);
+		expect(result.nonCompliantUserIds).toEqual(['u2']);
+		expect(result.inconclusiveUserIds).toEqual([]);
+	});
+
+	it('uses one batched round trip for N subjects, not N round trips', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_PERMIT', 'DECISION_PERMIT', 'DECISION_PERMIT']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await pdp.evaluateSubjectsAgainstAttributes(
+			[
+				user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] }),
+				user({ _id: 'u2', emails: [{ address: 'b@x.com', verified: true }] }),
+				user({ _id: 'u3', emails: [{ address: 'c@x.com', verified: true }] }),
+			],
+			attrs,
+			'r1',
+		);
+
+		expect(apiCall).toHaveBeenCalledTimes(1);
+		expect((apiCall.mock.calls[0][1] as any).decisionRequests).toHaveLength(3);
+	});
+
+	it('reports an inconclusive decision separately rather than as compliant', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_UNSPECIFIED']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'r1',
+		);
+
+		expect(result.inconclusiveUserIds).toEqual(['u1']);
+		expect(result.compliantUserIds).toEqual([]);
+		expect(result.nonCompliantUserIds).toEqual([]);
+	});
+
+	it('reports a missing decision as inconclusive, not compliant', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject([undefined]));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'r1',
+		);
+
+		expect(result.inconclusiveUserIds).toEqual(['u1']);
+		expect(result.compliantUserIds).toEqual([]);
+	});
+
+	it('treats a subject with no entity key as non-compliant without asking the PDP about them', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_PERMIT']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'keyless', emails: [] }), user({ _id: 'u2', emails: [{ address: 'b@x.com', verified: true }] })],
+			attrs,
+			'r1',
+		);
+
+		expect(result.nonCompliantUserIds).toEqual(['keyless']);
+		expect(result.compliantUserIds).toEqual(['u2']);
+		expect((apiCall.mock.calls[0][1] as any).decisionRequests).toHaveLength(1);
+	});
+
+	it('makes no PDP call when every subject lacks an entity key', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		const result = await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'a', emails: [] }), user({ _id: 'b', emails: [] })],
+			attrs,
+			'r1',
+		);
+
+		expect(result.nonCompliantUserIds).toEqual(['a', 'b']);
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('propagates a PDP failure rather than reporting everyone compliant', async () => {
+		const apiCall = jest.fn().mockRejectedValue(new Error('pdp down'));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(
+			pdp.evaluateSubjectsAgainstAttributes([user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })], attrs, 'r1'),
+		).rejects.toThrow('pdp down');
+	});
+
+	it('passes the given resourceId through as the ephemeral resource id', async () => {
+		const apiCall = jest.fn().mockResolvedValue(perSubject(['DECISION_PERMIT']));
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await pdp.evaluateSubjectsAgainstAttributes(
+			[user({ _id: 'u1', emails: [{ address: 'a@x.com', verified: true }] })],
+			attrs,
+			'draft-room-42',
+		);
+
+		const sent = (apiCall.mock.calls[0][1] as any).decisionRequests[0];
+		expect(sent.resources[0].ephemeralId).toBe('draft-room-42');
+	});
+});

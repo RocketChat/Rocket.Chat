@@ -1,6 +1,6 @@
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
-import { AbacAttributes } from '@rocket.chat/models';
+import { AbacAttributes, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document } from 'mongodb';
 
@@ -41,8 +41,15 @@ export class LocalAttributeStore implements IAttributeStore {
 		await ensureAttributeDefinitionsExist(attrs);
 	}
 
-	async entitlementsOf(_actor: AbacActor): Promise<AttributeEntitlements> {
-		return new Map();
+	/**
+	 * For the local PDP a subject's entitlements are simply the attributes on their own user
+	 * document, synced from LDAP. Previously this returned an empty map, which made the
+	 * "assign only attributes you possess" policy (ABAC-P4/D12) unenforceable for this store.
+	 */
+	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {
+		const user = await Users.findOneById(actor._id, { projection: { abacAttributes: 1 } });
+
+		return new Map((user?.abacAttributes ?? []).map(({ key, values }) => [key, new Set(values)]));
 	}
 
 	async scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(

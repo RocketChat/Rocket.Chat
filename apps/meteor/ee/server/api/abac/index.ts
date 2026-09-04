@@ -26,6 +26,9 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
+	POSTAbacAttributeAssignabilityBodySchema,
+	POSTAbacMembershipPreviewBodySchema,
+	POSTAbacMembershipPreviewResponseSchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
@@ -188,7 +191,7 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { key, values } = this.queryParams;
 
 			return API.v1.success(
@@ -363,7 +366,7 @@ const abacEndpoints = API.v1
 			query: GETAbacRoomsListQueryValidator,
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { filter, filterType } = this.queryParams;
 
 			const result = await Abac.listAbacRooms(
@@ -421,7 +424,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { start, end, actor } = this.queryParams;
 
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const _sort = { ts: sort?.ts ? sort?.ts : -1 };
 
@@ -503,6 +506,83 @@ const abacEndpoints = API.v1
 			const data = [...new Set(keys)].sort((a, b) => a.localeCompare(b)).map((key) => ({ key, label: key }));
 
 			return API.v1.success({ data });
+		},
+	)
+
+	.post(
+		'abac/membership-preview',
+		{
+			authRequired: true,
+			license: ['abac'],
+			body: POSTAbacMembershipPreviewBodySchema,
+			response: {
+				200: POSTAbacMembershipPreviewResponseSchema,
+				400: GenericErrorSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			// ABAC-P4 §7.2 — a dry run. Deliberately no `permissionsRequired`: the three surfaces that
+			// call this are governed by different entitlements (the creation flow by the creator's own
+			// authority, the room panel by `edit-room-abac-attributes`, the admin panel by
+			// `manage-abac-admin-rooms`), so authorization is enforced per-surface. What guards this
+			// endpoint is that it only ever reads, and only about rooms the caller names.
+			//
+			// TODO(ABAC-P4/D14): once M3 wires the room-side editor, tighten this to require either
+			// `edit-room-abac-attributes` on `rid` or `manage-abac-admin-rooms`.
+			const { rid, memberIds, memberUsernames, attributes, offset, count } = this.bodyParams;
+
+			const actor = getActorFromUser(this.user);
+			if (!actor) {
+				return API.v1.unauthorized();
+			}
+
+			const definitions = Object.entries(attributes).map(([key, values]) => ({ key, values }));
+
+			const target = ((): { rid: string } | { memberUsernames: string[] } | { memberIds: string[] } => {
+				if (rid) {
+					return { rid };
+				}
+				if (memberUsernames) {
+					return { memberUsernames };
+				}
+				return { memberIds: memberIds ?? [] };
+			})();
+
+			const preview = await Abac.previewMembersAgainstAttributes(target, definitions, actor, { offset, count });
+
+			return API.v1.success(preview);
+		},
+	)
+
+	.post(
+		'abac/attribute-assignability',
+		{
+			authRequired: true,
+			license: ['abac'],
+			body: POSTAbacAttributeAssignabilityBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				400: GenericErrorSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			// ABAC-P4 M2 — run before creating anything, so a PDP denial is reported while the user is
+			// still in the flow rather than after a room already exists. Reuses the validation the
+			// commit path applies; the thrown error carries the offending attribute.
+			const actor = getActorFromUser(this.user);
+			if (!actor) {
+				return API.v1.unauthorized();
+			}
+
+			const definitions = Object.entries(this.bodyParams.attributes).map(([key, values]) => ({ key, values }));
+
+			await Abac.assertCanAssignAttributes(definitions, actor);
+
+			return API.v1.success();
 		},
 	);
 

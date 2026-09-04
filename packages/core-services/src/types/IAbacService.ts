@@ -1,13 +1,14 @@
 import type {
-	IAbacAttributeDefinition,
+	AbacAccessOperation,
+	AbacMembershipPreview,
+	AbacObjectType,
+	AbacUserIdentifiers,
 	IAbacAttribute,
+	IAbacAttributeDefinition,
+	ILDAPEntry,
 	IRoom,
 	IRoomAbacRedaction,
 	IUser,
-	AbacAccessOperation,
-	AbacObjectType,
-	ILDAPEntry,
-	AbacUserIdentifiers,
 } from '@rocket.chat/core-typings';
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
@@ -41,6 +42,21 @@ export interface IAbacService {
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
+	/**
+	 * Dry-run member evaluation (ABAC-P4 §7.2). Commits nothing — `setRoomAbacAttributes` is the
+	 * commit path, and committing evicts.
+	 */
+	/**
+	 * PDP creator-authority check (ABAC-P4 M2): may this actor instantiate exactly these
+	 * attributes? Creates nothing. Throws with the offending attribute in the error details.
+	 */
+	assertCanAssignAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void>;
+	previewMembersAgainstAttributes(
+		target: { rid: string } | { memberIds: string[] } | { memberUsernames: string[] },
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		page?: { offset?: number; count?: number },
+	): Promise<AbacMembershipPreview>;
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
 	canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
