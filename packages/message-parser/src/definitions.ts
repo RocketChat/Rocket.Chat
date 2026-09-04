@@ -17,6 +17,7 @@ export type ListItem = {
 	type: 'LIST_ITEM';
 	value: Inlines[];
 	number?: number;
+	indentLevel?: number;
 };
 
 export type Tasks = {
@@ -27,6 +28,7 @@ export type Task = {
 	type: 'TASK';
 	status: boolean;
 	value: Inlines[];
+	indentLevel?: number;
 };
 
 export type CodeLine = {
