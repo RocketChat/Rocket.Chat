@@ -1,9 +1,8 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import jsonrpc from 'jsonrpc-lite';
-
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import jsonrpc from '../../jsonrpc';
 import { ModifyExtender } from '../modify/ModifyExtender';
 
 describe('ModifyExtender', () => {
@@ -12,7 +11,7 @@ describe('ModifyExtender', () => {
 	const senderFn = (r: any) =>
 		Promise.resolve({
 			id: Math.random().toString(36).substring(2),
-			jsonrpc: '2.0',
+			jsonrpc: '2.0' as const,
 			result: structuredClone(r),
 			serialize() {
 				return JSON.stringify(this);

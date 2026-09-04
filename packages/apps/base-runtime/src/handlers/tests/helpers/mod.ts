@@ -6,14 +6,13 @@ import type { RequestContext } from '../../../lib/requestContext';
 
 export function createMockRequest({ method, params }: RequestDescriptor): RequestContext {
 	return {
-		jsonrpc: '2.0',
+		jsonrpc: '2.0' as const,
 		id: 1,
 		method,
 		params,
 		context: {
 			logger: new Logger(method),
 		},
-		serialize: () => '',
 	};
 }
 

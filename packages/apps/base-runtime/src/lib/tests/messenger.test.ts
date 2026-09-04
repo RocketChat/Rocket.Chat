@@ -76,4 +76,69 @@ describe('Messenger', () => {
 
 		theSpy.mock.restore();
 	});
+
+	describe('meta', () => {
+		const meta = { traceId: 'trace-1' };
+
+		it('should forward the meta of a success response', async () => {
+			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+
+			await Messenger.successResponse({ id: 'test', result: 'test', meta }, context);
+
+			const [responseArgument] = theSpy.mock.calls[0].arguments;
+
+			assert.deepStrictEqual((responseArgument as any).meta, meta);
+
+			theSpy.mock.restore();
+		});
+
+		it('should forward the meta of an error response', async () => {
+			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+
+			await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' }, meta }, context);
+
+			const [responseArgument] = theSpy.mock.calls[0].arguments;
+
+			assert.deepStrictEqual((responseArgument as any).meta, meta);
+
+			theSpy.mock.restore();
+		});
+
+		it('should forward the meta of a notification', () => {
+			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+
+			Messenger.sendNotification({ method: 'test', params: [], meta });
+
+			const [notificationArgument] = theSpy.mock.calls[0].arguments;
+
+			assert.deepStrictEqual((notificationArgument as any).meta, meta);
+
+			theSpy.mock.restore();
+		});
+
+		it('should forward the meta of a request', () => {
+			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+
+			// The response never arrives here, so we only assert on what was enqueued.
+			void Messenger.sendRequest({ method: 'test', params: [], meta });
+
+			const [requestArgument] = theSpy.mock.calls[0].arguments;
+
+			assert.deepStrictEqual((requestArgument as any).meta, meta);
+
+			theSpy.mock.restore();
+		});
+
+		it('should leave meta absent when the descriptor omits it', async () => {
+			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+
+			await Messenger.successResponse({ id: 'test', result: 'test' }, context);
+
+			const [responseArgument] = theSpy.mock.calls[0].arguments;
+
+			assert.strictEqual('meta' in (responseArgument as any), false);
+
+			theSpy.mock.restore();
+		});
+	});
 });

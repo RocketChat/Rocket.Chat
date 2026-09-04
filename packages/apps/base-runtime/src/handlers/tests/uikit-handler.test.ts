@@ -1,9 +1,8 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import jsonrpc, { type Defined } from 'jsonrpc-lite';
-
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import jsonrpc, { type Defined } from '../../lib/jsonrpc';
 import { Logger } from '../../lib/logger';
 import type { RequestContext } from '../../lib/requestContext';
 import handleUIKitInteraction, {

@@ -27,7 +27,8 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime",
+		"bench:jsonrpc": "node --expose-gc --require ts-node/register/transpile-only benchmarks/jsonrpc/bench.ts"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
@@ -41,7 +42,6 @@
 		"debug": "^4.3.7",
 		"esbuild": "~0.28.2",
 		"jose": "^4.15.9",
-		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",
 		"semver": "^7.6.3",
 		"stack-trace": "0.0.10",
@@ -56,6 +56,7 @@
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",
 		"eslint": "~9.39.5",
+		"jsonrpc-lite": "2.2.0",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^6.0.1",
 		"ts-node": "^6.2.0",

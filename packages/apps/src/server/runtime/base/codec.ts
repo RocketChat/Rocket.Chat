@@ -1,4 +1,4 @@
-import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, ExtensionCodec } from '@msgpack/msgpack';
 
 import { hasSecureFields } from '../../../lib/SecureFields';
 
@@ -7,6 +7,57 @@ const extensionCodec = new ExtensionCodec();
 const FUNCTION_DISABLER_EXT = 0;
 const BUFFER_HANDLER_EXT = 1;
 const SECURE_FIELDS_HANDLER_EXT = 2;
+
+/**
+ * The secure fields extension marks the root object as an extension type and then
+ * runs a nested pass over its properties. `ignoreRoot` is how it tells that nested
+ * pass apart from the outer one.
+ */
+type SecureFieldsContext = { ignoreRoot?: boolean };
+
+/**
+ * msgpack's module-level `encode()` builds a whole `Encoder`, with its 2 KiB buffer,
+ * on every call. The extension below calls it once per object that carries secure
+ * fields, and that setup measured at ~1.4 us - enough to dominate a small bridge
+ * call, which is most of this bridge's traffic. Leasing a long-lived instance instead
+ * removes the setup and leaves only the work.
+ *
+ * The lease has to be reentrant. The nested pass walks the object's own fields, and
+ * one of those can carry secure fields in turn, which serializes again. Handing an
+ * inner call the instance an outer call is still writing into would corrupt both, so
+ * a busy instance is never lent twice: the pool grows one slot per level of nesting
+ * and settles there. Each slot owns its own context object, because an `Encoder` takes
+ * its context once, at construction, and the extension mutates `ignoreRoot`.
+ *
+ * `Encoder#encode` resets its state on entry, so an instance stays usable after a
+ * call that threw.
+ */
+type NestedEncoder = { encoder: _Encoder; context: SecureFieldsContext };
+
+const nestedEncoders: NestedEncoder[] = [];
+let nestedEncoderDepth = 0;
+
+function createNestedEncoder(): NestedEncoder {
+	const context: SecureFieldsContext = {};
+
+	return { encoder: new _Encoder({ extensionCodec, context }), context };
+}
+
+function encodeNested(value: unknown, context: SecureFieldsContext): Uint8Array {
+	nestedEncoders[nestedEncoderDepth] ??= createNestedEncoder();
+
+	const nested = nestedEncoders[nestedEncoderDepth];
+
+	nested.context.ignoreRoot = context.ignoreRoot;
+
+	nestedEncoderDepth += 1;
+
+	try {
+		return nested.encoder.encode(value);
+	} finally {
+		nestedEncoderDepth -= 1;
+	}
+}
 
 extensionCodec.register({
 	type: FUNCTION_DISABLER_EXT,
@@ -42,7 +93,7 @@ extensionCodec.register({
 	 * subprocess side, without having to iterate through all objects in search
 	 * of the field.
 	 */
-	encode: (object: unknown, context: { ignoreRoot?: boolean } = {}) => {
+	encode: (object: unknown, context: SecureFieldsContext = {}) => {
 		// Ignoring the root object allows msgpack to take care of encoding the object's properties,
 		// while we mark the root object itself as an extension type.
 		if (context?.ignoreRoot) {
@@ -52,7 +103,7 @@ extensionCodec.register({
 		}
 
 		if (hasSecureFields(object)) {
-			return encode(object, { extensionCodec, context: { ignoreRoot: true } });
+			return encodeNested(object, { ignoreRoot: true });
 		}
 	},
 
