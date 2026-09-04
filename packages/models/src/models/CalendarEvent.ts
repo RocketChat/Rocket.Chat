@@ -230,11 +230,11 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], now: Date): Promise<DeleteResult> {
+	public deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult> {
 		return this.deleteMany({
 			uid,
 			externalId: { $in: externalIds },
-			$or: [{ endTime: { $gt: now } }, { endTime: { $exists: false }, startTime: { $gt: now } }],
+			$or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gt: notBefore } }],
 		});
 	}
 

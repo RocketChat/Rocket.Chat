@@ -29,7 +29,7 @@ export interface ICalendarService {
 		events: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
-	deleteImported(uid: IUser['_id'], externalIds: string[], options?: CalendarBatchOptions): Promise<CalendarBatchResult>;
+	deleteImported(uid: IUser['_id'], externalIds: string[], notBefore: Date, options?: CalendarBatchOptions): Promise<CalendarBatchResult>;
 	pruneImportedWindow(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },

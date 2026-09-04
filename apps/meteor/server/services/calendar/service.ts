@@ -233,27 +233,32 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return result;
 	}
 
-	public async deleteImported(uid: IUser['_id'], externalIds: string[], options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
+	public async deleteImported(
+		uid: IUser['_id'],
+		externalIds: string[],
+		notBefore: Date,
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
 		if (!externalIds.length) {
 			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0 };
 		}
 
-		const { deletedCount } = await CalendarEvent.deleteUnfinishedByExternalIdsAndUserId(uid, externalIds, new Date());
+		const { deletedCount } = await CalendarEvent.deleteUnfinishedByExternalIdsAndUserId(uid, externalIds, notBefore);
 
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
+	/**
+	 * Desktop parity: the sync window opens at midnight, so a removal reaches back over the whole of today.
+	 * Earlier days fall outside it and are never reachable.
+	 */
 	public async pruneImportedWindow(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult> {
-		const now = new Date();
-		// History must not be reached by the prune.
-		const start = timeWindow.start > now ? timeWindow.start : now;
-
-		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, start, timeWindow.end, keepExternalIds);
+		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, timeWindow.start, timeWindow.end, keepExternalIds);
 
 		return this.finishDeletion(uid, deletedCount, options);
 	}

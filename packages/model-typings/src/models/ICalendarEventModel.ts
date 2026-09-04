@@ -28,6 +28,6 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
 	bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult>;
 	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
-	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], now: Date): Promise<DeleteResult>;
+	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
 }

@@ -140,7 +140,9 @@ export const syncMailbox = async (
 		);
 		changed = imported.changed;
 
-		const deleted = removals.size ? await Calendar.deleteImported(uid, [...removals], { deferSideEffects: true }) : undefined;
+		const deleted = removals.size
+			? await Calendar.deleteImported(uid, [...removals], timeWindow.start, { deferSideEffects: true })
+			: undefined;
 		changed = changed || Boolean(deleted?.changed);
 		removedEvents = Boolean(deleted?.deleted);
 
