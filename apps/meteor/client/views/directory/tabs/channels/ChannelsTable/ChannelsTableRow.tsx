@@ -19,6 +19,7 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 	const formatDate = useFormatDate();
 	const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
 	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(room);
+	const lastMessageTs = lastMessage?.ts;
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
@@ -45,9 +46,9 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 					{formatDate(ts)}
 				</GenericTableCell>
 			)}
-			{mediaQuery && (
+			{mediaQuery && lastMessageTs && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{lastMessage && formatDate(lastMessage.ts)}
+					{formatDate(lastMessageTs)}
 				</GenericTableCell>
 			)}
 			{mediaQuery && (
