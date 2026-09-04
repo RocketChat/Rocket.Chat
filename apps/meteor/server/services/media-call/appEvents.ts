@@ -204,11 +204,6 @@ function resolveFallbackText(app: EventResultMeta['app'], key: string, args?: Re
 
 /**
  * Turns what an app said about a call it prevented into the record kept on the call.
- *
- * The types make a `prevent` name either a reason or a key, but what arrives is a JSON-RPC payload
- * no type ever checked: an app can send one that names neither, or names one of them as something
- * other than a string. The prevention still stands - the app blocked the call, whatever it said
- * about it - so the workspace answers for the app rather than fail on a hot path.
  */
 function toPreventionRecord(outcome: Extract<PreMediaCallCreatedOutcome, { type: 'prevent' }>): CallPreventionRecord {
 	const { app } = outcome.meta;
@@ -267,8 +262,6 @@ export async function runPreMediaCallCreatedAppHook(params: PreCallCreatedHookPa
 	}
 
 	if (outcome.type === 'prevent') {
-		// Read off the record rather than the payload: the record is what the app said once it was
-		// known to be readable, and it is the same sentence the caller is about to be shown
 		const preventedBy = toPreventionRecord(outcome);
 		const reason = preventedBy.i18n?.key || preventedBy.text;
 
