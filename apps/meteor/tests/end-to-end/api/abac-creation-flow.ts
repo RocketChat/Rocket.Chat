@@ -64,11 +64,17 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('returns empty partitions for an empty member list', async () => {
-			await request
+			// An empty list satisfies the body schema, so this is a successful evaluation of nobody
+			// rather than a bad request.
+			const res = await request
 				.post(api('abac/membership-preview'))
 				.set(credentials)
 				.send({ memberIds: [], attributes: { [attributeKey]: ['secret'] } })
-				.expect(400);
+				.expect(200);
+
+			expect(res.body.counts).to.deep.equal({ total: 0, losing: 0, retaining: 0, inconclusive: 0 });
+			expect(res.body.loses).to.be.an('array').that.is.empty;
+			expect(res.body.retains).to.be.an('array').that.is.empty;
 		});
 
 		it('partitions members and never commits anything', async () => {
