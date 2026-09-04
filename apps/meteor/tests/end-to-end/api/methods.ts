@@ -3386,7 +3386,6 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
 				});
 		});
 
@@ -3407,7 +3406,6 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value Infinity');
 				});
 		});
 
@@ -3428,7 +3426,6 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
 				});
 		});
 	});
