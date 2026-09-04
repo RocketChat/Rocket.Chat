@@ -244,7 +244,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		},
 		persistent: true,
 	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton || true, {
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton ?? true, {
 		type: 'boolean',
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
