@@ -19,6 +19,7 @@ import {
 	useUserId,
 	useRoomToolbox,
 } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import ThreadChat from './components/ThreadChat';
@@ -42,6 +43,14 @@ const Thread = ({ tmid }: ThreadProps) => {
 			closeTab();
 		},
 	});
+
+	const isMainMessageUnavailable = mainMessageQueryResult.isError || mainMessageQueryResult.data?.t === 'rm';
+
+	useEffect(() => {
+		if (isMainMessageUnavailable) {
+			closeTab();
+		}
+	}, [isMainMessageUnavailable, closeTab]);
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
