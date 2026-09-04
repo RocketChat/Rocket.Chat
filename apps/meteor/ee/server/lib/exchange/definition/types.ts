@@ -3,9 +3,7 @@ export type ExchangeProviderId = 'graph' | 'ews';
 export type ExchangeProviderCapabilities = {
 	/** True for both: Graph has `deltaLink`, EWS has `SyncFolderItems`. */
 	supportsDelta: boolean;
-	/** Advertised only, nothing branches on it while polling is the only mode. */
 	supportsWebhooks: boolean;
-	/** False until contact ingestion lands. */
 	supportsContacts: boolean;
 };
 
