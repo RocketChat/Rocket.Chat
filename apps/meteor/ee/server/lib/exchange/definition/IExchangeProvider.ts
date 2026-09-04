@@ -15,10 +15,7 @@ export interface IExchangeProvider {
 	/** Fails closed, and never falls back to another endpoint: that would break the air gap. */
 	testConnection(): Promise<void>;
 
-	/**
-	 * `timeWindow` bounds the range, and is what EWS expands a changed recurring series over.
-	 * `cursor` is an opaque delta token, omitted for an initial sync.
-	 */
+	/** `timeWindow` bounds the range, `cursor` is an opaque delta token, omitted for an initial sync. */
 	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
 
 	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
