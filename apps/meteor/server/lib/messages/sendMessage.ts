@@ -237,16 +237,16 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (Apps.self?.isLoaded()) {
-		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageSentPrevent, message);
+	if (Apps.isLoaded()) {
+		const prevent = await Apps.triggerEvent(AppEvents.IPreMessageSentPrevent, message);
 
 		if (prevent) {
 			return;
 		}
 
-		const result = await Apps.self?.triggerEvent(
+		const result = await Apps.triggerEvent(
 			AppEvents.IPreMessageSentModify,
-			await Apps.self?.triggerEvent(AppEvents.IPreMessageSentExtend, message),
+			await Apps.triggerEvent(AppEvents.IPreMessageSentExtend, message),
 		);
 
 		if (typeof result === 'object') {
@@ -284,10 +284,10 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		message._id = insertedId;
 	}
 
-	if (Apps.self?.isLoaded()) {
+	if (Apps.isLoaded()) {
 		// If the message has a type (system message), we should notify the listener about it
 		const messageEvent = message.t ? AppEvents.IPostSystemMessageSent : AppEvents.IPostMessageSent;
-		void Apps.self?.triggerEvent(messageEvent, message);
+		void Apps.triggerEvent(messageEvent, message);
 	}
 
 	await afterSaveMessage(message, room, user, { options });

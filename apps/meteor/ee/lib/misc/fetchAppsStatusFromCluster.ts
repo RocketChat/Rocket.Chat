@@ -1,4 +1,4 @@
-import { Apps } from '@rocket.chat/core-services';
+import { Apps } from '@rocket.chat/apps';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { Instance } from '../../server/sdk';

@@ -32,7 +32,7 @@ export const performAcceptRoomInvite = async (
 	await callbacks.run('beforeAddedToRoom', { user, inviter }, room);
 
 	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter);
+		await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -55,7 +55,7 @@ export const performAcceptRoomInvite = async (
 			// Keep the current event
 			await callbacks.run('afterJoinRoom', user, room);
 
-			void Apps.self?.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
+			void Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
 		});
 	}
 };

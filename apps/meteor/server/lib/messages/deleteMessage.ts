@@ -37,7 +37,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1, federation: 1 } });
 
 	if (deletedMsg) {
-		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
+		const prevent = await Apps.triggerEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
@@ -102,7 +102,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 
 	if (deletedMsg) {
-		void Apps.self?.triggerEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
+		void Apps.triggerEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
 	}
 }
 

@@ -146,7 +146,7 @@ const commandsEndpoints = API.v1
 			},
 		},
 		async function action() {
-			if (!Apps.self?.isLoaded()) {
+			if (!Apps.isLoaded()) {
 				return API.v1.success(
 					{
 						commands: [],

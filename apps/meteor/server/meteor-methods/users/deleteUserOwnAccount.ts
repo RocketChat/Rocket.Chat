@@ -57,7 +57,7 @@ export const deleteUserOwnAccount = async (fromUserId: string, password: string,
 	await deleteUser(fromUserId, confirmRelinquish);
 
 	// App IPostUserDeleted event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user });
+	await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user });
 
 	return true;
 };

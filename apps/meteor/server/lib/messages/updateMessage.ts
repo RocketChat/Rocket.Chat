@@ -28,14 +28,14 @@ export const updateMessage = async function (
 	let messageData: IMessage = Object.assign({}, originalMessage, message);
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps.self && Apps.isLoaded()) {
-		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
+	if (message && Apps.isLoaded()) {
+		const prevent = await Apps.triggerEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
-		let result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedExtend, messageData);
-		result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedModify, result);
+		let result = await Apps.triggerEvent(AppEvents.IPreMessageUpdatedExtend, messageData);
+		result = await Apps.triggerEvent(AppEvents.IPreMessageUpdatedModify, result);
 
 		if (typeof result === 'object') {
 			Object.assign(messageData, result);
@@ -87,10 +87,10 @@ export const updateMessage = async function (
 		},
 	);
 
-	if (Apps.self?.isLoaded()) {
+	if (Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		void Apps.self?.triggerEvent(AppEvents.IPostMessageUpdated, messageData);
+		void Apps.triggerEvent(AppEvents.IPostMessageUpdated, messageData);
 	}
 
 	setImmediate(async () => {

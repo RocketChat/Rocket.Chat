@@ -100,7 +100,7 @@ export const removeUserFromRoom = async function (
 	// Rationale: for an abac room, we don't want apps to be able to prevent a user from leaving
 	if (!options?.skipAppPreEvents) {
 		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
+			await Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -116,5 +116,5 @@ export const removeUserFromRoom = async function (
 
 	await afterLeaveRoomCallback.run({ user, kicker: options?.byUser }, room);
 
-	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user, options?.byUser);
+	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user, options?.byUser);
 };

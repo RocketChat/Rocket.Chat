@@ -16,7 +16,7 @@ type AppsStatistics = {
 };
 
 async function _getAppsStatistics(): Promise<AppsStatistics> {
-	if (!Apps.self?.isInitialized()) {
+	if (!Apps.isInitialized()) {
 		return {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled: false,
@@ -28,7 +28,12 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 	}
 
 	try {
-		const apps = await Apps.getManager().get();
+		const [statuses, privateApps] = await Promise.all([
+			Apps.getAppsStatusLocal(),
+			Apps.getApps({ installationSource: AppInstallationSource.PRIVATE }),
+		]);
+
+		const privateAppIds = new Set((privateApps ?? []).map((app) => app.id));
 
 		let totalInstalled = 0;
 		let totalActive = 0;
@@ -36,28 +41,25 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 		let totalPrivateApps = 0;
 		let totalPrivateAppsEnabled = 0;
 
-		await Promise.all(
-			apps.map(async (app) => {
-				totalInstalled++;
+		for (const { appId, status } of statuses) {
+			totalInstalled++;
 
-				const status = await app.getStatus();
-				const storageItem = app.getStorageItem();
+			const isEnabled = AppStatusUtils.isEnabled(status);
 
-				if (storageItem.installationSource === AppInstallationSource.PRIVATE) {
-					totalPrivateApps++;
+			if (privateAppIds.has(appId)) {
+				totalPrivateApps++;
 
-					if (AppStatusUtils.isEnabled(status)) {
-						totalPrivateAppsEnabled++;
-					}
+				if (isEnabled) {
+					totalPrivateAppsEnabled++;
 				}
+			}
 
-				if (AppStatusUtils.isEnabled(status)) {
-					totalActive++;
-				} else if (status !== AppStatus.MANUALLY_DISABLED) {
-					totalFailed++;
-				}
-			}),
-		);
+			if (isEnabled) {
+				totalActive++;
+			} else if (status !== AppStatus.MANUALLY_DISABLED) {
+				totalFailed++;
+			}
+		}
 
 		return {
 			engineVersion: Info.marketplaceApiVersion,

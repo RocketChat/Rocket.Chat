@@ -208,8 +208,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('Failed to find the created message.');
 		}
 
-		if (Apps.self?.isLoaded()) {
-			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
+		if (Apps.isLoaded()) {
+			void Apps.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });

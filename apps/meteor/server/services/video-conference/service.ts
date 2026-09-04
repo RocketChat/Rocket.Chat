@@ -1,5 +1,4 @@
 import { Apps } from '@rocket.chat/apps';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
@@ -198,7 +197,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
+		const blocks = await Apps.videoConfProviders.getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
 			throw new Error(e);
 		});
 
@@ -577,8 +576,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
-		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		const configured = await Apps.videoConfProviders.isFullyConfigured(providerName).catch(() => false);
 		if (!configured) {
 			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
@@ -897,19 +895,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.getUrl(call, user, options);
 	}
 
-	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
-		if (!Apps.self?.isLoaded()) {
-			throw new Error('apps-engine-not-loaded');
-		}
-
-		const manager = Apps.self?.getManager()?.getVideoConfProviderManager();
-		if (!manager) {
-			throw new Error(availabilityErrors.NO_APP);
-		}
-
-		return manager;
-	}
-
 	private async getRoomName(rid: string): Promise<string> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(rid, { projection: { name: 1, fname: 1 } });
 
@@ -932,7 +917,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			discussionRid: call.discussionRid,
 		};
 
-		return (await this.getProviderManager()).generateUrl(call.providerName, callData);
+		return Apps.videoConfProviders.generateUrl(call.providerName, callData);
 	}
 
 	private async getCallTitleForUser(call: VideoConference, userId?: IUser['_id']): Promise<string> {
@@ -1008,7 +993,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name as string,
 		};
 
-		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options);
+		return Apps.videoConfProviders.customizeUrl(call.providerName, callData, userData, options);
 	}
 
 	private async runNewVideoConferenceEvent(callId: VideoConference['_id']): Promise<void> {
@@ -1026,7 +1011,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
+		return Apps.videoConfProviders.onNewVideoConference(call.providerName, call);
 	}
 
 	private async runVideoConferenceChangedEvent(callId: VideoConference['_id']): Promise<void> {
@@ -1044,7 +1029,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		return (await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call);
+		return Apps.videoConfProviders.onVideoConferenceChanged(call.providerName, call);
 	}
 
 	private async runOnUserJoinEvent(callId: VideoConference['_id'], user?: IVideoConferenceUser): Promise<void> {
@@ -1062,7 +1047,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);
+		return Apps.videoConfProviders.onUserJoin(call.providerName, call, user);
 	}
 
 	private async addUserToCall(

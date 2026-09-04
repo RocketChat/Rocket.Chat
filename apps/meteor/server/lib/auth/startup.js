@@ -17,6 +17,7 @@ import { beforeCreateUserCallback } from '../callbacks/beforeCreateUserCallback'
 import { getClientAddress } from '../getClientAddress';
 import { getMaxLoginTokens } from '../getMaxLoginTokens';
 import { i18n } from '../i18n';
+import { SystemLogger } from '../logger/system';
 import * as Mailer from '../notifications/email/api';
 import { notifyOnSettingChangedById } from '../notifyListener';
 import { addUserRolesAsync } from '../roles/addUserRoles';
@@ -398,8 +399,8 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
-			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
+		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
+			SystemLogger.error({ msg: 'Error while executing post user created event', err: e });
 		});
 	}
 
@@ -467,7 +468,7 @@ const validateLoginAttemptAsync = async function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
+		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;

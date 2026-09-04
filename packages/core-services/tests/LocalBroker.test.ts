@@ -18,6 +18,32 @@ describe('LocalBroker', () => {
 
 			expect(createdStub).toHaveBeenCalled();
 		});
+
+		it('should not throw when the service exposes accessor (getter) properties', async () => {
+			const methodStub = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+
+				// a getter on the prototype must not be treated as a callable method
+				get someAccessor() {
+					return { not: 'a function' };
+				}
+
+				async someMethod() {
+					methodStub();
+				}
+			})();
+
+			const broker = new LocalBroker();
+			expect(() => broker.createService(instance)).not.toThrow();
+
+			// real methods remain callable...
+			await broker.call('test.someMethod', []);
+			expect(methodStub).toHaveBeenCalled();
+
+			// ...while the accessor is not registered as a method
+			await expect(broker.call('test.someAccessor', [])).resolves.toBeUndefined();
+		});
 	});
 
 	describe('#destroyService()', () => {

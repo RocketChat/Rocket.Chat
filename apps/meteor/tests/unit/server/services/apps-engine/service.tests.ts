@@ -1,18 +1,19 @@
-import type { IAppsEngineService } from '@rocket.chat/core-services';
+import type { IAppsEngine } from '@rocket.chat/apps';
 import { expect } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const AppsMock = {
-	self: {
-		isInitialized: sinon.stub(),
-		getManager: sinon.stub(),
-		getStorage: sinon.stub(),
-		getAppSourceStorage: sinon.stub(),
-		getRocketChatLogger: sinon.stub(),
-		triggerEvent: sinon.stub(),
-	},
+// The service reads the orchestrator through the injected `getOrchestrator()`
+// accessor rather than the deprecated `Apps.self` global.
+const orchestratorMock = {
+	isInitialized: sinon.stub(),
+	isLoaded: sinon.stub(),
+	getManager: sinon.stub(),
+	getStorage: sinon.stub(),
+	getAppSourceStorage: sinon.stub(),
+	getRocketChatLogger: sinon.stub(),
+	triggerEvent: sinon.stub(),
 };
 
 const apiMock = {
@@ -23,7 +24,10 @@ const apiMock = {
 const isRunningMsMock = sinon.stub();
 
 const serviceMocks = {
-	'@rocket.chat/apps': { Apps: AppsMock },
+	'@rocket.chat/apps': {
+		AppEvents: {},
+		getOrchestrator: () => orchestratorMock,
+	},
 	'@rocket.chat/core-services': {
 		api: apiMock,
 		ServiceClassInternal: class {
@@ -39,7 +43,7 @@ const { AppsEngineService, AppsEngineNoNodesFoundError } = proxyquire
 	.load('../../../../../server/services/apps-engine/service', serviceMocks);
 
 describe('AppsEngineService', () => {
-	let service: IAppsEngineService;
+	let service: IAppsEngine;
 
 	it('should instantiate properly', () => {
 		expect(new AppsEngineService()).to.be.instanceOf(AppsEngineService);
@@ -62,23 +66,24 @@ describe('AppsEngineService', () => {
 	afterEach(() => {
 		apiMock.call.reset();
 		apiMock.nodeList.reset();
-		AppsMock.self.isInitialized.reset();
-		AppsMock.self.getManager.reset();
-		AppsMock.self.getStorage.reset();
-		AppsMock.self.getAppSourceStorage.reset();
-		AppsMock.self.getRocketChatLogger.reset();
-		AppsMock.self.triggerEvent.reset();
+		orchestratorMock.isInitialized.reset();
+		orchestratorMock.isLoaded.reset();
+		orchestratorMock.getManager.reset();
+		orchestratorMock.getStorage.reset();
+		orchestratorMock.getAppSourceStorage.reset();
+		orchestratorMock.getRocketChatLogger.reset();
+		orchestratorMock.triggerEvent.reset();
 		isRunningMsMock.reset();
 	});
 
 	describe('#isInitialized', () => {
 		it('should return true when Apps is initialized', () => {
-			AppsMock.self.isInitialized.returns(true);
+			orchestratorMock.isInitialized.returns(true);
 			expect(service.isInitialized()).to.be.true;
 		});
 
 		it('should return false when Apps is not initialized', () => {
-			AppsMock.self.isInitialized.returns(false);
+			orchestratorMock.isInitialized.returns(false);
 			expect(service.isInitialized()).to.be.false;
 		});
 	});
@@ -87,14 +92,14 @@ describe('AppsEngineService', () => {
 		it('should return app info from manager', async () => {
 			const mockApps = [{ getInfo: () => ({ id: 'app1' }) }];
 			const mockManager = { get: sinon.stub().resolves(mockApps) };
-			AppsMock.self.getManager.returns(mockManager);
+			orchestratorMock.getManager.returns(mockManager);
 
 			const result = await service.getApps({});
 			expect(result).to.deep.equal([{ id: 'app1' }]);
 		});
 
 		it('should return undefined when manager is not available', async () => {
-			AppsMock.self.getManager.returns(undefined);
+			orchestratorMock.getManager.returns(undefined);
 			const result = await service.getApps({});
 			expect(result).to.be.undefined;
 		});
@@ -109,7 +114,7 @@ describe('AppsEngineService', () => {
 				},
 			];
 			const mockManager = { get: sinon.stub().resolves(mockApps) };
-			AppsMock.self.getManager.returns(mockManager);
+			orchestratorMock.getManager.returns(mockManager);
 
 			const result = await service.getAppsStatusLocal();
 			expect(result).to.deep.equal([
@@ -121,7 +126,7 @@ describe('AppsEngineService', () => {
 		});
 
 		it('should return empty array when manager is not available', async () => {
-			AppsMock.self.getManager.returns(undefined);
+			orchestratorMock.getManager.returns(undefined);
 			const result = await service.getAppsStatusLocal();
 			expect(result).to.deep.equal([]);
 		});
@@ -134,7 +139,7 @@ describe('AppsEngineService', () => {
 				getStorageItem: sinon.stub().returns(mockStorageItem),
 			};
 			const mockManager = { getOneById: sinon.stub().returns(mockApp) };
-			AppsMock.self.getManager.returns(mockManager);
+			orchestratorMock.getManager.returns(mockManager);
 
 			const result = await service.getAppStorageItemById('app1');
 			expect(result).to.equal(mockStorageItem);
@@ -142,7 +147,7 @@ describe('AppsEngineService', () => {
 
 		it('should return undefined for non-existent app', async () => {
 			const mockManager = { getOneById: sinon.stub().returns(undefined) };
-			AppsMock.self.getManager.returns(mockManager);
+			orchestratorMock.getManager.returns(mockManager);
 
 			const result = await service.getAppStorageItemById('non-existent');
 			expect(result).to.be.undefined;
