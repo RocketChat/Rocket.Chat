@@ -63,6 +63,9 @@ const NavBarSearch = () => {
 				setFocus('filterText');
 			},
 			'Escape': (event) => {
+				if (triggerRef.current !== document.activeElement && !state.isOpen) {
+					return;
+				}
 				event.preventDefault();
 				handleEscSearch();
 			},
@@ -71,7 +74,7 @@ const NavBarSearch = () => {
 		return (): void => {
 			unsubscribe();
 		};
-	}, [focusManager, handleEscSearch, setFocus]);
+	}, [focusManager, handleEscSearch, setFocus, state.isOpen]);
 
 	return (
 		<FormProvider {...methods}>
