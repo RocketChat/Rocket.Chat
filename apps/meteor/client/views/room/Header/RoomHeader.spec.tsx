@@ -48,14 +48,16 @@ const mockActions: RoomToolboxActionConfig[] = [
 	{ id: 'pinned-messages', icon: 'pin', title: 'Pinned Messages' as any, groups: ['channel'], tabComponent: MockTabComponent },
 ];
 
-const mockLayoutConfig = JSON.stringify({
+const layoutSetting = (...layouts: object[]) => JSON.stringify({ layouts });
+
+const mockLayoutConfig = {
 	maxVisibleNormal: 2,
 	items: [
 		{ id: 'thread', featured: true, order: 1 },
 		{ id: 'members-list', featured: false, order: 2 },
 		{ id: 'discussions', featured: false, order: 3 },
 	],
-});
+};
 
 describe('RoomHeader', () => {
 	describe('Toolbox', () => {
@@ -104,21 +106,12 @@ describe('RoomHeader', () => {
 			mockUseRealRoomToolbox.value = false;
 		});
 
-		const settingKeyForRoom = (
-			roomType: string,
-		): 'Room_Toolbox_Layout_Public' | 'Room_Toolbox_Layout_Private' | 'Room_Toolbox_Layout_Direct' => {
-			if (roomType === 'c') return 'Room_Toolbox_Layout_Public';
-			if (roomType === 'p') return 'Room_Toolbox_Layout_Private';
-			return 'Room_Toolbox_Layout_Direct';
-		};
-
 		const renderWithLayout = (
 			room = mockedRoom,
 			layoutContextValue?: Partial<LayoutContextValue>,
 			extraSettings?: Record<string, string | boolean>,
 			featuresPreview = [{ name: 'roomToolboxLayout', value: true }],
 		) => {
-			const scopeKey = settingKeyForRoom(room.t);
 			const mockLayoutContextValue: LayoutContextValue = {
 				isEmbedded: false,
 				showTopNavbarEmbeddedLayout: false,
@@ -160,11 +153,11 @@ describe('RoomHeader', () => {
 			};
 
 			const allowFeaturePreview = extraSettings?.Accounts_AllowFeaturePreview ?? true;
-			const layoutValue = extraSettings?.[scopeKey] ?? mockLayoutConfig;
+			const layoutValue = extraSettings?.Room_Toolbox_Layout ?? layoutSetting({ roomType: [room.t], ...mockLayoutConfig });
 
 			const appRootWithSettings = mockAppRoot()
 				.withSetting('Accounts_AllowFeaturePreview', allowFeaturePreview as boolean)
-				.withSetting(scopeKey, layoutValue as string)
+				.withSetting('Room_Toolbox_Layout', layoutValue as string)
 				.withUserPreference('featuresPreview', featuresPreview)
 				.withRoom(room)
 				.wrap((children) => <FakeRoomProvider roomOverrides={room}>{children}</FakeRoomProvider>)
@@ -217,7 +210,8 @@ describe('RoomHeader', () => {
 
 				it('should order featured and visible actions by their configured order instead of their declaration order', () => {
 					renderWithLayout(testRoom, undefined, {
-						[settingKeyForRoom(type)]: JSON.stringify({
+						Room_Toolbox_Layout: layoutSetting({
+							roomType: [type],
 							maxVisibleNormal: 2,
 							items: [
 								{ id: 'thread', featured: true, order: 2 },
@@ -257,14 +251,31 @@ describe('RoomHeader', () => {
 						expect(screen.queryByTitle('Options')).not.toBeInTheDocument();
 					});
 
-					it('should fallback to legacy behavior if layout configuration is malformed JSON', () => {
-						renderWithLayout(testRoom, undefined, {
-							[settingKeyForRoom(type)]: '{ invalid json }',
-						});
+					it.each([
+						['malformed JSON', '{ invalid json }'],
+						['missing the layouts wrapper', JSON.stringify(mockLayoutConfig)],
+						['scoped to an unsupported room type', layoutSetting({ roomType: ['l'], ...mockLayoutConfig })],
+						[
+							'claiming the same room type twice',
+							layoutSetting({ roomType: [type], ...mockLayoutConfig }, { roomType: [type], maxVisibleNormal: 1 }),
+						],
+					])('should fallback to legacy behavior if layout configuration is %s', (_, layoutValue) => {
+						renderWithLayout(testRoom, undefined, { Room_Toolbox_Layout: layoutValue });
 
 						expect(screen.getByTitle('Threads')).toBeInTheDocument();
 						expect(screen.getByTitle('Members')).toBeInTheDocument();
 						expect(screen.getByTitle('Discussions')).toBeInTheDocument();
+						expect(screen.getByTitle('Files')).toBeInTheDocument();
+						expect(screen.getByTitle('Pinned Messages')).toBeInTheDocument();
+						expect(screen.queryByTitle('Options')).not.toBeInTheDocument();
+					});
+
+					it('should fallback to legacy behavior if no scope declares this room type', () => {
+						const otherType = type === 'd' ? 'c' : 'd';
+						renderWithLayout(testRoom, undefined, {
+							Room_Toolbox_Layout: layoutSetting({ roomType: [otherType], ...mockLayoutConfig }),
+						});
+
 						expect(screen.getByTitle('Files')).toBeInTheDocument();
 						expect(screen.getByTitle('Pinned Messages')).toBeInTheDocument();
 						expect(screen.queryByTitle('Options')).not.toBeInTheDocument();
@@ -279,6 +290,39 @@ describe('RoomHeader', () => {
 						expect(results).toHaveNoViolations();
 					});
 				});
+			});
+		});
+
+		describe('a single setting serving every room type', () => {
+			const sharedSetting = layoutSetting(
+				{
+					roomType: ['c', 'p'],
+					maxVisibleNormal: 2,
+					items: [
+						{ id: 'thread', featured: true, order: 1 },
+						{ id: 'members-list', featured: false, order: 2 },
+						{ id: 'discussions', featured: false, order: 3 },
+					],
+				},
+				{
+					roomType: ['d'],
+					maxVisibleNormal: 1,
+					items: [{ id: 'files', featured: true, order: 1 }],
+				},
+			);
+
+			it.each(['c', 'p'] as const)('should apply the channel scope to room type %s', (type) => {
+				const room = createFakeRoom({ prid: undefined, t: type, name: type, fname: type });
+				renderWithLayout(room, undefined, { Room_Toolbox_Layout: sharedSetting });
+
+				expect(getToolbarSequence()).toEqual(['Threads', 'divider', 'Members', 'Discussions', 'Options']);
+			});
+
+			it('should apply the direct message scope from the same setting', () => {
+				const room = createFakeRoom({ prid: undefined, t: 'd', name: 'dm', fname: 'dm' });
+				renderWithLayout(room, undefined, { Room_Toolbox_Layout: sharedSetting });
+
+				expect(getToolbarSequence()).toEqual(['Files', 'divider', 'Threads', 'Options']);
 			});
 		});
 	});

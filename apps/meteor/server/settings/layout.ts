@@ -216,29 +216,13 @@ export const createLayoutSettings = () =>
 			});
 		});
 		await this.section('Room_Header', async function () {
-			await this.add('Room_Toolbox_Layout_Public', '', {
+			await this.add('Room_Toolbox_Layout', '', {
 				type: 'code',
 				code: 'application/json',
 				multiline: true,
 				public: true,
-				i18nLabel: 'Room_Toolbox_Layout_Public',
-				i18nDescription: 'Room_Toolbox_Layout_Public_description',
-			});
-			await this.add('Room_Toolbox_Layout_Private', '', {
-				type: 'code',
-				code: 'application/json',
-				multiline: true,
-				public: true,
-				i18nLabel: 'Room_Toolbox_Layout_Private',
-				i18nDescription: 'Room_Toolbox_Layout_Private_description',
-			});
-			await this.add('Room_Toolbox_Layout_Direct', '', {
-				type: 'code',
-				code: 'application/json',
-				multiline: true,
-				public: true,
-				i18nLabel: 'Room_Toolbox_Layout_Direct',
-				i18nDescription: 'Room_Toolbox_Layout_Direct_description',
+				i18nLabel: 'Room_Toolbox_Layout',
+				i18nDescription: 'Room_Toolbox_Layout_Setting_description',
 			});
 		});
 	});

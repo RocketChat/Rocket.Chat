@@ -5,54 +5,15 @@ import type { RoomToolboxActionConfig, RoomToolboxContextValue } from '@rocket.c
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { resolveLayoutForRoomType } from './parseLayoutSetting';
 import { processRoomActions } from './processRoomActions';
-import type { RoomToolboxBaseAction, RoomToolboxLayoutConfig } from './processRoomActions';
+import type { RoomToolboxBaseAction } from './processRoomActions';
 import { useRoom } from '../../../contexts/RoomContext';
 
 type MenuSection = {
 	id: string;
 	title?: string;
 	items: GenericMenuItemProps[];
-};
-
-const parseLayoutConfig = (raw: string): RoomToolboxLayoutConfig | null => {
-	if (!raw) {
-		return null;
-	}
-	try {
-		const parsed = JSON.parse(raw) as Record<string, unknown>;
-		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-			return null;
-		}
-		if (Array.isArray(parsed.items)) {
-			const items = parsed.items as unknown[];
-			const validItems = items.every((item: unknown): boolean => {
-				if (typeof item !== 'object' || item === null) {
-					return false;
-				}
-				const candidate = item as Record<string, unknown>;
-				return (
-					typeof candidate.id === 'string' &&
-					(candidate.featured === undefined || typeof candidate.featured === 'boolean') &&
-					(candidate.order === undefined || (typeof candidate.order === 'number' && Number.isFinite(candidate.order)))
-				);
-			});
-			if (!validItems) {
-				return null;
-			}
-		} else if (parsed.items !== undefined) {
-			return null;
-		}
-		if (
-			parsed.maxVisibleNormal !== undefined &&
-			(typeof parsed.maxVisibleNormal !== 'number' || !Number.isFinite(parsed.maxVisibleNormal))
-		) {
-			return null;
-		}
-		return parsed;
-	} catch {
-		return null;
-	}
 };
 
 const canRenderAsMenuItem = (item: RoomToolboxActionConfig): boolean => Boolean(item.action ?? item.tabComponent);
@@ -80,25 +41,14 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const room = useRoom();
 	const isLayoutPreviewEnabled = useFeaturePreview('roomToolboxLayout');
 
-	const layoutPublicJSON = useSetting('Room_Toolbox_Layout_Public', '');
-	const layoutPrivateJSON = useSetting('Room_Toolbox_Layout_Private', '');
-	const layoutDirectJSON = useSetting('Room_Toolbox_Layout_Direct', '');
+	const layoutSettingJSON = useSetting('Room_Toolbox_Layout', '');
 
 	const layoutConfig = useMemo(() => {
 		if (!isLayoutPreviewEnabled) {
 			return null;
 		}
-		const roomType = room.t as string;
-		let raw = '';
-		if (roomType === 'c') {
-			raw = layoutPublicJSON;
-		} else if (roomType === 'p') {
-			raw = layoutPrivateJSON;
-		} else if (roomType === 'd') {
-			raw = layoutDirectJSON;
-		}
-		return parseLayoutConfig(raw);
-	}, [isLayoutPreviewEnabled, room.t, layoutPublicJSON, layoutPrivateJSON, layoutDirectJSON]);
+		return resolveLayoutForRoomType(layoutSettingJSON, room.t);
+	}, [isLayoutPreviewEnabled, layoutSettingJSON, room.t]);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);

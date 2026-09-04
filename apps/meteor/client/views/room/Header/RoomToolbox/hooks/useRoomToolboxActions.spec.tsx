@@ -55,7 +55,10 @@ describe('useRoomToolboxActions', () => {
 	});
 
 	describe('with roomToolboxLayout feature preview enabled', () => {
-		const mockLayoutConfig = JSON.stringify({
+		const layoutSetting = (...layouts: object[]) => JSON.stringify({ layouts });
+
+		const mockLayoutConfig = layoutSetting({
+			roomType: ['c'],
 			maxVisibleNormal: 2,
 			items: [
 				{ id: 'team-info', featured: false, order: 1 },
@@ -70,7 +73,7 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
 					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
@@ -83,40 +86,54 @@ describe('useRoomToolboxActions', () => {
 			expect(hiddenIds).toContain('rocket-search');
 		});
 
-		it('should use the private layout config for private rooms', () => {
-			const privateConfig = JSON.stringify({
-				maxVisibleNormal: 1,
-				items: [{ id: 'thread', featured: true, order: 1 }],
-			});
-			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: mockAppRoot()
-					.withSetting('Accounts_AllowFeaturePreview', true)
-					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Private', privateConfig)
-					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'p' }}>{children}</FakeRoomProvider>)
-					.build(),
-			});
-			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
-		});
+		describe('with a single setting scoped by room type', () => {
+			const scopedSetting = layoutSetting(
+				{
+					roomType: ['c', 'p'],
+					maxVisibleNormal: 1,
+					items: [{ id: 'thread', featured: true, order: 1 }],
+				},
+				{
+					roomType: ['d'],
+					maxVisibleNormal: 1,
+					items: [{ id: 'discussions', featured: false, order: 1 }],
+				},
+			);
 
-		it('should use the direct layout config for direct message rooms', () => {
-			const directConfig = JSON.stringify({
-				maxVisibleNormal: 1,
-				items: [{ id: 'discussions', featured: false, order: 1 }],
+			const renderForRoomType = (roomType: 'c' | 'p' | 'd' | 'l') =>
+				renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+					wrapper: mockAppRoot()
+						.withSetting('Accounts_AllowFeaturePreview', true)
+						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+						.withSetting('Room_Toolbox_Layout', scopedSetting)
+						.wrap((children) => <FakeRoomProvider roomOverrides={{ t: roomType }}>{children}</FakeRoomProvider>)
+						.build(),
+				});
+
+			it.each(['c', 'p'] as const)('should apply the scope declaring both channel types to room type %s', (roomType) => {
+				const { result } = renderForRoomType(roomType);
+
+				expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 			});
-			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: mockAppRoot()
-					.withSetting('Accounts_AllowFeaturePreview', true)
-					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Direct', directConfig)
-					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'd' }}>{children}</FakeRoomProvider>)
-					.build(),
+
+			it('should apply the direct message scope from the same setting', () => {
+				const { result } = renderForRoomType('d');
+
+				expect(result.current.visibleActions.map((a) => a.id)).toEqual(['discussions']);
 			});
-			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['discussions']);
+
+			it('should fall back to legacy behavior for a room type no scope declares', () => {
+				const { result } = renderForRoomType('l');
+
+				const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
+				expect(result.current.featuredActions.map((a) => a.id)).toEqual(['start-call']);
+				expect(result.current.visibleActions.map((a) => a.id)).toEqual(expectedVisible.map((a) => a.id));
+			});
 		});
 
 		it('should keep actions flagged as featured by themselves out of the visible row and the kebab menu', () => {
-			const configWithoutStartCall = JSON.stringify({
+			const configWithoutStartCall = layoutSetting({
+				roomType: ['c'],
 				maxVisibleNormal: 1,
 				items: [{ id: 'team-info', featured: false, order: 1 }],
 			});
@@ -124,7 +141,7 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Public', configWithoutStartCall)
+					.withSetting('Room_Toolbox_Layout', configWithoutStartCall)
 					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
@@ -139,14 +156,21 @@ describe('useRoomToolboxActions', () => {
 		it.each([
 			['invalid JSON', '{ invalid json }'],
 			['a JSON array', '[]'],
-			['non-array items', JSON.stringify({ items: {} })],
-			['items with invalid item types', JSON.stringify({ items: [null] })],
+			['missing the layouts wrapper', JSON.stringify({ maxVisibleNormal: 1, items: [{ id: 'team-info' }] })],
+			['non-array layouts', JSON.stringify({ layouts: {} })],
+			['non-array items', layoutSetting({ roomType: ['c'], items: {} })],
+			['items with invalid item types', layoutSetting({ roomType: ['c'], items: [null] })],
+			['a scope without roomType', layoutSetting({ maxVisibleNormal: 1, items: [] })],
+			['an empty roomType', layoutSetting({ roomType: [], items: [] })],
+			['an unsupported roomType', layoutSetting({ roomType: ['l'], items: [] })],
+			['room types overlapping across scopes', layoutSetting({ roomType: ['c', 'p'] }, { roomType: ['c'] })],
+			['a room type repeated inside one scope', layoutSetting({ roomType: ['c', 'c'] })],
 		])('should fall back to legacy behavior if config is %s', (_, layoutConfigValue) => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Public', layoutConfigValue)
+					.withSetting('Room_Toolbox_Layout', layoutConfigValue)
 					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
@@ -161,7 +185,7 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: false }])
-					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
 					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
@@ -229,7 +253,7 @@ describe('useRoomToolboxActions', () => {
 					wrapper: mockAppRoot()
 						.withSetting('Accounts_AllowFeaturePreview', true)
 						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout_Public', JSON.stringify(config))
+						.withSetting('Room_Toolbox_Layout', layoutSetting({ roomType: ['c'], ...config }))
 						.wrap((children) => withLayout(<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>))
 						.build(),
 				});
@@ -288,7 +312,7 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
 					.wrap((children) => (
 						<LayoutContext.Provider value={collapsedLayoutContextValue}>
 							<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
