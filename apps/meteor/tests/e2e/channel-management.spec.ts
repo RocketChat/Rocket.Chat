@@ -282,6 +282,18 @@ test.describe.serial('channel-management', () => {
 			await user1Channel.content.sendMessage('message to check ignore');
 
 			await expect(poHomeChannel.content.lastUserMessageBody.getByRole('button', { name: 'This message was ignored' })).toBeVisible();
+
+			await user1Channel.content.openReplyInThread();
+			await user1Channel.content.waitForThread();
+			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
+			await user1Channel.content.sendMessageInThread('thread reply from an ignored user');
+
+			await poHomeChannel.content.openReplyInThread();
+			await poHomeChannel.content.waitForThread();
+
+			await expect(poHomeChannel.content.threadMessageListItems).toHaveCount(2);
+			await expect(poHomeChannel.content.ignoredThreadMessages).toHaveCount(2);
+			await expect(poHomeChannel.content.threadMessageList).not.toContainText('thread reply from an ignored user');
 		});
 
 		test('should unignore single user1 message', async () => {
@@ -297,6 +309,22 @@ test.describe.serial('channel-management', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
 			await poHomeChannel.content.lastIgnoredUserMessage.click();
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('only message to be unignored');
+
+			await user1Channel.content.openReplyInThread();
+			await user1Channel.content.waitForThread();
+			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
+			await user1Channel.content.sendMessageInThread('thread reply that stays ignored');
+			await user1Channel.content.sendMessageInThread('thread reply to be revealed');
+
+			await poHomeChannel.content.openReplyInThread();
+			await poHomeChannel.content.waitForThread();
+
+			await expect(poHomeChannel.content.ignoredThreadMessages).toHaveCount(3);
+
+			await poHomeChannel.content.lastIgnoredThreadMessage.click();
+
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('thread reply to be revealed');
+			await expect(poHomeChannel.content.ignoredThreadMessages).toHaveCount(2);
 		});
 
 		test('should unignore user1 messages', async ({ page }) => {
