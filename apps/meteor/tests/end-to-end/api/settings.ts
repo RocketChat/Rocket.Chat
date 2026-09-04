@@ -129,6 +129,22 @@ describe('[Settings]', () => {
 					.expect(400);
 			});
 
+			it('should reject an empty integer value without changing the setting', async () => {
+				const settingId = 'UserData_ProcessingFrequency';
+				const originalValue = await getSettingValueById(settingId);
+
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: settingId, value: null }] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+
+				expect(await getSettingValueById(settingId)).to.equal(originalValue);
+			});
+
 			it('should successfully update multiple settings in a single request', async () => {
 				await request
 					.post(api('settings'))
