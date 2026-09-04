@@ -101,20 +101,20 @@ const AbacRoomAttributesSection = ({ room }: AbacRoomAttributesSectionProps) => 
 
 			<Box marginBlockStart={16}>
 				<ButtonGroup stretch>
-				{editFlow.phase === 'preview' ? (
-					<>
-						<Button type='button' onClick={editFlow.backToEdit}>
-							{t('Back')}
+					{editFlow.phase === 'preview' ? (
+						<>
+							<Button type='button' onClick={editFlow.backToEdit}>
+								{t('Back')}
+							</Button>
+							<Button type='button' primary onClick={editFlow.requestSave} disabled={!editFlow.canSave} loading={editFlow.isSaving}>
+								{t('Save_changes')}
+							</Button>
+						</>
+					) : (
+						<Button type='button' primary onClick={editFlow.goToPreview} disabled={!isValid || !isDirty}>
+							{t('Next')}
 						</Button>
-						<Button type='button' primary onClick={editFlow.requestSave} disabled={!editFlow.canSave} loading={editFlow.isSaving}>
-							{t('Save_changes')}
-						</Button>
-					</>
-				) : (
-					<Button type='button' primary onClick={editFlow.goToPreview} disabled={!isValid || !isDirty}>
-						{t('Next')}
-					</Button>
-				)}
+					)}
 				</ButtonGroup>
 			</Box>
 		</FormProvider>
