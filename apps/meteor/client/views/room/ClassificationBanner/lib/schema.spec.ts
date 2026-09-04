@@ -52,9 +52,15 @@ describe('classification banners JSON schema (v2 enforcement contract)', () => {
 		expect(validate(validConfig)).toBe(true);
 	});
 
+	// v2 added only the optional `nonAbacBanner`, so every v1 document is a valid v2 document with
+	// that option left out. Migration v336 rewrites the stored `version`, but a document can also
+	// arrive by hand — pasted back from an export, or restored from a backup — and rejecting one an
+	// administrator saved before the upgrade would be a regression, not a safeguard.
+	it('accepts a v1 document, which v2 is a strict superset of', () => {
+		expect(validate({ ...validConfig, version: 1 })).toBe(true);
+	});
+
 	it.each([
-		// v1 documents are rewritten by migration v336; the schema itself only accepts v2.
-		['a v1 version', { ...validConfig, version: 1 }],
 		['an unknown future version', { ...validConfig, version: 3 }],
 		['missing banner option (colorMode)', { ...validConfig, banner: { ...banner, colorMode: undefined } }],
 		['empty delimiter', { ...validConfig, banner: { ...banner, delimiter: '' } }],

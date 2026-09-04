@@ -13,8 +13,9 @@ const SETTING_ID = 'ABAC_Classification_Banners_Config';
  * synthesised — its absence means "no banner in rooms without attributes", which is exactly the
  * pre-v2 behaviour, so an existing configuration keeps rendering as it did.
  *
- * The schema is `additionalProperties: false` with `version` as a `const`, which is why the bump
- * cannot be skipped: a v1 document would fail validation the moment an admin re-saved it.
+ * The schema accepts both versions, so this is normalisation rather than rescue: a v1 document an
+ * admin re-saves by hand is still valid. What the bump buys is that everything stored says v2, so
+ * the next schema change has one shape to reason about instead of two.
  *
  * Rollback: set `version` back to `1` and delete `nonAbacBanner` if present.
  *   db.rocketchat_settings.updateOne(

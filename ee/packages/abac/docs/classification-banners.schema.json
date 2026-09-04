@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
-    "version": { "const": 2 },
+    "version": { "enum": [1, 2] },
     "enabled": { "type": "boolean" },
     "banner": {
       "type": "object",
