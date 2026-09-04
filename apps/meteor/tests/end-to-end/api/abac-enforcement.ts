@@ -174,8 +174,12 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('blocks discussion creation (D7)', async () => {
+			// The parent has to exist before enforcement is on: from M4, creating a room without
+			// attributes is refused, so it cannot be made inside this block.
+			await setEnforcement(false);
 			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
 			const parentId = parent.body.group._id;
+			await setEnforcement(true);
 
 			await request
 				.post(api('rooms.createDiscussion'))
@@ -191,21 +195,18 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(true);
 		});
 
-		it('still allows private channel creation', async () => {
-			// M1 blocks only the paths that cannot produce a compliant room. Requiring attributes at
-			// creation is M4, so a private channel created here is allowed and is itself locked until
-			// attributes are assigned.
-			const res = await request
+		it('refuses a private channel carrying no attributes (M4)', async () => {
+			// Up to M3 this was allowed and the room was simply born locked. From M4 a room that
+			// would be born locked is refused instead.
+			await request
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `abac-private-${Date.now()}` })
-				.expect(200);
-
-			const roomId = res.body.group._id;
-
-			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId });
-			await setEnforcement(true);
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-abac-attributes-required');
+				});
 		});
 	});
 
