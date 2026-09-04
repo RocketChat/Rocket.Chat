@@ -40,6 +40,50 @@ describe('useRoomToolboxActions', () => {
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));
 	});
+
+	it('should return empty visibleActions when roomToolboxExpanded is false', () => {
+		const { result } = renderHook(
+			() => useRoomToolboxActions({ actions, openTab: () => undefined }),
+			{
+				wrapper: mockAppRoot()
+					.withLayout({ roomToolboxExpanded: false })
+					.build(),
+			}
+		);
+
+		expect(result.current.visibleActions).toEqual([]);
+	});
+
+	it('should not create hiddenActions when exactly 6 normal actions exist', () => {
+		const sixActions = actions.slice(0, 6).map(a => ({ ...a, featured: false }));
+
+		const { result } = renderHook(
+			() => useRoomToolboxActions({ actions: sixActions, openTab: () => undefined }),
+			{
+				wrapper: mockAppRoot()
+					.withLayout({ roomToolboxExpanded: true })
+					.build(),
+			}
+		);
+
+		expect(result.current.visibleActions.length).toBe(6);
+		expect(result.current.hiddenActions.length).toBe(0);
+	});
+
+	it('should exclude disabled actions from hiddenActions', () => {
+		const disabledAction = { ...actions[0], disabled: true };
+
+		const { result } = renderHook(
+			() => useRoomToolboxActions({ actions: [disabledAction], openTab: () => undefined }),
+			{
+				wrapper: mockAppRoot()
+					.withLayout({ roomToolboxExpanded: false })
+					.build(),
+			}
+		);
+
+		expect(result.current.hiddenActions.length).toBe(0);
+	});
 });
 
 const appsActions: RoomToolboxActionConfig[] = [
