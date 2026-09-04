@@ -44,9 +44,7 @@ export type PatchEventResult<T> = Marker & { type: 'patch'; patch: Partial<T>; [
 
 /**
  * What a `prevent` says about the block: a sentence the app wrote, or a key the app ships a
- * translation for. The two are exclusive, and `never` on the absent one is what says so: a bare
- * union of the two members lets an object literal carry both, because the excess-property check
- * admits any property that one member declares.
+ * translation for
  */
 export type PreventReason = { reason: string; i18n?: never } | { i18n: I18nMessage; reason?: never };
 
