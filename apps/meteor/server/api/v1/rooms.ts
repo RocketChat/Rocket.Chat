@@ -1140,6 +1140,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 	},
@@ -1158,7 +1159,7 @@ API.v1.get(
 		}
 
 		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
-			return API.v1.unauthorized();
+			return API.v1.forbidden();
 		}
 
 		// Ensures that role priorities for the specified room are synchronized correctly.
@@ -1299,13 +1300,14 @@ API.v1.post(
 			200: successResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		const { roomId } = this.bodyParams;
 
 		if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-			return API.v1.unauthorized();
+			return API.v1.forbidden();
 		}
 
 		const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
@@ -1723,13 +1725,14 @@ export const roomEndpoints = API.v1
 			response: {
 				200: roomsBannedUsersResponseSchema,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
 			const { roomId } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
