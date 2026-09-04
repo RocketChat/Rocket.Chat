@@ -71,16 +71,26 @@ export const getExchangeProvider = (): IExchangeProvider => {
 	return current;
 };
 
-const DEFAULT_SYNC_WINDOW_HOURS = 48;
-const MIN_SYNC_WINDOW_HOURS = 1;
-// 30 days. Wider than this, a daily series expands past the item cap `CalendarView` requests
-const MAX_SYNC_WINDOW_HOURS = 720;
+const DEFAULT_SYNC_WINDOW_DAYS = 2;
+const MIN_SYNC_WINDOW_DAYS = 1;
+// Wider than this, a daily series expands past the item cap `CalendarView` requests
+const MAX_SYNC_WINDOW_DAYS = 30;
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Starts at midnight, the same day `calendar-events.list` reports on, so an event that already happened
+ * today is still refreshed rather than left behind. Both bounds land on a day boundary, so the window is
+ * identical for every run of the same day, which is what makes a Graph delta link reusable.
+ */
 export const getSyncWindow = (from: Date = new Date()): DateRange => {
-	const configured = Math.trunc(settings.get<number>('Outlook_Calendar_Server_Sync_Window_Hours')) || DEFAULT_SYNC_WINDOW_HOURS;
-	const hours = Math.min(Math.max(configured, MIN_SYNC_WINDOW_HOURS), MAX_SYNC_WINDOW_HOURS);
+	const configured = Math.trunc(settings.get<number>('Outlook_Calendar_Server_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
+	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
 
-	return { start: from, end: new Date(from.getTime() + hours * 60 * 60 * 1000) };
+	const start = new Date(from);
+	start.setHours(0, 0, 0, 0);
+
+	return { start, end: new Date(start.getTime() + days * DAY_MS) };
 };
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
