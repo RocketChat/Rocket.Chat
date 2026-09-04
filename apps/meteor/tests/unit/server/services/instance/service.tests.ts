@@ -7,6 +7,7 @@ import type { IInstanceService } from '../../../../../ee/server/sdk/types/IInsta
 
 const ServiceBrokerMock = {
 	call: sinon.stub(),
+	nodeID: 'local-node',
 };
 
 const AppsMock = {
@@ -56,7 +57,7 @@ describe('InstanceService', () => {
 			const instances = await service.getInstances();
 
 			expect(instances).to.deep.equal(mockInstances);
-			expect(ServiceBrokerMock.call.calledWith('$node.list', { onlyAvailable: true })).to.be.true;
+			expect(ServiceBrokerMock.call.calledWith('$node.list', { onlyAvailable: true }, { nodeID: 'local-node' })).to.be.true;
 		});
 
 		it('should handle empty instance list', async () => {
@@ -65,7 +66,7 @@ describe('InstanceService', () => {
 			const instances = await service.getInstances();
 
 			expect(instances).to.deep.equal([]);
-			expect(ServiceBrokerMock.call.calledWith('$node.list', { onlyAvailable: true })).to.be.true;
+			expect(ServiceBrokerMock.call.calledWith('$node.list', { onlyAvailable: true }, { nodeID: 'local-node' })).to.be.true;
 		});
 	});
 

@@ -71,11 +71,14 @@ class EJSONSerializer extends Base {
 	}
 }
 
+const isNatsTransporter = /^nats:/i.test(TRANSPORTER);
+
 export function startBroker(options: Moleculer.BrokerOptions = {}): NetworkBroker {
 	const network = new ServiceBroker({
 		namespace: MS_NAMESPACE,
 		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 		transporter: TRANSPORTER,
+		disableBalancer: isNatsTransporter,
 		metrics: {
 			enabled: MS_METRICS === 'true',
 			reporter: [
