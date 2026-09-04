@@ -1,8 +1,8 @@
 import type { IExchangeProvider } from './definition/IExchangeProvider';
 import type { DateRange } from './definition/types';
 import { ExchangeError } from './errors';
+import { EwsTransport } from './ews/EwsTransport';
 import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
-import { NtlmEwsTransport } from './ews/NtlmEwsTransport';
 import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
 import { logger } from './logger';
 import { scrubForLog } from './scrub';
@@ -46,7 +46,7 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 
 		case 'ews':
 			return new ExchangeEwsProvider(
-				new NtlmEwsTransport({
+				new EwsTransport({
 					url: settings.get<string>('Outlook_Calendar_EWS_Url'),
 					username: settings.get<string>('Outlook_Calendar_EWS_Username'),
 					password: settings.get<string>('Outlook_Calendar_EWS_Password'),
