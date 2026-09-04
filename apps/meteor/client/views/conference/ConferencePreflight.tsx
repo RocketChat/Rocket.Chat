@@ -1,6 +1,7 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, CheckBox, Field, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +10,36 @@ import CallDeviceToggle from './components/CallDeviceToggle';
 import type { CallPreferences } from './hooks/useCallPreferences';
 import { useCallPreferences } from './hooks/useCallPreferences';
 import CallParticipants from '../../components/CallParticipants';
+
+/**
+ * How much of the tile's bottom edge the mic and camera toggles float over: their own inset plus their height,
+ * and a little clear air. The placeholder inside the tile centres in what is left above this rather than in the
+ * whole tile — otherwise the icon and its line of text land underneath the buttons, which is what a short tile
+ * (a phone in landscape, a small window) leaves room for.
+ */
+const TOGGLES_ZONE = 60;
+
+/**
+ * The camera tile: 16:9, and black rather than a themed surface, since this is where a camera goes and a camera
+ * with nothing to show is black. It stays black with the camera off too, so toggling it doesn't repaint the tile.
+ *
+ * Width leads while there is height to spare. On a short viewport — a phone in landscape, a small window — a
+ * full-width 16:9 tile is taller than the whole screen, and it was pushing the field and the button that starts
+ * the call below the fold: the tile says what the camera *will* do, while the button is what the screen is for.
+ * So there, height leads and the aspect ratio derives the width, which keeps the tile 16:9 and centred instead
+ * of crowding out the actions.
+ */
+const previewTileStyle = css`
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	background-color: #000;
+
+	@media (max-height: 620px) {
+		width: auto;
+		max-width: 100%;
+		height: min(52dvh, 300px);
+	}
+`;
 
 type ConferencePreflightProps = {
 	name: string;
@@ -41,7 +72,14 @@ const ConferencePreflight = ({
 	// state, leaving two sources of truth for one answer.
 	const { preferences, ring, toggle, toggleRing } = useCallPreferences(capabilities);
 
-	const columns = useBreakpoints().includes('md');
+	// Side by side once there is room for both; stacked below that, with the preview still first.
+	//
+	// Width alone was the wrong question. A phone in landscape is wide but short, and stacking there spent the
+	// little height it has on the preview, leaving the name and the call button off the bottom of the screen —
+	// so the columns come back on the viewport's shape as well as its width.
+	const wideEnough = useBreakpoints().includes('md');
+	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 480px)');
+	const columns = wideEnough || shortAndWide;
 
 	const [title, setTitle] = useState(defaultName ?? name);
 	const [confirming, setConfirming] = useState(false);
@@ -78,17 +116,27 @@ const ConferencePreflight = ({
 				justifyContent='center'
 				borderRadius='x8'
 				overflow='hidden'
-				style={{ aspectRatio: '16 / 9', backgroundColor: '#000' }}
+				className={previewTileStyle}
 			>
-				<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-				<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-					{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
-				</Box>
-				{preferences.cam && (
-					<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-						{t('Which_devices_are_used_is_chosen_in_the_call')}
+				<Box
+					display='flex'
+					flexDirection='column'
+					alignItems='center'
+					justifyContent='center'
+					width='100%'
+					height='100%'
+					style={{ paddingBlockEnd: TOGGLES_ZONE }}
+				>
+					<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
+					<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
+						{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
 					</Box>
-				)}
+					{preferences.cam && (
+						<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
+							{t('Which_devices_are_used_is_chosen_in_the_call')}
+						</Box>
+					)}
+				</Box>
 
 				<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
 					<ButtonGroup>
