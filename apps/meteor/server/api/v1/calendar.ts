@@ -12,6 +12,7 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { settings } from '../../settings';
 import { API } from '../api';
 
 const successWithDataSchema = ajv.compile<{ data: ICalendarEvent[] }>({
@@ -144,6 +145,10 @@ API.v1.post(
 	async function action() {
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
+
+		if (settings.get<string>('Outlook_Calendar_Mode') === 'server') {
+			return API.v1.failure('error-calendar-import-disabled-in-server-mode');
+		}
 
 		const id = await Calendar.import({
 			uid,
