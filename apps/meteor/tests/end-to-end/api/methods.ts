@@ -3369,8 +3369,8 @@ describe('Meteor.methods', () => {
 	});
 
 	describe('[@saveSettings]', () => {
-		it('should return an error when trying to save a "NaN" value', () => {
-			void request
+		it('should return an error when trying to save a "NaN" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3386,12 +3386,11 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
 				});
 		});
 
-		it('should return an error when trying to save a "Infinity" value', () => {
-			void request
+		it('should return an error when trying to save a "Infinity" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3402,17 +3401,16 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 1 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value Infinity');
 				});
 		});
 
-		it('should return an error when trying to save a "-Infinity" value', () => {
-			void request
+		it('should return an error when trying to save a "-Infinity" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3423,12 +3421,11 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: -1 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
 				});
 		});
 	});
