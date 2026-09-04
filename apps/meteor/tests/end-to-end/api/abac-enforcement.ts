@@ -71,6 +71,11 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		after(async () => {
 			await setEnforcement(false);
+
+			// These have to be removed: `im.list.everyone` asserts an exact count elsewhere in the
+			// suite, so leaving two direct messages behind fails an unrelated test.
+			await deleteRoom({ type: 'd', roomId: dmRoomId });
+			await deleteRoom({ type: 'd', roomId: groupDmRoomId });
 		});
 
 		it('allows sending a message in a 1-on-1 DM', async () => {
