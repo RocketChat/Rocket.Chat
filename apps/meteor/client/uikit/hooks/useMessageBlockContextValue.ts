@@ -1,7 +1,7 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -23,6 +23,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const loadVideoConfCapabilities = useVideoConfLoadCapabilities();
+	const videoConfJoinDisabled = !!useCurrentRoutePath()?.startsWith('/conference/');
 
 	const handleOpenVideoConf = useStableCallback(async (rid: IRoom['_id']) => {
 		if (isCalling || isRinging) {
@@ -77,6 +78,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 			});
 		},
 		rid,
+		videoConfJoinDisabled,
 		values: {}, // TODO: this is a hack to make the context work, but it should be removed
 	};
 };

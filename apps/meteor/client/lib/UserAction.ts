@@ -23,7 +23,13 @@ const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-const rooms = new Map<string, (username: string, activityType: string[], extras?: object) => void>();
+type RoomActivityStream = {
+	handler: (username: string, activityType: string[], extras?: object) => void;
+	stop: () => void;
+	refs: number;
+};
+
+const rooms = new Map<string, RoomActivityStream>();
 
 const performingUsers = new Map<string, IRoomActivity>();
 const performingUsersEmitter = new Emitter<{ changed: void }>();
@@ -67,10 +73,35 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 	performingUsersEmitter.emit('changed');
 }
+/**
+ * The disposer for one `addStream` call. It releases that call's reference and no more, however many times it is
+ * invoked: an effect cleanup can run twice (StrictMode's double invoke, a cleanup racing a re-mount), and a second
+ * decrement would take `refs` below the number of mounts still holding the stream — closing it under them, and then
+ * never closing it at all once the count can no longer come back to zero.
+ */
+const releaseRoomStream = (rid: string, entry: RoomActivityStream): (() => void) => {
+	let released = false;
+
+	return () => {
+		if (released) {
+			return;
+		}
+		released = true;
+
+		entry.refs--;
+		if (entry.refs === 0) {
+			entry.stop();
+			rooms.delete(rid);
+		}
+	};
+};
+
 export const UserAction = new (class {
 	addStream(rid: string): () => void {
-		if (rooms.get(rid)) {
-			throw new Error('UserAction - addStream should only be called once per room');
+		const existing = rooms.get(rid);
+		if (existing) {
+			existing.refs++;
+			return releaseRoomStream(rid, existing);
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
@@ -82,16 +113,12 @@ export const UserAction = new (class {
 			}
 			handleStreamAction(rid, username, activityType, extras);
 		};
-		rooms.set(rid, handler);
 
 		const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
-		return () => {
-			if (!rooms.get(rid)) {
-				return;
-			}
-			stop();
-			rooms.delete(rid);
-		};
+		const entry: RoomActivityStream = { handler, stop, refs: 1 };
+		rooms.set(rid, entry);
+
+		return releaseRoomStream(rid, entry);
 	}
 
 	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {
