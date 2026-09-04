@@ -98,7 +98,7 @@ export const MultiSelectCustom = ({
 		[selectedOptions, setSelectedOptions],
 	);
 
-	const selectedOptionsCount = dropdownOptions.filter((option) => option.hasOwnProperty('checked') && option.checked).length;
+	const selectedOptionsCount = selectedOptions.length;
 	const buttonProps = useButtonPattern(() => toggleCollapsed(!collapsed));
 
 	return (
