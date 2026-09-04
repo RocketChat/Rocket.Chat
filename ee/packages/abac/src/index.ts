@@ -1,4 +1,4 @@
-import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { api, Authorization, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
@@ -60,6 +60,10 @@ const PREVIEW_PAGE_SIZE = 50;
 // TODO(ABAC-P4/N3): confirm whether this should be its own setting or reuse `API_User_Limit`,
 // which already caps the comparable bulk-membership path at a default of 500.
 const PREVIEW_ENUMERATION_THRESHOLD = 500;
+
+// Above this many removals in one attribute change, the per-member system messages are replaced by
+// a single summarised one.
+const MASS_EVICTION_SUMMARY_THRESHOLD = 5;
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -632,7 +636,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (diffAttributeSets(previous, normalized).added) {
-			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
+			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized, actor);
 		}
 	}
 
@@ -666,7 +670,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.broadcastRoomUpdate({ ...room, abacAttributes: next });
 
-			await this.onRoomAttributesChanged(room, next);
+			await this.onRoomAttributesChanged(room, next, actor);
 			return;
 		}
 
@@ -691,7 +695,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
-			await this.onRoomAttributesChanged(room, next);
+			await this.onRoomAttributesChanged(room, next, actor);
 		}
 	}
 
@@ -752,7 +756,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
 
-		await this.onRoomAttributesChanged(room, next);
+		await this.onRoomAttributesChanged(room, next, actor);
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
@@ -783,7 +787,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 
 			if (diffAttributeSets([exists], [{ key, values }]).added) {
-				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+				await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 			}
 
 			return;
@@ -799,7 +803,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.broadcastRoomUpdate({ ...room, abacAttributes: nextAttributes });
 
-		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+		await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 	}
 
 	private shouldUseCache(userSub: { abacLastTimeChecked?: Date }): boolean {
@@ -1007,10 +1011,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
+	private async removeUserFromRoom(
+		room: AtLeast<IRoom, '_id'>,
+		user: IUser,
+		reason: AbacAuditReason,
+		options?: { skipSystemMessage?: boolean },
+	): Promise<void> {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
-			customSystemMessage: 'abac-removed-user-from-room' as const,
+			...(options?.skipSystemMessage ? { skipSystemMessage: true } : { customSystemMessage: 'abac-removed-user-from-room' as const }),
 		})
 			.then(
 				() =>
@@ -1035,6 +1044,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	protected async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
+		actor?: AbacActor,
 	): Promise<void> {
 		const rid = room._id;
 		if (!newAttributes?.length) {
@@ -1058,7 +1068,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return;
 			}
 
-			await Promise.all(nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change'))));
+			// ABAC-P4/M3 — Rocket.Chat writes one system message per membership change, so a single
+			// attribute change on a large room would bury its history under hundreds of identical
+			// lines. Past a threshold the per-member messages are suppressed and one summarised
+			// message is written instead.
+			//
+			// TODO(ABAC-P4/N4): the brief calls the wording of this a security decision in a
+			// classified environment. The neutral count-only text here is deliberate — it names no
+			// one — but the threshold and the copy both want confirming.
+			// Falls back to per-member messages when there is no acting user to attribute the
+			// summary to (the LDAP- and cron-driven paths), which is the existing behaviour.
+			const summarise = Boolean(actor) && nonCompliantUsers.length > MASS_EVICTION_SUMMARY_THRESHOLD;
+
+			await Promise.all(
+				nonCompliantUsers.map((user) =>
+					limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change', { skipSystemMessage: summarise })),
+				),
+			);
+
+			if (summarise && actor) {
+				await Message.saveSystemMessage('abac-removed-users-from-room', rid, String(nonCompliantUsers.length), actor);
+			}
 		} catch (err) {
 			logger.error({
 				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',

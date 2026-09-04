@@ -230,4 +230,13 @@ export default (instance: MessageTypes) => {
 		system: true,
 		text: (t) => t('abac_removed_user_from_the_room'),
 	});
+
+	// ABAC-P4/M3 — one summarised message for a mass eviction, instead of one per member. Rooms of
+	// any size can be re-scoped by a single attribute change, and a per-member message would bury
+	// the room's history under hundreds of identical lines.
+	instance.registerType({
+		id: 'abac-removed-users-from-room',
+		system: true,
+		text: (t, message) => t('abac_removed_users_from_the_room', { count: Number(message.msg) || 0 }),
+	});
 };

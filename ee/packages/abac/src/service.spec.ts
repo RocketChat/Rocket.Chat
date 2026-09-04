@@ -60,6 +60,7 @@ const mockCreateAuditServerEvent = jest.fn();
 const mockRoomsFindAllPrivateAbac = jest.fn();
 const mockUsersFindActiveByRoomIds = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn();
+const mockSaveSystemMessage = jest.fn();
 const mockUsersFindUsersByIdentifiers = jest.fn();
 const mockLdapSyncByIds = jest.fn();
 
@@ -118,6 +119,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		Room: {
 			removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+		},
+		Message: {
+			saveSystemMessage: (...args: any[]) => mockSaveSystemMessage(...args),
 		},
 		LDAPEnterprise: {
 			syncUsersAbacAttributesByIds: (...args: any[]) => mockLdapSyncByIds(...args),
@@ -647,9 +651,11 @@ describe('AbacService (unit)', () => {
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor); // adding sales
 
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				{ key: 'dept', values: ['eng', 'sales'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng', 'sales'] }],
+				fakeActor,
+			);
 			expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 		});
 
@@ -757,9 +763,11 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'], fakeActor);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				{ key: 'dept', values: ['eng', 'sales'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng', 'sales'] }],
+				fakeActor,
+			);
 		});
 
 		it('updates existing key and does NOT trigger hook when a value is removed', async () => {
@@ -900,6 +908,7 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -916,6 +925,7 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -1007,6 +1017,7 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -1019,10 +1030,11 @@ describe('AbacService (unit)', () => {
 			await service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor);
 
 			expect(mockInsertAbacAttributeIfNotExistsById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				...existing,
-				{ key: 'dept', values: ['eng'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[...existing, { key: 'dept', values: ['eng'] }],
+				fakeActor,
+			);
 		});
 
 		it('rejects when provided value not allowed by definition', async () => {
@@ -2029,6 +2041,57 @@ describe('AbacService (unit)', () => {
 
 			expect(mockLdapSyncByIds).not.toHaveBeenCalled();
 			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('mass eviction system message (ABAC-P4/M3)', () => {
+		const room = { _id: 'r1', t: 'p' as const, teamMain: false, abacAttributes: [] };
+		const attrs = [{ key: 'dept', values: ['eng'] }];
+		const evicted = (count: number) => Array.from({ length: count }, (_, i) => ({ _id: `u${i}`, username: `user${i}` }));
+
+		const withEvictions = (count: number) => {
+			const svc = new AbacService();
+			(svc as any).pdp = { onRoomAttributesChanged: jest.fn().mockResolvedValue(evicted(count)) };
+			return svc;
+		};
+
+		beforeEach(() => {
+			// Reset clears the resolved value too, and the service chains `.then` off this call.
+			mockRoomRemoveUserFromRoom.mockReset().mockResolvedValue(undefined);
+			mockSaveSystemMessage.mockReset().mockResolvedValue(undefined);
+		});
+
+		it('writes one summarised message and suppresses the per-member ones above the threshold', async () => {
+			const svc = withEvictions(6);
+
+			await (svc as any).onRoomAttributesChanged(room, attrs, fakeActor);
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(6);
+			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => options.skipSystemMessage === true)).toBe(true);
+			expect(mockSaveSystemMessage).toHaveBeenCalledTimes(1);
+			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '6', fakeActor);
+		});
+
+		it('keeps the per-member messages at or below the threshold', async () => {
+			const svc = withEvictions(5);
+
+			await (svc as any).onRoomAttributesChanged(room, attrs, fakeActor);
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(5);
+			expect(
+				mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => options.customSystemMessage === 'abac-removed-user-from-room'),
+			).toBe(true);
+			expect(mockSaveSystemMessage).not.toHaveBeenCalled();
+		});
+
+		it('keeps the per-member messages when there is no actor to attribute a summary to', async () => {
+			// The LDAP- and cron-driven paths have no acting user; behaviour there is unchanged.
+			const svc = withEvictions(20);
+
+			await (svc as any).onRoomAttributesChanged(room, attrs);
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(20);
+			expect(mockSaveSystemMessage).not.toHaveBeenCalled();
 		});
 	});
 

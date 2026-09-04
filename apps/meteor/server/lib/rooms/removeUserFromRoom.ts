@@ -18,7 +18,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyL
 export const performUserRemoval = async function (
 	room: IRoom,
 	user: IUser,
-	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 ): Promise<void> {
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1, status: 1 },
@@ -36,7 +36,11 @@ export const performUserRemoval = async function (
 	await beforeLeaveRoomCallback.run(user, room);
 
 	if (subscription) {
-		if (options?.customSystemMessage) {
+		// ABAC-P4/M3 — a mass eviction writes one summarised message for the whole change instead of
+		// one per member, so the caller suppresses the per-member message here.
+		if (options?.skipSystemMessage) {
+			// no system message for this removal
+		} else if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {
 			const extraData = {
@@ -90,7 +94,7 @@ export const performUserRemoval = async function (
 export const removeUserFromRoom = async function (
 	rid: string,
 	user: IUser,
-	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 ): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
