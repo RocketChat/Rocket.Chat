@@ -597,7 +597,7 @@ expect(res.body).to.have.property('errorType', 'invalid-params');
 expect(res.body).to.have.property('errorType', 'error-invalid-params');
 ```
 
-This only affects **query** parameter validation (GET/DELETE). Body parameter validation (POST/PUT) keeps `'invalid-params'`.
+This affects both **query** parameter validation (GET/DELETE) and **body** parameter validation (POST/PUT).
 
 ### Error message format changes
 
@@ -615,7 +615,7 @@ expect(res.body).to.have.property('error', "must have required property 'platfor
 
 When migrating an endpoint, search for its tests and update:
 
-1. `errorType` from `'invalid-params'` to `'error-invalid-params'` (for query params only)
+1. `errorType` from `'invalid-params'` to `'error-invalid-params'` for query and body params
 2. Remove `' [invalid-params]'` suffix from `error` message assertions
 3. Verify that status codes remain the same (400 for validation errors)
 

@@ -1,5 +1,5 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
-import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
@@ -25,11 +25,12 @@ API.v1.post(
 			200: ldapSyncNowResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		if (!this.userId) {
-			throw new Error('error-invalid-user');
+			throw new Error('unauthorized');
 		}
 
 		if (!(await hasPermissionAsync(this.user, 'sync-auth-services-users'))) {
