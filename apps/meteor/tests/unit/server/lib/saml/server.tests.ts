@@ -864,6 +864,58 @@ describe('SAML', () => {
 				}).to.throw('SAML Profile did not contain an email address');
 			});
 
+			describe('empty email attribute values', () => {
+				// An <Attribute> element with no <AttributeValue> children is parsed into an empty array, and
+				// every value below must be rejected before it can reach the user lookup in insertOrUpdateSAMLUser.
+				const useSingleEmailFieldMap = () => {
+					const { globalSettings } = SAMLUtils;
+					globalSettings.userDataFieldMap = JSON.stringify({ email: 'singleEmail' });
+					SAMLUtils.updateGlobalSettings(globalSettings);
+				};
+
+				const rejectedValues: [string, unknown][] = [
+					['an attribute with no values', []],
+					['an empty string', ''],
+					['an array of empty strings', ['', '']],
+					['a whitespace-only value', '   '],
+					['an array of whitespace-only values', ['  ', '\t']],
+				];
+
+				rejectedValues.forEach(([description, singleEmail]) => {
+					it(`should reject ${description}`, () => {
+						useSingleEmailFieldMap();
+
+						expect(() => {
+							SAMLUtils.mapProfileToUserObject({ ...profile, singleEmail });
+						}).to.throw('SAML Profile did not contain an email address');
+					});
+				});
+
+				it('should keep accepting a single valid email value', () => {
+					useSingleEmailFieldMap();
+
+					const userObject = SAMLUtils.mapProfileToUserObject({ ...profile, singleEmail: 'testing@server.com' });
+
+					expect(userObject).to.have.property('emailList').that.is.an('array').with.members(['testing@server.com']);
+				});
+
+				it('should keep accepting multiple valid email values', () => {
+					useSingleEmailFieldMap();
+
+					const userObject = SAMLUtils.mapProfileToUserObject({ ...profile, singleEmail: ['first@server.com', 'second@server.com'] });
+
+					expect(userObject).to.have.property('emailList').that.is.an('array').with.members(['first@server.com', 'second@server.com']);
+				});
+
+				it('should discard empty values while keeping the valid ones', () => {
+					useSingleEmailFieldMap();
+
+					const userObject = SAMLUtils.mapProfileToUserObject({ ...profile, singleEmail: ['', 'valid@server.com', '  '] });
+
+					expect(userObject).to.have.property('emailList').that.is.an('array').with.members(['valid@server.com']);
+				});
+			});
+
 			it('should load data from the default fields when the field map is lacking', () => {
 				const { globalSettings } = SAMLUtils;
 
