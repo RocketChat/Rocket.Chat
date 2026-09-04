@@ -1,7 +1,11 @@
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { DeleteResult, FindCursor, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel, InsertionModel } from './IBaseModel';
+
+export type ImportedCalendarEvent = Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'externalId'> & { externalId: string };
+
+export type CalendarBulkUpsertResult = { matchedCount: number; modifiedCount: number; upsertedCount: number };
 
 export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent>;
@@ -22,4 +26,8 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		now: Date;
 		offset?: number;
 	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
+	bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult>;
+	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
+	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult>;
+	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
 }

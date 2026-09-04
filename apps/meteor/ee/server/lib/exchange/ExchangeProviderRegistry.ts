@@ -95,7 +95,7 @@ export const getSyncWindow = (from: Date = new Date()): DateRange => {
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
 
-export const registerExchangeProviderWatchers = (): void => {
+export const registerExchangeProviderWatchers = () =>
 	settings.watchMultiple(WATCHED_SETTINGS, () => {
 		try {
 			current = buildExchangeProvider();
@@ -107,4 +107,8 @@ export const registerExchangeProviderWatchers = (): void => {
 
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
 	});
+
+/** Without this a license downgrade leaves a live, credentialed provider behind. */
+export const detachExchangeProvider = (): void => {
+	current = undefined;
 };
