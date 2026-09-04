@@ -547,7 +547,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		await store.validateAssignable(attrs, actor);
-		await this.enforceOwnedAttributesOnly(store, attrs, actor);
 	}
 
 	/**
@@ -556,9 +555,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 	 * Applied here rather than inside a store so the policy has exactly one home. It is only
 	 * meaningful for the local PDP: the Virtru store's `validateAssignable` already compares against
 	 * that subject's entitlements, which *is* this rule, so applying it twice would be redundant.
+	 *
+	 * Its single caller is `assertCanAssignAttributes`, deliberately: see the note there for why the
+	 * administrative room endpoints are outside it.
 	 */
 	private async enforceOwnedAttributesOnly(store: IAttributeStore, attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
 		if (this.pdpTypeSetting !== 'local' || !(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'))) {
+			return;
+		}
+
+		// Self-contained rather than relying on its caller, so the bypass keeps covering this rule
+		// as it did while the two checks shared `enforceStoreValidation`.
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
 			return;
 		}
 
@@ -580,12 +588,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 	/**
 	 * Answers "may this actor instantiate exactly these attributes?" without creating anything —
 	 * the PDP creator-authority check the creation flow runs before a room exists (ABAC-P4 M2).
-	 * Reuses the same validation the commit path applies, so the two cannot disagree.
+	 * Reuses the same store validation the commit path applies, so the two cannot disagree.
+	 *
+	 * This is also the one place ABAC-P4/D12 is applied. Here the actor is assigning attributes in
+	 * their own right, to a room they are creating, which is the case D12 describes. The
+	 * administrative room endpoints are a different case: they are entitled by
+	 * `manage-abac-admin-rooms`, they are how an operator configures rooms they are not a member of,
+	 * and ABAC-P4/D11 says not to change their behaviour. Applying D12 to them would stop any
+	 * administrator who carries no subject attributes of their own from setting room attributes at
+	 * all.
 	 */
 	async assertCanAssignAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const store = await this.resolveAttributeStore();
 		await this.enforceStoreValidation(store, attributes, actor);
+		await this.enforceOwnedAttributesOnly(store, attributes, actor);
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
