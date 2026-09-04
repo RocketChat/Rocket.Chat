@@ -7,6 +7,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Streamer } from '../../../../modules/streamer/streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../modules/streamer/types';
 import { statusVisibilityGate } from '../../../statusVisibility/StatusVisibilityGate';
+import { hiddenIds } from '../../../statusVisibility/presenceScope';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -37,6 +38,8 @@ class UserPresence {
 	// map value as true marks a pending correction
 	private hiddenFrom = new Map<IUser['_id'], true | undefined>();
 
+	private hideAll = false;
+
 	private stale = true;
 
 	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
@@ -63,7 +66,8 @@ class UserPresence {
 	}
 
 	async refreshHiddenFrom(): Promise<void> {
-		if (!(await statusVisibilityGate.ensureEnabled())) {
+		if (!(await statusVisibilityGate.ensureActive())) {
+			this.hideAll = false;
 			if (this.hiddenFrom.size) {
 				this.hiddenFrom = new Map();
 			}
@@ -72,9 +76,20 @@ class UserPresence {
 		}
 
 		const previous = this.hiddenFrom;
+		const wasHidingAll = this.hideAll;
 
 		try {
-			const hidden = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
+			const scope = await StatusVisibility.getPresenceScope(this.publication._session?.userId);
+
+			this.hideAll = scope.hideAll;
+
+			if (scope.hideAll) {
+				this.hiddenFrom = new Map(wasHidingAll ? [] : [...this.listeners].map((uid) => [uid, true as const]));
+				this.stale = false;
+				return;
+			}
+
+			const hidden = hiddenIds(scope);
 
 			this.hiddenFrom = new Map(hidden.map((uid) => [uid, !previous.has(uid) && this.listeners.has(uid) ? true : undefined]));
 			this.stale = false;
@@ -85,10 +100,11 @@ class UserPresence {
 	}
 
 	run = (args: UserPresenceStreamArgs): void => {
-		const hidden = this.hiddenFrom.has(args.uid);
+		const hidden = this.hideAll || this.hiddenFrom.has(args.uid);
+		const pending = this.hiddenFrom.has(args.uid) ? this.hiddenFrom.get(args.uid) : this.hideAll;
 
 		if (hidden) {
-			if (!this.hiddenFrom.get(args.uid)) {
+			if (!pending) {
 				return;
 			}
 

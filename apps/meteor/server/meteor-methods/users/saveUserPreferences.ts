@@ -210,6 +210,12 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
+	if (settings.statusVisibilityDenied != null && (await StatusVisibility.isPresenceDisabledFor(user._id))) {
+		throw new Meteor.Error('error-presence-disabled', 'Presence is disabled for this user', {
+			method: 'saveUserPreferences',
+		});
+	}
+
 	const requested = settings.statusVisibilityDenied?.filter((username) => username !== user.username);
 	const denied = requested ? await resolveUsersByUsernames(requested) : undefined;
 

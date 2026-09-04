@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,6 +83,8 @@ const UsersTable = ({
 		});
 	});
 
+	const presenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
@@ -121,7 +123,7 @@ const UsersTable = ({
 					direction={sortData?.sortDirection}
 					active={sortData?.sortBy === 'status'}
 					onClick={sortData?.setSort}
-					sort='status'
+					sort={presenceDisabled ? undefined : 'status'}
 				>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
@@ -153,7 +155,7 @@ const UsersTable = ({
 				{t('Actions')}
 			</GenericTableHeaderCell>,
 		],
-		[sortData, t, isLaptop, tab, isMobile, showVoipExtension],
+		[sortData, t, isLaptop, tab, isMobile, showVoipExtension, presenceDisabled],
 	);
 
 	return (

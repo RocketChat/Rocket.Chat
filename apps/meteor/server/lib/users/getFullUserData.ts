@@ -4,7 +4,8 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
-import { getUsersHiddenFrom } from '../statusVisibility/hiddenUsers';
+import { getPresenceScope } from '../statusVisibility/hiddenUsers';
+import { isHiddenFor } from '../statusVisibility/presenceScope';
 import { redactStatus } from '../statusVisibility/redactStatus';
 import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
 
@@ -34,6 +35,7 @@ export const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	presenceDisabledByAdmin: 1,
 	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
@@ -152,7 +154,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
-	const hidden = await getUsersHiddenFrom(userId);
+	const scope = await getPresenceScope(userId);
 
-	return hidden?.has(user._id) ? redactStatus(user) : user;
+	return isHiddenFor(scope, user._id) ? redactStatus(user) : user;
 }

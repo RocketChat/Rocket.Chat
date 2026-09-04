@@ -1,7 +1,8 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UserBridge } from '@rocket.chat/apps/dist/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
-import { Presence } from '@rocket.chat/core-services';
+import { UserStatusConnection } from '@rocket.chat/apps-engine/definition/users';
+import { Presence, StatusVisibility } from '@rocket.chat/core-services';
 import type { PresenceSource, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -19,11 +20,27 @@ export class AppUserBridge extends UserBridge {
 		super();
 	}
 
+	private async redactPresence(user: IUser | undefined): Promise<IUser | undefined> {
+		if (!user?.id || !(await StatusVisibility.isPresenceDisabledFor(user.id))) {
+			return user;
+		}
+
+		const {
+			statusText: _statusText,
+			statusSource: _statusSource,
+			statusExpiresAt: _statusExpiresAt,
+			statusDefault: _statusDefault,
+			...rest
+		} = user;
+
+		return { ...rest, status: 'offline', statusConnection: UserStatusConnection.OFFLINE };
+	}
+
 	protected async getById(userId: string, appId: string): Promise<IUser> {
 		this.orch.debugLog(`The App ${appId} is getting the userId: "${userId}"`);
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promise: Promise<IUser | undefined> = this.orch.getConverters()?.get('users').convertById(userId);
-		return promise as Promise<IUser>;
+		return this.redactPresence(await promise) as Promise<IUser>;
 	}
 
 	protected async getByUsername(username: string, appId: string): Promise<IUser> {
@@ -31,7 +48,7 @@ export class AppUserBridge extends UserBridge {
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promise: Promise<IUser | undefined> = this.orch.getConverters()?.get('users').convertByUsername(username);
-		return promise as Promise<IUser>;
+		return this.redactPresence(await promise) as Promise<IUser>;
 	}
 
 	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
@@ -135,6 +152,10 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		const { status, statusText, ...updateFields } = fields;
+
+		if ((status || typeof statusText === 'string') && (await StatusVisibility.isPresenceDisabledFor(user.id))) {
+			throw new Error('Presence is disabled for this user');
+		}
 
 		if (status) {
 			await Presence.setStatus(user.id, status as UserStatus, statusText);

@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { MeteorError, Presence, StatusVisibility, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -48,7 +48,8 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { getPresenceScope, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { hiddenIds, isHiddenFor, scopeHidesAnyone } from '../../lib/statusVisibility/presenceScope';
 import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
@@ -719,16 +720,28 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
-			const hidden = await getUsersHiddenFrom(this.userId);
+			const scope = await getPresenceScope(this.userId);
 
-			if (hidden && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
+			if (queryFiltersStatus(query)) {
+				if (scope.hideAll) {
+					return API.v1.success({ users: [], count: 0, offset, total: 0 });
+				}
+
+				const ids = hiddenIds(scope);
+
+				if (ids.length) {
+					nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: ids } }];
+				}
 			}
 
 			const actualSort = sort || { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+
+				if (scopeHidesAnyone(scope)) {
+					delete actualSort.status;
+				}
 			}
 
 			if (sort?.name) {
@@ -782,7 +795,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users: redactHiddenUsers(users, hidden),
+				users: redactHiddenUsers(users, scope),
 				count: users.length,
 				offset,
 				total,
@@ -828,6 +841,13 @@ API.v1.get(
 		const { sort } = await this.parseJsonQuery();
 		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
+		const scope = await getPresenceScope(this.userId);
+
+		if (sort?.status && scopeHidesAnyone(scope)) {
+			sort.active = sort.status;
+			delete sort.status;
+		}
+
 		const result = await findPaginatedUsersByStatus({
 			uid: this.userId,
 			offset,
@@ -841,11 +861,9 @@ API.v1.get(
 			inactiveReason,
 		});
 
-		const hidden = await getUsersHiddenFrom(this.userId);
-
 		return API.v1.success({
 			...result,
-			users: redactHiddenUsers(result.users, hidden),
+			users: redactHiddenUsers(result.users, scope),
 		});
 	},
 );
@@ -1576,14 +1594,14 @@ API.v1.get(
 			},
 		};
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
 		if (ids) {
 			const requested = Array.isArray(ids) ? ids : ids.split(',');
 			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
 
 			return API.v1.success({
-				users: filterHiddenUsers(users, hidden),
+				users: filterHiddenUsers(users, scope),
 				full: false,
 			});
 		}
@@ -1596,7 +1614,7 @@ API.v1.get(
 				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
 
 				return API.v1.success({
-					users: filterHiddenUsers(users, hidden),
+					users: filterHiddenUsers(users, scope),
 					full: false,
 				});
 			}
@@ -1605,7 +1623,7 @@ API.v1.get(
 		const users = await Users.findUsersNotOffline(options).toArray();
 
 		return API.v1.success({
-			users: filterHiddenUsers(users, hidden),
+			users: filterHiddenUsers(users, scope),
 			full: true,
 		});
 	},
@@ -1740,15 +1758,23 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
-		if (hidden && queryFiltersStatus(selector.conditions)) {
-			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		if (queryFiltersStatus(selector.conditions)) {
+			if (scope.hideAll) {
+				return API.v1.success({ items: [] });
+			}
+
+			const ids = hiddenIds(scope);
+
+			if (ids.length) {
+				selector.conditions = { $and: [selector.conditions, { _id: { $nin: ids } }] };
+			}
 		}
 
 		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
 
-		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
+		return API.v1.success({ items: redactHiddenUsers(items, scope) });
 	},
 );
 
@@ -1977,10 +2003,10 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
-			const hidden = await getUsersHiddenFrom(this.userId);
+			const scope = await getPresenceScope(this.userId);
 
 			return API.v1.success({
-				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
+				presence: (isHiddenFor(scope, user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2077,6 +2103,12 @@ API.v1
 				});
 			}
 
+			if (await StatusVisibility.isPresenceDisabledFor(user._id)) {
+				throw new Meteor.Error('error-presence-disabled', 'Presence is disabled for this user', {
+					method: 'users.setStatus',
+				});
+			}
+
 			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
 
 			return API.v1.success();
@@ -2117,8 +2149,8 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
-			const hidden = await getUsersHiddenFrom(this.userId);
-			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
+			const scope = await getPresenceScope(this.userId);
+			const visible = isHiddenFor(scope, user._id) ? redactStatus(user) : user;
 
 			return API.v1.success({
 				_id: visible._id,

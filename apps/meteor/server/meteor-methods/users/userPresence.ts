@@ -1,4 +1,4 @@
-import { Presence } from '@rocket.chat/core-services';
+import { Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
@@ -15,11 +15,16 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	'UserPresence:setDefaultStatus'(status) {
+	async 'UserPresence:setDefaultStatus'(status) {
 		methodDeprecationLogger.method('UserPresence:setDefaultStatus', '9.0.0', '/v1/users.setStatus');
 		const { userId } = this;
 		if (!userId) {
 			return;
+		}
+		if (await StatusVisibility.isPresenceDisabledFor(userId)) {
+			throw new Meteor.Error('error-presence-disabled', 'Presence is disabled for this user', {
+				method: 'UserPresence:setDefaultStatus',
+			});
 		}
 		return Presence.setStatus(userId, status);
 	},

@@ -41,7 +41,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
-import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { getPresenceScope, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
@@ -1125,12 +1125,12 @@ API.v1.get(
 
 		const { status, filter } = this.queryParams;
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
 		const { cursor, totalCount } = await findUsersOfRoom({
 			rid: findResult.rid,
 			...(status && { status: status as UserStatus[] }),
-			hidden,
+			scope,
 			skip,
 			limit,
 			filter,
@@ -1140,7 +1140,7 @@ API.v1.get(
 		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			members: redactHiddenUsers(members, hidden),
+			members: redactHiddenUsers(members, scope),
 			count: members.length,
 			offset: skip,
 			total,
@@ -1298,7 +1298,7 @@ API.v1.get(
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
 		const online: Pick<IUser, '_id' | 'username'>[] = filterHiddenUsers(
 			await Users.findUsersNotOffline({
@@ -1306,7 +1306,7 @@ API.v1.get(
 					username: 1,
 				},
 			}).toArray(),
-			hidden,
+			scope,
 		);
 
 		const onlineInRoom = await Promise.all(

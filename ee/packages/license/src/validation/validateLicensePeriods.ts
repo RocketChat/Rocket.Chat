@@ -4,16 +4,16 @@ import { isBehaviorAllowed } from '../isItemAllowed';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
 
-export const isPeriodInvalid = (from: string | undefined, until: string | undefined) => {
-	const now = new Date();
+export const isPeriodInvalid = (_from: string | undefined, _until: string | undefined) => {
+	// const now = new Date();
 
-	if (from && now < new Date(from)) {
-		return true;
-	}
+	// if (from && now < new Date(from)) {
+	// 	return true;
+	// }
 
-	if (until && now > new Date(until)) {
-		return true;
-	}
+	// if (until && now > new Date(until)) {
+	// 	return true;
+	// }
 
 	return false;
 };

@@ -30,10 +30,12 @@ import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import UserStatusDisabledInfo from './UserStatusDisabledInfo';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -47,7 +49,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const { isMobile } = useLayout();
 
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const presenceDisabledByAdmin = user?.presenceDisabledByAdmin === true || workspacePresenceDisabled;
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && !presenceDisabledByAdmin;
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
@@ -270,15 +274,20 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<TextInput
 									{...field}
 									placeholder={t('StatusMessage_Placeholder')}
-									disabled={!allowUserStatusMessageChange}
+									disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
 									flexGrow={1}
 									error={errors.statusText?.message}
+									endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
 									startAddon={
-										<Controller
-											control={control}
-											name='statusType'
-											render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
-										/>
+										presenceDisabledByAdmin ? (
+											<UserStatusIndicator status={UserStatus.OFFLINE} />
+										) : (
+											<Controller
+												control={control}
+												name='statusType'
+												render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
+											/>
+										)
 									}
 								/>
 							)}
@@ -286,7 +295,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					</FieldRow>
 					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
-					{allowUserStatusMessageChange && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
+					{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Status_clear_after')}</FieldLabel>

@@ -33,7 +33,8 @@ import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
-import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { getPresenceScope } from '../../lib/statusVisibility/hiddenUsers';
+import { isHiddenFor, scopeHidesAnyone } from '../../lib/statusVisibility/presenceScope';
 import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -516,7 +517,7 @@ API.v1.get(
 
 		const canSeeAllMembers = await hasPermissionAsync(this.user, 'view-all-teams', team.roomId);
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
 		const query: Record<string, unknown> = {};
 		if (username) {
@@ -526,14 +527,14 @@ API.v1.get(
 			query.name = new RegExp(escapeRegExp(name), 'i');
 		}
 		if (status) {
-			Object.assign(query, effectiveStatusFilter(status as UserStatus[], hidden));
+			Object.assign(query, effectiveStatusFilter(status as UserStatus[], scope));
 		}
 
 		const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 
 		return API.v1.success({
-			members: hidden
-				? records.map((record) => (hidden.has(record.user._id) ? { ...record, user: redactStatus(record.user) } : record))
+			members: scopeHidesAnyone(scope)
+				? records.map((record) => (isHiddenFor(scope, record.user._id) ? { ...record, user: redactStatus(record.user) } : record))
 				: records,
 			total,
 			count: records.length,

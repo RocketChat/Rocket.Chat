@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { Account, Presence, MeteorService, MeteorError } from '@rocket.chat/core-services';
+import { Account, Presence, MeteorService, MeteorError, StatusVisibility } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 
 import { Server } from './Server';
@@ -8,6 +8,12 @@ import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 
 export const server = new Server();
+
+const assertPresenceEnabled = async (userId: string, method: string): Promise<void> => {
+	if (await StatusVisibility.isPresenceDisabledFor(userId)) {
+		throw new MeteorError('error-presence-disabled', 'Presence is disabled for this user', { method });
+	}
+};
 
 export const events = new EventEmitter();
 
@@ -109,11 +115,12 @@ server.methods({
 			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 		}, 1);
 	},
-	'UserPresence:setDefaultStatus'(status) {
+	async 'UserPresence:setDefaultStatus'(status) {
 		const { userId } = this;
 		if (!userId) {
 			return;
 		}
+		await assertPresenceEnabled(userId, 'UserPresence:setDefaultStatus');
 		return Presence.setStatus(userId, status);
 	},
 	'UserPresence:online'() {
@@ -130,11 +137,12 @@ server.methods({
 		}
 		return Presence.setConnectionStatus(userId, UserStatus.AWAY, session);
 	},
-	'setUserStatus'(status, statusText) {
+	async 'setUserStatus'(status, statusText) {
 		const { userId } = this;
 		if (!userId) {
 			return;
 		}
+		await assertPresenceEnabled(userId, 'setUserStatus');
 		return Presence.setStatus(userId, status, statusText);
 	},
 });

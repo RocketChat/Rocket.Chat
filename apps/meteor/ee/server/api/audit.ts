@@ -15,7 +15,7 @@ import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
-import { getUsersHiddenFrom, redactHiddenUsers } from '../../../server/lib/statusVisibility/hiddenUsers';
+import { getPresenceScope, redactHiddenUsers } from '../../../server/lib/statusVisibility/hiddenUsers';
 import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from '../lib/audit/functions';
 
 type AuditRoomMembersParams = PaginatedRequest<{
@@ -188,11 +188,11 @@ API.v1.get(
 			return API.v1.notFound();
 		}
 
-		const hidden = await getUsersHiddenFrom(this.userId);
+		const scope = await getPresenceScope(this.userId);
 
 		const { cursor, totalCount } = await findUsersOfRoom({
 			rid: room._id,
-			hidden,
+			scope,
 			filter,
 			skip,
 			limit,
@@ -220,7 +220,7 @@ API.v1.get(
 		});
 
 		return API.v1.success({
-			members: redactHiddenUsers(members, hidden),
+			members: redactHiddenUsers(members, scope),
 			count: members.length,
 			offset: skip,
 			total,
