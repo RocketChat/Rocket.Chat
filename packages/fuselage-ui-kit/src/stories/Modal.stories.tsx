@@ -82,6 +82,12 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors: Record<string
 
 export const Divider = createStory(payloads.divider);
 
+export const Header = createStory(payloads.header);
+
+export const Video = createStory(payloads.video);
+
+export const Markdown = createStory(payloads.markdown);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
@@ -141,6 +147,14 @@ export const InputWithDatePicker = createStory(payloads.inputWithDatePicker, {
 export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
+
+export const InputWithDateTimePicker = createStory(payloads.inputWithDateTimePicker);
+
+export const InputWithNumberInput = createStory(payloads.inputWithNumberInput);
+
+export const InputWithEmailInput = createStory(payloads.inputWithEmailInput);
+
+export const InputWithUrlInput = createStory(payloads.inputWithUrlInput);
 
 export const Conditional = createStory(payloads.conditional);
 
