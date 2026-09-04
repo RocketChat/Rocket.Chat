@@ -204,22 +204,37 @@ function resolveFallbackText(app: EventResultMeta['app'], key: string, args?: Re
 
 /**
  * Turns what an app said about a call it prevented into the record kept on the call.
+ *
+ * The types make a `prevent` name either a reason or a key, but what arrives is a JSON-RPC payload
+ * no type ever checked: an app can send one that names neither, or names one of them as something
+ * other than a string. The prevention still stands - the app blocked the call, whatever it said
+ * about it - so the workspace answers for the app rather than fail on a hot path.
  */
 function toPreventionRecord(outcome: Extract<PreMediaCallCreatedOutcome, { type: 'prevent' }>): CallPreventionRecord {
 	const { app } = outcome.meta;
 	const who = { appId: app.id, appName: app.name };
 
-	if ('i18n' in outcome) {
-		const { key, args } = outcome.i18n;
+	const i18n = 'i18n' in outcome ? outcome.i18n : undefined;
+
+	if (typeof i18n?.key === 'string' && i18n.key) {
+		const { key, args } = i18n;
 
 		return {
 			...who,
-			i18n: { ...outcome.i18n, ns: app.i18nNamespace },
+			i18n: { key, ns: app.i18nNamespace, ...(args && { args }) },
 			text: resolveFallbackText(app, key, args),
 		};
 	}
 
-	return { ...who, text: capText(outcome.reason) };
+	const reason = 'reason' in outcome ? outcome.reason : undefined;
+
+	if (typeof reason === 'string' && reason) {
+		return { ...who, text: capText(reason) };
+	}
+
+	logger.warn({ msg: 'An app prevented a media call and named nothing a reader can use', appId: app.id });
+
+	return { ...who, text: preventedByAppText(app.name) };
 }
 
 /**
@@ -252,20 +267,18 @@ export async function runPreMediaCallCreatedAppHook(params: PreCallCreatedHookPa
 	}
 
 	if (outcome.type === 'prevent') {
-		const reason = 'reason' in outcome ? outcome.reason : undefined;
-		const i18nKey = 'i18n' in outcome ? outcome.i18n.key : undefined;
+		// Read off the record rather than the payload: the record is what the app said once it was
+		// known to be readable, and it is the same sentence the caller is about to be shown
+		const preventedBy = toPreventionRecord(outcome);
+		const reason = preventedBy.i18n?.key || preventedBy.text;
 
 		logger.info({
 			msg: 'An app prevented a media call from being created',
 			appId: outcome.meta.app.id,
-			reason: reason || i18nKey,
+			reason,
 		});
 
-		return {
-			prevented: true,
-			reason: reason || i18nKey,
-			preventedBy: toPreventionRecord(outcome),
-		};
+		return { prevented: true, reason, preventedBy };
 	}
 
 	// Drop potentially unknown features the app might have added

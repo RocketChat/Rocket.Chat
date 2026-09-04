@@ -101,6 +101,10 @@ describe('media call app events', () => {
 		triggerEvent.resolves(undefined);
 		loggerMock.warn.reset();
 		loggerMock.info.reset();
+		// The stub is module-scoped, so a test that fails after it changes the language would
+		// otherwise leave that language to every test that follows
+		settingsMock.get.reset();
+		settingsMock.get.returns('en');
 		AppsMock.self = { triggerEvent };
 	});
 
@@ -409,7 +413,10 @@ describe('media call app events', () => {
 			const failure = new Error('the app subprocess is gone');
 			triggerEvent.rejects(failure);
 
-			// The hook is a policy decision: an outcome nobody could produce must not read as `pass`
+			// The hook is a policy decision: an outcome nobody could produce must not read as `pass`.
+			// This covers the errors that reach the hook at all - an `AppsEngineException`, and one the
+			// listener manager raised. `ProxiedApp.call` swallows an error thrown inside an app's own
+			// handler and a timeout, and both read as a pass; see ADR 0003, "Deliberate gaps in Phase 1"
 			const error = await runPreMediaCallCreatedAppHook(hookParams()).then(
 				() => undefined,
 				(error: unknown) => error,
@@ -505,7 +512,6 @@ describe('media call app events', () => {
 			const result = await runPreMediaCallCreatedAppHook(hookParams());
 
 			expect(result.preventedBy.text).to.equal('sem chamadas');
-			settingsMock.get.returns('en');
 		});
 
 		it('answers for an app that named a key it ships no translation for', async () => {
@@ -520,6 +526,76 @@ describe('media call app events', () => {
 			// A raw key must never be what a reader is left with
 			expect(result.preventedBy.text).to.equal('Prevented by app: Blocking App');
 			expect(loggerMock.warn.callCount).to.equal(1);
+		});
+
+		/**
+		 * The variants are exclusive in the type, but nothing checks the JSON-RPC payload that
+		 * carries them. A prevention the workspace cannot read still blocked the call.
+		 */
+		it('answers for an app that prevented the call and named neither a reason nor a key', async () => {
+			triggerEvent.resolves({
+				type: 'prevent',
+				meta: { app: { id: 'blocking-app', name: 'Blocking App', i18nNamespace: 'app-blocking-app' } },
+			});
+
+			expect(await runPreMediaCallCreatedAppHook(hookParams())).to.deep.equal({
+				prevented: true,
+				reason: 'Prevented by app: Blocking App',
+				preventedBy: { appId: 'blocking-app', appName: 'Blocking App', text: 'Prevented by app: Blocking App' },
+			});
+			expect(loggerMock.warn.callCount).to.equal(1);
+		});
+
+		it('answers for an app that named a reason that is not a sentence', async () => {
+			triggerEvent.resolves({
+				type: 'prevent',
+				meta: { app: { id: 'blocking-app', name: 'Blocking App', i18nNamespace: 'app-blocking-app' } },
+				reason: 42,
+			});
+
+			const result = await runPreMediaCallCreatedAppHook(hookParams());
+
+			expect(result.preventedBy.text).to.equal('Prevented by app: Blocking App');
+		});
+
+		it('answers for an app that named a key that is not a key', async () => {
+			triggerEvent.resolves({
+				type: 'prevent',
+				meta: { app: { id: 'blocking-app', name: 'Blocking App', i18nNamespace: 'app-blocking-app' } },
+				i18n: { args: { username: 'callee' } },
+			});
+
+			const result = await runPreMediaCallCreatedAppHook(hookParams());
+
+			expect(result.preventedBy).to.deep.equal({
+				appId: 'blocking-app',
+				appName: 'Blocking App',
+				text: 'Prevented by app: Blocking App',
+			});
+		});
+
+		// An app that sends both is malformed too, and the key is the form that survives its uninstall
+		it('prefers the key when an app named a reason as well', async () => {
+			triggerEvent.resolves({
+				type: 'prevent',
+				meta: {
+					app: {
+						id: 'blocking-app',
+						name: 'Blocking App',
+						i18nNamespace: 'app-blocking-app',
+						translations: { en: 'the callee does not take calls' },
+					},
+				},
+				i18n: { key: 'callee_is_dnd' },
+				reason: 'the callee does not take calls',
+			});
+
+			expect((await runPreMediaCallCreatedAppHook(hookParams())).preventedBy).to.deep.equal({
+				appId: 'blocking-app',
+				appName: 'Blocking App',
+				i18n: { key: 'callee_is_dnd', ns: 'app-blocking-app' },
+				text: 'the callee does not take calls',
+			});
 		});
 
 		it('keeps the requested features when every app passed', async () => {
