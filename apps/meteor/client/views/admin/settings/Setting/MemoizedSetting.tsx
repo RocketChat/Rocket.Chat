@@ -13,6 +13,7 @@ import GenericSettingInput from './inputs/GenericSettingInput';
 import IntSettingInput from './inputs/IntSettingInput';
 import LanguageSettingInput from './inputs/LanguageSettingInput';
 import LookupSettingInput from './inputs/LookupSettingInput';
+import MultiLookupSettingInput from './inputs/MultiLookupSettingInput';
 import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
 import PasswordSettingInput from './inputs/PasswordSettingInput';
 import RangeSettingInput from './inputs/RangeSettingInput';
@@ -41,6 +42,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	roomPick: RoomPickSettingInput,
 	timezone: SelectTimezoneSettingInput,
 	lookup: LookupSettingInput,
+	multiLookup: MultiLookupSettingInput,
 	timespan: TimespanSettingInput,
 	range: RangeSettingInput,
 	date: GenericSettingInput, // @todo: implement

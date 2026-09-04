@@ -4,6 +4,7 @@ import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
 const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
+const localPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'local' }];
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('General', async function () {
@@ -19,6 +20,30 @@ export function addSettings(): Promise<void> {
 					invalidValue: false,
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Enabled_Description',
+				});
+				await this.add('ABAC_Required_Attributes', [], {
+					type: 'multiLookup',
+					lookupEndpoint: 'v1/abac/attribute-keys',
+					public: true,
+					invalidValue: [],
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Required_Attributes_Description',
+					enableQuery: abacEnabledQuery,
+				});
+				// TODO(ABAC-P4/D13): `general` is public, attribute-less and `default: true`, so under
+				// enforcement it is locked while `addUserToDefaultChannels` still subscribes every new
+				// user into it — that file only skips rooms which *have* attributes. The plain rule is
+				// implemented here (locked room, still auto-joined) because auto-join is explicitly out
+				// of scope; whether `general` is exempted, has its `default` flag cleared at rollout, or
+				// a locked landing room is acceptable is still open.
+				await this.add('ABAC_Enforce_All_Rooms', false, {
+					type: 'boolean',
+					public: true,
+					// Losing the license must never leave rooms locked.
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Enforce_All_Rooms_Description',
+					enableQuery: abacEnabledQuery,
 				});
 				await this.add('ABAC_PDP_Type', 'local', {
 					type: 'select',
@@ -45,6 +70,16 @@ export function addSettings(): Promise<void> {
 					alert: 'ABAC_Attribute_Store_Switch_Alert',
 					enableQuery: virtruPdpQuery,
 				});
+				// ABAC-P4/D12 — default on, and only meaningful for the local PDP: under Virtru the
+				// equivalent filtering is performed by the PDP via GetEntitlements.
+				await this.add('ABAC_Restrict_To_Owned_Attributes', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Restrict_To_Owned_Attributes_Description',
+					enableQuery: localPdpQuery,
+				});
 				await this.add('ABAC_ShowAttributesInRooms', false, {
 					type: 'boolean',
 					public: true,
@@ -70,6 +105,17 @@ export function addSettings(): Promise<void> {
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],
 					i18nDescription: 'ABAC_Classification_Banners_Config_Description',
 					schema: bannersConfigSchema,
+				});
+				// ABAC-P4/D10 — captures the value of `Discussion_enabled` at the moment enforcement is
+				// switched on, so it can be restored verbatim when enforcement is switched off.
+				// '' means "no override in effect"; otherwise 'true' | 'false'. Server-only: hidden
+				// settings are filtered out of both settings endpoints and never reach a client.
+				await this.add('ABAC_Discussion_Enabled_Restore', '', {
+					type: 'string',
+					public: false,
+					hidden: true,
+					invalidValue: '',
+					section: 'ABAC',
 				});
 				await this.add('Abac_Cache_Decision_Time_Seconds', 300, {
 					type: 'int',

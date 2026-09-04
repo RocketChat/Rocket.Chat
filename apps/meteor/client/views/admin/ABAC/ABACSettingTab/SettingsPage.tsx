@@ -17,8 +17,13 @@ const SettingsPage = () => {
 		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
+				<SettingField settingId='ABAC_Required_Attributes' />
+				<SettingField settingId='ABAC_Enforce_All_Rooms' />
 				<SettingField settingId='ABAC_PDP_Type' />
 				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
+				{/* Rendered in both PDP modes rather than hidden: under Virtru it is deliberately shown
+				    disabled, because the equivalent filtering is performed by the PDP (ABAC-P4/D12). */}
+				<SettingField settingId='ABAC_Restrict_To_Owned_Attributes' />
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
