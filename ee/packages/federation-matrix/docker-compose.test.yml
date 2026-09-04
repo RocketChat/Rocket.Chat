@@ -143,6 +143,28 @@ services:
     networks:
       - rc1-net
 
+  xmpp-appservice-test-bridge:
+    image: node:22-alpine
+    profiles:
+      - test
+      - element
+    working_dir: /app
+    command: ['node', '/app/xmpp-appservice-test-bridge.mjs']
+    environment:
+      PORT: 3300
+      HOMESERVER_URL: http://rc1:3000
+      SERVER_NAME: rc1
+      HS_TOKEN: xmpp_hs_token
+      AS_TOKEN: xmpp_as_token
+    ports:
+      - '127.0.0.1:3300:3300'
+    volumes:
+      - ./tests/xmpp-appservice-test-bridge/xmpp-appservice-test-bridge.mjs:/app/xmpp-appservice-test-bridge.mjs:ro
+    networks:
+      - rc1-net
+    depends_on:
+      - rc1
+
   element:
     image: vectorim/element-web
     profiles:
