@@ -3,7 +3,7 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
-import { registerExchangeSyncJob, stopExchangeSyncJob } from '../lib/exchange/sync/registerExchangeSyncJob';
+import { registerExchangeSyncJob } from '../lib/exchange/sync/registerExchangeSyncJob';
 import { addSettings } from '../settings/outlookCalendar';
 
 Meteor.startup(async () => {
@@ -20,12 +20,11 @@ Meteor.startup(async () => {
 			stopProviderWatcher = registerExchangeProviderWatchers();
 			stopSyncWatcher = registerExchangeSyncJob();
 		},
-		down: async () => {
-			stopSyncWatcher?.();
+		down: () => {
 			stopProviderWatcher?.();
-			detachExchangeProvider();
+			stopSyncWatcher?.();
 
-			await stopExchangeSyncJob();
+			detachExchangeProvider();
 		},
 	});
 });

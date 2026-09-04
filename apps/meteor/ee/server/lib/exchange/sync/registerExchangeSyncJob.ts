@@ -12,6 +12,12 @@ const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Outlook_Calendar_Mode', '
 
 const DEFAULT_INTERVAL_MINUTES = 15;
 
+const stopExchangeSyncJob = async (): Promise<void> => {
+	if (await cronJobs.has(EXCHANGE_SYNC_JOB)) {
+		await cronJobs.remove(EXCHANGE_SYNC_JOB);
+	}
+};
+
 export const intervalToCron = (minutes: number): string => {
 	const value = Math.trunc(minutes) > 0 ? Math.trunc(minutes) : DEFAULT_INTERVAL_MINUTES;
 
@@ -44,16 +50,18 @@ export const configureExchangeSyncJob = async (): Promise<void> => {
 	await cronJobs.add(EXCHANGE_SYNC_JOB, schedule, async () => runExchangeSync());
 };
 
-export const registerExchangeSyncJob = (): (() => void) =>
-	settings.watchMultiple(WATCHED_SETTINGS, () => {
-		// The watcher callback is sync, so a rejection here would otherwise be unhandled.
+export const registerExchangeSyncJob = (): (() => void) => {
+	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, () => {
 		void configureExchangeSyncJob().catch((err) =>
 			logger.error({ msg: 'Could not configure the Exchange sync job', err: scrubForLog(err) }),
 		);
 	});
 
-export const stopExchangeSyncJob = async (): Promise<void> => {
-	if (await cronJobs.has(EXCHANGE_SYNC_JOB)) {
-		await cronJobs.remove(EXCHANGE_SYNC_JOB);
-	}
+	return () => {
+		stopWatching();
+
+		void stopExchangeSyncJob().catch((err) =>
+			logger.error({ msg: 'Could not stop the Exchange sync job during cleanup', err: scrubForLog(err) }),
+		);
+	};
 };

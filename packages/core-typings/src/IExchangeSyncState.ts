@@ -6,7 +6,7 @@ export interface IExchangeSyncState extends IRocketChatRecord {
 	mailbox: string;
 	provider: 'graph' | 'ews';
 	/** The window the cursor was created with. Graph bakes it into the delta link. */
-	syncWindowHours: number;
+	syncWindowDays: number;
 	/** The anchored start the cursor was created with, the other half of the baked-in window. */
 	windowStart: Date;
 	cursor?: string;

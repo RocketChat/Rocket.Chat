@@ -246,38 +246,4 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }],
 		});
 	}
-
-	/** The rows `deleteImportedOutsideSet` would remove, so a caller can inspect them before they are gone. */
-	public findImportedOutsideSet(
-		uid: IUser['_id'],
-		start: Date,
-		end: Date,
-		keepExternalIds: string[],
-	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>> {
-		return this.find(
-			{
-				uid,
-				externalId: { $type: 'string', $nin: keepExternalIds },
-				startTime: { $lt: end },
-				$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }],
-			},
-			{
-				projection: { startTime: 1, endTime: 1, busy: 1 },
-			},
-		);
-	}
-
-	/** The rows `deleteUnfinishedByExternalIdsAndUserId` would remove, so a caller can inspect them first. */
-	public findUnfinishedByExternalIdsAndUserId(
-		uid: IUser['_id'],
-		externalIds: string[],
-		now: Date,
-	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>> {
-		return this.find(
-			{ uid, externalId: { $in: externalIds }, $or: [{ endTime: { $gt: now } }, { endTime: { $exists: false }, startTime: { $gt: now } }] },
-			{
-				projection: { startTime: 1, endTime: 1, busy: 1 },
-			},
-		);
-	}
 }

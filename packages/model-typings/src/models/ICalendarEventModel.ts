@@ -30,15 +30,4 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
 	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], now: Date): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
-	findImportedOutsideSet(
-		uid: IUser['_id'],
-		start: Date,
-		end: Date,
-		keepExternalIds: string[],
-	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>>;
-	findUnfinishedByExternalIdsAndUserId(
-		uid: IUser['_id'],
-		externalIds: string[],
-		now: Date,
-	): FindCursor<Pick<ICalendarEvent, '_id' | 'startTime' | 'endTime' | 'busy'>>;
 }

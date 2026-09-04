@@ -43,7 +43,7 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 		const outcome = await syncMailbox(provider, uid, mailbox, getSyncWindow());
 
 		if (outcome.changed) {
-			dirty.set(uid, outcome.endedInProgressEvent);
+			dirty.set(uid, outcome.removedEvents);
 		}
 
 		return outcome;

@@ -8,12 +8,10 @@ export type CalendarBatchResult = {
 	modified: number;
 	deleted: number;
 	skipped: number;
-	/** A removed event was busy and in progress: the only case in which a batch may end the busy claim. */
-	endedInProgressEvent: boolean;
 };
 
 /** Mirrors the `delete` gate. Without it a refresh may set or extend a claim but never end one. */
-export type CalendarPresenceRefreshOptions = { endedInProgressEvent?: boolean };
+export type CalendarPresenceRefreshOptions = { removedEvents?: boolean };
 
 /** `deferSideEffects` suppresses the workspace-global reschedulers and the presence refresh, so a caller running a batch can do them once at the end. */
 export type CalendarBatchOptions = { deferSideEffects?: boolean };
@@ -34,7 +32,7 @@ export interface ICalendarService {
 	deleteImported(uid: IUser['_id'], externalIds: string[], options?: CalendarBatchOptions): Promise<CalendarBatchResult>;
 	pruneImportedWindow(
 		uid: IUser['_id'],
-		window: { start: Date; end: Date },
+		timeWindow: { start: Date; end: Date },
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;

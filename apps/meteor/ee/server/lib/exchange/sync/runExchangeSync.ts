@@ -53,7 +53,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 		}
 
 		const provider = getExchangeProvider();
-		const window = getSyncWindow();
+		const timeWindow = getSyncWindow();
 
 		await forEachWithConcurrency(iterateMailboxCandidates(), MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
@@ -68,7 +68,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 
 			summary.mailboxes++;
 
-			const outcome = await syncMailbox(provider, uid, mailbox, window);
+			const outcome = await syncMailbox(provider, uid, mailbox, timeWindow);
 
 			summary.upserted += outcome.upserted;
 			summary.modified += outcome.modified;
@@ -80,7 +80,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 			}
 
 			if (outcome.changed) {
-				dirty.set(uid, (dirty.get(uid) ?? false) || outcome.endedInProgressEvent);
+				dirty.set(uid, (dirty.get(uid) ?? false) || outcome.removedEvents);
 			}
 
 			if (outcome.fatal) {

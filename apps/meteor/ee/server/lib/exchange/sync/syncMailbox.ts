@@ -19,7 +19,7 @@ export type MailboxSyncOutcome = {
 	deleted: number;
 	pruned: number;
 	changed: boolean;
-	endedInProgressEvent: boolean;
+	removedEvents: boolean;
 	failed: boolean;
 	fatal: boolean;
 };
@@ -30,7 +30,7 @@ const EMPTY: MailboxSyncOutcome = {
 	deleted: 0,
 	pruned: 0,
 	changed: false,
-	endedInProgressEvent: false,
+	removedEvents: false,
 	failed: false,
 	fatal: false,
 };
@@ -63,7 +63,7 @@ type Collected = {
 const collectPages = async (
 	provider: IExchangeProvider,
 	mailbox: string,
-	window: DateRange,
+	timeWindow: DateRange,
 	startCursor: string | undefined,
 ): Promise<Collected> => {
 	const upserts = new Map<string, ExchangeEventUpsert>();
@@ -73,7 +73,7 @@ const collectPages = async (
 	let pages = 0;
 
 	for (;;) {
-		const page = await provider.listEvents(mailbox, window, cursor);
+		const page = await provider.listEvents(mailbox, timeWindow, cursor);
 		pages++;
 		const pageUpserts: ExchangeEventUpsert[] = [];
 
@@ -109,10 +109,10 @@ export const syncMailbox = async (
 	provider: IExchangeProvider,
 	uid: IUser['_id'],
 	mailbox: string,
-	window: DateRange,
+	timeWindow: DateRange,
 ): Promise<MailboxSyncOutcome> => {
-	const syncWindowHours = Math.round((window.end.getTime() - window.start.getTime()) / 3_600_000);
-	const identity = { mailbox, provider: provider.id, syncWindowHours, windowStart: window.start };
+	const syncWindowDays = Math.round((timeWindow.end.getTime() - timeWindow.start.getTime()) / 86_400_000);
+	const identity = { mailbox, provider: provider.id, syncWindowDays, windowStart: timeWindow.start };
 
 	const state = await ExchangeSyncState.findOneByUserId(uid);
 
@@ -123,16 +123,16 @@ export const syncMailbox = async (
 		Boolean(state?.cursor) &&
 		state?.mailbox === mailbox &&
 		state?.provider === provider.id &&
-		state?.syncWindowHours === syncWindowHours &&
-		state?.windowStart?.getTime() === window.start.getTime();
+		state?.syncWindowDays === syncWindowDays &&
+		state?.windowStart?.getTime() === timeWindow.start.getTime();
 
 	// Tracked outside the try so a later throw cannot discard work that already committed: the desktop path
 	// applies presence in the same call as the write, so a written event always got its scheduling.
 	let changed = false;
-	let endedInProgressEvent = false;
+	let removedEvents = false;
 
 	try {
-		const { upserts, removals, keep, cursor } = await collectPages(provider, mailbox, window, reusable ? state?.cursor : undefined);
+		const { upserts, removals, keep, cursor } = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
 
 		const imported = await Calendar.importMany(
 			[...upserts.values()].map((event) => toCalendarEvent(uid, event)),
@@ -142,12 +142,12 @@ export const syncMailbox = async (
 
 		const deleted = removals.size ? await Calendar.deleteImported(uid, [...removals], { deferSideEffects: true }) : undefined;
 		changed = changed || Boolean(deleted?.changed);
-		endedInProgressEvent = Boolean(deleted?.endedInProgressEvent);
+		removedEvents = Boolean(deleted?.deleted);
 
 		// Only from a complete set, and only after the upserts landed.
-		const pruned = keep ? await Calendar.pruneImportedWindow(uid, window, keep, { deferSideEffects: true }) : undefined;
+		const pruned = keep ? await Calendar.pruneImportedWindow(uid, timeWindow, keep, { deferSideEffects: true }) : undefined;
 		changed = changed || Boolean(pruned?.changed);
-		endedInProgressEvent = endedInProgressEvent || Boolean(pruned?.endedInProgressEvent);
+		removedEvents = removedEvents || Boolean(pruned?.deleted);
 
 		await ExchangeSyncState.saveCursor(uid, identity, cursor, new Date());
 
@@ -157,7 +157,7 @@ export const syncMailbox = async (
 			deleted: deleted?.deleted ?? 0,
 			pruned: pruned?.deleted ?? 0,
 			changed,
-			endedInProgressEvent,
+			removedEvents,
 			failed: false,
 			fatal: false,
 		};
@@ -172,6 +172,6 @@ export const syncMailbox = async (
 
 		logger.warn({ msg: 'Exchange mailbox sync failed', uid, code, err: scrubForLog(err) });
 
-		return { ...EMPTY, changed, endedInProgressEvent, failed: true, fatal: FATAL_CODES.has(code) };
+		return { ...EMPTY, changed, removedEvents, failed: true, fatal: FATAL_CODES.has(code) };
 	}
 };

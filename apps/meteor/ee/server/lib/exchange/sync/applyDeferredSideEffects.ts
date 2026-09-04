@@ -5,9 +5,9 @@ import { logger } from '../logger';
 import { scrubForLog } from '../scrub';
 
 export const applyDeferredSideEffects = async (dirty: Map<IUser['_id'], boolean>): Promise<void> => {
-	for (const [uid, endedInProgressEvent] of dirty) {
+	for (const [uid, removedEvents] of dirty) {
 		try {
-			await Calendar.refreshBusyPresence(uid, { endedInProgressEvent });
+			await Calendar.refreshBusyPresence(uid, { removedEvents });
 		} catch (err) {
 			// One user's presence write must not cost the rest of the run theirs, nor the reschedule below.
 			logger.error({ msg: 'Could not refresh calendar busy presence after the Exchange sync', uid, err: scrubForLog(err) });

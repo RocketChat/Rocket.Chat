@@ -3,6 +3,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateInternalErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
@@ -26,6 +27,8 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'sync-state-invalid': 'Outlook_Calendar_Test_Connection_sync_state_invalid',
 };
 
+const TEST_CONNECTION_SERVER_FAULTS: ReadonlySet<ExchangeErrorCode> = new Set(['unexpected-response', 'sync-state-invalid']);
+
 const testConnectionResponse = {
 	type: 'object',
 	properties: {
@@ -47,6 +50,7 @@ API.v1.post(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
+			500: validateInternalErrorResponse,
 		},
 	},
 	async function action() {
@@ -61,7 +65,13 @@ API.v1.post(
 		} catch (err) {
 			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
 
-			return API.v1.failure(isExchangeError(err) ? ERROR_MESSAGES[err.code] : 'Outlook_Calendar_Test_Connection_failed');
+			if (!isExchangeError(err)) {
+				return API.v1.internalError('Outlook_Calendar_Test_Connection_failed');
+			}
+
+			return TEST_CONNECTION_SERVER_FAULTS.has(err.code)
+				? API.v1.internalError(ERROR_MESSAGES[err.code])
+				: API.v1.failure(ERROR_MESSAGES[err.code]);
 		}
 
 		return API.v1.success({
@@ -70,6 +80,8 @@ API.v1.post(
 		});
 	},
 );
+
+const USER_FIXABLE_SYNC_ERRORS: ReadonlySet<ExchangeErrorCode> = new Set(['email-not-verified', 'mailbox-not-found', 'rate-limited']);
 
 const syncResponse = {
 	type: 'object',
@@ -93,6 +105,7 @@ API.v1.post(
 			200: ajv.compile<{ upserted: number; modified: number; deleted: number; success: true }>(syncResponse),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			500: validateInternalErrorResponse,
 		},
 	},
 	async function action() {
@@ -107,7 +120,13 @@ API.v1.post(
 		} catch (err) {
 			logger.error({ msg: 'On-demand Exchange sync failed', uid: this.userId, err: scrubForLog(err) });
 
-			return API.v1.failure((isExchangeError(err) && ERROR_MESSAGES[err.code]) || 'Outlook_Sync_Failed');
+			if (!isExchangeError(err)) {
+				return API.v1.internalError('Outlook_Sync_Failed');
+			}
+
+			return USER_FIXABLE_SYNC_ERRORS.has(err.code)
+				? API.v1.failure(ERROR_MESSAGES[err.code])
+				: API.v1.internalError(ERROR_MESSAGES[err.code]);
 		}
 	},
 );

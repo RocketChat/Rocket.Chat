@@ -184,7 +184,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		for (const data of events) {
 			const { uid, externalId, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
-			// Without an externalId there is nothing to match on, so every run would insert it again.
 			if (!externalId) {
 				skipped++;
 				continue;
@@ -225,7 +224,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			modified: modifiedCount + reopened,
 			deleted: 0,
 			skipped,
-			endedInProgressEvent: false,
 		};
 
 		if (!options?.deferSideEffects && result.changed) {
@@ -237,52 +235,36 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	public async deleteImported(uid: IUser['_id'], externalIds: string[], options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
 		if (!externalIds.length) {
-			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0, endedInProgressEvent: false };
+			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0 };
 		}
 
-		// The same `now` for both queries, so the set inspected is the set removed.
-		const now = new Date();
-		const doomed = await CalendarEvent.findUnfinishedByExternalIdsAndUserId(uid, externalIds, now).toArray();
-		const endedInProgressEvent = doomed.some((event) => this.isBusyAndInProgress(event, now));
+		const { deletedCount } = await CalendarEvent.deleteUnfinishedByExternalIdsAndUserId(uid, externalIds, new Date());
 
-		const { deletedCount } = await CalendarEvent.deleteUnfinishedByExternalIdsAndUserId(uid, externalIds, now);
-
-		return this.finishDeletion(uid, { deletedCount, endedInProgressEvent }, options);
+		return this.finishDeletion(uid, deletedCount, options);
 	}
 
 	public async pruneImportedWindow(
 		uid: IUser['_id'],
-		window: { start: Date; end: Date },
+		timeWindow: { start: Date; end: Date },
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult> {
 		const now = new Date();
-		// Never before `now`: the sync window is anchored and can start in the past, and a past event is
-		// history the prune must not be able to reach.
-		const start = window.start > now ? window.start : now;
+		// History must not be reached by the prune.
+		const start = timeWindow.start > now ? timeWindow.start : now;
 
-		const doomed = await CalendarEvent.findImportedOutsideSet(uid, start, window.end, keepExternalIds).toArray();
-		const endedInProgressEvent = doomed.some((event) => this.isBusyAndInProgress(event, now));
+		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, start, timeWindow.end, keepExternalIds);
 
-		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, start, window.end, keepExternalIds);
-
-		return this.finishDeletion(uid, { deletedCount, endedInProgressEvent }, options);
+		return this.finishDeletion(uid, deletedCount, options);
 	}
 
-	/**
-	 * Desktop parity: an upsert-only pass can set or extend the claim but never end it, exactly like
-	 * `reconcileInProgressEvent`. `endedInProgressEvent` is the `delete` gate, so pass it only when the batch
-	 * removed an event that was busy and in progress.
-	 */
 	public async refreshBusyPresence(uid: IUser['_id'], options?: CalendarPresenceRefreshOptions): Promise<void> {
 		const now = new Date();
 
-		// What `delete` does: recomputing can end the claim, and only a removed busy in-progress event earns that.
-		if (options?.endedInProgressEvent) {
+		if (options?.removedEvents) {
 			return this.syncBusyPresence(uid, { now });
 		}
 
-		// What `reconcileInProgressEvent` does: an upsert may set or extend a claim, never end one.
 		const inProgress = await CalendarEvent.findOverlappingEvents('', uid, now, now).toArray();
 
 		if (inProgress.length) {
@@ -290,16 +272,12 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 	}
 
-	private async finishDeletion(
-		uid: IUser['_id'],
-		{ deletedCount, endedInProgressEvent }: { deletedCount: number; endedInProgressEvent: boolean },
-		options?: CalendarBatchOptions,
-	): Promise<CalendarBatchResult> {
+	private async finishDeletion(uid: IUser['_id'], deletedCount: number, options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
 		if (deletedCount > 0 && !options?.deferSideEffects) {
-			await this.applyBatchSideEffects([uid], { endedInProgressEvent });
+			await this.applyBatchSideEffects([uid], { removedEvents: true });
 		}
 
-		return { changed: deletedCount > 0, upserted: 0, modified: 0, deleted: deletedCount, skipped: 0, endedInProgressEvent };
+		return { changed: deletedCount > 0, upserted: 0, modified: 0, deleted: deletedCount, skipped: 0 };
 	}
 
 	private async applyBatchSideEffects(uids: IUser['_id'][], options?: CalendarPresenceRefreshOptions): Promise<void> {

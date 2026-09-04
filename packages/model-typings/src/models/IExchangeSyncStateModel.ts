@@ -4,7 +4,7 @@ import type { UpdateResult } from 'mongodb';
 import type { IBaseModel } from './IBaseModel';
 
 /** The fields that, when any of them changes, make a stored cursor unusable. */
-export type ExchangeSyncIdentity = Pick<IExchangeSyncState, 'mailbox' | 'provider' | 'syncWindowHours' | 'windowStart'>;
+export type ExchangeSyncIdentity = Pick<IExchangeSyncState, 'mailbox' | 'provider' | 'syncWindowDays' | 'windowStart'>;
 
 export interface IExchangeSyncStateModel extends IBaseModel<IExchangeSyncState> {
 	findOneByUserId(uid: IUser['_id']): Promise<IExchangeSyncState | null>;
