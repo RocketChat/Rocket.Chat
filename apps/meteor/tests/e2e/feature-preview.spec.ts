@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AccountProfile, AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
+import { AccountFeaturePreview, AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
 import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
@@ -61,7 +61,7 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test('should show "Navigation" feature section', async ({ page }) => {
-		await new AccountProfile(page).gotoFeaturePreview();
+		await new AccountFeaturePreview(page).goto();
 
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});

@@ -73,46 +73,6 @@ export class AccountProfile extends Account {
 		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
 
-	get inputToken(): Locator {
-		return this.page.locator('[data-qa="PersonalTokenField"]');
-	}
-
-	get tokensTableEmpty(): Locator {
-		return this.page.locator('//h3[contains(text(), "No results found")]');
-	}
-
-	get btnTokensAdd(): Locator {
-		return this.page.locator('role=button[name="Add"]');
-	}
-
-	get tokenAddedModal(): Locator {
-		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
-	}
-
-	get btnTokenAddedOk(): Locator {
-		return this.tokenAddedModal.locator('role=button[name="Ok"]');
-	}
-
-	get tokensRows(): Locator {
-		return this.page.locator('table tbody tr');
-	}
-
-	tokenInTable(name: string): Locator {
-		return this.page.locator(`tr[qa-token-name="${name}"]`);
-	}
-
-	get btnRegenerateTokenModal(): Locator {
-		return this.page.locator('role=button[name="Regenerate token"]');
-	}
-
-	get removeTokenModal(): Locator {
-		return this.page.locator('role=dialog', { hasText: 'personal access token' });
-	}
-
-	get btnRemoveTokenModal(): Locator {
-		return this.removeTokenModal.getByRole('button', { name: 'Remove' });
-	}
-
 	get inputImageFile(): Locator {
 		return this.page.locator('input[type=file]');
 	}
@@ -133,22 +93,6 @@ export class AccountProfile extends Account {
 		return this.page.getByRole('heading', { name: 'Profile', exact: true });
 	}
 
-	get personalAccessTokensHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Personal Access Tokens', exact: true });
-	}
-
-	get omnichannelHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Omnichannel', exact: true });
-	}
-
-	get featurePreviewHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Feature preview', exact: true });
-	}
-
-	get accessibilityAndAppearanceHeading(): Locator {
-		return this.page.getByRole('heading', { name: 'Accessibility & appearance', exact: true });
-	}
-
 	get btnDeleteMyAccount(): Locator {
 		return this.page.getByRole('button', { name: 'Delete my account' });
 	}
@@ -159,21 +103,5 @@ export class AccountProfile extends Account {
 
 	get errorInvalidUrl(): Locator {
 		return this.getErrorAlertByText('Invalid image URL');
-	}
-
-	async gotoTokens(): Promise<void> {
-		await this.navigateTo(AccountSectionsHref.tokens, this.personalAccessTokensHeading);
-	}
-
-	async gotoOmnichannel(): Promise<void> {
-		await this.navigateTo(AccountSectionsHref.omnichannel, this.omnichannelHeading);
-	}
-
-	async gotoFeaturePreview(): Promise<void> {
-		await this.navigateTo(AccountSectionsHref.featurePreview, this.featurePreviewHeading);
-	}
-
-	async gotoAccessibilityAndAppearance(): Promise<void> {
-		await this.navigateTo(AccountSectionsHref.accessibilityAndAppearance, this.accessibilityAndAppearanceHeading);
 	}
 }
