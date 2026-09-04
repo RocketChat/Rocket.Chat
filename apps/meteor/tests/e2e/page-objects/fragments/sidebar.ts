@@ -62,11 +62,6 @@ export class RoomSidebar extends Sidebar {
 		return this.teamCollabFilters.getByRole('tab', { name: 'Discussions' });
 	}
 
-	// TODO: fix this filter, workaround due to virtuoso
-	get topChannelList(): Locator {
-		return this.root.getByTestId('virtuoso-top-item-list');
-	}
-
 	get channelsList(): Locator {
 		// TODO: fix this filter, workaround due to virtuoso
 		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
@@ -86,7 +81,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.topChannelList.getByRole('region').first().getByRole('button').first();
+		return this.channelsList.getByRole('region').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
