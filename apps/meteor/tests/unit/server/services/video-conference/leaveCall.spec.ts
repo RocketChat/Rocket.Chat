@@ -1,0 +1,318 @@
+import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import sinon from 'sinon';
+
+import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, providerCapabilities, resetAll } from './testHarness';
+import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/constants';
+
+// `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
+// projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A
+// real DB would answer both from the same document, so `fixture` is the single canonical record and the
+// mutating model methods below write into it, regardless of the projection asked for.
+let fixture: VideoConference;
+
+const VideoConferenceModelMock = {
+	// `endCall`'s `getUnfiltered` is `VideoConfService.getUnfiltered`, which itself just calls
+	// `VideoConference.findOneById(callId)` with no projection — there's no separate model method to stub.
+	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
+	setUserLeftById: sinon.stub().callsFake(async (_callId: string, uid: string, leftAt: Date) => {
+		const member = fixture.users.find((user) => user._id === uid);
+		if (member) {
+			(member as IVideoConferenceUser).leftAt = leftAt;
+		}
+	}),
+	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
+		Object.assign(fixture, data);
+	}),
+	setStatusById: sinon.stub().callsFake(async (_callId: string, status: VideoConference['status']) => {
+		fixture.status = status;
+	}),
+	find: sinon.stub().returns({ toArray: async () => [] }),
+	addMemberById: sinon.stub().resolves(),
+	setUserJoinedById: sinon.stub().resolves(),
+};
+
+const UsersMock = {
+	findOneById: sinon.stub().resolves(null),
+};
+
+const broadcastStub = sinon.stub().resolves();
+
+const VideoConfService = createService({
+	broadcast: broadcastStub,
+	models: {
+		Users: UsersMock,
+		VideoConference: VideoConferenceModelMock,
+		// A room with another member in it, so a broadcast the service should NOT send room-wide has somebody
+		// it would demonstrably reach.
+		Subscriptions: {
+			findByRoomIdAndNotUserId: sinon.stub().returns({
+				toArray: sinon.stub().resolves([{ u: { _id: 'other' } }]),
+				forEach: (cb: (subscription: { u: { _id: string } }) => void) => {
+					cb({ u: { _id: 'other' } });
+					return Promise.resolve();
+				},
+			}),
+		},
+	},
+	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
+	// join is stubbed out of the way. The grace period must stay the real one — it is what the suite measures.
+	overrides: {
+		'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, EMPTY_CALL_GRACE_MS },
+	},
+});
+
+/** Who was told 'end' through `notifyUser` — the per-user broadcast, as opposed to the room-wide channel. */
+const endNotifiedUserIds = (): string[] =>
+	broadcastStub.args
+		.filter(([channel, payload]) => channel === 'user.video-conference' && (payload as { action: string }).action === 'end')
+		.map(([, payload]) => (payload as { userId: string }).userId);
+
+describe('VideoConfService.leaveCall', () => {
+	let service: any;
+
+	let clock: sinon.SinonFakeTimers;
+
+	/** The call empties, then the grace period passes with nobody having come back. */
+	const leaveAndSettle = async (uid: string) => {
+		await service.leaveCall(uid, 'call1');
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+	};
+
+	beforeEach(() => {
+		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
+		service = new VideoConfService();
+		resetAll(
+			VideoConferenceModelMock.findOneById,
+			VideoConferenceModelMock.setUserLeftById,
+			VideoConferenceModelMock.setDataById,
+			VideoConferenceModelMock.setStatusById,
+			broadcastStub,
+		);
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
+		providerCapabilities.current = undefined;
+	});
+
+	afterEach(() => {
+		clock.restore();
+		providerCapabilities.current = undefined;
+	});
+
+	// The reported bug: leaving the last-standing spot in a call must end it and leave every member a
+	// history entry, not just silently mark the leaver as gone. `creator` already left earlier, so `other`
+	// is genuinely the last one still in the call — this is what makes it "the last participant leaves"
+	// rather than just "one of several leaves".
+	it('ends the call when the last participant leaves', async () => {
+		fixture = buildGroupCall([
+			buildMember({ _id: 'creator', leftAt: new Date('2026-01-01T00:30:00.000Z') }),
+			buildMember({ _id: 'other' }),
+		]);
+
+		await leaveAndSettle('other');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(fixture.endedAt).to.be.instanceOf(Date);
+	});
+
+	// Someone leaving while others remain must not end the call for them.
+	it('marks the member as left without ending the call when others remain', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'other' })]);
+
+		await service.leaveCall('other', 'call1');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
+		expect(fixture.endedAt).to.be.undefined;
+
+		const leaver = fixture.users.find((user) => user._id === 'other');
+		expect(leaver?.leftAt).to.be.instanceOf(Date);
+	});
+
+	it('ends a direct (1:1) conference when the last participant leaves', async () => {
+		fixture = buildDirectCall([
+			buildMember({ _id: 'creator', leftAt: new Date('2026-01-01T00:30:00.000Z') }),
+			buildMember({ _id: 'other' }),
+		]);
+
+		await leaveAndSettle('other');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+	});
+
+	// A conference that already ended (already carries `endedAt`) must not be re-processed at all — this is
+	// the guard `leaveCall` itself applies before touching anything.
+	it('does not re-process a conference that already has endedAt', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'other', leftAt: new Date() })], {
+			status: VideoConferenceStatus.ENDED,
+			endedAt: new Date('2026-01-01T01:00:00.000Z'),
+		});
+
+		await service.leaveCall('creator', 'call1');
+
+		expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
+	});
+
+	// A member who was added to the conference but never joined (`joined: false`) has no active presence in
+	// the call — they must not hold it open once the only member who actually joined leaves.
+	it('ends the call when the leaver is the only joined member, even with an unjoined member still on the roster', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'neverJoined', joined: false, joinedAt: undefined })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+	});
+
+	// `pagehide` fires on a reload exactly as it does on a close, so ending the moment the call empties meant
+	// refreshing the call window killed the call. Coming back inside the grace period must cancel it.
+	it('does not end the call when the last participant comes back inside the grace period', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await service.leaveCall('creator', 'call1');
+
+		// The rejoin: what the client's own join does to the entry, which is all isInVideoConference reads.
+		const rejoiner = fixture.users.find((user) => user._id === 'creator');
+		delete rejoiner?.leftAt;
+
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
+		expect(fixture.endedAt).to.be.undefined;
+	});
+
+	it('still ends the call when nobody comes back', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await service.leaveCall('creator', 'call1');
+		expect(fixture.endedAt, 'ended before the grace period elapsed').to.be.undefined;
+
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+	});
+
+	// One member leaving is not the call ending — a reload fires a leave too — so the room at large must not
+	// hear 'end': that would dismiss everyone else's ringing popup and silence the caller's outgoing ring while
+	// the call still runs. Only the leaver's own devices are told, so their other windows drop the call UI.
+	it('tells only the leaver about their own leave, never the room, for an embedded provider', async () => {
+		providerCapabilities.current = { embedded: true };
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'leaver' })]);
+
+		await service.leaveCall('leaver', 'call1');
+
+		expect(endNotifiedUserIds()).to.deep.equal(['leaver']);
+	});
+
+	// The room-wide 'end' belongs to the call actually ending: once the grace period confirms the call emptied,
+	// everyone still holding a popup for it is told.
+	it('tells the room once the call actually ends', async () => {
+		providerCapabilities.current = { embedded: true };
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(endNotifiedUserIds()).to.include('other');
+	});
+});
+
+describe('VideoConfService one call at a time', () => {
+	let clock: sinon.SinonFakeTimers;
+	let service: any;
+
+	/** The conferences the model answers about, by id — a join reads the one being joined and any other it finds. */
+	let calls: Record<string, VideoConference>;
+
+	beforeEach(() => {
+		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
+		service = new VideoConfService();
+		calls = {};
+		// Leaving other calls on join is part of the embedded lifecycle — a non-embedded join records the member
+		// and nothing else.
+		providerCapabilities.current = { embedded: true };
+		resetAll(
+			VideoConferenceModelMock.findOneById,
+			VideoConferenceModelMock.setUserLeftById,
+			VideoConferenceModelMock.find,
+			VideoConferenceModelMock.addMemberById,
+			VideoConferenceModelMock.setUserJoinedById,
+			UsersMock.findOneById,
+		);
+		VideoConferenceModelMock.findOneById.callsFake(async (callId: string) => calls[callId]);
+		UsersMock.findOneById.resolves({ _id: 'joiner', username: 'joiner.user', name: 'Joiner', avatarETag: null });
+	});
+
+	afterEach(() => {
+		clock.restore();
+		providerCapabilities.current = undefined;
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
+		UsersMock.findOneById.resolves(null);
+	});
+
+	/** `other` is a call this user is in, alongside the `wanted` one they are about to join. */
+	const joinWhileIn = async (other: VideoConference) => {
+		calls = { wanted: buildGroupCall([buildMember({ _id: 'host' })], { _id: 'wanted' }), [other._id]: other };
+		VideoConferenceModelMock.find.returns({ toArray: async () => [other] });
+
+		await service.addUser('wanted', 'joiner');
+	};
+
+	// A window that dies without reporting its departure — a crash, a killed tab — leaves its user counted as
+	// present forever, which both misreports them and keeps a finished call listed as occupied. Joining anything
+	// is the moment that can be put right.
+	it('leaves the call a joining user is still counted as being in', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		expect(VideoConferenceModelMock.setUserLeftById.calledWith('stale', 'joiner')).to.be.true;
+	});
+
+	it('joins the wanted call all the same', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('wanted', 'joiner')).to.be.true;
+	});
+
+	// The query is the whole rule, so it is what this asserts: another call, still running, and one this user is
+	// *present* in. Membership of a call already left is not presence in it — leaving it again would write a later
+	// `leftAt` over the real one — and an entry with no `joined` flag predates the flag and counts as present.
+	it('asks only about the calls it should leave', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		const [query] = VideoConferenceModelMock.find.firstCall.args;
+		expect(query).to.deep.equal({
+			_id: { $ne: 'wanted' },
+			// The statuses name what the partial index is filtered on; `endedAt` remains the liveness rule itself.
+			status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+			endedAt: { $exists: false },
+			users: { $elemMatch: { _id: 'joiner', joined: { $ne: false }, leftAt: { $exists: false } } },
+		});
+	});
+});
+
+// Leaving is reported more than once by design: the call window says so as it closes, and whatever opened it
+// says so again if that window vanished without managing to. The second report must change nothing — a moved
+// `leftAt` would rewrite when someone left, and the broadcast would announce a roster change that didn't happen.
+describe('VideoConfService.leaveCall reported twice', () => {
+	let service: any;
+
+	beforeEach(() => {
+		service = new VideoConfService();
+	});
+
+	it('records the departure once and says nothing the second time', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'stays' }), buildMember({ _id: 'goes' })]);
+
+		await service.leaveCall('goes', 'call1');
+
+		const leftAt = fixture.users.find(({ _id }) => _id === 'goes')?.leftAt;
+		expect(leftAt).to.be.an.instanceOf(Date);
+
+		const writes = VideoConferenceModelMock.setUserLeftById.callCount;
+		const broadcasts = broadcastStub.callCount;
+
+		await service.leaveCall('goes', 'call1');
+
+		expect(VideoConferenceModelMock.setUserLeftById.callCount, 'wrote the departure again').to.equal(writes);
+		expect(broadcastStub.callCount, 'announced the departure again').to.equal(broadcasts);
+		expect(fixture.users.find(({ _id }) => _id === 'goes')?.leftAt).to.equal(leftAt);
+	});
+});
