@@ -32,6 +32,7 @@ import {
 	toInternalQuoteMessageFormat,
 } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
+import { FanoutQueue } from './FanoutQueue';
 import { MatrixMediaService } from './services/MatrixMediaService';
 import { shortnameToUnicode } from './utils/emojiConverter';
 
@@ -56,6 +57,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private validateUserDomain: boolean;
 
 	private readonly logger = new Logger(this.name);
+
+        private readonly avatarFanoutQueue = new FanoutQueue('avatar-updates', {
+    concurrency: 5,
+    maxRetries: 3,
+    baseDelayMs: 1000,
+});
 
 	override async created(): Promise<void> {
 		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
@@ -112,7 +119,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					return;
 				}
 
-				// TODO: Check if it should exclude himself from the list
 				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
 				const statusMap: Record<UserStatus, PresenceState> = {
 					[UserStatus.ONLINE]: 'online',
@@ -132,7 +138,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
-
 		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
 			if (!username || username.includes(':')) {
 				return;
@@ -153,28 +158,36 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.info(`Sending avatar update for ${username} to federated rooms`);
 
-			const matrixUserId = `@${localUser.username}:${this.serverName}`;
+			if (!this.serverName) {
+				this.logger.warn('Federation server name not configured, skipping avatar update');
+				return;
+			}
 
-			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
+			const matrixUserId = userIdSchema.parse(`@${localUser.username}:${this.serverName}`);
+
 			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
 
-			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
 
-			// TODO add user avatar update events to a fanout queue
-			for await (const { externalRoomId } of roomsUserIsMemberOf) {
+			const profilePayload = {
+				displayname: localUser.name || localUser.username,
+				avatar_url: avatarUrl,
+			};
+
+			for (const { externalRoomId } of roomsUserIsMemberOf) {
 				if (!externalRoomId) {
 					continue;
 				}
 
-				try {
-					await federationSDK.updateUserProfile(externalRoomId, matrixUserId, {
-						displayname: localUser.name || localUser.username,
-						avatar_url: avatarUrl,
-					});
-					this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
-				} catch (error) {
-					this.logger.error({ err: error, msg: `Failed to send avatar update for ${username} to room ${externalRoomId}` });
-				}
+			this.avatarFanoutQueue.enqueue(
+					`avatar:${username}:${externalRoomId}`,
+					async () => {
+						await federationSDK.updateUserProfile(externalRoomId, matrixUserId, profilePayload);
+						this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
+					},
+				).catch(() => {
+					
+				});
 			}
 		});
 	}
@@ -196,7 +209,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
 			const roomName = room.name || room.fname || 'Untitled Room';
 
-			// canonical alias computed from name
+			
 			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
 			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
@@ -207,7 +220,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
-			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
 
 			this.logger.debug({ msg: 'Room creation completed successfully', roomId: room._id });
 
@@ -293,7 +305,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			let lastEventId: { eventId: string } | null = null;
 
-			// TODO handle multiple files, we currently save thumbs on files[], we need to flag them as thumb so we can ignore them here
+			
 			const [file] = message.files;
 
 			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain, matrixRoomId);
@@ -472,8 +484,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
 
-			// TODO fix branded EventID and remove type casting
-			// TODO message.u?.username is not the user who removed the message
+			
+
 			const eventId = await federationSDK.redactMessage(roomIdSchema.parse(matrixRoomId), eventIdSchema.parse(matrixEventId));
 
 			this.logger.debug({ msg: 'Message redaction sent to Matrix successfully', eventId });
@@ -497,8 +509,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						);
 					}
 
-					// if inviter is an external user it means we receive the invite from the endpoint
-					// since we accept from there we can skip accepting here
+					
+		
 					if (isUserNativeFederated(inviter)) {
 						this.logger.debug('Inviter is native federated, skip accept invite');
 						return;
@@ -675,8 +687,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				? userWhoUnbanned.federation.mui
 				: `@${userWhoUnbanned.username}:${this.serverName}`;
 
-			// In Matrix, unban is a membership: leave event for the banned user.
-			// We use kickUser (which sends a leave) to propagate the unban.
+	
 			await federationSDK.kickUser(
 				roomIdSchema.parse(room.federation.mrid),
 				userIdSchema.parse(actualUnbannedMatrixUserId),
@@ -872,7 +883,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const results = Object.fromEntries(
 			await Promise.all(
 				matrixIds.map(async (matrixId) => {
-					// Split only on the first ':' (after the leading '@') so we keep any port in the homeserver
+					
 					const separatorIndex = matrixId.indexOf(':', 1);
 					if (separatorIndex === -1) {
 						return [matrixId, 'UNABLE_TO_VERIFY'];
@@ -935,7 +946,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('User username not found');
 		}
 
-		// TODO: should use common function to get matrix user ID
+		
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		if (action === 'accept') {
@@ -977,7 +988,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		// get last event_id for the room or thread
+		
 		const lastMessage = threadId
 			? await Messages.findVisibleThreadByThreadId(threadId, {
 					sort: { ts: -1 },
@@ -1003,7 +1014,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('User username not found');
 		}
 
-		// TODO: should use common function to get matrix user ID
+		
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		await federationSDK.sendReadReceipt({
@@ -1014,7 +1025,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		});
 	}
 
-	// when a user changes their username, we need to send a new event for every room the user is a member
+	
 	async updateUserName(user: IUser): Promise<void> {
 		const matrixUserId = userIdSchema.parse(`@${user.username}:${this.serverName}`);
 
