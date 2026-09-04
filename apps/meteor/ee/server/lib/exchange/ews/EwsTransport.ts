@@ -20,12 +20,11 @@ import { scrubForLog } from '../scrub';
  * established here.
  */
 
-export type NtlmEwsTransportConfig = {
+export type EwsTransportConfig = {
 	url: string;
 	username: string;
 	password: string;
 	authMethod: 'ntlm' | 'basic';
-	/** PEM for a private certificate authority. An opt-in, never a blanket bypass. */
 	caCert?: string;
 	rejectUnauthorized?: boolean;
 	workstation?: string;
@@ -65,8 +64,8 @@ export class AllowlistedAgent extends Agent {
 	}
 }
 
-export class NtlmEwsTransport implements IEwsTransport {
-	private readonly config: NtlmEwsTransportConfig;
+export class EwsTransport implements IEwsTransport {
+	private readonly config: EwsTransportConfig;
 
 	private readonly endpoint: URL | undefined;
 
@@ -80,7 +79,7 @@ export class NtlmEwsTransport implements IEwsTransport {
 	/** Must be the certificate of the connection actually carrying the handshake, not a separate lookup. */
 	private lastPeerCertificate: Buffer | undefined;
 
-	constructor(config: NtlmEwsTransportConfig) {
+	constructor(config: EwsTransportConfig) {
 		this.config = config;
 
 		try {
