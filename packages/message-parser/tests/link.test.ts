@@ -26,6 +26,10 @@ test.each([
 	['[title](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('title')])])]],
 	['[title](http://localhost)', [paragraph([link('http://localhost', [plain('title')])])]],
 	['[title](http://localhost?testing=true)', [paragraph([link('http://localhost?testing=true', [plain('title')])])]],
+	[
+		'[test-with-a-text-containing-an_here](http://example.com?param=my_value)',
+		[paragraph([link('http://example.com?param=my_value', [plain('test-with-a-text-containing-an_here')])])],
+	],
 	['[**title**](https://rocket.chat)', [paragraph([link('https://rocket.chat', [bold([plain('title')])])])]],
 	['[~~title~~](https://rocket.chat)', [paragraph([link('https://rocket.chat', [strike([plain('title')])])])]],
 	['[__title__](https://rocket.chat)', [paragraph([link('https://rocket.chat', [italic([plain('title')])])])]],
