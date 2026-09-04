@@ -8,12 +8,14 @@ on:
       - '**'
     paths-ignore:
       - '**.md'
+      - '.devcontainer/**'
   merge_group:
   push:
     branches:
       - develop
     paths-ignore:
       - '**.md'
+      - '.devcontainer/**'
 
 concurrency:
   # merge_group runs group by the merge-group ref so a recreated group cancels the stale run;

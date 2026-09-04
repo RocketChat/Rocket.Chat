@@ -1,0 +1,74 @@
+# Shared Turborepo remote cache — https://ducktors.github.io/turborepo-remote-cache
+#
+# This is a STANDALONE compose project (`name:` below), deliberately NOT part of
+# the devcontainer's own project: every worktree gets its own devcontainer
+# compose project, so anything defined there would be duplicated per worktree
+# and each copy would have its own empty cache. One project, started once on the
+# host by ../scripts/ensure-turbo-cache.sh, is shared by all of them.
+#
+# The devcontainers reach it over the `turbo-cache` network declared at the
+# bottom, which they attach to as an external network. Nothing about this file
+# is worktree-specific, so whichever checkout brings it up first wins and the
+# rest just find it already running.
+name: turbo-cache
+
+services:
+  # The artifact volume is a named volume, so its mount point lands root-owned
+  # while the server runs as uid 1001 (`app`) — it could not create anything
+  # under it. Compose has no chown, so a throwaway init service does it once and
+  # exits; the server waits for it to complete.
+  init:
+    image: busybox:1.37
+    command: sh -c 'mkdir -p /data && chown -R 1001:1001 /data'
+    volumes:
+      - turbo-cache-data:/data
+    # Only to keep compose from creating a second, unused default network for it.
+    networks:
+      - turbo-cache
+
+  cache:
+    image: ducktors/turborepo-remote-cache:2.11.5
+    container_name: turbo-cache
+    restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment:
+      # Shared secret between this server and every turbo client. Local-only
+      # cache on a private docker network, so this is a fixed well-known value
+      # rather than a managed secret — override by exporting TURBO_TOKEN before
+      # the ensure script runs, and set the same value in devcontainer.json.
+      TURBO_TOKEN: ${TURBO_TOKEN:-rocketchat-local-dev}
+      STORAGE_PROVIDER: local
+      # Without this the path is forced under /tmp, which is container-local and
+      # would drop the whole cache on every restart.
+      STORAGE_PATH_USE_TMP_FOLDER: "false"
+      STORAGE_PATH: /data
+      # Rocket.Chat artifacts (apps/meteor bundles) go well past the 100MB default.
+      BODY_LIMIT: "536870912"
+      LOG_LEVEL: info
+    volumes:
+      - turbo-cache-data:/data
+    networks:
+      - turbo-cache
+    # Loopback-only so the cache is usable from the host too (plain `yarn build`
+    # outside a devcontainer) without exposing it to the LAN.
+    ports:
+      - "127.0.0.1:3399:3000"
+
+volumes:
+  # Single volume in a single project = one cache for every worktree.
+  turbo-cache-data:
+
+networks:
+  turbo-cache:
+    # Fixed name so devcontainers can reference it as an external network
+    # without the `turbo-cache_` project prefix compose would otherwise add.
+    name: turbo-cache
+    ipam:
+      config:
+        # Pinned because the devcontainer's egress firewall allowlists this
+        # exact CIDR (see ../scripts/claude-code/init-firewall.sh). Chosen outside the range Docker
+        # has handed out so far (172.17–172.23) but inside its default pool, so
+        # claiming it also keeps the auto-allocator off it.
+        - subnet: 172.30.0.0/24

@@ -1,0 +1,93 @@
+services:
+  app:
+    build:
+      # Build context is the repo root so the Dockerfile can COPY package.json
+      # and .tool-versions to pin the toolchain versions.
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      # The workspace bind mount and the two build volumes nested inside it
+      # (node_modules and apps/meteor/.meteor/local) are NOT here: their targets
+      # must track `workspaceFolder`, which is per-worktree and built from a
+      # variable no compose file can resolve. They are `mounts` entries in
+      # devcontainer.json instead, which is where the reasoning for each lives.
+      # So this file alone no longer describes a usable container — bring the
+      # stack up through the devcontainer CLI or VS Code, never `docker compose
+      # up` by hand.
+      #
+      # No mongo service is defined here on purpose: `meteor` starts its own
+      # bundled mongod (127.0.0.1:3001) and only does so while MONGO_URL is
+      # UNSET. Do not add MONGO_URL to this file or devcontainer.json — setting
+      # it makes Meteor skip its local mongod and connect out instead.
+      #
+      # Anything a devcontainer *feature* owns is NOT here — the shared gh auth
+      # and Claude Code config volumes both used to be. They live in the
+      # generated docker-compose.overrides.yml instead, contributed by
+      # scripts/<feature>/initialize.sh, so that commenting a feature out of
+      # devcontainer.json takes its mounts with it. This file can't do that:
+      # compose is static, and an external volume nothing created fails the
+      # create outright. See scripts/lib/overrides.sh.
+      #
+      # Yarn's global folder — the downloaded package zips plus its metadata
+      # index — shared by every worktree through one external volume and a
+      # subpath the host creates before the container starts (see the volume
+      # declaration at the bottom). Mounted at the default `globalFolder` path so
+      # nothing has to be pointed at it; the only setting involved is
+      # YARN_ENABLE_GLOBAL_CACHE (devcontainer.json), which makes yarn treat
+      # this as THE cache instead of writing a second copy into the project's
+      # .yarn/cache on the bind mount.
+      - type: volume
+        source: yarn-cache
+        target: /home/vscode/.yarn/berry
+        volume:
+          subpath: berry
+    # `default` must be listed explicitly: naming any network here drops the
+    # implicit default, which is what carries the forwarded ports below.
+    # turbo-cache is the shared cache's network — see turbo-cache/docker-compose.yml.
+    # It resolves the `turbo-cache` container by name, so TURBO_API
+    # (devcontainer.json) needs no host-specific address.
+    networks:
+      - default
+      - turbo-cache
+    ports:
+      - ${PORT:-3000}:3000
+      - ${DB_PORT:-}:3001
+    # No cap_add here: NET_ADMIN/NET_RAW exist only for the egress firewall, which
+    # belongs to the claude-code feature, so they are granted from
+    # scripts/claude-code/initialize.sh and only when that feature is declared.
+    # Keep the container running so VS Code / the CLI can attach into it.
+    command: sleep infinity
+
+volumes:
+  # rc-node-modules and rc-meteor-local are not declared here either: the CLI
+  # declares them in the override it generates for devcontainer.json's `mounts`,
+  # with the same project prefix this file would have given them.
+  #
+  # The feature-owned volumes (rc-devcontainer-gh-auth,
+  # rc-devcontainer-claude-config) are declared in the generated
+  # docker-compose.overrides.yml, beside the mounts that use them — see the note
+  # in the service's `volumes` above.
+  #
+  # Yarn's ~/.yarn/berry: the package cache (~650MB once warm) and metadata
+  # index. External with a fixed name, which is what makes it shared: each
+  # worktree runs its own compose project, so an ordinary volume gets namespaced
+  # per worktree and would re-download every package for every checkout. What it
+  # saves is bandwidth and disk rather than a login — nothing in here is secret,
+  # and it is pure cache: `docker volume rm rc-devcontainer-yarn-cache` costs one
+  # slow install, nothing more. Being external also keeps it out of reach of
+  # `docker compose down -v`.
+  #
+  # Created on the host by scripts/ensure-yarn-cache.sh (initializeCommand),
+  # which also creates the berry/ subdirectory — compose does not create missing
+  # external volumes, it errors out on create.
+  yarn-cache:
+    external: true
+    name: rc-devcontainer-yarn-cache
+
+networks:
+  # Created by the standalone turbo-cache project, not by this one — it has to
+  # outlive any single devcontainer and be shared by every worktree.
+  # .devcontainer/scripts/ensure-turbo-cache.sh (initializeCommand) guarantees it
+  # exists before this file is used; without it compose errors out on create.
+  turbo-cache:
+    external: true
