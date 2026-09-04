@@ -1,0 +1,37 @@
+.changeset/presence-disable-per-user.md
+  s_453d8d6e1aa7b9::t_619472164a8f19 5
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 37,122-123
+apps/meteor/client/views/admin/users/UsersTable/UsersTable.tsx
+  ai_agent 87
+apps/meteor/server/settings/accounts.ts
+  ai_agent 777-778,783-784,787,793-794
+.changeset/presence-disable-workspace.md
+  s_453d8d6e1aa7b9::t_619472164a8f19 5
+packages/i18n/src/locales/en.i18n.json
+  s_453d8d6e1aa7b9::t_40a23acdd9d6b8 429-430,432,7015-7018
+apps/meteor/server/services/statusVisibility/service.spec.ts
+  ai_agent 51,279,291,301,313,317,325,329
+apps/meteor/server/lib/statusVisibility/hiddenUsers.ts
+  ai_agent 13
+apps/meteor/tests/end-to-end/api/status-visibility.ts
+  ai_agent 416,427,431
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 6,25-26,34-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "745f660210515209618fa39dad957fca8e27a876",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
