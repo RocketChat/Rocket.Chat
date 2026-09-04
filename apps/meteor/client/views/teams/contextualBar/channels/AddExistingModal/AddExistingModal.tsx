@@ -1,17 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import {
-	Box,
-	Button,
-	Field,
-	FieldLabel,
-	Modal,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalHeader,
-	ModalTitle,
-} from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -29,7 +18,6 @@ export type AddExistingModalProps = {
 	reload?: () => void;
 };
 
-// TODO: Use GenericModal instead of Modal
 const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -62,33 +50,23 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 	);
 
 	return (
-		<Modal
-			aria-label={t('Team_Add_existing_channels')}
+		<GenericModal
+			title={t('Team_Add_existing_channels')}
+			onClose={onClose}
+			onCancel={onClose}
+			confirmText={t('Add')}
+			confirmDisabled={!isDirty}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}
 		>
-			<ModalHeader>
-				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent>
-				<Field marginBlockEnd={24}>
-					<FieldLabel>{t('Channels')}</FieldLabel>
-					<Controller
-						control={control}
-						name='rooms'
-						render={({ field: { value, onChange } }) => <RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} />}
-					/>
-				</Field>
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} type='submit' primary>
-						{t('Add')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+			<Field marginBlockEnd={24}>
+				<FieldLabel>{t('Channels')}</FieldLabel>
+				<Controller
+					control={control}
+					name='rooms'
+					render={({ field: { value, onChange } }) => <RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} />}
+				/>
+			</Field>
+		</GenericModal>
 	);
 };
 
