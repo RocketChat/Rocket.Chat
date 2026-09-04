@@ -334,3 +334,53 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		expect(tunreadUser).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
 	});
 });
+
+/**
+ * The sidebar's own group for a call that is ringing. With the call window it goes away — a ringing call is
+ * listed with the ones already running, behind the navbar button — so it has to still be here without it.
+ */
+describe('the Incoming calls group', () => {
+	const ringingRoom = { ...createFakeSubscription({ t: 'd' }), ...createFakeRoom({ t: 'd' }) } as unknown as SubscriptionWithRoom;
+
+	// Stable: `useSyncExternalStore` compares snapshots by identity, and a fresh array per read never settles.
+	const ringingCalls = [{ callId: 'a-call', uid: 'caller', rid: ringingRoom.rid }];
+
+	const renderWithRingingCall = (conferenceWindowEnabled: boolean) =>
+		renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: mockAppRoot()
+				.wrap((children) => (
+					<VideoConfContext.Provider
+						value={
+							{
+								queryIncomingCalls: () => [() => () => undefined, () => ringingCalls],
+							} as any
+						}
+					>
+						{children}
+					</VideoConfContext.Provider>
+				))
+				.withUser(user)
+				.withSubscriptions([ringingRoom])
+				.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
+				.build(),
+		});
+
+	it('is listed for a ringing call without the call window', () => {
+		const { result } = renderWithRingingCall(false);
+
+		expect(groupsListOf(result.current.groups)).toContain('Incoming_Calls');
+	});
+
+	// An empty dynamic group is left out of the list, so gating the categorisation is what removes the group.
+	it('is gone once the calls are listed elsewhere', () => {
+		const { result } = renderWithRingingCall(true);
+
+		expect(groupsListOf(result.current.groups)).not.toContain('Incoming_Calls');
+	});
+
+	// The room itself must not go missing with the group: it belongs to whichever group it would otherwise be in.
+	it('leaves the ringing room in the list either way', () => {
+		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
+		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
+	});
+});

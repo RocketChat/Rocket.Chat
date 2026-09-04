@@ -1,9 +1,17 @@
-import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import type { IVideoConferenceUser, VideoConferenceCapabilities, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
+import {
+	useConnectionStatus,
+	useEndpoint,
+	useSetting,
+	useStream,
+	useToastMessageDispatch,
+	useUser,
+	useUserId,
+} from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { CallPreferences } from './useCallPreferences';
 import { departureFor } from './useLeaveConferenceOnClose';
@@ -11,6 +19,7 @@ import { conferenceNameFor } from '../../../../lib/videoConference/conferenceNam
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
+import { NEW_CONFERENCE_ID } from '../lib/callWindow';
 
 /**
  * A member of the call, as this window holds them: who they are, and where they stand with the call.
@@ -51,12 +60,31 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
 	}
 };
 
+/**
+ * Whether the call's chat lives in a thread off the call message, rather than in the room itself.
+ *
+ * The mode alone doesn't say. Its registered default is `thread`, so reading it on its own put the chat in a
+ * thread on every workspace with the call window on — including workspaces where the server would never make
+ * one. The server takes three answers before it will: persistent chat enabled, the mode, and a provider that
+ * declares it supports persistent chat (`autoFollowCallThread` refuses on any of them, as `maybeCreateDiscussion`
+ * does for the other mode). Answering differently here means a panel titled "Thread in …" over a thread nobody
+ * is subscribed to, in a call whose chat is the room's.
+ */
+const chatLivesInAThread = (
+	isPersistentChatEnabled: boolean,
+	chatMode: 'thread' | 'main_room',
+	capabilities: VideoConferenceCapabilities | undefined,
+): boolean => isPersistentChatEnabled && chatMode === 'thread' && !!capabilities?.persistentChat;
+
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const subscribeToVideoConference = useStream('video-conference');
+	/** Bumped every time this window starts watching the call, so the catch-up read below happens once per go. */
+	const [watchingSince, setWatchingSince] = useState(0);
+	const { connected } = useConnectionStatus();
 	const queryClient = useQueryClient();
 	const uid = useUserId();
 	// The provider is told who is arriving, so the name in the call is the one the workspace shows.
@@ -66,6 +94,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	// The fallback is only reached where the setting isn't registered, which is a workspace without the call
 	// window — and there the server answers `main_room` too. Once the window is on, the registered value wins.
 	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'main_room') as 'thread' | 'main_room';
+	const isPersistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
 
 	const {
 		data: info,
@@ -80,13 +109,54 @@ export const useConferenceEmbedded = (callId: string) => {
 	// The conference can change under a participant in several ways — the chat moves to another room, the same room
 	// becomes readable by members who couldn't read it, someone joins, declines or leaves — and every one of them
 	// has the same answer: read the conference again. It carries the room, who can see it, and who is in it.
-	useEffect(
-		() =>
-			subscribeToVideoConference(`${callId}/updated`, () => {
-				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-			}),
-		[callId, subscribeToVideoConference, queryClient],
-	);
+	//
+	// Two things this has to get right, because the stream is the window's only word on what the call is doing and
+	// the server refuses a subscription rather than queueing it — and a refused subscription is never retried:
+	//
+	// - **Never ask about a call that cannot exist.** The window opens on `/conference/new` before the conference
+	//   is created, so `new` is a call id this page can be handed; `streamVideoConference.allowRead` looks the call
+	//   up by that id, finds nothing and refuses. Waiting for a real id costs nothing: the id changing re-runs this.
+	// - **Never ask before the server knows who is asking.** `allowRead` resolves the user from the connection and
+	//   refuses when there is none, so a window that subscribes while its session is still being restored is
+	//   refused for good — the very shape of a call window, which opens fresh and authenticates as it loads.
+	//   Waiting for the user id costs nothing and is what makes the subscription survive that race.
+	// - **A subscription is only good while the connection under it is.** One that was refused, or lost with the
+	//   socket, leaves the window watching nothing — silently, since a stream reports neither. So this re-subscribes
+	//   on every connection, and re-reads the conference when it does, because whatever moved while this window was
+	//   away was announced to nobody here.
+	useEffect(() => {
+		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
+			return;
+		}
+
+		const stop = subscribeToVideoConference(`${callId}/updated`, () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		});
+
+		setWatchingSince((epoch) => epoch + 1);
+
+		return stop;
+	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
+
+	// And read the call again once something is listening, once per subscription.
+	//
+	// The read that filled this window happened *before* the subscription existed, and the gap between the two
+	// is not empty: subscribing is a round trip. Whatever changed while it was in flight was announced once, to
+	// nobody here — so nothing brings it back, and the window waits for a *next* event that may never come while
+	// showing the call as it was. Seen in CI: the `sub` went out two seconds after the call was read, the callee
+	// declined in between, and the window kept the pre-decline roster for the rest of the test.
+	//
+	// After the first read has settled, because invalidating one still in flight achieves nothing — the fetch
+	// already running is the one that returns, stale answer and all.
+	const caughtUpAt = useRef(0);
+	useEffect(() => {
+		if (!watchingSince || isInfoPending || caughtUpAt.current === watchingSince) {
+			return;
+		}
+
+		caughtUpAt.current = watchingSince;
+		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+	}, [watchingSince, isInfoPending, callId, queryClient]);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
@@ -135,6 +205,8 @@ export const useConferenceEmbedded = (callId: string) => {
 		const missing = new Set(info.chatAccess.membersWithoutAccess);
 		return { ...info.chatAccess, members: members.filter(({ _id }) => missing.has(_id)) };
 	}, [info, members]);
+
+	const isThreadedChat = chatLivesInAThread(isPersistentChatEnabled, chatMode, info?.capabilities);
 
 	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
 	// choices into the provider's URL — and what marks them as present. So this waits to be asked, rather than
@@ -208,7 +280,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		} as const,
 		room: {
 			rid: info?.discussionRid || info?.rid,
-			tmid: !info?.discussionRid && chatMode === 'thread' ? info?.messages.started : undefined,
+			tmid: !info?.discussionRid && isThreadedChat ? info?.messages.started : undefined,
 			name: info?.chatAccess.name,
 			type: info?.chatAccess.type,
 			loading: isInfoPending,

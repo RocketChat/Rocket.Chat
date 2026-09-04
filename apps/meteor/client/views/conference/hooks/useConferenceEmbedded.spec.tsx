@@ -74,6 +74,91 @@ it('reads the conference again when it changes', async () => {
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(0));
 });
 
+// The stream is the window's only word on what the call is doing, and the server refuses a subscription it
+// can't authorise rather than queueing it — a refusal that is never retried. So *when* the window subscribes
+// is the whole of whether it ever hears anything.
+describe('watching the conference', () => {
+	const renderFor = (initialCallId: string) => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		return {
+			streamRef,
+			...renderHook(({ id }: { id: string }) => useConferenceEmbedded(id), {
+				initialProps: { id: initialCallId },
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withStream('video-conference', streamRef)
+					.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+					.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+					.build(),
+			}),
+		};
+	};
+
+	// `new` is the id the window carries before the call exists. The server looks the conference up by it, finds
+	// nothing, and refuses — and nothing asks again, so the window would watch nothing for as long as it is open.
+	it('asks about nothing while the call does not exist yet', async () => {
+		const { result, streamRef } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has('new/updated')).toBe(false);
+	});
+
+	// The window opens fresh and authenticates as it loads, so the race is its normal condition rather than an
+	// edge: `allowRead` resolves the user from the connection and refuses when there is none, and a refusal is
+	// never retried — the window would then watch nothing for as long as it stayed open.
+	it('asks about nothing before the server knows who is asking', async () => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has(`${callId}/updated`)).toBe(false);
+	});
+
+	// Subscribing is a round trip, and the read the query already made happened before it. Whatever changed in
+	// between was announced once, to nobody — so the catch-up read is the only thing that recovers it, and CI
+	// caught a window sitting on a pre-decline roster for the rest of a test for want of it.
+	it('reads the call again once something is listening', async () => {
+		let reads = 0;
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => {
+					reads += 1;
+					return buildInfo([]);
+				})
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+
+		// Twice: the read that filled the panel, and the one that covers the gap before anything was listening.
+		await waitFor(() => expect(reads).toBeGreaterThan(1));
+	});
+
+	it('starts watching as soon as the call is real', async () => {
+		const { result, streamRef, rerender } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+
+		rerender({ id: callId });
+
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+	});
+});
+
 it('follows the chat to a discussion the conference moved into', async () => {
 	const streamRef: StreamControllerRef<'video-conference'> = {};
 	let discussionRid: string | undefined;
@@ -103,9 +188,14 @@ it('follows the chat to a discussion in thread mode too', async () => {
 	const { result } = renderHook(() => useConferenceEmbedded(callId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			.withSetting('VideoConf_Enable_Persistent_Chat', true)
 			.withSetting('VideoConf_Persistent_Chat_Mode', 'thread')
 			.withStream('video-conference', streamRef)
-			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
+			.withEndpoint(
+				'GET',
+				'/v1/video-conference.info',
+				() => ({ ...buildInfo([]), capabilities: { persistentChat: true }, discussionRid }) as any,
+			)
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
 			.build(),
 	});
@@ -118,6 +208,63 @@ it('follows the chat to a discussion in thread mode too', async () => {
 
 	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
 	expect(result.current.room.tmid).toBeUndefined();
+});
+
+// Where the call's chat lives is the server's answer, and it takes three things to be a thread: persistent chat
+// on, the mode set to `thread`, and a provider that says it supports persistent chat (`autoFollowCallThread`
+// checks all three). The mode's registered default is `thread`, so reading it alone put every call's chat in a
+// thread nobody was subscribed to — the panel titled "Thread in <room>" over a conversation held in the room.
+describe('where the chat lives', () => {
+	const renderWithChatSettings = ({
+		enabled,
+		mode,
+		providerSupport,
+	}: {
+		enabled: boolean;
+		mode: 'thread' | 'main_room';
+		providerSupport: boolean;
+	}) =>
+		renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('VideoConf_Enable_Persistent_Chat', enabled)
+				.withSetting('VideoConf_Persistent_Chat_Mode', mode)
+				.withEndpoint(
+					'GET',
+					'/v1/video-conference.info',
+					() => ({ ...buildInfo([]), capabilities: { persistentChat: providerSupport } }) as any,
+				)
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+	it('is the call message thread when the server would put it there', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBe('some-msg-id');
+	});
+
+	it('is the room while persistent chat is off, whatever the mode says', async () => {
+		const { result } = renderWithChatSettings({ enabled: false, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	it('is the room for a provider that does not do persistent chat', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: false });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	it('is the room in main_room mode', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'main_room', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
 });
 
 // Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices
