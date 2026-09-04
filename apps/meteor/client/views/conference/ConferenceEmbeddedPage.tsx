@@ -1,7 +1,7 @@
 import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,7 +86,14 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const chatVisible = activePanel === 'chat';
 
 	const breakpoints = useBreakpoints();
-	const overlayPanel = !breakpoints.includes('md');
+	const tooShortToSplit = useMediaQuery('(max-height: 520px)');
+
+	// Too small to split, in either direction: below `md` there is no width for a panel beside the call, and a
+	// phone in landscape has the width but not the height — docking there left the call a third of a short screen
+	// and the chat a message list two lines tall above its own composer. Both get the sheet instead.
+	//
+	// Width alone was the first answer and the wrong one: a phone in landscape is 852pt wide, which is `md`.
+	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
 	useConferenceSubscription(room.rid);
 
@@ -231,7 +238,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 					<ConferenceIframe url={conference.url} />
 				</Box>
 
-				<CallPanel visible={!!activePanel} overlay={overlayPanel}>
+				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
 					{activePanel === 'members' && (
 						<CallMembersPanel
 							callId={callId}
