@@ -442,6 +442,10 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 			room.loaded += messages.length;
 		} catch (error) {
+			if (generation !== this.generation(message.rid)) {
+				return;
+			}
+
 			// The target may have been deleted since the link was created; no window to build then.
 			if (!(error instanceof Response && error.status === 404)) {
 				dispatchToastMessage({ type: 'error', message: error });
