@@ -4,19 +4,29 @@ import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
+// All query params are optional per spec.
 const PublicRoomsQuerySchema = {
 	type: 'object',
 	properties: {
+		limit: {
+			// spec default is 0, meaning no limit; negatives are meaningless and Synapse rejects them
+			type: 'integer',
+			minimum: 0,
+			description: 'Maximum number of rooms to return',
+		},
+		since: {
+			type: 'string',
+			description: 'Pagination token from a previous call',
+		},
 		include_all_networks: {
 			type: 'boolean',
 			description: 'Include all networks (ignored)',
 		},
-		limit: {
-			type: 'number',
-			description: 'Maximum number of rooms to return',
+		third_party_instance_id: {
+			type: 'string',
+			description: 'Specific third-party network to request (ignored)',
 		},
 	},
-	required: ['include_all_networks', 'limit'],
 };
 
 const isPublicRoomsQueryProps = ajvQuery.compile(PublicRoomsQuerySchema);
@@ -86,17 +96,29 @@ const PublicRoomsResponseSchema = {
 
 const isPublicRoomsResponseProps = ajv.compile(PublicRoomsResponseSchema);
 
+// All body fields are optional per spec: "Options for which rooms to return, or empty object to use defaults."
 const PublicRoomsPostBodySchema = {
 	type: 'object',
 	properties: {
-		include_all_networks: {
+		limit: {
+			type: 'integer',
+			minimum: 0,
+			description: 'Maximum number of rooms to return',
+			nullable: true,
+		},
+		since: {
 			type: 'string',
+			description: 'Pagination token from a previous request',
+			nullable: true,
+		},
+		include_all_networks: {
+			type: 'boolean',
 			description: 'Include all networks (ignored)',
 			nullable: true,
 		},
-		limit: {
-			type: 'number',
-			description: 'Maximum number of rooms to return',
+		third_party_instance_id: {
+			type: 'string',
+			description: 'Specific third-party network to request (ignored)',
 			nullable: true,
 		},
 		filter: {
@@ -116,93 +138,99 @@ const PublicRoomsPostBodySchema = {
 					nullable: true,
 				},
 			},
+			nullable: true,
 		},
 	},
-	required: ['filter'],
 };
 
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
 export const getMatrixRoomsRoutes = () => {
-	return new Router('/federation')
-		.use(isAuthenticatedMiddleware())
-		.get(
-			'/v1/publicRooms',
-			{
-				query: isPublicRoomsQueryProps,
-				response: {
-					200: isPublicRoomsResponseProps,
-				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async () => {
-				const defaultObj = {
-					join_rule: 'public',
-					guest_can_join: false, // trying to reduce required endpoint hits
-					world_readable: false, // ^^^
-					avatar_url: '', // ?? don't have any yet
-				};
-
-				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
-
-				return {
-					body: {
-						chunk: publicRooms.map((room) => ({
-							...defaultObj,
-							...room,
-						})),
+	return (
+		new Router('/federation')
+			.use(isAuthenticatedMiddleware())
+			// GET /_matrix/federation/v1/publicRooms
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1publicrooms
+			.get(
+				'/v1/publicRooms',
+				{
+					query: isPublicRoomsQueryProps,
+					response: {
+						200: isPublicRoomsResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		)
-		.post(
-			'/v1/publicRooms',
-			{
-				body: isPublicRoomsPostBodyProps,
-				response: {
-					200: isPublicRoomsResponseProps,
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async (c) => {
-				const body = await c.req.json();
+				async () => {
+					const defaultObj = {
+						join_rule: 'public',
+						guest_can_join: false, // trying to reduce required endpoint hits
+						world_readable: false, // ^^^
+						avatar_url: '', // ?? don't have any yet
+					};
 
-				const defaultObj = {
-					join_rule: 'public',
-					guest_can_join: false, // trying to reduce required endpoint hits
-					world_readable: false, // ^^^
-					avatar_url: '', // ?? don't have any yet
-				};
+					const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
 
-				const { filter } = body;
-
-				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
-
-				return {
-					body: {
-						chunk: publicRooms
-							.filter((r) => {
-								if (filter.generic_search_term) {
-									return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
-								}
-
-								// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
-								// TODO: https://rocketchat.atlassian.net/browse/FDR-152 -> Implement logic to handle custom room types
-								// if (filter.room_types) {
-								// }
-
-								return true;
-							})
-							.map((room) => ({
+					return {
+						body: {
+							chunk: publicRooms.map((room) => ({
 								...defaultObj,
 								...room,
 							})),
+						},
+						statusCode: 200,
+					};
+				},
+			)
+			// POST /_matrix/federation/v1/publicRooms
+			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1publicrooms
+			.post(
+				'/v1/publicRooms',
+				{
+					body: isPublicRoomsPostBodyProps,
+					response: {
+						200: isPublicRoomsResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		);
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				async (c) => {
+					const body = await c.req.json();
+
+					const defaultObj = {
+						join_rule: 'public',
+						guest_can_join: false, // trying to reduce required endpoint hits
+						world_readable: false, // ^^^
+						avatar_url: '', // ?? don't have any yet
+					};
+
+					const { filter } = body;
+
+					const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
+
+					return {
+						body: {
+							chunk: publicRooms
+								.filter((r) => {
+									if (filter?.generic_search_term) {
+										return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
+									}
+
+									// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
+									// TODO: https://rocketchat.atlassian.net/browse/FDR-152 -> Implement logic to handle custom room types
+									// if (filter.room_types) {
+									// }
+
+									return true;
+								})
+								.map((room) => ({
+									...defaultObj,
+									...room,
+								})),
+						},
+						statusCode: 200,
+					};
+				},
+			)
+	);
 };
