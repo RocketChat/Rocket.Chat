@@ -9,24 +9,25 @@ const deriveExternalPeerInfoFromInstanceContact = (contact: CallContact): Extern
 
 	return {
 		number: contact.id || 'unknown',
+		...(contact.displayName && { displayName: contact.displayName }),
 	};
 };
 
 const deriveInternalPeerInfoFromInstanceContact = (contact: CallContact): Omit<InternalPeerInfo, 'avatarUrl'> => {
-	if (contact.type !== 'user') {
+	if (contact.type !== 'user' && !contact.uid) {
 		throw new Error('deriveInternalPeerInfoFromInstanceContact: Contact is not a user contact');
 	}
 
 	return {
 		displayName: contact.displayName || 'unknown',
-		userId: contact.id || 'unknown',
+		userId: contact.uid || contact.id || 'unknown',
 		username: contact.username,
 		callerId: contact.sipExtension,
 	};
 };
 
 export const derivePeerInfoFromInstanceContact = (contact: CallContact) => {
-	if (contact.type === 'sip') {
+	if (contact.type === 'sip' && !contact.uid) {
 		return deriveExternalPeerInfoFromInstanceContact(contact);
 	}
 

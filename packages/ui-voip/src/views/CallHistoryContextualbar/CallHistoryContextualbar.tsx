@@ -63,6 +63,12 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 				<InfoPanel>
 					<InfoPanelSection fontScale='p1b'>
 						<CallHistoryUser contact={contact} />
+						{'number' in contact && contact.number && (
+							<InfoPanelSection>
+								<InfoPanelLabel>{t('Number')}</InfoPanelLabel>
+								<InfoPanelText>{contact.number}</InfoPanelText>
+							</InfoPanelSection>
+						)}
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1b'>
@@ -92,7 +98,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{isCallHistoryInternalContact(contact) && directMessage && (
+					{directMessage && (
 						<Button onClick={directMessage}>
 							<Icon name='balloon' size='x20' marginInlineEnd='x4' />
 							{t('Direct_message')}

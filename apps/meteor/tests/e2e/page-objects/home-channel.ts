@@ -20,6 +20,7 @@ import {
 	UserInfoFlexTab,
 	FilesFlexTab,
 } from './fragments';
+import { SidebarRail } from './fragments/siderail';
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
@@ -61,11 +62,14 @@ export class HomeChannel {
 
 	readonly threadComposer: ThreadComposer;
 
+	readonly sidebarRail: SidebarRail;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
+		this.sidebarRail = new SidebarRail(page);
 		this.navbar = new Navbar(page);
 		this.userCard = new UserCard(page);
 		this._tabs = {

@@ -5,9 +5,10 @@ import type { AvailableViews } from '../context/MediaCallInstanceContext';
 const filter = (view: AvailableViews, _index: number, array: AvailableViews[]) => {
 	switch (view) {
 		case 'widget':
-			return !array.includes('room');
+			return !array.includes('room') && !array.includes('inline-widget');
 		case 'popout':
 		case 'room':
+		case 'inline-widget':
 		default:
 			return true;
 	}

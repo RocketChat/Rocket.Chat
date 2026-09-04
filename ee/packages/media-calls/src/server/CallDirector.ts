@@ -24,6 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+	sipCallId?: string;
 };
 
 // expiration checks by call id
@@ -36,8 +37,7 @@ class MediaCallDirector {
 
 		const modified = await this.hangupCallById(call._id, { endedBy, reason });
 		if (modified) {
-			await actorAgent.onCallEnded(call._id);
-			await actorAgent.oppositeAgent?.onCallEnded(call._id);
+			await this.triggerOnCallEnded(call, actorAgent);
 		}
 	}
 
@@ -62,13 +62,18 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
+		data: {
+			calleeContractId: string;
+			webrtcAnswer?: RTCSessionDescriptionInit;
+			supportedFeatures: CallFeature[];
+			sipCallId?: string;
+		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
 		// To avoid race conditions, load the negotiation before changing the call state
 		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		const negotiation = data.webrtcAnswer ? await MediaCallNegotiations.findLatestByCallId(call._id) : null;
 
 		const { webrtcAnswer, ...acceptData } = data;
 
@@ -209,7 +214,16 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const participants = [caller, callee];
+		const allowedFeatures = features.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureAvailableForParticipants(feature, participants),
+		);
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
 			_id: randomUUID(),
@@ -236,6 +250,7 @@ class MediaCallDirector {
 			...(divertedBy && { divertedBy }),
 
 			features: allowedFeatures,
+			...(params.sipCallId && { sipCallId: params.sipCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -454,6 +469,22 @@ class MediaCallDirector {
 		} catch (err) {
 			logger.error({ msg: 'Failed to terminate call.', err, callId: call._id, params });
 			return modified;
+		}
+	}
+
+	private async getAgentFromCall(call: IMediaCall, role: CallRole): Promise<IMediaCallAgent | null> {
+		return this.cast.getAgentFromCall(call, role).catch(() => null);
+	}
+
+	private async triggerOnCallEnded(call: IMediaCall, agent: IMediaCallAgent): Promise<void> {
+		await agent.onCallEnded(call._id);
+		if (agent.oppositeAgent) {
+			return agent.oppositeAgent.onCallEnded(call._id);
+		}
+
+		const oppositeAgent = await this.getAgentFromCall(call, agent.oppositeRole);
+		if (oppositeAgent) {
+			await oppositeAgent?.onCallEnded(call._id);
 		}
 	}
 }

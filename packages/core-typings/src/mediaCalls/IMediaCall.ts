@@ -20,6 +20,7 @@ export type ServerActor = {
 };
 
 export type MediaCallContactInformation = {
+	uid?: string;
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;
@@ -69,6 +70,11 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	uids: IUser['_id'][];
 
+	escalatedAt?: Date;
+	escalatedByPeerAt?: Date;
+
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
 	features: string[];
+
+	sipCallId?: string;
 }

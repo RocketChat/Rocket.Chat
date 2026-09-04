@@ -22,7 +22,7 @@ export type MediaSignalingEvents = {
 	sessionStateChange: void;
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
-	endedCall: void;
+	endedCall: { call: IClientMediaCall; wasHidden: boolean };
 	hiddenCall: void;
 	registered: { activeCalls: IClientMediaCall['callId'][] };
 	outOfSync: { missingCalls: IClientMediaCall['callId'][] };
@@ -71,7 +71,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastRegisterTimestamp: Date | null = null;
 
-	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
+	private lastState: { mainCall: ClientMediaCall | null; hidden: boolean; busy: boolean };
 
 	private sessionEnded = false;
 
@@ -121,7 +121,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.deviceId = null;
 		this.currentDeviceId = null;
 		this.callsToGetUserMedia = 0;
-		this.lastState = { hasCall: false, hasVisibleCall: false, hasBusyCall: false };
+		this.lastState = { mainCall: null, hidden: false, busy: false };
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
 		this.registration = new SessionRegistration({
@@ -241,6 +241,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		const call = this.getOrCreateCallBySignal(signal);
+		if (!call) {
+			return;
+		}
 
 		if (signal.type === 'notification' && signal.signedContractId) {
 			if (signal.signedContractId === this._sessionId) {
@@ -376,11 +379,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall {
+	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
 		if (existingCall) {
 			return existingCall;
+		}
+
+		// Notifications that do not cause state change can be ignored if the call is still unknown
+		if (signal.type === 'notification' && ['escalated', 'trying'].includes(signal.notification)) {
+			return null;
 		}
 
 		return this.createCall(signal.callId);
@@ -679,9 +687,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
+		call.emitter.on('ringing', () => this.onRingingCall());
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
+		call.emitter.on('escalated', () => this.onSessionStateChange());
 
 		return call;
 	}
@@ -742,6 +752,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.onSessionStateChange();
 	}
 
+	private onRingingCall(): void {
+		this.config.logger?.debug('MediaSignalingSession.onRingingCall');
+		this.emit('sessionStateChange');
+	}
+
 	private async onScreenShareRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.onScreenShareRequestChange');
 
@@ -755,30 +770,27 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		const hadCall = this.lastState.hasCall;
-		const hadVisibleCall = this.lastState.hasVisibleCall;
-		const hadBusyCall = this.lastState.hasBusyCall;
+		const { mainCall: oldCall, hidden: wasHidden, busy: wasBusy } = this.lastState;
 
 		if (!this.registration.active) {
-			if (hadCall) {
-				this.emit('endedCall');
+			if (oldCall) {
+				this.emit('endedCall', { call: oldCall, wasHidden });
 			}
 			this.config.logger?.debug('skipping session events on inactive session');
 			return;
 		}
 
 		// Do not skip local calls if we transitioned from a different active call to it
-		const mainCall = this.getMainCall(!hadCall);
-		const hasCall = Boolean(mainCall);
-		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
-		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
+		const mainCall = this.getMainCall(!oldCall);
+		const hidden = mainCall?.hidden ?? false;
+		const busy = mainCall?.busy ?? false;
 
-		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
+		this.lastState = { mainCall, hidden, busy };
 
-		if (mainCall && !hadCall) {
+		if (mainCall && !oldCall) {
 			this.emit('newCall', { call: mainCall });
 		}
-		if (mainCall && hasBusyCall && !hadBusyCall) {
+		if (mainCall && busy && !wasBusy) {
 			this.emit('acceptedCall', { call: mainCall });
 		}
 
@@ -791,10 +803,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 		}
 
-		if (hadCall && !hasCall) {
-			this.emit('endedCall');
-		} else if (hadVisibleCall && !hasVisibleCall) {
-			this.emit('hiddenCall');
+		if (oldCall) {
+			if (!mainCall) {
+				this.emit('endedCall', { call: oldCall, wasHidden });
+			} else if (!wasHidden && hidden) {
+				this.emit('hiddenCall');
+			}
 		}
 	}
 }

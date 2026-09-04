@@ -98,6 +98,76 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints extends MediaCallsAnswerEndpoints {}
 }
 
+type MediaCallsEscalate = {
+	callId: string;
+};
+
+const MediaCallsEscalateSchema: JSONSchemaType<MediaCallsEscalate> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsEscalateProps = ajv.compile<MediaCallsEscalate>(MediaCallsEscalateSchema);
+
+const mediaCallsEscalateEndpoints = API.v1.post(
+	'media-calls.escalate',
+	{
+		response: {
+			200: ajv.compile<{
+				providerName: string;
+				url: string;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					providerName: {
+						type: 'string',
+						description: 'The name of the conference provider.',
+					},
+					url: {
+						type: 'string',
+						description: 'The url of the conference.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['providerName', 'url', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		body: isMediaCallsEscalateProps,
+		authRequired: true,
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const url = await MediaCall.escalateCall(this.userId, { callId });
+
+		return API.v1.success({
+			providerName: 'core.pexip',
+			url,
+		});
+	},
+);
+
+type MediaCallsEscalateEndpoints = ExtractRoutesFromAPI<typeof mediaCallsEscalateEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsEscalateEndpoints {}
+}
+
 type MediaCallsStateSignalsParams = {
 	contractId: string;
 };
@@ -209,4 +279,69 @@ type MediaCallsStateEndpoints = ExtractRoutesFromAPI<typeof mediaCallsStateEndpo
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsStateEndpoints {}
+}
+
+type MediaCallsInfoParams = {
+	callId: string;
+};
+
+const MediaCallsInfoSchema: JSONSchemaType<MediaCallsInfoParams> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsInfoProps = ajv.compile<MediaCallsInfoParams>(MediaCallsInfoSchema);
+
+const mediaCallsInfoEndpoints = API.v1.get(
+	'media-calls.info',
+	{
+		response: {
+			200: ajv.compile<{
+				call: IMediaCall;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					call: {
+						type: 'object',
+						$ref: '#/components/schemas/IMediaCall',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['call', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		query: isMediaCallsInfoProps,
+		authRequired: true,
+	},
+	async function action() {
+		const call = await MediaCalls.findOneById(this.queryParams.callId);
+
+		if (!call?.uids.includes(this.userId)) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({
+			call,
+		});
+	},
+);
+
+type MediaCallsInfoEndpoints = ExtractRoutesFromAPI<typeof mediaCallsInfoEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsInfoEndpoints {}
 }

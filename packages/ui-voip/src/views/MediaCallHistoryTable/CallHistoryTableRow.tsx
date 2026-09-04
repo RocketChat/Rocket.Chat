@@ -5,6 +5,7 @@ import { intlFormatDistance } from 'date-fns';
 import type { ReactNode } from 'react';
 
 import CallHistoryTableDirection from './CallHistoryTableDirection';
+import CallHistoryTableNumber from './CallHistoryTableNumber';
 import CallHistoryTableStatus from './CallHistoryTableStatus';
 import CallHistoryUser from '../../components/CallHistoryUser';
 import type {
@@ -44,6 +45,9 @@ const CallHistoryTableRow = <T extends CallHistoryContact>({
 		<GenericTableRow key={_id} onClick={onClick} tabIndex={0} role='link' action>
 			<GenericTableCell>
 				<CallHistoryUser contact={contact} />
+			</GenericTableCell>
+			<GenericTableCell>
+				<CallHistoryTableNumber contact={contact} />
 			</GenericTableCell>
 			<GenericTableCell>
 				<CallHistoryTableDirection direction={type} />

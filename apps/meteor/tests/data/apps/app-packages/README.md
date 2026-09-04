@@ -667,3 +667,74 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 ```
 
 </details>
+
+#### Media Call Reader Test
+
+File name: `media-call-reader-test_0.0.1.zip`
+
+An app with the `media-call.read` permission that exposes a public API endpoint for testing the `MediaCallRead` accessor. The endpoint `GET /read-call?callId=<id>` calls `read.getMediaCallReader().getById(callId)` and returns `{ call: <IMediaCall | null> }`.
+
+Used by `apps/meteor/tests/end-to-end/apps/app-media-call-reader.ts`.
+
+<details>
+<summary>App source code</summary>
+
+**app.json** (relevant excerpt)
+```json
+{
+    "permissions": [
+        { "name": "media-call.read" }
+    ]
+}
+```
+
+**MediaCallReaderTestApp.ts**
+```typescript
+import {
+    IAppAccessors, IConfigurationExtend, IHttp, ILogger,
+    IModify, IPersistence, IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+
+class ReadCallEndpoint extends ApiEndpoint {
+    public path = 'read-call';
+
+    public async get(
+        request: IApiRequest,
+        _endpoint: IApiEndpointInfo,
+        read: IRead,
+        _modify: IModify,
+        _http: IHttp,
+        _persis: IPersistence,
+    ): Promise<IApiResponse> {
+        const { callId } = request.query;
+
+        if (!callId) {
+            return { status: 400, content: { error: 'callId query parameter is required' } };
+        }
+
+        const call = await read.getMediaCallReader().getById(callId);
+
+        return { status: 200, content: { call: call || null } };
+    }
+}
+
+export class MediaCallReaderTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [new ReadCallEndpoint(this)],
+        });
+    }
+}
+```
+
+</details>

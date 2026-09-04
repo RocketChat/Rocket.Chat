@@ -10,7 +10,7 @@ import type { CallActorType } from './common';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -36,6 +36,7 @@ export const callHangupReasonList = [
 	'timeout-remote-sdp', // Timeout waiting for the remote SDP
 	'timeout-local-sdp', // Timeout while generating the local SDP + waiting for ICE Gathering
 	'timeout-activation', // Timeout connecting to the negotiated session
+	'timeout-accepting', // Timeout waiting for server to acknowledge our acceptance
 	'timeout', // The call state hasn't progressed for too long
 	'signaling-error', // Hanging up because of an error during the signal processing
 	'service-error', // Hanging up because of an error setting up the service connection
@@ -44,9 +45,12 @@ export const callHangupReasonList = [
 	'error', // Hanging up because of an unidentified error
 	'unknown', // One of the call's signed users reported they don't know this call
 	'another-client', // One of the call's users requested a hangup from a different client session than the one where the call is happening
+	'conference-escalation', // The user has escalated this call into a video conference
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
+export const isCallHangupReason = (reason: string): reason is CallHangupReason =>
+	(callHangupReasonList as readonly string[]).includes(reason);
 
 export const callAnswerList = [
 	'accept', // actor accepts the call
@@ -62,6 +66,7 @@ export const callNotificationList = [
 	'active', // notify that call activity was confirmed
 	'hangup', // notify that the call is over;
 	'trying', // notify that the other client is connecting but still need more time
+	'escalated', // notify that the call was escalated to a video-conference
 ] as const;
 
 export type CallNotification = (typeof callNotificationList)[number];
@@ -118,6 +123,7 @@ export interface IClientMediaCall {
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isFeatureAvailable(feature: CallFeature): boolean;
 	hasFlag(flag: CallFlag): boolean;
+	shouldSkipSoundEffects(): boolean;
 
 	readonly localParticipant: IClientMediaCallLocalParticipant;
 	readonly remoteParticipants: IClientMediaCallRemoteParticipant[];

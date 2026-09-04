@@ -86,7 +86,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				return;
 			}
 
-			if (!anchor) {
+			if (!anchor || anchor.tagName === 'IFRAME') {
 				contextValue.close();
 				return;
 			}
