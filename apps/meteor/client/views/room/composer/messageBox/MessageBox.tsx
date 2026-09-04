@@ -136,7 +136,7 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useStableCallback(() => {
+	const handleSendMessage = useStableCallback(async () => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
@@ -144,12 +144,14 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		popup.clear();
 
-		onSend?.({
+		await onSend?.({
 			value: text,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
 		});
+
+		flushDraft(chat.composer?.text ?? '');
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {

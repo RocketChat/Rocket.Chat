@@ -369,6 +369,78 @@ describe('flushDraft', () => {
 		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
 		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'typed message' });
 	});
+
+	it('should flush the given value instead of the persisted draft', async () => {
+		const { result, endpointHandler } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('edited message');
+		});
+
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
+		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'edited message' });
+	});
+
+	it('should clear the server draft when flushed with an empty value', async () => {
+		const { result, endpointHandler } = renderUseDraft({ serverDraft: 'server draft' });
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('');
+		});
+
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
+		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: '' });
+	});
+
+	it('should clear the server thread draft when flushed with an empty value', async () => {
+		const { result, endpointHandler } = renderUseDraft({ tmid: 'tmid', serverDraft: 'server draft' });
+
+		act(() => {
+			result.current.persistLocal('typed in thread');
+			result.current.flushDraft('');
+		});
+
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
+		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: '', tmid: 'tmid' });
+	});
+
+	it('should remove the local copy once the draft is cleared on the server', async () => {
+		const { result } = renderUseDraft({ serverDraft: 'server draft' });
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('');
+		});
+
+		await waitFor(() => expect(readLocalDraft('rid')).toBe(null));
+	});
+
+	it('should not call the endpoint when flushing an empty value with no server draft', () => {
+		const { result, endpointHandler } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('');
+			result.current.flushDraft('');
+		});
+
+		expect(endpointHandler).not.toHaveBeenCalled();
+	});
+
+	it('should not flush the persisted draft after it was superseded by an explicit flush', async () => {
+		const { result, endpointHandler } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('sent message');
+			result.current.flushDraft();
+		});
+
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
+		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'sent message' });
+	});
 });
 
 describe('referential stability', () => {
