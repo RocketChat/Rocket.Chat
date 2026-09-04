@@ -236,6 +236,8 @@ test.describe('Apps > Media call events', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 		await uninstallApp(appId);
 		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', screenSharingWasEnabled);
+		// `api.login` builds a request context of its own per user, and the fixture disposes none of them
+		await Promise.all(Object.values(userApis).map((userApi) => userApi.dispose()));
 		await connection.close();
 	});
 
