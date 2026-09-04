@@ -3,6 +3,7 @@ import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
+	useCurrentModal,
 	useEndpoint,
 	useTranslation,
 	useRouteParameter,
@@ -11,7 +12,7 @@ import {
 	useRouter,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -48,6 +49,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
+	const currentModal = useCurrentModal();
+	
 	const dispatchToastMessage = useToastMessageDispatch();
 	const openIncompatibleModal = useOpenIncompatibleModal();
 
@@ -87,10 +90,25 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = app.status ? appEnabledStatuses.includes(app.status) : false;
 
+	// Helper to open modal
+	const openModal = useCallback(
+		(modal: ReactNode) => {
+			setModal(modal);
+		},
+		[setModal],
+	);
+
 	const closeModal = useCallback(() => {
 		setModal(null);
 		setLoading(false);
 	}, [setModal, setLoading]);
+
+	// Reset isLoading when modal is closed by any means (including backdrop/ESC)
+	useEffect(() => {
+		if (!currentModal) {
+			setLoading(false);
+		}
+	}, [currentModal]);
 
 	const marketplaceActions = useMarketplaceActions();
 
@@ -128,9 +146,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
 	const missingAddonHandler = useCallback(
 		(actionType: AddonActionType) => {
-			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
+			openModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
 		},
-		[appInstallationHandler, closeModal, setModal],
+		[appInstallationHandler, closeModal, openModal],
 	);
 
 	const handleAddon = useCallback(
@@ -179,8 +197,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			}
 		};
 
-		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
+		openModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
+	}, [app, isSubscribed, openModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
 		router.navigate({
@@ -205,10 +223,10 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				handleAPIError(error);
 			}
 		};
-		setModal(
+		openModal(
 			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [app.name, closeModal, setAppStatus, setModal, t]);
+	}, [app.name, closeModal, setAppStatus, openModal, t]);
 
 	const handleEnable = useCallback(() => {
 		handleAddon('enable', async () => {
@@ -248,7 +266,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				await handleSubscription();
 			};
 
-			setModal(
+			openModal(
 				<WarningModal
 					close={closeModal}
 					cancel={uninstall}
@@ -258,6 +276,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
 				/>,
 			);
+			return;
 		}
 
 		if (!appCountQuery.data) {
@@ -265,7 +284,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		}
 
 		if (app.migrated) {
-			setModal(
+			openModal(
 				<UninstallGrandfatheredAppModal
 					context={context}
 					appName={app.name}
@@ -277,7 +296,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			return;
 		}
 
-		setModal(
+		openModal(
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [
@@ -285,7 +304,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		appCountQuery.data,
 		app.migrated,
 		app.name,
-		setModal,
+		openModal,
 		closeModal,
 		t,
 		uninstallApp,
