@@ -1769,7 +1769,12 @@ export const roomEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, next, previous, lastSeen, showThreadMessages = true } = this.queryParams;
+			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
+
+			if ([next, previous, aroundId].filter(Boolean).length > 1) {
+				throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
+			}
+
 			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
 			// honors the API_Upper_Count_Limit cap.
 			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
@@ -1794,10 +1799,20 @@ export const roomEndpoints = API.v1
 				return API.v1.forbidden();
 			}
 
+			let around: IMessage | undefined;
+			if (aroundId) {
+				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				if (!message) {
+					return API.v1.notFound();
+				}
+				around = message;
+			}
+
 			const result = await loadRoomHistory({
 				userId: this.userId,
 				next,
 				previous,
+				around,
 				lastSeen: lastSeen ? new Date(lastSeen) : undefined,
 				count,
 				showThreadMessages,
