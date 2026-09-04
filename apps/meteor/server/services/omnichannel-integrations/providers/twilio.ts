@@ -226,11 +226,12 @@ export class Twilio implements ISMSProvider {
 				isSuccess: result.status !== 'failed',
 				resultMsg: result.status,
 			};
-		} catch (e: any) {
-			await notifyAgent(userId, rid, e.message);
+		} catch (e) {
+			const message = e instanceof Error ? e.message : String(e);
+			await notifyAgent(userId, rid, message);
 			return {
 				isSuccess: false,
-				resultMsg: e.message,
+				resultMsg: message,
 			};
 		}
 	}
