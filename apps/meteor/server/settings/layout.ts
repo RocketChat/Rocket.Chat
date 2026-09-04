@@ -221,6 +221,7 @@ export const createLayoutSettings = () =>
 				code: 'application/json',
 				multiline: true,
 				public: true,
+				enableQuery: [{ _id: 'Accounts_AllowFeaturePreview', value: true }],
 				i18nLabel: 'Room_Toolbox_Layout',
 				i18nDescription: 'Room_Toolbox_Layout_Setting_description',
 			});
