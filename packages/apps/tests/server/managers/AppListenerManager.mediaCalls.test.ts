@@ -155,15 +155,18 @@ describe('AppListenerManager media call events', () => {
 		/**
 		 * The one key the app named, in every language it ships it in - not the whole catalogue,
 		 * which would cross the boundary on every prevented call.
+		 *
+		 * The languages are keyed the way `AppPackageParser` stores them, all lowercase, because a
+		 * host looks them up by the code the workspace runs in, which is not.
 		 */
-		it('slices the app translations of the key the result named', async () => {
+		it('slices the app translations of the key the result named, under the language codes a host reads', async () => {
 			const outcome = await runPreCallCreated([
 				mockApp(
 					'preventing',
 					{ [AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED]: () => EventResult.prevent({ i18n: { key: 'callee_is_dnd' } }) },
 					{
 						'en': { callee_is_dnd: 'The callee is on a do-not-disturb list', another_key: 'not asked for' },
-						'pt-BR': { callee_is_dnd: 'O destinatário está em modo não perturbe' },
+						'pt-br': { callee_is_dnd: 'O destinatário está em modo não perturbe' },
 						'de': { another_key: 'nicht gefragt' },
 					},
 				),
