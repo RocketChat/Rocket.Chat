@@ -1,0 +1,13 @@
+apps/meteor/client/views/admin/users/AdminUserForm.tsx
+  ai_agent 39,61,88,133,177-179,182-186,486
+apps/meteor/client/views/admin/users/UsersTable/UsersTableRow.tsx
+  ai_agent 141
+apps/meteor/client/views/admin/users/AdminUserStatusField.tsx
+  ai_agent 1-4,7-8,10-14,17-18,20-23,25-47,49-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "cd2630e271b10971bc5377d463eea52894709fdc",
+  "prompts": {}
+}
