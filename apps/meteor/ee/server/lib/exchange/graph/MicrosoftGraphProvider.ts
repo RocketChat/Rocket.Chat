@@ -87,11 +87,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		await this.tokenClient.getAccessToken();
 	}
 
-	public async listEvents(mailbox: string, window: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
+	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
 		const fullRead = !cursor;
 		const items: ExchangeEvent[] = [];
 
-		let url = cursor ?? this.calendarViewDeltaUrl(mailbox, window);
+		let url = cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow);
 
 		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
 			const payload = await this.requestJson<GraphDeltaResponse>(url, { headers: { Prefer: PREFER_UTC } });
@@ -114,10 +114,10 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
 	}
 
-	private calendarViewDeltaUrl(mailbox: string, window: DateRange): string {
+	private calendarViewDeltaUrl(mailbox: string, timeWindow: DateRange): string {
 		const params = new URLSearchParams({
-			startDateTime: window.start.toISOString(),
-			endDateTime: window.end.toISOString(),
+			startDateTime: timeWindow.start.toISOString(),
+			endDateTime: timeWindow.end.toISOString(),
 		});
 
 		return `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}/calendarView/delta?${params.toString()}`;
