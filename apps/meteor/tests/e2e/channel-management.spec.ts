@@ -148,8 +148,8 @@ test.describe.serial('channel-management', () => {
 
 	test('should open room info when clicking on roomName', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.getBtnOpenRoomInfo(targetChannel).focus();
-		await expect(poHomeChannel.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
+		await poHomeChannel.btnOpenRoomInfo.focus();
+		await expect(poHomeChannel.btnOpenRoomInfo).toBeFocused();
 		await page.keyboard.press('Space');
 		await page.getByRole('dialog').waitFor();
 
