@@ -146,8 +146,6 @@ API.v1.post(
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
-		// Refusing here is the only place the server can guarantee that server-side
-		// sync and the legacy per-user sync never both write to `calendar_event`.
 		if (settings.get<string>('Outlook_Calendar_Mode') === 'server') {
 			return API.v1.failure('error-calendar-import-disabled-in-server-mode');
 		}
