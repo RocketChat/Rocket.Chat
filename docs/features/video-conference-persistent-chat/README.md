@@ -256,7 +256,9 @@ rather than a taste, so `AppLayoutThemeWrapper` lets it through even where a lay
 
 The conference is a column: a top bar carrying the call's name and its controls, then a row holding the call and the chat panel.
 
-`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. A provider running the call in here rather than in an iframe brings mic, camera and hang-up of its own; where those go is that provider's to decide, and is not guessed at here.
+`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. It keeps them for **both** kinds of provider: they are about this window rather than about the call, so they belong in one place regardless of who is drawing the call itself.
+
+A provider running the call in here rather than in an iframe brings mic, camera, screen and hang-up of its own. Those go in `CallBar`, the bottom strip, which the page hands the provider as a portal host (`actionsContainer`) — so there is one bar for the call rather than the provider's strip stacked above the window's. `CallBar` exists only for those controls: an iframe provider keeps its controls inside the frame and gets no bottom strip at all, because an empty one would say there is something down there to use. Nothing else goes in it — the panel toggles are in the top bar, and putting them in both showed the same two buttons twice, once above the call and once below it.
 
 `CallPanel` is the product's own `Contextualbar`, so a panel beside a call has the same edges and elevation as one beside a room; it is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
 
@@ -484,20 +486,16 @@ Three details carry most of the weight:
   leaving is never revived this way — the guard is in `renewUserPresenceById`'s query, so a heartbeat still in
   flight behind someone who left matches nothing.
 
-This is deliberately **provider-agnostic**: the renewing window is ours whether the call renders inside it or is
-handed to an iframe, so it needs no cooperation from Pexip, Jitsi or anyone else. Where a provider *can* be asked
-who is in a room it may register a **presence probe** (`videoConfPresence`), whose answer renews the same leases
-from the server side — which matters because browsers throttle a background window's timers to roughly one a
-minute, and a call is usually something you listen to while looking at something else. LiveKit registers one; a
-provider reached by URL registers nothing and loses nothing but that. A probe returning `undefined` means "no
-answer", which is what an unreachable provider says, and it is never read as "nobody is there" — our own network
-trouble must not empty someone else's call.
+This is deliberately **provider-agnostic**, and deliberately the *only* source of presence: the renewing window is
+ours whether the call renders inside it or is handed to an iframe, so it needs no cooperation from Pexip, Jitsi,
+LiveKit or anyone else. Who is in a call is answered in one place, by evidence we own — a second source that could
+disagree with the roster is how a call ends up counted as occupied by one half of the code and empty by the other.
 
-**Known limitation.** For a provider with no probe, presence means *"still has the conference window open on this
-call"*. Hang up inside the iframe and leave the tab open and you stay listed until the window closes. Closing that
-gap needs the provider to report it (the `postMessage` bridge described in [Deferred to
-follow-ups](#deferred-to-follow-ups)) or a management API to ask — both per-provider, which is why the lease is the
-floor rather than the ceiling.
+**Known limitation.** Presence means *"still has the conference window open on this call"*. Hang up inside the
+iframe and leave the tab open and you stay listed until the window closes; a window whose timers the browser has
+throttled hard enough to miss `PRESENCE_LEASE_MS` of renewals reads as gone until it renews again. Both are the
+cost of a single source of truth, and the lease is long enough — three minutes against a thirty-second heartbeat —
+that the second needs five missed renewals in a row.
 
 ### The window that opened the call watches it
 

@@ -6,10 +6,13 @@ export * from './Actions';
 
 export { default as ToggleButton } from './ToggleButton';
 export { default as ActionButton } from './ActionButton';
+export { default as VoiceActivity } from './VoiceActivity';
 export { default as Keypad } from './Keypad/Keypad';
 export { useInfoSlots } from './PeerInfo/useInfoSlots';
 export { default as PeerAutocomplete } from './PeerAutocomplete';
 export { default as Timer } from './Timer';
 export { default as DevicePicker } from './DevicePicker';
+export { default as CameraPicker } from './CameraPicker';
+export { default as LayoutPicker } from './LayoutPicker';
 export { default as CallHistoryInternalUser } from './CallHistoryInternalUser';
 export { default as CallHistoryExternalUser } from './CallHistoryExternalUser';

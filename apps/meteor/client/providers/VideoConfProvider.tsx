@@ -12,6 +12,7 @@ import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+import { useOptionalLiveKitVideoConf } from '../views/videoConference/livekit/LiveKitVideoConfContext';
 
 export type VideoConfContextProviderProps = { children: ReactNode };
 
@@ -50,6 +51,19 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 				watchCallWindow(callId, target);
 			}),
 		[handleOpenCall, router, conferenceWindowEnabled, watchCallWindow],
+	);
+
+	// An embedded provider mounts its call in place rather than opening a URL, so the join is forwarded into that
+	// provider's own React context here — which is what keeps the manager singleton free of a dependency on it.
+	const joinEmbeddedCall = useOptionalLiveKitVideoConf()?.joinCall;
+	useEffect(
+		() =>
+			VideoConfManager.on('call/joinEmbedded', ({ callId, rid, providerName, preferences }) => {
+				if (providerName === 'livekit') {
+					joinEmbeddedCall?.({ callId, rid, preferences });
+				}
+			}),
+		[joinEmbeddedCall],
 	);
 
 	useEffect(

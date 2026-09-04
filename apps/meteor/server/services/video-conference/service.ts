@@ -212,12 +212,35 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
-			throw new Error(e);
-		});
+		// Only a provider that came from an app has an app to ask. A built-in one is registered from bootstrap, so
+		// the apps engine has never heard of it and raises `VideoConfProviderNotRegisteredError` — which reached
+		// whoever clicked the message block's info button as a 500 with nothing said. The same guard the other
+		// provider hooks already use, for the same reason.
+		if (!this.isEmbeddedProvider(call.providerName)) {
+			const blocks = await (await this.getProviderManager())
+				.getVideoConferenceInfo(call.providerName, call, user || undefined)
+				.catch((e) => {
+					throw new Error(e);
+				});
 
-		if (blocks?.length) {
-			return blocks as UiKit.ModalSurfaceLayout;
+			if (blocks?.length) {
+				return blocks as UiKit.ModalSurfaceLayout;
+			}
+		}
+
+		// And a call held in our own window has no URL to offer, so the section below would have read
+		// `**Meeting URL**: undefined`. Who is in the call is what the button is clicked to find out.
+		if (!call.url) {
+			return [
+				{
+					blockId: 'videoconf-info',
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: i18n.t('__count__people_in_the_call', { count: call.users.filter(isInVideoConference).length }),
+					},
+				},
+			];
 		}
 
 		return [
@@ -1032,8 +1055,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
-		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
-		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike.
+		// provider's React tree, so the empty string is what tells it there is nothing to open. Who is in the
+		// call is the roster's business either way: that entry is the `onJoinVideoConference` callback's doing,
+		// fired above for every provider alike.
 		if (this.isEmbeddedProvider(call.providerName)) {
 			return '';
 		}
@@ -1757,7 +1781,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					await this.endCall(call._id);
 				}
 			} catch (err) {
-				// One unreachable provider or one malformed call must not stop the sweep for every other call.
+				// One malformed call must not stop the sweep for every other call.
 				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
 			}
 		}
