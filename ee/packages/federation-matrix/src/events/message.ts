@@ -1,11 +1,10 @@
 import { FederationMatrix, Message } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Logger } from '@rocket.chat/logger';
+import { logger } from '../logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { getThreadMessageId } from '../helpers/getThreadMessageId';
 
-const logger = new Logger('federation-matrix:message');
 
 export function message() {
 	federationSDK.eventEmitterService.on('homeserver.matrix.message', async (event) => {
