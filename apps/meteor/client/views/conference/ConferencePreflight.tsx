@@ -366,9 +366,11 @@ const ConferencePreflight = ({
 					alignItems='center'
 					marginBlockStart={12}
 					paddingInline={20}
-					// A grid rather than flex: equal columns are what make the three read as one set, and flex
-					// sizes to content however hard it is pushed. `minmax(0, 1fr)` is what lets them truncate.
-					style={{ gap: 8, gridAutoFlow: 'column', gridAutoColumns: 'minmax(0, 1fr)' }}
+					// A grid rather than flex: equal columns are what make these read as one set, and flex sizes to
+					// content however hard it is pushed. `auto-fit` is what makes them wrap: three columns while
+					// there is room for three, and fewer — full width, one per row — on a phone, where forcing
+					// three cut every device name down to `Disp…` and said nothing at all.
+					style={{ gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
 				>
 					{capabilities.mic && (
 						<CallDeviceMenu
