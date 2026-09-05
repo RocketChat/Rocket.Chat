@@ -181,6 +181,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 		showThreadMessages?: boolean,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]>;
 	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number>;
 	findFilesByRoomIdPinnedTimestampAndUsers<
 		T extends Document = IMessage,
@@ -340,6 +341,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>>;
+	incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>>;
 	findUnreadThreadMessagesByDate(
 		rid: string,
 		tmid: string,
