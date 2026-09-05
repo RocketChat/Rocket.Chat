@@ -50,6 +50,7 @@ export * from './INps';
 
 export type * from './ISession';
 export type * from './IEmoji';
+export type * from './IEmojiPackEntry';
 export type * from './IEmojiCustom';
 export type * from './ICustomEmojiDescriptor';
 export type * from './IAnalytics';
