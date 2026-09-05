@@ -363,7 +363,7 @@ export const timestampFromHours = (hours: string, minutes = '00', seconds = '00'
 
 	const yearMonthDay = date.toISOString().split('T')[0];
 
-	const timestamp = (new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone}`).getTime() / 1000) | 0;
+	const timestamp = Math.floor(new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone}`).getTime() / 1000);
 
 	return timestamp.toString();
 };
@@ -387,9 +387,9 @@ export const timestampFromIsoTime = ({
 	milliseconds?: string;
 	timezone?: string;
 }) => {
-	const date =
-		(new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds || '000'}${timezone ? `${timezone}` : ''}`).getTime() /
-			1000) |
-		0;
+	const date = Math.floor(
+		new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds || '000'}${timezone ? `${timezone}` : ''}`).getTime() /
+			1000,
+	);
 	return date.toString();
 };
