@@ -39,8 +39,8 @@ const MessageComposerGenericFile = ({
 
 		setModal(
 			<FileUploadModal
-				onSubmit={(name, altText) => {
-					onEdit(upload.id, name, altText);
+				onSubmit={(name, altText, file) => {
+					onEdit(upload.id, name, altText, file);
 					setModal(null);
 					chat?.composer?.focus();
 				}}

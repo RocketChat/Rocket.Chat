@@ -115,6 +115,21 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		}
 	};
 
+	editUploadFile = (uploadId: Upload['id'], file: File) => {
+		this.set(
+			this.uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					file,
+				};
+			}),
+		);
+	};
+
 	clear = () => {
 		this.set([]);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
