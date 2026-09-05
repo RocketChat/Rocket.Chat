@@ -99,9 +99,19 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				msg: i18n.t('Users_added', { lng }),
 			});
 		} catch (e: any) {
-			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
+			if (e.error === 'cant-invite-for-direct-room') {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng }),
+				});
+				return;
+			}
+
+			// Only `Meteor.Error` carries `error`; a plain `Error` — which is what the ABAC creation
+			// and membership guards throw (ABAC-P4 M4) — carries only `message`. Without this fallback
+			// the user gets a blank ephemeral message and no idea why the command did nothing.
+			const key = e.error ?? e.message;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t(msg, { lng }),
+				msg: key ? i18n.t(key, { lng }) : i18n.t('Something_went_wrong', { lng }),
 			});
 		}
 	};

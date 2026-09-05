@@ -9,8 +9,8 @@ import schema from '../../../../../../../ee/packages/abac/docs/classification-ba
 const validate = ajv.compile(schema);
 
 const validConfig: ClassificationBannersConfig & { $schema: string } = {
-	$schema: 'https://rocket.chat/schemas/classification-banners/v1.json',
-	version: 1,
+	$schema: 'https://rocket.chat/schemas/classification-banners/v2.json',
+	version: 2,
 	enabled: true,
 	banner: {
 		style: 'classic',
@@ -47,13 +47,21 @@ const { banner } = validConfig;
 const [attribute] = validConfig.attributes;
 const [value] = attribute.values;
 
-describe('classification banners JSON schema (v1 enforcement contract)', () => {
+describe('classification banners JSON schema (v2 enforcement contract)', () => {
 	it('accepts a complete document typed as ClassificationBannersConfig', () => {
 		expect(validate(validConfig)).toBe(true);
 	});
 
+	// v2 added only the optional `nonAbacBanner`, so every v1 document is a valid v2 document with
+	// that option left out. Migration v336 rewrites the stored `version`, but a document can also
+	// arrive by hand — pasted back from an export, or restored from a backup — and rejecting one an
+	// administrator saved before the upgrade would be a regression, not a safeguard.
+	it('accepts a v1 document, which v2 is a strict superset of', () => {
+		expect(validate({ ...validConfig, version: 1 })).toBe(true);
+	});
+
 	it.each([
-		['wrong version', { ...validConfig, version: 2 }],
+		['an unknown future version', { ...validConfig, version: 3 }],
 		['missing banner option (colorMode)', { ...validConfig, banner: { ...banner, colorMode: undefined } }],
 		['empty delimiter', { ...validConfig, banner: { ...banner, delimiter: '' } }],
 		['oversized delimiter', { ...validConfig, banner: { ...banner, delimiter: 'x'.repeat(9) } }],
@@ -73,7 +81,22 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 		['identical duplicate values', { ...validConfig, attributes: [{ ...attribute, values: [value, value] }] }],
 		['value with 3-digit color', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, color: '#fff' }] }] }],
 		['value missing label', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, label: undefined }] }] }],
+		// ABAC-P4 M4 — the non-ABAC banner (schema v2)
+		['nonAbacBanner missing text', { ...validConfig, nonAbacBanner: { enabled: true, color: '#000000' } }],
+		['nonAbacBanner missing color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED' } }],
+		['nonAbacBanner with empty text', { ...validConfig, nonAbacBanner: { enabled: true, text: '', color: '#000000' } }],
+		['nonAbacBanner with a malformed color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: 'black' } }],
+		['nonAbacBanner with a 3-digit color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#fff' } }],
+		['unknown nonAbacBanner option', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', position: 'top' } }],
 	])('rejects %s', (_name, config) => {
 		expect(validate(config)).toBe(false);
+	});
+
+	it('accepts a document carrying a nonAbacBanner', () => {
+		expect(validate({ ...validConfig, nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' } })).toBe(true);
+	});
+
+	it('accepts a document without a nonAbacBanner — absence means no banner in those rooms', () => {
+		expect(validate(validConfig)).toBe(true);
 	});
 });

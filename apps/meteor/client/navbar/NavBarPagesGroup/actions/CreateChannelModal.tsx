@@ -36,7 +36,6 @@ import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultip
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
-import { sdk } from '../../../lib/SDKClient';
 import RoomFormAttributeFields from '../../../views/admin/ABAC/ABACRoomsTab/RoomFormAttributeFields';
 import { useIsABACAvailable } from '../../../views/admin/ABAC/hooks/useIsABACAvailable';
 import { useIsAbacEnforcementOn } from '../../../views/admin/ABAC/hooks/useIsAbacEnforcementOn';
@@ -247,6 +246,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			name,
 			members,
 			readOnly,
+			// ABAC-P4 M4 — attributes travel with the creation call, so the room is never briefly
+			// locked and the creator's authority is validated before the insert.
+			...(isAbacManaged && Object.keys(attributeMap).length ? { abacAttributes: attributeMap } : {}),
 			extraData: {
 				topic,
 				broadcast,
@@ -264,14 +266,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			} else {
 				roomData = await createChannel(params);
 				rid = roomData.channel._id;
-			}
-
-			// Assigned after creation because the attribute write is what validates the actor's
-			// authority and writes the audit entry. Authority was already checked when leaving
-			// step 2, so a failure here is unexpected rather than routine — and the room is left
-			// locked, which is the safe end state.
-			if (isAbacManaged) {
-				await sdk.rest.post(`/v1/abac/rooms/${rid}/attributes`, { attributes: attributeMap });
 			}
 
 			if (!teamId) {

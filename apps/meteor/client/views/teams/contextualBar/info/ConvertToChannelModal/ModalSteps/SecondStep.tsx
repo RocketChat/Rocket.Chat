@@ -3,6 +3,8 @@ import { Icon } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
+import AbacAttributesLostWarning from '../../../../../../components/ABAC/AbacAttributesLostWarning';
+
 type SecondStepsProps = {
 	onClose: () => void;
 	onCancel: () => void;
@@ -11,9 +13,11 @@ type SecondStepsProps = {
 		[key: string]: Serialized<IRoom>;
 	};
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
+	/** The team's main room — converting it to a channel discards its ABAC attributes. */
+	teamRoom?: Pick<IRoom, 'abacAttributes'>;
 };
 
-const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }: SecondStepsProps) => {
+const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], teamRoom, ...props }: SecondStepsProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -29,6 +33,7 @@ const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [
 			onConfirm={(): void => onConfirm(deletedRooms)}
 		>
 			{t('You_are_converting_team_to_channel')}
+			{teamRoom && <AbacAttributesLostWarning room={teamRoom} />}
 		</GenericModal>
 	);
 };
