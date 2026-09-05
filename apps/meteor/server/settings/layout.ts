@@ -215,4 +215,15 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 		});
+		await this.section('Room_Header', async function () {
+			await this.add('Room_Toolbox_Layout', '', {
+				type: 'code',
+				code: 'application/json',
+				multiline: true,
+				public: true,
+				enableQuery: [{ _id: 'Accounts_AllowFeaturePreview', value: true }],
+				i18nLabel: 'Room_Toolbox_Layout',
+				i18nDescription: 'Room_Toolbox_Layout_Setting_description',
+			});
+		});
 	});
