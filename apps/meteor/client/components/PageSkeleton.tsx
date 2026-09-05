@@ -1,25 +1,29 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
-const PageSkeleton = () => (
-	<Page>
-		<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
-			<ButtonGroup>
-				<Button disabled>
-					<Skeleton width='x80' />
-				</Button>
-			</ButtonGroup>
-		</PageHeader>
-		<PageContent>
-			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-				<Box is='p' color='hint' fontScale='p2'>
-					<Skeleton />
-					<Skeleton />
-					<Skeleton width='75%' />
+const PageSkeleton = () => {
+	const { t } = useTranslation(undefined, { useSuspense: false });
+	return (
+		<Page aria-busy='true'>
+			<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
+				<ButtonGroup>
+					<Button disabled aria-hidden='true'>
+						<Skeleton width='x80' />
+					</Button>
+				</ButtonGroup>
+			</PageHeader>
+			<PageContent>
+				<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+					<Box is='p' color='hint' fontScale='p2'>
+						<Skeleton />
+						<Skeleton />
+						<Skeleton width='75%' />
+					</Box>
 				</Box>
-			</Box>
-		</PageContent>
-	</Page>
-);
+			</PageContent>
+		</Page>
+	);
+};
 
 export default PageSkeleton;
