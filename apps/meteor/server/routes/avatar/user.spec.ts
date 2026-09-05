@@ -109,7 +109,7 @@ describe('#userAvatarById()', () => {
 	it(`should serve avatar file if found`, async () => {
 		const request = { url: '/jon' };
 
-		const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };
+		const file = { uploadedAt: new Date(0), type: 'image/png', size: 100, complete: true };
 		mocks.avatarFindOneByUserId.returns(file);
 
 		await userAvatarById(request, response, next);
