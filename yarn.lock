@@ -9065,7 +9065,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -9208,7 +9208,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -9376,6 +9376,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
     "@types/jest": "npm:~30.0.0"
@@ -9394,7 +9395,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
     polka: "npm:^0.5.2"
@@ -10362,7 +10363,7 @@ __metadata:
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
@@ -10583,6 +10584,7 @@ __metadata:
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
     moleculer: "npm:^0.14.35"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
     typescript: "npm:~5.9.3"
@@ -10692,7 +10694,7 @@ __metadata:
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -10848,7 +10850,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -10911,7 +10913,7 @@ __metadata:
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -29729,12 +29731,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nats@npm:^2.28.2":
-  version: 2.28.2
-  resolution: "nats@npm:2.28.2"
+"nats@npm:^2.29.1":
+  version: 2.29.1
+  resolution: "nats@npm:2.29.1"
   dependencies:
     nkeys.js: "npm:1.1.0"
-  checksum: 10/09fff7e163c40e4c99be97cfc5a094572cd98258411e5dbdd40183409196fb432b810dbda8dd7cfc96e059b66edcd2bb29c7b42e93bc57a66ff6a5b0e6da05c2
+  checksum: 10/5d6c22701825372b3ce88d799e5552bab35c7838d82ad1a6df32fa8a6240ac272577dd1afdd80c77611c4fb1e52ed989b739218c1251a79e1f742c18b5f299c7
   languageName: node
   linkType: hard
 
@@ -34109,7 +34111,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
+    nats: "npm:^2.29.1"
     npm-run-all: "npm:^4.1.5"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"

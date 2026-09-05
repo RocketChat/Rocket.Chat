@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
+import { Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import polka from 'polka';
@@ -103,59 +103,59 @@ export class DDPStreamer extends ServiceClass {
 	}, 30000);
 
 	override async created(): Promise<void> {
-		if (!this.context) {
+		const nodeID = this.context?.nodeID;
+		if (!nodeID) {
+			// presence is recorded per node, and the login handler below is what sends a
+			// client its own user document, so there is nothing safe to do without one
+			console.error('DDPStreamer has no broker context: presence and post login user data are disabled');
 			return;
 		}
 
-		const { broker, nodeID } = this.context;
-		if (!broker || !nodeID) {
-			return;
+		// metrics are optional - a broker that does not collect them must not stop the
+		// DDP handlers below from being registered
+		const metrics = this.context?.broker?.metrics;
+
+		if (metrics) {
+			metrics.register({
+				name: 'rocketchat_subscription',
+				type: 'histogram',
+				labelNames: ['subscription'],
+				description: 'Client subscriptions to Rocket.Chat',
+				unit: 'millisecond',
+				quantiles: true,
+			});
+
+			metrics.register({
+				name: 'users_connected',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users connected by streamer',
+			});
+
+			metrics.register({
+				name: 'users_logged',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users logged by streamer',
+			});
+
+			server.setMetrics(metrics);
+
+			server.on(DDP_EVENTS.CONNECTED, () => {
+				metrics.increment('users_connected', { nodeID }, 1);
+			});
+
+			server.on(DDP_EVENTS.LOGGED, () => {
+				metrics.increment('users_logged', { nodeID }, 1);
+			});
+
+			server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
+				metrics.decrement('users_connected', { nodeID }, 1);
+				if (userId) {
+					metrics.decrement('users_logged', { nodeID }, 1);
+				}
+			});
 		}
-
-		const { metrics } = broker;
-		if (!metrics) {
-			return;
-		}
-
-		metrics.register({
-			name: 'rocketchat_subscription',
-			type: 'histogram',
-			labelNames: ['subscription'],
-			description: 'Client subscriptions to Rocket.Chat',
-			unit: 'millisecond',
-			quantiles: true,
-		});
-
-		metrics.register({
-			name: 'users_connected',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users connected by streamer',
-		});
-
-		metrics.register({
-			name: 'users_logged',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users logged by streamer',
-		});
-
-		server.setMetrics(metrics);
-
-		server.on(DDP_EVENTS.CONNECTED, () => {
-			metrics.increment('users_connected', { nodeID }, 1);
-		});
-
-		server.on(DDP_EVENTS.LOGGED, () => {
-			metrics.increment('users_logged', { nodeID }, 1);
-		});
-
-		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
-			metrics.decrement('users_connected', { nodeID }, 1);
-			if (userId) {
-				metrics.decrement('users_logged', { nodeID }, 1);
-			}
-		});
 
 		async function sendUserData(client: Client, userId: string) {
 			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
@@ -250,51 +250,44 @@ export class DDPStreamer extends ServiceClass {
 	}
 
 	override async started(): Promise<void> {
-		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
-		try {
-			const versions = await MeteorService.getAutoUpdateClientVersions();
-
-			Object.keys(versions || {}).forEach((key) => {
-				Autoupdate.updateVersion(versions[key]);
-			});
-
-			this.app = polka()
-				.use(proxy())
-				.get('/health', async (_req, res) => {
-					try {
-						if (!this.api) {
-							throw new Error('API not available');
-						}
-
-						await this.api.nodeList();
-						res.end('ok');
-					} catch (err) {
-						console.error('Service not healthy', err);
-
-						res.writeHead(500);
-						res.end('not healthy');
+		this.app = polka()
+			.use(proxy())
+			.get('/health', async (_req, res) => {
+				try {
+					if (!this.api) {
+						throw new Error('API not available');
 					}
-				})
-				.get('*', function (_req, res) {
-					res.setHeader('Access-Control-Allow-Origin', '*');
-					res.setHeader('Content-Type', 'application/json');
 
-					res.writeHead(200);
+					await this.api.nodeList();
+					res.end('ok');
+				} catch (err) {
+					console.error('Service not healthy', err);
 
-					res.end(
-						`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`,
-					);
-				})
-				.listen(PORT);
+					res.writeHead(500);
+					res.end('not healthy');
+				}
+			})
+			.get('*', function (_req, res) {
+				res.setHeader('Access-Control-Allow-Origin', '*');
+				res.setHeader('Content-Type', 'application/json');
 
-			this.wss = new WebSocket.Server({ server: this.app.server });
+				res.writeHead(200);
 
-			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
+			})
+			.listen(PORT);
 
-			void InstanceStatus.registerInstance('ddp-streamer', {});
-		} catch (err) {
-			console.error('DDPStreamer did not start correctly', err);
-		}
+		this.wss = new WebSocket.Server({ server: this.app.server });
+
+		this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+
+		void InstanceStatus.registerInstance('ddp-streamer', {});
+
+		// deliberately last and non fatal: the client versions come from the monolith,
+		// which may still be booting, and nothing here may stop the socket server from
+		// listening - traefik routes /websocket to it, so a process that is up but not
+		// listening takes down every realtime feature
+		await Autoupdate.prime().catch((err) => console.error('DDPStreamer could not load client versions', err));
 	}
 
 	override async stopped(): Promise<void> {
