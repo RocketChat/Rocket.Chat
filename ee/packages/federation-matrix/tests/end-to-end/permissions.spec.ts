@@ -2,12 +2,7 @@ import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
 import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import {
-	addUserToRoomViaMethod,
-	createRoom,
-	getSubscriptionByRoomId,
-	getSubscriptions,
-} from '../../../../../apps/meteor/tests/data/rooms.helper';
+import { addUserToRoom, createRoom, getSubscriptionByRoomId, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig, TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -185,28 +180,29 @@ import { SynapseClient } from '../helper/synapse-client';
 					await deleteUser(user, {}, rc1AdminRequestConfig);
 				});
 				it('should not be able to add a user without access-federation permission to a room', async () => {
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
-					addUserResponse = await addUserToRoomViaMethod({
+					[addUserResponse] = await addUserToRoom({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(200);
 					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+					expect(addUserResponse.body).toHaveProperty('group');
 				});
 			});
 		});
@@ -270,15 +266,16 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					}).expect(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
-					}).expect(200);
+						type: 'p',
+					});
 
+					expect(addUserResponse.status).toBe(200);
 					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+					expect(addUserResponse.body).toHaveProperty('group');
 				});
 			});
 		});
@@ -425,10 +422,11 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [rcValidUser2.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(200);
@@ -520,15 +518,16 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [userWithNonMatchingEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 				});
 
 				it('should NOT be able to be added to a federated room during creation', async () => {
@@ -602,15 +601,16 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [userWithUnverifiedEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 				});
 			});
 
@@ -666,15 +666,16 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [userWithoutEmail.username],
 						rid: createResponse.body.group._id,
 						config: rcValidUser1.config,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+					expect(addUserResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 				});
 			});
 
@@ -875,10 +876,11 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(createResponse.status).toBe(200);
 
-					const addUserResponse = await addUserToRoomViaMethod({
+					const [addUserResponse] = await addUserToRoom({
 						usernames: [userWithNonMatchingEmail.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
+						type: 'p',
 					});
 
 					expect(addUserResponse.status).toBe(200);
