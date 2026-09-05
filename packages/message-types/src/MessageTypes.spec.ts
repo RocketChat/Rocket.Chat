@@ -1,6 +1,8 @@
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { TFunction } from 'i18next';
 
 import { MessageTypes } from './MessageTypes';
+import registerCommonTypes from './registrations/common';
 
 let messageTypes: MessageTypes;
 const baseMessage: IMessage = {
@@ -52,4 +54,15 @@ it('should identify non-system messages', () => {
 
 it('should return false for isSystemMessage if type is not registered', () => {
 	expect(messageTypes.isSystemMessage({ ...baseMessage, t: undefined })).toBe(false);
+});
+
+it('should pass the username as a sprintf argument in welcome messages', () => {
+	registerCommonTypes(messageTypes);
+	const welcomeMessage = messageTypes.getType({ t: 'wm' });
+	const translate = jest.fn((_key: string, options: { postProcess?: string; sprintf?: string[] }) =>
+		options.postProcess === 'sprintf' ? `Welcome <em>${options.sprintf?.[0] ?? '%s'}</em>.` : 'Welcome <em>%s</em>.',
+	) as unknown as TFunction;
+
+	expect(welcomeMessage?.text(translate, { ...baseMessage, t: 'wm' })).toBe('Welcome <em>user</em>.');
+	expect(translate).toHaveBeenCalledWith('Welcome', { postProcess: 'sprintf', sprintf: ['user'] });
 });
