@@ -3346,6 +3346,7 @@
   "Prune_Warning_after": "{{roomName}}の{{fromDate}}以降の{{items}}が削除されます。",
   "Prune_Warning_all": "{{roomName}}のすべての{{items}}が削除されます！",
   "Prune_Warning_before": "{{roomName}}の{{toDate}}以前の{{items}}が削除されます。",
+  "Prune_Warning_between": "%s～%sのすべての%sが削除されます。",
   "Pruning_files": "ファイルを整理中...",
   "Pruning_messages": "メッセージを整理中...",
   "Public": "パブリック",

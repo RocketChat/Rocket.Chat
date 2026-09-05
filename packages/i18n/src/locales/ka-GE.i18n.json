@@ -2612,6 +2612,7 @@
   "Prune_Warning_after": "ეს წაშლის ყველა {{items}} -ს {{roomName}}- ში {{fromDate}}-ის შემდეგ",
   "Prune_Warning_all": "ეს წაშლის ყველა {{items}} -ს {{roomName}}- ში!",
   "Prune_Warning_before": "ეს წაშლის ყველა {{items}} -ს {{roomName}}- ში {{toDate}}-მდე",
+  "Prune_Warning_between": "ეს წაშლის ყველა %s -ს %s-სა და %s-ს შორის",
   "Public": "საჯარო",
   "Public_Channels": "საჯარო არხები",
   "Public_Community": "საჯარო საზოგადოება",
