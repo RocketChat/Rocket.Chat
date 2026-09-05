@@ -9,4 +9,5 @@ import './roles';
 import './routes';
 import './slashCommands';
 import './startup';
+import './sliderRTLFix';
 import './streamMessage';
