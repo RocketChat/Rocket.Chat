@@ -672,7 +672,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('calling/changed');
 
 		if (!callData.joined) {
-			this.joinCall(params.callId);
+			void this.joinCall(params.callId);
 		}
 
 		if (skipConfirmation) {
@@ -689,7 +689,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		this.joinCall(params.callId);
+		void this.joinCall(params.callId);
 	}
 
 	private onDirectCallJoined(params: DirectCallParams): void {

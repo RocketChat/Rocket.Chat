@@ -503,6 +503,10 @@ export class HomeContent {
 		return this.page.locator('.rcx-videoconf-message-block');
 	}
 
+	get btnJoinVideoConfMessageBlock(): Locator {
+		return this.videoConfMessageBlock.last().getByRole('button', { name: 'Join', exact: true });
+	}
+
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}

@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Room, Authorization } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -736,6 +736,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const calleeId = uids?.filter((uid) => uid !== user._id).pop();
 		if (!calleeId) {
 			// Are you trying to call yourself?
+			throw new Error('invalid-call-target');
+		}
+
+		const userCanBeCalled = await Authorization.hasAtLeastOnePermission(calleeId, ['call-management', 'videoconf-join-call']);
+
+		if (!userCanBeCalled) {
 			throw new Error('invalid-call-target');
 		}
 
