@@ -2,7 +2,32 @@ declare module 'meteor/accounts-base' {
 	import type { Meteor } from 'meteor/meteor';
 
 	namespace Accounts {
+		// client-side only
 		const storageLocation: Window['localStorage'];
+
+		const _loginFuncs: Record<
+			string,
+			(
+				options: Meteor.LoginWithExternalServiceOptions,
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+			) => void
+		>;
+
+		function registerClientLoginFunction(
+			name: string,
+			func: (
+				options: Meteor.LoginWithExternalServiceOptions,
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+			) => void,
+		): void;
+
+		function applyLoginFunction(
+			name: string,
+			args: [
+				options: Meteor.LoginWithExternalServiceOptions,
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+			],
+		): void;
 
 		function _expireTokens(oldestValidDate?: Date, userId?: string): Promise<void>;
 
@@ -18,7 +43,7 @@ declare module 'meteor/accounts-base' {
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
-		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
+		function registerLoginHandler(name: string | null, handler: (options: any) => undefined | object): void;
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 

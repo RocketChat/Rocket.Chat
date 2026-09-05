@@ -3,7 +3,7 @@
 import { baseURI } from './baseURI';
 import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 
-type AbsoluteUrlOptions = {
+export type AbsoluteUrlOptions = {
 	rootUrl?: string;
 	secure?: boolean;
 	replaceLocalhost?: boolean;

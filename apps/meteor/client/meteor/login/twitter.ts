@@ -1,54 +1,34 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import-x/no-duplicates
-import { OAuth } from 'meteor/oauth';
-// eslint-disable-next-line import-x/no-duplicates
-import { Twitter } from 'meteor/twitter-oauth';
 
-import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { createOAuthLoginFunctionForMeteor, launchLogin, stateParam, wrapRequestCredentialFn } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 import { absoluteUrl } from '../../lib/absoluteUrl';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 
-const { loginWithTwitter } = Meteor;
-const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
-Meteor.loginWithTwitter = (options, callback) => {
-	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
+type LoginWithTwitterOptions = LoginWithExternalServiceOptions & {
+	force_login?: string;
+	screen_name?: string;
 };
 
-Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
+const validParamsAuthenticate = ['force_login', 'screen_name'] as const;
+
+const requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration, LoginWithTwitterOptions>(
 	'twitter',
-	({ loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
-		const options = requestOptions as Record<string, string>;
-		const credentialToken = Random.secret();
-
-		let loginPath = `_oauth/twitter/?requestTokenAndRedirect=true&state=${OAuth._stateParam(
-			loginStyle,
-			credentialToken,
-			options?.redirectUrl,
-		)}`;
-
-		if (Meteor.isCordova) {
-			loginPath += '&cordova=true';
-			if (/Android/i.test(navigator.userAgent)) {
-				loginPath += '&android=true';
-			}
-		}
-
+	({ loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
+		const loginUrl = new URL(absoluteUrl('_oauth/twitter/'));
+		loginUrl.searchParams.append('requestTokenAndRedirect', 'true');
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options?.redirectUrl));
 		// Support additional, permitted parameters
 		if (options) {
-			const hasOwn = Object.prototype.hasOwnProperty;
-			Twitter.validParamsAuthenticate.forEach((param: string) => {
-				if (hasOwn.call(options, param)) {
-					loginPath += `&${param}=${encodeURIComponent(options[param])}`;
+			validParamsAuthenticate.forEach((param) => {
+				if (Object.hasOwn(options, param) && options[param] !== undefined) {
+					loginUrl.searchParams.append(param, options[param]);
 				}
 			});
 		}
 
-		const loginUrl = absoluteUrl(loginPath);
-
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'twitter',
 			loginStyle,
 			loginUrl,
@@ -57,3 +37,11 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 		});
 	},
 );
+
+const loginWithTwitter = createOAuthLoginFunctionForMeteor(requestCredential);
+
+Accounts.oauth.registerService('twitter');
+Accounts.registerClientLoginFunction('twitter', loginWithTwitter);
+Object.assign(Meteor, {
+	loginWithTwitter: (...args: Parameters<typeof loginWithTwitter>) => Accounts.applyLoginFunction('twitter', args),
+});
