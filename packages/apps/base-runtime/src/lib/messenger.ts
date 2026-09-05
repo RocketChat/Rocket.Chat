@@ -1,4 +1,5 @@
 import EventEmitter from 'node:events';
+import crypto from 'node:crypto';
 
 import * as jsonrpc from 'jsonrpc-lite';
 
@@ -174,12 +175,16 @@ export function pongResponse(): Promise<void> {
 	return Promise.resolve(Queue.enqueue(COMMAND_PONG));
 }
 
-export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
-	const request = jsonrpc.request(Math.random().toString(36).slice(2), requestDescriptor.method, requestDescriptor.params);
+const REQUEST_TIMEOUT = 30000;
 
-	// TODO: add timeout to this
+export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
+	const request = jsonrpc.request(crypto.randomUUID(), requestDescriptor.method, requestDescriptor.params);
+
 	const responsePromise = new Promise((resolve, reject) => {
+		let timeoutId: ReturnType<typeof setTimeout>;
+
 		const handler = (payload: { error: Error } | { detail: jsonrpc.SuccessObject }) => {
+			clearTimeout(timeoutId);
 			if ('error' in payload) {
 				return reject(payload.error);
 			}
@@ -188,6 +193,11 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 		};
 
 		RPCResponseObserver.once(`response:${request.id}`, handler);
+
+		timeoutId = setTimeout(() => {
+			RPCResponseObserver.removeListener(`response:${request.id}`, handler);
+			reject(new Error('Request timed out'));
+		}, REQUEST_TIMEOUT);
 	});
 
 	await Queue.enqueue(request);
