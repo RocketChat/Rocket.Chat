@@ -10,6 +10,13 @@ export class CronHistoryRaw extends BaseRaw<ICronHistoryItem> implements ICronHi
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
-		return [{ key: { intendedAt: 1, name: 1 }, unique: true }];
+		return [
+			{ key: { name: 1, intendedAt: -1 } },
+			{ key: { name: 1, startedAt: -1 } },
+			{
+				key: { error: 1, startedAt: -1 },
+				partialFilterExpression: { error: { $exists: true } },
+			},
+		];
 	}
 }

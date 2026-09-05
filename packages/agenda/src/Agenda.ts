@@ -15,6 +15,8 @@ import { noCallback } from './lib/noCallback';
 
 const debug = debugInitializer('agenda:agenda');
 
+export const DEFAULT_LOCK_LIFETIME = 10 * 60 * 1000;
+
 const defaultInterval = 5000;
 
 type JobSort = Partial<Record<keyof IJob, 1 | -1>>;
@@ -135,7 +137,7 @@ export class Agenda extends EventEmitter {
 		this._runningJobs = [];
 		this._lockedJobs = [];
 		this._jobQueue = new JobProcessingQueue();
-		this._defaultLockLifetime = config.defaultLockLifeTime || 10 * 60 * 1000; // 10 minute default lockLifetime
+		this._defaultLockLifetime = config.defaultLockLifeTime || DEFAULT_LOCK_LIFETIME; // 10 minute default lockLifetime
 		this._sort = config.sort || { nextRunAt: 1, priority: -1 };
 		this._indexes = { name: 1, ...this._sort, priority: -1, lockedAt: 1, nextRunAt: 1, disabled: 1 };
 
@@ -152,7 +154,7 @@ export class Agenda extends EventEmitter {
 
 	public mongo(mdb: MongoDB, collection: string | undefined) {
 		this._mdb = mdb;
-		if (mdb.s && mdb.topology && mdb.topology.s) {
+		if (mdb.s && mdb.topology?.s) {
 			this._mongoUseUnifiedTopology = Boolean(mdb?.topology?.s?.options?.useUnifiedTopology);
 		}
 		return this.dbInit(collection);

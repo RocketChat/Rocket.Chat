@@ -1,7 +1,8 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatRooms, Users, CronHistory, OmnichannelAutoCloseScheduler } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
@@ -53,7 +54,8 @@ export class AutoCloseOnHoldSchedulerClass {
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
-		await this.scheduler.schedule(when, jobName, { roomId, comment });
+		const job = await this.scheduler.schedule(when, jobName, { roomId, comment });
+		await OmnichannelAutoCloseScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
@@ -65,24 +67,54 @@ export class AutoCloseOnHoldSchedulerClass {
 		await this.scheduler.cancel({ name: jobName });
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
-		const { roomId, comment } = data;
+	private async executeJob({ attrs: { data, name } }: any = {}): Promise<void> {
+		const { insertedId } = await CronHistory.insertOne({
+			_id: Random.id(),
+			intendedAt: new Date(),
+			name,
+			startedAt: new Date(),
+			type: 'omnichannel',
+		});
 
-		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
-		if (!room || !user) {
-			throw new Error(
-				`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
+		try {
+			this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
+			const { roomId, comment } = data;
+
+			const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
+			if (!room || !user) {
+				throw new Error(
+					`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
+				);
+			}
+
+			const payload = {
+				room,
+				user,
+				comment,
+			};
+
+			await closeRoom(payload);
+
+			await CronHistory.updateOne(
+				{ _id: insertedId },
+				{
+					$set: {
+						finishedAt: new Date(),
+					},
+				},
 			);
+		} catch (error: unknown) {
+			await CronHistory.updateOne(
+				{ _id: insertedId },
+				{
+					$set: {
+						finishedAt: new Date(),
+						error: error instanceof Error && error.stack ? error.stack : String(error),
+					},
+				},
+			);
+			throw error;
 		}
-
-		const payload = {
-			room,
-			user,
-			comment,
-		};
-
-		await closeRoom(payload);
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {

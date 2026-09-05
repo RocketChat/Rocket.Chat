@@ -11,6 +11,8 @@ import {
 	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
+	CronJobsRaw,
+	AppSchedulerRaw,
 	CustomSoundsRaw,
 	CustomUserStatusRaw,
 	EmailInboxRaw,
@@ -76,6 +78,7 @@ import {
 	AbacAttributesRaw,
 	TwoFactorChallengesRaw,
 	SamlUsedAssertionsRaw,
+	OmnichannelSchedulerRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -93,6 +96,8 @@ registerModel('ICalendarEventModel', new CalendarEventRaw(db));
 registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
+registerModel('ICronJobsModel', new CronJobsRaw(db));
+registerModel('IAppSchedulerModel', new AppSchedulerRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
 registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
@@ -163,3 +168,6 @@ registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
 registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
 registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));
+registerModel('IOmnichannelAutoCloseSchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_auto_close_on_hold_scheduler'));
+registerModel('IOmnichannelAutoTransferSchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_scheduler'));
+registerModel('IOmnichannelQueueInactivitySchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_queue_inactivity_monitor'));

@@ -18,6 +18,7 @@ import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
 import type { ICallHistoryService } from './types/ICallHistoryService';
+import type { ICronJobsService } from './types/ICronJobsService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
@@ -176,6 +177,7 @@ export type {
 	IImportService,
 	IOmnichannelAnalyticsService,
 	IUserService,
+	ICronJobsService,
 };
 export { proxify };
 
@@ -215,6 +217,7 @@ export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
+export const CronJobs = proxify<ICronJobsService>('cron-jobs');
 export const User = proxify<IUserService>('user');
 export const Push = proxify<IPushService>('push');
 
