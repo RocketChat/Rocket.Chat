@@ -40,6 +40,9 @@ test.describe.serial('abac-enforcement', () => {
 			// Off while the fixtures are built: under enforcement a room cannot be created without
 			// attributes, and this one has to exist unattributed so it is locked.
 			setSettingValueById(api, 'ABAC_Enforce_All_Rooms', false),
+			// Stated rather than assumed: with no workspace-required attributes, the creation flow's
+			// attribute step opens with no rows, which is what the flow test walks through.
+			setSettingValueById(api, 'ABAC_Required_Attributes', []),
 		]);
 
 		expect((await api.post('/abac/attributes', { key: attrKey, values: ['secret', 'topsecret'] })).status()).toBe(200);
@@ -81,7 +84,7 @@ test.describe.serial('abac-enforcement', () => {
 		// The composer is replaced by the locked callout, and the owner is offered the way out.
 		await expect(page.getByText('ABAC-managed workspace. Set room attributes to unlock this channel.')).toBeVisible();
 		await expect(poHomeChannel.composer.inputMessage).toHaveCount(0);
-		await expect(page.getByRole('button', { name: 'Edit channel' })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Edit channel', exact: true })).toBeVisible();
 	});
 
 	test('creates a room through the four-step flow', async ({ page }) => {
@@ -99,11 +102,14 @@ test.describe.serial('abac-enforcement', () => {
 		await dialog.getByRole('textbox', { name: 'Name' }).fill(channelName);
 		await dialog.getByRole('button', { name: 'Next' }).click();
 
-		// Step 2 — room attributes.
+		// Step 2 — room attributes. No workspace-required attributes are configured here, so the step
+		// opens with no rows and one has to be added. Both inputs in a row are labelled by the same
+		// "Attribute" field label, so they are told apart by their placeholders rather than by name.
 		await expect(dialog.getByText('Step 2 of 4')).toBeVisible();
-		await dialog.getByRole('textbox', { name: 'Search attribute' }).click();
+		await dialog.getByRole('button', { name: 'Add Attribute' }).click();
+		await dialog.getByPlaceholder('Search attribute').click();
 		await page.getByRole('option', { name: attrKey }).click();
-		await dialog.getByRole('textbox', { name: 'Select attribute values' }).click();
+		await dialog.getByPlaceholder('Select attribute values').click();
 		await page.getByRole('option', { name: 'secret', exact: true }).click();
 		await dialog.getByRole('button', { name: 'Next' }).click();
 
@@ -114,7 +120,9 @@ test.describe.serial('abac-enforcement', () => {
 		// Step 4 — the member compliance preview, with the creator compliant.
 		await expect(dialog.getByText('Step 4 of 4')).toBeVisible();
 		await expect(dialog.getByText('Only attribute-compliant users can be added to ABAC rooms.')).toBeVisible();
-		await expect(dialog.getByText('Compliant')).toBeVisible();
+		// Exact: the step also carries "attribute-compliant" in its callout and can carry a
+		// "Non-compliant" group, both of which a substring match would collide with.
+		await expect(dialog.getByText('Compliant', { exact: true })).toBeVisible();
 
 		const btnCreate = dialog.getByRole('button', { name: 'Create' });
 		await expect(btnCreate).toBeEnabled();
@@ -140,7 +148,9 @@ test.describe.serial('abac-enforcement', () => {
 
 		// Narrowing the attribute to a value the admin still holds keeps them in the room, so the
 		// preview should report nobody removed — and nothing is committed until it is confirmed.
-		await page.getByRole('textbox', { name: 'Select attribute values' }).click();
+		// The section opens with the room's existing attribute already in a row, so there is nothing
+		// to add — only the values to narrow.
+		await page.getByPlaceholder('Select attribute values').click();
 		await page.getByRole('option', { name: 'topsecret' }).click();
 
 		await page.getByRole('button', { name: 'Next' }).click();
