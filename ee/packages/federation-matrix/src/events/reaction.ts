@@ -3,6 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 
+import { onHomeserverEvent } from '../helpers/onHomeserverEvent';
 import { unicodeToShortname } from '../utils/emojiConverter';
 
 const logger = new Logger('federation-matrix:reaction');
@@ -52,9 +53,9 @@ export function reaction() {
 		}
 	});
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
+	onHomeserverEvent('homeserver.matrix.redaction', async ({ event, redacts }) => {
 		try {
-			const redactedEventId = event.redacts;
+			const redactedEventId = redacts || event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
 				return;
