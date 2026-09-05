@@ -10,6 +10,8 @@ import { Avatars, Uploads } from '@rocket.chat/models';
 const logger = new Logger('federation-matrix:media-service');
 
 export class MatrixMediaService {
+	private static readonly pendingDownloads = new Map<string, Promise<IUpload | null>>();
+
 	static generateMXCUri(fileId: string, serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
 	}
@@ -72,6 +74,10 @@ export class MatrixMediaService {
 				return null;
 			}
 
+			if (!file.complete && file.federation?.mxcUri) {
+				return this.materializePendingFile(file._id);
+			}
+
 			return file;
 		} catch (err) {
 			logger.error({ msg: 'Error retrieving local file', err });
@@ -115,51 +121,79 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async downloadAndStoreRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
-		try {
-			const parts = this.parseMXCUri(mxcUri);
-			if (!parts) {
-				logger.error({ mxcUri, msg: 'Invalid MXC URI format' });
-				throw new Error('Invalid MXC URI');
+	/**
+	 * Registers a remote file without fetching it.
+	 *
+	 * An event describing a file routinely arrives before the origin can serve it — for a large
+	 * upload the sender is still committing while the event is already federated, and every
+	 * download endpoint answers 404 until it finishes. Downloading here would make delivery of the
+	 * message depend on that race. Everything needed to store and render the message is already in
+	 * the event, so the bytes are fetched the first time somebody actually opens the file.
+	 */
+	static async registerRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
+		const parts = this.parseMXCUri(mxcUri);
+		if (!parts) {
+			throw new Error('Invalid MXC URI');
+		}
+
+		const uploadAlreadyExists = await Uploads.findByFederationMediaIdAndServerName(parts.mediaId, parts.serverName);
+		if (uploadAlreadyExists) {
+			if (!uploadAlreadyExists.rid && metadata.rid) {
+				await Uploads.setFederationRoomInfo(uploadAlreadyExists._id, metadata.rid, matrixRoomId);
 			}
+			return uploadAlreadyExists._id;
+		}
 
-			const uploadAlreadyExists = await Uploads.findByFederationMediaIdAndServerName(parts.mediaId, parts.serverName);
-			if (uploadAlreadyExists) {
-				// App-service uploads are stored before any room is known (empty rid/mrid);
-				// backfill the association now that a message ties the file to a room.
-				if (!uploadAlreadyExists.rid && metadata.rid) {
-					await Uploads.setFederationRoomInfo(uploadAlreadyExists._id, metadata.rid, matrixRoomId);
-				}
-				return uploadAlreadyExists._id;
-			}
-
-			const buffer = await federationSDK.downloadFromRemoteServer(parts.serverName, parts.mediaId);
-			if (!buffer) {
-				throw new Error('Download from remote server returned null content.');
-			}
-
-			// TODO: Make uploadFile support Partial<IUpload> to avoid calling a DB update right after the upload to set the federation info
-			const uploadedFile = await Upload.uploadFile({
-				userId: metadata.userId || 'federation',
-				buffer,
-				details: {
-					...metadata,
-					size: buffer.length,
-				},
-			});
-
-			await Uploads.setFederationInfo(uploadedFile._id, {
+		const file = await Upload.createPendingFile({
+			userId: metadata.userId || 'federation',
+			details: metadata,
+			federation: {
 				mxcUri,
 				mrid: matrixRoomId,
 				serverName: parts.serverName,
 				mediaId: parts.mediaId,
-			});
+			},
+		});
 
-			return uploadedFile._id;
-		} catch (err) {
-			logger.error({ msg: 'Error downloading and storing remote file', err });
-			throw err;
+		return file._id;
+	}
+
+	static async materializePendingFile(fileId: string): Promise<IUpload | null> {
+		const inFlight = this.pendingDownloads.get(fileId);
+		if (inFlight) {
+			return inFlight;
 		}
+
+		const download = (async (): Promise<IUpload | null> => {
+			const file = await Uploads.findOneById(fileId);
+			if (!file) {
+				return null;
+			}
+
+			if (file.complete) {
+				return file;
+			}
+
+			const { serverName, mediaId } = file.federation ?? {};
+			if (!serverName || !mediaId) {
+				return null;
+			}
+
+			logger.debug({ msg: 'Fetching federated file on first access', fileId, serverName, mediaId });
+
+			const buffer = await federationSDK.downloadFromRemoteServer(serverName, mediaId);
+			if (!buffer) {
+				throw new Error('Download from remote server returned null content.');
+			}
+
+			return Upload.completePendingFile({ fileId, buffer });
+		})().finally(() => {
+			this.pendingDownloads.delete(fileId);
+		});
+
+		this.pendingDownloads.set(fileId, download);
+
+		return download;
 	}
 
 	static async getLocalFileBuffer(file: IUpload): Promise<Buffer> {
