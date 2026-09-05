@@ -109,7 +109,7 @@ export class RoomSidebar extends Sidebar {
 		await item.hover();
 		await item.focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
-		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
+		await this.page.getByRole('menuitem', { name: 'Mark unread' }).click();
 	}
 
 	getCollapseGroupByName(name: string): Locator {

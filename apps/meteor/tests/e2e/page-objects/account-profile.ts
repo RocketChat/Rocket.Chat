@@ -82,7 +82,7 @@ export class AccountProfile extends Account {
 	}
 
 	get tokenAddedModal(): Locator {
-		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
+		return this.page.locator('role=dialog[name="Personal access token successfully generated"]');
 	}
 
 	get btnTokenAddedOk(): Locator {

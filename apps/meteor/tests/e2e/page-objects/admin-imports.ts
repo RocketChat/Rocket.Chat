@@ -4,7 +4,7 @@ import { Admin } from './admin';
 
 export class AdminImports extends Admin {
 	get btnImportNewFile(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import new file"');
 	}
 
 	async getOptionFileType(option: string): Promise<Locator> {
@@ -21,7 +21,7 @@ export class AdminImports extends Admin {
 	}
 
 	get btnStartImport(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start importing"');
 	}
 
 	get importStatusTableFirstRowCell(): Locator {

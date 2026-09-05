@@ -8,7 +8,7 @@ export class AdminThirdPartyLogin extends Admin {
 	}
 
 	get btnNewApplication(): Locator {
-		return this.page.getByRole('button', { name: 'New Application', exact: true });
+		return this.page.getByRole('button', { name: 'New application', exact: true });
 	}
 
 	get inputRedirectURI(): Locator {
@@ -16,7 +16,7 @@ export class AdminThirdPartyLogin extends Admin {
 	}
 
 	get inputApplicationName(): Locator {
-		return this.page.getByRole('textbox', { name: 'Application Name' });
+		return this.page.getByRole('textbox', { name: 'Application name' });
 	}
 
 	get inputClientId(): Locator {
@@ -24,7 +24,7 @@ export class AdminThirdPartyLogin extends Admin {
 	}
 
 	get inputClientSecret(): Locator {
-		return this.page.getByRole('textbox', { name: 'Client Secret' });
+		return this.page.getByRole('textbox', { name: 'Client secret' });
 	}
 
 	get inputAuthUrl(): Locator {
@@ -32,7 +32,7 @@ export class AdminThirdPartyLogin extends Admin {
 	}
 
 	get inputTokenUrl(): Locator {
-		return this.page.getByRole('textbox', { name: 'Access Token URL' });
+		return this.page.getByRole('textbox', { name: 'Access token URL' });
 	}
 
 	getThirdPartyAppByName(name: string): Locator {
