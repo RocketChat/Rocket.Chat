@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"eslint": "~9.39.5",
 		"typescript": "~5.9.3"
 	},

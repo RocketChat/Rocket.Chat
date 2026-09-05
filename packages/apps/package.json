@@ -51,7 +51,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/debug": "^4.1.13",
 		"@types/lodash.clonedeep": "^4.5.9",
-		"@types/node": "~22.16.5",
+		"@types/node": "~24.13.2",
 		"@types/semver": "^7.5.8",
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",

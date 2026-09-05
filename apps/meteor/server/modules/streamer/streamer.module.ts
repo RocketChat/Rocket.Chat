@@ -296,8 +296,6 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 	}
 
 	static isPublicationActive(publication: IPublication): publication is ActivePublication {
-		// After Meteor 3.5 the socket can become null independently of session deactivation
-		// (e.g. right after a disconnection), so "active" must also mean the socket is still there.
 		return !publication._isDeactivated() && publication._session?.socket != null;
 	}
 
