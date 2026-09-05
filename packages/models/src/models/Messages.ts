@@ -1506,10 +1506,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null> {
+	getMessageByFileIdAndUsername(fileID: string, userId: string, roomId: string): Promise<IMessage | null> {
 		const query = {
 			'file._id': fileID,
 			'u._id': userId,
+			rid: roomId,
 		};
 
 		const options = {

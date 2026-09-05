@@ -335,7 +335,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;
-	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null>;
+	getMessageByFileIdAndUsername(fileID: string, userId: string, roomId: string): Promise<IMessage | null>;
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
 	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;

@@ -72,7 +72,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+	confirmTemporaryFile(fileId: string, userId: string): Promise<UpdateResult> | undefined {
 		if (!fileId) {
 			return;
 		}
@@ -80,11 +80,31 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		const filter = {
 			_id: fileId,
 			userId,
-		};
+			expiresAt: { $exists: true },
+		} as Filter<T>;
 
 		const update: Filter<T> = {
 			$unset: {
 				expiresAt: 1,
+			},
+		};
+
+		return this.updateOne(filter, update);
+	}
+
+	releaseTemporaryFileClaim(fileId: string, userId: string, expiresAt: Date): Promise<UpdateResult> | undefined {
+		if (!fileId) {
+			return;
+		}
+
+		const filter = {
+			_id: fileId,
+			userId,
+		} as Filter<T>;
+
+		const update: Filter<T> = {
+			$set: {
+				expiresAt,
 			},
 		};
 
