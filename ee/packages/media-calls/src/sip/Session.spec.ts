@@ -38,8 +38,14 @@ describe('SipServerSession', () => {
 			expect(session.getExtensionUri('1001')).toBe('sip:1001@pbx.example.com:5060');
 		});
 
-		it('should format URI without port when port is 0 or undefined', () => {
+		it('should format URI without port when port is 0', () => {
 			settings.sip.sipServer.port = 0;
+			session.configure(settings);
+			expect(session.getExtensionUri('1001')).toBe('sip:1001@pbx.example.com');
+		});
+
+		it('should format URI without port when port is undefined', () => {
+			delete (settings.sip.sipServer as Partial<typeof settings.sip.sipServer>).port;
 			session.configure(settings);
 			expect(session.getExtensionUri('1001')).toBe('sip:1001@pbx.example.com');
 		});
