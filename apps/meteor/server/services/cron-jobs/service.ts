@@ -1,6 +1,6 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { ICronJobsService } from '@rocket.chat/core-services';
-import type { CronJobStatus, ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
+import type { ICronJobsService, IBackgroundJobsPaginationParams } from '@rocket.chat/core-services';
+import type { ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import type { IAppSchedulerModel, ICronJobsModel, IOmnichannelSchedulerModel } from '@rocket.chat/model-typings';
 import {
@@ -20,31 +20,21 @@ import { deriveStatus } from './deriveStatus';
 export class CronJobsService extends ServiceClassInternal implements ICronJobsService {
 	protected name = 'cron-jobs';
 
-	async getCoreJobs(pagination?: {
-		offset?: number;
-		count?: number;
-		searchTerm?: string;
-		status?: CronJobStatus;
-	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+	async getCoreJobs(
+		pagination?: IBackgroundJobsPaginationParams,
+	): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
 		return this.listJobs(CronJobs, pagination);
 	}
 
-	async getAppJobs(pagination?: {
-		offset?: number;
-		count?: number;
-		searchTerm?: string;
-		status?: CronJobStatus;
-	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+	async getAppJobs(
+		pagination?: IBackgroundJobsPaginationParams,
+	): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
 		return this.listJobs(AppScheduler, pagination);
 	}
 
-	async getOmnichannelJobs(pagination: {
-		source: OmnichannelJobSource;
-		offset?: number;
-		count?: number;
-		searchTerm?: string;
-		status?: CronJobStatus;
-	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+	async getOmnichannelJobs(
+		pagination: IBackgroundJobsPaginationParams & { source: OmnichannelJobSource },
+	): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
 		const { source, ...listOptions } = pagination;
 		switch (source) {
 			case 'auto-close':
@@ -118,12 +108,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 	private async listJobs(
 		model: ICronJobsModel | IAppSchedulerModel | IOmnichannelSchedulerModel,
-		pagination?: {
-			offset?: number;
-			count?: number;
-			searchTerm?: string;
-			status?: CronJobStatus;
-		},
+		pagination?: IBackgroundJobsPaginationParams,
 	): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
 		const offset = pagination?.offset || 0;
 		const count = pagination?.count;

@@ -1,4 +1,5 @@
 import { CronJobs } from '@rocket.chat/core-services';
+import type { IBackgroundJobsPaginationParams } from '@rocket.chat/core-services';
 import type { CronJobStatus, ICronJobItem, ICronHistoryItem, OmnichannelJobSource } from '@rocket.chat/core-typings';
 import {
 	ajv,
@@ -12,12 +13,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
-const isCronJobsListParams = ajvQuery.compile<{
-	offset?: number;
-	count?: number;
-	searchTerm?: string;
-	status?: CronJobStatus;
-}>({
+const isCronJobsListParams = ajvQuery.compile<IBackgroundJobsPaginationParams>({
 	type: 'object',
 	properties: {
 		offset: { type: 'number', nullable: true },
@@ -32,13 +28,11 @@ const isCronJobsListParams = ajvQuery.compile<{
 	additionalProperties: false,
 });
 
-const isCronOmnichannelJobsListParams = ajvQuery.compile<{
-	source: OmnichannelJobSource;
-	offset?: number;
-	count?: number;
-	searchTerm?: string;
-	status?: CronJobStatus;
-}>({
+const isCronOmnichannelJobsListParams = ajvQuery.compile<
+	IBackgroundJobsPaginationParams & {
+		source: OmnichannelJobSource;
+	}
+>({
 	type: 'object',
 	properties: {
 		source: {
@@ -151,13 +145,7 @@ async function handleJobListings(
 		status?: CronJobStatus;
 		source?: OmnichannelJobSource;
 	},
-	fetcher: (params: {
-		offset: number;
-		count: number;
-		searchTerm?: string;
-		status?: CronJobStatus;
-		source?: OmnichannelJobSource;
-	}) => Promise<{ jobs: ICronJobItem[]; total: number }>,
+	fetcher: (params: IBackgroundJobsPaginationParams) => Promise<{ jobs: ICronJobItem[]; total: number }>,
 ) {
 	const { offset, count } = await getPaginationItems(queryParams);
 	const searchTerm = queryParams.searchTerm?.trim();
