@@ -7,6 +7,7 @@ const mockSettingsGet = jest.fn();
 const mockHasModule = jest.fn();
 const mockHasPermission = jest.fn();
 const mockEntitlementsOf = jest.fn();
+const mockStoreList = jest.fn();
 
 jest.mock('./store', () => {
 	const { ensureAttributeDefinitionsExist } = jest.requireActual('./helper');
@@ -16,6 +17,7 @@ jest.mock('./store', () => {
 			validateAssignable: (attrs: any[], _actor: any) => ensureAttributeDefinitionsExist(attrs),
 			scopeRoomsPage: (rooms: any[]) => Promise.resolve(rooms),
 			entitlementsOf: (...args: any[]) => mockEntitlementsOf(...args),
+			list: (...args: any[]) => mockStoreList(...args),
 		})),
 		VirtruAttributeStore: jest.fn().mockImplementation(() => ({
 			onStoreSelected: jest.fn(),
@@ -366,7 +368,9 @@ describe('AbacService (unit)', () => {
 			const filters = { key: 'k', values: 'v', offset: 0, count: 25 };
 			const returned = await service.listAbacAttributes(filters, actor);
 
-			expect(fakeStore.list).toHaveBeenCalledWith(actor, filters);
+			// The service also resolves whether D12 narrows the result; a caller that did not ask for
+			// `assignableOnly` gets the full list, which is what the admin surfaces rely on.
+			expect(fakeStore.list).toHaveBeenCalledWith(actor, { ...filters, restrictToOwned: false });
 			expect(returned).toBe(result);
 			expect(mockAbacFindPaginated).not.toHaveBeenCalled();
 		});
@@ -2189,6 +2193,31 @@ describe('AbacService (unit)', () => {
 			mockEntitlementsOf.mockResolvedValue(entitled({}));
 
 			await expect(service.assertCanAssignAttributes([{ key: 'dept', values: ['eng'] }], fakeActor)).resolves.toBeUndefined();
+		});
+
+		it('asks the store to restrict the attribute list when the picker requests it', async () => {
+			mockStoreList.mockResolvedValue({ attributes: [], offset: 0, count: 0, total: 0 });
+
+			await service.listAbacAttributes({ assignableOnly: true }, fakeActor);
+
+			expect(mockStoreList).toHaveBeenCalledWith(fakeActor, expect.objectContaining({ restrictToOwned: true }));
+		});
+
+		it('does not restrict the attribute list for callers that do not ask — the admin surfaces (D11)', async () => {
+			mockStoreList.mockResolvedValue({ attributes: [], offset: 0, count: 0, total: 0 });
+
+			await service.listAbacAttributes({}, fakeActor);
+
+			expect(mockStoreList).toHaveBeenCalledWith(fakeActor, expect.objectContaining({ restrictToOwned: false }));
+		});
+
+		it('does not restrict the attribute list while the setting is off, even when asked', async () => {
+			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? false : 'local'));
+			mockStoreList.mockResolvedValue({ attributes: [], offset: 0, count: 0, total: 0 });
+
+			await service.listAbacAttributes({ assignableOnly: true }, fakeActor);
+
+			expect(mockStoreList).toHaveBeenCalledWith(fakeActor, expect.objectContaining({ restrictToOwned: false }));
 		});
 
 		it('leaves the administrative room endpoints alone (D11)', async () => {

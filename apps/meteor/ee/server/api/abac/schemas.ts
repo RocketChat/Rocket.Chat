@@ -68,13 +68,20 @@ const GetAbacAttributesQuery = {
 		values: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		offset: { type: 'number' },
 		count: { type: 'number' },
+		// ABAC-P4/D12 — the room attribute pickers ask for only what the caller could be granted.
+		// The administrative attribute and room surfaces omit it and keep listing everything.
+		assignableOnly: { type: 'boolean' },
 	},
 	additionalProperties: false,
 };
 
-export const GETAbacAttributesQuerySchema = ajvQuery.compile<{ key?: string; values?: string; offset: number; count?: number }>(
-	GetAbacAttributesQuery,
-);
+export const GETAbacAttributesQuerySchema = ajvQuery.compile<{
+	key?: string;
+	values?: string;
+	offset: number;
+	count?: number;
+	assignableOnly?: boolean;
+}>(GetAbacAttributesQuery);
 
 const AbacAttributeRecord = {
 	type: 'object',

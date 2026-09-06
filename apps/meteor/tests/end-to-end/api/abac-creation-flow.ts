@@ -203,6 +203,22 @@ import { IS_EE } from '../../e2e/config/constants';
 				await updateSetting('ABAC_Restrict_To_Owned_Attributes', false);
 			});
 
+			// The picker has to offer the same set the PDP will accept. It used to list every
+			// definition on the workspace regardless, so a user chose one and was refused a step
+			// later (ABAC-P4 QA).
+			it('lists only the attributes the caller could be granted when the picker asks', async () => {
+				const res = await request.get(api('abac/attributes')).set(credentials).query({ assignableOnly: true, count: 150 }).expect(200);
+
+				// The admin carries no subject attributes of their own in this suite.
+				expect(res.body.attributes.map(({ key }: { key: string }) => key)).to.not.include(attributeKey);
+			});
+
+			it('still lists every definition for callers that do not ask — the admin surfaces (D11)', async () => {
+				const res = await request.get(api('abac/attributes')).set(credentials).query({ count: 150 }).expect(200);
+
+				expect(res.body.attributes.map(({ key }: { key: string }) => key)).to.include(attributeKey);
+			});
+
 			it('refuses an attribute the actor does not possess', async () => {
 				// The user has no subject attributes at all, so they possess nothing to assign.
 				const res = await request

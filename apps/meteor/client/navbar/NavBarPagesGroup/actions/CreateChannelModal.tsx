@@ -32,6 +32,7 @@ import CreateChannelSecurityFields from './CreateChannelSecurityFields';
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import AbacMembershipPreview from '../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
 import { useAbacMembershipPreview } from '../../../components/ABAC/AbacMembershipPreview/useAbacMembershipPreview';
+import { useAbacAttributeMap } from '../../../components/ABAC/useAbacAttributeMap';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -144,7 +145,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
 
-	const { isPrivate, broadcast, federated, encrypted, isAbacManaged, members, attributes } = watch();
+	const { isPrivate, broadcast, federated, encrypted, isAbacManaged, members } = watch();
 
 	const isStepped = isAbacAvailable && isAbacManaged;
 	const [step, setStep] = useState(1);
@@ -192,14 +193,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		}
 	}, [isStepped]);
 
-	const attributeMap = useMemo(
-		() =>
-			Object.fromEntries(attributes.filter(({ key, values }) => key && values.length).map(({ key, values }) => [key, values])) as Record<
-				string,
-				string[]
-			>,
-		[attributes],
-	);
+	const attributeMap = useAbacAttributeMap(control);
 
 	const {
 		data: compliance,
@@ -435,7 +429,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 								{t('ABAC_Room_attributes_section')}
 							</Box>
 							{pdpDenial && <Callout type='danger'>{pdpDenial}</Callout>}
-							<RoomFormAttributeFields fields={fields} remove={remove} lockedLeadingCount={requiredAttributeKeys.length} />
+							<RoomFormAttributeFields fields={fields} remove={remove} lockedLeadingCount={requiredAttributeKeys.length} assignableOnly />
 							<Button
 								width='full'
 								disabled={fields.length >= MAX_ATTRIBUTE_ROWS}

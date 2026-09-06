@@ -1,12 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAbacAttributeEditFlow } from '../../../../../components/ABAC/AbacAttributeEditor/useAbacAttributeEditFlow';
 import AbacMembershipPreview from '../../../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
+import { useAbacAttributeMap } from '../../../../../components/ABAC/useAbacAttributeMap';
 import RoomFormAttributeFields from '../../../../admin/ABAC/ABACRoomsTab/RoomFormAttributeFields';
 import { useIsABACAvailable } from '../../../../admin/ABAC/hooks/useIsABACAvailable';
 
@@ -43,22 +43,12 @@ const AbacRoomAttributesSection = ({ room }: AbacRoomAttributesSectionProps) => 
 
 	const {
 		control,
-		watch,
 		formState: { isValid, isDirty },
 	} = methods;
 
 	const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
 
-	const attributes = watch('attributes');
-
-	const attributeMap = useMemo(
-		() =>
-			Object.fromEntries(attributes.filter(({ key, values }) => key && values.length).map(({ key, values }) => [key, values])) as Record<
-				string,
-				string[]
-			>,
-		[attributes],
-	);
+	const attributeMap = useAbacAttributeMap(control);
 
 	const editFlow = useAbacAttributeEditFlow({
 		rid: room._id,
@@ -84,7 +74,7 @@ const AbacRoomAttributesSection = ({ room }: AbacRoomAttributesSectionProps) => 
 					<Box marginBlockEnd={8} color='hint' fontScale='c1'>
 						{t('ABAC_Room_attributes_edit_hint')}
 					</Box>
-					<RoomFormAttributeFields fields={fields} remove={remove} />
+					<RoomFormAttributeFields fields={fields} remove={remove} assignableOnly />
 					<Button
 						type='button'
 						width='full'
