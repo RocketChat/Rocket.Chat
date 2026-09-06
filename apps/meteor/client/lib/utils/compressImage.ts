@@ -1,31 +1,89 @@
 export const isAnimatedImage = async (file: File): Promise<boolean> => {
-	if (file.type.includes('gif') || file.type.includes('apng') || file.name.endsWith('.apng')) {
+	if (file.type.includes('gif')) {
 		return true;
 	}
 
-	try {
-		const buffer = await file.slice(0, 4096).arrayBuffer();
-		const bytes = new Uint8Array(buffer);
+	if (file.name.toLowerCase().endsWith('.apng')) {
+		return true;
+	}
 
-		const containsString = (str: string) => {
-			for (let i = 0; i <= bytes.length - str.length; i++) {
-				let match = true;
-				for (let j = 0; j < str.length; j++) {
-					if (bytes[i + j] !== str.charCodeAt(j)) {
-						match = false;
-						break;
+	// 1. PNG / APNG chunk parser
+	if (file.type.includes('png') || file.name.toLowerCase().endsWith('.png')) {
+		try {
+			let offset = 8; // PNG signature is 8 bytes
+			while (offset < file.size) {
+				const headerBuffer = await file.slice(offset, offset + 8).arrayBuffer();
+				if (headerBuffer.byteLength < 8) {
+					break;
+				}
+
+				const view = new DataView(headerBuffer);
+				const length = view.getUint32(0); // big-endian
+				const type = String.fromCharCode(
+					view.getUint8(4),
+					view.getUint8(5),
+					view.getUint8(6),
+					view.getUint8(7),
+				);
+
+				if (type === 'acTL') {
+					return true;
+				}
+				if (type === 'IDAT' || type === 'IEND') {
+					return false;
+				}
+				offset += 12 + length;
+			}
+		} catch {
+			// Ignore read errors and fall through
+		}
+	}
+
+	// 2. WebP chunk parser
+	if (file.type.includes('webp') || file.name.toLowerCase().endsWith('.webp')) {
+		try {
+			const headerBuffer = await file.slice(0, 32).arrayBuffer();
+			if (headerBuffer.byteLength >= 12) {
+				const view = new DataView(headerBuffer);
+				const riff = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+				const webp = String.fromCharCode(view.getUint8(8), view.getUint8(9), view.getUint8(10), view.getUint8(11));
+
+				if (riff === 'RIFF' && webp === 'WEBP') {
+					let offset = 12;
+					while (offset < file.size) {
+						const chunkHeaderBuffer = await file.slice(offset, offset + 8).arrayBuffer();
+						if (chunkHeaderBuffer.byteLength < 8) {
+							break;
+						}
+
+						const chunkView = new DataView(chunkHeaderBuffer);
+						const type = String.fromCharCode(
+							chunkView.getUint8(0),
+							chunkView.getUint8(1),
+							chunkView.getUint8(2),
+							chunkView.getUint8(3),
+						);
+						const length = chunkView.getUint32(4, true); // little-endian
+
+						if (type === 'ANIM' || type === 'ANMF') {
+							return true;
+						}
+						if (type === 'VP8X' && headerBuffer.byteLength >= 17) {
+							const flags = view.getUint8(16);
+							if ((flags & 0x02) !== 0) {
+								return true;
+							}
+						}
+						if (type === 'VP8 ' || type === 'VP8L') {
+							return false;
+						}
+						offset += 8 + length + (length & 1);
 					}
 				}
-				if (match) return true;
 			}
-			return false;
-		};
-
-		if (containsString('acTL') || containsString('ANIM') || containsString('ANMF')) {
-			return true;
+		} catch {
+			// Ignore read errors and fall through
 		}
-	} catch {
-		// Ignore slice read errors
 	}
 
 	return false;

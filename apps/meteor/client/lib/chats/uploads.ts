@@ -46,11 +46,6 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	getProcessingUploads = (): boolean => this.processingUploads;
 
 	cancel = (id: Upload['id']): void => {
-		const activeXhr = this.activeXhrs.get(id);
-		if (activeXhr) {
-			activeXhr.abort();
-			this.activeXhrs.delete(id);
-		}
 		this.emit(`cancelling-${id}`);
 	};
 
@@ -63,11 +58,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	}
 
 	removeUpload = (id: Upload['id']): void => {
-		const activeXhr = this.activeXhrs.get(id);
-		if (activeXhr) {
-			activeXhr.abort();
-			this.activeXhrs.delete(id);
-		}
+		this.cancel(id);
 		this.set(this.uploads.filter((upload) => upload.id !== id));
 
 		if (this.uploads.length === 0) {
@@ -133,13 +124,13 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			return;
 		}
 
+		this.cancel(uploadId);
 		this.updateUpload(uploadId, { file, percentage: 0, url: undefined, error: undefined });
 		this.performUpload(uploadId, file);
 	};
 
 	clear = () => {
-		this.activeXhrs.forEach((xhr) => xhr.abort());
-		this.activeXhrs.clear();
+		this.uploads.forEach((upload) => this.cancel(upload.id));
 		this.set([]);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
@@ -148,14 +139,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
 
-		const existingXhr = this.activeXhrs.get(id);
-		if (existingXhr) {
-			existingXhr.abort();
-			this.activeXhrs.delete(id);
-		}
-
 		try {
-			await new Promise((resolve, reject) => {
+			await new Promise<void>((resolve, reject) => {
 				if (file.size === 0) {
 					return reject(new Error(i18n.t('FileUpload_File_Empty')));
 				}
@@ -178,8 +163,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						}),
 					},
 					{
-						load: (event) => {
-							resolve(event);
+						load: () => {
+							// Handled in xhr.onload
 						},
 						progress: (event) => {
 							if (!event.lengthComputable) {
@@ -197,8 +182,21 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				this.activeXhrs.set(id, xhr);
 
-				xhr.onload = () => {
+				const cleanup = () => {
 					this.activeXhrs.delete(id);
+					this.off(`cancelling-${id}`, onCancel);
+				};
+
+				const onCancel = () => {
+					xhr.abort();
+					cleanup();
+					reject(new Error(i18n.t('FileUpload_Canceled')));
+				};
+
+				this.once(`cancelling-${id}`, onCancel);
+
+				xhr.onload = () => {
+					cleanup();
 					try {
 						if (xhr.readyState !== xhr.DONE) {
 							return;
@@ -207,27 +205,24 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						if (xhr.status === 400) {
 							const error = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
+							resolve();
 							return;
 						}
 
 						if (xhr.status === 200) {
 							const result = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { id: result.file._id, url: result.file.url, percentage: 100 });
+							resolve();
 							return;
 						}
 
 						this.updateUpload(id, { percentage: 0, error: new Error(i18n.t('FileUpload_Error')) });
+						resolve();
 					} catch (error) {
 						this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+						resolve();
 					}
 				};
-
-				this.once(`cancelling-${id}`, () => {
-					xhr.abort();
-					this.activeXhrs.delete(id);
-					this.removeUpload(id);
-					reject(new Error(i18n.t('FileUpload_Canceled')));
-				});
 			});
 		} catch (error: unknown) {
 			this.activeXhrs.delete(id);
