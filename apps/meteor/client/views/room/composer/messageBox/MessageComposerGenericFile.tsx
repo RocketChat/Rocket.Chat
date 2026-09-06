@@ -9,6 +9,7 @@ import type { MessageComposerFileItemProps } from './MessageComposerFileItem';
 import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import { isEncryptedUpload } from '../../../../lib/chats/Upload';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
 import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
@@ -47,6 +48,7 @@ const MessageComposerGenericFile = ({
 				fileName={upload.file.name}
 				fileAltText={upload.altText}
 				file={upload.file}
+				isEncrypted={isEncryptedUpload(upload)}
 				onClose={() => setModal(null)}
 			/>,
 		);

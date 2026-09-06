@@ -38,11 +38,19 @@ export type FileUploadModalProps = {
 	file: File;
 	fileName: string;
 	fileAltText?: string;
+	isEncrypted?: boolean;
 };
 
 const LARGE_MEDIA_THRESHOLD = 10 * 1024 * 1024; // 10MB
 
-const FileUploadModal = ({ onClose, file: initialFile, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
+const FileUploadModal = ({
+	onClose,
+	file: initialFile,
+	fileName,
+	fileAltText = '',
+	isEncrypted = false,
+	onSubmit,
+}: FileUploadModalProps) => {
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 
@@ -137,24 +145,26 @@ const FileUploadModal = ({ onClose, file: initialFile, fileName, fileAltText = '
 										<Controller name='altText' control={control} render={({ field }) => <TextAreaInput {...field} />} />
 									</FieldRow>
 								</Field>
-								<Field>
-									<FieldRow>
-										<CheckBox
-											checked={isCompressed}
-											disabled={isCompressing}
-											onChange={(e) => handleImageCompressionToggle((e.target as HTMLInputElement).checked)}
-										/>
-										<FieldLabel>{t('FileUpload_Compress_Image')}</FieldLabel>
-									</FieldRow>
-									{isCompressed && (
-										<FieldDescription>
-											{t('FileUpload_Image_Compressed_Info', {
-												originalSize: formatBytes(initialFile.size, 2),
-												compressedSize: formatBytes(currentFile.size, 2),
-											})}
-										</FieldDescription>
-									)}
-								</Field>
+								{!isEncrypted && (
+									<Field>
+										<FieldRow>
+											<CheckBox
+												checked={isCompressed}
+												disabled={isCompressing}
+												onChange={(e) => handleImageCompressionToggle((e.target as HTMLInputElement).checked)}
+											/>
+											<FieldLabel>{t('FileUpload_Compress_Image')}</FieldLabel>
+										</FieldRow>
+										{isCompressed && (
+											<FieldDescription>
+												{t('FileUpload_Image_Compressed_Info', {
+													originalSize: formatBytes(initialFile.size, 2),
+													compressedSize: formatBytes(currentFile.size, 2),
+												})}
+											</FieldDescription>
+										)}
+									</Field>
+								)}
 							</>
 						)}
 					</FieldGroup>

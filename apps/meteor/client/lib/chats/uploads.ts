@@ -17,6 +17,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private tmid?: string;
 
+	private activeXhrs = new Map<Upload['id'], XMLHttpRequest>();
+
 	constructor({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		super();
 		this.rid = rid;
@@ -44,6 +46,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	getProcessingUploads = (): boolean => this.processingUploads;
 
 	cancel = (id: Upload['id']): void => {
+		const activeXhr = this.activeXhrs.get(id);
+		if (activeXhr) {
+			activeXhr.abort();
+			this.activeXhrs.delete(id);
+		}
 		this.emit(`cancelling-${id}`);
 	};
 
@@ -56,6 +63,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	}
 
 	removeUpload = (id: Upload['id']): void => {
+		const activeXhr = this.activeXhrs.get(id);
+		if (activeXhr) {
+			activeXhr.abort();
+			this.activeXhrs.delete(id);
+		}
 		this.set(this.uploads.filter((upload) => upload.id !== id));
 
 		if (this.uploads.length === 0) {
@@ -116,42 +128,31 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	};
 
 	editUploadFile = (uploadId: Upload['id'], file: File) => {
-		this.set(
-			this.uploads.map((upload) => {
-				if (upload.id !== uploadId) {
-					return upload;
-				}
+		const targetUpload = this.uploads.find((upload) => upload.id === uploadId);
+		if (!targetUpload || targetUpload.file === file || isEncryptedUpload(targetUpload)) {
+			return;
+		}
 
-				return {
-					...upload,
-					file,
-				};
-			}),
-		);
+		this.updateUpload(uploadId, { file, percentage: 0, url: undefined, error: undefined });
+		this.performUpload(uploadId, file);
 	};
 
 	clear = () => {
+		this.activeXhrs.forEach((xhr) => xhr.abort());
+		this.activeXhrs.clear();
 		this.set([]);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
 
-	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
+	private async performUpload(id: Upload['id'], file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
-		const id = Random.id();
 
-		this.set([
-			...this.uploads,
-			{
-				id,
-				file: encrypted ? encrypted.rawFile : file,
-				percentage: 0,
-				...(encrypted && {
-					encryptedFile: encrypted.encryptedFile,
-					metadataForEncryption: encrypted.fileContent.raw,
-				}),
-			},
-		]);
+		const existingXhr = this.activeXhrs.get(id);
+		if (existingXhr) {
+			existingXhr.abort();
+			this.activeXhrs.delete(id);
+		}
 
 		try {
 			await new Promise((resolve, reject) => {
@@ -194,7 +195,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					},
 				);
 
+				this.activeXhrs.set(id, xhr);
+
 				xhr.onload = () => {
+					this.activeXhrs.delete(id);
 					try {
 						if (xhr.readyState !== xhr.DONE) {
 							return;
@@ -220,13 +224,34 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
+					this.activeXhrs.delete(id);
 					this.removeUpload(id);
 					reject(new Error(i18n.t('FileUpload_Canceled')));
 				});
 			});
 		} catch (error: unknown) {
+			this.activeXhrs.delete(id);
 			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
 		}
+	}
+
+	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
+		const id = Random.id();
+
+		this.set([
+			...this.uploads,
+			{
+				id,
+				file: encrypted ? encrypted.rawFile : file,
+				percentage: 0,
+				...(encrypted && {
+					encryptedFile: encrypted.encryptedFile,
+					metadataForEncryption: encrypted.fileContent.raw,
+				}),
+			},
+		]);
+
+		await this.performUpload(id, file, encrypted);
 	}
 }
 

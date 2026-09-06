@@ -1,52 +1,91 @@
+export const isAnimatedImage = async (file: File): Promise<boolean> => {
+	if (file.type.includes('gif') || file.type.includes('apng') || file.name.endsWith('.apng')) {
+		return true;
+	}
+
+	try {
+		const buffer = await file.slice(0, 4096).arrayBuffer();
+		const bytes = new Uint8Array(buffer);
+
+		const containsString = (str: string) => {
+			for (let i = 0; i <= bytes.length - str.length; i++) {
+				let match = true;
+				for (let j = 0; j < str.length; j++) {
+					if (bytes[i + j] !== str.charCodeAt(j)) {
+						match = false;
+						break;
+					}
+				}
+				if (match) return true;
+			}
+			return false;
+		};
+
+		if (containsString('acTL') || containsString('ANIM') || containsString('ANMF')) {
+			return true;
+		}
+	} catch {
+		// Ignore slice read errors
+	}
+
+	return false;
+};
+
 export const compressImage = async (file: File, quality = 0.7, maxWidth = 1920): Promise<File> => {
-	if (!file.type.startsWith('image/') || file.type.includes('gif') || file.type.includes('svg')) {
+	if (!file.type.startsWith('image/') || file.type.includes('svg')) {
+		return file;
+	}
+
+	if (await isAnimatedImage(file)) {
 		return file;
 	}
 
 	return new Promise((resolve) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = (event) => {
-			const img = new Image();
-			img.src = event.target?.result as string;
-			img.onload = () => {
-				const canvas = document.createElement('canvas');
-				let { width, height } = img;
+		const objectUrl = URL.createObjectURL(file);
+		const img = new Image();
+		img.src = objectUrl;
 
-				if (width > maxWidth) {
-					height = Math.round((height * maxWidth) / width);
-					width = maxWidth;
-				}
+		img.onload = () => {
+			URL.revokeObjectURL(objectUrl);
+			const canvas = document.createElement('canvas');
+			let { width, height } = img;
 
-				canvas.width = width;
-				canvas.height = height;
+			if (width > maxWidth) {
+				height = Math.round((height * maxWidth) / width);
+				width = maxWidth;
+			}
 
-				const ctx = canvas.getContext('2d');
-				if (!ctx) {
-					resolve(file);
-					return;
-				}
+			canvas.width = width;
+			canvas.height = height;
 
-				ctx.drawImage(img, 0, 0, width, height);
+			const ctx = canvas.getContext('2d');
+			if (!ctx) {
+				resolve(file);
+				return;
+			}
 
-				canvas.toBlob(
-					(blob) => {
-						if (!blob || blob.size >= file.size) {
-							resolve(file);
-							return;
-						}
-						const compressedFile = new File([blob], file.name, {
-							type: file.type || 'image/jpeg',
-							lastModified: Date.now(),
-						});
-						resolve(compressedFile);
-					},
-					file.type || 'image/jpeg',
-					quality,
-				);
-			};
-			img.onerror = () => resolve(file);
+			ctx.drawImage(img, 0, 0, width, height);
+
+			canvas.toBlob(
+				(blob) => {
+					if (!blob || blob.size >= file.size || (file.type && blob.type !== file.type)) {
+						resolve(file);
+						return;
+					}
+					const compressedFile = new File([blob], file.name, {
+						type: blob.type,
+						lastModified: Date.now(),
+					});
+					resolve(compressedFile);
+				},
+				file.type || 'image/jpeg',
+				quality,
+			);
 		};
-		reader.onerror = () => resolve(file);
+
+		img.onerror = () => {
+			URL.revokeObjectURL(objectUrl);
+			resolve(file);
+		};
 	});
 };
