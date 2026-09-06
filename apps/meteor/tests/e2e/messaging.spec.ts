@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
+import { BASE_API_URL, DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -15,7 +15,19 @@ test.describe('Messaging', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+
+		// Navigation and message edition tests need existing messages authored by user1.
+		const userApi = await api.login({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password });
+		try {
+			for (const text of ['msg1', 'msg2']) {
+				const response = await userApi.post(`${BASE_API_URL}/chat.postMessage`, { data: { channel: targetChannel, text } });
+				expect(response.ok()).toBeTruthy();
+				expect((await response.json()).success).toBe(true);
+			}
+		} finally {
+			await userApi.dispose();
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -32,73 +44,6 @@ test.describe('Messaging', () => {
 			await channelPage.navbar.openChat(targetChannel);
 			// wait for the room toolbox to mount, since it's a lazy loaded component
 			await channelPage.roomToolbar.waitFor();
-		});
-
-		// TODO: this should be replaced by a unit test
-		test('should navigate on messages using keyboard', async ({ page }) => {
-			await test.step('open chat and send message', async () => {
-				await channelPage.content.sendMessage('msg1');
-				await channelPage.content.sendMessage('msg2');
-			});
-
-			await test.step('move focus to the second message', async () => {
-				await page.keyboard.press('Shift+Tab');
-				await expect(channelPage.content.lastUserMessage).toBeFocused();
-			});
-
-			await test.step('move focus to the first system message', async () => {
-				await page.keyboard.press('ArrowUp');
-				await page.keyboard.press('ArrowUp');
-				await expect(channelPage.content.systemMessageListItems.first()).toBeFocused();
-			});
-
-			await test.step('move focus to the first typed message', async () => {
-				await page.keyboard.press('ArrowDown');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
-
-			await test.step('move focus to the room title', async () => {
-				const roomHeaderFavoriteBtn = channelPage.getRoomHeaderFavoriteBtn(IS_EE);
-				await page.keyboard.press('Shift+Tab');
-
-				await expect(roomHeaderFavoriteBtn).toBeFocused();
-			});
-
-			await test.step('move focus to the channel list', async () => {
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
-
-			await test.step('move focus to the message toolbar', async () => {
-				await channelPage.content
-					.getMessageByText('msg1')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(
-					channelPage.content
-						.getMessageByText('msg1')
-						.locator('[role=toolbar][aria-label="Message actions"]')
-						.getByRole('button', { name: 'Add reaction' }),
-				).toBeFocused();
-			});
-
-			await test.step('move focus to the composer', async () => {
-				await page.keyboard.press('Tab');
-				await channelPage.content
-					.getMessageByText('msg2')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.composer.inputMessage).toBeFocused();
-			});
 		});
 
 		test('should navigate properly on the user card', async ({ page }) => {

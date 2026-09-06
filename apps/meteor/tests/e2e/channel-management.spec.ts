@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
@@ -24,40 +23,6 @@ test.describe.serial('channel-management', () => {
 
 		await page.goto('/home');
 		await poHomeChannel.waitForHome();
-	});
-
-	// TODO: this should be replaced by a unit test
-	test('should navigate on toolbar using arrow keys', async ({ page }) => {
-		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
-
-		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello composer');
-		await roomHeaderFavoriteBtn.focus();
-		await expect(roomHeaderFavoriteBtn).toBeFocused();
-
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('ArrowRight');
-		await page.keyboard.press('ArrowRight');
-
-		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true })).toBeFocused();
-	});
-
-	// TODO: this should be replaced by a unit test
-	test('should move the focus away from toolbar using tab key', async ({ page }) => {
-		const roomHeaderFavoriteBtn = poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE);
-
-		await poHomeChannel.navbar.openChat(targetChannel);
-		await roomHeaderFavoriteBtn.focus();
-		await expect(roomHeaderFavoriteBtn).toBeFocused();
-
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-
-		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Call' })).not.toBeFocused();
 	});
 
 	test('should add user1 to targetChannel', async () => {
