@@ -183,8 +183,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 							this.updateUpload(id, { percentage: Math.min(Math.round(progress), 99) || 0 });
 						},
 						error: (event) => {
+							const isCurrent = this.isCurrentAttempt(id, attemptId);
 							cleanup();
-							if (this.isCurrentAttempt(id, attemptId)) {
+							if (isCurrent) {
 								this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
 							}
 							reject(event);
@@ -203,16 +204,20 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				};
 
 				const onCancel = () => {
+					const isCurrent = this.isCurrentAttempt(id, attemptId);
 					xhr.abort();
 					cleanup();
-					reject(new Error(i18n.t('FileUpload_Canceled')));
+					if (isCurrent) {
+						reject(new Error(i18n.t('FileUpload_Canceled')));
+					}
 				};
 
 				this.once(`cancelling-${id}`, onCancel);
 
 				xhr.onload = () => {
+					const isCurrent = this.isCurrentAttempt(id, attemptId);
 					cleanup();
-					if (!this.isCurrentAttempt(id, attemptId)) {
+					if (!isCurrent) {
 						resolve();
 						return;
 					}
