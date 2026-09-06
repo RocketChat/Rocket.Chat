@@ -6,13 +6,17 @@ import type { Db } from 'mongodb';
 
 const logger = new Logger('Cron');
 
-const runCronJobFunctionAndPersistResult = async (fn: () => Promise<unknown>, jobName: string): Promise<void> => {
+export const withCronHistory = async (
+	jobName: string,
+	type: 'system' | 'app' | 'omnichannel',
+	fn: () => Promise<unknown> | void,
+): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
 		_id: Random.id(),
 		intendedAt: new Date(),
 		name: jobName,
 		startedAt: new Date(),
-		type: 'system',
+		type,
 	});
 	try {
 		const result = await fn();
@@ -262,7 +266,7 @@ export class AgendaCronJobs {
 		}
 
 		this.scheduler.define(jobName, async () => {
-			await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+			await withCronHistory(jobName, 'system', async () => callback());
 		});
 	}
 }
