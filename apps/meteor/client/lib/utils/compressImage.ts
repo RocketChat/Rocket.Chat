@@ -68,10 +68,14 @@ export const isAnimatedImage = async (file: File): Promise<boolean> => {
 						if (type === 'ANIM' || type === 'ANMF') {
 							return true;
 						}
-						if (type === 'VP8X' && headerBuffer.byteLength >= 17) {
-							const flags = view.getUint8(16);
-							if ((flags & 0x02) !== 0) {
-								return true;
+						if (type === 'VP8X') {
+							const vp8xBuffer = await file.slice(offset, offset + 9).arrayBuffer();
+							if (vp8xBuffer.byteLength >= 9) {
+								const vp8xView = new DataView(vp8xBuffer);
+								const flags = vp8xView.getUint8(8);
+								if ((flags & 0x02) !== 0) {
+									return true;
+								}
 							}
 						}
 						if (type === 'VP8 ' || type === 'VP8L') {

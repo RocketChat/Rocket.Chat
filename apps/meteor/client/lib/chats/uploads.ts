@@ -19,6 +19,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private activeXhrs = new Map<Upload['id'], XMLHttpRequest>();
 
+	private activeAttempts = new Map<Upload['id'], string>();
+
 	constructor({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		super();
 		this.rid = rid;
@@ -44,6 +46,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	};
 
 	getProcessingUploads = (): boolean => this.processingUploads;
+
+	private isCurrentAttempt(id: Upload['id'], attemptId: string): boolean {
+		return this.activeAttempts.get(id) === attemptId;
+	}
 
 	cancel = (id: Upload['id']): void => {
 		this.emit(`cancelling-${id}`);
@@ -138,6 +144,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	private async performUpload(id: Upload['id'], file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
+		const attemptId = Random.id();
+
+		this.activeAttempts.set(id, attemptId);
 
 		try {
 			await new Promise<void>((resolve, reject) => {
@@ -167,14 +176,17 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 							// Handled in xhr.onload
 						},
 						progress: (event) => {
-							if (!event.lengthComputable) {
+							if (!event.lengthComputable || !this.isCurrentAttempt(id, attemptId)) {
 								return;
 							}
 							const progress = (event.loaded / event.total) * 100;
 							this.updateUpload(id, { percentage: Math.min(Math.round(progress), 99) || 0 });
 						},
 						error: (event) => {
-							this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
+							cleanup();
+							if (this.isCurrentAttempt(id, attemptId)) {
+								this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
+							}
 							reject(event);
 						},
 					},
@@ -183,8 +195,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				this.activeXhrs.set(id, xhr);
 
 				const cleanup = () => {
-					this.activeXhrs.delete(id);
 					this.off(`cancelling-${id}`, onCancel);
+					if (this.isCurrentAttempt(id, attemptId)) {
+						this.activeXhrs.delete(id);
+						this.activeAttempts.delete(id);
+					}
 				};
 
 				const onCancel = () => {
@@ -197,6 +212,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				xhr.onload = () => {
 					cleanup();
+					if (!this.isCurrentAttempt(id, attemptId)) {
+						resolve();
+						return;
+					}
+
 					try {
 						if (xhr.readyState !== xhr.DONE) {
 							return;
@@ -225,8 +245,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				};
 			});
 		} catch (error: unknown) {
-			this.activeXhrs.delete(id);
-			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+			if (this.isCurrentAttempt(id, attemptId)) {
+				this.activeXhrs.delete(id);
+				this.activeAttempts.delete(id);
+				this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+			}
 		}
 	}
 
