@@ -1,8 +1,8 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
+import { withCronHistory } from '@rocket.chat/cron';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, Users, CronHistory, OmnichannelAutoCloseScheduler } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
+import { LivechatRooms, Users, OmnichannelAutoCloseScheduler } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
@@ -68,15 +68,7 @@ export class AutoCloseOnHoldSchedulerClass {
 	}
 
 	private async executeJob({ attrs: { data, name } }: any = {}): Promise<void> {
-		const { insertedId } = await CronHistory.insertOne({
-			_id: Random.id(),
-			intendedAt: new Date(),
-			name,
-			startedAt: new Date(),
-			type: 'omnichannel',
-		});
-
-		try {
+		await withCronHistory(name, 'omnichannel', async () => {
 			this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
 			const { roomId, comment } = data;
 
@@ -94,27 +86,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			};
 
 			await closeRoom(payload);
-
-			await CronHistory.updateOne(
-				{ _id: insertedId },
-				{
-					$set: {
-						finishedAt: new Date(),
-					},
-				},
-			);
-		} catch (error: unknown) {
-			await CronHistory.updateOne(
-				{ _id: insertedId },
-				{
-					$set: {
-						finishedAt: new Date(),
-						error: error instanceof Error && error.stack ? error.stack : String(error),
-					},
-				},
-			);
-			throw error;
-		}
+		});
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {

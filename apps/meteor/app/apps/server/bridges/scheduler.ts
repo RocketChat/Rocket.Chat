@@ -4,8 +4,8 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { SchedulerBridge } from '@rocket.chat/apps/dist/server/bridges/SchedulerBridge';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
-import { CronHistory, AppScheduler } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
+import { withCronHistory } from '@rocket.chat/cron';
+import { AppScheduler } from '@rocket.chat/models';
 import { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 
@@ -20,62 +20,25 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 
 		void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status: 'running' } });
 
-		const { insertedId } = await CronHistory.insertOne({
-			_id: Random.id(),
-			intendedAt: new Date(),
-			name: job.attrs.name,
-			startedAt: new Date(),
-			type: 'app',
-		});
-
-		try {
+		await withCronHistory(job.attrs.name, 'app', async () => {
 			await (processor as (jobContext: IJobContext) => Promise<void>)(data);
 
-			await CronHistory.updateOne(
-				{ _id: insertedId },
-				{
-					$set: {
-						finishedAt: new Date(),
-					},
-				},
-			);
-
 			const status = job.attrs.nextRunAt ? 'scheduled' : 'completed';
-			void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status } });
+			AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status } }).catch((err) =>
+				console.error('Failed to update job status', err),
+			);
 
 			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
 			// as Agenda does not remove it from the DB
 			if (job.attrs.type === 'normal') {
 				await job.agenda.cancel({ _id: job.attrs._id });
 			}
-		} catch (error: unknown) {
-			let errorMessage: string;
-			if (error instanceof Error) {
-				errorMessage = error.stack || error.message || String(error);
-			} else if (typeof error === 'object' && error !== null) {
-				try {
-					errorMessage = JSON.stringify(error, null, 2);
-				} catch {
-					errorMessage = String(error);
-				}
-			} else {
-				errorMessage = String(error);
-			}
-
-			await CronHistory.updateOne(
-				{ _id: insertedId },
-				{
-					$set: {
-						finishedAt: new Date(),
-						error: errorMessage,
-					},
-				},
+		}).catch((error: unknown) => {
+			AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status: 'failed' } }).catch((err) =>
+				console.error('Failed to update job status', err),
 			);
-
-			void AppScheduler.updateOne({ _id: job.attrs._id }, { $set: { status: 'failed' } });
-
 			throw error;
-		}
+		});
 	};
 }
 
