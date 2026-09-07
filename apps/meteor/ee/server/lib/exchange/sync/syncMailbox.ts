@@ -22,6 +22,7 @@ export type MailboxSyncOutcome = {
 	removedEvents: boolean;
 	failed: boolean;
 	fatal: boolean;
+	error?: unknown;
 };
 
 const EMPTY: MailboxSyncOutcome = {
@@ -174,6 +175,6 @@ export const syncMailbox = async (
 
 		logger.warn({ msg: 'Exchange mailbox sync failed', uid, code, err: scrubForLog(err) });
 
-		return { ...EMPTY, changed, removedEvents, failed: true, fatal: FATAL_CODES.has(code) };
+		return { ...EMPTY, changed, removedEvents, failed: true, fatal: FATAL_CODES.has(code), error: err };
 	}
 };

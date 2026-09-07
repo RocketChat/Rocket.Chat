@@ -46,6 +46,10 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 			dirty.set(uid, outcome.removedEvents);
 		}
 
+		if (outcome.failed) {
+			throw outcome.error;
+		}
+
 		return outcome;
 	} finally {
 		inFlight.delete(uid);
