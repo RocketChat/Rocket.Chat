@@ -217,6 +217,66 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	});
 
 	/**
+	 * Clearing every attribute is how a room stops being ABAC-managed, and it has its own endpoint.
+	 *
+	 * The replace-all route requires at least one attribute, so committing an empty set through it
+	 * fails with "must NOT have fewer than 1 properties" — which is what the room panel used to do
+	 * once removing the last attribute became possible (ABAC-P4 QA). These pin the contract the
+	 * client now relies on.
+	 */
+	describe('clearing every attribute', () => {
+		const attributeKey = `clearclearance${Date.now()}`;
+		let attributeId: string;
+		let roomId: IRoom['_id'];
+
+		before(async () => {
+			await updatePermission('abac-management', ['admin']);
+			await updatePermission('manage-abac-admin-rooms', ['admin']);
+			await updatePermission('manage-abac-admin-room-attributes', ['admin']);
+			await updateSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			await request
+				.post(api('abac/attributes'))
+				.set(credentials)
+				.send({ key: attributeKey, values: ['secret'] })
+				.expect(200);
+			const { body } = await request.get(api('abac/attributes')).set(credentials).query({ key: attributeKey });
+			attributeId = body.attributes.find((attribute: { key: string }) => attribute.key === attributeKey)._id;
+
+			const room = await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `abac-clear-${Date.now()}`, abacAttributes: { [attributeKey]: ['secret'] } })
+				.expect(200);
+			roomId = room.body.group._id;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId });
+			await request.delete(api(`abac/attributes/${attributeId}`)).set(credentials);
+			await updateSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('refuses an empty set on the replace-all route', async () => {
+			await request
+				.post(api(`abac/rooms/${roomId}/attributes`))
+				.set(credentials)
+				.send({ attributes: {} })
+				.expect(400);
+		});
+
+		it('removes them all through DELETE, leaving a room that is no longer ABAC-managed', async () => {
+			await request
+				.delete(api(`abac/rooms/${roomId}/attributes`))
+				.set(credentials)
+				.expect(200);
+
+			const info = await request.get(api('groups.info')).set(credentials).query({ roomId }).expect(200);
+			expect(info.body.group.abacAttributes ?? []).to.be.an('array').that.is.empty;
+		});
+	});
+
+	/**
 	 * The founding members of a room have to be evaluated against its attributes, like anyone
 	 * invited later.
 	 *

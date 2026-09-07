@@ -64,7 +64,14 @@ export const useAbacAttributeEditFlow = ({ rid, roomName, attributes, successMes
 	const isClearingAttributes = Object.keys(attributes).length === 0;
 
 	const saveMutation = useMutation({
-		mutationFn: () => sdk.rest.post(`/v1/abac/rooms/${rid}/attributes`, { attributes }),
+		// Clearing goes to its own endpoint. The replace-all route requires at least one attribute
+		// (`minProperties: 1`) and would refuse an empty set, while DELETE exists to remove them all
+		// and deliberately asks for neither the licence nor `ABAC_Enabled` — a room must be able to
+		// stop being ABAC-managed regardless (ABAC-P4 QA).
+		mutationFn: () =>
+			isClearingAttributes
+				? sdk.rest.delete(`/v1/abac/rooms/${rid}/attributes`)
+				: sdk.rest.post(`/v1/abac/rooms/${rid}/attributes`, { attributes }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: successMessage ?? t('ABAC_Room_attributes_updated') });
 			setModal(null);
