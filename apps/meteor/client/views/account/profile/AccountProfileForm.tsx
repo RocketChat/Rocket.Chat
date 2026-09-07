@@ -78,7 +78,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
 
-	const isExpirationDisabled = statusType === UserStatus.ONLINE && !statusText?.trim();
+	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 
 	useEffect(() => {
 		if (isExpirationDisabled) {
@@ -178,7 +178,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				await setPreferences({ data: { statusVisibilityDenied } });
 			}
 
-			if (statusDirty) {
+			if (statusDirty && !presenceDisabledByAdmin) {
 				await setUserStatus({
 					status: statusType,
 					...(allowUserStatusMessageChange && { message: statusText }),
