@@ -9,7 +9,11 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	countGcmTokens(): Promise<number>;
 	countApnTokens(): Promise<number>;
 	findOneByTokenAndAppName(tokenValue: IPushToken['tokenValue'], appName: IPushToken['appName']): Promise<IPushToken | null>;
-	findOneByTokenAndUserId(tokenValue: IPushToken['tokenValue'], userId: IPushToken['userId']): Promise<IPushToken | null>;
+	findOneByTokenAndUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		tokenValue: IPushToken['tokenValue'],
+		userId: IPushToken['userId'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findFirstByUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		options?: O,

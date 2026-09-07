@@ -200,7 +200,7 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { token } = this.bodyParams;
 
-			const doc = await PushToken.findOneByTokenAndUserId(token, this.userId);
+			const doc = await PushToken.findOneByTokenAndUserId(token, this.userId, { projection: { tokenType: 1, authToken: 1 } });
 			if (!doc) {
 				return API.v1.notFound();
 			}

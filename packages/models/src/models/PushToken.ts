@@ -83,8 +83,12 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		return this.findOne({ tokenValue, appName });
 	}
 
-	findOneByTokenAndUserId(tokenValue: IPushToken['tokenValue'], userId: IPushToken['userId']): Promise<IPushToken | null> {
-		return this.findOne({ tokenValue, userId });
+	findOneByTokenAndUserId<T extends Document = IPushToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		tokenValue: IPushToken['tokenValue'],
+		userId: IPushToken['userId'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ tokenValue, userId }, options);
 	}
 
 	removeByUserIdExceptTokens(userId: string, tokens: IPushToken['authToken'][]): Promise<DeleteResult> {
