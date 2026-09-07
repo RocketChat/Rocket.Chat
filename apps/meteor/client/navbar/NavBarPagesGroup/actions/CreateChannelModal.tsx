@@ -30,14 +30,15 @@ import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-for
 
 import CreateChannelSecurityFields from './CreateChannelSecurityFields';
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
+import AbacCreationAttributeStep from '../../../components/ABAC/AbacCreationAttributeStep';
 import AbacMembershipPreview from '../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
 import { useAbacMembershipPreview } from '../../../components/ABAC/AbacMembershipPreview/useAbacMembershipPreview';
+import { useAbacAssignabilityBlock } from '../../../components/ABAC/useAbacAssignabilityBlock';
+import { useAbacAttributeMap } from '../../../components/ABAC/useAbacAttributeMap';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
-import { sdk } from '../../../lib/SDKClient';
-import RoomFormAttributeFields from '../../../views/admin/ABAC/ABACRoomsTab/RoomFormAttributeFields';
 import { useIsABACAvailable } from '../../../views/admin/ABAC/hooks/useIsABACAvailable';
 import { useIsAbacEnforcementOn } from '../../../views/admin/ABAC/hooks/useIsAbacEnforcementOn';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
@@ -81,7 +82,6 @@ const getFederationHintKey = (federationModule: boolean, featureToggle: boolean,
 
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
-const MAX_ATTRIBUTE_ROWS = 10;
 const TOTAL_ABAC_STEPS = 4;
 
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess }: CreateChannelModalProps) => {
@@ -145,7 +145,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
 
-	const { isPrivate, broadcast, federated, encrypted, isAbacManaged, members, attributes } = watch();
+	const { isPrivate, broadcast, federated, encrypted, isAbacManaged, members } = watch();
 
 	const isStepped = isAbacAvailable && isAbacManaged;
 	const [step, setStep] = useState(1);
@@ -176,6 +176,16 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		setValue('readOnly', broadcast);
 	}, [broadcast, setValue]);
 
+	// The licence lookup behind `isAbacAvailable` resolves after the first render, so the default
+	// above can be computed while it is still false. Enforcement has to win once it is known, or
+	// the flow silently degrades to the unstepped form and the server refuses the creation with no
+	// explanation (ABAC-P4 QA).
+	useEffect(() => {
+		if (isAbacAvailable && abacEnforcementOn) {
+			setValue('isAbacManaged', true);
+		}
+	}, [isAbacAvailable, abacEnforcementOn, setValue]);
+
 	// ABAC-P4 M2 switch interlocks (Figma 4838:45022). An ABAC-managed room is private by
 	// definition, and ABAC is not applied to federated rooms (D8), so the two are exclusive.
 	useEffect(() => {
@@ -193,14 +203,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		}
 	}, [isStepped]);
 
-	const attributeMap = useMemo(
-		() =>
-			Object.fromEntries(attributes.filter(({ key, values }) => key && values.length).map(({ key, values }) => [key, values])) as Record<
-				string,
-				string[]
-			>,
-		[attributes],
-	);
+	const attributeMap = useAbacAttributeMap(control);
+	// Whether this user can assign anything at all. Checked here rather than inside the step so
+	// the Next button can be held back too (ABAC-P4 QA).
+	const assignability = useAbacAssignabilityBlock(requiredAttributeKeys);
 
 	const {
 		data: compliance,
@@ -247,6 +253,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			name,
 			members,
 			readOnly,
+			// ABAC-P4 M4 — attributes travel with the creation call, so the room is never briefly
+			// locked and the creator's authority is validated before the insert.
+			...(isAbacManaged && Object.keys(attributeMap).length ? { abacAttributes: attributeMap } : {}),
 			extraData: {
 				topic,
 				broadcast,
@@ -264,14 +273,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			} else {
 				roomData = await createChannel(params);
 				rid = roomData.channel._id;
-			}
-
-			// Assigned after creation because the attribute write is what validates the actor's
-			// authority and writes the audit entry. Authority was already checked when leaving
-			// step 2, so a failure here is unexpected rather than routine — and the room is left
-			// locked, which is the safe end state.
-			if (isAbacManaged) {
-				await sdk.rest.post(`/v1/abac/rooms/${rid}/attributes`, { attributes: attributeMap });
 			}
 
 			if (!teamId) {
@@ -299,6 +300,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		}
 
 		if (step === 2) {
+			if (assignability.isBlocked) {
+				return;
+			}
+
 			if (!(await trigger('attributes'))) {
 				return;
 			}
@@ -436,22 +441,14 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 					)}
 
 					{showAttributeFields && (
-						<FieldGroup marginBlockEnd={24}>
-							<Box is='h5' fontScale='h5' color='titles-labels'>
-								{t('ABAC_Room_attributes_section')}
-							</Box>
-							{pdpDenial && <Callout type='danger'>{pdpDenial}</Callout>}
-							<RoomFormAttributeFields fields={fields} remove={remove} lockedLeadingCount={requiredAttributeKeys.length} />
-							<Button
-								width='full'
-								disabled={fields.length >= MAX_ATTRIBUTE_ROWS}
-								onClick={() => {
-									append({ key: '', values: [] });
-								}}
-							>
-								{t('ABAC_Add_Attribute')}
-							</Button>
-						</FieldGroup>
+						<AbacCreationAttributeStep
+							fields={fields}
+							append={() => append({ key: '', values: [] })}
+							remove={remove}
+							requiredAttributeKeys={requiredAttributeKeys}
+							pdpDenial={pdpDenial}
+							blockedReason={assignability.reason}
+						/>
 					)}
 
 					{showCompliance && (
@@ -516,7 +513,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 							<Button onClick={onClose}>{t('Cancel')}</Button>
 						)}
 						{isStepped && step < TOTAL_ABAC_STEPS ? (
-							<Button primary onClick={handleNext}>
+							<Button primary onClick={handleNext} disabled={showAttributeFields && assignability.isBlocked}>
 								{t('Next')}
 							</Button>
 						) : (

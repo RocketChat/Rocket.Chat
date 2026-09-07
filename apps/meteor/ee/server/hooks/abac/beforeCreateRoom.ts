@@ -1,6 +1,9 @@
+import { Abac } from '@rocket.chat/core-services';
+
 import { getRoomLockContext } from '../../../../server/lib/authorization/isRoomLocked';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { settings } from '../../../../server/settings';
 
 /**
  * ABAC-P4/D6, D7 — while enforcement is on, the creation paths that cannot produce a compliant room
@@ -38,7 +41,41 @@ beforeCreateRoomCallback.add(
 		if (room.t === 'c') {
 			throw new Error('error-abac-public-room-creation-blocked');
 		}
+
+		// ABAC-P4 M4 — a room that would be born locked is refused instead. Checked here rather than
+		// per endpoint so the REST API, the Apps-Engine bridge, team creation and `/invite-all-to`
+		// are all covered by the one guard.
+		if (!room.abacAttributes?.length) {
+			throw new Error('error-abac-attributes-required');
+		}
 	},
 	callbacks.priority.HIGH,
 	'abac-block-non-compliant-room-creation',
+);
+
+/**
+ * The creator-authority check, on every creation path (ABAC-P4 M4).
+ *
+ * Separate from the blocking rule above because it applies whenever attributes are supplied, not
+ * only under enforcement — an actor must never be able to instantiate a combination the PDP would
+ * refuse them, enforcement on or off. The thrown error names the offending attribute.
+ */
+beforeCreateRoomCallback.add(
+	async ({ owner, room }) => {
+		if (!room.abacAttributes?.length || !settings.get('ABAC_Enabled')) {
+			return;
+		}
+
+		if (room.federated === true || room.t === 'l') {
+			return;
+		}
+
+		await Abac.assertCanAssignAttributes(room.abacAttributes, {
+			_id: owner._id,
+			username: owner.username,
+			name: owner.name,
+		});
+	},
+	callbacks.priority.HIGH,
+	'abac-validate-creator-authority',
 );

@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../hooks/rooms/beforeAddUserToRoom';
 import { callbacks } from '../callbacks';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
@@ -92,9 +93,20 @@ async function createUsersSubscriptions({
 	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
 		try {
+			// `addUserToRoom` runs both of these for someone invited later. Creation ran only the
+			// second, so a guard that lives on the first — the ABAC compliance check — never saw the
+			// initial member list, and a room's founding members were never evaluated against its
+			// attributes. Reachable from every creation path, the REST API included.
+			await beforeAddUserToRoomPatch([member.username as string], room, owner);
 			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 		} catch (error) {
+			// A member a guard refuses is left out, as before. The owner is the exception: a room
+			// without the person who created it cannot be administered or even opened by them, so
+			// their refusal fails the creation rather than producing one.
+			if (member.username === owner.username) {
+				throw error;
+			}
 			continue;
 		}
 

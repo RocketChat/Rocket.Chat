@@ -82,6 +82,17 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             </div>
           </div>
         </span>
+        <button
+          class="rcx-box rcx-box--full rcx-button rcx-css-1nmakuf"
+          title="Remove"
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
+          >
+            Remove
+          </span>
+        </button>
       </div>
     </div>
   </div>

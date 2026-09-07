@@ -21,6 +21,8 @@ export interface IAbacService {
 			values?: string;
 			offset?: number;
 			count?: number;
+			/** Return only the attributes the actor could be granted (ABAC-P4/D12). */
+			assignableOnly?: boolean;
 		},
 		actor?: AbacActor,
 	): Promise<{ attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[]; offset: number; count: number; total: number }>;
@@ -51,6 +53,8 @@ export interface IAbacService {
 	 * attributes? Creates nothing. Throws with the offending attribute in the error details.
 	 */
 	assertCanAssignAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void>;
+	/** Records the attributes a room was created with (ABAC-P4 M4). */
+	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewMembersAgainstAttributes(
 		target: { rid: string } | { memberIds: string[] } | { memberUsernames: string[] },
 		attributes: IAbacAttributeDefinition[],

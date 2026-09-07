@@ -32,6 +32,7 @@ import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { redactStatus } from '../../lib/statusVisibility/redactStatus';
@@ -132,7 +133,7 @@ const teamsEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, abacAttributes } = this.bodyParams;
 
 			if (room?.id && !(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.id))) {
 				return API.v1.forbidden();
@@ -143,7 +144,13 @@ const teamsEndpoints = API.v1
 					name,
 					type,
 				},
-				room: room as Parameters<typeof Team.create>[1]['room'],
+				// ABAC-P4 — the team's main room is created through `createRoom` like any other, so
+				// the creation guards already apply to it. This is what lets the flow supply the
+				// attributes, so the room is never born locked.
+				room: {
+					...room,
+					extraData: { ...(room?.extraData as Record<string, unknown>), ...toAbacAttributeDefinitions(abacAttributes) },
+				} as Parameters<typeof Team.create>[1]['room'],
 				members,
 				owner,
 			});

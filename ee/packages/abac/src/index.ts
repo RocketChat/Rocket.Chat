@@ -362,8 +362,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
+	/**
+	 * `assignableOnly` is what the room attribute pickers ask for: only the attributes this actor
+	 * could actually be granted. It is honoured when D12 is in force; the administrative surfaces
+	 * do not pass it and keep seeing every definition (ABAC-P4/D11).
+	 */
 	async listAbacAttributes(
-		filters?: { key?: string; values?: string; offset?: number; count?: number },
+		filters?: { key?: string; values?: string; offset?: number; count?: number; assignableOnly?: boolean },
 		actor?: AbacActor,
 	): Promise<{
 		attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];
@@ -371,7 +376,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		count: number;
 		total: number;
 	}> {
-		return (await this.resolveAttributeStore()).list(actor, filters);
+		const restrictToOwned = Boolean(filters?.assignableOnly) && (await this.isOwnedAttributeRestrictionOn());
+
+		return (await this.resolveAttributeStore()).list(actor, { ...filters, restrictToOwned });
 	}
 
 	async listAbacRooms(
@@ -563,8 +570,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 	 * Its single caller is `assertCanAssignAttributes`, deliberately: see the note there for why the
 	 * administrative room endpoints are outside it.
 	 */
+	/**
+	 * Whether ABAC-P4/D12 is in force. One home for the condition, so what the attribute picker
+	 * offers and what the PDP will accept cannot disagree.
+	 */
+	private async isOwnedAttributeRestrictionOn(): Promise<boolean> {
+		return this.pdpTypeSetting === 'local' && Boolean(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'));
+	}
+
 	private async enforceOwnedAttributesOnly(store: IAttributeStore, attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
-		if (this.pdpTypeSetting !== 'local' || !(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'))) {
+		if (!(await this.isOwnedAttributeRestrictionOn())) {
 			return;
 		}
 
@@ -587,6 +602,22 @@ export class AbacService extends ServiceClass implements IAbacService {
 				throw new AbacInvalidAttributeValuesError({ key: attribute.key, values: disallowed });
 			}
 		}
+	}
+
+	/**
+	 * Records the attributes a room was created with (ABAC-P4 M4).
+	 *
+	 * Creation writes the attributes as part of the insert so a room is never briefly locked, which
+	 * means the usual `setRoomAbacAttributes` audit path is not taken. This closes that gap. There
+	 * is no membership to re-evaluate: the room was created with these attributes, and its initial
+	 * members were already filtered against them by the creation flow.
+	 */
+	async auditRoomAttributesAtCreation(room: AtLeast<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
+			return;
+		}
+
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, [], room.abacAttributes, 'created', actor);
 	}
 
 	/**

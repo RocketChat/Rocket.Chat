@@ -87,4 +87,70 @@ describe('LocalAttributeStore', () => {
 			{ projection: { key: 1, values: 1 }, skip: 5, limit: 10 },
 		);
 	});
+
+	/**
+	 * ABAC-P4/D12 — the attribute picker used to offer every definition on the workspace even when
+	 * the actor could be granted none of them, so a user picked something and was refused on the
+	 * next step. The Virtru store answers from the subject's entitlements to begin with; this is
+	 * what gives the local store the same behaviour.
+	 */
+	describe('list with restrictToOwned', () => {
+		it('asks only for the keys the actor holds', async () => {
+			usersFindOneById.mockResolvedValue({ _id: 'u', abacAttributes: [{ key: 'clearance', values: ['secret'] }] });
+			findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
+
+			await new LocalAttributeStore().list(actor, { offset: 0, count: 25, restrictToOwned: true });
+
+			expect(findPaginated).toHaveBeenCalledWith(
+				{ key: { $in: ['clearance'] } },
+				{ projection: { key: 1, values: 1 }, skip: 0, limit: 25 },
+			);
+		});
+
+		it('narrows each definition to the values the actor holds', async () => {
+			usersFindOneById.mockResolvedValue({ _id: 'u', abacAttributes: [{ key: 'clearance', values: ['secret'] }] });
+			findPaginated.mockReturnValue({
+				cursor: { toArray: async () => [{ _id: 'id1', key: 'clearance', values: ['secret', 'topsecret'] }] },
+				totalCount: Promise.resolve(1),
+			});
+
+			const result = await new LocalAttributeStore().list(actor, { restrictToOwned: true });
+
+			expect(result.attributes).toEqual([{ _id: 'id1', key: 'clearance', values: ['secret'] }]);
+		});
+
+		it('drops a key whose values the actor no longer holds', async () => {
+			// The definition was edited to remove the only value this actor carries, so there is
+			// nothing left for them to choose under it.
+			usersFindOneById.mockResolvedValue({ _id: 'u', abacAttributes: [{ key: 'clearance', values: ['retired'] }] });
+			findPaginated.mockReturnValue({
+				cursor: { toArray: async () => [{ _id: 'id1', key: 'clearance', values: ['secret'] }] },
+				totalCount: Promise.resolve(1),
+			});
+
+			const result = await new LocalAttributeStore().list(actor, { restrictToOwned: true });
+
+			expect(result.attributes).toEqual([]);
+			expect(result.count).toBe(0);
+		});
+
+		it('still applies the search filters alongside the restriction', async () => {
+			usersFindOneById.mockResolvedValue({ _id: 'u', abacAttributes: [{ key: 'clearance', values: ['secret'] }] });
+			findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
+
+			await new LocalAttributeStore().list(actor, { key: 'clear', restrictToOwned: true });
+
+			expect(findPaginated).toHaveBeenCalledWith({ $or: [{ key: /clear/i }], key: { $in: ['clearance'] } }, expect.anything());
+		});
+
+		it('lists everything when the restriction is off', async () => {
+			const docs = [{ _id: 'id1', key: 'clearance', values: ['secret', 'topsecret'] }];
+			findPaginated.mockReturnValue({ cursor: { toArray: async () => docs }, totalCount: Promise.resolve(1) });
+
+			const result = await new LocalAttributeStore().list(actor, {});
+
+			expect(usersFindOneById).not.toHaveBeenCalled();
+			expect(result.attributes).toEqual(docs);
+		});
+	});
 });

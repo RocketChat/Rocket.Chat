@@ -192,7 +192,7 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { key, values } = this.queryParams;
+			const { key, values, assignableOnly } = this.queryParams;
 
 			return API.v1.success(
 				await Abac.listAbacAttributes(
@@ -201,6 +201,7 @@ const abacEndpoints = API.v1
 						values,
 						offset,
 						count,
+						assignableOnly,
 					},
 					getActorFromUser(this.user),
 				),

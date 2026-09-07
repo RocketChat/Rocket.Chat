@@ -1,11 +1,12 @@
 import { ContextualbarClose, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomForm from './RoomForm';
 import { useAbacAttributeEditFlow } from '../../../../components/ABAC/AbacAttributeEditor/useAbacAttributeEditFlow';
+import { useAbacAttributeMap } from '../../../../components/ABAC/useAbacAttributeMap';
 
 export type RoomsContextualBarProps = {
 	attributeId?: string;
@@ -30,23 +31,14 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 		mode: 'onChange',
 	});
 
-	const { watch } = methods;
+	const { watch, control } = methods;
 
 	const [selectedRoomLabel, setSelectedRoomLabel] = useState<string>('');
 
 	const attributeId = useRouteParameter('id');
 
 	const rid = watch('room');
-	const attributes = watch('attributes');
-
-	const attributeMap = useMemo(
-		() =>
-			Object.fromEntries(attributes.filter(({ key, values }) => key && values.length).map(({ key, values }) => [key, values])) as Record<
-				string,
-				string[]
-			>,
-		[attributes],
-	);
+	const attributeMap = useAbacAttributeMap(control);
 
 	// ABAC-P4 M3 — the primary action is Next, not Save: an attribute change is only committed
 	// after its membership impact has been shown and confirmed. The same flow backs the room's own

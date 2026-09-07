@@ -150,7 +150,9 @@ export const ABACQueryKeys = {
 	},
 	roomAttributes: {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
-		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
+		// `assignableOnly` narrows the result to what the caller may be granted, so it is part of
+		// the identity of the list rather than a detail of one request (ABAC-P4/D12).
+		list: (...args: [query?: PaginatedRequest & { assignableOnly?: boolean }]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
 	membershipPreview: (args: {

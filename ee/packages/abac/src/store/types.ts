@@ -3,7 +3,18 @@ import type { AbacPdpType, IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoo
 
 export type AttributeEntitlements = Map<string, Set<string>>;
 
-export type ListAttributesOptions = { key?: string; values?: string; offset?: number; count?: number };
+export type ListAttributesOptions = {
+	key?: string;
+	values?: string;
+	offset?: number;
+	count?: number;
+	/**
+	 * Return only what this actor may actually assign (ABAC-P4/D12). Resolved by the service, which
+	 * owns the decision; a store that already answers from the subject's entitlements — the Virtru
+	 * one — has nothing extra to do.
+	 */
+	restrictToOwned?: boolean;
+};
 
 export type ListAttributesResult = {
 	attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];

@@ -11,6 +11,7 @@ export type GroupsCreateProps = {
 		teamId?: string;
 	};
 	excludeSelf?: boolean;
+	abacAttributes?: Record<string, string[]>;
 };
 
 const GroupsCreatePropsSchema = {
@@ -31,6 +32,21 @@ const GroupsCreatePropsSchema = {
 		excludeSelf: {
 			type: 'boolean',
 			nullable: true,
+		},
+		abacAttributes: {
+			// ABAC-P4 M4 — attribute key → values. Supplied at creation so a room is never briefly
+			// locked between being created and being given its attributes. Deliberately top-level
+			// rather than inside `extraData`, which is closed precisely to stop callers writing room
+			// fields directly: these are validated against the caller's authority before the insert.
+			type: 'object',
+			propertyNames: { type: 'string', pattern: '^[A-Za-z0-9_-]+$' },
+			maxProperties: 10,
+			additionalProperties: {
+				type: 'array',
+				items: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+				maxItems: 10,
+				uniqueItems: true,
+			},
 		},
 		customFields: {
 			type: 'object',

@@ -41,6 +41,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -490,7 +491,9 @@ API.v1.post(
 				this.bodyParams.members ? this.bodyParams.members : [],
 				readOnly,
 				this.bodyParams.customFields,
-				this.bodyParams.extraData,
+				// ABAC-P4 M4 — see the note in channels.create: attributes travel with the room rather
+				// than being assigned afterwards, so it is never briefly locked.
+				{ ...this.bodyParams.extraData, ...toAbacAttributeDefinitions(this.bodyParams.abacAttributes) },
 				this.bodyParams.excludeSelf ?? false,
 			);
 

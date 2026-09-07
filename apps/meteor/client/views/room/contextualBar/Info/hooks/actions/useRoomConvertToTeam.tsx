@@ -4,6 +4,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 
+import AbacAttributesLostWarning from '../../../../../../components/ABAC/AbacAttributesLostWarning';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomConvertToTeam = (room: IRoom) => {
@@ -40,6 +41,7 @@ export const useRoomConvertToTeam = (room: IRoom) => {
 				confirmText={t('Convert')}
 			>
 				{t('Converting_channel_to_a_team')}
+				<AbacAttributesLostWarning room={room} />
 			</GenericModal>,
 		);
 	});

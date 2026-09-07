@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import ConvertToChannelModal from './ConvertToChannelModal';
 import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 
-export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
+export const useConvertToChannel = (room: IRoom) => {
+	const { _id, teamId } = room;
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const userId = useUserId();
@@ -41,6 +42,7 @@ export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 				onConfirm={onConfirm}
 				teamId={teamId}
 				userId={userId}
+				teamRoom={room}
 			/>,
 		);
 	});

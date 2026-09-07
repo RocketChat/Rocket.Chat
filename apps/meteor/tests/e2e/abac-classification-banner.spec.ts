@@ -13,7 +13,8 @@ test.use({ storageState: Users.admin.state });
 const attrKey = `clearance_${Date.now()}`;
 
 const bannersConfig = {
-	version: 1,
+	// ABAC-P4 M4 bumped the schema to v2; the settings validator rejects a v1 document.
+	version: 2,
 	enabled: true,
 	banner: {
 		style: 'classic',
@@ -108,6 +109,42 @@ test.describe.serial('abac-classification-banner', () => {
 		await expect(banner).toBeVisible();
 		await expect(banner).toHaveText('CLEARANCE-TOP SECRET');
 		await expect(banner).toHaveCSS('background-color', convertHexToRGB('#ff8c00'));
+	});
+
+	// ABAC-P4 M4 — the render gate used to be "ABAC-managed rooms only". A room carrying no
+	// attributes now shows the separately configured banner instead of nothing.
+	test('should show the non-ABAC banner in a room with no attributes', async ({ page, api }) => {
+		await setSettingValueById(
+			api,
+			'ABAC_Classification_Banners_Config',
+			JSON.stringify({
+				...bannersConfig,
+				nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+			}),
+		);
+
+		const { group: plainRoom } = await createTargetGroupAndReturnFullRoom(api);
+
+		await poHomeChannel.navbar.openChat(plainRoom.name as string);
+
+		const banner = page.getByRole('region', { name: 'Room Attributes' });
+		await expect(banner).toBeVisible();
+		await expect(banner).toHaveText('UNCLASSIFIED');
+		await expect(banner).toHaveCSS('background-color', convertHexToRGB('#007a33'));
+
+		await deleteRoom(api, plainRoom._id);
+		await setSettingValueById(api, 'ABAC_Classification_Banners_Config', JSON.stringify(bannersConfig));
+	});
+
+	test('should show no banner in a room with no attributes when none is configured', async ({ page, api }) => {
+		// Absence of `nonAbacBanner` is the pre-v2 behaviour, and is what a migrated v1 config has.
+		const { group: plainRoom } = await createTargetGroupAndReturnFullRoom(api);
+
+		await poHomeChannel.navbar.openChat(plainRoom.name as string);
+		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+		await expect(page.getByRole('region', { name: 'Room Attributes' })).toHaveCount(0);
+
+		await deleteRoom(api, plainRoom._id);
 	});
 
 	test('should not show the banner when classification banners are disabled', async ({ page, api }) => {
