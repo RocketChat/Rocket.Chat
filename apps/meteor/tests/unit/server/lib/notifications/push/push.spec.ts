@@ -1,4 +1,5 @@
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
+import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
 import { pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -6,10 +7,14 @@ import sinon from 'sinon';
 
 const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
 const settingsStub = { get: sinon.stub().returns('') };
+const sendAPNStub = sinon.stub();
+const sendFCMStub = sinon.stub();
 
 const { Push } = proxyquire.noCallThru().load('../../../../../../server/lib/notifications/push/push', {
 	'./logger': { logger: loggerStub },
 	'../../../settings': { settings: settingsStub },
+	'./apn': { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() },
+	'./fcm': { sendFCM: sendFCMStub },
 	'@rocket.chat/tools': { pick, truncateString },
 	'meteor/check': {
 		check: sinon.stub(),
@@ -107,6 +112,142 @@ describe('Push Notifications [PushClass]', () => {
 			await expect(Push.send(options)).to.be.rejectedWith('No userId found');
 
 			expect(sendNotificationStub.called).to.be.false;
+		});
+	});
+
+	describe('sendNotificationNative() token routing', () => {
+		const makePushToken = (overrides: Partial<IPushToken>): IPushToken => ({
+			_id: 'token-id',
+			tokenType: 'apn',
+			tokenValue: 'TOKEN',
+			appName: 'app',
+			userId: 'user1',
+			enabled: true,
+			authToken: 'auth',
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+			...overrides,
+		});
+
+		beforeEach(() => {
+			sendAPNStub.resetHistory();
+			sendFCMStub.resetHistory();
+			settingsStub.get.returns('');
+			Push.options = { apn: {}, gcm: {} };
+		});
+
+		it('sends a regular notification to an apn document via APN with the plain topic', async () => {
+			const pushToken = makePushToken({ tokenType: 'apn', tokenValue: 'APN_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: false }, [], []);
+			expect(sendAPNStub.calledOnce).to.be.true;
+			expect(sendAPNStub.firstCall.args[0].userToken).to.equal('APN_TOKEN');
+			expect(sendAPNStub.firstCall.args[0].notification.topic).to.equal('app');
+		});
+
+		it('sends a voip notification to a voip document via APN with the .voip topic', async () => {
+			const pushToken = makePushToken({ tokenType: 'voip', tokenValue: 'VOIP_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: true }, [], []);
+			expect(sendAPNStub.calledOnce).to.be.true;
+			expect(sendAPNStub.firstCall.args[0].userToken).to.equal('VOIP_TOKEN');
+			expect(sendAPNStub.firstCall.args[0].notification.topic).to.equal('app.voip');
+		});
+
+		it('skips an apn document when the notification is voip', async () => {
+			const pushToken = makePushToken({ tokenType: 'apn', tokenValue: 'APN_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: true }, [], []);
+			expect(sendAPNStub.called).to.be.false;
+			expect(sendFCMStub.called).to.be.false;
+		});
+
+		it('skips a voip document when the notification is regular', async () => {
+			const pushToken = makePushToken({ tokenType: 'voip', tokenValue: 'VOIP_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: false }, [], []);
+			expect(sendAPNStub.called).to.be.false;
+			expect(sendFCMStub.called).to.be.false;
+		});
+
+		it('sends a regular notification to a gcm document via FCM', async () => {
+			sinon.stub(Push, 'getNativeNotificationAuthorizationCredentials').resolves({ token: 'FCM_AUTH', projectId: 'proj' });
+			const pushToken = makePushToken({ tokenType: 'gcm', tokenValue: 'GCM_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: false }, [], []);
+			expect(sendFCMStub.calledOnce).to.be.true;
+			expect(sendFCMStub.firstCall.args[0].userTokens).to.equal('GCM_TOKEN');
+		});
+
+		it('sends a voip notification to a gcm document via FCM', async () => {
+			sinon.stub(Push, 'getNativeNotificationAuthorizationCredentials').resolves({ token: 'FCM_AUTH', projectId: 'proj' });
+			const pushToken = makePushToken({ tokenType: 'gcm', tokenValue: 'GCM_TOKEN' });
+			await Push.sendNotificationNative(pushToken, { useVoipToken: true }, [], []);
+			expect(sendFCMStub.calledOnce).to.be.true;
+			expect(sendFCMStub.firstCall.args[0].userTokens).to.equal('GCM_TOKEN');
+		});
+	});
+
+	describe('sendNotificationGateway() token routing', () => {
+		const makePushToken = (overrides: Partial<IPushToken>): IPushToken => ({
+			_id: 'token-id',
+			tokenType: 'apn',
+			tokenValue: 'TOKEN',
+			appName: 'app',
+			userId: 'user1',
+			enabled: true,
+			authToken: 'auth',
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+			...overrides,
+		});
+
+		let sendGatewayPushStub: sinon.SinonStub;
+
+		beforeEach(() => {
+			settingsStub.get.returns('');
+			Push.options = { gateways: ['https://gateway.rocket.chat'] };
+			sendGatewayPushStub = sinon.stub(Push, 'sendGatewayPush').resolves();
+		});
+
+		it('sends a regular notification to an apn document with the plain topic', async () => {
+			const pushToken = makePushToken({ tokenType: 'apn', tokenValue: 'APN_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: false }, [], []);
+			expect(sendGatewayPushStub.calledOnce).to.be.true;
+			expect(sendGatewayPushStub.firstCall.args[1]).to.equal('apn');
+			expect(sendGatewayPushStub.firstCall.args[2]).to.equal('APN_TOKEN');
+			expect(sendGatewayPushStub.firstCall.args[3].topic).to.equal('app');
+		});
+
+		it('sends a voip notification to a voip document with the .voip topic', async () => {
+			const pushToken = makePushToken({ tokenType: 'voip', tokenValue: 'VOIP_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: true }, [], []);
+			expect(sendGatewayPushStub.calledOnce).to.be.true;
+			expect(sendGatewayPushStub.firstCall.args[2]).to.equal('VOIP_TOKEN');
+			expect(sendGatewayPushStub.firstCall.args[3].topic).to.equal('app.voip');
+		});
+
+		it('skips an apn document when the notification is voip', async () => {
+			const pushToken = makePushToken({ tokenType: 'apn', tokenValue: 'APN_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: true }, [], []);
+			expect(sendGatewayPushStub.called).to.be.false;
+		});
+
+		it('skips a voip document when the notification is regular', async () => {
+			const pushToken = makePushToken({ tokenType: 'voip', tokenValue: 'VOIP_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: false }, [], []);
+			expect(sendGatewayPushStub.called).to.be.false;
+		});
+
+		it('sends a regular notification to a gcm document', async () => {
+			const pushToken = makePushToken({ tokenType: 'gcm', tokenValue: 'GCM_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: false }, [], []);
+			expect(sendGatewayPushStub.calledOnce).to.be.true;
+			expect(sendGatewayPushStub.firstCall.args[1]).to.equal('gcm');
+			expect(sendGatewayPushStub.firstCall.args[2]).to.equal('GCM_TOKEN');
+		});
+
+		it('sends a voip notification to a gcm document', async () => {
+			const pushToken = makePushToken({ tokenType: 'gcm', tokenValue: 'GCM_TOKEN' });
+			await Push.sendNotificationGateway(pushToken, { useVoipToken: true }, [], []);
+			expect(sendGatewayPushStub.calledOnce).to.be.true;
+			expect(sendGatewayPushStub.firstCall.args[1]).to.equal('gcm');
+			expect(sendGatewayPushStub.firstCall.args[2]).to.equal('GCM_TOKEN');
 		});
 	});
 });
