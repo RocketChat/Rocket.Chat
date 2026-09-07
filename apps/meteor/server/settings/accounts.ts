@@ -765,6 +765,15 @@ export const createAccountSettings = () =>
 		});
 
 		await this.section('Privacy', async function () {
+			await this.add('Accounts_UserStatus_Enabled', true, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: true,
+				i18nDescription: 'Accounts_UserStatus_Enabled_Description',
+			});
+
 			await this.add('Accounts_StatusVisibility_Enabled', false, {
 				type: 'boolean',
 				public: true,
@@ -772,6 +781,7 @@ export const createAccountSettings = () =>
 				modules: ['unlimited-presence'],
 				invalidValue: false,
 				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
+				enableQuery: { _id: 'Accounts_UserStatus_Enabled', value: true },
 			});
 		});
 

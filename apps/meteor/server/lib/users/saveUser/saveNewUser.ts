@@ -1,3 +1,4 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -52,6 +53,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 	}
 
+	if (userData.presenceDisabledByAdmin) {
+		updater.set('presenceDisabledByAdmin', true);
+	}
+
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 
@@ -66,6 +71,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	}
 
 	userData._id = _id;
+
+	if (userData.presenceDisabledByAdmin) {
+		void StatusVisibility.invalidate([_id], { allViewers: true });
+	}
 
 	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
 

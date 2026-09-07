@@ -460,6 +460,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findWithStatusVisibilityConfig(
 		userIds?: string[],
 	): FindCursor<Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings'>>;
+	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds?: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userIds: string[],
 		options?: O,
