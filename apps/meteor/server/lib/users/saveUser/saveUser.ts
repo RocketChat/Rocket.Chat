@@ -223,7 +223,6 @@ const _saveUser = (session?: ClientSession) =>
 			}
 
 			if (presenceChanged) {
-				// invalidate broadcasts and returns immediately when allViewers is set, so there is nothing to await
 				void StatusVisibility.invalidate([userData._id], { allViewers: true });
 			}
 

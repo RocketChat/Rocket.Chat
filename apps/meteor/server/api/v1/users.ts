@@ -32,6 +32,7 @@ import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -48,8 +49,9 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
+import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
-import { hiddenIds, isHiddenFor } from '../../lib/statusVisibility/presenceScope';
+import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -722,14 +724,7 @@ API.v1.addRoute(
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			if (queryFiltersStatus(query)) {
-				if (hidden.hideAll) {
-					return API.v1.success({ users: [], count: 0, offset, total: 0 });
-				}
-
-				const ids = hiddenIds(hidden);
-				if (ids.length) {
-					nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: ids } }];
-				}
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
 			}
 
 			const actualSort = sort || { username: 1 };
@@ -1751,15 +1746,7 @@ API.v1.get(
 		const hidden = await getUsersHiddenFrom(this.userId);
 
 		if (queryFiltersStatus(selector.conditions)) {
-			if (hidden.hideAll) {
-				return API.v1.success({ items: [] });
-			}
-
-			const ids = hiddenIds(hidden);
-
-			if (ids.length) {
-				selector.conditions = { $and: [selector.conditions, { _id: { $nin: ids } }] };
-			}
+			selector.conditions = { $and: [selector.conditions, excludingHiddenFilter(hidden)] };
 		}
 
 		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });

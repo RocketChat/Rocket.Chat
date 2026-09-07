@@ -1,7 +1,7 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { effectiveStatusExpression, effectiveStatusFilter, excludingOfflineFilter } from './effectiveStatus';
+import { effectiveStatusExpression, effectiveStatusFilter, excludingHiddenFilter, excludingOfflineFilter } from './effectiveStatus';
 import type { PresenceScope } from './presenceScope';
 
 const nobody: PresenceScope = { hideAll: false };
@@ -70,5 +70,17 @@ describe('excludingOfflineFilter', () => {
 
 	it('should match nobody when the whole workspace is hidden', () => {
 		expect(excludingOfflineFilter(everyone)).to.be.deep.equal({ $nor: [{}] });
+	});
+});
+
+describe('excludingHiddenFilter', () => {
+	it('should leave hidden users out and match everyone else', () => {
+		expect(excludingHiddenFilter(nobody)).to.be.deep.equal({});
+		expect(excludingHiddenFilter({ hideAll: false, hidden: new Set() })).to.be.deep.equal({});
+		expect(excludingHiddenFilter(hiding('alice', 'bob'))).to.be.deep.equal({ _id: { $nin: ['alice', 'bob'] } });
+	});
+
+	it('should match nobody when the whole workspace is hidden', () => {
+		expect(excludingHiddenFilter(everyone)).to.be.deep.equal({ $nor: [{}] });
 	});
 });
