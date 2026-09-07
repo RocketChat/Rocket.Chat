@@ -11,6 +11,7 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'statusDefault': 1,
 	'statusText': 1,
 	'statusSource': 1,
+	'presenceDisabledByAdmin': 1,
 	'statusExpiresAt': 1,
 	'statusConnection': 1,
 	'bio': 1,

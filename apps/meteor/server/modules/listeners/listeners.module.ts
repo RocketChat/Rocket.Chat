@@ -163,7 +163,8 @@ export class ListenersModule {
 		service.onEvent('presence.invalidateVisibility', ({ targets, viewers }) => {
 			void StatusVisibility.refresh(targets)
 				.then(async (users) => {
-					await Promise.all([refreshVisibility(viewers), statusVisibilityGate.syncRestrictedUsers()]);
+					await statusVisibilityGate.syncRestrictedUsers();
+					await refreshVisibility(viewers);
 
 					for (const { _id, username, status, statusText, statusSource, statusExpiresAt } of users) {
 						if (username) {
