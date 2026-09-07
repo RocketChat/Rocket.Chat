@@ -152,6 +152,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
+	// not gated by Accounts_StatusVisibility_Enabled: admins can disable a user's status regardless of that setting
 	const hidden = await getUsersHiddenFrom(userId);
 
 	return redactHiddenUser(user, hidden);
