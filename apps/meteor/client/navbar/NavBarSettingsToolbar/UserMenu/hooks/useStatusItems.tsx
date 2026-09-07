@@ -1,4 +1,5 @@
 import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnumValue } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -75,6 +76,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		staleTime: Infinity,
 	});
 
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const userPresenceDisabled = user?.presenceDisabledByAdmin === true;
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const handleStatusVisibility = useStatusVisibilityModalHandler();
@@ -82,6 +85,21 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
+		if (userPresenceDisabled || workspacePresenceDisabled) {
+			return [
+				{
+					id: 'user-status-disabled',
+					status: <UserStatus status={UserStatusEnumValue.OFFLINE} />,
+					content: t('Offline'),
+					addon: (
+						<Box title={workspacePresenceDisabled ? t('User_status_disabled_on_this_workspace') : t('User_status_disabled_by_an_admin')}>
+							<Icon name='info-circled' size='x20' color='info' />
+						</Box>
+					),
+				},
+			];
+		}
+
 		if (presenceDisabled) {
 			return [
 				{
@@ -176,6 +194,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
+		userPresenceDisabled,
+		workspacePresenceDisabled,
 		allowUserStatusMessageChange,
 		t,
 		handleStatusDisabledModal,
