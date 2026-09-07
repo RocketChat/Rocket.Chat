@@ -3,8 +3,26 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateTeamModal from './CreateTeamModal';
+import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
+
+const withAbac = ({ enforced = true, attributes = [{ _id: 'a1', key: 'clearance', values: ['secret'] }] } = {}) =>
+	mockAppRoot()
+		.withJohnDoe()
+		.withSetting('ABAC_Enabled', true)
+		.withSetting('UI_Allow_room_names_with_special_chars', true)
+		.withSetting('ABAC_Enforce_All_Rooms', enforced)
+		.withEndpoint('GET', '/v1/licenses.info', jest.fn().mockResolvedValue({ license: createFakeLicenseInfo({ activeModules: ['abac'] }) }))
+		.withEndpoint(
+			'GET',
+			'/v1/abac/attributes',
+			jest.fn().mockResolvedValue({ attributes, offset: 0, count: attributes.length, total: attributes.length }),
+		)
+		.withEndpoint('POST', '/v1/abac/membership-preview', jest.fn())
+		.withEndpoint('POST', '/v1/abac/attribute-assignability', jest.fn())
+		.withEndpoint('GET', '/v1/rooms.nameExists', jest.fn().mockResolvedValue({ exists: false }))
+		.build();
 
 describe('CreateTeamModal', () => {
 	it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {
@@ -269,5 +287,46 @@ describe('CreateTeamModal', () => {
 		expect(broadcast).not.toBeChecked();
 		expect(readOnly).not.toBeChecked();
 		expect(readOnly).toBeEnabled();
+	});
+
+	/**
+	 * ABAC-P4 QA — a team's main room is a room like any other, so team creation follows the same
+	 * stepped flow as channel creation. It used to be offered only for channels.
+	 */
+	describe('ABAC', () => {
+		it('runs the stepped flow when the workspace enforces ABAC', async () => {
+			render(<CreateTeamModal onClose={() => null} />, { wrapper: withAbac() });
+
+			expect(await screen.findByText('ABAC_Step_n_of_m')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: 'Create' })).not.toBeInTheDocument();
+		});
+
+		it('locks ABAC Managed on under enforcement, which forces the team private', async () => {
+			render(<CreateTeamModal onClose={() => null} />, { wrapper: withAbac() });
+
+			const managed = (await screen.findByLabelText('ABAC_Managed')) as HTMLInputElement;
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+			expect(screen.getByLabelText('Teams_New_Private_Label')).toBeChecked();
+		});
+
+		it('leaves the single-page form alone when ABAC is not enabled', () => {
+			render(<CreateTeamModal onClose={() => null} />, { wrapper: mockAppRoot().build() });
+
+			expect(screen.queryByText('ABAC_Step_n_of_m')).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+		});
+
+		it('says why the attribute step cannot be completed when the user has nothing to assign', async () => {
+			render(<CreateTeamModal onClose={() => null} />, { wrapper: withAbac({ attributes: [] }) });
+
+			// The name field is the first textbox in the dialog; it has to be filled for step 1 to pass.
+			await userEvent.type((await screen.findAllByRole('textbox'))[0], 'abac-team');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findByText('ABAC_No_attributes_to_assign')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+		});
 	});
 });

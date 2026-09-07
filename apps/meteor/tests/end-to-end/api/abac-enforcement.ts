@@ -215,6 +215,73 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	/**
+	 * A team's main room is created through `createRoom` like any other, so the enforcement guards
+	 * already applied to it — but `teams.create` had no way to carry attributes, which left team
+	 * creation impossible once enforcement was on (ABAC-P4 QA).
+	 */
+	describe('team creation', () => {
+		const attributeKey = `teamclearance${Date.now()}`;
+		let attributeId: string;
+
+		before(async () => {
+			await updatePermission('abac-management', ['admin']);
+			await updatePermission('manage-abac-admin-room-attributes', ['admin']);
+			// The admin carries no subject attributes here, so D12 would refuse anything they chose.
+			await updateSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			await request
+				.post(api('abac/attributes'))
+				.set(credentials)
+				.send({ key: attributeKey, values: ['secret'] })
+				.expect(200);
+			const { body } = await request.get(api('abac/attributes')).set(credentials).query({ key: attributeKey });
+			attributeId = body.attributes.find((attribute: { key: string }) => attribute.key === attributeKey)._id;
+
+			await setEnforcement(true);
+		});
+
+		after(async () => {
+			await setEnforcement(false);
+			await request.delete(api(`abac/attributes/${attributeId}`)).set(credentials);
+			await updateSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('refuses a team whose main room would carry no attributes', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-team-${Date.now()}`, type: 1 })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-abac-attributes-required');
+				});
+		});
+
+		it('creates a team whose main room carries the attributes it was given', async () => {
+			const teamName = `abac-team-ok-${Date.now()}`;
+
+			const created = await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: teamName, type: 1, abacAttributes: { [attributeKey]: ['secret'] } })
+				.expect(200);
+
+			const { roomId } = created.body.team;
+			const info = await request.get(api('groups.info')).set(credentials).query({ roomId }).expect(200);
+
+			expect(info.body.group.abacAttributes).to.deep.equal([{ key: attributeKey, values: ['secret'] }]);
+
+			await setEnforcement(false);
+			await request
+				.post(api('teams.delete'))
+				.set(credentials)
+				.send({ teamName, roomsToRemove: [roomId] });
+			await setEnforcement(true);
+		});
+	});
+
 	describe('Discussion_enabled override and restore (D10)', () => {
 		after(async () => {
 			await setEnforcement(false);
