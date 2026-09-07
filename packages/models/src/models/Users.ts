@@ -71,6 +71,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				key: { 'settings.preferences.statusVisibilityDenied': 1 },
 				partialFilterExpression: { 'settings.preferences.statusVisibilityDenied': { $exists: true } },
 			},
+			{ key: { presenceDisabledByAdmin: 1 }, partialFilterExpression: { presenceDisabledByAdmin: true } },
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
@@ -2452,6 +2453,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				},
 			},
 		);
+	}
+
+	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds?: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ ...(userIds && { _id: { $in: userIds } }), presenceDisabledByAdmin: true }, options);
 	}
 
 	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
+import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { getStatusText } from '../../lib/users/getStatusText';
 
 declare module '@rocket.chat/ddp-client' {
@@ -22,6 +23,6 @@ Meteor.methods<ServerMethods>({
 
 		const hidden = await getUsersHiddenFrom(currentUserId);
 
-		return hidden?.has(userId) ? undefined : getStatusText(userId);
+		return isHiddenFor(hidden, userId) ? undefined : getStatusText(userId);
 	},
 });

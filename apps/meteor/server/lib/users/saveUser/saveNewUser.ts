@@ -1,3 +1,4 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
@@ -57,6 +58,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 	}
 
+	if (userData.presenceDisabledByAdmin) {
+		updater.set('presenceDisabledByAdmin', true);
+	}
+
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 
@@ -88,6 +93,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		} catch (e) {
 			// Ignore this error for now, as it not being successful isn't bad
 		}
+	}
+
+	if (userData.presenceDisabledByAdmin) {
+		void StatusVisibility.invalidate([_id], { allViewers: true });
 	}
 
 	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
