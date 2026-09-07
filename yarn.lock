@@ -9820,16 +9820,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@npm:^0.36.2":
-  version: 0.36.2
-  resolution: "@rocket.chat/layout@npm:0.36.2"
+"@rocket.chat/layout@npm:~0.36.3":
+  version: 0.36.3
+  resolution: "@rocket.chat/layout@npm:0.36.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/logo": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/ed0d5d3438f8b4fed986f62a5ce9349b4de1f46e2dabc63fdd39f46ed9c4b9ab06b4d8e8031d847578fb56658919d09950049733ae6715bed59bec295527e18a
+  checksum: 10/12bdab30798d5c726c7e8524b75385f7696c05f0029e50a66077ee5fbfe4f3ab23eff5d841f11554d53e32d9d1be9a6fce02b1a5a6040761642e07c295d3bb9c
   languageName: node
   linkType: hard
 
@@ -10126,7 +10126,7 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "npm:^0.36.2"
+    "@rocket.chat/layout": "npm:~0.36.3"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
@@ -11152,7 +11152,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:^0.34.0"
     "@rocket.chat/icons": "npm:^0.49.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/layout": "npm:^0.36.2"
+    "@rocket.chat/layout": "npm:~0.36.3"
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
@@ -11462,7 +11462,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:^0.34.0"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/icons": "npm:^0.49.0"
-    "@rocket.chat/layout": "npm:^0.36.2"
+    "@rocket.chat/layout": "npm:~0.36.3"
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:~"
