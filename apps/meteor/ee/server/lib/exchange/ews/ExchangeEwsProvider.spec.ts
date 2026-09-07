@@ -3,6 +3,7 @@ import type { IEwsTransport } from './IEwsTransport';
 
 const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';
+const E = 'http://schemas.microsoft.com/exchange/services/2006/errors';
 
 const soap = (body: string) =>
 	`<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="${T}" xmlns:m="${M}"><soap:Body>${body}</soap:Body></soap:Envelope>`;
@@ -274,11 +275,25 @@ describe('ExchangeEwsProvider', () => {
 	});
 
 	describe('error channels', () => {
-		it('surfaces a SOAP fault', async () => {
-			const transport = new FakeTransport([soap('<soap:Fault><faultstring>Bad request</faultstring></soap:Fault>')]);
+		it.each(['s', 'soap', 'SOAP-ENV'])('surfaces a SOAP fault sent with the %s prefix', async (prefix) => {
+			const transport = new FakeTransport([soap(`<${prefix}:Fault><faultstring>Bad request</faultstring></${prefix}:Fault>`)]);
 
 			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
 				code: 'unexpected-response',
+			});
+		});
+
+		it('reads the code out of a fault detail, so an unknown mailbox is never an empty calendar', async () => {
+			const transport = new FakeTransport([
+				soap(
+					'<s:Fault><faultstring>The specified object was not found in the store.</faultstring><detail>' +
+						`<e:ResponseCode xmlns:e="${E}">ErrorNonExistentMailbox</e:ResponseCode>` +
+						'</detail></s:Fault>',
+				),
+			]);
+
+			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
+				code: 'mailbox-not-found',
 			});
 		});
 
