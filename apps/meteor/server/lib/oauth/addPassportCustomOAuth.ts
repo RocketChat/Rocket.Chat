@@ -28,7 +28,7 @@ export const addPassportCustomOAuth = (
 			serviceName,
 			config as OAuthConfiguration & { clientSecret: string },
 			(accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) =>
-				verifyFunction(accessToken, refreshToken, profile, done, serviceName),
+				verifyFunction(accessToken, refreshToken, profile, done, serviceName).catch((err) => done(err)),
 		),
 	);
 

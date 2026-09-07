@@ -211,6 +211,10 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.email = this.getEmail(identity);
 		}
 
+		if (identity.email) {
+			identity.emails = [{ value: identity.email }];
+		}
+
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -220,6 +224,8 @@ export class CustomOAuthStrategy extends Strategy {
 		} else {
 			identity.name = this.getName(identity);
 		}
+
+		identity.displayName = identity.name;
 
 		return renameInvalidProperties(identity);
 	}
