@@ -14,6 +14,8 @@ export class StatusVisibilityGate {
 
 	private pendingSync?: Promise<void>;
 
+	private queuedSync?: Promise<void>;
+
 	watch(service: IServiceClass): void {
 		service.onSettingChanged(STATUS_VISIBILITY_SETTING_ID, async ({ setting }) => {
 			this.settingCache.set(STATUS_VISIBILITY_SETTING_ID, Promise.resolve(setting.value === true));
@@ -79,17 +81,24 @@ export class StatusVisibilityGate {
 	}
 
 	syncRestrictedUsers(): Promise<void> {
-		if (!this.pendingSync) {
-			this.pendingSync = Promise.all([StatusVisibility.getRestrictedUsers(), this.hidesEveryone()])
-				.then(([users, everyoneHidden]) => {
-					this.restrictedUsers = new Set(users);
-					this.everyoneHidden = everyoneHidden;
-				})
-				.catch(() => undefined)
-				.finally(() => {
-					this.pendingSync = undefined;
-				});
+		if (this.pendingSync) {
+			this.queuedSync ??= this.pendingSync.then(() => {
+				this.queuedSync = undefined;
+				return this.syncRestrictedUsers();
+			});
+
+			return this.queuedSync;
 		}
+
+		this.pendingSync = Promise.all([StatusVisibility.getRestrictedUsers(), this.hidesEveryone()])
+			.then(([users, everyoneHidden]) => {
+				this.restrictedUsers = new Set(users);
+				this.everyoneHidden = everyoneHidden;
+			})
+			.catch(() => undefined)
+			.finally(() => {
+				this.pendingSync = undefined;
+			});
 
 		return this.pendingSync;
 	}

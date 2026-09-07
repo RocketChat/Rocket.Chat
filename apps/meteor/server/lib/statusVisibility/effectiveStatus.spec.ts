@@ -33,10 +33,7 @@ describe('effectiveStatusFilter', () => {
 	});
 
 	it('should match nobody when the whole workspace is hidden and the filter excludes offline', () => {
-		const filter = effectiveStatusFilter([UserStatus.ONLINE], everyone);
-
-		expect(filter).to.not.have.property('_id');
-		expect(Object.keys(filter)).to.have.lengthOf(1);
+		expect(effectiveStatusFilter([UserStatus.ONLINE], everyone)).to.be.deep.equal({ $nor: [{}] });
 	});
 
 	it('should survive being merged into a query that already constrains _id', () => {
@@ -72,7 +69,6 @@ describe('excludingOfflineFilter', () => {
 	});
 
 	it('should match nobody when the whole workspace is hidden', () => {
-		expect(excludingOfflineFilter(everyone)).to.not.be.deep.equal({ status: { $ne: UserStatus.OFFLINE } });
-		expect(Object.keys(excludingOfflineFilter(everyone))).to.have.lengthOf(1);
+		expect(excludingOfflineFilter(everyone)).to.be.deep.equal({ $nor: [{}] });
 	});
 });

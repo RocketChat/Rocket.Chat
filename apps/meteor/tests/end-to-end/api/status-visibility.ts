@@ -389,6 +389,8 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('should refuse a status change from a disabled user', async () => {
+			await setPresenceDisabled(bystander._id, true).expect(200);
+
 			await request.post(api('users.setStatus')).set(bystanderCredentials).send({ status: UserStatus.BUSY }).expect(400);
 		});
 
