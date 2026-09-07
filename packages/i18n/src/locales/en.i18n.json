@@ -5056,7 +5056,7 @@
   "Outlook_Calendar_Sync_email_not_verified": "Your email address is not verified, so no Exchange mailbox can be matched to your account. Verify it and try again.",
   "Outlook_Calendar_Sync_no_mailbox": "No Exchange mailbox is mapped to your account. Ask an administrator to check the mailbox address field.",
   "Outlook_Calendar_Test_Connection": "Test connection",
-  "Outlook_Calendar_Test_Connection_authentication_failed": "Exchange rejected the credentials. Check the client secret or the service account password.",
+  "Outlook_Calendar_Test_Connection_authentication_failed": "Exchange rejected the credentials. Check them in the server-to-server connection settings.",
   "Outlook_Calendar_Test_Connection_authorization_failed": "The credentials are valid but not allowed to read mailboxes. Check the application access policy or the impersonation role.",
   "Outlook_Calendar_Test_Connection_connection_failed": "Could not reach the Exchange endpoint. Check the URL, the network route, and the certificate.",
   "Outlook_Calendar_Test_Connection_failed": "The connection test failed.",
