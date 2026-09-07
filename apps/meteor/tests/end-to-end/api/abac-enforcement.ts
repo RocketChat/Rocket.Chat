@@ -2,14 +2,15 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 /**
  * ABAC Phase 4, Milestone 1 — enforcement guards.
@@ -212,6 +213,125 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.include('error-abac-attributes-required');
 				});
+		});
+	});
+
+	/**
+	 * The founding members of a room have to be evaluated against its attributes, like anyone
+	 * invited later.
+	 *
+	 * They were not. `addUserToRoom` runs two hooks — a `makeFunction` seam and a `Callbacks` hook
+	 * of the same name — and the ABAC compliance guard lives on the seam. Creation ran only the
+	 * `Callbacks` one, so every founding member was admitted unchecked, on every creation path
+	 * including the REST API (ABAC-P4 QA).
+	 */
+	describe('founding members are evaluated against the room attributes', () => {
+		const attributeKey = `foundingclearance${Date.now()}`;
+		let connection: MongoClient;
+		let attributeId: string;
+		let compliantUser: IUser;
+
+		before(async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
+
+			await updatePermission('abac-management', ['admin']);
+			await updatePermission('manage-abac-admin-room-attributes', ['admin']);
+
+			await request
+				.post(api('abac/attributes'))
+				.set(credentials)
+				.send({ key: attributeKey, values: ['secret'] })
+				.expect(200);
+			const { body } = await request.get(api('abac/attributes')).set(credentials).query({ key: attributeKey });
+			attributeId = body.attributes.find((attribute: { key: string }) => attribute.key === attributeKey)._id;
+
+			compliantUser = await createUser();
+
+			// The local PDP decides from the database, so the subject attributes are written there
+			// directly — the same approach the other ABAC suites take rather than going through LDAP.
+			await connection
+				.db()
+				.collection<IUser>('users')
+				.updateMany(
+					{ username: { $in: [adminUsername, compliantUser.username as string] } },
+					{ $push: { abacAttributes: { key: attributeKey, values: ['secret'] } } },
+				);
+		});
+
+		after(async () => {
+			await connection
+				.db()
+				.collection<IUser>('users')
+				.updateMany(
+					{ username: { $in: [adminUsername, compliantUser.username as string] } },
+					{ $pull: { abacAttributes: { key: attributeKey } } },
+				);
+			await connection.close();
+
+			await deleteUser(compliantUser);
+			await request.delete(api(`abac/attributes/${attributeId}`)).set(credentials);
+		});
+
+		it('leaves a non-compliant founding member out of the room', async () => {
+			const created = await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `abac-founding-${Date.now()}`,
+					members: [compliantUser.username, otherUser.username],
+					abacAttributes: { [attributeKey]: ['secret'] },
+				})
+				.expect(200);
+
+			const roomId = created.body.group._id;
+
+			const members = await request.get(api('groups.members')).set(credentials).query({ roomId, count: 50 }).expect(200);
+			const usernames = members.body.members.map(({ username }: { username: string }) => username);
+
+			expect(usernames).to.include(compliantUser.username);
+			// `otherUser` carries no subject attributes, so the room's attribute excludes them.
+			expect(usernames).to.not.include(otherUser.username);
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+
+		it('still admits every compliant founding member', async () => {
+			const created = await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `abac-founding-ok-${Date.now()}`,
+					members: [compliantUser.username],
+					abacAttributes: { [attributeKey]: ['secret'] },
+				})
+				.expect(200);
+
+			const roomId = created.body.group._id;
+
+			const members = await request.get(api('groups.members')).set(credentials).query({ roomId, count: 50 }).expect(200);
+			const usernames = members.body.members.map(({ username }: { username: string }) => username);
+
+			expect(usernames).to.include(compliantUser.username);
+			expect(usernames).to.include(adminUsername);
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+
+		it('leaves a room without attributes alone', async () => {
+			const created = await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `abac-founding-plain-${Date.now()}`, members: [otherUser.username] })
+				.expect(200);
+
+			const roomId = created.body.group._id;
+
+			const members = await request.get(api('groups.members')).set(credentials).query({ roomId, count: 50 }).expect(200);
+			const usernames = members.body.members.map(({ username }: { username: string }) => username);
+
+			expect(usernames).to.include(otherUser.username);
+
+			await deleteRoom({ type: 'p', roomId });
 		});
 	});
 

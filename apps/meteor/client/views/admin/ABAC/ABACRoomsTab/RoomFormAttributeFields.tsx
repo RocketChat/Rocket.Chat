@@ -21,6 +21,13 @@ export type RoomFormAttributeFieldsProps = {
 	 * entitlements, and D11 keeps that behaviour as it was.
 	 */
 	assignableOnly?: boolean;
+	/**
+	 * Whether the room must keep at least one attribute, which makes the first row required and not
+	 * removable. True while enforcement is on — every room has to stay ABAC-managed. With
+	 * enforcement off, clearing the last attribute is how a room stops being ABAC-managed, so the
+	 * row has to be removable (ABAC-P4 QA).
+	 */
+	requireAtLeastOne?: boolean;
 };
 
 const RoomFormAttributeFields = ({
@@ -29,6 +36,7 @@ const RoomFormAttributeFields = ({
 	disabled = false,
 	lockedLeadingCount = 0,
 	assignableOnly = false,
+	requireAtLeastOne = true,
 }: RoomFormAttributeFieldsProps) => {
 	const { t } = useTranslation();
 	const isExternalAttributeStore = useIsExternalAttributeStore();
@@ -48,20 +56,20 @@ const RoomFormAttributeFields = ({
 			)}
 			{fields.map((field, index) => (
 				<Field key={field.id}>
-					<FieldLabel id={field.id} required={index === 0 || index < lockedLeadingCount}>
+					<FieldLabel id={field.id} required={index < lockedLeadingCount || (index === 0 && requireAtLeastOne)}>
 						{t('Attribute')}
 					</FieldLabel>
 					<RoomFormAttributeField
 						labelId={field.id}
 						attributeList={attributeList.attributes}
-						required={index === 0 || index < lockedLeadingCount}
+						required={index < lockedLeadingCount || (index === 0 && requireAtLeastOne)}
 						onRemove={() => {
 							remove(index);
 						}}
 						index={index}
 						disabled={disabled}
 						lockKey={index < lockedLeadingCount}
-						removable={index >= lockedLeadingCount}
+						removable={index >= lockedLeadingCount && !(index === 0 && requireAtLeastOne)}
 					/>
 				</Field>
 			))}

@@ -9,6 +9,7 @@ import AbacMembershipPreview from '../../../../../components/ABAC/AbacMembership
 import { useAbacAttributeMap } from '../../../../../components/ABAC/useAbacAttributeMap';
 import RoomFormAttributeFields from '../../../../admin/ABAC/ABACRoomsTab/RoomFormAttributeFields';
 import { useIsABACAvailable } from '../../../../admin/ABAC/hooks/useIsABACAvailable';
+import { useIsAbacEnforcementOn } from '../../../../admin/ABAC/hooks/useIsAbacEnforcementOn';
 
 const MAX_ATTRIBUTE_ROWS = 10;
 
@@ -32,6 +33,7 @@ const AbacRoomAttributesSection = ({ room }: AbacRoomAttributesSectionProps) => 
 	const { t } = useTranslation();
 
 	const isAbacAvailable = useIsABACAvailable();
+	const abacEnforcementOn = useIsAbacEnforcementOn();
 	const canEditAttributes = usePermission('edit-room-abac-attributes', room._id);
 
 	const methods = useForm<{ attributes: { key: string; values: string[] }[] }>({
@@ -74,7 +76,9 @@ const AbacRoomAttributesSection = ({ room }: AbacRoomAttributesSectionProps) => 
 					<Box marginBlockEnd={8} color='hint' fontScale='c1'>
 						{t('ABAC_Room_attributes_edit_hint')}
 					</Box>
-					<RoomFormAttributeFields fields={fields} remove={remove} assignableOnly />
+					{/* With enforcement off, removing the last attribute is how a room stops being
+					    ABAC-managed; with it on, a room has to keep at least one (ABAC-P4 QA). */}
+					<RoomFormAttributeFields fields={fields} remove={remove} assignableOnly requireAtLeastOne={abacEnforcementOn} />
 					<Button
 						type='button'
 						width='full'

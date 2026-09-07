@@ -278,6 +278,48 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 	const showSecurityFields = !isStepped || step === 3;
 	const showCompliance = isStepped && step === TOTAL_ABAC_STEPS;
 
+	const securityFields = (
+		<>
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Teams_New_Encrypted_Label')}</FieldLabel>
+					<Controller
+						control={control}
+						name='encrypted'
+						render={({ field: { onChange, value, ref } }) => (
+							<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
+						)}
+					/>
+				</FieldRow>
+				<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
+			</Field>
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Teams_New_Read_only_Label')}</FieldLabel>
+					<Controller
+						control={control}
+						name='readOnly'
+						render={({ field: { onChange, value, ref } }) => (
+							<ToggleSwitch disabled={readOnlyDisabled} onChange={onChange} checked={value} ref={ref} />
+						)}
+					/>
+				</FieldRow>
+				<FieldHint>{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}</FieldHint>
+			</Field>
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Teams_New_Broadcast_Label')}</FieldLabel>
+					<Controller
+						control={control}
+						name='broadcast'
+						render={({ field: { onChange, value, ref } }) => <ToggleSwitch onChange={onChange} checked={value} ref={ref} />}
+					/>
+				</FieldRow>
+				{broadcast && <FieldHint>{t('Teams_New_Broadcast_Description')}</FieldHint>}
+			</Field>
+		</>
+	);
+
 	const createTeamFormId = useId();
 
 	return (
@@ -340,24 +382,6 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 									)}
 								/>
 							</Field>
-							<Field>
-								<FieldRow>
-									<FieldLabel>{t('Teams_New_Private_Label')}</FieldLabel>
-									<Controller
-										control={control}
-										name='isPrivate'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch
-												onChange={onChange}
-												checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
-												disabled={!!canOnlyCreateOneType}
-												ref={ref}
-											/>
-										)}
-									/>
-								</FieldRow>
-								<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
-							</Field>
 							{isAbacAvailable && (
 								<Field>
 									<FieldRow>
@@ -374,6 +398,25 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 									<FieldHint>{t('ABAC_Restricts_access_to_compliant_users')}</FieldHint>
 								</Field>
 							)}
+							<Field>
+								<FieldRow>
+									<FieldLabel>{t('Teams_New_Private_Label')}</FieldLabel>
+									<Controller
+										control={control}
+										name='isPrivate'
+										render={({ field: { onChange, value, ref } }) => (
+											<ToggleSwitch
+												onChange={onChange}
+												checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
+												// An ABAC-managed room is private by definition, so the switch is held there.
+												disabled={!!canOnlyCreateOneType || isAbacManaged}
+												ref={ref}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
+							</Field>
 						</FieldGroup>
 					)}
 
@@ -404,56 +447,28 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 						</>
 					)}
 
-					{showSecurityFields && (
-						<Accordion>
-							<AccordionItem title={t('Advanced_settings')}>
-								<FieldGroup>
-									<Box is='h5' fontScale='h5' color='titles-labels'>
-										{t('Security_and_permissions')}
-									</Box>
-									<Field>
-										<FieldRow>
-											<FieldLabel>{t('Teams_New_Encrypted_Label')}</FieldLabel>
-											<Controller
-												control={control}
-												name='encrypted'
-												render={({ field: { onChange, value, ref } }) => (
-													<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
-												)}
-											/>
-										</FieldRow>
-										<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
-									</Field>
-									<Field>
-										<FieldRow>
-											<FieldLabel>{t('Teams_New_Read_only_Label')}</FieldLabel>
-											<Controller
-												control={control}
-												name='readOnly'
-												render={({ field: { onChange, value, ref } }) => (
-													<ToggleSwitch disabled={readOnlyDisabled} onChange={onChange} checked={value} ref={ref} />
-												)}
-											/>
-										</FieldRow>
-										<FieldHint>
-											{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
-										</FieldHint>
-									</Field>
-									<Field>
-										<FieldRow>
-											<FieldLabel>{t('Teams_New_Broadcast_Label')}</FieldLabel>
-											<Controller
-												control={control}
-												name='broadcast'
-												render={({ field: { onChange, value, ref } }) => <ToggleSwitch onChange={onChange} checked={value} ref={ref} />}
-											/>
-										</FieldRow>
-										{broadcast && <FieldHint>{t('Teams_New_Broadcast_Description')}</FieldHint>}
-									</Field>
-								</FieldGroup>
-							</AccordionItem>
-						</Accordion>
-					)}
+					{showSecurityFields &&
+						(isStepped ? (
+							// Inside the stepped flow this *is* the step, so it is shown outright rather
+							// than folded into a collapsed Advanced settings panel (ABAC-P4 QA).
+							<FieldGroup marginBlockEnd={24}>
+								<Box is='h5' fontScale='h5' color='titles-labels'>
+									{t('Security_and_permissions')}
+								</Box>
+								{securityFields}
+							</FieldGroup>
+						) : (
+							<Accordion>
+								<AccordionItem title={t('Advanced_settings')}>
+									<FieldGroup>
+										<Box is='h5' fontScale='h5' color='titles-labels'>
+											{t('Security_and_permissions')}
+										</Box>
+										{securityFields}
+									</FieldGroup>
+								</AccordionItem>
+							</Accordion>
+						))}
 				</ModalContent>
 				<ModalFooter>
 					{isStepped && (
