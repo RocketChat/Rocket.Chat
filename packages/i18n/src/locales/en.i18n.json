@@ -5054,7 +5054,7 @@
   "Outlook_Calendar_Server_Sync_Window_Days_Description": "How many whole days each run covers, counting from midnight today, and the range a changed recurring meeting is expanded over. It also bounds what is kept: an event beyond every future window can never be refreshed or removed. 2 days covers today and tomorrow.",
   "Outlook_calendar_settings": "Outlook calendar settings",
   "Outlook_Calendar_Test_Connection": "Test connection",
-  "Outlook_Calendar_Test_Connection_authentication_failed": "Exchange rejected the credentials. Check the client secret or the service account password.",
+  "Outlook_Calendar_Test_Connection_authentication_failed": "Exchange rejected the credentials. Check them in the server-to-server connection settings.",
   "Outlook_Calendar_Test_Connection_authorization_failed": "The credentials are valid but not allowed to read mailboxes. Check the application access policy or the impersonation role.",
   "Outlook_Calendar_Test_Connection_connection_failed": "Could not reach the Exchange endpoint. Check the URL, the network route, and the certificate.",
   "Outlook_Calendar_Test_Connection_failed": "The connection test failed.",
