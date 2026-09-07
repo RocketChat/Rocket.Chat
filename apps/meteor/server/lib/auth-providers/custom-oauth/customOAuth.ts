@@ -225,7 +225,7 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.name = this.getName(identity);
 		}
 
-		identity.displayName = identity.name;
+		identity.displayName = identity.name || identity.displayName;
 
 		return renameInvalidProperties(identity);
 	}

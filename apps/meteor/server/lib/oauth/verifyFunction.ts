@@ -20,7 +20,6 @@ export const verifyFunction = async (
 			{
 				accessToken,
 				refreshToken,
-				...profile,
 				...restProfile,
 				..._json,
 				...(name ? { name } : {}),
