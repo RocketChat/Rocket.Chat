@@ -35,6 +35,16 @@ export const effectiveStatusExpression = (hidden: PresenceScope) => {
 	return ids.length ? { $cond: [{ $in: ['$_id', ids] }, UserStatus.OFFLINE, '$status'] } : '$status';
 };
 
+export const excludingHiddenFilter = (hidden: PresenceScope): Filter<IUser> => {
+	if (hidden.hideAll) {
+		return { $nor: [{}] };
+	}
+
+	const ids = hiddenIds(hidden);
+
+	return ids.length ? { _id: { $nin: ids } } : {};
+};
+
 export const excludingOfflineFilter = (hidden: PresenceScope): Filter<IUser> => {
 	if (hidden.hideAll) {
 		return { $nor: [{}] };
