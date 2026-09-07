@@ -1,5 +1,5 @@
 import { Push } from '@rocket.chat/core-services';
-import type { IPushToken } from '@rocket.chat/core-typings';
+import type { IPushToken, PushTokenTarget } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { PushToken } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -12,7 +12,7 @@ import { _matchToken } from '../../lib/notifications/push/push';
 
 type PushUpdateOptions = {
 	id?: string;
-	token: IPushToken['token'];
+	token: PushTokenTarget;
 	authToken: string;
 	appName: string;
 	userId: string | null;
