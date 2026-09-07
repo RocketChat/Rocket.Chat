@@ -30,6 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
@@ -42,6 +43,7 @@ import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
@@ -84,6 +86,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
@@ -99,6 +102,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
+	const { data: hasPresenceLicense = false } = useHasLicenseModule('unlimited-presence');
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -190,6 +195,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const nicknameId = useId();
 	const passwordId = useId();
 	const rolesId = useId();
+	const userStatusId = useId();
 	const joinDefaultChannelsId = useId();
 	const sendWelcomeEmailId = useId();
 	const setRandomPasswordId = useId();
@@ -418,6 +424,31 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
+					{hasPresenceLicense && userStatusEnabled && (
+						<Field>
+							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
+								<FieldLabel htmlFor={userStatusId}>{t('User_Status')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='presenceDisabledByAdmin'
+										render={({ field: { ref, onChange, value } }) => (
+											<ToggleSwitch
+												id={userStatusId}
+												ref={ref}
+												aria-describedby={`${userStatusId}-hint`}
+												onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+												checked={value !== true}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Box>
+							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
+								{t('User_status_admin_toggle_Description')}
+							</FieldHint>
+						</Field>
+					)}
 					{isNewUserPage && (
 						<Field>
 							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
