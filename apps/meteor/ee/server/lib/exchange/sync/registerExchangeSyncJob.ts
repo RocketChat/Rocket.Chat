@@ -25,6 +25,7 @@ export const intervalToCron = (minutes: number): string => {
 		return `*/${value} * * * *`;
 	}
 
+	// If greater than or equal to 60, it's converted to hours
 	return `0 */${Math.min(Math.round(value / 60), 23)} * * *`;
 };
 

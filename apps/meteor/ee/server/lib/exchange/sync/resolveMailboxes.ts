@@ -17,7 +17,6 @@ const buildQuery = (mailboxField: string, lastId?: string): Filter<IUser> => ({
 	federated: { $ne: true },
 	isRemote: { $ne: true },
 	roles: { $ne: 'guest' },
-	// Narrowing here rather than in the loop: otherwise every user in the workspace costs a skip decision.
 	...(mailboxField
 		? { [`customFields.${mailboxField}`]: { $exists: true, $nin: ['', null] } }
 		: { emails: { $elemMatch: { verified: true } } }),

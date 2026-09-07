@@ -57,7 +57,7 @@ type Collected = {
 	upserts: Map<string, ExchangeEventUpsert>;
 	removals: Set<string>;
 	/** Present only when a provider handed over a complete set for the window. */
-	keep?: string[];
+	keepExternalIds?: string[];
 	cursor?: string;
 };
 
@@ -69,7 +69,7 @@ const collectPages = async (
 ): Promise<Collected> => {
 	const upserts = new Map<string, ExchangeEventUpsert>();
 	const removals = new Set<string>();
-	let keep: string[] | undefined;
+	let keepExternalIds: string[] | undefined;
 	let cursor = startCursor;
 	let pages = 0;
 
@@ -95,13 +95,13 @@ const collectPages = async (
 
 		// Each complete page is an independent full-window snapshot, so the newest one supersedes any earlier one
 		if (page.isCompleteForWindow) {
-			keep = pageUpserts.map(({ externalId }) => externalId);
+			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
 		cursor = page.cursor;
 
 		if (!page.hasMore || !page.cursor || pages >= MAX_PAGES) {
-			return { upserts, removals, keep, cursor };
+			return { upserts, removals, keepExternalIds, cursor };
 		}
 	}
 };
@@ -127,13 +127,16 @@ export const syncMailbox = async (
 		state?.syncWindowDays === syncWindowDays &&
 		state?.windowStart?.getTime() === timeWindow.start.getTime();
 
-	// Tracked outside the try so a later throw cannot discard work that already committed: the desktop path
-	// applies presence in the same call as the write, so a written event always got its scheduling.
 	let changed = false;
 	let removedEvents = false;
 
 	try {
-		const { upserts, removals, keep, cursor } = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
+		const { upserts, removals, keepExternalIds, cursor } = await collectPages(
+			provider,
+			mailbox,
+			timeWindow,
+			reusable ? state?.cursor : undefined,
+		);
 
 		const imported = await Calendar.importMany(
 			[...upserts.values()].map((event) => toCalendarEvent(uid, event)),
@@ -148,7 +151,9 @@ export const syncMailbox = async (
 		removedEvents = Boolean(deleted?.deleted);
 
 		// Only from a complete set, and only after the upserts landed.
-		const pruned = keep ? await Calendar.pruneImportedWindow(uid, timeWindow, keep, { deferSideEffects: true }) : undefined;
+		const pruned = keepExternalIds
+			? await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, { deferSideEffects: true })
+			: undefined;
 		changed = changed || Boolean(pruned?.changed);
 		removedEvents = removedEvents || Boolean(pruned?.deleted);
 

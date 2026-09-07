@@ -17,7 +17,8 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 
 	inFlight.add(uid);
 
-	const dirty = new Map<IUser['_id'], boolean>();
+	let changed = false;
+	let removedEvents = false;
 
 	try {
 		const provider = getExchangeProvider();
@@ -30,9 +31,8 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 		const mailbox = user && resolveMailbox(user, mailboxField);
 
 		if (!mailbox) {
-			// Without a custom field the mailbox is the verified address, so an unverified one is the caller's
-			// own fix rather than an admin's. The scheduled run never lands here: its query already requires a
-			// verified email, so an unverified user is simply skipped and never asked about.
+			// Without a custom field the mailbox is the verified address. The scheduled run never
+			// lands here: an unverified user is simply skipped and never asked about.
 			if (user && !mailboxField && !user.emails?.some(({ verified }) => verified)) {
 				throw new ExchangeError('email-not-verified', 'The user has no verified email address to use as a mailbox');
 			}
@@ -42,9 +42,10 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 
 		const outcome = await syncMailbox(provider, uid, mailbox, getSyncWindow());
 
-		if (outcome.changed) {
-			dirty.set(uid, outcome.removedEvents);
-		}
+		// Read before the throw below, so a write that committed before the failure still gets its
+		// scheduling and its presence refresh from the `finally`.
+		changed = outcome.changed;
+		removedEvents = outcome.removedEvents;
 
 		if (outcome.failed) {
 			throw outcome.error;
@@ -53,6 +54,8 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 		return outcome;
 	} finally {
 		inFlight.delete(uid);
+
+		const dirty = new Map<IUser['_id'], boolean>(changed ? [[uid, removedEvents]] : []);
 		await applyDeferredSideEffects(dirty);
 	}
 };

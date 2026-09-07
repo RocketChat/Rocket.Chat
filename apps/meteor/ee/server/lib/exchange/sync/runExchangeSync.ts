@@ -60,7 +60,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 				return;
 			}
 
-			// A user we cannot map is counted and left alone: one unmappable user must not end the run.
+			// One unmappable user must not end the run.
 			if (!mailbox) {
 				summary.skipped++;
 				return;
@@ -97,7 +97,6 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 
 		return summary;
 	} catch (err) {
-		// The provider was torn down between the tick and here. Nothing to sync, not a failure.
 		if (isExchangeError(err) && err.code === 'not-configured') {
 			return summary;
 		}
