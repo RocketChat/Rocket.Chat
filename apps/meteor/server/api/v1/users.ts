@@ -48,8 +48,8 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { hiddenIds, isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -721,14 +721,22 @@ API.v1.addRoute(
 
 			const hidden = await getUsersHiddenFrom(this.userId);
 
-			if (hidden && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
+			if (queryFiltersStatus(query)) {
+				if (hidden.hideAll) {
+					return API.v1.success({ users: [], count: 0, offset, total: 0 });
+				}
+
+				const ids = hiddenIds(hidden);
+				if (ids.length) {
+					nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: ids } }];
+				}
 			}
 
 			const actualSort = sort || { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+				delete actualSort.status;
 			}
 
 			if (sort?.name) {
@@ -1742,8 +1750,16 @@ API.v1.get(
 
 		const hidden = await getUsersHiddenFrom(this.userId);
 
-		if (hidden && queryFiltersStatus(selector.conditions)) {
-			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		if (queryFiltersStatus(selector.conditions)) {
+			if (hidden.hideAll) {
+				return API.v1.success({ items: [] });
+			}
+
+			const ids = hiddenIds(hidden);
+
+			if (ids.length) {
+				selector.conditions = { $and: [selector.conditions, { _id: { $nin: ids } }] };
+			}
 		}
 
 		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
@@ -1980,7 +1996,7 @@ API.v1
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
+				presence: (isHiddenFor(hidden, user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2118,7 +2134,7 @@ API.v1
 
 			const user = await getUserFromParams(this.queryParams);
 			const hidden = await getUsersHiddenFrom(this.userId);
-			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
+			const visible = redactHiddenUser(user, hidden);
 
 			return API.v1.success({
 				_id: visible._id,

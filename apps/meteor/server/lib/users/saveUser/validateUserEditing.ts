@@ -41,6 +41,13 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		throw new MeteorError('error-invalid-user', 'Invalid user');
 	}
 
+	if (userData.presenceDisabledByAdmin !== undefined && !canEditOtherUserInfo) {
+		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
 	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {
 		throw new MeteorError('error-action-not-allowed', 'Assign roles is not allowed', {
 			method: 'insertOrUpdateUser',
