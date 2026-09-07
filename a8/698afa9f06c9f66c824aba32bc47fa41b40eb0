@@ -1,0 +1,28 @@
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 63-65,69-75
+apps/meteor/tests/end-to-end/api/status-visibility.ts
+  ai_agent 392-393
+apps/meteor/server/lib/findUsersOfRoom.ts
+  ai_agent 10,32-35,48
+apps/meteor/server/api/lib/users.ts
+  ai_agent 149
+apps/meteor/app/apps/server/bridges/users.ts
+  ai_agent 57
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.spec.ts
+  ai_agent 1-51
+apps/meteor/server/lib/statusVisibility/effectiveStatus.spec.ts
+  ai_agent 36,72
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 17-18,84-91,94-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a8698afa9f06c9f66c824aba32bc47fa41b40eb0",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
