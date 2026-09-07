@@ -7,7 +7,7 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import { settings } from '../settings';
 import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibility/effectiveStatus';
 import type { PresenceScope } from './statusVisibility/presenceScope';
-import { NOTHING_HIDDEN, scopeHidesAnyone } from './statusVisibility/presenceScope';
+import { NOTHING_HIDDEN, hiddenIds, scopeHidesAnyone } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;
@@ -29,6 +29,10 @@ export async function findUsersOfRoom({
 	sort,
 }: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
 	const hiddenCanAppear = scopeHidesAnyone(hidden) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
+	const hiddenInRoom =
+		hiddenCanAppear &&
+		(hidden.hideAll ||
+			(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: hiddenIds(hidden) } })) > 0);
 
 	const options: FindOptions<IUser> = {
 		projection: {
@@ -41,7 +45,7 @@ export async function findUsersOfRoom({
 			federated: 1,
 		},
 		sort: {
-			...(hiddenCanAppear ? {} : { statusConnection: -1 }),
+			...(hiddenInRoom ? {} : { statusConnection: -1 }),
 			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
 		...(skip > 0 && { skip }),
