@@ -53,6 +53,7 @@ export async function registerPushToken(data: PushTokenData): Promise<IPushToken
 		tokenValue: data.tokenValue,
 		appName: data.appName,
 		authToken: data.authToken,
+		userId: data.userId,
 	});
 	if (removeResult.deletedCount) {
 		logger.debug({ msg: 'Removed existing app items', tokenType: data.tokenType, removed: removeResult.deletedCount });

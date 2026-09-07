@@ -94,12 +94,14 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		});
 	}
 
-	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'appName' | 'authToken'>): Promise<DeleteResult> {
+	removeDuplicateTokens(
+		tokenData: Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'appName' | 'authToken' | 'userId'>,
+	): Promise<DeleteResult> {
 		return this.deleteMany({
 			_id: { $ne: tokenData._id },
 			$or: [
 				{ tokenValue: tokenData.tokenValue, appName: tokenData.appName },
-				{ authToken: tokenData.authToken, tokenType: tokenData.tokenType },
+				{ userId: tokenData.userId, authToken: tokenData.authToken, tokenType: tokenData.tokenType },
 			],
 		});
 	}
