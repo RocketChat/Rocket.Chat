@@ -86,13 +86,17 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	return useMemo<GenericMenuItemProps[]>(() => {
 		if (userPresenceDisabled || workspacePresenceDisabled) {
+			const statusDisabledReason = workspacePresenceDisabled
+				? t('User_status_disabled_on_this_workspace')
+				: t('User_status_disabled_by_an_admin');
+
 			return [
 				{
 					id: 'user-status-disabled',
 					status: <UserStatus status={UserStatusEnumValue.OFFLINE} />,
 					content: t('Offline'),
 					addon: (
-						<Box title={workspacePresenceDisabled ? t('User_status_disabled_on_this_workspace') : t('User_status_disabled_by_an_admin')}>
+						<Box role='img' aria-label={statusDisabledReason} title={statusDisabledReason}>
 							<Icon name='info-circled' size='x20' color='info' />
 						</Box>
 					),
