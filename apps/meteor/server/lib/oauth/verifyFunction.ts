@@ -2,6 +2,8 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import type { DoneCallback, Profile } from 'passport';
 
+import { resolveOAuthProfile } from './resolveOAuthProfile';
+
 export const verifyFunction = async (
 	accessToken: string,
 	refreshToken: string,
@@ -10,20 +12,14 @@ export const verifyFunction = async (
 	serviceName: string,
 ) => {
 	try {
-		const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string; email?: string; name?: string };
-		const { _json, _raw, ...restProfile } = profileWithRaw;
-		const email = profile?.emails?.[0]?.value || profileWithRaw.email || (typeof _json?.email === 'string' ? _json.email : undefined);
-		const name = profile.displayName || profileWithRaw.name;
+		const serviceData = resolveOAuthProfile(profile);
 
 		const user = await Accounts.updateOrCreateUserFromExternalService(
 			serviceName,
 			{
 				accessToken,
 				refreshToken,
-				...restProfile,
-				..._json,
-				...(name ? { name } : {}),
-				...(email ? { email } : {}),
+				...serviceData,
 			},
 			{},
 		);
