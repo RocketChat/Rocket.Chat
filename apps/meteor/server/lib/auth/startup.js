@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
-import { Roles, Settings, Users } from '@rocket.chat/models';
+import { CredentialTokens, Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
@@ -473,9 +473,42 @@ const validateLoginAttemptAsync = async function (login) {
 	return true;
 };
 
-Accounts.validateLoginAttempt(function (...args) {
+Accounts.validateLoginAttempt(async function (login) {
 	// Depends on meteor support for Async
-	return validateLoginAttemptAsync.call(this, ...args);
+	if (login.type !== 'saml') {
+		return validateLoginAttemptAsync.call(this, login);
+	}
+
+	let [request] = login.methodArguments;
+	// The TOTP login handler delegates to the original login request.
+	while (request?.totp?.code) {
+		request = request.totp.login;
+	}
+	const credentialToken = request?.credentialToken;
+	if (!request?.saml || typeof credentialToken !== 'string') {
+		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'No matching login attempt found');
+	}
+
+	try {
+		const allowed = await validateLoginAttemptAsync.call(this, login);
+		if (!allowed) {
+			await CredentialTokens.removeById(credentialToken);
+			return allowed;
+		}
+
+		// Consume atomically before Meteor issues a login token, not in the deferred
+		// afterValidateLogin hook. Concurrent attempts and expired credentials must fail.
+		if (!(await CredentialTokens.removeNotExpiredById(credentialToken))) {
+			throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'No matching login attempt found');
+		}
+		return allowed;
+	} catch (error) {
+		// Only a retryable 2FA challenge may reuse the credential, with its original expiry.
+		if (error?.error !== 'totp-required' && error?.error !== 'totp-invalid') {
+			await CredentialTokens.removeById(credentialToken);
+		}
+		throw error;
+	}
 });
 
 Accounts.validateNewUser((user) => {

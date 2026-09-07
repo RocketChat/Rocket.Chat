@@ -27,14 +27,15 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
-	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
+		await CredentialTokens.removeById(loginRequest.credentialToken);
 		return makeError('No matching login attempt found');
 	}
 
 	if (!loginResult.profile) {
+		await CredentialTokens.removeById(loginRequest.credentialToken);
 		return makeError('No profile information found');
 	}
 
@@ -43,8 +44,10 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		const updatedUser = await SAML.insertOrUpdateSAMLUser(userObject);
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
+		// The awaited login validator consumes the credential after 2FA succeeds.
 		return updatedUser;
 	} catch (err: any) {
+		await CredentialTokens.removeById(loginRequest.credentialToken);
 		SystemLogger.error({ err });
 
 		let message = err.toString();

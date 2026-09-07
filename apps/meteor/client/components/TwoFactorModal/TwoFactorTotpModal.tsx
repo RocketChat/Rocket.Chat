@@ -1,12 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
+import { isTotpInvalidError } from '../../lib/2fa/utils';
 
 export type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
@@ -20,6 +22,7 @@ type TwoFactorTotpFormData = {
 };
 
 const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
 	const {
@@ -46,6 +49,10 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		try {
 			await onConfirm(code, Method.TOTP);
 		} catch (error) {
+			if (!isTotpInvalidError(error)) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
+			}
 			setError('code', {
 				type: 'manual',
 				message: t('Invalid_two_factor_code'),
