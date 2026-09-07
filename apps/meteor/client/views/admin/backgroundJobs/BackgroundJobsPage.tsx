@@ -22,7 +22,9 @@ export type BackgroundJobsTab = 'history' | 'system' | 'apps' | 'omnichannel';
 const BackgroundJobsPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const tab = (useRouteParameter('tab') as BackgroundJobsTab) || 'history';
+	const rawTab = useRouteParameter('tab');
+	const validTabs = ['history', 'system', 'apps', 'omnichannel'];
+	const tab = (validTabs.includes(rawTab as string) ? rawTab : 'history') as BackgroundJobsTab;
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const [omnichannelSource, setOmnichannelSource] = useState<OmnichannelJobSource>('auto-close');
