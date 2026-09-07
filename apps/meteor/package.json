@@ -130,6 +130,7 @@
 		"@rocket.chat/memo": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/message-types": "workspace:~",
+		"@rocket.chat/meteor-client": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mongo-adapter": "workspace:^",
@@ -418,6 +419,7 @@
 		"@types/ua-parser-js": "^0.7.39",
 		"@types/underscore": "^1.13.0",
 		"@types/xml-encryption": "~1.2.4",
+		"@vitejs/plugin-react": "~6.0.5",
 		"autoprefixer": "^10.5.4",
 		"babel-loader": "~10.0.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -465,6 +467,8 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.22.5",
 		"typescript": "~5.9.3",
+		"vite": "~8.1.5",
+		"vite-plugin-istanbul": "~9.0.1",
 		"webpack": "~5.104.1"
 	},
 	"volta": {
