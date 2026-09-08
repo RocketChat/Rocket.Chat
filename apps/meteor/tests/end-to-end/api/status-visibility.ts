@@ -507,22 +507,17 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('should not order users.list by the real status it redacts', async () => {
-			const usernamesSortedBy = async (status: 1 | -1) => {
-				const { body } = await request
-					.get(api('users.list'))
-					.set(bystanderCredentials)
-					.query({ sort: JSON.stringify({ status }), count: 50 })
-					.expect(200);
+			const { body } = await request
+				.get(api('users.list'))
+				.set(bystanderCredentials)
+				.query({ sort: JSON.stringify({ status: 1, username: 1 }), count: 50 })
+				.expect(200);
 
-				expect(body.users.every((user: { status?: string }) => user.status === UserStatus.OFFLINE)).to.be.true;
+			const usernames = usernamesOf(body.users);
 
-				return usernamesOf(body.users);
-			};
-
-			const ascending = await usernamesSortedBy(1);
-
-			expect(ascending.length).to.be.greaterThan(1);
-			expect(ascending).to.be.deep.equal(await usernamesSortedBy(-1));
+			expect(body.users.every((user: { status?: string }) => user.status === UserStatus.OFFLINE)).to.be.true;
+			expect(usernames.length).to.be.greaterThan(1);
+			expect(usernames).to.be.deep.equal([...usernames].sort());
 		});
 	});
 
