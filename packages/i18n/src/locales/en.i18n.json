@@ -5008,7 +5008,7 @@
   "Outlook_Calendar_EWS_Auth_Method_Description": "NTLM is required by Exchange 2019 CU14 and later and by Exchange Server Subscription Edition, which enable Extended Protection by default. Choose Basic only for older servers that still allow it.",
   "Outlook_Calendar_EWS_Auth_Method_NTLM": "NTLM",
   "Outlook_Calendar_EWS_CA_Cert": "Certificate authority",
-  "Outlook_Calendar_EWS_CA_Cert_Description": "Paste a PEM certificate to trust a private certificate authority. This adds trust for that authority only, and does not disable certificate validation.",
+  "Outlook_Calendar_EWS_CA_Cert_Description": "Paste the issuing certificate authority in PEM, including the BEGIN CERTIFICATE and END CERTIFICATE lines and the line breaks. Without them the value cannot be read and is ignored silently. Validation stays on, and trust narrows to this authority alone, so a certificate from a public authority is no longer accepted.",
   "Outlook_Calendar_EWS_Password": "Service account password",
   "Outlook_Calendar_EWS_Reject_Unauthorized": "Verify server certificate",
   "Outlook_Calendar_EWS_Reject_Unauthorized_Description": "Keep this enabled. Disabling certificate verification exposes the connection to interception.",
