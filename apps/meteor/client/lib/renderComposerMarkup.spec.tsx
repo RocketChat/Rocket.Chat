@@ -189,6 +189,14 @@ describe('schemeless links', () => {
 		expect(new URL(href).protocol).toBe('https:');
 	});
 
+	it.each([
+		['bare domain with a port', 'see rocket.chat:8080 now', 'https://rocket.chat:8080/'],
+		['markdown link to a port', 'see [x](192.168.1.5:8080/admin)', 'https://192.168.1.5:8080/admin'],
+		['markdown link to a hostname with a port', 'see [x](localhost:3000/admin)', 'https://localhost:3000/admin'],
+	])('resolves a %s instead of reading the host as a scheme', (_label, text, expected) => {
+		expect(hrefOf(text)).toBe(expected);
+	});
+
 	it('normalizes a schemeless target so a backslash cannot disguise the real host', () => {
 		const href = hrefOf('see [x](evil.example\\@rocket.chat)');
 
