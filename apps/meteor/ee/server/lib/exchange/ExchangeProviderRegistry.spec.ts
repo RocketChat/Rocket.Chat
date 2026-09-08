@@ -43,7 +43,7 @@ describe('getSyncWindow', () => {
 		['zero, which would sync nothing at all', 0, 2],
 		['a fractional value the int field should not have allowed', 0.5, 2],
 		['a negative value', -12, 1],
-		['more than thirty days, past what a CalendarView will return', 5000, 30],
+		['more than the hard limit of a week', 5000, 7],
 	])('clamps %s', (_label, configured, expectedDays) => {
 		setDays(configured);
 
