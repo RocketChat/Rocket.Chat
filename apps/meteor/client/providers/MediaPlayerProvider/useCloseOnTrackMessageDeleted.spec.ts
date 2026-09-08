@@ -171,6 +171,38 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(close).not.toHaveBeenCalled();
 	});
 
+	it('does not close the player when deleteMessageBulk ignores discussions and the track belongs to one, but closes when it does not', () => {
+		const notifyRef: StreamControllerRef<'notify-room'> = {};
+		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+		const closeDiscussion = jest.fn();
+		const closeNonDiscussion = jest.fn();
+		const discussionTrack = buildTrack({ drid: 'disc1' });
+		const nonDiscussionTrack = buildTrack({ drid: undefined });
+
+		const { rerender } = renderHook(({ track, close }) => useCloseOnTrackMessageDeleted(track, close), {
+			initialProps: { track: discussionTrack as PersistentAudioTrack | null, close: closeDiscussion },
+			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+		});
+
+		const bulkParams = {
+			rid: discussionTrack.rid!,
+			excludePinned: false,
+			ignoreDiscussion: true,
+			ts: { $gt: new Date(0) },
+			users: [],
+		};
+
+		notifyRef.controller?.emit(`${discussionTrack.rid}/deleteMessageBulk`, [bulkParams]);
+
+		expect(closeDiscussion).not.toHaveBeenCalled();
+
+		rerender({ track: nonDiscussionTrack, close: closeNonDiscussion });
+
+		notifyRef.controller?.emit(`${nonDiscussionTrack.rid}/deleteMessageBulk`, [bulkParams]);
+
+		expect(closeNonDiscussion).toHaveBeenCalledTimes(1);
+	});
+
 	it('does not subscribe to streams when track is null', () => {
 		const notifyRef: StreamControllerRef<'notify-room'> = {};
 		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
