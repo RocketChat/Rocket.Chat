@@ -10,10 +10,9 @@ import {
 	filterMarkdown,
 	createMarkdownMessageRenderer,
 	createMarkdownNotificationRenderer,
-	createCodeParserWithFailingHighlighter,
-	resetTokenIds,
 	markup,
 } from './markdown.mocks';
+import hljs from '../../../../app/markdown/lib/hljs';
 
 const { bold, inlineCode, anchor, image, blockquote } = markup;
 
@@ -25,8 +24,6 @@ const render = (text: string, options: MarkdownOptions = defaultOptions) =>
 const renderEscaped = (text: string, options: MarkdownOptions = defaultOptions) => render(escapeHTML(text), options);
 
 describe('Markdown entry points', () => {
-	beforeEach(resetTokenIds);
-
 	it('should escape HTML before parsing', () => {
 		expect(Markdown.parse('<img src=x onerror=alert(1)> *Hello*')).to.equal(`&lt;img src=x onerror=alert(1)&gt; ${bold('Hello')}`);
 	});
@@ -56,8 +53,6 @@ describe('Markdown entry points', () => {
 });
 
 describe('Markdown token restoration', () => {
-	beforeEach(resetTokenIds);
-
 	it('should return the message untouched when it has no tokens', () => {
 		const message = { html: 'plain text' };
 
@@ -103,8 +98,6 @@ describe('Markdown token restoration', () => {
 });
 
 describe('Markdown renderers', () => {
-	beforeEach(resetTokenIds);
-
 	const renderMessage = createMarkdownMessageRenderer({
 		rootUrl: 'http://localhost:3000/',
 		supportSchemesForLink: 'http,https',
@@ -129,8 +122,6 @@ describe('Markdown renderers', () => {
 });
 
 describe('Original parser', () => {
-	beforeEach(resetTokenIds);
-
 	it('should convert every new line to a <br>', () => {
 		expect(render('a\nb\nc')).to.equal('a<br>b<br>c');
 	});
@@ -205,8 +196,6 @@ describe('Original parser', () => {
 });
 
 describe('Code parser', () => {
-	beforeEach(resetTokenIds);
-
 	it('should leave a message without code untouched', () => {
 		expect(code({ html: 'no code here' }).tokens).to.be.undefined;
 		expect(code({}).html).to.be.undefined;
@@ -229,14 +218,18 @@ describe('Code parser', () => {
 
 	it('should fall back to automatic highlighting when highlighting the explicit language fails', () => {
 		const consoleError = sinon.stub(console, 'error');
+		const highlight = sinon.stub(hljs, 'highlight').throws(new Error('highlighting failed'));
+		const highlightAuto = sinon.spy(hljs, 'highlightAuto');
 
 		try {
-			const message = createCodeParserWithFailingHighlighter()({ html: '```javascript\nvar a;\n```' });
+			const message = code({ html: '```javascript\nvar a;\n```' });
 
-			expect(message.tokens?.[0].text).to.contain("code-colors hljs plaintext'");
+			expect(highlight.args).to.deep.equal([['javascript', 'var a;\n']]);
+			expect(highlightAuto.calledOnce).to.be.true;
+			expect(message.tokens?.[0].text).to.contain(`code-colors hljs ${highlightAuto.firstCall.returnValue.language}'`);
 			expect(consoleError.calledOnce).to.be.true;
 		} finally {
-			consoleError.restore();
+			sinon.restore();
 		}
 	});
 });
