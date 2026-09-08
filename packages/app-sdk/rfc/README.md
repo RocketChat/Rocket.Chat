@@ -32,9 +32,10 @@ What an app author writes.
 | 14 | [HTTP endpoints](14-surface-http-endpoints.md) | routes, body/query/param schemas, auth |
 | 15 | [Event listeners](15-surface-event-listeners.md) | one listener, intent by return value |
 | 16 | [Interactive UI](16-surface-interactive-ui.md) | `await ctx.ui.open` — suspend and resume |
-| 17 | [Settings, persistence, providers, lifecycle](17-surface-settings-persistence-lifecycle.md) | the remaining app-facing pieces |
-| 18 | [Store associations](18-surface-store-associations.md) | secondary concern: cascade cleanup, and whether to keep the tag |
-| 19 | [Block authoring](assets/19-ui-block-authoring.md) | research report: builder vs. object literals, and binding blocks to the state schema |
+| 16a | [Block authoring](assets/16a-ui-block-authoring.md) | research report: builder vs. object literals, and binding blocks to the state schema |
+| 17 | [Settings, providers, lifecycle](17-surface-settings-providers-lifecycle.md) | the remaining app-facing pieces |
+| 18 | [The store](18-surface-store.md) | `defineStore`, `ctx.store`, and the index contract |
+| 18a | [Store associations](18a-surface-store-associations.md) | the relation tag on a store write: cascade cleanup, and whether to keep it |
 
 ## The data layer
 
@@ -100,6 +101,9 @@ ADRs 0002 and 0003 live on branch `feat/apps-media-call-hooks`, not on
 - Documents 30 and 31 are **research reports** against the current codebase.
   They keep their own section numbering, because their internal
   cross-references are dense.
+- A letter suffix marks a document that hangs off a scope instead of holding one
+  of its own — `16a` supports [16](16-surface-interactive-ui.md), `18a` supports
+  [18](18-surface-store.md).
 - [`assets/`](assets) holds research reports that support a scope document
   rather than stating a decision. Each carries YAML frontmatter recording the
   `origin/develop` commit it was researched against, so a reader can tell how

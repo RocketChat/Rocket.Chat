@@ -53,7 +53,7 @@ export const settings = defineSettings({
 export const store = defineStore({
   reminders: {
     schema: z.object({ userId: z.string(), roomId: z.string(), text: z.string(), dueAt: z.string(), delivered: z.boolean() }),
-    indexes: ['userId', 'roomId'],
+    indexes: [{ on: ['userId', 'delivered'] }, { on: ['delivered', 'dueAt'] }],   // see 18
   },
 });
 

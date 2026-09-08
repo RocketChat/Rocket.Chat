@@ -15,7 +15,7 @@ Everything the legacy app-facing surface exposes has a home. `✅` designed here
 | Pre/Post × Prevent/Extend/Modify interfaces | `defineListener` (intent by return) | ✅ |
 | the five legacy pre-event return contracts | one `ctx.event.pass`/`patch`/`prevent` vocabulary (ADR 0002); `prompt` is not exposed | ◑ |
 | `ISettingsExtend` / typed reads | `defineSettings` + typed `ctx.settings` | ✅ |
-| `IPersistence` (typed store) | `defineStore` typed collections | ✅ |
+| `IPersistence` (typed store) | `defineStore` typed collections, and the index contract | ✅ |
 | `IPersistence` associations | an optional per-record tag, for cascade cleanup the host does not do today | ◑ |
 | `IRead` / `IModify` accessor trees | `ctx.*` domain clients | ✅ |
 | `IHttp` / `INotifier` / `ILogger` | `ctx.http` / `ctx.notify` / `ctx.logger` | ✅ |

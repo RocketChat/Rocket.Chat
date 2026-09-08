@@ -3,12 +3,12 @@
 > Part of the [Apps Engine host RFC](README.md).
 
 **Status:** research report
-**Substantiates:** [17](../rfc/17-surface-settings-persistence-lifecycle.md) — "typed
-collections (`defineStore`) with familiar CRUD + `find(query)`".
+**Substantiates:** [18](../rfc/18-surface-store.md) — the app-facing store: typed
+collections, and the index contract.
 **Scope:** where an app's records live in MongoDB, who creates the indexes, and what
 an open store costs the workspace. The app-facing shape of `ctx.store` is
-[17](../rfc/17-surface-settings-persistence-lifecycle.md)'s business. The relation tag
-is [18](../rfc/18-surface-store-associations.md)'s.
+[18](../rfc/18-surface-store.md)'s business. The relation tag is
+[18a](../rfc/18a-surface-store-associations.md)'s.
 
 ---
 
@@ -19,10 +19,10 @@ named `rocketchat_app_<appId>_<name>`. The host creates it and its indexes at in
 reconciles them at update, and drops them at uninstall. The declaration moves into the
 app package, so the host owns the schema and the index set before any app code runs.
 
-**The index declaration becomes the query contract.** `indexes` today is a list of
-field names ([`src/store.ts:18-21`](../src/store.ts)). It becomes a list of index specs,
-and `find` accepts only a key set that one declared index serves as a prefix. An app
-cannot issue a query the host did not plan for.
+**The index declaration is the query contract.** `indexes` is a list of index specs,
+and `find` accepts only a key set that one declared index serves as a prefix
+([`src/store.ts`](../src/store.ts), [18](../rfc/18-surface-store.md)). An app cannot
+issue a query the host did not plan for.
 
 Five findings from the codebase and from MongoDB's own limits force this shape:
 
@@ -58,15 +58,16 @@ answer for what happens when it does.
 ## 2. What the store has to serve
 
 The app-facing contract is six methods per collection
-([`src/context.ts:245-252`](../src/context.ts)):
+([`src/context.ts`](../src/context.ts), and [18](../rfc/18-surface-store.md) for what an
+app author sees):
 
 ```ts
-export interface Collection<T extends object> {
-	insert(doc: T, opts?: { associations?: Association[] }): Promise<string>;
-	get(id: string): Promise<(T & { _id: string }) | undefined>;
-	find(query?: Partial<T>, opts?: PageOpts): Promise<(T & { _id: string })[]>;
-	findByAssociation(assoc: Association): Promise<(T & { _id: string })[]>;
-	update(id: string, patch: Partial<T>, opts?: { upsert?: boolean }): Promise<void>;
+export interface Collection<S extends CollectionShape> {
+	insert(doc: S['record'], opts?: { associations?: Association[] }): Promise<string>;
+	get(id: string): Promise<Stored<S> | undefined>;
+	find(query?: ServedQuery<S>, opts?: PageOpts): Promise<Stored<S>[]>;
+	findByAssociation(assoc: Association): Promise<Stored<S>[]>;
+	update(id: string, patch: Partial<S['record']>, opts?: { upsert?: boolean }): Promise<void>;
 	delete(id: string): Promise<boolean>;
 }
 ```
@@ -75,8 +76,8 @@ Three properties of that contract drive the host design:
 
 | The contract says | The host must therefore |
 |---|---|
-| `find(query?: Partial<T>)` | compile the query itself. It never forwards an app object to the driver |
-| `T` comes from a schema | hold that schema, and validate a write before it reaches Mongo |
+| `find(query?: ServedQuery<S>)` | compile the query itself. It never forwards an app object to the driver |
+| the record comes from a schema | hold that schema, and validate a write before it reaches Mongo |
 | collections are named and declared | know the names before the app runs, so it can build the indexes |
 
 ---
@@ -210,9 +211,8 @@ Three of those five lines are security, not performance:
 
 ### 6.1 The declaration
 
-`indexes: (keyof T & string)[]` ([`src/store.ts:18-21`](../src/store.ts)) says only
-"index this field". It cannot express the three things apps actually need — a compound
-key, uniqueness, and expiry:
+An index spec ([`src/store.ts`](../src/store.ts)) expresses the three things apps
+actually need — a compound key, uniqueness, and expiry:
 
 ```ts
 defineStore({
@@ -350,7 +350,7 @@ how much of the workspace each one can take down.
 | 3 | **Index bloat.** 40 indexes on a hot collection evict core pages from the WiredTiger cache | every query on the server | the per-app index cap, and the admin review at install |
 | 4 | **Query injection.** A forwarded filter object carries `$where` or `$expr` | the server's CPU; not other apps' data, because the namespace is per app | the gateway compiles the filter ([§5](#5-the-gateway)) |
 | 5 | **Write amplification in the oplog.** A chatty app pushes replicas behind and lengthens the recovery window | replication, and every consumer that tails the oplog | the quota, and a write-rate ceiling per app |
-| 6 | **Undeclared personal data.** An app stores user data the workspace's retention and erasure paths never see | compliance | uninstall purges. Per-user erasure does not exist — see [18](../rfc/18-surface-store-associations.md) |
+| 6 | **Undeclared personal data.** An app stores user data the workspace's retention and erasure paths never see | compliance | uninstall purges. Per-user erasure does not exist — see [18a](../rfc/18a-surface-store-associations.md) |
 | 7 | **Schema drift.** Version 2 reads version 1 rows | one app | `_v`, and validate-on-write only ([§8](#8-schema-evolution)) |
 | 8 | **A failed index build blocks an update** | one app, at update time | the update fails whole, and version 1 stays enabled ([§6.3](#63-creation-reconciliation-failure)) |
 | 9 | **Orphan namespaces.** An install fails halfway and leaves collections behind | the namespace budget | the reconciliation pass ([§6.3](#63-creation-reconciliation-failure)) |
@@ -364,13 +364,13 @@ at install, and cap it.
 
 ## 11. What this changes
 
-| Where | Change |
-|---|---|
-| [`src/store.ts:18-21`](../src/store.ts) | `indexes` becomes a list of index specs, not field names |
-| [`src/context.ts:248`](../src/context.ts) | `find` narrows from `Partial<T>` to the key sets the declared indexes serve |
-| [17](../rfc/17-surface-settings-persistence-lifecycle.md) | states the index contract and the quota as part of the store, not as runtime detail |
-| the manifest | `app.json` gains the store declaration; the admin reviews it at install |
-| [`rfc/50-capability-coverage.md`](../rfc/50-capability-coverage.md) | persistence stays `✅` only if the index contract ships with it |
+| Where | Change | |
+|---|---|---|
+| [`src/store.ts`](../src/store.ts) | `indexes` is a list of index specs; `ServedQuery` derives the accepted `find` keys from them | applied |
+| [`src/context.ts`](../src/context.ts) | `find` takes `ServedQuery<S>`, not `Partial<T>` | applied |
+| [18](../rfc/18-surface-store.md) | states the index contract and the quota as part of the app-facing store | applied |
+| the manifest | `app.json` gains the store declaration; the admin reviews it at install | open |
+| [`rfc/50-capability-coverage.md`](../rfc/50-capability-coverage.md) | persistence stays `✅` only if the index contract ships with it | open |
 
 ---
 

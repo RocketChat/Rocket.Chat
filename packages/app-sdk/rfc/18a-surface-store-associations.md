@@ -1,12 +1,11 @@
 # Store associations
 
-> Part of the [Apps Engine SDK RFC](README.md).
+> Part of the [Apps Engine SDK RFC](README.md). One decision inside
+> [the store](18-surface-store.md).
 
-**Secondary concern.** The store in
-[17](17-surface-settings-persistence-lifecycle.md) works without associations.
-They carry some value, but they are not a clear win. This document states both
-sides and stops short of a recommendation. Read it after the rest of the store
-is settled.
+**Secondary concern.** The store works without associations. They carry some
+value, but they are not a clear win. This document states both sides and stops
+short of a recommendation. Read it after the rest of the store is settled.
 
 ## What an association is today
 
@@ -29,7 +28,7 @@ The tag does two jobs at once:
 ## What the redesign does with it
 
 `find(query)` takes job 1
-([`src/store.ts`](../src/store.ts)). The sketch keeps the tag for job 2, and
+([18](18-surface-store.md)). The sketch keeps the tag for job 2, and
 attaches a new promise to it — cascade cleanup
 ([`src/context.ts`](../src/context.ts)):
 
@@ -102,7 +101,7 @@ for this row rather than `✅`.
 defineStore({
   reminders: {
     schema: reminderSchema,
-    indexes: ['userId', 'roomId'],
+    indexes: [{ on: 'roomId' }],
     ownedBy: { room: 'roomId' },   // the whole collection dies with the room
   },
 });

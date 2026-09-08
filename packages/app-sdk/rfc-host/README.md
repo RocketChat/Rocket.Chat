@@ -47,5 +47,5 @@ nomenclature in [`../GLOSSARY.md`](../GLOSSARY.md).
 | [42](../rfc/42-platform-permissions.md) | the grant, the single gate, the two principals, consent |
 | [43](../rfc/43-platform-field-permissions.md) | gating a field rather than a call |
 | [41](../rfc/41-platform-deployment-and-isolation.md) | in-process vs. the apps-runtime microservice |
-| [17](../rfc/17-surface-settings-persistence-lifecycle.md) | the app-facing store: `defineStore`, `ctx.store` |
-| [18](../rfc/18-surface-store-associations.md) | the relation tag, and whether it survives |
+| [18](../rfc/18-surface-store.md) | the app-facing store: `defineStore`, `ctx.store`, the index contract |
+| [18a](../rfc/18a-surface-store-associations.md) | the relation tag, and whether it survives |

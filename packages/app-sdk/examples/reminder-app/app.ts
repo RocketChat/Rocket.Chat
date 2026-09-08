@@ -40,8 +40,15 @@ export const store = defineStore({
 			text: z.string(),
 			dueAt: z.string(),
 			delivered: z.boolean(),
+			expiresAt: z.date(),
 		}),
-		indexes: ['userId', 'roomId'],
+		// The index set is also the query surface: every `find` below matches a
+		// prefix of one of these. See rfc/18-surface-store.md.
+		indexes: [
+			{ on: ['userId', 'delivered'] }, // the per-user pending list
+			{ on: ['delivered', 'dueAt'] }, // the digest, oldest first
+			{ on: 'expiresAt', ttl: '30d' }, // the host drops delivered rows
+		],
 	},
 });
 

@@ -220,7 +220,7 @@ curated subset therefore carries no driver dependency.
 
 The SDK wants `zod` anyway — [the design principles](../00-overview.md#design-principles)
 put a schema at every boundary. It wants `ui-kit` anyway, for
-[block authoring](19-ui-block-authoring.md). So two of the five are
+[block authoring](16a-ui-block-authoring.md). So two of the five are
 already on the SDK's own bill of materials, and sharing one version is a benefit,
 not a cost.
 

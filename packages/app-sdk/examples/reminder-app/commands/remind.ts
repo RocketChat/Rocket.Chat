@@ -40,7 +40,7 @@ export const remind = app.slashCommand({
 
 		const dueAt = new Date(Date.now() + minutes * 60_000);
 		const reminderId = await ctx.store.reminders.insert(
-			{ userId: targetUser, roomId: ctx.room, text, dueAt: dueAt.toISOString(), delivered: false },
+			{ userId: targetUser, roomId: ctx.room, text, dueAt: dueAt.toISOString(), delivered: false, expiresAt: dueAt },
 			{ associations: [{ model: 'room', id: ctx.room }] }, // cascade-cleaned if the room is deleted
 		);
 

@@ -1,4 +1,4 @@
-# Settings, persistence, providers, lifecycle
+# Settings, providers, lifecycle
 
 > Part of the [Apps Engine SDK RFC](README.md).
 
@@ -6,12 +6,9 @@
 the value's type, `ctx.settings.set(key, value)` is type-checked. Legacy
 `getValueById(id)` returned `any`.
 
-**Persistence** — typed collections (`defineStore`) with familiar CRUD +
-`find(query)`, without the untyped surface. Legacy "associations" survive in the
-sketch as an optional per-record tag, on the argument that they can drive
-cascade cleanup. That argument is a secondary concern and is not settled — see
-[Store associations](18-surface-store-associations.md). See
-[`src/store.ts`](../src/store.ts) and `ctx.store` usage throughout the examples.
+**Persistence** — `defineStore` and `ctx.store` have their own scope: [The
+store](18-surface-store.md), and [the relation
+tag](18a-surface-store-associations.md).
 
 **Providers** — `defineVideoConfProvider` / `defineOutboundProvider`; methods
 receive `ctx`. See [`src/providers.ts`](../src/providers.ts) and

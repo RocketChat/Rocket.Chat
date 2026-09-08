@@ -409,7 +409,7 @@ in the order to take them:
    app call and no query. This covers most of case 1 in practice, because "the
    admin configured it" means a setting.
 3. **Let the app maintain a delivery set on the host** — the association surface
-   from [18](18-surface-store-associations.md), read as a subscription. Genuinely
+   from [18a](18a-surface-store-associations.md), read as a subscription. Genuinely
    stateful, genuinely larger, and not v1.
 
 Ship 1. Shape the types for 2 now, because the move is the one the patch encoding

@@ -34,6 +34,7 @@ export const webhook = app.endpoint({
 			text,
 			dueAt: dueAt.toISOString(),
 			delivered: false,
+			expiresAt: dueAt, // the TTL index drops the row 30 days after this
 		});
 
 		return ctx.json({ ok: true, reminderId: id }, 201);

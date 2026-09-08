@@ -37,12 +37,13 @@
 import type { Logger } from './logger';
 import type { IMessage, IRoom, IUpload, IUser, MessageId, RoomId, UploadId, UserId, UiBlock } from './models';
 import type { InferArg, Schema } from './schema';
+import type { CollectionShape, ServedQuery } from './store';
 import type { OpenSurface, SurfaceResult } from './ui';
 
 /** Shape of an app's typed environment: its settings value-map and its store collections. */
 export interface AppEnv {
 	settings: Record<string, unknown>;
-	store: Record<string, object>;
+	store: Record<string, CollectionShape>;
 }
 
 /** Default environment for env-agnostic definitions (no typed settings/store). */
@@ -231,7 +232,8 @@ export interface CloudClient {
  * Legacy persistence was an untyped key/value bag keyed by "associations"
  * (`create(data)`, `readByAssociation(assoc)`). The SDK exposes typed
  * collections declared with `defineStore(...)`; each supports familiar CRUD +
- * query. Associations survive as an optional per-record tag so app data can be
+ * query, and `find` accepts only the key sets a declared index serves.
+ * Associations survive as an optional per-record tag so app data can be
  * garbage-collected when the room/message/user it hangs off is deleted.
  * ------------------------------------------------------------------ */
 
@@ -242,16 +244,20 @@ export type Association =
 	| { model: 'upload'; id: UploadId }
 	| { model: 'misc'; id: string };
 
-export interface Collection<T extends object> {
-	insert(doc: T, opts?: { associations?: Association[] }): Promise<string>;
-	get(id: string): Promise<(T & { _id: string }) | undefined>;
-	find(query?: Partial<T>, opts?: PageOpts): Promise<(T & { _id: string })[]>;
-	findByAssociation(assoc: Association): Promise<(T & { _id: string })[]>;
-	update(id: string, patch: Partial<T>, opts?: { upsert?: boolean }): Promise<void>;
+export interface Collection<S extends CollectionShape> {
+	insert(doc: S['record'], opts?: { associations?: Association[] }): Promise<string>;
+	get(id: string): Promise<Stored<S> | undefined>;
+	/** `query` is narrowed to the key sets a declared index serves — see store.ts `ServedQuery`. */
+	find(query?: ServedQuery<S>, opts?: PageOpts): Promise<Stored<S>[]>;
+	findByAssociation(assoc: Association): Promise<Stored<S>[]>;
+	update(id: string, patch: Partial<S['record']>, opts?: { upsert?: boolean }): Promise<void>;
 	delete(id: string): Promise<boolean>;
 }
 
-export type StoreClient<TStore extends Record<string, object>> = {
+/** A record as it comes back from the store: the app's fields, plus the host-minted id. */
+export type Stored<S extends CollectionShape> = S['record'] & { _id: string };
+
+export type StoreClient<TStore extends Record<string, CollectionShape>> = {
 	readonly [K in keyof TStore]: Collection<TStore[K]>;
 };
 

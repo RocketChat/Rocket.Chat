@@ -52,6 +52,7 @@ packages/app-sdk/
     ├── reminder-app/    a full app: commands, jobs, listener, endpoint, modal, lifecycle
     ├── standalone-video-conf.ts   the standalone style + provider + action button
     ├── data-layer.ts    selection inference, views, commands, the request envelope
+    ├── store-queries.ts the index contract: which `find` calls the types admit
     └── _vendor/zod.ts   offline compile shim (delete in a real app)
 ```
 
@@ -59,3 +60,4 @@ packages/app-sdk/
 |---|---|
 | [`src/data.ts`](../src/data.ts) | records, view lenses and guards, the entity model, `Selection` / `Selected` inference, the read clients and command catalogs, the `DataRequest` envelope with its budget checks, and the host-side `defineEntity` / gateway / transport seams |
 | [`examples/data-layer.ts`](../examples/data-layer.ts) | selection narrowing, relation hydration at depth 2, cursor lists with closed filters, thread and discussion as views, the team's tagged reference, named commands, and envelope budgeting |
+| [`examples/store-queries.ts`](../examples/store-queries.ts) | the store's index contract ([18](18-surface-store.md)): every `find` a declared index serves, every one it refuses, and the two declarations the types reject |

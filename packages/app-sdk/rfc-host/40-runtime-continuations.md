@@ -248,7 +248,7 @@ type Continuation = {
 
 **Where it lives.** A host-owned collection, `rocketchat_apps_continuations`,
 with a TTL index on `expiresAt`. Not the app store: `ctx.store` is app-readable
-and app-writable ([17](../rfc/17-surface-settings-persistence-lifecycle.md)), and
+and app-writable ([17](../rfc/17-surface-settings-providers-lifecycle.md)), and
 an app that can edit its own continuation can forge a resume. The precedent for
 host-owned, app-scoped durable state is the scheduler's own collection,
 `rocketchat_apps_scheduler` (`apps/meteor/app/apps/server/bridges/scheduler.ts:42`).

@@ -35,7 +35,7 @@ export const remind = app.slashCommand({
     const { who, minutes, text } = ctx.args;   // typed { who: string; minutes: number; text: string }
     const dueAt = new Date(Date.now() + minutes * 60_000);
     const reminderId = await ctx.store.reminders.insert(
-      { userId: ctx.sender, roomId: ctx.room, text, dueAt: dueAt.toISOString(), delivered: false },
+      { userId: ctx.sender, roomId: ctx.room, text, dueAt: dueAt.toISOString(), delivered: false, expiresAt: dueAt },
       { associations: [{ model: 'room', id: ctx.room }] },   // cascade-cleaned with the room
     );
     await ctx.scheduler.runAt(deliverReminder, dueAt, { reminderId, roomId: ctx.room, userId: ctx.sender, text });
