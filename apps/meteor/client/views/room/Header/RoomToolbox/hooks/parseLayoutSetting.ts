@@ -10,9 +10,7 @@ export type RoomToolboxLayoutScope = RoomToolboxLayoutConfig & {
 	roomType: RoomToolboxLayoutRoomType[];
 };
 
-export type RoomToolboxLayoutSetting = {
-	layouts: RoomToolboxLayoutScope[];
-};
+export type RoomToolboxLayoutSetting = RoomToolboxLayoutScope[];
 
 const isRoomToolboxLayoutRoomType = (value: unknown): value is RoomToolboxLayoutRoomType =>
 	typeof value === 'string' && ROOM_TOOLBOX_LAYOUT_ROOM_TYPES.includes(value as RoomToolboxLayoutRoomType);
@@ -60,9 +58,9 @@ const isValidLayoutScope = (value: unknown): value is RoomToolboxLayoutScope => 
 	return true;
 };
 
-const hasOverlappingRoomTypes = (layouts: RoomToolboxLayoutScope[]): boolean => {
+const hasOverlappingRoomTypes = (scopes: RoomToolboxLayoutScope[]): boolean => {
 	const claimed = new Set<RoomToolboxLayoutRoomType>();
-	for (const scope of layouts) {
+	for (const scope of scopes) {
 		for (const roomType of scope.roomType) {
 			if (claimed.has(roomType)) {
 				return true;
@@ -85,30 +83,24 @@ export const parseLayoutSetting = (raw: string): RoomToolboxLayoutSetting | null
 		return null;
 	}
 
-	if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+	if (!Array.isArray(parsed) || !parsed.every(isValidLayoutScope)) {
 		return null;
 	}
 
-	const { layouts } = parsed as Record<string, unknown>;
-
-	if (!Array.isArray(layouts) || !layouts.every(isValidLayoutScope)) {
+	if (hasOverlappingRoomTypes(parsed)) {
 		return null;
 	}
 
-	if (hasOverlappingRoomTypes(layouts)) {
-		return null;
-	}
-
-	return { layouts };
+	return parsed;
 };
 
 export const resolveLayoutForRoomType = (raw: string, roomType: RoomType): RoomToolboxLayoutConfig | null => {
-	const setting = parseLayoutSetting(raw);
-	if (!setting) {
+	const scopes = parseLayoutSetting(raw);
+	if (!scopes) {
 		return null;
 	}
 
-	const scope = setting.layouts.find((candidate) => candidate.roomType.includes(roomType as RoomToolboxLayoutRoomType));
+	const scope = scopes.find((candidate) => candidate.roomType.includes(roomType as RoomToolboxLayoutRoomType));
 	if (!scope) {
 		return null;
 	}

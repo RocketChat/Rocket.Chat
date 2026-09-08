@@ -55,7 +55,7 @@ describe('useRoomToolboxActions', () => {
 	});
 
 	describe('with roomToolboxLayout feature preview enabled', () => {
-		const layoutSetting = (...layouts: object[]) => JSON.stringify({ layouts });
+		const layoutSetting = (...scopes: object[]) => JSON.stringify(scopes);
 
 		const mockLayoutConfig = layoutSetting({
 			roomType: ['c'],
@@ -155,9 +155,9 @@ describe('useRoomToolboxActions', () => {
 
 		it.each([
 			['invalid JSON', '{ invalid json }'],
-			['a JSON array', '[]'],
-			['missing the layouts wrapper', JSON.stringify({ maxVisibleNormal: 1, items: [{ id: 'team-info' }] })],
-			['non-array layouts', JSON.stringify({ layouts: {} })],
+			['an empty array', '[]'],
+			['a bare scope object instead of an array', JSON.stringify({ roomType: ['c'], maxVisibleNormal: 1, items: [{ id: 'team-info' }] })],
+			['the legacy layouts wrapper', JSON.stringify({ layouts: [{ roomType: ['c'], maxVisibleNormal: 1 }] })],
 			['non-array items', layoutSetting({ roomType: ['c'], items: {} })],
 			['items with invalid item types', layoutSetting({ roomType: ['c'], items: [null] })],
 			['a scope without roomType', layoutSetting({ maxVisibleNormal: 1, items: [] })],

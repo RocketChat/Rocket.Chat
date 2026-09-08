@@ -48,7 +48,7 @@ const mockActions: RoomToolboxActionConfig[] = [
 	{ id: 'pinned-messages', icon: 'pin', title: 'Pinned Messages' as any, groups: ['channel'], tabComponent: MockTabComponent },
 ];
 
-const layoutSetting = (...layouts: object[]) => JSON.stringify({ layouts });
+const layoutSetting = (...scopes: object[]) => JSON.stringify(scopes);
 
 const mockLayoutConfig = {
 	maxVisibleNormal: 2,
@@ -253,7 +253,8 @@ describe('RoomHeader', () => {
 
 					it.each([
 						['malformed JSON', '{ invalid json }'],
-						['missing the layouts wrapper', JSON.stringify(mockLayoutConfig)],
+						['a bare scope object instead of an array', JSON.stringify({ roomType: [type], ...mockLayoutConfig })],
+						['the legacy layouts wrapper', JSON.stringify({ layouts: [{ roomType: [type], ...mockLayoutConfig }] })],
 						['scoped to an unsupported room type', layoutSetting({ roomType: ['l'], ...mockLayoutConfig })],
 						[
 							'claiming the same room type twice',
