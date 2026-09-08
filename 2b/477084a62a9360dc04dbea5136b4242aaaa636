@@ -1,0 +1,27 @@
+apps/meteor/tests/unit/app/markdown/hljs.tests.ts
+  s_daa6ecce09ff34::t_6514209be54206 3,180-182,187,192-193
+  s_daa6ecce09ff34::t_21182cddd1391a 175-176,179
+  s_daa6ecce09ff34::t_9ddf94c21fd495 188-191,200,208
+  s_daa6ecce09ff34::t_4d65ab5f167bf6 196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2b477084a62a9360dc04dbea5136b4242aaaa636",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_daa6ecce09ff34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5c319b23-9018-4ad3-8dc4-ff4521a646c9",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

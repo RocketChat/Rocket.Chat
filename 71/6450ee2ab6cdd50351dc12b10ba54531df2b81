@@ -1,0 +1,22 @@
+apps/meteor/tests/unit/app/markdown/markdown.tests.ts
+  s_daa6ecce09ff34::t_b889eef3b8e2ba 15,221-222,225,227-229,232
+apps/meteor/tests/unit/app/markdown/markdown.mocks.ts
+  s_daa6ecce09ff34::t_b889eef3b8e2ba 27-29
+  s_daa6ecce09ff34::t_a6bd6af2bdab60 11,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "716450ee2ab6cdd50351dc12b10ba54531df2b81",
+  "prompts": {},
+  "sessions": {
+    "s_daa6ecce09ff34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5c319b23-9018-4ad3-8dc4-ff4521a646c9",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
