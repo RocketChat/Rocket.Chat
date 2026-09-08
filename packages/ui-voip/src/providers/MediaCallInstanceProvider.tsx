@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { useAudioStream } from './useAudioStream';
 import useAvailableViewTracker from './useAvailableViewTracker';
+import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useInstanceState } from './useInstanceState';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
@@ -26,6 +27,8 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
 
 	const getAutocompleteOptions = useGetAutocompleteOptions(instance);
+
+	useDesktopTelephonyListener(openWidget);
 
 	const value = useMemo(
 		() => ({
