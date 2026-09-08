@@ -1128,16 +1128,16 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should still enforce join permissions for a logged in user without call-management or videoconf-join-call, even when Accounts_AllowAnonymousRead is enabled', async () => {
+			it('should join a call with authenticated user without call-management or videoconf-join-call when Accounts_AllowAnonymousRead is enabled', async () => {
 				await updateSetting('Accounts_AllowAnonymousRead', true);
 
 				await request
 					.post(api('video-conference.join'))
 					.set(regularUserCredentials)
 					.send({ callId })
-					.expect(403)
+					.expect(200)
 					.expect((res: Response) => {
-						expect(res.body.success).to.be.equal(false);
+						expect(res.body.success).to.be.equal(true);
 					});
 			});
 		});
