@@ -25,11 +25,13 @@ ajv.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajv.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajvQuery.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajvQuery.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajvQuery.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajv.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',

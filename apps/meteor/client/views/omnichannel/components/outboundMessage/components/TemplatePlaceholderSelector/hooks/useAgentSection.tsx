@@ -29,10 +29,12 @@ export const useAgentSection = ({ onSelect }: UseAgentSectionProps) => {
 			onClick: () => onSelect(user.name || user._id),
 		};
 
+		const primaryPhone = user.phones?.find((phone) => phone.primary)?.number ?? user.phones?.[0]?.number ?? user.phone ?? '';
+
 		const phoneItem = {
 			id: `${user._id}.phone`,
-			content: renderItem(t('Phone_number'), user.phone ? formatPhoneNumber(user.phone) : t('None')),
-			onClick: () => onSelect(user.phone || ''),
+			content: renderItem(t('Phone_number'), primaryPhone ? formatPhoneNumber(primaryPhone) : t('None')),
+			onClick: () => onSelect(primaryPhone),
 		};
 
 		const emails =
