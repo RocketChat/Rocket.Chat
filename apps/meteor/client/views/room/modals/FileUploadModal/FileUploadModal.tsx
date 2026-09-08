@@ -22,6 +22,7 @@ import {
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
 import type { ComponentProps } from 'react';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { memo, useCallback, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -54,6 +55,8 @@ const FileUploadModal = ({
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const [currentFile, setCurrentFile] = useState<File>(initialFile);
 	const [isCompressed, setIsCompressed] = useState(false);
 	const [isCompressing, setIsCompressing] = useState(false);
@@ -70,10 +73,17 @@ const FileUploadModal = ({
 	const handleImageCompressionToggle = async (shouldCompress: boolean) => {
 		if (shouldCompress) {
 			setIsCompressing(true);
-			const compressed = await compressImage(initialFile);
-			setCurrentFile(compressed);
-			setIsCompressed(compressed.size < initialFile.size);
-			setIsCompressing(false);
+			try {
+				const compressed = await compressImage(initialFile);
+				setCurrentFile(compressed);
+				setIsCompressed(compressed.size < initialFile.size);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setCurrentFile(initialFile);
+				setIsCompressed(false);
+			} finally {
+				setIsCompressing(false);
+			}
 		} else {
 			setCurrentFile(initialFile);
 			setIsCompressed(false);
