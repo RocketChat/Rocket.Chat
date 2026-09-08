@@ -46,7 +46,7 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 };
 
 const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
-	if (item.external) {
+	if (item.type !== 'media-call' || item.external) {
 		return getExternalContact(item);
 	}
 
@@ -64,7 +64,7 @@ type DetailsTab = {
 
 type UserInfoTab = {
 	openTab: 'user-info';
-	rid: string;
+	rid?: string;
 	userId: string;
 };
 
@@ -96,7 +96,7 @@ const CallHistoryPage = () => {
 	);
 
 	const openUserInfo = useCallback(
-		(userId: string, rid: string) => {
+		(userId: string, rid?: string) => {
 			setTab({ openTab: 'user-info', rid, userId });
 		},
 		[setTab],
@@ -216,12 +216,20 @@ const CallHistoryPage = () => {
 									contact={item.contact}
 									onClick={() => onClickRow(item.rid ?? '', item._id)}
 									rid={item.rid ?? ''}
-									onClickUserInfo={item.rid ? openUserInfo : undefined}
+									onClickUserInfo={openUserInfo}
 								/>
 							);
 						}
 
-						return <CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
+						return (
+							<CallHistoryRowExternalUser
+								key={item._id}
+								{...item}
+								contact={item.contact}
+								onClick={() => onClickRow('', item._id)}
+								onClickUserInfo={openUserInfo}
+							/>
+						);
 					})}
 				</MediaCallHistoryTable>
 			)}
