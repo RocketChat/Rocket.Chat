@@ -99,6 +99,7 @@ describe('getModifierClickHref on anchors the renderer did not produce', () => {
 		['file', 'file:///etc/passwd'],
 		['smb', 'smb://attacker.example/share'],
 		['ms-msdt', 'ms-msdt:/id'],
+		['javascript with a host-and-port shape', 'javascript:1/alert(1)'],
 	])('refuses a %s href that entered the composer outside the renderer', (_label, href) => {
 		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBeUndefined();
 	});
@@ -107,6 +108,7 @@ describe('getModifierClickHref on anchors the renderer did not produce', () => {
 		['http', 'http://rocket.chat/docs'],
 		['https', 'https://rocket.chat/docs'],
 		['mailto', 'mailto:me@rocket.chat'],
+		['tel', 'tel:07563546725'],
 	])('still resolves a %s href', (_label, href) => {
 		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBe(href);
 	});
