@@ -43,3 +43,5 @@ export const ipv4WithPortPattern = /^(\d+\.\d+\.\d+\.\d+)(?::(\d+))?$/;
 export const MAX_REDIRECTS = 5;
 
 export const redirectStatus = new Set([301, 302, 303, 307, 308]);
+
+export const authRequiredStatus = 401;
