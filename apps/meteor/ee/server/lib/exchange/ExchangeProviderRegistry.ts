@@ -73,8 +73,7 @@ export const getExchangeProvider = (): IExchangeProvider => {
 
 const DEFAULT_SYNC_WINDOW_DAYS = 2;
 const MIN_SYNC_WINDOW_DAYS = 1;
-// Wider than this, a daily series expands past the item cap `CalendarView` requests
-const MAX_SYNC_WINDOW_DAYS = 30;
+const MAX_SYNC_WINDOW_DAYS = 7;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
