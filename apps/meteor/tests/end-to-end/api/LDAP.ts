@@ -217,7 +217,14 @@ describe('LDAP', function () {
 			});
 			expect(loginResponse.body.data.me.emails.map(({ address }: { address: string }) => address)).to.include('ldap.e2e@space.air');
 
-			const avatarResponse = await request.get(`/avatar/${ldapUsername}`).buffer(true).expect('Content-Type', 'image/jpeg').expect(200);
+			const { userId, authToken } = loginResponse.body.data;
+
+			const avatarResponse = await request
+				.get(`/avatar/${ldapUsername}`)
+				.set({ cookie: `rc_uid=${userId}; rc_token=${authToken}` })
+				.buffer(true)
+				.expect('Content-Type', 'image/jpeg')
+				.expect(200);
 			const metadata = await sharp(avatarResponse.body as Buffer).metadata();
 			const stats = await sharp(avatarResponse.body as Buffer).stats();
 			const avatarChannels = stats.channels.slice(0, 3);
