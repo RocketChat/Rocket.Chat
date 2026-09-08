@@ -15,6 +15,8 @@ export type AudioAttachmentSource = {
 	mid?: string;
 	username?: string;
 	name?: string;
+	ts?: Date;
+	pinned?: boolean;
 };
 
 type AudioAttachmentComponentProps = AudioAttachmentProps & {
@@ -49,8 +51,10 @@ const AudioAttachment = ({
 			mid: source?.mid,
 			username: source?.username,
 			name: source?.name,
+			ts: source?.ts,
+			pinned: source?.pinned,
 		}),
-		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size],
+		[source?.mid, source?.rid, source?.username, source?.name, source?.ts, source?.pinned, url, src, type, title, size],
 	);
 
 	const active = isActive(track.id);

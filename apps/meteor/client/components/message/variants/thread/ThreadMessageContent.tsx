@@ -53,7 +53,14 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 			{!!quotes?.length && (
 				<Attachments
 					attachments={quotes}
-					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+					source={{
+						rid: message.rid,
+						mid: message._id,
+						username: message.u.username,
+						name: message.u.name,
+						ts: message.ts,
+						pinned: message.pinned,
+					}}
 				/>
 			)}
 
@@ -78,7 +85,14 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				<Attachments
 					id={message.files?.[0]?._id}
 					attachments={attachments}
-					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+					source={{
+						rid: message.rid,
+						mid: message._id,
+						username: message.u.username,
+						name: message.u.name,
+						ts: message.ts,
+						pinned: message.pinned,
+					}}
 				/>
 			)}
 
