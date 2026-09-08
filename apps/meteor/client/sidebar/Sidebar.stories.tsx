@@ -26,6 +26,20 @@ const settings: Record<string, ISetting> = {
 		public: true,
 		_updatedAt: new Date(),
 	},
+	Discussion_enabled: {
+		_id: 'Discussion_enabled',
+		blocked: false,
+		createdAt: new Date(),
+		env: true,
+		i18nLabel: 'Discussions',
+		packageValue: true,
+		sorter: 1,
+		ts: new Date(),
+		type: 'boolean',
+		value: true,
+		public: true,
+		_updatedAt: new Date(),
+	},
 };
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
@@ -44,36 +58,97 @@ const userPreferences: Record<string, unknown> = {
 	sidebarSortby: 'activity',
 };
 
-const subscriptions: SubscriptionWithRoom[] = [
-	{
-		_id: '3Bysd8GrmkWBdS9RT',
+const createSubscription = ({
+	_id,
+	name,
+	t = 'c',
+	f = false,
+	unread = 0,
+	userMentions = 0,
+	groupMentions = 0,
+	prid,
+	teamMain = false,
+}: {
+	_id: string;
+	name: string;
+	t?: SubscriptionWithRoom['t'];
+	f?: boolean;
+	unread?: number;
+	userMentions?: number;
+	groupMentions?: number;
+	prid?: string;
+	teamMain?: boolean;
+}): SubscriptionWithRoom =>
+	({
+		_id,
 		open: true,
-		alert: true,
-		unread: 0,
-		userMentions: 0,
-		groupMentions: 0,
+		alert: unread > 0 || userMentions > 0 || groupMentions > 0,
+		unread,
+		userMentions,
+		groupMentions,
 		ts: new Date(),
-		rid: 'GENERAL',
-		name: 'general',
-		t: 'c',
+		rid: _id.toUpperCase(),
+		name,
+		t,
+		f,
 		u: {
 			_id: '5yLFEABCSoqR5vozz',
-			username: 'yyy',
-			name: 'yyy',
+			username: 'john.doe',
+			name: 'John Doe',
 		},
 		_updatedAt: new Date(),
 		ls: new Date(),
 		lr: new Date(),
-		tunread: [],
-		lowerCaseName: 'general',
-		lowerCaseFName: 'general',
+		tunread: unread > 0 ? [`${_id}-thread`] : [],
+		tunreadUser: userMentions > 0 ? [`${_id}-mention`] : [],
+		tunreadGroup: groupMentions > 0 ? [`${_id}-group`] : [],
+		lowerCaseName: name.toLowerCase(),
+		lowerCaseFName: name.toLowerCase(),
 		estimatedWaitingTimeQueue: 0,
 		livechatData: undefined,
 		priorityWeight: 3,
+		prid,
 		responseBy: undefined,
+		teamMain,
 		usersCount: 0,
 		waitingResponse: undefined,
-	},
+	}) as SubscriptionWithRoom;
+
+const subscriptions: SubscriptionWithRoom[] = [
+	...Array.from({ length: 32 }, (_, index) =>
+		createSubscription({
+			_id: `channel-${index}`,
+			name: `channel-${index}`,
+			f: index % 11 === 0,
+			unread: index % 5 === 0 ? index + 1 : 0,
+			userMentions: index % 9 === 0 ? 1 : 0,
+		}),
+	),
+	...Array.from({ length: 8 }, (_, index) =>
+		createSubscription({
+			_id: `team-${index}`,
+			name: `team-${index}`,
+			teamMain: true,
+			unread: index % 4 === 0 ? 2 : 0,
+		}),
+	),
+	...Array.from({ length: 10 }, (_, index) =>
+		createSubscription({
+			_id: `direct-${index}`,
+			name: `direct-${index}`,
+			t: 'd',
+			f: index === 0,
+			unread: index % 3 === 0 ? 1 : 0,
+		}),
+	),
+	...Array.from({ length: 6 }, (_, index) =>
+		createSubscription({
+			_id: `discussion-${index}`,
+			name: `discussion-${index}`,
+			prid: 'GENERAL',
+			groupMentions: index === 0 ? 1 : 0,
+		}),
+	),
 ];
 
 const userContextValue: ContextType<typeof UserContext> = {
