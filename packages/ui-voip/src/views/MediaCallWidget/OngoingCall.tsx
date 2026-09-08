@@ -1,7 +1,8 @@
-import { Box, ButtonGroup, Divider, Field, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Dialpad from './Dialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -15,7 +16,7 @@ import {
 	DevicePicker,
 	ActionButton,
 	useInfoSlots,
-	Keypad,
+	useDraggableWidget,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
@@ -25,11 +26,14 @@ import { isExternalPeer } from '../../utils/isExternalPeer';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
+	const { sessionState, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
+	const isInline = !useDraggableWidget();
 
-	const [open, setOpen] = useState(false);
-	const [inputValue, setInputValue] = useState('');
+	// The floating widget keeps a collapsible DTMF dialpad in the footer.
+	// The inline (sidebar rail) dialpad is permanently expanded in the content instead,
+	// so the toggle is only shown while floating to avoid showing both.
+	const [dialpadOpen, setDialpadOpen] = useState(false);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -47,6 +51,8 @@ const OngoingCall = () => {
 		throw new Error('Peer info is required');
 	}
 
+	const isSip = 'number' in peerInfo;
+
 	return (
 		<Widget>
 			<WidgetHandle />
@@ -58,35 +64,23 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{isInline && isSip && <Dialpad autoFocus={false} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{open ? (
-					<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
-						<Field marginBlockEnd={8}>
-							<FieldRow>
-								<TextInput value={inputValue} readOnly small marginInline={24} />
-							</FieldRow>
-						</Field>
-						<Keypad
-							onKeyPress={(...args) => {
-								setInputValue((inputValue) => inputValue + args[0]);
-								onTone(...args);
-							}}
-						/>
-						<Divider width='100%' />
-					</Box>
-				) : null}
+				{!isInline && dialpadOpen && <Dialpad />}
 				<AppActions actions={appActions} vertical />
 				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
-					<ActionButton
-						disabled={connecting || reconnecting}
-						icon='dialpad'
-						label={t('Dialpad')}
-						title={open ? t('Close_dialpad') : t('Open_dialpad')}
-						onClick={() => setOpen((open) => !open)}
-					/>
+					{!isInline && (
+						<ActionButton
+							disabled={connecting || reconnecting}
+							icon='dialpad'
+							label='Dialpad'
+							title={dialpadOpen ? t('Close_dialpad') : t('Open_dialpad')}
+							onClick={() => setDialpadOpen((open) => !open)}
+						/>
+					)}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					{holdAvailable && (
 						<ToggleButton
