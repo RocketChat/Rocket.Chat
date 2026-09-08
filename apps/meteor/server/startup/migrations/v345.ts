@@ -41,6 +41,5 @@ addMigration({
 		await col.deleteMany({ tokenValue: { $exists: false } });
 
 		await col.dropIndex('appName_1_token_1').catch(() => undefined);
-		await PushToken.createIndexes();
 	},
 });
