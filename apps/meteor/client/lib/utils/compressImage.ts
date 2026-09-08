@@ -1,4 +1,5 @@
 export const isAnimatedImage = async (file: File): Promise<boolean> => {
+	// Fast path for common animated formats
 	if (file.type.includes('gif')) {
 		return true;
 	}
@@ -7,11 +8,16 @@ export const isAnimatedImage = async (file: File): Promise<boolean> => {
 		return true;
 	}
 
+	// Limit how many bytes we'll scan when detecting animation signatures to avoid
+	// reading entire very large files into memory / blocking the main thread.
+	const MAX_SCAN_BYTES = 256 * 1024; // 256KB
+
 	// 1. PNG / APNG chunk parser
 	if (file.type.includes('png') || file.name.toLowerCase().endsWith('.png')) {
 		try {
 			let offset = 8; // PNG signature is 8 bytes
-			while (offset < file.size) {
+			const scanLimit = Math.min(file.size, MAX_SCAN_BYTES);
+			while (offset < scanLimit) {
 				const headerBuffer = await file.slice(offset, offset + 8).arrayBuffer();
 				if (headerBuffer.byteLength < 8) {
 					break;
@@ -34,6 +40,9 @@ export const isAnimatedImage = async (file: File): Promise<boolean> => {
 				}
 				offset += 12 + length;
 			}
+			// If we reached the scan limit without finding definitive markers,
+			// conservatively assume non-animated to avoid blocking. This may have
+			// false negatives for very large APNGs, but protects the UI.
 		} catch {
 			// Ignore read errors and fall through
 		}
@@ -50,7 +59,8 @@ export const isAnimatedImage = async (file: File): Promise<boolean> => {
 
 				if (riff === 'RIFF' && webp === 'WEBP') {
 					let offset = 12;
-					while (offset < file.size) {
+					const scanLimit = Math.min(file.size, MAX_SCAN_BYTES);
+					while (offset < scanLimit) {
 						const chunkHeaderBuffer = await file.slice(offset, offset + 8).arrayBuffer();
 						if (chunkHeaderBuffer.byteLength < 8) {
 							break;
@@ -130,12 +140,19 @@ export const compressImage = async (file: File, quality = 0.7, maxWidth = 1920):
 
 			canvas.toBlob(
 				(blob) => {
-					if (!blob || blob.size >= file.size || (file.type && blob.type !== file.type)) {
+					// Accept a compressed result if it is smaller and appears to be an image.
+					if (!blob || blob.size >= file.size) {
 						resolve(file);
 						return;
 					}
+					if (blob.type && !blob.type.startsWith('image/')) {
+						// Unexpected non-image result; skip compression.
+						resolve(file);
+						return;
+					}
+					// Use the compressed blob even if its mime-type differs from the original
 					const compressedFile = new File([blob], file.name, {
-						type: blob.type,
+						type: blob.type || file.type || 'image/jpeg',
 						lastModified: Date.now(),
 					});
 					resolve(compressedFile);
