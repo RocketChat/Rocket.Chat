@@ -31,7 +31,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 			const matchesCriteria = createDeleteCriteria(params);
 			const trackMessage = { _id: mid, rid, ts, pinned, drid, u: { username } } as IMessage;
 
-			if (matchesCriteria(trackMessage)) {
+			if (params.ids?.includes(mid) || matchesCriteria(trackMessage)) {
 				close();
 			}
 		});

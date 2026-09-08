@@ -84,7 +84,20 @@ const ContextMessage = ({
 						<MessageRole>{room.name || room.fname || 'DM'}</MessageRole>
 					</MessageHeader>
 					<MessageBody>
-						{!!quotes?.length && <Attachments attachments={quotes} />}
+						{!!quotes?.length && (
+							<Attachments
+								attachments={quotes}
+								source={{
+									rid: message.rid,
+									mid: message._id,
+									username: message.u.username,
+									name: message.u.name,
+									ts: message.ts,
+									pinned: message.pinned,
+									drid: message.drid,
+								}}
+							/>
+						)}
 						{!message.blocks?.length && !!message.md?.length ? (
 							<>
 								{(!isEncryptedMessage || message.e2e === 'done') && (
@@ -98,7 +111,21 @@ const ContextMessage = ({
 							)
 						)}
 
-						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+						{!!attachments && (
+							<Attachments
+								id={message.files?.[0]?._id}
+								attachments={attachments}
+								source={{
+									rid: message.rid,
+									mid: message._id,
+									username: message.u.username,
+									name: message.u.name,
+									ts: message.ts,
+									pinned: message.pinned,
+									drid: message.drid,
+								}}
+							/>
+						)}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					</MessageBody>
 					<ReportReasonCollapsible>

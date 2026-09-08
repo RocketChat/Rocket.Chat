@@ -101,6 +101,30 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(close).toHaveBeenCalledTimes(1);
 	});
 
+	it('closes when deleteMessageBulk lists the track id even though excludePinned/ignoreDiscussion would exclude it', () => {
+		const notifyRef: StreamControllerRef<'notify-room'> = {};
+		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+		const close = jest.fn();
+		const track = buildTrack({ pinned: true, drid: 'disc1' });
+
+		renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+		});
+
+		notifyRef.controller?.emit(`${track.rid}/deleteMessageBulk`, [
+			{
+				rid: track.rid!,
+				excludePinned: true,
+				ignoreDiscussion: true,
+				ts: { $gt: new Date() },
+				users: [],
+				ids: [track.mid!],
+			},
+		]);
+
+		expect(close).toHaveBeenCalledTimes(1);
+	});
+
 	it('does not close the player when deleteMessageBulk ids do not include the track message', () => {
 		const notifyRef: StreamControllerRef<'notify-room'> = {};
 		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
