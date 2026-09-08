@@ -215,7 +215,7 @@ test.describe.parallel('administration', () => {
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await poAdminRooms.editRoom.privateLabel.click();
 			await poAdminRooms.editRoom.btnSave.click();
-			await expect(poAdminRooms.getRoomRow(targetChannel)).toContainText('Private Channel');
+			await expect(poAdminRooms.getRoomRow(targetChannel)).toContainText('Private channel');
 		});
 
 		test('should archive target channel', async () => {

@@ -32,11 +32,11 @@ export class AdminSettings extends Admin {
 	}
 
 	get btnFullScreen(): Locator {
-		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
+		return this.page.getByRole('button', { name: 'Full screen', exact: true });
 	}
 
 	get btnExitFullScreen(): Locator {
-		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
+		return this.page.getByRole('button', { name: 'Exit full screen', exact: true });
 	}
 
 	get btnSaveChanges(): Locator {

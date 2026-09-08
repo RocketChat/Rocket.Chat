@@ -52,7 +52,7 @@ export class AccountSecurity extends Account {
 	}
 
 	get security2FASection(): Locator {
-		return this.page.locator('[role="button"]:has-text("Two Factor Authentication")');
+		return this.page.locator('[role="button"]:has-text("Two factor authentication")');
 	}
 
 	get securityE2EEncryptionSection(): Locator {

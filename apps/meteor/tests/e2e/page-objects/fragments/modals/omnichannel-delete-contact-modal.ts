@@ -4,11 +4,11 @@ import { Modal } from './modal';
 
 export class OmnichannelDeleteContactModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Delete Contact' }));
+		super(page.getByRole('dialog', { name: 'Delete contact' }));
 	}
 
 	get inputConfirmation(): Locator {
-		return this.root.getByRole('textbox', { name: 'Confirm Contact Removal' });
+		return this.root.getByRole('textbox', { name: 'Confirm contact removal' });
 	}
 
 	get btnDelete(): Locator {

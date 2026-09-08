@@ -16,7 +16,7 @@ export class AdminDeviceManagement extends Admin {
 
 	constructor(page: Page) {
 		super(page);
-		this.deviceInfo = new DeviceInfoFlexTab(page.getByRole('dialog', { name: 'Device Info' }));
+		this.deviceInfo = new DeviceInfoFlexTab(page.getByRole('dialog', { name: 'Device info' }));
 		this.deviceRowMenu = new MenuOptions(page);
 		this.table = new DevicesTable(page);
 		this.logoutModal = new ConfirmLogoutModal(page.getByRole('dialog', { name: 'Log out device' }));

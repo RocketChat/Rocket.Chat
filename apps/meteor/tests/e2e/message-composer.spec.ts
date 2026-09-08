@@ -225,7 +225,7 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
 			await page.waitForTimeout(1000);
-			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish recording', exact: true }).click();
 			await expect(poHomeChannel.composer.getFileByName('Audio record.mp3')).toBeVisible();
 		});
 	});

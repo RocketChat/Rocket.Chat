@@ -8,7 +8,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit User' }));
+		super(page.getByRole('dialog', { name: 'Edit user' }));
 		this.listbox = new Listbox(page);
 	}
 
@@ -49,7 +49,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 
 class OmnichannelAgentInfoFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'User info' }));
 	}
 
 	get btnEdit(): Locator {

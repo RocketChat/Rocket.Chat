@@ -20,7 +20,7 @@ export class AdminIntegrations extends Admin {
 	}
 
 	get inputPostToChannel(): Locator {
-		return this.page.getByRole('textbox', { name: 'Post to Channel' });
+		return this.page.getByRole('textbox', { name: 'Post to channel' });
 	}
 
 	get inputPostAs(): Locator {

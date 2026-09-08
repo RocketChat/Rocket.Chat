@@ -6,7 +6,7 @@ import { Listbox } from '../fragments/listbox';
 export class OmnichannelBusinessHours extends OmnichannelAdmin {
 	protected readonly route = 'businessHours';
 
-	protected readonly title = 'Business Hours';
+	protected readonly title = 'Business hours';
 
 	readonly listbox: Listbox;
 

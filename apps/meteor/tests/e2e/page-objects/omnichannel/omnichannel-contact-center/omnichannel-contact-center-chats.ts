@@ -42,7 +42,7 @@ export class OmnichannelChatsFilters extends FlexTab {
 	}
 
 	get inputServedBy(): Locator {
-		return this.root.getByLabel('Served By').locator('input');
+		return this.root.getByLabel('Served by').locator('input');
 	}
 
 	get inputDepartment(): Locator {
@@ -124,7 +124,7 @@ class OmnichannelContactCenterChatsTable extends Table {
 export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 	protected readonly route = 'current/chats';
 
-	protected override readonly tableName = 'Omnichannel Contact Center Chats';
+	protected override readonly tableName = 'Omnichannel contact center chats';
 
 	readonly filters: OmnichannelChatsFilters;
 

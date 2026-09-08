@@ -9,7 +9,7 @@ import { OmnichannelDeleteContactModal } from '../../fragments/modals';
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	protected readonly route = 'current/contacts';
 
-	protected override readonly tableName = 'Omnichannel Contact Center Contacts';
+	protected override readonly tableName = 'Omnichannel contact center contacts';
 
 	readonly contactInfo: OmnichannelContactInfo;
 

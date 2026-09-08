@@ -96,14 +96,14 @@ export class TeamInfoFlexTab extends RoomInfoFlexTab {
 
 	async convertIntoChannel() {
 		await this.btnMore.click();
-		await this.menu.selectMenuItem('Convert to Channel');
+		await this.menu.selectMenuItem('Convert to channel');
 		await this.confirmConvertIntoChannelModal.confirmConvert();
 	}
 }
 
 export class OmnichannelRoomInfoFlexTab extends RoomInfoFlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Room Information' }));
+		super(page.getByRole('dialog', { name: 'Room information' }));
 	}
 
 	getInfo(value: string): Locator {

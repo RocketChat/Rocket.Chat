@@ -5,7 +5,7 @@ import { OmnichannelAdmin } from './omnichannel-admin';
 export class OmnichannelCannedResponses extends OmnichannelAdmin {
 	protected readonly route = 'canned-responses';
 
-	protected readonly title = 'Canned Responses';
+	protected readonly title = 'Canned responses';
 
 	get inputShortcut() {
 		return this.page.getByRole('textbox', { name: 'Shortcut', exact: true });

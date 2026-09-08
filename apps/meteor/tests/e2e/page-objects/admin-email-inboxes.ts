@@ -8,7 +8,7 @@ export class AdminEmailInboxes extends Admin {
 	}
 
 	get btnNewEmailInbox(): Locator {
-		return this.page.locator('role=button[name="New Email Inbox"]');
+		return this.page.locator('role=button[name="New email inbox"]');
 	}
 
 	get inputName(): Locator {

@@ -7,7 +7,7 @@ export class UserInfoFlexTab extends FlexTab {
 	readonly menu: MenuMore;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'User info' }));
 		this.menu = new MenuMore(page);
 	}
 

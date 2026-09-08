@@ -68,7 +68,7 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.btnNew.click();
 			await poAdminEmoji.addEmojiFlexTab.inputName.fill(emojiName);
 
-			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
+			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom emoji"]').click()]);
 			await fileChooser.setFiles(emojiUrl);
 
 			await poAdminEmoji.addEmojiFlexTab.save();

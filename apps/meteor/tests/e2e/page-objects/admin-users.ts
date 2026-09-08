@@ -4,7 +4,7 @@ import { Admin } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 import { expect } from '../utils/test';
 
-type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
+type UserActions = 'Make admin' | 'Remove admin' | 'Activate' | 'Deactivate';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
@@ -29,7 +29,7 @@ export class AdminUsers extends Admin {
 	}
 
 	private get inputSearchUsers(): Locator {
-		return this.page.getByRole('textbox', { name: 'Search Users' });
+		return this.page.getByRole('textbox', { name: 'Search users' });
 	}
 
 	get btnMoreActionsMenu(): Locator {

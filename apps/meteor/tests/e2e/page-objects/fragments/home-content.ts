@@ -168,7 +168,7 @@ export class HomeContent {
 		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
+		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
@@ -181,7 +181,7 @@ export class HomeContent {
 	}
 
 	private get fileUploadModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'File Upload' });
+		return this.page.getByRole('dialog', { name: 'File upload' });
 	}
 
 	get btnModalConfirm(): Locator {
@@ -258,7 +258,7 @@ export class HomeContent {
 	}
 
 	get linkPreview(): Locator {
-		return this.lastUserMessage.getByText('Link Preview');
+		return this.lastUserMessage.getByText('Link preview');
 	}
 
 	quotedLinkText(name: string): Locator {
@@ -327,7 +327,7 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.getByRole('button', { name: 'User Info' });
+		return this.page.getByRole('button', { name: 'User info' });
 	}
 
 	get btnContactInfoVoiceCall(): Locator {
@@ -464,11 +464,11 @@ export class HomeContent {
 	}
 
 	get primaryRoomActionsToolbar(): Locator {
-		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
+		return this.page.getByRole('toolbar', { name: 'Primary room actions' });
 	}
 
 	get btnVideoCall(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
 	get btnToolbarOptions(): Locator {
@@ -480,7 +480,7 @@ export class HomeContent {
 	}
 
 	get starredMessagesMenuOption(): Locator {
-		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
+		return this.optionsMenu.getByRole('menuitem', { name: 'Starred messages', exact: true });
 	}
 
 	getVideoConfPopup(name?: string): Locator {
@@ -613,7 +613,7 @@ export class HomeContent {
 	}
 
 	get btnOptionStartDiscussion(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+		return this.page.getByRole('menuitem', { name: 'Start a discussion' });
 	}
 
 	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {
