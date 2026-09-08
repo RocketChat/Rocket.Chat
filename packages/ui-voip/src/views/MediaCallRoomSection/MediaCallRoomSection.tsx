@@ -78,7 +78,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const showHeaderActions = appActions.length > 0;
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || !('userId' in peerInfo) || !peerInfo.userId) {
 		return null;
 	}
 
