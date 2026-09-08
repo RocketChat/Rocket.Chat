@@ -2,7 +2,12 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
-import { MediaCallRoomActivity, usePeekMediaSessionState, usePeekMediaSessionPeerInfo } from '@rocket.chat/ui-voip';
+import {
+	MediaCallRoomActivity,
+	usePeekMediaSessionState,
+	usePeekMediaSessionPeerInfo,
+	usePeekMediaSessionHidden,
+} from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -42,11 +47,12 @@ export type MediaCallRoomProps = {
 
 const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const state = usePeekMediaSessionState();
+	const hidden = usePeekMediaSessionHidden();
 	const peerInfo = usePeekMediaSessionPeerInfo();
 	const userId = useUserId();
 	const room = useRoom();
 
-	if (state !== 'ongoing' || !isMediaCallRoom(room, peerInfo, userId)) {
+	if (hidden || state !== 'ongoing' || !isMediaCallRoom(room, peerInfo, userId)) {
 		return children;
 	}
 
