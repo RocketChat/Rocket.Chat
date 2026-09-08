@@ -28,11 +28,12 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
@@ -129,6 +130,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
+	const {
+		fields: phoneFields,
+		append: appendPhone,
+		remove: removePhone,
+	} = useFieldArray<AccountProfileFormValues>({ control, name: 'phones' });
+
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
 			email,
@@ -143,6 +150,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			bio,
 			customFields,
 			statusVisibilityDenied,
+			phones,
 		} = values;
 
 		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
@@ -166,6 +174,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					username,
 					nickname,
 					bio,
+					phones,
 				},
 				customFields,
 			});
@@ -438,6 +447,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.email && <FieldError>{errors.email.message}</FieldError>}
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
+
+				<Field>
+					<FieldLabel is='span' aria-hidden='true'>
+						{t('Phone_Numbers')}
+					</FieldLabel>
+					<FieldRow is='div'>
+						<PhoneNumberFieldList
+							control={control}
+							name='phones'
+							phones={phoneFields}
+							onAddPhone={appendPhone}
+							onRemovePhone={removePhone}
+						/>
+					</FieldRow>
+				</Field>
+
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>
