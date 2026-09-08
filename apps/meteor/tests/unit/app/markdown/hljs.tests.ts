@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { createRegister } from './markdown.mocks';
+import hljs, { register } from '../../../../app/markdown/lib/hljs';
 
 const lazyLanguages: string[] = [
 	'onec',
@@ -172,40 +172,40 @@ const lazyLanguages: string[] = [
 	'zephir',
 ];
 
+const eagerLanguages = ['markdown', 'clean', 'javascript'];
+
 describe('hljs', () => {
 	describe('eagerly registered languages', () => {
-		it('should register markdown, clean and javascript when the module is loaded', () => {
-			const { registered } = createRegister();
-
-			expect(registered.map(({ name }) => name)).to.deep.equal(['markdown', 'clean', 'javascript']);
-			registered.forEach(({ definition }) => expect(definition).to.be.a('function'));
+		eagerLanguages.forEach((lang) => {
+			it(`should register '${lang}' when the module is loaded`, () => {
+				expect(hljs.getLanguage(lang)).to.be.an('object');
+			});
 		});
 	});
 
 	describe('register', () => {
+		afterEach(() => {
+			hljs
+				.listLanguages()
+				.filter((lang) => !eagerLanguages.includes(lang))
+				.forEach((lang) => hljs.unregisterLanguage(lang));
+		});
+
 		lazyLanguages.forEach((lang) => {
 			it(`should register a syntax definition for '${lang}'`, async () => {
-				const { register, registered } = createRegister();
-				const eager = registered.length;
+				hljs.unregisterLanguage(lang);
 
 				await register(lang);
 
-				expect(registered.slice(eager)).to.have.lengthOf(1);
-				expect(registered[eager].name).to.equal(lang);
-				expect(registered[eager].definition).to.be.a('function');
+				expect(hljs.listLanguages()).to.include(lang);
 			});
 		});
 
 		['', 'not-a-language'].forEach((lang) => {
 			it(`should fall back to plaintext for '${lang}'`, async () => {
-				const { register, registered } = createRegister();
-				const eager = registered.length;
-
 				await register(lang);
 
-				expect(registered.slice(eager)).to.have.lengthOf(1);
-				expect(registered[eager].name).to.equal('plaintext');
-				expect(registered[eager].definition).to.be.a('function');
+				expect(hljs.listLanguages()).to.include('plaintext');
 			});
 		});
 	});

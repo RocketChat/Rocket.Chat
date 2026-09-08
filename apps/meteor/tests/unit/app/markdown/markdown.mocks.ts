@@ -60,25 +60,6 @@ export const { code } = proxyquire.noCallThru().load('../../../../app/markdown/l
 	code: CodeParser;
 };
 
-type LanguageDefinition = (...args: unknown[]) => unknown;
-
-type Registration = { name: string; definition: LanguageDefinition };
-
-export const createRegister = (): { register: (lang: string) => Promise<void>; registered: Registration[] } => {
-	const registered: Registration[] = [];
-
-	const hljsStub = {
-		registerLanguage: (name: string, definition: LanguageDefinition) => registered.push({ name, definition }),
-		listLanguages: () => registered.map(({ name }) => name),
-	};
-
-	const { register } = proxyquire.noCallThru().load('../../../../app/markdown/lib/hljs', {
-		'highlight.js/lib/core': { '__esModule': true, 'default': hljsStub, '@noCallThru': true },
-	});
-
-	return { register, registered };
-};
-
 export const createCodeParserWithFailingHighlighter = (): CodeParser => {
 	const hljsStub = {
 		listLanguages: () => ['javascript'],
