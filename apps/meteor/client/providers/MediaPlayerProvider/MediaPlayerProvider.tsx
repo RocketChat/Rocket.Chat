@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
+import { useCloseOnTrackMessageDeleted } from './useCloseOnTrackMessageDeleted';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
@@ -101,6 +102,8 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	});
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
+
+	useCloseOnTrackMessageDeleted(track, close);
 
 	const value = useMemo<MediaPlayerContextValue>(
 		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),

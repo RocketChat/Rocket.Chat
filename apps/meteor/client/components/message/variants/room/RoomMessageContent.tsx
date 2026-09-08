@@ -60,7 +60,14 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			{!!quotes?.length && (
 				<Attachments
 					attachments={quotes}
-					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+					source={{
+						rid: message.rid,
+						mid: message._id,
+						username: message.u.username,
+						name: message.u.name,
+						ts: message.ts,
+						pinned: message.pinned,
+					}}
 				/>
 			)}
 
@@ -83,7 +90,14 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<Attachments
 					id={message.files?.[0]?._id}
 					attachments={attachments}
-					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+					source={{
+						rid: message.rid,
+						mid: message._id,
+						username: message.u.username,
+						name: message.u.name,
+						ts: message.ts,
+						pinned: message.pinned,
+					}}
 				/>
 			)}
 
