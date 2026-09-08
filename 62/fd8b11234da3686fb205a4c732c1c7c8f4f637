@@ -1,0 +1,21 @@
+packages/models/src/models/PushToken.ts
+  s_80229c9aae3f3b::t_40e6a54db75a89 97-99,104
+packages/model-typings/src/models/IPushTokenModel.ts
+  s_80229c9aae3f3b::t_40e6a54db75a89 36-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "62fd8b11234da3686fb205a4c732c1c7c8f4f637",
+  "prompts": {},
+  "sessions": {
+    "s_80229c9aae3f3b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6d587a4f-8bb9-4c0d-bc95-bc9bba5cfa54",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

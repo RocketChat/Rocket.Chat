@@ -1,0 +1,26 @@
+packages/i18n/src/locales/en.i18n.json
+  s_453d8d6e1aa7b9::t_c2685cd5cee157 461-462,7016,7019
+apps/meteor/server/api/v1/users.ts
+  ai_agent 35,52,54,727
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1f5b2febab7a3d2cb3acbfba4e63edb6f61f9618",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
