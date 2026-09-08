@@ -128,40 +128,22 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
-			if (contact.type === 'sip') {
-				dispatch({
-					type: 'instance_updated',
-					payload: {
-						peerInfo: derivePeerInfoFromInstanceContact(contact),
-						transferredBy,
-						state,
-						muted,
-						held,
-						connectionState,
-						hidden,
-						remoteHeld,
-						remoteMuted,
-						callId,
-						startedAt,
-						supportedFeatures,
-					},
-				});
-				return;
-			}
-
 			const avatarUrl = (() => {
 				if (contact.username) {
 					return getAvatarUrl({ username: contact.username });
 				}
 
-				if (contact.id) {
+				if (contact.type === 'user' && contact.id) {
 					return getAvatarUrl({ userId: contact.id });
 				}
 
 				return undefined;
 			})();
 
-			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
+			const peerInfo = {
+				...derivePeerInfoFromInstanceContact(contact),
+				avatarUrl,
+			};
 
 			dispatch({
 				type: 'instance_updated',
