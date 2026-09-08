@@ -203,6 +203,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 			supportedFeatures: SIP_CALL_FEATURES,
 			sipCallId: this.sipDialog.sip?.callId,
+			negotiationId: negotiation._id,
 		});
 	}
 

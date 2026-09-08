@@ -67,15 +67,12 @@ class MediaCallDirector {
 			webrtcAnswer?: RTCSessionDescriptionInit;
 			supportedFeatures: CallFeature[];
 			sipCallId?: string;
+			negotiationId?: string;
 		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
-		// To avoid race conditions, load the negotiation before changing the call state
-		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = data.webrtcAnswer ? await MediaCallNegotiations.findLatestByCallId(call._id) : null;
-
-		const { webrtcAnswer, ...acceptData } = data;
+		const { webrtcAnswer, negotiationId, ...acceptData } = data;
 
 		const stateResult = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
@@ -95,12 +92,12 @@ class MediaCallDirector {
 		await calleeAgent.onCallAccepted(updatedCall);
 		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
-		if (data.webrtcAnswer && negotiation) {
-			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+		if (webrtcAnswer && negotiationId) {
+			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiationId, webrtcAnswer);
 			if (negotiationResult.modifiedCount) {
-				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId: negotiation._id });
+				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId });
 			}
-			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiationId);
 		}
 
 		return true;
