@@ -34,7 +34,7 @@
 		"rc-scrollbars": "^1.1.6",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"react-router-dom": "^6.30.4",
+		"react-router-dom": "^6.30.6",
 		"react-split-pane": "^0.1.92",
 		"react-virtuoso": "~4.12.8",
 		"reactflow": "^11.11.4"
@@ -42,11 +42,11 @@
 	"devDependencies": {
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/lodash": "~4.17.24",
+		"@types/lodash": "~4.17.25",
 		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
-		"@vitejs/plugin-react": "~6.0.1",
-		"eslint": "~9.39.4",
+		"@vitejs/plugin-react": "~6.0.5",
+		"eslint": "~9.39.5",
 		"typescript": "~5.9.3",
 		"vite": "^8.0.16"
 	},
