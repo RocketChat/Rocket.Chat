@@ -64,7 +64,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		return {
 			...job,
-			status: deriveStatus(job),
+			status: job.status ?? deriveStatus(job),
 		};
 	}
 
@@ -113,25 +113,9 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		const offset = pagination?.offset || 0;
 		const count = pagination?.count;
 		const status = pagination?.status;
-		const query = this.buildJobQuery(pagination?.searchTerm);
+		const nameQuery = this.buildJobQuery(pagination?.searchTerm);
 
-		if (status) {
-			const filtered = (await model.find(query, { sort: { name: 1 } }).toArray())
-				.map((job) => ({
-					...job,
-					status: deriveStatus(job),
-				}))
-				.filter((job) => job.status === status);
-
-			const jobs = count ? filtered.slice(offset, offset + count) : filtered.slice(offset);
-
-			return {
-				jobs,
-				count: jobs.length,
-				offset,
-				total: filtered.length,
-			};
-		}
+		const query: Filter<ICronJobItem> = status ? { ...nameQuery, status } : nameQuery;
 
 		const { cursor, totalCount } = model.findPaginated(query, {
 			sort: { name: 1 },
@@ -143,7 +127,7 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 		const jobs = allJobs.map((job) => ({
 			...job,
-			status: deriveStatus(job),
+			status: job.status ?? deriveStatus(job),
 		}));
 
 		return {
