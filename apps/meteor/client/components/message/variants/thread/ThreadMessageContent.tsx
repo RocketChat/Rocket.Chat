@@ -61,6 +61,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 						name: message.u.name,
 						ts: message.ts,
 						pinned: message.pinned,
+						drid: message.drid,
 					}}
 				/>
 			)}
@@ -93,6 +94,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 						name: message.u.name,
 						ts: message.ts,
 						pinned: message.pinned,
+						drid: message.drid,
 					}}
 				/>
 			)}

@@ -5,12 +5,6 @@ import { useEffect } from 'react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { createDeleteCriteria } from '../../lib/utils/threadMessageUtils';
 
-/**
- * Closes the shared audio player when the message that owns the currently
- * loaded track is deleted, either individually or through a bulk/prune
- * operation. Runs regardless of playback state, so a paused player is
- * closed too.
- */
 export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null, close: () => void): void => {
 	const subscribeToNotifyRoom = useStream('notify-room');
 	const subscribeToRoomMessages = useStream('room-messages');
@@ -20,6 +14,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 	const ts = track?.ts;
 	const pinned = track?.pinned;
 	const username = track?.username;
+	const drid = track?.drid;
 
 	useEffect(() => {
 		if (!rid || !mid) {
@@ -34,7 +29,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
 			const matchesCriteria = createDeleteCriteria(params);
-			const trackMessage = { _id: mid, rid, ts, pinned, u: { username } } as IMessage;
+			const trackMessage = { _id: mid, rid, ts, pinned, drid, u: { username } } as IMessage;
 
 			if (matchesCriteria(trackMessage)) {
 				close();
@@ -52,5 +47,5 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 			unsubscribeFromDeleteMessageBulk();
 			unsubscribeFromRoomMessages();
 		};
-	}, [rid, mid, ts, pinned, username, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
+	}, [rid, mid, ts, pinned, username, drid, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
 };
