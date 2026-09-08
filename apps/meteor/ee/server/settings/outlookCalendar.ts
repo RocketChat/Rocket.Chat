@@ -106,14 +106,6 @@ export function addSettings(): void {
 						enableQuery: serverOnly,
 						invalidValue: 2,
 					});
-
-					// Empty means the verified Rocket.Chat email, matching `getUserCalendar`.
-					await this.add('Outlook_Calendar_Server_Sync_Mailbox_Field', '', {
-						type: 'string',
-						enableQuery: serverOnly,
-						placeholder: 'mail',
-						invalidValue: '',
-					});
 				});
 
 				await this.section('Outlook_Calendar_Server_Sync_Graph', async function () {
