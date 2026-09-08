@@ -1,29 +1,41 @@
 # JSON-RPC bridge benchmark results
 
-> **Outcome.** Option 1 below was taken: the codec's JSON-RPC extension is gone.
-> The envelope is a plain object, it goes on the wire as a plain msgpack map, and
-> the receiver categorizes it with the type guards in `src/lib/jsonrpc.ts`. The
-> in-house types stay, because that is where the win over `jsonrpc-lite` sits.
->
-> A re-run after the change confirms it. The wire form is now byte-for-byte equal
-> across all three pipelines, and the `vs in-house, no ext` totals read the noise
-> floor - build 0.99x, encode 1.00x, receive 0.99x, round-trip 1.01x - which is
-> the check that the extension is really gone. Against `jsonrpc-lite`: build
-> 2,780x, receive 11.66x, round-trip 10.41x, and encode recovers from 0.90x to
-> 1.00x-1.07x. The 64 KiB upload no longer pays a double copy.
->
-> One thing follows that no table shows: `meta` now crosses the process
-> boundary. The extension's tuple had no slot for it; a map carries the key for
-> free.
->
-> The error payload keeps a class, `JsonRpcError`, because the runtime's main
-> loop tests it with `instanceof` to tell a failed handler from a successful one,
-> and a shape test cannot do that safely. Its wire shape has its own name,
-> `SerializedJsonRpcError`. The classes were never the cost measured here - the
-> `in-house, no ext` column used them throughout and won.
+## TL;DR
 
-Run of `yarn workspace @rocket.chat/apps bench:jsonrpc` on top of commit
-`d9d8467f86`, with the three-contender benchmark in the working tree.
+- In-house types improve build by 3,200x, receive by 11.8x, round-trip by 10.1x versus `jsonrpc-lite`.
+- Remove the JSON-RPC extension: with it, encode reads 0.88x and round-trip reads 0.92x of the plain-map result.
+- Extension saves 0.4% wire bytes while introducing an extra payload copy on large messages.
+- Use in-house types with plain msgpack maps; categorize messages on receive with type guards.
+
+## Strategy
+
+The first strategy to replace the jsonrpc-lite package was to simply implement the same class structure the package exported with our own module.
+
+This allowed for an experiment: add a custom extension to the msgpack codec that was aware of the class types and applied a different approach to encoding/decoding them.
+
+However, this showed a small size gain on the wire at the cost of some speed. In the end, we applied factories that generate simple - classless - objects, save for the JsonRpcError.
+
+In the document, these strategies are referenced as:
+
+- **`in-house`** — the codec extension encodes the message as a positional tuple, `[kind, id, method, params]`. The receiver gets the object back from the extension, with no parse step.
+- **`in-house, no ext`** — plain msgpack writes the object's properties as a map. `hydrate()` reads 4 fields on receive and builds the result.
+
+## Outcome
+
+The benchmark supports two sequential changes:
+
+1. **Remove `jsonrpc-lite` and use the in-house types.** This is where the large performance win comes from.
+2. **Remove the JSON-RPC codec extension.** This removes the extension's encode/copy overhead with essentially no runtime cost, at the expense of the tuple's small wire-size savings.
+
+After the second change, all three pipelines use the same wire representation byte-for-byte, and the remaining differences are at the benchmark's noise floor.
+
+A re-run after the change confirms it. The `vs in-house, no ext` totals read build 0.99x, encode 1.00x, receive 0.99x, and round-trip 1.01x. Against `jsonrpc-lite`, the same re-run reads build 2,780x, receive 11.66x, and round-trip 10.41x. Encode recovers from 0.90x to 1.00x-1.07x. The 64 KiB upload no longer pays a double copy.
+
+The error payload still uses `JsonRpcError` because the runtime uses `instanceof` to distinguish failed handlers from successful ones. Its wire type is `SerializedJsonRpcError`. The classes were not the source of the measured cost: the `in-house, no ext` column used them throughout.
+
+`meta` now crosses the process boundary as well. A plain map can carry it without adding a tuple slot.
+
+Run of `yarn workspace @rocket.chat/apps bench:jsonrpc` on commit `d9d8467f86`, with the three-contender benchmark in the working tree.
 
 | item      | value                                              |
 | --------- | -------------------------------------------------- |
@@ -36,67 +48,35 @@ Run of `yarn workspace @rocket.chat/apps bench:jsonrpc` on top of commit
 | baseline  | `jsonrpc-lite` 2.2.0                                |
 | settings  | 14 fixtures, 7 samples of ~50 ms each (defaults)    |
 
-The machine is a developer laptop, not an isolated bench host. The speed tables
-repeat to within a few percent between runs. The GC table does not; read it as a
-trend.
+The machine is a developer laptop, not an isolated benchmark host. Speed results repeat within a few percent; GC measurements are less stable and should be read as trends.
 
 **Correctness: all 14 fixtures round-trip identically through all 3 pipelines.**
 
-## The three pipelines
+## 1. Remove `jsonrpc-lite`
 
-| contender          | types          | wire form                                    | receive                          |
-| ------------------ | -------------- | -------------------------------------------- | -------------------------------- |
-| `jsonrpc-lite`     | `jsonrpc-lite` | plain msgpack map of the object's properties | decode, then `parseObject()`     |
-| `in-house, no ext` | in-house       | plain msgpack map of the object's properties | decode, then `hydrate()`         |
-| `in-house`         | in-house       | positional tuple behind the codec extension  | decode; the class comes back     |
+The first comparison isolates the type implementation:
 
-Column 1 against column 2 measures the types. Column 2 against column 3 measures
-the codec's JSON-RPC extension, and nothing else. The `vs` columns in every table
-below read `in-house` against that column, so `vs in-house, no ext` is the answer
-about the extension.
+- `jsonrpc-lite`: `jsonrpc-lite` types, plain msgpack map, `parseObject()`
+- `in-house`: in-house types, positional tuple behind the codec extension
+- `in-house, no ext`: in-house types, plain msgpack map, `hydrate()`
 
-`hydrate()` is generous to the no-extension side on purpose: one field test per
-branch, no validation, no copy of `params`. What the extension does not beat
-there, it does not beat at all.
+`hydrate()` favors the no-extension side on purpose. It runs one field test per branch, with no validation and no copy of `params`.
 
-## Summary
+The important result is that **the in-house types provide the major win over `jsonrpc-lite`**.
 
-### Is the extension worth it? On this corpus, no.
+The old-codec in-house path already delivers:
 
-- **It costs 10% of encode**, on every fixture but one, in both runs.
-- **It returns almost nothing on receive**: 0.98x and 0.97x in the two runs. The
-  instance the extension hands back costs about what `hydrate()` costs to build.
-- **Round-trip is 0.92x**: the extension makes the whole corpus 8% slower.
-- **It costs 34% of the 64 KiB upload round-trip.** The extension serializes the
-  message into its own buffer and the outer encoder then copies that buffer into
-  the frame, so a large payload is copied twice.
-- **It buys 0.4% of the wire** over the corpus, and 13-65% on the small control
-  messages. The bytes go to a pipe on the same machine, so 25 bytes saved per
-  message do not pay for 50-700 ns of extra encode.
-- **It wins one fixture outright**: `bridge error: doCreate rejected` encodes
-  2.3x faster. That message is all envelope and no payload, and the tuple form
-  drops 5 map keys plus the nested `error` map.
+- **build:** 3,200x
+- **receive:** 11.8x
+- **round-trip:** 10.1x
 
-The 64 KiB upload dominates the corpus totals. Take it out and the extension
-still loses:
+The `in-house, no ext` column carries the same win. Its totals give build 3,201x, receive 12.1x, and round-trip 11.0x.
 
-| step       | ext vs no ext, corpus | ext vs no ext, corpus minus the upload |
-| ---------- | --------------------- | -------------------------------------- |
-| encode     | 0.88x                 | 0.91x                                  |
-| receive    | 0.98x                 | 0.99x                                  |
-| round-trip | 0.92x                 | 0.95x                                  |
+`jsonrpc-lite` validates every message with a throwaway `JSON.stringify`, which accounts for most of the gap.
 
-### What the in-house types bought is untouched by this
+### Wire size
 
-The win over `jsonrpc-lite` sits in the types, not in the extension. Column 2 -
-the in-house types on the *old* codec - already carries all of it: build 3,200x,
-receive 11.8x, round-trip 10.1x. `jsonrpc-lite` validated every message with a
-throwaway `JSON.stringify`, and that is the whole gap.
-
-## Wire size
-
-Bytes msgpack writes to the pipe. Deterministic. The two no-extension columns are
-byte-for-byte equal, so every byte saved belongs to the extension.
+Bytes that msgpack writes to the pipe. The values are deterministic. The two no-extension columns are byte-for-byte equal, so every saved byte belongs to the extension.
 
 | fixture                                  | jsonrpc-lite | in-house, no ext | in-house | vs jsonrpc-lite | vs in-house, no ext |
 | ---------------------------------------- | ------------ | ---------------- | -------- | --------------- | ------------------- |
@@ -109,18 +89,16 @@ byte-for-byte equal, so every byte saved belongs to the extension.
 | bridge error: doCreate rejected          | 77 B         | 77 B             | 47 B     | -39.0%          | -39.0%              |
 | bridges:getMessageBridge:doCreate        | 188 B        | 188 B            | 163 B    | -13.3%          | -13.3%              |
 | bridges:getUserBridge:doGetById          | 92 B         | 92 B             | 67 B     | -27.2%          | -27.2%              |
-| bridges:getHttpBridge:doCall             | 851 B        | 851 B            | 827 B    | -2.8%           | -2.8%               |
+| bridges:getHttpBridge:doCall             | 851 B        | 851 B            | 827 B    | -2.8%           | -2.8%              |
 | log notification (12 entries)            | 2.0 KiB      | 2.0 KiB          | 2.0 KiB  | -1.0%           | -1.0%               |
 | ready notification                       | 34 B         | 34 B             | 12 B     | -64.7%          | -64.7%              |
-| app result + logs                        | 1.1 KiB      | 1.1 KiB          | 1.1 KiB  | -1.5%           | -1.5%               |
+| app result + logs                        | 1.1 KiB      | 1.1 KiB          | 1.1 KiB  | -1.5%           | -1.5%              |
 | app error + logs                         | 1.2 KiB      | 1.2 KiB          | 1.2 KiB  | -2.9%           | -2.9%               |
 | **TOTAL**                                | **76.0 KiB** | **76.0 KiB**     | **75.7 KiB** | **-0.4%**   | **-0.4%**           |
 
-## Speed - build
+### Speed — build
 
-ns per message, median of 7 samples. Lower is better. Above 1.00x means
-`in-house` wins. The extension never runs in this step, so columns 2 and 3 are
-the same code and their ratio is the noise floor of the harness: 1.00x.
+ns per message, median of 7 samples. Lower is better. A value above 1.00x means `in-house` wins. The extension never runs in this step. Columns 2 and 3 are therefore the same code, and their ratio gives the noise floor of the harness: 1.00x.
 
 | fixture                                  | jsonrpc-lite | in-house, no ext | in-house | vs jsonrpc-lite | vs in-house, no ext |
 | ---------------------------------------- | ------------ | ---------------- | -------- | --------------- | ------------------- |
@@ -140,7 +118,7 @@ the same code and their ratio is the noise floor of the harness: 1.00x.
 | app error + logs                         | 40           | 31               | 31       | 1.29x           | 1.00x               |
 | **TOTAL (one of each of the 14)**        | **896,327**  | **280**          | **279**  | **3211.73x**    | **1.00x**           |
 
-## Speed - encode
+### Speed — encode
 
 | fixture                                  | jsonrpc-lite | in-house, no ext | in-house | vs jsonrpc-lite | vs in-house, no ext |
 | ---------------------------------------- | ------------ | ---------------- | -------- | --------------- | ------------------- |
@@ -160,11 +138,9 @@ the same code and their ratio is the noise floor of the harness: 1.00x.
 | app error + logs                         | 15,218       | 15,645           | 17,002   | 0.90x           | 0.92x               |
 | **TOTAL (one of each of the 14)**        | **105,470**  | **102,392**      | **117,000** | **0.90x**    | **0.88x**           |
 
-`bridges:getUserBridge:doGetById` is the one unstable row in this table. It read
-1.05x here and 0.50x in the second run, on a fixture whose absolute cost is about
-1.3 us. Do not read that row on its own.
+`bridges:getUserBridge:doGetById` is unstable: 1.05x here and 0.50x in the second run, with an absolute cost of about 1.3 us. Do not interpret that row in isolation.
 
-## Speed - receive
+### Speed — receive
 
 | fixture                                  | jsonrpc-lite | in-house, no ext | in-house | vs jsonrpc-lite | vs in-house, no ext |
 | ---------------------------------------- | ------------ | ---------------- | -------- | --------------- | ------------------- |
@@ -184,12 +160,7 @@ the same code and their ratio is the noise floor of the harness: 1.00x.
 | app error + logs                         | 9,337        | 9,149            | 9,242    | 1.01x           | 0.99x               |
 | **TOTAL (one of each of the 14)**        | **862,360**  | **71,365**       | **72,911** | **11.83x**    | **0.98x**           |
 
-This is the table the extension was supposed to win, and it does not. Skipping a
-parse step is worth something against `jsonrpc-lite`, which rebuilds and
-re-validates the message. It is worth nothing against 6 lines that read 4 fields
-and call a constructor.
-
-## Speed - round-trip
+### Speed — round-trip
 
 | fixture                                  | jsonrpc-lite | in-house, no ext | in-house | vs jsonrpc-lite | vs in-house, no ext |
 | ---------------------------------------- | ------------ | ---------------- | -------- | --------------- | ------------------- |
@@ -209,28 +180,82 @@ and call a constructor.
 | app error + logs                         | 21,778       | 21,697           | 22,421   | 0.97x           | 0.97x               |
 | **TOTAL (one of each of the 14)**        | **1,856,104** | **168,990**     | **184,622** | **10.05x**   | **0.92x**           |
 
-The extension is slower than the plain map on 10 of the 14 fixtures. It wins two
-(`app:getStatus`, `bridge error`), ties one, and loses the upload badly.
+**Step 1 conclusion:** the in-house types are the real performance improvement. The large gains over `jsonrpc-lite` remain when the extension is removed.
 
-## Why encode gets slower
+---
 
-`ExtensionCodec` hands the encoder a byte array, not a stream position. So the
-extension has to run a second, nested `Encoder` over the message, take the
-`Uint8Array` it returns, and let the outer encoder copy it into the frame.
+## 2. Remove the JSON-RPC extension
 
-For a small control message that costs one nested encoder call, about 50-100 ns,
-and the tuple form gives some of it back by dropping the map keys. For a message
-that carries a payload it costs a full copy of the payload: the 64 KiB upload
-encodes in 6.7 us as a plain map and 11.6 us through the extension.
+This comparison isolates the extension:
 
-`hoisting the codec instances` (commit `9167e771ae`) already removed the other
-half of this cost, which was a fresh `Encoder` and its 2 KiB buffer per message.
-The copy is what is left, and no amount of pooling removes it.
+- `in-house, no ext`: plain msgpack map of the object's properties, `hydrate()`
+- `in-house`: positional tuple behind the codec extension
 
-## GC pressure - round-trip
+The two no-extension representations are byte-for-byte equal. This means the `vs in-house, no ext` columns isolate the extension itself.
 
-Collections and pause time per 1M messages. Lower is better. The counter is
-process-wide, so only the 64 KiB row is far outside the noise.
+### Summary
+
+On this corpus, **the extension is not worth its runtime cost**:
+
+- **encode:** `0.88x` vs no extension
+- **receive:** `0.98x`
+- **round-trip:** `0.92x`
+- **wire size:** `-0.4%`
+- **64 KiB upload round-trip:** the extension costs **34%**
+- **small control messages:** the tuple saves **13-65%** of the bytes
+
+The bytes go to a pipe on the same machine. 25 saved bytes per message do not pay for 50-700 ns of extra encode.
+
+The 64 KiB upload exposes the main problem: the extension serializes the message into its own buffer, then the outer encoder copies that buffer into the frame. The payload is therefore copied twice.
+
+Without the upload, the extension still loses:
+
+| step       | ext vs no ext, corpus | ext vs no ext, corpus minus the upload |
+| ---------- | --------------------- | -------------------------------------- |
+| encode     | 0.88x                 | 0.91x                                  |
+| receive    | 0.98x                 | 0.99x                                  |
+| round-trip | 0.92x                 | 0.95x                                  |
+
+The extension wins one encode fixture outright: `bridge error: doCreate rejected`, at `2.3x`. That message is all envelope and no payload, and the tuple form drops 5 map keys plus the nested `error` map.
+
+On round-trip the extension is slower than the plain map on 10 of the 14 fixtures. It wins `app:getStatus` (`1.05x`) and `bridge error: doCreate rejected` (`1.07x`), ties two fixtures, and loses the upload badly.
+
+The skipped parse step helps against `jsonrpc-lite`, but not against a six-line `hydrate()` that reads 4 fields and constructs the result.
+
+### Speed against `jsonrpc-lite`
+
+The extension does not change the first conclusion:
+
+| total | run 1 | run 2 |
+| ----- | ----- | ----- |
+| **ext vs jsonrpc-lite** | | |
+| build | 3211.73x | 2903.32x |
+| encode | 0.90x | 0.87x |
+| receive | 11.83x | 11.86x |
+| round-trip | 10.05x | 9.63x |
+
+The in-house types retain the large gains over `jsonrpc-lite`, while the extension itself is slower than the plain map.
+
+### Why encode gets slower
+
+`ExtensionCodec` supplies a byte array rather than a stream position. The extension therefore:
+
+1. runs a nested `Encoder`,
+2. allocates the returned `Uint8Array`,
+3. lets the outer encoder copy those bytes into the frame.
+
+For small control messages, the nested encoder costs about **50-100 ns**. The tuple recovers some of that by dropping map keys.
+
+For payloads, the full copy dominates:
+
+- plain 64 KiB upload: **6.7 us**
+- extension: **11.6 us**
+
+Commit `9167e771ae` already removed the other half of this cost by hoisting the codec instances, avoiding a fresh `Encoder` and its **2 KiB** buffer per message. The payload copy remains.
+
+### GC pressure — round-trip
+
+Collections and pause time per 1M messages. Lower is better. The counter is process-wide, so only the 64 KiB row sits far outside the noise.
 
 | fixture                                  | jsonrpc-lite        | in-house, no ext | in-house       | vs in-house, no ext |
 | ---------------------------------------- | ------------------- | ---------------- | -------------- | ------------------- |
@@ -249,12 +274,9 @@ process-wide, so only the 64 KiB row is far outside the noise.
 | app result + logs                        | 1,578 / 259 ms      | 1,577 / 188 ms   | 1,613 / 192 ms | +2.0%               |
 | app error + logs                         | 1,685 / 187 ms      | 1,673 / 186 ms   | 1,692 / 188 ms | +1.2%               |
 
-The pause times do not repeat between runs, but the collection counts do, and
-they say the same thing as the speed tables: the extension allocates a little
-more than the plain map on every small fixture, and 50% more on the upload. The
-intermediate `Uint8Array` is that allocation.
+Pause times do not repeat between runs, but the collection counts do. They show a little more allocation with the extension on every small fixture, and 50% more on the upload. The intermediate `Uint8Array` is that allocation.
 
-## Retained heap
+### Retained heap
 
 `heapUsed` + `external` still held by one received message. Lower is better.
 
@@ -276,62 +298,62 @@ intermediate `Uint8Array` is that allocation.
 | app error + logs                         | 4.0 KiB      | 3.9 KiB          | 3.9 KiB  | -1.4%           | -0.0%               |
 | **TOTAL**                                | **91.4 KiB** | **90.9 KiB**     | **90.8 KiB** | **-0.7%**   | **-0.1%**           |
 
-The received message is the same object either way, so this table is flat by
-construction. It confirms that the extension holds nothing extra after the
-message lands, and that the smaller retained heap against `jsonrpc-lite` comes
-from the types.
+The received object is the same either way, so retained heap is effectively flat. The smaller retained heap versus `jsonrpc-lite` comes from the in-house types, not the extension.
 
-Process at the end of the run: rss 203.39 MiB, heapUsed 50.18 MiB.
+Process at the end of the run: `rss 203.39 MiB`, `heapUsed 50.18 MiB`.
 
-## Run-to-run stability
+### Run-to-run stability
 
-Two consecutive runs on the same machine.
+Two consecutive runs on the same machine:
 
 | total               | run 1  | run 2  |
-| ------------------- | ------ | ------ |
-| **ext vs no ext**   |        |        |
-| build               | 1.00x  | 0.99x  |
-| encode              | 0.88x  | 0.88x  |
-| receive             | 0.98x  | 0.97x  |
-| round-trip          | 0.92x  | 0.93x  |
-| wire size           | -0.4%  | -0.4%  |
-| retained heap       | -0.1%  | -0.1%  |
-| **ext vs jsonrpc-lite** |    |        |
+| ------------------- | ------- | ------- |
+| **ext vs no ext**   |         |         |
+| build               | 1.00x   | 0.99x   |
+| encode              | 0.88x   | 0.88x   |
+| receive             | 0.98x   | 0.97x   |
+| round-trip          | 0.92x   | 0.93x   |
+| wire size           | -0.4%   | -0.4%   |
+| retained heap       | -0.1%   | -0.1%   |
+| **ext vs jsonrpc-lite** |    |         |
 | build               | 3211.73x | 2903.32x |
-| encode              | 0.90x  | 0.87x  |
-| receive             | 11.83x | 11.86x |
-| round-trip          | 10.05x | 9.63x  |
+| encode              | 0.90x   | 0.87x   |
+| receive             | 11.83x  | 11.86x  |
+| round-trip          | 10.05x  | 9.63x   |
 
-## What to do with this
+## Final conclusion
 
-The extension is the wrong lever, not the wrong idea. Its two costs - the nested
-encode and the payload copy - come from the `ExtensionCodec` interface, not from
-the tuple wire form. The tuple itself is free and is where the byte savings are.
+The benchmark separates two independent effects:
 
-Three options, in order of how much they cost to try:
+### 1. The in-house types are the win
 
-1. **Drop the extension.** Put the envelope on the wire as a plain map and
-   categorize on receive, exactly like the `in-house, no ext` column. This costs
-   nothing to implement (`hydrate()` in `contenders.ts` is the whole receiver),
-   gives back 8-10% of encode, and gives up 13-65% of the bytes on small control
-   messages.
-2. **Move the tuple up one level.** Have the messenger encode
-   `[kind, id, method, params]` itself and switch on element 0 after decode. This
-   keeps every byte the extension saves, drops the nested encode and the payload
-   copy, and needs no extension at all. Worth measuring before either of the
-   others.
-3. **Keep the extension.** Justified only if something outside this corpus values
-   the bytes more than the CPU - a bridge that stops being a local pipe, for
-   instance.
+Compared with `jsonrpc-lite`, the in-house implementation improves build, receive, and round-trip by roughly **3,200x**, **11.8x**, and **10.1x** respectively.
 
-The `meta` slot noted as missing in `src/lib/jsonrpc.ts` is easier to add under
-options 1 and 2 than under 3, because a map carries an optional key for free and
-a tuple has to grow a slot on both sides.
+### 2. The extension is not the win
 
-## Note on the dependency
+Compared with the same in-house implementation without the extension, the extension reads **0.88x on encode** and **0.92x on round-trip**. That is 12% less encode throughput and 8% less round-trip throughput, for only **0.4% of total wire bytes**. The 64 KiB upload is particularly unfavorable because the extension introduces an extra payload copy.
 
-`jsonrpc-lite` was gone from `packages/apps/package.json`; commit `938d20930f`
-removed it and the benchmark commit did not put it back. The run needs it, so
-this run added `"jsonrpc-lite": "2.2.0"` to the workspace devDependencies. Drop
-it again together with the `benchmarks/` folder once the numbers have served
-their purpose.
+The tuple wire format itself is not the problem. The overhead comes from using it through `ExtensionCodec`.
+
+The resulting implementation choice is therefore:
+
+- keep the **in-house types**
+- remove the **JSON-RPC extension**
+- send the envelope as a plain msgpack map
+- categorize it on receive with the type guards in `src/lib/jsonrpc.ts`
+
+`hydrate()` in `contenders.ts` is sufficient for the no-extension receiver.
+
+The tuple could alternatively be moved up one level and encoded directly by the messenger as `[kind, id, method, params]`. That would preserve the tuple's wire-size savings without the nested encoder or payload copy, and is worth measuring separately.
+
+The old extension is justified only if saving wire bytes becomes more important than the CPU cost—for example, if the bridge stops being a local pipe.
+
+## Reference
+
+- Benchmark commit: `d9d8467f86`
+- Dependency removal: `938d20930f`
+- Codec-instance hoisting: `9167e771ae`
+- `jsonrpc-lite`: `2.2.0`
+- `@msgpack/msgpack`: `3.0.0-beta2`
+
+`jsonrpc-lite` was removed from `packages/apps/package.json` by `938d20930f`. The benchmark run temporarily added `"jsonrpc-lite": "2.2.0"` to workspace devDependencies so the baseline could still be measured. It can be removed again with the benchmark folder once the measurements are no longer needed.
