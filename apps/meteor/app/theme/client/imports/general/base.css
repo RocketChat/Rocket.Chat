@@ -110,3 +110,18 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+[dir] [class~='rcx-option__content'],
+[dir] [class~='rcx-select__focus'],
+[dir] [class~='rcx-select__placeholder'] {
+	text-align: start;
+}
+
+[dir] [class~='rcx-option'],
+[dir] [class~='rcx-option__title'] {
+	padding-inline: 0.75rem 1.5rem;
+}
+
+[dir] [class~='rcx-option__title'] {
+	text-align: start;
+}
