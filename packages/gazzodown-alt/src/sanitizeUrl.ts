@@ -1,6 +1,6 @@
 const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
 
-const hostPortPattern = /^[^\s:/?#]+:\d+(?:[/?#]|$)/;
+const hostPortPattern = /^[^\s:/?#]+\.[^\s:/?#]+:\d+(?:[/?#]|$)/;
 const rootRelativePattern = /^\/(?![/\\])[^\s]*$/;
 
 const parseUrl = (href: string): URL | undefined => {
@@ -20,10 +20,16 @@ export const sanitizeUrl = (href: string): string | undefined => {
 		return href;
 	}
 
-	const absolute = hostPortPattern.test(href) ? undefined : parseUrl(href);
+	const absolute = parseUrl(href);
 
 	if (absolute) {
-		return allowedProtocols.includes(absolute.protocol.toLowerCase()) ? absolute.href : undefined;
+		if (allowedProtocols.includes(absolute.protocol.toLowerCase())) {
+			return absolute.href;
+		}
+
+		if (!hostPortPattern.test(href)) {
+			return undefined;
+		}
 	}
 
 	const url = parseUrl(href.startsWith('//') ? `https:${href}` : `https://${href}`);

@@ -145,6 +145,8 @@ describe('link scheme policy', () => {
 		['https', 'see [x](https://rocket.chat/docs)', 'https://rocket.chat/docs'],
 		['mailto', 'see [x](mailto:me@rocket.chat)', 'mailto:me@rocket.chat'],
 		['tel', 'see [x](tel:+15551234567)', 'tel:+15551234567'],
+		['tel with a national number', 'see [x](tel:07563546725)', 'tel:07563546725'],
+		['tel with a short number', 'see [x](tel:5551)', 'tel:5551'],
 	])('keeps the href of a %s link', (_label, text, expected) => {
 		expect(hrefOf(text)).toBe(expected);
 	});
@@ -160,6 +162,9 @@ describe('link scheme policy', () => {
 		['ms-msdt', 'see [x](ms-msdt:/id)'],
 		['intent', 'see [x](intent://evil.example)'],
 		['jar', 'see [x](jar:http://evil.example/a.jar)'],
+		['javascript link shaped like a host and port', 'see [x](javascript:1/alert(1))'],
+		['data link shaped like a host and port', 'see [x](data:1)'],
+		['schemeless host with no dot', 'see [x](localhost:3000/admin)'],
 	])('refuses the href of a %s link', (_label, text) => {
 		expect(hrefOf(text)).toBeNull();
 	});
@@ -192,7 +197,6 @@ describe('schemeless links', () => {
 	it.each([
 		['bare domain with a port', 'see rocket.chat:8080 now', 'https://rocket.chat:8080/'],
 		['markdown link to a port', 'see [x](192.168.1.5:8080/admin)', 'https://192.168.1.5:8080/admin'],
-		['markdown link to a hostname with a port', 'see [x](localhost:3000/admin)', 'https://localhost:3000/admin'],
 	])('resolves a %s instead of reading the host as a scheme', (_label, text, expected) => {
 		expect(hrefOf(text)).toBe(expected);
 	});
