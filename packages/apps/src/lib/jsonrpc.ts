@@ -7,32 +7,8 @@
  * share this module: the host imports it directly, the app runtime through
  * `base-runtime/src/lib/jsonrpc`.
  *
- * Notably, this does NOT validate the messages it builds. `jsonrpc-lite` ran
- * `JSON.stringify` over every object it created just to assert it was
- * serializable, then threw the resulting string away. That is pure overhead
- * here: messages are serialized with msgpack, never with `JSON.stringify`, so
- * the check validated something we never do and rejected payloads (e.g.
- * `Buffer`s, circular-free but large graphs) that msgpack handles fine. The
- * factory helpers below simply construct the objects.
- *
- * An envelope is a plain object, and it goes on the wire as a plain msgpack map
- * of its own properties. Receivers categorize it with the type guards below.
- * A codec extension used to tag each envelope and rebuild a class instance on
- * decode; `benchmarks/jsonrpc/RESULTS.md` measured it as a net loss (0.88x
- * encode, 0.92x round-trip, for 0.4% of the wire) and it is gone. Every
- * TypeScript JSON-RPC implementation surveyed models the envelope this way, and
- * none of them rebuilds it on receive.
- *
- * The error payload is the one exception, because it is the one place where an
- * exact identity test earns its keep. So there are two names for it, the way
- * `vscode-jsonrpc`, `@metamask/rpc-errors`, `json-rpc-2.0` and tRPC each split
- * theirs. THE RULE: build a {@link JsonRpcError} in process and test it with
- * `instanceof`; read a payload that came off the wire as
- * {@link SerializedJsonRpcError}, and never test that one with `instanceof`.
- *
  * Every message also carries an optional `meta` bag, analogous to HTTP headers
- * (see {@link JsonRpcMeta}). A map carries the key for free, so `meta` crosses
- * the process boundary like any other property.
+ * (see {@link JsonRpcMeta}).
  */
 
 export type ID = string | number | null;
@@ -86,13 +62,6 @@ export type SerializedJsonRpcError = {
 };
 
 /**
- * An error payload, as a handler builds one. The class earns its place in exactly
- * one way: the runtime's main loop tests the value a handler returned to decide
- * between a success response and an error response. `instanceof` answers that
- * exactly. A shape test cannot - a successful result could carry a string
- * `message` next to a numeric `code` by accident, and the bridge would report a
- * failure the app never raised.
- *
  * Intentionally NOT an `Error` subclass: its `message`/`code`/`data` must be own,
  * enumerable properties so msgpack serializes them across the process boundary (an
  * `Error`'s `message` is non-enumerable and would be dropped). That is also why
@@ -148,12 +117,6 @@ export type RequestObject = {
 
 export type NotificationObject = {
 	jsonrpc: typeof JSONRPC_VERSION;
-	/**
-	 * A notification has no `id`. Declaring the slot as `undefined` keeps a
-	 * `RequestObject` from being assignable here - it is otherwise a structural
-	 * supertype, and narrowing the union by {@link isNotificationObject} would
-	 * then discard `RequestObject` too.
-	 */
 	id?: undefined;
 	method: string;
 	params?: RpcParams;
@@ -164,7 +127,6 @@ export type SuccessObject = {
 	jsonrpc: typeof JSONRPC_VERSION;
 	id: ID;
 	result: Defined;
-	/** A success never carries an error. Declaring the slot makes the union narrow. */
 	error?: undefined;
 	meta?: JsonRpcMeta;
 };
@@ -173,7 +135,6 @@ export type ErrorObject = {
 	jsonrpc: typeof JSONRPC_VERSION;
 	id: ID;
 	error: SerializedJsonRpcError;
-	/** An error never carries a result. Declaring the slot makes the union narrow. */
 	result?: undefined;
 	meta?: JsonRpcMeta;
 };
