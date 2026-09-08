@@ -1,0 +1,14 @@
+apps/meteor/client/views/account/profile/AccountProfileForm.tsx
+  ai_agent 81,181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bd92109a7add6d61a358c2a7acca1b77652b2979",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
