@@ -188,6 +188,9 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
+		// The dialog's remote sdp is replaced by any re-invite, so the answer must be read before anything is awaited.
+		const answerSdp = this.sipDialog.remote.sdp;
+
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - dialog created', callId: this.sipDialog.sip?.callId });
 		this.sipDialog.on('destroy', () => this.onDialogDestroyed());
 
@@ -200,9 +203,10 @@ export class OutgoingSipCall extends BaseSipCall {
 		// This will not do anything if the call is no longer waiting to be accepted.
 		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
-			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
+			webrtcAnswer: { type: 'answer', sdp: answerSdp },
 			supportedFeatures: SIP_CALL_FEATURES,
 			sipCallId: this.sipDialog.sip?.callId,
+			negotiationId: negotiation._id,
 		});
 	}
 
