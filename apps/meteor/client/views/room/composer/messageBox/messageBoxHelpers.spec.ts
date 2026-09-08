@@ -34,21 +34,38 @@ describe('getModifierClickHref', () => {
 	it('resolves the href on ctrl+click outside macOS', () => {
 		setPlatform('Linux x86_64');
 
-		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { ctrlKey: true })).toBe('https://rocket.chat');
+		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { ctrlKey: true })).toBe('https://rocket.chat/');
 		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { metaKey: true })).toBeUndefined();
 	});
 
 	it('resolves the href on cmd+click on macOS', () => {
 		setPlatform('MacIntel');
 
-		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { metaKey: true })).toBe('https://rocket.chat');
+		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { metaKey: true })).toBe('https://rocket.chat/');
 		expect(clickOn('<a href="https://rocket.chat">rocket.chat</a>', { ctrlKey: true })).toBeUndefined();
 	});
 
 	it('finds the link when the click lands on markup nested in it', () => {
 		setPlatform('Linux x86_64');
 
-		expect(clickOn('<a href="//rocket.chat/docs"><strong data-target>docs</strong></a>', { ctrlKey: true })).toBe('//rocket.chat/docs');
+		expect(clickOn('<a href="//rocket.chat/docs"><strong data-target>docs</strong></a>', { ctrlKey: true })).toBe(
+			'https://rocket.chat/docs',
+		);
+	});
+
+	it.each([
+		['a schemeless href', 'rocket.chat/docs', 'https://rocket.chat/docs'],
+		['a host:port href', 'rocket.chat:8080', 'https://rocket.chat:8080/'],
+	])('resolves %s to the target the renderer validated instead of a same-origin path', (_label, href, expected) => {
+		setPlatform('Linux x86_64');
+
+		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBe(expected);
+	});
+
+	it('keeps a root-relative href relative so it resolves against this server', () => {
+		setPlatform('Linux x86_64');
+
+		expect(clickOn('<a href="/admin/rooms">x</a>', { ctrlKey: true })).toBe('/admin/rooms');
 	});
 
 	it('ignores a click outside a link', () => {
@@ -149,6 +166,13 @@ describe('pasting into the composer', () => {
 		['a styled fragment', '<b style="color:red">bold</b>', 'bold'],
 	])('intercepts a paste carrying %s and yields only its plain text', (_label, html, plain) => {
 		expect(extractPastedPlainText?.(clipboardEvent({ 'text/html': html, 'text/plain': plain }))).toBe(plain);
+	});
+
+	it.each([
+		['an anchor', '<a href="javascript:alert(1)">docs</a>', 'docs'],
+		['a styled fragment', '<b style="color:red">bold</b>', 'bold'],
+	])('falls back to the text of %s when the clipboard carries no plain text', (_label, html, expected) => {
+		expect(extractPastedPlainText?.(clipboardEvent({ 'text/html': html }))).toBe(expected);
 	});
 
 	it('lets a plain-text-only paste reach the browser default', () => {

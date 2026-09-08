@@ -26,11 +26,7 @@ export const getModifierClickHref = (event: MouseEvent<HTMLElement>): string | u
 
 	const href = getClickedLink(event)?.getAttribute('href');
 
-	if (!href || !sanitizeUrl(href)) {
-		return undefined;
-	}
-
-	return href;
+	return href ? sanitizeUrl(href) : undefined;
 };
 
 export const handleFormattingShortcut = (
@@ -68,7 +64,16 @@ export const extractPastedPlainText = (event: ClipboardEvent<HTMLElement>): stri
 		return undefined;
 	}
 
-	return clipboardData.getData('text/plain');
+	const plainText = clipboardData.getData('text/plain');
+
+	if (plainText) {
+		return plainText;
+	}
+
+	// A clipboard carrying only HTML would otherwise paste nothing; DOMParser neither runs scripts nor loads resources.
+	const html = clipboardData.getData('text/html');
+
+	return html ? (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '') : '';
 };
 
 export const extractImageFilesFromClipboard = (event: ClipboardEvent<HTMLElement>, format: (date: Date) => string): File[] => {
