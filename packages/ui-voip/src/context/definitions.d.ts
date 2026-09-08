@@ -33,6 +33,7 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	ringing?: boolean;
 	supportedFeatures: readonly CallFeature[];
 }
 
