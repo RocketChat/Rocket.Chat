@@ -26,11 +26,35 @@ cn: LDAP E2E
 sn: E2E
 mail: ldap.e2e@space.air
 uid: ldap.e2e
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+dn: uid=ldap.avatar,ou=others,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: LDAP Avatar
+sn: Avatar
+mail: ldap.avatar@space.air
+uid: ldap.avatar
 jpegPhoto:: /9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHB
  YWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCg
  oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAACAAIDASIAAhEBAxEB/8QAFQAB
  AQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAA
  AAAB//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AIMAnDx//9k=
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+dn: uid=ldap.sync,ou=others,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: LDAP Sync
+sn: Sync
+mail: ldap.sync@space.air
+uid: ldap.sync
 userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
  1RaVHZJPQ==
 
