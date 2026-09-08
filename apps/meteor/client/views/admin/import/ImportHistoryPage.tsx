@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -131,71 +131,73 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Table fixed data-qa-id='ImportTable'>
-					<TableHead>
-						<TableRow>
-							<TableCell is='th' rowSpan={2} width='x140'>
-								{t('Import_Type')}
-							</TableCell>
-							<TableCell is='th' rowSpan={2}>
-								{t('Last_Updated')}
-							</TableCell>
+				<Box width='full' overflowX='auto'>
+					<Table fixed data-qa-id='ImportTable' style={{ minWidth: small ? '520px' : '960px' }}>
+						<TableHead>
+							<TableRow>
+								<TableCell is='th' rowSpan={2} width='x140'>
+									{t('Import_Type')}
+								</TableCell>
+								<TableCell is='th' rowSpan={2}>
+									{t('Last_Updated')}
+								</TableCell>
+								{!small && (
+									<>
+										<TableCell is='th' rowSpan={2}>
+											{t('Last_Status')}
+										</TableCell>
+										<TableCell is='th' rowSpan={2}>
+											{t('File')}
+										</TableCell>
+										<TableCell is='th' align='center' colSpan={5} width='x320'>
+											{t('Counters')}
+										</TableCell>
+									</>
+								)}
+							</TableRow>
 							{!small && (
+								<TableRow>
+									<TableCell is='th' align='center'>
+										{t('Users')}
+									</TableCell>
+									<TableCell is='th' align='center'>
+										{t('Contacts')}
+									</TableCell>
+									<TableCell is='th' align='center'>
+										{t('Channels')}
+									</TableCell>
+									<TableCell is='th' align='center'>
+										{t('Messages')}
+									</TableCell>
+									<TableCell is='th' align='center'>
+										{t('Total')}
+									</TableCell>
+								</TableRow>
+							)}
+						</TableHead>
+						<TableBody>
+							{isLoading && (
 								<>
-									<TableCell is='th' rowSpan={2}>
-										{t('Last_Status')}
-									</TableCell>
-									<TableCell is='th' rowSpan={2}>
-										{t('File')}
-									</TableCell>
-									<TableCell is='th' align='center' colSpan={4} width='x320'>
-										{t('Counters')}
-									</TableCell>
+									{Array.from({ length: 20 }, (_, i) => (
+										<ImportOperationSummarySkeleton key={i} small={small} />
+									))}
 								</>
 							)}
-						</TableRow>
-						{!small && (
-							<TableRow>
-								<TableCell is='th' align='center'>
-									{t('Users')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Contacts')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Channels')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Messages')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Total')}
-								</TableCell>
-							</TableRow>
-						)}
-					</TableHead>
-					<TableBody>
-						{isLoading && (
-							<>
-								{Array.from({ length: 20 }, (_, i) => (
-									<ImportOperationSummarySkeleton key={i} small={small} />
-								))}
-							</>
-						)}
 
-						{currentOperation.isSuccess && currentOperation.data.valid && (
-							<ImportOperationSummary {...currentOperation.data} small={small} />
-						)}
-						{currentOperation.isSuccess && latestOperations.isSuccess && (
-							<>
-								{latestOperations.data
-									.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
-									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
-									?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
-							</>
-						)}
-					</TableBody>
-				</Table>
+							{currentOperation.isSuccess && currentOperation.data.valid && (
+								<ImportOperationSummary {...currentOperation.data} small={small} />
+							)}
+							{currentOperation.isSuccess && latestOperations.isSuccess && (
+								<>
+									{latestOperations.data
+										.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
+										// Forcing valid=false as the current API only accept preparation/progress over currentOperation
+										?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
+								</>
+							)}
+						</TableBody>
+					</Table>
+				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
 	);
