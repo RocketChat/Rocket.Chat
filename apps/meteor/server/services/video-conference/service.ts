@@ -546,7 +546,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		if (this.isEmbeddedProvider(call.providerName)) {
-			await this.notifyUsersOfRoom(call.rid, '', 'end', {
+			await this.notifyCallAndRoomUsers(call, 'end', {
 				callId: call._id,
 				rid: call.rid,
 				uid: call.createdBy._id,
@@ -876,6 +876,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			callId,
 			calleeId,
 		};
+	}
+
+	/**
+	 * Everyone the end of a call concerns, which is not the same as everyone in its room.
+	 *
+	 * Being added to a conference grants no room access — the third person in a DM call is a member of the call
+	 * with no subscription to the DM it started in — so a broadcast that walks subscriptions alone never reached
+	 * them, and their window went on showing a call that had ended. Their own membership is added to the room's,
+	 * the way `assignDiscussionToConference` does it when the chat moves.
+	 *
+	 * Only the end is broadcast this way. `ring` and `started` are about a call appearing in a room, and someone
+	 * outside that room learns of it by being rung rather than by watching the room.
+	 */
+	private async notifyCallAndRoomUsers(
+		call: AtLeast<VideoConference, '_id' | 'rid' | 'users'>,
+		action: string,
+		params: { uid: IUser['_id']; rid: IRoom['_id']; callId: VideoConference['_id'] },
+	): Promise<void> {
+		const roomMemberIds = (await Subscriptions.findByRoomId(call.rid, { projection: { 'u._id': 1 } }).toArray()).map(({ u }) => u._id);
+		const recipients = new Set([...roomMemberIds, ...call.users.map(({ _id }) => _id)]);
+
+		recipients.forEach((userId) => this.notifyUser(userId, action, params));
 	}
 
 	private async notifyUsersOfRoom(
