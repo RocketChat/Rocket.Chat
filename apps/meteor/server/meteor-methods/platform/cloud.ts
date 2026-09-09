@@ -5,12 +5,10 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { buildWorkspaceRegistrationData } from '../../lib/cloud/buildRegistrationData';
 import { checkUserHasCloudLogin } from '../../lib/cloud/checkUserHasCloudLogin';
-import { connectWorkspace } from '../../lib/cloud/connectWorkspace';
 import { finishOAuthAuthorization } from '../../lib/cloud/finishOAuthAuthorization';
 import { getOAuthAuthorizationUrl } from '../../lib/cloud/getOAuthAuthorizationUrl';
 import { retrieveRegistrationStatus } from '../../lib/cloud/retrieveRegistrationStatus';
 import { startRegisterWorkspace } from '../../lib/cloud/startRegisterWorkspace';
-import { syncWorkspace } from '../../lib/cloud/syncWorkspace';
 import { userLogout } from '../../lib/cloud/userLogout';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
@@ -26,8 +24,6 @@ declare module '@rocket.chat/ddp-client' {
 		};
 		'cloud:getWorkspaceRegisterData': () => string;
 		'cloud:registerWorkspace': () => boolean;
-		'cloud:syncWorkspace': () => boolean;
-		'cloud:connectWorkspace': (token: string) => boolean | Error;
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
 		'cloud:checkUserLoggedIn': () => boolean;
@@ -91,51 +87,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return startRegisterWorkspace();
-	},
-	async 'cloud:syncWorkspace'() {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:syncWorkspace',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:syncWorkspace',
-			});
-		}
-
-		await syncWorkspace();
-
-		return true;
-	},
-	async 'cloud:connectWorkspace'(token) {
-		methodDeprecationLogger.method('cloud:connectWorkspace', '9.0.0', '/v1/cloud.connectWorkspace');
-		check(token, String);
-
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:connectWorkspace',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:connectWorkspace',
-			});
-		}
-
-		if (!token) {
-			throw new Meteor.Error('error-invalid-payload', 'Token is required.', {
-				method: 'cloud:connectWorkspace',
-			});
-		}
-
-		return connectWorkspace(token);
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	async 'cloud:getOAuthAuthorizationUrl'() {

@@ -1,12 +1,10 @@
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
@@ -59,13 +57,6 @@ type UserPreferences = {
 	utcOffset?: number;
 	statusVisibilityDenied?: string[];
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
-	}
-}
 
 async function updateNotificationPreferences(
 	userId: ISubscription['u']['_id'],
@@ -281,17 +272,3 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		}
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async saveUserPreferences(settings) {
-		methodDeprecationLogger.method('saveUserPreferences', '9.0.0', '/v1/users.setPreferences');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveUserPreferences' });
-		}
-
-		await saveUserPreferences(settings, userId);
-
-		return true;
-	},
-});
