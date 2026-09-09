@@ -1983,6 +1983,100 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		describe('custom fields filter', () => {
+			let cfUser: TestUser<IUser>;
+			const cfValue = `ext-${Date.now()}`;
+
+			before(async () => {
+				await updateSetting('Accounts_CustomFields', JSON.stringify({ externalId: { type: 'text', required: false } }));
+
+				cfUser = await createUser();
+
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: cfUser._id, data: { customFields: { externalId: cfValue } } })
+					.expect(200);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('Accounts_CustomFields', ''),
+					restorePermissionToRoles('view-full-other-user-info'),
+					deleteUser(cfUser),
+				]);
+			});
+
+			it('should return only the user matching the custom field value', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }) })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('total', 1);
+				expect(response.body.users).to.be.an('array').with.lengthOf(1);
+				expect(response.body.users[0]).to.have.property('_id', cfUser._id);
+			});
+
+			it('should return nothing when the value does not match', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: 'no-such-value' }) })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('total', 0);
+			});
+
+			it('should not accept a mongo operator as a value', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: { $ne: null } }) })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(response.body).to.have.property('success', false);
+			});
+
+			it('should return the custom fields when includeCustomFields is set', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }), includeCustomFields: 'true' })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body.users[0]).to.have.nested.property('customFields.externalId', cfValue);
+			});
+
+			it('should not return the custom fields unless includeCustomFields is set', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }) })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body.users[0]).to.not.have.property('customFields');
+			});
+
+			it('should forbid both filtering and reading without view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				await request
+					.get(api('users.list'))
+					.set(user2Credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }) })
+					.expect(403);
+
+				await request.get(api('users.list')).set(user2Credentials).query({ includeCustomFields: 'true' }).expect(403);
+			});
+		});
+
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
