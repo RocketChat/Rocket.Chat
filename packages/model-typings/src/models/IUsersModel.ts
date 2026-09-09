@@ -586,6 +586,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		freeSwitchExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		phoneNumber: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
