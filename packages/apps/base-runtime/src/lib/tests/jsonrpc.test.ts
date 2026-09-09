@@ -95,6 +95,71 @@ describe('jsonrpc', () => {
 		});
 	});
 
+	describe('guards', () => {
+		const guards = {
+			request: jsonrpc.isRequestObject,
+			notification: jsonrpc.isNotificationObject,
+			success: jsonrpc.isSuccessObject,
+			error: jsonrpc.isErrorObject,
+		};
+
+		/** No guard but the named one may accept the message; `none` means every guard rejects it. */
+		const assertCategorizesAs = (kind: keyof typeof guards | 'none', message: unknown) => {
+			for (const [name, guard] of Object.entries(guards)) {
+				assert.strictEqual(guard(message), name === kind, `${name} guard on ${JSON.stringify(message)}`);
+			}
+		};
+
+		it('should accept each shape the factories build', () => {
+			assertCategorizesAs('request', jsonrpc.request('id-1', 'app:getStatus'));
+			assertCategorizesAs('notification', jsonrpc.notification('ready', []));
+			assertCategorizesAs('success', jsonrpc.success('id-1', { value: null }));
+			assertCategorizesAs('error', jsonrpc.error('id-1', jsonrpc.JsonRpcError.internalError()));
+		});
+
+		it('should accept the id types JSON-RPC 2.0 allows', () => {
+			assertCategorizesAs('request', jsonrpc.request(1, 'app:getStatus'));
+			assertCategorizesAs('request', jsonrpc.request(null, 'app:getStatus'));
+			// `parseMessage` and the invalid-request path both answer with a null id.
+			assertCategorizesAs('error', jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(null)));
+		});
+
+		it('should reject a response that carries both result and error', () => {
+			// The host tests for a success first, so an ambiguous map used to resolve the
+			// pending request as successful and drop the error alongside it.
+			assertCategorizesAs('none', {
+				jsonrpc: '2.0',
+				id: 'id-1',
+				result: { value: null },
+				error: { message: 'boom', code: jsonrpc.SERVER_ERROR },
+			});
+		});
+
+		it('should reject a response with no id', () => {
+			assertCategorizesAs('none', { jsonrpc: '2.0', result: { value: null } });
+			assertCategorizesAs('none', { jsonrpc: '2.0', error: { message: 'boom', code: jsonrpc.SERVER_ERROR } });
+		});
+
+		it('should reject a request whose id is neither a string, a number, nor null', () => {
+			for (const id of [{}, [], true, Symbol('id')]) {
+				assertCategorizesAs('none', { jsonrpc: '2.0', id, method: 'app:getStatus' });
+			}
+		});
+
+		it('should reject a foreign object and a wrong version', () => {
+			assertCategorizesAs('none', { id: 'id-1', method: 'app:getStatus' });
+			assertCategorizesAs('none', { jsonrpc: '1.0', id: 'id-1', method: 'app:getStatus' });
+			assertCategorizesAs('none', null);
+			assertCategorizesAs('none', 'a string');
+		});
+
+		it('should reject an error payload that is not a SerializedJsonRpcError', () => {
+			assertCategorizesAs('none', { jsonrpc: '2.0', id: 'id-1', error: 'boom' });
+			assertCategorizesAs('none', { jsonrpc: '2.0', id: 'id-1', error: { message: 'boom' } });
+			assertCategorizesAs('none', { jsonrpc: '2.0', id: 'id-1', error: { code: jsonrpc.SERVER_ERROR } });
+		});
+	});
+
 	describe('error', () => {
 		it('should keep the meta it receives', () => {
 			const message = jsonrpc.error(1, jsonrpc.JsonRpcError.internalError('cause'), meta);
