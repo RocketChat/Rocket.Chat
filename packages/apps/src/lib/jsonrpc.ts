@@ -210,20 +210,40 @@ function isEnvelope(message: unknown): message is JsonRpc {
 	return typeof message === 'object' && message !== null && (message as JsonRpc).jsonrpc === JSONRPC_VERSION;
 }
 
+/**
+ * JSON-RPC 2.0 allows a string, a number, or null in the `id` slot, and nothing else.
+ * The guards check the type rather than only the presence of the key, because the id
+ * is what routes a response back to its pending request: an object or an array there
+ * would resolve `result:[object Object]` and orphan the call it belongs to.
+ */
+function isValidId(value: unknown): value is ID {
+	return typeof value === 'string' || typeof value === 'number' || value === null;
+}
+
 export function isRequestObject(message: unknown): message is RequestObject {
-	return isEnvelope(message) && typeof (message as RequestObject).method === 'string' && 'id' in message;
+	return isEnvelope(message) && typeof (message as RequestObject).method === 'string' && isValidId((message as RequestObject).id);
 }
 
 export function isNotificationObject(message: unknown): message is NotificationObject {
 	return isEnvelope(message) && typeof (message as NotificationObject).method === 'string' && !('id' in message);
 }
 
+/**
+ * The response guards are mutually exclusive on purpose. `BaseRuntimeSubprocessController`
+ * tests for a success first, so a map carrying both slots would resolve the pending request
+ * as successful and drop the error it also carried.
+ */
 export function isSuccessObject(message: unknown): message is SuccessObject {
-	return isEnvelope(message) && 'result' in message;
+	return isEnvelope(message) && 'result' in message && !('error' in message) && isValidId((message as SuccessObject).id);
 }
 
 export function isErrorObject(message: unknown): message is ErrorObject {
-	return isEnvelope(message) && isSerializedJsonRpcError((message as ErrorObject).error);
+	return (
+		isEnvelope(message) &&
+		!('result' in message) &&
+		isSerializedJsonRpcError((message as ErrorObject).error) &&
+		isValidId((message as ErrorObject).id)
+	);
 }
 
 export function isJsonRpc(message: unknown): message is JsonRpc {
