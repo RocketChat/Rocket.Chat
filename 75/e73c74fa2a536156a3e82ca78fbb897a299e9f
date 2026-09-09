@@ -1,0 +1,14 @@
+.changeset/meteor-3-5.md
+  h_4c386397e672f4 2,5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "75e73c74fa2a536156a3e82ca78fbb897a299e9f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
