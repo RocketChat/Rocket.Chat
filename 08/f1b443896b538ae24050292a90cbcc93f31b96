@@ -1,0 +1,21 @@
+packages/rest-typings/src/v1/groups/GroupsListAllProps.ts
+  s_d2d9ee37d80481::t_ae22915bb49c26 11
+packages/rest-typings/src/v1/channels/ChannelsListProps.ts
+  s_d2d9ee37d80481::t_ae22915bb49c26 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "08f1b443896b538ae24050292a90cbcc93f31b96",
+  "prompts": {},
+  "sessions": {
+    "s_d2d9ee37d80481": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4489598-8e02-4a87-8bbf-53585969c0ef",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
