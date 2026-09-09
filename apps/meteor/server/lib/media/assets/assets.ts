@@ -4,7 +4,6 @@ import type { ServerResponse, IncomingMessage } from 'node:http';
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { NextHandleFunction } from 'connect';
-import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import sharp from 'sharp';
@@ -243,7 +242,7 @@ class RocketChatAssetsClass {
 		}
 
 		if (assetInstance.constraints.width || assetInstance.constraints.height) {
-			const dimensions = sizeOf(file);
+			const dimensions = await sharp(file).metadata();
 			if (assetInstance.constraints.width && assetInstance.constraints.width !== dimensions.width) {
 				throw new Meteor.Error('error-invalid-file-width', 'Invalid file width', {
 					function: 'Invalid file width',
