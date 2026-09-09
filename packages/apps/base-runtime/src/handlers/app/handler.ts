@@ -97,6 +97,15 @@ export default async function handleApp(request: RequestContext): Promise<Define
 
 		return await result.then(formatResult);
 	} catch (e: unknown) {
+		// `JsonRpcError` is deliberately not an `Error` subclass (see `lib/jsonrpc.ts`), so
+		// it has to be recognized before the native `Error` check below. Without this branch
+		// the `METHOD_NOT_FOUND` thrown above falls through to `SERVER_ERROR` and loses its
+		// code, which the host branches on. Every sub-handler catches its own errors today,
+		// so this branch also keeps the code of any payload one of them starts to reject with.
+		if (e instanceof JsonRpcError) {
+			return e;
+		}
+
 		if (!(e instanceof Error)) {
 			return new JsonRpcError('Unknown error', SERVER_ERROR, e);
 		}
