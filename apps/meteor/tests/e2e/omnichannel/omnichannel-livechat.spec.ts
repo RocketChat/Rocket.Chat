@@ -90,10 +90,12 @@ test.describe.serial('OC - Livechat', () => {
 		});
 
 		await test.step('expect unread counter to be empty after user sends a message after reload', async () => {
+			const message = 'this_a_test_message_from_user_after_reload';
+
 			await poLiveChat.openAnyLiveChat();
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+			await poLiveChat.onlineAgentMessage.fill(message);
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage(message)).toBeVisible();
 			await expect(poLiveChat.unreadMessagesBadge(2)).toHaveCount(0);
 			await expect(poLiveChat.unreadMessagesBadge(1)).toHaveCount(0);
 		});
