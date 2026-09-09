@@ -81,6 +81,7 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 		Messages: { setBlocksById: sinon.stub().resolves() },
 		Subscriptions: {
 			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
+			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }),
 		},
 	},
 	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },

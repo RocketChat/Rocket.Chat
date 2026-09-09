@@ -54,6 +54,9 @@ const VideoConfService = createService({
 					return Promise.resolve();
 				},
 			}),
+			// The same room read as a list, which is how the end-of-call broadcast asks for it: it adds the call's
+			// own members to these, and a member with no subscription here is the case that needs the union.
+			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([{ u: { _id: 'other' } }]) }),
 		},
 	},
 	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
@@ -212,6 +215,21 @@ describe('VideoConfService.leaveCall', () => {
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(endNotifiedUserIds()).to.include('other');
+	});
+
+	// Being added to a conference grants no room access, so a member can have no subscription to the room the
+	// call started in — the third person in a DM call is exactly that. A broadcast that walked subscriptions
+	// alone never reached them, and their window went on showing a call that had ended.
+	it('tells a member with no subscription to the room that the call ended', async () => {
+		providerCapabilities.current = { embedded: true };
+		// Added to the call and still ringing, so the call empties when the creator goes: `invited` is in the
+		// membership without ever having been in the room.
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'invited', joined: false })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(endNotifiedUserIds()).to.include('invited');
 	});
 });
 
