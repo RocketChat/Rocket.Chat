@@ -1798,6 +1798,15 @@ describe('[Groups]', () => {
 				expect(response.body.groups).to.be.an('array').that.is.empty;
 			});
 
+			it('should reject an empty customFields parameter instead of ignoring it', async () => {
+				await request
+					.get(api('groups.listAll'))
+					.set(credentials)
+					.query({ customFields: '' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
 			it('should reject a mongo operator as a value', async () => {
 				const response = await request
 					.get(api('groups.listAll'))
