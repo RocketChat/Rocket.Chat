@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 
-import type { RoomToolboxLayoutConfig, RoomToolboxLayoutItem } from './processRoomActions';
+import type { RoomToolboxLayoutConfig } from './processRoomActions';
 
 export const ROOM_TOOLBOX_LAYOUT_ROOM_TYPES = ['c', 'p', 'd'] as const;
 
@@ -12,70 +12,7 @@ export type RoomToolboxLayoutScope = RoomToolboxLayoutConfig & {
 
 export type RoomToolboxLayoutSetting = RoomToolboxLayoutScope[];
 
-const isRoomToolboxLayoutRoomType = (value: unknown): value is RoomToolboxLayoutRoomType =>
-	typeof value === 'string' && ROOM_TOOLBOX_LAYOUT_ROOM_TYPES.includes(value as RoomToolboxLayoutRoomType);
-
-const isValidRoomTypeList = (value: unknown): value is RoomToolboxLayoutRoomType[] =>
-	Array.isArray(value) && value.length > 0 && value.every(isRoomToolboxLayoutRoomType);
-
-const isValidLayoutItem = (value: unknown): value is RoomToolboxLayoutItem => {
-	if (typeof value !== 'object' || value === null) {
-		return false;
-	}
-	const candidate = value as Record<string, unknown>;
-	return (
-		typeof candidate.id === 'string' &&
-		(candidate.featured === undefined || typeof candidate.featured === 'boolean') &&
-		(candidate.order === undefined || (typeof candidate.order === 'number' && Number.isFinite(candidate.order)))
-	);
-};
-
-const isValidLayoutScope = (value: unknown): value is RoomToolboxLayoutScope => {
-	if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-		return false;
-	}
-	const candidate = value as Record<string, unknown>;
-
-	if (!isValidRoomTypeList(candidate.roomType)) {
-		return false;
-	}
-
-	if (Array.isArray(candidate.items)) {
-		if (!candidate.items.every(isValidLayoutItem)) {
-			return false;
-		}
-	} else if (candidate.items !== undefined) {
-		return false;
-	}
-
-	if (
-		candidate.maxVisibleNormal !== undefined &&
-		(typeof candidate.maxVisibleNormal !== 'number' || !Number.isFinite(candidate.maxVisibleNormal))
-	) {
-		return false;
-	}
-
-	return true;
-};
-
-const hasOverlappingRoomTypes = (scopes: RoomToolboxLayoutScope[]): boolean => {
-	const claimed = new Set<RoomToolboxLayoutRoomType>();
-	for (const scope of scopes) {
-		for (const roomType of scope.roomType) {
-			if (claimed.has(roomType)) {
-				return true;
-			}
-			claimed.add(roomType);
-		}
-	}
-	return false;
-};
-
 export const parseLayoutSetting = (raw: string): RoomToolboxLayoutSetting | null => {
-	if (!raw) {
-		return null;
-	}
-
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(raw);
@@ -83,24 +20,13 @@ export const parseLayoutSetting = (raw: string): RoomToolboxLayoutSetting | null
 		return null;
 	}
 
-	if (!Array.isArray(parsed) || !parsed.every(isValidLayoutScope)) {
-		return null;
-	}
-
-	if (hasOverlappingRoomTypes(parsed)) {
-		return null;
-	}
-
-	return parsed;
+	return Array.isArray(parsed) ? (parsed as RoomToolboxLayoutSetting) : null;
 };
 
 export const resolveLayoutForRoomType = (raw: string, roomType: RoomType): RoomToolboxLayoutConfig | null => {
 	const scopes = parseLayoutSetting(raw);
-	if (!scopes) {
-		return null;
-	}
 
-	const scope = scopes.find((candidate) => candidate.roomType.includes(roomType as RoomToolboxLayoutRoomType));
+	const scope = scopes?.find(({ roomType: roomTypes }) => roomTypes?.includes(roomType as RoomToolboxLayoutRoomType));
 	if (!scope) {
 		return null;
 	}

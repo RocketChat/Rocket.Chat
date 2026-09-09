@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import roomToolboxLayoutSchema from '../../lib/roomToolboxLayout/room-toolbox-layout.schema.json';
 
 export const createLayoutSettings = () =>
 	settingsRegistry.addGroup('Layout', async function () {
@@ -224,6 +225,7 @@ export const createLayoutSettings = () =>
 				enableQuery: [{ _id: 'Accounts_AllowFeaturePreview', value: true }],
 				i18nLabel: 'Room_Toolbox_Layout',
 				i18nDescription: 'Room_Toolbox_Layout_Setting_description',
+				schema: roomToolboxLayoutSchema,
 			});
 		});
 	});

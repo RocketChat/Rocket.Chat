@@ -6,4 +6,4 @@
 
 Adds a configurable **Room Toolbox Layout**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Room → **Room Toolbox Layout**). While the feature preview is off, the room header toolbox keeps its current behavior and the setting has no effect.
 
-Admins can define the layout through the new workspace setting **Room Toolbox Layout** (`Room_Toolbox_Layout`) under **Admin → Settings → Layout → Room Header**, which is itself only shown when **Feature Preview** is enabled for the workspace
+Admins can define the layout through the new workspace setting **Room Toolbox Layout** (`Room_Toolbox_Layout`) under **Admin → Settings → Layout → Room Header**, which is itself only shown when **Feature Preview** is enabled for the workspace. The setting value is validated against a JSON schema when saved, so a malformed configuration is rejected with an error instead of being silently ignored
