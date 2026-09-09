@@ -1,16 +1,8 @@
-import { parseLayoutSetting, resolveLayoutForRoomType } from './parseLayoutSetting';
+import { resolveLayoutForRoomType } from './parseLayoutSetting';
 
 const setting = (value: unknown) => JSON.stringify(value);
 
-describe('parseLayoutSetting', () => {
-	it('should return the entries as they were saved', () => {
-		const raw = setting([{ roomType: ['c', 'p'], maxVisibleNormal: 4, items: [{ id: 'thread', featured: true, order: 1 }] }]);
-
-		expect(parseLayoutSetting(raw)).toEqual([
-			{ roomType: ['c', 'p'], maxVisibleNormal: 4, items: [{ id: 'thread', featured: true, order: 1 }] },
-		]);
-	});
-
+describe('resolveLayoutForRoomType', () => {
 	it.each([
 		['an empty string', ''],
 		['invalid JSON', '{ invalid json }'],
@@ -19,11 +11,9 @@ describe('parseLayoutSetting', () => {
 		['a JSON primitive', '42'],
 		['null', 'null'],
 	])('should return null when the setting is %s', (_, raw) => {
-		expect(parseLayoutSetting(raw)).toBeNull();
+		expect(resolveLayoutForRoomType(raw, 'c')).toBeNull();
 	});
-});
 
-describe('resolveLayoutForRoomType', () => {
 	const raw = setting([
 		{ roomType: ['c', 'p'], maxVisibleNormal: 4, items: [{ id: 'thread', featured: true, order: 1 }] },
 		{ roomType: ['d'], maxVisibleNormal: 1, items: [{ id: 'discussions', order: 1 }] },
@@ -64,11 +54,8 @@ describe('resolveLayoutForRoomType', () => {
 		expect(resolveLayoutForRoomType(setting([]), 'c')).toBeNull();
 	});
 
-	it('should skip entries left without a roomType by an older configuration', () => {
-		expect(resolveLayoutForRoomType(setting([{ maxVisibleNormal: 2 }, { roomType: ['c'], maxVisibleNormal: 4 }]), 'c')).toEqual({
-			maxVisibleNormal: 4,
-			items: undefined,
-		});
+	it('should return null when an entry declares no roomType, as the schema requires one', () => {
+		expect(resolveLayoutForRoomType(setting([{ maxVisibleNormal: 2 }, { roomType: ['c'], maxVisibleNormal: 4 }]), 'c')).toBeNull();
 	});
 
 	describe('when the value did not go through schema validation', () => {
@@ -97,6 +84,13 @@ describe('resolveLayoutForRoomType', () => {
 			['an item order is an object', setting([{ roomType: ['c'], items: [{ id: 'thread', order: {} }] }])],
 			['an item order is null', setting([{ roomType: ['c'], items: [{ id: 'thread', order: null }] }])],
 			['an item order parses to Infinity', '[{"roomType":["c"],"items":[{"id":"thread","order":1e999}]}]'],
+			['the setting is an empty list', setting([])],
+			['an entry carries an unknown key', setting([{ roomType: ['c'], somethingElse: true }])],
+			['an item carries an unknown key', setting([{ roomType: ['c'], items: [{ id: 'thread', pinned: true }] }])],
+			['an item id is empty', setting([{ roomType: ['c'], items: [{ id: '' }] }])],
+			['an item order is fractional', setting([{ roomType: ['c'], items: [{ id: 'thread', order: 1.5 }] }])],
+			['maxVisibleNormal is negative', setting([{ roomType: ['c'], maxVisibleNormal: -1 }])],
+			['maxVisibleNormal is fractional', setting([{ roomType: ['c'], maxVisibleNormal: 1.5 }])],
 		])('should return null so the toolbox keeps its default layout when %s', (_, raw) => {
 			expect(resolveLayoutForRoomType(raw, 'c')).toBeNull();
 		});

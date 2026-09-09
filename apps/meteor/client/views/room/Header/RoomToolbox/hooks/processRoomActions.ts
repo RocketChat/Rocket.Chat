@@ -37,21 +37,9 @@ const groupActionsByType = (actions: RoomToolboxBaseAction[]): RoomToolboxHidden
 	return Array.from(sectionsMap.values());
 };
 
-export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
+export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig) => {
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
-
-	if (!config) {
-		const hiddenActions: RoomToolboxHiddenSection[] = [];
-		if (appActions.length > 0) {
-			hiddenActions.push({ id: 'apps', items: appActions });
-		}
-		return {
-			featuredActions: [] as RoomToolboxBaseAction[],
-			visibleActions: nonAppActions,
-			hiddenActions,
-		};
-	}
 
 	const itemMap = new Map((config.items || []).map((item) => [item.id, item]));
 
@@ -71,7 +59,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 	featuredWithOrder.sort(compareByOrder);
 	normalWithOrder.sort(compareByOrder);
 
-	const maxVisible = Math.max(0, Math.floor(config.maxVisibleNormal ?? 6));
+	const maxVisible = config.maxVisibleNormal ?? 6;
 	const visibleActions = normalWithOrder.slice(0, maxVisible).map((n) => n.action);
 	const overflowNormalActions = normalWithOrder.slice(maxVisible).map((n) => n.action);
 

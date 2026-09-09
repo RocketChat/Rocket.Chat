@@ -60,12 +60,6 @@ describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 		];
 		expect(allRenderedIds).toContain('brand-new-action');
 	});
-	it('should safely fall back to legacy ordering if the provided layout config is invalid or empty', () => {
-		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
-		const config = null;
-		const result = processRoomActions(actionsBase, config);
-		expect(result.visibleActions.length).toBeGreaterThan(0);
-	});
 	it('should return base actions unchanged when the config has no items', () => {
 		const actionsBase = [{ id: 'thread' }, { id: 'start-call' }];
 		const config = {
@@ -106,9 +100,9 @@ describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 		const hiddenIds = result.hiddenActions.flatMap((section) => section.items.map((i) => i.id));
 		expect(hiddenIds).toEqual(['7']);
 	});
-	it('should force app actions into hiddenActions even when config is null', () => {
+	it('should force app actions into hiddenActions', () => {
 		const actionsBase = [{ id: 'app-x', type: 'apps' }, { id: 'thread' }];
-		const result = processRoomActions(actionsBase, null);
+		const result = processRoomActions(actionsBase, { maxVisibleNormal: 6 });
 		expect(result.visibleActions.map((a) => a.id)).toEqual(['thread']);
 		expect(result.hiddenActions).toMatchObject([{ id: 'apps', items: [{ id: 'app-x' }] }]);
 	});
@@ -174,10 +168,10 @@ describe('RoomToolbox Layout Engine (processRoomActions)', () => {
 		const result = processRoomActions(actionsBase, config);
 		expect(result.featuredActions.map((a) => a.id)).toEqual(['thread', 'start-call']);
 	});
-	it('should treat negative maxVisibleNormal as 0, hiding all normal actions', () => {
+	it('should hide all normal actions when maxVisibleNormal is 0', () => {
 		const actionsBase = [{ id: 'thread' }, { id: 'search' }];
 		const config = {
-			maxVisibleNormal: -3,
+			maxVisibleNormal: 0,
 			items: [
 				{ id: 'thread', featured: false, order: 1 },
 				{ id: 'search', featured: false, order: 2 },
