@@ -22,16 +22,14 @@ guess at:
    whether we expose durable multi-step flows beyond single modals. **Decision
    needed:** how durable, and how long?
 
-3. **Backward compatibility.** Do we ship a compatibility shim that runs existing
-   marketplace apps unchanged on the new runtime, a codemod, or a hard major
-   version break with a migration window? This shapes the whole rollout.
-   There is prior art in tree: ADR 0002 migrates one return contract without
-   breaking an app, by recognizing the new shape in a guard that runs **before**
-   every legacy branch, and mapping each legacy shape onto a new variant
-   (`return true` ≡ `prevent`, a returned entity ≡ a full `patch`). Its lesson is
-   that the guard-before-legacy ordering is a review invariant, not a style
-   preference. **Decision needed:** does that per-contract widening scale to the
-   whole surface, or does the surface change too much for it?
+3. **Backward compatibility.** Answered on the host side: an app declares an
+   [API level](../rfc-host/42-runtime-api-levels.md), a frozen shim serves the
+   old one, and [an announced window](../rfc-host/43-runtime-level-retirement.md)
+   ends it. What stays open here is the app-facing half. ADR 0002 widens one
+   return contract in place, by recognizing the new shape in a guard that runs
+   **before** every legacy branch (`return true` ≡ `prevent`, a returned entity
+   ≡ a full `patch`). **Decision needed:** which parts of this surface can be
+   widened that way inside level 1, and which need the level to change?
 
 4. **Isolation boundary & wire protocol.** In-process vs. per-app subprocess
    (today's Deno runtime) vs. shared apps-runtime service; and the exact NATS

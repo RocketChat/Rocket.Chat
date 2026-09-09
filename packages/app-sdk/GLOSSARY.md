@@ -107,6 +107,10 @@ this file disagrees with it, this file is wrong.
 | **the module boundary** | the one `require` an app bundle can reach — `sandboxRequire`. Every builtin, and every bundled npm dependency, passes through it | [host 41](rfc-host/41-runtime-module-boundary.md) |
 | **the load record** | one entry per builtin specifier a bundle requires. An inventory, not a counter | [host 41](rfc-host/41-runtime-module-boundary.md) |
 | **the traffic record** | per-socket telemetry off `net.client.socket` — host asked for, address resolved, duration, bytes, and the handler call that caused it | [host 41](rfc-host/41-runtime-module-boundary.md) |
+| **API level** | the contract generation an app was built against — an integer in `app.json`. Never derived from `requiredApiVersion` | [host 42](rfc-host/42-runtime-api-levels.md) |
+| **the load gate** | the boot-time check that a stored package's level is still supported. Neither gate 1 nor gate 2 | [host 42](rfc-host/42-runtime-api-levels.md) |
+| **the shim** | the frozen engine and adapter accessors serving one retired level. A copy of a dead artifact, never a fork of live code | [host 42](rfc-host/42-runtime-api-levels.md) |
+| **the support window** | the interval between a level's successor shipping and the announced release that removes it | [host 43](rfc-host/43-runtime-level-retirement.md) |
 
 ---
 
@@ -127,7 +131,8 @@ wrong one describes a component that does not exist.
 | **definition** | the inert value a `define*` factory returns, app-side ([10](rfc/10-surface-composition-root.md)) | *the declaration* — `defineEntity`, host-side ([27](rfc/27-data-host-gateways.md)) |
 | **selection** | what the app asks for — `select` / `with` ([24](rfc/24-data-read-surface.md)) | the **projection** it compiles to, after the grant removes ungranted fields ([43](rfc/43-platform-field-permissions.md)) |
 | **patch** | a listener outcome that modifies the subject ([15](rfc/15-surface-event-listeners.md)) | any host-side field filtering; that is projection. A **monkey patch** — replacing a builtin's export or prototype — is a third thing, and one [host 41](rfc-host/41-runtime-module-boundary.md) rejects |
-| **gate** | **gate 1** — the app's grant covers the scope ([42](rfc/42-platform-permissions.md)) | **gate 2** — the principal may touch the resource ([host 10](rfc-host/10-identity-app-user.md)). Both are "the gate" only where one is unambiguous |
+| **gate** | **gate 1** — the app's grant covers the scope ([42](rfc/42-platform-permissions.md)) | **gate 2** — the principal may touch the resource ([host 10](rfc-host/10-identity-app-user.md)); or **the load gate**, which admits the package at all ([host 42](rfc-host/42-runtime-api-levels.md)). Each is "the gate" only where it is unambiguous |
+| **level** | an **API level** — the contract an app declares ([host 42](rfc-host/42-runtime-api-levels.md)) | a layer of the stack. For the bridges, the accessors and the engine exports, name the layer |
 
 ## Terms deliberately not used
 
