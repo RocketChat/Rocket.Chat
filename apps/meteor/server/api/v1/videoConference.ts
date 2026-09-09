@@ -537,16 +537,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		// The service refuses a mode the room can't do, and discussion creation the caller isn't permitted —
-		// authorization answers, not failures, so they map to 403 rather than surfacing as internal errors.
-		try {
-			return API.v1.success({ rid: await VideoConf.shareChatWithMembers(conference.userId, callId, mode) });
-		} catch (e) {
-			if (e instanceof Error && e.message === 'error-not-allowed') {
-				return API.v1.forbidden('Not allowed');
-			}
-			throw e;
-		}
+		return API.v1.success({ rid: await VideoConf.shareChatWithMembers(conference.userId, callId, mode) });
 	},
 );
 
