@@ -8,6 +8,7 @@ const groupsListAllPropsSchema = {
 	properties: {
 		customFields: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 };

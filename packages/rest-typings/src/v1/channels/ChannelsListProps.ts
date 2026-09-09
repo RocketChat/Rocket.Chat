@@ -16,6 +16,7 @@ const channelsListPropsSchema = {
 		},
 		customFields: {
 			type: 'string',
+			minLength: 1,
 		},
 		query: {
 			type: 'string',
