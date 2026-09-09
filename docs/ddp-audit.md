@@ -251,3 +251,46 @@ Generated: 2026-05-22T16:35:38.003Z
 | `subscriptions/get` | apps/meteor/server/publications/subscription/index.ts:47 | 1 |
 | `uploadFileToWebdav` | apps/meteor/app/webdav/server/methods/uploadFileToWebdav.ts:25 | 1 |
 | `userSetUtcOffset` | apps/meteor/server/methods/userSetUtcOffset.ts:15 | 2 |
+
+## 4. Addendum — post-May re-audit (2026-08-05, applied 2026-09-09)
+
+The REST migrations merged after the snapshot above orphaned more methods. A
+re-audit (zero in-repo callers in `apps/meteor/client`, `packages`,
+`apps/meteor/ee/client`, excluding type declarations and tests) removed these
+19 additional registrations, bringing the changeset total to 104:
+
+| method | REST replacement |
+|---|---|
+| `2fa:checkCodesRemaining` | `GET /v1/users.totpCodesRemaining` |
+| `2fa:disable` | `POST /v1/users.disableTotp` |
+| `2fa:enable` | `POST /v1/users.enableTotp` |
+| `2fa:regenerateCodes` | `POST /v1/users.regenerateTotpCodes` |
+| `addOAuthService` | `POST /v1/settings.addCustomOAuth` |
+| `auditGetAuditions` | `GET /v1/audit.auditions` |
+| `auditGetMessages` | `POST /v1/audit.messages` |
+| `auditGetOmnichannelMessages` | `POST /v1/audit.omnichannelMessages` |
+| `authorization:addPermissionToRole` | `POST /v1/permissions.addRole` |
+| `authorization:removeRoleFromPermission` | `POST /v1/permissions.removeRole` |
+| `clearIntegrationHistory` | `POST /v1/integrations.clearHistory` |
+| `cloud:connectWorkspace` | `POST /v1/cloud.connectWorkspace` |
+| `cloud:syncWorkspace` | `POST /v1/cloud.syncWorkspace` |
+| `joinRoom` | `POST /v1/rooms.join` |
+| `refreshOAuthService` | `POST /v1/settings.refreshOAuthServices` |
+| `removeOAuthService` | `POST /v1/settings.removeCustomOAuth` |
+| `replayOutgoingIntegration` | `POST /v1/integrations.replayOutgoing` |
+| `setAvatarFromService` | `POST /v1/users.setAvatar` |
+| `spotlight` | `GET /v1/spotlight` |
+
+`afterVerifyEmail` was also on the candidate list but its registration was
+already gone on this branch — nothing to remove.
+
+Methods that also lost their last web-client caller but stay registered
+(login-path handshakes, the realtime message-window contract, and dual-stack
+methods with plausible mobile/SDK DDP use) were added to the `NEVER_REMOVE`
+skip list in `scripts/remove-orphan-ddp-methods.mjs` with per-group reasons —
+notably `2fa:validateTempToken`, `loadHistory`/`loadMissedMessages`/
+`loadNextMessages`/`loadSurroundingMessages`/`getMessages`, `sendMessage`,
+`blockUser`/`unblockUser`, `createDirectMessage`, the `e2e.*` key-exchange
+methods and `autoTranslate.*`. `cloud:getWorkspaceRegisterData` keeps a live
+caller in the setup wizard (`RegisterServerStep` in `@rocket.chat/ui-client`)
+and is skip-listed as well.

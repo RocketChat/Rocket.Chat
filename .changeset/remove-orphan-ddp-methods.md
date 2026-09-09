@@ -2,14 +2,19 @@
 '@rocket.chat/meteor': major
 ---
 
-**Breaking:** Removed 85 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
+**Breaking:** Removed 104 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
 
 Removed methods:
 
+- `2fa:checkCodesRemaining` — use `GET /v1/users.totpCodesRemaining`
+- `2fa:disable` — use `POST /v1/users.disableTotp`
+- `2fa:enable` — use `POST /v1/users.enableTotp`
+- `2fa:regenerateCodes` — use `POST /v1/users.regenerateTotpCodes`
 - `OAuth.retrieveCredential`
 - `UserPresence:setDefaultStatus`
 - `addAllUserToRoom`
 - `addIncomingIntegration` — use `POST /v1/integrations.create`
+- `addOAuthService` — use `POST /v1/settings.addCustomOAuth`
 - `addOutgoingIntegration` — use `POST /v1/integrations.create`
 - `addRoomLeader` — use `POST /v1/channels.addLeader` / `groups.addLeader`
 - `addRoomModerator` — use `POST /v1/channels.addModerator` / `groups.addModerator`
@@ -17,11 +22,19 @@ Removed methods:
 - `addSamlService`
 - `addUserToRoom` — use `POST /v1/channels.invite` / `groups.invite`
 - `archiveRoom` — use `POST /v1/channels.archive` / `groups.archive`
+- `auditGetAuditions` — use `GET /v1/audit.auditions`
+- `auditGetMessages` — use `POST /v1/audit.messages`
+- `auditGetOmnichannelMessages` — use `POST /v1/audit.omnichannelMessages`
+- `authorization:addPermissionToRole` — use `POST /v1/permissions.addRole`
+- `authorization:removeRoleFromPermission` — use `POST /v1/permissions.removeRole`
 - `autoTranslate.saveSettings`
 - `botRequest`
 - `browseChannels` — use `GET /v1/directory`
 - `channelsList` — use `GET /v1/channels.list`
 - `cleanRoomHistory` — use `POST /v1/rooms.cleanHistory`
+- `clearIntegrationHistory` — use `POST /v1/integrations.clearHistory`
+- `cloud:connectWorkspace` — use `POST /v1/cloud.connectWorkspace`
+- `cloud:syncWorkspace` — use `POST /v1/cloud.syncWorkspace`
 - `createChannel` — use `POST /v1/channels.create`
 - `createDiscussion` — use `POST /v1/rooms.createDiscussion`
 - `deleteCustomUserStatus` — use `POST /v1/custom-user-status.delete`
@@ -55,6 +68,7 @@ Removed methods:
 - `insertOrUpdateEmoji` — use `POST /v1/emoji-custom.create` / `update`
 - `insertOrUpdateUserStatus`
 - `joinDefaultChannels`
+- `joinRoom` — use `POST /v1/rooms.join`
 - `license:getTags`
 - `license:hasLicense` — use `GET /v1/licenses.info`
 - `messageSearch` — use `GET /v1/chat.search`
@@ -63,10 +77,13 @@ Removed methods:
 - `pinMessage` — use `POST /v1/chat.pinMessage`
 - `raix:push-update`
 - `readMessages` — use `POST /v1/subscriptions.read`
+- `refreshOAuthService` — use `POST /v1/settings.refreshOAuthServices`
+- `removeOAuthService` — use `POST /v1/settings.removeCustomOAuth`
 - `removeRoomLeader` — use `POST /v1/channels.removeLeader` / `groups.removeLeader`
 - `removeRoomModerator` — use `POST /v1/channels.removeModerator` / `groups.removeModerator`
 - `removeRoomOwner` — use `POST /v1/channels.removeOwner` / `groups.removeOwner`
 - `removeUserFromRoom` — use `POST /v1/channels.kick` / `groups.kick`
+- `replayOutgoingIntegration` — use `POST /v1/integrations.replayOutgoing`
 - `resetAvatar` — use `POST /v1/users.resetAvatar`
 - `rocketchatSearch.suggest`
 - `saveAudioNotificationValue`
@@ -75,9 +92,11 @@ Removed methods:
 - `saveUserPreferences` — use `POST /v1/users.setPreferences`
 - `sendMessageLivechat`
 - `sendSMTPTestEmail`
+- `setAvatarFromService` — use `POST /v1/users.setAvatar`
 - `setEmail` — use `POST /v1/users.update`
 - `setRealName` — use `POST /v1/users.update`
 - `setUserActiveStatus` — use `POST /v1/users.setActiveStatus`
+- `spotlight` — use `GET /v1/spotlight`
 - `starMessage` — use `POST /v1/chat.starMessage`
 - `startImport` — use `POST /v1/startImport`
 - `toggleFavorite` — use `POST /v1/rooms.favorite`
