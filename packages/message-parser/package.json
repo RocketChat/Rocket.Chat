@@ -50,7 +50,7 @@
 		"@rocket.chat/peggy-loader": "workspace:~",
 		"@rocket.chat/prettier-config": "~0.31.25",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"eslint": "~9.39.5",
 		"fast-check": "^4.6.0",
 		"jest": "~30.2.0",
@@ -67,7 +67,7 @@
 		"webpack-cli": "~5.1.4"
 	},
 	"engines": {
-		"node": "22.22.3"
+		"node": ">=22.22.3 <23 || >=24.15.0 <25"
 	},
 	"volta": {
 		"extends": "../../package.json"
