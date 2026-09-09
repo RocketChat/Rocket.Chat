@@ -1,0 +1,14 @@
+ee/packages/federation-matrix/docker-compose.test.yml
+  h_4c386397e672f4 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "74372e1e3ab1c8dd2285491f9b8782a728033352",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
