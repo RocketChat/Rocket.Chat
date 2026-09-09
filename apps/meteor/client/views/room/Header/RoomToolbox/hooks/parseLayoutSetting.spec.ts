@@ -83,6 +83,15 @@ describe('resolveLayoutForRoomType', () => {
 			['the same room type is claimed by two entries', setting([{ roomType: ['c', 'p'] }, { roomType: ['c'] }])],
 			['the same room type is repeated inside one entry', setting([{ roomType: ['c', 'c'] }])],
 			['a roomType is not an array', setting([{ roomType: 'c' }])],
+			['an entry is null', setting([{ roomType: ['c'] }, null])],
+			['the matching entry itself is null', setting([null, { roomType: ['d'] }])],
+			['an entry is a primitive', setting([{ roomType: ['c'] }, 'nope'])],
+			['an entry is an array', setting([{ roomType: ['c'] }, []])],
+			['an item featured is not a boolean', setting([{ roomType: ['c'], items: [{ id: 'thread', featured: 'yes' }] }])],
+			['an item order is not a number', setting([{ roomType: ['c'], items: [{ id: 'thread', order: 'first' }] }])],
+			['an item order is an object', setting([{ roomType: ['c'], items: [{ id: 'thread', order: {} }] }])],
+			['an item order is null', setting([{ roomType: ['c'], items: [{ id: 'thread', order: null }] }])],
+			['an item order parses to Infinity', '[{"roomType":["c"],"items":[{"id":"thread","order":1e999}]}]'],
 		])('should return null so the toolbox keeps its default layout when %s', (_, raw) => {
 			expect(resolveLayoutForRoomType(raw, 'c')).toBeNull();
 		});

@@ -12,17 +12,18 @@ export type RoomToolboxLayoutScope = RoomToolboxLayoutConfig & {
 
 export type RoomToolboxLayoutSetting = RoomToolboxLayoutScope[];
 
-const isUsableScope = ({ maxVisibleNormal, items }: RoomToolboxLayoutScope): boolean => {
-	if (maxVisibleNormal !== undefined && !Number.isFinite(maxVisibleNormal)) {
-		return false;
-	}
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-	if (items === undefined) {
-		return true;
-	}
+const isLayoutItem = (value: unknown): boolean =>
+	isRecord(value) &&
+	typeof value.id === 'string' &&
+	(value.featured === undefined || typeof value.featured === 'boolean') &&
+	(value.order === undefined || Number.isFinite(value.order));
 
-	return Array.isArray(items) && items.every((item) => typeof item === 'object' && item !== null && typeof item.id === 'string');
-};
+const isLayoutScope = (value: unknown): boolean =>
+	isRecord(value) &&
+	(value.maxVisibleNormal === undefined || Number.isFinite(value.maxVisibleNormal)) &&
+	(value.items === undefined || (Array.isArray(value.items) && value.items.every(isLayoutItem)));
 
 const hasOverlappingRoomTypes = (scopes: RoomToolboxLayoutSetting): boolean => {
 	const claimed = new Set<RoomToolboxLayoutRoomType>();
@@ -47,7 +48,11 @@ export const parseLayoutSetting = (raw: string): RoomToolboxLayoutSetting | null
 		return null;
 	}
 
-	return Array.isArray(parsed) ? (parsed as RoomToolboxLayoutSetting) : null;
+	if (!Array.isArray(parsed) || !parsed.every(isLayoutScope)) {
+		return null;
+	}
+
+	return parsed as RoomToolboxLayoutSetting;
 };
 
 export const resolveLayoutForRoomType = (raw: string, roomType: RoomType): RoomToolboxLayoutConfig | null => {
@@ -59,7 +64,7 @@ export const resolveLayoutForRoomType = (raw: string, roomType: RoomType): RoomT
 	const scope = scopes.find(
 		({ roomType: roomTypes }) => Array.isArray(roomTypes) && roomTypes.includes(roomType as RoomToolboxLayoutRoomType),
 	);
-	if (!scope || !isUsableScope(scope)) {
+	if (!scope) {
 		return null;
 	}
 

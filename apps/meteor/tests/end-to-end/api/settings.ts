@@ -347,6 +347,16 @@ describe('[Settings]', () => {
 				});
 		});
 
+		it('should reject an entry repeating a room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c', 'c'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
 		it('should reject an entry carrying an unknown key', async () => {
 			await saveLayout(JSON.stringify([{ roomType: ['c'], somethingElse: true }]))
 				.expect(400)
