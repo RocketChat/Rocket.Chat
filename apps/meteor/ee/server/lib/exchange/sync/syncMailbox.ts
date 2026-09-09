@@ -117,15 +117,12 @@ export const syncMailbox = async (
 
 	const state = await ExchangeSyncState.findOneByUserId(uid);
 
-	// A Graph delta link has the window baked in and ignores the one we pass, so the cursor is only good
-	// while the window is the same one it was made for. The anchored start is what makes that comparable
-	// across runs; without it the link would keep answering for a window drifting into the past.
-	const reusable =
-		Boolean(state?.cursor) &&
-		state?.mailbox === mailbox &&
-		state?.provider === provider.id &&
-		state?.syncWindowDays === syncWindowDays &&
-		state?.windowStart?.getTime() === timeWindow.start.getTime();
+	const sameSource = state?.mailbox === mailbox && state?.provider === provider.id;
+	const sameWindow = state?.syncWindowDays === syncWindowDays && state?.windowStart?.getTime() === timeWindow.start.getTime();
+
+	// The window only invalidates a cursor that answers about one, which is why the anchored start exists.
+	// Applying it to a folder scoped cursor would throw away a valid one and pay a full window read for it.
+	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || !provider.capabilities.cursorIsWindowScoped);
 
 	let changed = false;
 	let removedEvents = false;
