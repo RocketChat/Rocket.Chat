@@ -15,7 +15,10 @@ const isolateLifecycleHook =
 	(fn: (...args: unknown[]) => unknown) =>
 	(...args: unknown[]): void => {
 		try {
-			void fn(...args);
+			const result = fn(...args);
+			if (result && typeof (result as PromiseLike<unknown>).then === 'function') {
+				void Promise.resolve(result).catch((error) => console.error(error));
+			}
 		} catch (error) {
 			console.error(error);
 		}
