@@ -18,7 +18,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
-		await poOmnichannelDepartments.goTo();
+		await poOmnichannelDepartments.goto();
 	});
 
 	test('OC - Manage Departments (CE) - Create department', async () => {

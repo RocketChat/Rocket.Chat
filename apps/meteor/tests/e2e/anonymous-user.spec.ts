@@ -20,7 +20,7 @@ test.describe('anonymous-user', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 		await poHomeChannel.navbar.openChat('general');
 	});
 

@@ -43,7 +43,7 @@ test.describe.serial('System Messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 
 		if (!group?.name) {
 			return;

@@ -50,8 +50,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 
 	test.beforeEach(async ({ page, api }) => {
 		poHomeChannel = new HomeOmnichannel(page);
-		await page.goto('/');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 
 		conversation = await createConversation(api, {
 			visitorName: visitor.name,

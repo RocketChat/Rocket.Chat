@@ -1,4 +1,5 @@
 import { Users } from './fixtures/userStates';
+import { AdminSettings } from './page-objects';
 import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
@@ -8,7 +9,7 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 	test.beforeAll(({ api }) => setSettingValueById(api, 'Hide_System_Messages', []));
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/admin/settings/Message');
+		await new AdminSettings(page).gotoSection('Message');
 
 		// Intercept the API call and delay its response
 		await page.route('/api/v1/method.call/saveSettings', async (route) => {

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
 export class AdminIntegrations extends Admin {
 	constructor(page: Page) {
@@ -10,6 +10,10 @@ export class AdminIntegrations extends Admin {
 	get btnInstructions(): Locator {
 		return this.page.getByRole('button', { name: 'Instructions', exact: true });
 	}
+
+	protected readonly route = AdminSectionsHref.integrations;
+
+	protected readonly title = 'Integrations';
 
 	codeExamplePayload(text: string): Locator {
 		return this.page.locator('code', { hasText: text });

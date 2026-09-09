@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { ToastMessages } from '../fragments';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { OmnichannelResetPrioritiesModal } from '../fragments/modals';
@@ -15,7 +15,7 @@ class OmnichannelEditPriorityFlexTab extends FlexTab {
 }
 
 export class OmnichannelPriorities extends OmnichannelAdmin {
-	protected readonly route = 'priorities';
+	protected readonly route = OmnichannelSectionsHref.priorities;
 
 	protected readonly title = 'Priorities';
 

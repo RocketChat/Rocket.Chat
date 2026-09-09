@@ -1,7 +1,14 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { HomeChannel, AccountProfile } from './page-objects';
+import {
+	AccountAccessibility,
+	AccountFeaturePreview,
+	AccountOmnichannel,
+	AccountProfile,
+	AccountTokens,
+	HomeChannel,
+} from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
@@ -18,12 +25,12 @@ test.describe.serial('settings-account-profile', () => {
 		poAccountProfile = new AccountProfile(page);
 	});
 
-	// FIXME: solve test intermitencies
 	test.describe('Profile', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/account/profile');
+		test.beforeEach(async () => {
+			await poAccountProfile.goto();
 		});
 
+		// FIXME: solve test intermitencies
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
 			const newUsername = faker.internet.userName({ firstName: newName });
@@ -83,50 +90,51 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test('Personal Access Tokens', async ({ page }) => {
+		const poAccountTokens = new AccountTokens(page);
 		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
-		await page.goto('/account/tokens');
+		await poAccountTokens.goto();
 		await response;
 
 		await test.step('should show empty personal access tokens table', async () => {
-			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
-			await expect(poAccountProfile.inputToken).toBeVisible();
+			await expect(poAccountTokens.tokensTableEmpty).toBeVisible();
+			await expect(poAccountTokens.inputToken).toBeVisible();
 		});
 
 		await test.step('should show new personal token', async () => {
-			await poAccountProfile.inputToken.fill(token);
-			await poAccountProfile.btnTokensAdd.click();
-			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await poAccountProfile.btnTokenAddedOk.click();
+			await poAccountTokens.inputToken.fill(token);
+			await poAccountTokens.btnTokensAdd.click();
+			await expect(poAccountTokens.tokenAddedModal).toBeVisible();
+			await poAccountTokens.btnTokenAddedOk.click();
 		});
 
 		await test.step('should not allow add new personal with no name', async () => {
-			await poAccountProfile.btnTokensAdd.click();
+			await poAccountTokens.btnTokensAdd.click();
 			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
 		});
 
 		await test.step('should not allow add new personal token with same name', async () => {
-			await poAccountProfile.inputToken.fill(token);
-			await poAccountProfile.btnTokensAdd.click();
-			await expect(poAccountProfile.tokensRows).toHaveCount(1);
+			await poAccountTokens.inputToken.fill(token);
+			await poAccountTokens.btnTokensAdd.click();
+			await expect(poAccountTokens.tokensRows).toHaveCount(1);
 		});
 
 		await test.step('should regenerate personal token', async () => {
-			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
-			await poAccountProfile.btnRegenerateTokenModal.click();
-			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await poAccountProfile.btnTokenAddedOk.click();
+			await poAccountTokens.tokenInTable(token).locator('button >> nth=0').click();
+			await poAccountTokens.btnRegenerateTokenModal.click();
+			await expect(poAccountTokens.tokenAddedModal).toBeVisible();
+			await poAccountTokens.btnTokenAddedOk.click();
 		});
 
 		await test.step('should delete personal token', async () => {
-			await poAccountProfile.tokenInTable(token).locator('button >> nth=1').click();
-			await poAccountProfile.btnRemoveTokenModal.click();
-			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
+			await poAccountTokens.tokenInTable(token).locator('button >> nth=1').click();
+			await poAccountTokens.btnRemoveTokenModal.click();
+			await expect(poAccountTokens.tokensTableEmpty).toBeVisible();
 		});
 	});
 
 	test.describe('Omnichannel', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/omnichannel');
+			await new AccountOmnichannel(page).goto();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -135,7 +143,7 @@ test.describe.serial('settings-account-profile', () => {
 
 	test.describe('Feature Preview', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/feature-preview');
+			await new AccountFeaturePreview(page).goto();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -144,7 +152,7 @@ test.describe.serial('settings-account-profile', () => {
 
 	test.describe('Accessibility & Appearance', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/accessibility-and-appearance');
+			await new AccountAccessibility(page).goto();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);

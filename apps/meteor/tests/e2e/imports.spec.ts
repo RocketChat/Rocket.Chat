@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parse } from 'csv-parse';
 
 import { Users } from './fixtures/userStates';
-import { AdminImports, AdminRooms } from './page-objects';
+import { AdminImports, AdminRooms, AdminUsers } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -88,7 +88,7 @@ test.describe.serial('imports', () => {
 
 	test('expect import users data from slack', async ({ page }) => {
 		const poAdminImports = new AdminImports(page);
-		await page.goto('/admin/import');
+		await poAdminImports.goto();
 
 		await poAdminImports.btnImportNewFile.click();
 
@@ -106,7 +106,7 @@ test.describe.serial('imports', () => {
 
 	test('expect import users data from zipped CSV files', async ({ page }) => {
 		const poAdminImports = new AdminImports(page);
-		await page.goto('/admin/import');
+		await poAdminImports.goto();
 
 		await poAdminImports.btnImportNewFile.click();
 
@@ -125,7 +125,7 @@ test.describe.serial('imports', () => {
 	});
 
 	test('expect all imported users to be actually listed as users', async ({ page }) => {
-		await page.goto('/admin/users');
+		await new AdminUsers(page).goto();
 
 		for await (const user of rowUserName) {
 			if (user === 'billy.billy') {
@@ -138,7 +138,7 @@ test.describe.serial('imports', () => {
 
 	test('expect all imported rooms to be actually listed as rooms with correct members count', async ({ page }) => {
 		const poAdmin: AdminRooms = new AdminRooms(page);
-		await page.goto('/admin/rooms');
+		await poAdmin.goto();
 
 		for await (const room of importedRooms) {
 			await poAdmin.inputSearchRooms.fill(room.name);
@@ -150,7 +150,7 @@ test.describe.serial('imports', () => {
 
 	test('expect all imported rooms to have correct room type and owner', async ({ page }) => {
 		const poAdmin = new AdminRooms(page);
-		await page.goto('/admin/rooms');
+		await poAdmin.goto();
 
 		for await (const room of importedRooms) {
 			await poAdmin.inputSearchRooms.fill(room.name);
@@ -165,7 +165,7 @@ test.describe.serial('imports', () => {
 
 	test('expect imported DM to be actually listed as a room with correct members and messages count', async ({ page }) => {
 		const poAdmin = new AdminRooms(page);
-		await page.goto('/admin/rooms');
+		await poAdmin.goto();
 
 		for await (const user of csvImportedUsernames) {
 			await poAdmin.inputSearchRooms.fill(user);

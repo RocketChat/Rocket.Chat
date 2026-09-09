@@ -19,7 +19,7 @@ test.describe.serial('search-discussion', () => {
 	test.beforeEach(async ({ page, api }) => {
 		discussion = await createTargetDiscussion(api);
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

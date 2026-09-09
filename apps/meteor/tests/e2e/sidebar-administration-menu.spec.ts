@@ -11,7 +11,7 @@ test.describe.serial('sidebar-administration-menu', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeDiscussion = new HomeDiscussion(page);
 
-		await page.goto('/home');
+		await poHomeDiscussion.goto();
 	});
 
 	test.describe('admin user', () => {
