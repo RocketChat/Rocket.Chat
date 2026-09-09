@@ -1875,6 +1875,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setTitleById(callId, name);
+		// Both streams: the room's message block shows the name, and so does the call window, which watches the
+		// conference rather than the room it started in.
+		this.notifyConferenceUpdate(callId);
 		this.notifyVideoConfUpdate(call.rid, callId);
 	}
 
