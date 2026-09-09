@@ -2,7 +2,6 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import EJSON from 'ejson';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
@@ -122,24 +121,19 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 
 			await request
-				.post(methodCall('auditGetAuditions'))
+				.get(api('audit.auditions'))
 				.set(credentials)
-				.send({
-					message: EJSON.stringify({
-						method: 'auditGetAuditions',
-						params: [{ startDate: new Date(Date.now() - 86400000), endDate: new Date() }],
-						id: 'id',
-						msg: 'method',
-					}),
+				.query({
+					startDate: new Date(Date.now() - 86400000).toISOString(),
+					endDate: new Date().toISOString(),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const message = JSON.parse(res.body.message);
 
-					expect(message.result).to.be.an('array').with.lengthOf.greaterThan(1);
-					const entry = message.result.find((audition: any) => {
+					expect(res.body.auditions).to.be.an('array').with.lengthOf.greaterThan(1);
+					const entry = res.body.auditions.find((audition: any) => {
 						return audition.fields?.rids?.includes(testChannel._id);
 					});
 					expect(entry).to.have.property('u').that.is.an('object').deep.equal({
