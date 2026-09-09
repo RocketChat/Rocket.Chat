@@ -20,8 +20,14 @@ const isLayoutItem = (value: unknown): boolean =>
 	(value.featured === undefined || typeof value.featured === 'boolean') &&
 	(value.order === undefined || Number.isFinite(value.order));
 
+const isRoomTypeList = (value: unknown): boolean =>
+	Array.isArray(value) && value.length > 0 && value.every((type) => (ROOM_TOOLBOX_LAYOUT_ROOM_TYPES as readonly unknown[]).includes(type));
+
+// a missing roomType stays tolerated so an entry written before the setting was scoped is skipped
+// rather than discarding the whole configuration
 const isLayoutScope = (value: unknown): boolean =>
 	isRecord(value) &&
+	(value.roomType === undefined || isRoomTypeList(value.roomType)) &&
 	(value.maxVisibleNormal === undefined || Number.isFinite(value.maxVisibleNormal)) &&
 	(value.items === undefined || (Array.isArray(value.items) && value.items.every(isLayoutItem)));
 
@@ -29,7 +35,7 @@ const hasOverlappingRoomTypes = (scopes: RoomToolboxLayoutSetting): boolean => {
 	const claimed = new Set<RoomToolboxLayoutRoomType>();
 
 	for (const { roomType: roomTypes } of scopes) {
-		for (const claimedType of Array.isArray(roomTypes) ? roomTypes : []) {
+		for (const claimedType of roomTypes ?? []) {
 			if (claimed.has(claimedType)) {
 				return true;
 			}
@@ -61,9 +67,7 @@ export const resolveLayoutForRoomType = (raw: string, roomType: RoomType): RoomT
 		return null;
 	}
 
-	const scope = scopes.find(
-		({ roomType: roomTypes }) => Array.isArray(roomTypes) && roomTypes.includes(roomType as RoomToolboxLayoutRoomType),
-	);
+	const scope = scopes.find(({ roomType: roomTypes }) => roomTypes?.includes(roomType as RoomToolboxLayoutRoomType));
 	if (!scope) {
 		return null;
 	}
