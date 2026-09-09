@@ -333,6 +333,9 @@ describe('[Channels]', () => {
 			const tenant = `tenant-${Date.now()}`;
 
 			before(async () => {
+				await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+				await updatePermission('view-joined-room', ['guest', 'bot', 'app', 'anonymous']);
+
 				taggedRoom = (await createRoom({ type: 'c', name: `channels.list.cf.${Date.now()}` })).body.channel;
 
 				await request

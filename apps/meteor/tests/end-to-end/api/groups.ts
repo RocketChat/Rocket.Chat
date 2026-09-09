@@ -1759,6 +1759,8 @@ describe('[Groups]', () => {
 			const tenant = `tenant-${Date.now()}`;
 
 			before(async () => {
+				await updatePermission('view-room-administration', ['admin']);
+
 				taggedRoom = (await createRoom({ type: 'p', name: `groups.listAll.cf.${Date.now()}` })).body.group;
 
 				await request
