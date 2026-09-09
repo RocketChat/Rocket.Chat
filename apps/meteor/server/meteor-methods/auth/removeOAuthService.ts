@@ -1,19 +1,8 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/tools';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		removeOAuthService(name: string): Promise<void>;
-	}
-}
 
 export const removeCustomOAuthSettings = async (name: string): Promise<void> => {
 	const normalized = capitalize(name.toLowerCase().replace(/[^a-z0-9_]/g, ''));
@@ -64,23 +53,3 @@ export const removeCustomOAuthSettings = async (name: string): Promise<void> => 
 	});
 };
 
-Meteor.methods<ServerMethods>({
-	async removeOAuthService(name) {
-		methodDeprecationLogger.method('removeOAuthService', '9.0.0', '/v1/settings.removeCustomOAuth');
-		check(name, String);
-
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'removeOAuthService',
-			});
-		}
-
-		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
-		}
-
-		await removeCustomOAuthSettings(name);
-	},
-});
