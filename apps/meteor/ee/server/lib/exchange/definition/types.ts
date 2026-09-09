@@ -5,6 +5,12 @@ export type ExchangeProviderCapabilities = {
 	supportsDelta: boolean;
 	supportsWebhooks: boolean;
 	supportsContacts: boolean;
+	/**
+	 * True when the cursor answers about one time window, so it stops being valid once the window moves. A
+	 * Graph delta link bakes the window into itself; an EWS sync state is scoped to the folder and outlives
+	 * any window, so it must persist across days.
+	 */
+	cursorIsWindowScoped: boolean;
 };
 
 export type DateRange = {
