@@ -4,7 +4,7 @@ description: 'Setup NodeJS'
 inputs:
   node-version:
     required: false
-    description: 'Node version. If not provided, read from package.json engines.node'
+    description: 'Node version. If not provided, read from package.json volta.node'
   cache-modules:
     required: false
     description: 'Cache node_modules'
@@ -43,7 +43,7 @@ runs:
       run: |
         NODE_VERSION="${{ inputs.node-version }}"
         if [ -z "$NODE_VERSION" ]; then
-          NODE_VERSION=$(node -p "require('./package.json').engines.node")
+          NODE_VERSION=$(node -p "require('./package.json').volta.node")
         fi
         echo "NODE_VERSION: ${NODE_VERSION}"
         echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
