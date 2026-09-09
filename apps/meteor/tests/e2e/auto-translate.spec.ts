@@ -1,11 +1,8 @@
-import type { MongoClient } from 'mongodb';
-import { MongoClient as Mongo } from 'mongodb';
-
-import { URL_MONGODB } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannelAndReturnFullRoom, deleteChannel, sendTargetChannelMessage } from './utils';
 import { preserveSettings } from './utils/preserveSettings';
+import { seedTranslatedMessage } from './utils/seedTranslatedMessage';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
@@ -17,13 +14,10 @@ const TRANSLATED_MESSAGE = 'Guten Morgen zusammen';
 test.describe.serial('auto-translate', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	let connection: MongoClient;
 
 	preserveSettings(['AutoTranslate_Enabled']);
 
 	test.beforeAll(async ({ api }) => {
-		connection = await Mongo.connect(URL_MONGODB);
-
 		await setSettingValueById(api, 'AutoTranslate_Enabled', true);
 
 		const { channel } = await createTargetChannelAndReturnFullRoom(api);
@@ -31,20 +25,18 @@ test.describe.serial('auto-translate', () => {
 
 		await sendTargetChannelMessage(api, targetChannel, { msg: ORIGINAL_MESSAGE });
 
-		await connection
-			.db()
-			.collection('rocketchat_message')
-			.updateOne(
-				{ rid: channel._id, msg: ORIGINAL_MESSAGE },
-				{ $set: { u: { _id: Users.user1.data._id, username: Users.user1.data.username }, translations: { de: TRANSLATED_MESSAGE } } },
-			);
+		await seedTranslatedMessage({
+			rid: channel._id,
+			msg: ORIGINAL_MESSAGE,
+			author: Users.user1,
+			translations: { de: TRANSLATED_MESSAGE },
+		});
 
 		await api.post('/autotranslate.saveSettings', { roomId: channel._id, field: 'autoTranslateLanguage', value: 'de' });
 	});
 
 	test.afterAll(async ({ api }) => {
 		await deleteChannel(api, targetChannel);
-		await connection.close();
 	});
 
 	test.beforeEach(async ({ page }) => {
