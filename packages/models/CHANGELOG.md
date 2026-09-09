@@ -1,5 +1,18 @@
 # @rocket.chat/models
 
+## 2.5.1
+
+### Patch Changes
+
+- ([#42042](https://github.com/RocketChat/Rocket.Chat/pull/42042) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Omnichannel rooms failing to register agent responses (and showing send errors on messages and file uploads that were actually delivered) when the room carried corrupted visitor activity data created by older app integrations
+
+- <details><summary>Updated dependencies [61e940939adce0e512bdba3bbb33d27aec2a1fea]:</summary>
+
+  - @rocket.chat/model-typings@2.5.1
+  - @rocket.chat/core-typings@8.8.1
+  - @rocket.chat/rest-typings@8.8.1
+  </details>
+
 ## 2.5.0
 
 ### Minor Changes
