@@ -7,7 +7,8 @@
   separates a failed handler from a successful one with `instanceof`.
 - Every message goes on the wire as a plain msgpack map of its own properties.
 - The receiver categorizes a message with the type guards at the dispatch site. There is no
-  parse step and no re-validation.
+  `parseObject()` rebuild and no re-validation. The runtime still gates its stream on the same
+  guards, in `parseMessage`.
 - Measured against `jsonrpc-lite`: build 3,200x, receive 12.1x, round-trip 11.0x.
 - A msgpack codec extension for the envelope was measured and rejected. See
   [Alternatives considered](#alternatives-considered).
@@ -28,8 +29,10 @@
 2. **The factories build plain objects.** `JsonRpcError` is the single exception. The runtime
    tests it with `instanceof`, and its wire type is `SerializedJsonRpcError`.
 3. **The wire format is a plain msgpack map** of the envelope's own properties.
-4. **The receiver categorizes with the type guards** at the dispatch site — one field test per
-   branch, no validation, no copy of `params`.
+4. **The receiver categorizes with the type guards** at the dispatch site — a few field tests per
+   branch, no copy of `params`. The guards check the envelope's own slots: the `jsonrpc` version,
+   the `method` or `error` payload, and the type of the `id`. They are mutually exclusive, so an
+   ambiguous map is rejected rather than routed. They do not look at `params` or `result`.
 
 ## Context
 
@@ -80,11 +83,14 @@ runs. GC figures did not repeat and were read as trends only.
 ## Consequences
 
 - `meta` crosses the process boundary, because a map carries a new field without a tuple slot.
-- The receiver trusts the sender. A malformed envelope reaches the dispatch site and fails there,
-  instead of failing in a parse step.
-- The benchmark is removed. `jsonrpc-lite` existed in `packages/apps/package.json` as a
-  devDependency for it alone, so that entry goes with it. Re-adding it is what a re-measurement
-  costs.
+- The receiver trusts the sender, and the two sides check it differently. The runtime runs the
+  guards once in `parseMessage` and answers an `invalidRequest` to anything they all reject. The
+  host has no such step: `parseStdout` categorizes at the dispatch site and logs an unrecognized
+  message. Neither side rebuilds the envelope the way `parseObject()` did.
+- The benchmark is removed. `jsonrpc-lite` was a runtime dependency on both sides — the
+  `dependencies` block of `packages/apps/package.json` and the import map of
+  `deno-runtime/deno.jsonc` — and the benchmark was its last remaining reader once the bridge
+  stopped importing it. Both entries go with it. Re-adding them is what a re-measurement costs.
 
 ## Alternatives considered
 
@@ -145,7 +151,8 @@ lost the measurement; `ExtensionCodec` is.
 ### This decision
 
 - Types, factories, and guards: `packages/apps/src/lib/jsonrpc.ts`
-- Codec: `packages/apps/src/server/runtime/base/codec.ts`
+- Codec: `packages/apps/src/server/runtime/base/codec.ts`; runtime side
+  `packages/apps/base-runtime/src/lib/codec.ts`
 - Host dispatch: `packages/apps/src/server/runtime/base/BaseRuntimeSubprocessController.ts`;
   transport `.../ProcessMessenger.ts`
 - Runtime dispatch: `packages/apps/base-runtime/src/mainLoop.ts`;
