@@ -328,6 +328,60 @@ describe('[Channels]', () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
+		describe('filtering by customFields', () => {
+			let taggedRoom: IRoom;
+			const tenant = `tenant-${Date.now()}`;
+
+			before(async () => {
+				taggedRoom = (await createRoom({ type: 'c', name: `channels.list.cf.${Date.now()}` })).body.channel;
+
+				await request
+					.post(api('rooms.saveRoomSettings'))
+					.set(credentials)
+					.send({ rid: taggedRoom._id, roomCustomFields: { CustomerID: tenant } })
+					.expect(200);
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'c', roomId: taggedRoom._id });
+			});
+
+			it('should return only the room carrying the value', async () => {
+				const response = await request
+					.get(api('channels.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ CustomerID: tenant }) })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.channels).to.be.an('array').with.lengthOf(1);
+				expect(response.body.channels[0]).to.have.property('_id', taggedRoom._id);
+			});
+
+			it('should match on the exact value only', async () => {
+				const response = await request
+					.get(api('channels.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ CustomerID: tenant.slice(0, 6) }) })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body.channels).to.be.an('array').that.is.empty;
+			});
+
+			it('should reject a mongo operator as a value', async () => {
+				const response = await request
+					.get(api('channels.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ CustomerID: { $ne: null } }) })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(response.body).to.have.property('success', false);
+			});
+		});
+
 		it('should succesfully return a list of channels', async () => {
 			await request
 				.get(api('channels.list'))

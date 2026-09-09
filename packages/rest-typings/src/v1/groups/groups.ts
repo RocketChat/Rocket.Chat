@@ -17,6 +17,7 @@ import type { GroupsInfoProps } from './GroupsInfoProps';
 import type { GroupsInviteProps } from './GroupsInviteProps';
 import type { GroupsKickProps } from './GroupsKickProps';
 import type { GroupsLeaveProps } from './GroupsLeaveProps';
+import type { GroupsListAllProps } from './GroupsListAllProps';
 import type { GroupsListProps } from './GroupsListProps';
 import type { GroupsMembersProps } from './GroupsMembersProps';
 import type { GroupsMessagesProps } from './GroupsMessagesProps';
@@ -154,7 +155,7 @@ export type GroupsEndpoints = {
 		};
 	};
 	'/v1/groups.listAll': {
-		GET: (params: GroupsListProps) => {
+		GET: (params: GroupsListAllProps) => {
 			count: number;
 			offset: number;
 			groups: IRoom[];

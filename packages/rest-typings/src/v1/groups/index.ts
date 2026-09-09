@@ -20,6 +20,7 @@ export * from './GroupsAddOwnerProps';
 export * from './GroupsGetIntegrationsProps';
 export * from './GroupsInfoProps';
 export * from './GroupsInviteProps';
+export * from './GroupsListAllProps';
 export * from './GroupsListProps';
 export * from './GroupsOnlineProps';
 export * from './GroupsOpenProps';

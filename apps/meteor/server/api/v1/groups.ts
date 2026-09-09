@@ -20,6 +20,7 @@ import {
 	isGroupsHistoryProps,
 	isGroupsInfoProps,
 	isGroupsInviteProps,
+	isGroupsListAllProps,
 	isGroupsListProps,
 	isGroupsModeratorsProps,
 	isGroupsOnlineProps,
@@ -65,6 +66,7 @@ import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
+import { parseCustomFieldsFilter } from '../lib/parseCustomFieldsFilter';
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -1002,7 +1004,7 @@ API.v1.get(
 	'groups.listAll',
 	{
 		authRequired: true,
-		query: isGroupsListProps,
+		query: isGroupsListAllProps,
 		permissionsRequired: ['view-room-administration'],
 		response: {
 			200: groupsListResponseSchema,
@@ -1015,6 +1017,10 @@ API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, fields, query } = await this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
+
+		if ('customFields' in this.queryParams && this.queryParams.customFields) {
+			Object.assign(ourQuery, parseCustomFieldsFilter(this.queryParams.customFields));
+		}
 
 		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },

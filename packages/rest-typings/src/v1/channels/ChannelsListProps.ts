@@ -3,6 +3,7 @@ import { ajvQuery } from '../Ajv';
 
 export type ChannelsListProps = PaginatedRequest<{
 	_id?: string;
+	customFields?: string;
 	/* deprecated */
 	fields?: string;
 }>;
@@ -11,6 +12,9 @@ const channelsListPropsSchema = {
 	type: 'object',
 	properties: {
 		_id: {
+			type: 'string',
+		},
+		customFields: {
 			type: 'string',
 		},
 		query: {

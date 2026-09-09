@@ -77,6 +77,7 @@ import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
+import { parseCustomFieldsFilter } from '../lib/parseCustomFieldsFilter';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -1453,6 +1454,10 @@ API.v1.get(
 			...(_id ? { _id } : {}),
 			t: 'c',
 		};
+
+		if ('customFields' in this.queryParams && this.queryParams.customFields) {
+			Object.assign(ourQuery, parseCustomFieldsFilter(this.queryParams.customFields));
+		}
 
 		if (!hasPermissionToSeeAllPublicChannels) {
 			const roomIds = (
