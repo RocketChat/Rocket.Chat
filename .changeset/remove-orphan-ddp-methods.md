@@ -2,7 +2,7 @@
 '@rocket.chat/meteor': major
 ---
 
-**Breaking:** Removed 86 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
+**Breaking:** Removed 85 orphan Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
 
 Removed methods:
 
@@ -16,7 +16,6 @@ Removed methods:
 - `addRoomOwner` — use `POST /v1/channels.addOwner` / `groups.addOwner`
 - `addSamlService`
 - `addUserToRoom` — use `POST /v1/channels.invite` / `groups.invite`
-- `addWebdavAccountByToken`
 - `archiveRoom` — use `POST /v1/channels.archive` / `groups.archive`
 - `autoTranslate.saveSettings`
 - `botRequest`
