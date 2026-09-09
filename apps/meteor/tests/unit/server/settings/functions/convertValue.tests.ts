@@ -24,6 +24,8 @@ describe('convertValue', () => {
 				['+5', 5],
 				['  7  ', 7],
 				['9007199254740991', 9007199254740991],
+				['1e3', 1000],
+				['0x10', 16],
 			];
 
 			validValues.forEach(([value, expected]) => {
@@ -41,8 +43,6 @@ describe('convertValue', () => {
 				'10px',
 				'1.5',
 				'.5',
-				'1e3',
-				'0x10',
 				'NaN',
 				'Infinity',
 				'-Infinity',

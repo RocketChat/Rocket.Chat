@@ -1,17 +1,9 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
-const INTEGER_PATTERN = /^[+-]?\d+$/;
-
 const parseIntegerValue = (value: string): number => {
-	const trimmed = value.trim();
+	const parsed = Number(value);
 
-	if (!INTEGER_PATTERN.test(trimmed)) {
-		throw new Error(`Invalid integer value "${value}"`);
-	}
-
-	const parsed = Number(trimmed);
-
-	if (!Number.isSafeInteger(parsed)) {
+	if (value.trim() === '' || !Number.isSafeInteger(parsed)) {
 		throw new Error(`Invalid integer value "${value}"`);
 	}
 
