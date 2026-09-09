@@ -56,6 +56,54 @@ describe('[Cron Jobs API]', () => {
 					expect(res.body.offset).to.equal(0);
 				});
 		});
+
+		it('should filter core jobs by status correctly and strictly paginate distinct records', async () => {
+			await updatePermission('manage-scheduled-jobs', ['admin']);
+
+			let allScheduledJobs: any[] = [];
+			await request
+				.get(api('cron.jobs'))
+				.set(credentials)
+				.query({ status: 'scheduled', count: 100, offset: 0 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					allScheduledJobs = res.body.jobs;
+					res.body.jobs.forEach((job: any) => {
+						expect(job.status).to.equal('scheduled');
+					});
+				});
+
+			expect(allScheduledJobs.length).to.be.greaterThanOrEqual(2, 'Test requires at least 2 scheduled jobs to run properly');
+			const expectedPage1 = allScheduledJobs.slice(0, 2);
+			const expectedPage2 = allScheduledJobs.slice(2, 4);
+
+			await request
+				.get(api('cron.jobs'))
+				.set(credentials)
+				.query({ status: 'scheduled', count: 2, offset: 0 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.jobs.length).to.equal(2);
+					expect(res.body.jobs.map((j: any) => j._id)).to.deep.equal(expectedPage1.map((j: any) => j._id));
+					expect(res.body.offset).to.equal(0);
+					expect(res.body.total).to.equal(allScheduledJobs.length);
+				});
+
+			await request
+				.get(api('cron.jobs'))
+				.set(credentials)
+				.query({ status: 'scheduled', count: 2, offset: 2 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.jobs.length).to.equal(expectedPage2.length);
+					expect(res.body.jobs.map((j: any) => j._id)).to.deep.equal(expectedPage2.map((j: any) => j._id));
+					expect(res.body.offset).to.equal(2);
+					expect(res.body.total).to.equal(allScheduledJobs.length);
+				});
+		});
 	});
 
 	describe('[/cron.appjobs]', () => {
@@ -80,6 +128,71 @@ describe('[Cron Jobs API]', () => {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				});
+		});
+	});
+
+	describe('[/cron.omnichanneljobs]', () => {
+		it('should return 401 when the user is not authenticated', async () => {
+			await request.get(api('cron.omnichanneljobs')).expect(401);
+		});
+
+		it('should return a 403 error when the user does not have the manage-scheduled-jobs permission', async () => {
+			await updatePermission('manage-scheduled-jobs', []);
+			await request.get(api('cron.omnichanneljobs')).set(credentials).expect(403);
+		});
+
+		it('should return an array of omnichannel jobs when the user has the permission', async () => {
+			await updatePermission('manage-scheduled-jobs', ['admin']);
+			await request
+				.get(api('cron.omnichanneljobs'))
+				.set(credentials)
+				.query({ source: 'auto-close' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('jobs').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				});
+		});
+	});
+
+	describe('[/cron.job]', () => {
+		it('should return 401 when the user is not authenticated', async () => {
+			await request.get(api('cron.job')).query({ jobName: 'temporaryUploadCleanup' }).expect(401);
+		});
+
+		it('should return a 403 error when the user does not have the manage-scheduled-jobs permission', async () => {
+			await updatePermission('manage-scheduled-jobs', []);
+			await request.get(api('cron.job')).set(credentials).query({ jobName: 'temporaryUploadCleanup' }).expect(403);
+		});
+
+		it('should return a single valid job when the user has permission', async () => {
+			await updatePermission('manage-scheduled-jobs', ['admin']);
+			await request
+				.get(api('cron.job'))
+				.set(credentials)
+				.query({ jobName: 'temporaryUploadCleanup' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('job').and.to.be.an('object');
+					expect(res.body.job).to.have.property('name', 'temporaryUploadCleanup');
+				});
+		});
+
+		it('should return error-job-not-found when the job does not exist', async () => {
+			await updatePermission('manage-scheduled-jobs', ['admin']);
+			await request
+				.get(api('cron.job'))
+				.set(credentials)
+				.query({ jobName: 'invalid-job-name' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('error-job-not-found');
 				});
 		});
 	});
