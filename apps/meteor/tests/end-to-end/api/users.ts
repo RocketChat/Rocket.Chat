@@ -1405,7 +1405,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -1943,6 +1943,22 @@ describe('[Users]', () => {
 			]),
 		);
 
+		it("should reject the removed 'query' and 'fields' parameters", async () => {
+			await Promise.all(
+				[{ query: JSON.stringify({ type: 'user' }) }, { fields: JSON.stringify({ services: 1 }) }].map((params) =>
+					request
+						.get(api('users.list'))
+						.set(credentials)
+						.query(params)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						}),
+				),
+			);
+		});
+
 		it('should query all users in the system', async () => {
 			const res = await request.get(api('users.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
@@ -1955,12 +1971,6 @@ describe('[Users]', () => {
 
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					active: 1,
-					status: 1,
-				}),
 				sort: JSON.stringify({
 					status: 1,
 				}),
@@ -2022,7 +2032,6 @@ describe('[Users]', () => {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})
@@ -2054,7 +2063,6 @@ describe('[Users]', () => {
 				.set(user3Credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})

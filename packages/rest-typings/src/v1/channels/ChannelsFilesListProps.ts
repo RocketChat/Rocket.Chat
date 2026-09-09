@@ -5,7 +5,6 @@ export type ChannelsFilesListProps = PaginatedRequest<
 	({ roomId: string; roomName?: string } | { roomId?: string; roomName: string }) & {
 		name?: string;
 		typeGroup?: string;
-		query?: string;
 		onlyConfirmed?: boolean;
 	}
 >;
@@ -38,10 +37,6 @@ const channelsFilesListPropsSchema = {
 			nullable: true,
 		},
 		typeGroup: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

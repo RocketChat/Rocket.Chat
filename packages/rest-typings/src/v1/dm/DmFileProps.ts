@@ -5,7 +5,6 @@ export type DmFileProps = PaginatedRequest<
 	({ roomId: string; username?: string } | { roomId?: string; username: string }) & {
 		name?: string;
 		typeGroup?: string;
-		query?: string;
 		onlyConfirmed?: boolean;
 	}
 >;
@@ -38,10 +37,6 @@ const dmFilesListPropsSchema = {
 			nullable: true,
 		},
 		typeGroup: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
