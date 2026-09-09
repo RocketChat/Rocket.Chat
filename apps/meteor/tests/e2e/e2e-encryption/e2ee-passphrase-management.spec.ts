@@ -6,6 +6,7 @@ import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
+import { Authenticated } from '../page-objects/auth';
 import { Navbar } from '../page-objects/fragments';
 import { CreateE2EEChannel, E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
 import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
@@ -46,8 +47,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 			await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
 
-			await page.goto('/home');
-			await loginPage.waitForIt();
+			await loginPage.goto();
 			await loginPage.loginByUserState(Users.admin);
 		});
 
@@ -207,7 +207,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {
-		await page.goto('/account/security');
+		await poAccountSecurity.goto();
 		await poAccountSecurity.securityE2EEncryptionSection.click();
 		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
@@ -216,8 +216,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await page.goto('/home');
-		await page.waitForSelector('#main-content');
+		await new Authenticated(page).goto();
 
 		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 
@@ -256,7 +255,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 
 		// Logout to remove e2ee keys
 		await poHomeChannel.navbar.logout();
@@ -302,7 +301,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test('expect waiting for room keys state', async ({ page }) => {
-		await page.goto('/home');
+		await poHomeChannel.goto();
 
 		const channelName = faker.string.uuid();
 

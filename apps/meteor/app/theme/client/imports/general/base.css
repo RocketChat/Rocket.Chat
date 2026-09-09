@@ -110,3 +110,24 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+/*
+ * Prevent iOS Safari from auto-zooming when a field gains focus: it zooms whenever the
+ * focused control's font-size is below 16px. Enforce a 16px minimum on text-entry controls
+ * on small screens — this preserves pinch-to-zoom, unlike disabling user-scalable in the
+ * viewport meta. `!important` is required to override the design-system default
+ * (.rcx-input-box is 0.875rem and fuselage.css is imported after this file).
+ *
+ * `-webkit-touch-callout` is implemented only by iOS WebKit, so it scopes this to the
+ * engine that has the behavior: every iOS browser, but no desktop or Android one.
+ */
+@supports (-webkit-touch-callout: none) {
+	@media (width <= 767px) {
+		input,
+		textarea,
+		select,
+		[contenteditable]:not([contenteditable='false']) {
+			font-size: 16px !important;
+		}
+	}
+}

@@ -110,7 +110,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 				status: <UserStatus status={user?.status} />,
 				content: (
 					<>
-						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
+						{contentValue && <MarkdownText withTruncatedText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
 								<Icon name='clock' size='x16' marginInlineEnd={4} />
@@ -155,7 +155,9 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 						(status): GenericMenuItemProps => ({
 							id: status.id,
 							status: <UserStatus status={status.statusType} />,
-							content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+							content: (
+								<MarkdownText withTruncatedText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />
+							),
 							addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
 							onClick: () => setStatusMutation.mutate(status),
 						}),

@@ -19,8 +19,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat('general');
+		await poHomeChannel.gotoChannel('general');
 	});
 
 	test.afterAll(async () => {

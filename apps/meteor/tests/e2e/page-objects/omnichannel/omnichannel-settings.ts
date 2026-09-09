@@ -1,8 +1,13 @@
 import type { Locator } from '@playwright/test';
 
-import { AdminSettings } from '../admin-settings';
+import { AdminSectionsHref } from '../admin';
+import { AdminSettingsSection } from '../admin-settings';
 
-export class OmnichannelSettings extends AdminSettings {
+export class OmnichannelSettings extends AdminSettingsSection {
+	protected readonly route = `${AdminSectionsHref.settings}/Omnichannel` as const;
+
+	protected readonly title = 'Omnichannel';
+
 	get labelLivechatLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]');
 	}

@@ -93,7 +93,7 @@ test.describe('embedded-layout', () => {
 
 	test.describe('Channel non-member functionality', () => {
 		test('should display join button and disable composer for non-members', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(notMemberChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
@@ -102,7 +102,7 @@ test.describe('embedded-layout', () => {
 		});
 
 		test('should allow joining channel and enable messaging', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(joinChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
@@ -121,7 +121,7 @@ test.describe('embedded-layout', () => {
 	test.describe('Direct message functionality', () => {
 		test('should allow sending direct messages', async ({ page, api }) => {
 			await createDirectMessage(api);
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await page.goto(embeddedLayoutURL(page.url()));
 

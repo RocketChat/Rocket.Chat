@@ -35,7 +35,7 @@ test.describe('OC - Livechat - Hide "Expand chat"', async () => {
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
 
-		await page.goto('/omnichannel/appearance');
+		await poLivechatAppearance.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
