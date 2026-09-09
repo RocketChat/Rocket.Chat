@@ -28,6 +28,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		supportsDelta: true,
 		supportsWebhooks: false,
 		supportsContacts: false,
+		cursorIsWindowScoped: false,
 	};
 
 	private readonly transport: IEwsTransport;
