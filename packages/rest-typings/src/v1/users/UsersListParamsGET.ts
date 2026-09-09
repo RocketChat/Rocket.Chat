@@ -18,7 +18,7 @@ const UsersListParamsGetSchema = {
 		offset: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
 		email: { type: 'string', minLength: 1, nullable: true },
-		customFields: { type: 'string', nullable: true },
+		customFields: { type: 'string', minLength: 1, nullable: true },
 		includeCustomFields: { type: 'string', enum: ['true', 'false'], nullable: true },
 	},
 	additionalProperties: false,
