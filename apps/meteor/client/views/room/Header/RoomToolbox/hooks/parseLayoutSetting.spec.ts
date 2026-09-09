@@ -70,4 +70,27 @@ describe('resolveLayoutForRoomType', () => {
 			items: undefined,
 		});
 	});
+
+	describe('when the value did not go through schema validation', () => {
+		it.each([
+			['items is not an array', setting([{ roomType: ['c'], items: {} }])],
+			['items holds a null', setting([{ roomType: ['c'], items: [null] }])],
+			['items holds a primitive', setting([{ roomType: ['c'], items: ['thread'] }])],
+			['an item has no id', setting([{ roomType: ['c'], items: [{ order: 1 }] }])],
+			['an item id is not a string', setting([{ roomType: ['c'], items: [{ id: 1 }] }])],
+			['maxVisibleNormal is a string', setting([{ roomType: ['c'], maxVisibleNormal: '4' }])],
+			['maxVisibleNormal is null', setting([{ roomType: ['c'], maxVisibleNormal: null }])],
+			['the same room type is claimed by two entries', setting([{ roomType: ['c', 'p'] }, { roomType: ['c'] }])],
+			['the same room type is repeated inside one entry', setting([{ roomType: ['c', 'c'] }])],
+			['a roomType is not an array', setting([{ roomType: 'c' }])],
+		])('should return null so the toolbox keeps its default layout when %s', (_, raw) => {
+			expect(resolveLayoutForRoomType(raw, 'c')).toBeNull();
+		});
+
+		it('should discard the whole setting when a later entry overlaps, even if the matching one is fine', () => {
+			const raw = setting([{ roomType: ['c'], maxVisibleNormal: 4 }, { roomType: ['d'] }, { roomType: ['d'] }]);
+
+			expect(resolveLayoutForRoomType(raw, 'c')).toBeNull();
+		});
+	});
 });
