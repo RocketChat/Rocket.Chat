@@ -510,12 +510,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Tells anyone watching the conference that something about it moved — its membership, its chat's room, or who
-	 * can read that chat. Whichever it was, the answer on the other side is to read the conference again, so this
-	 * is one signal rather than three: the call window needs it to know whether it is still waiting on anyone, and
-	 * a participant's chat panel needs it to follow the chat.
-	 */
-	/**
 	 * Whether the provider runs the call inside Rocket.Chat rather than at a page of its own.
 	 *
 	 * A question asked all over this file — of a call, of a provider name, positively and negatively — and one
@@ -531,6 +525,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfProviders.getProviderCapabilities(providerName)?.persistentChat === true;
 	}
 
+	/**
+	 * Tells anyone watching the conference that something about it moved — its membership, its chat's room, or who
+	 * can read that chat. Whichever it was, the answer on the other side is to read the conference again, so this
+	 * is one signal rather than three: the call window needs it to know whether it is still waiting on anyone, and
+	 * a participant's chat panel needs it to follow the chat.
+	 */
 	private notifyConferenceUpdate(callId: VideoConference['_id']): void {
 		void api.broadcast('video-conference.updated', { callId });
 	}
@@ -1630,7 +1630,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 */
 	private async claimBusyForCall(uid: IUser['_id']): Promise<void> {
 		try {
-			const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(uid, { projection: { language: 1 } });
+			const user = await Users.findOneById(uid, { projection: { language: 1 } });
 			const lng = user?.language || settings.get<string>('Language') || 'en';
 
 			await Presence.setActiveState(uid, {
