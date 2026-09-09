@@ -2064,6 +2064,15 @@ describe('[Users]', () => {
 				expect(response.body.users[0]).to.not.have.property('customFields');
 			});
 
+			it('should reject an empty customFields parameter instead of ignoring it', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: '' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
 			it('should forbid both filtering and reading without view-full-other-user-info', async () => {
 				await updatePermission('view-full-other-user-info', ['admin']);
 
