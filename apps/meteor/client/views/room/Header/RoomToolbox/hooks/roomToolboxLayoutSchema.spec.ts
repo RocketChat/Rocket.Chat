@@ -1,6 +1,3 @@
-/**
- * @jest-environment node
- */
 import { ajv } from '@rocket.chat/rest-typings';
 
 import { resolveLayoutForRoomType } from './parseLayoutSetting';

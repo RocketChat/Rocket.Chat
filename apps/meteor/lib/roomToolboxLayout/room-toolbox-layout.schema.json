@@ -61,17 +61,17 @@
 		"entryClaimingPublicChannel": {
 			"type": "object",
 			"required": ["roomType"],
-			"properties": { "roomType": { "contains": { "const": "c" } } }
+			"properties": { "roomType": { "type": "array", "contains": { "const": "c" } } }
 		},
 		"entryClaimingPrivateChannel": {
 			"type": "object",
 			"required": ["roomType"],
-			"properties": { "roomType": { "contains": { "const": "p" } } }
+			"properties": { "roomType": { "type": "array", "contains": { "const": "p" } } }
 		},
 		"entryClaimingDirectMessage": {
 			"type": "object",
 			"required": ["roomType"],
-			"properties": { "roomType": { "contains": { "const": "d" } } }
+			"properties": { "roomType": { "type": "array", "contains": { "const": "d" } } }
 		}
 	}
 }
