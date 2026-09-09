@@ -4,7 +4,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { getThreadMessageId } from '../helpers/getThreadMessageId';
-import { onHomeserverEvent } from '../helpers/onHomeserverEvent';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -133,7 +132,7 @@ export function message() {
 		}
 	});
 
-	onHomeserverEvent('homeserver.matrix.redaction', async ({ event, redacts }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event, redacts }) => {
 		try {
 			const redactedEventId = redacts || event.redacts;
 			if (!redactedEventId) {
