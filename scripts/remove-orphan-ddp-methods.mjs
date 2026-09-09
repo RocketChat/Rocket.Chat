@@ -53,9 +53,54 @@ const NEVER_REMOVE = new Set([
 	'cloud:logout',
 	'cloud:finishOAuthAuthorization',
 	'cloud:getOAuthAuthorizationUrl',
+	// Still called by the setup wizard (RegisterServerStep in @rocket.chat/ui-client).
+	'cloud:getWorkspaceRegisterData',
 	// Wired into Meteor accounts via Accounts.forgotPassword on the client —
 	// the audit's static scan can't see that chain.
 	'sendForgotPasswordEmail',
+	// Login-path 2FA challenge handshake — mobile and external DDP clients
+	// depend on it during login, before any REST session exists.
+	'2fa:validateTempToken',
+	// Realtime message-window contract still used by mobile/SDK DDP clients.
+	'loadHistory',
+	'loadMissedMessages',
+	'loadNextMessages',
+	'loadSurroundingMessages',
+	'getMessages',
+	'setUserStatus',
+	'userSetUtcOffset',
+	'sendMessage',
+	'joinDefaultChannels',
+	// Dual-stack methods recently migrated to REST in the web client, but with
+	// plausible mobile/SDK DDP use — keep until owners confirm external usage.
+	'blockUser',
+	'unblockUser',
+	'createDirectMessage',
+	'e2e.getUsersOfRoomWithoutKey',
+	'e2e.updateGroupKey',
+	'e2e.requestSubscriptionKeys',
+	'e2e.resetOwnE2EKey',
+	'getThreadMessages',
+	'readThreads',
+	'deleteFileMessage',
+	'listCustomSounds',
+	'listCustomUserStatus',
+	'getReadReceipts',
+	'getRoomById',
+	'getSingleMessage',
+	'addUsersToRoom',
+	'leaveRoom',
+	'slashCommand',
+	'executeSlashCommandPreview',
+	'getSlashCommandPreviews',
+	'autoTranslate.translateMessage',
+	'autoTranslate.getSupportedLanguages',
+	'autoTranslate.getProviderUiMetadata',
+	'requestDataDownload',
+	'getSetupWizardParameters',
+	'banner/dismiss',
+	'samlLogout',
+	'raix:push-setuser',
 ]);
 
 function loadAudit() {
