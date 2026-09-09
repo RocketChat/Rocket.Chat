@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
 import { forEachWithConcurrency } from './forEachWithConcurrency';
-import { getMailboxField, iterateMailboxCandidates } from './resolveMailboxes';
+import { iterateMailboxCandidates } from './resolveMailboxes';
 import { syncMailbox } from './syncMailbox';
 import { getExchangeProvider, getSyncWindow, isServerSyncEnabled } from '../ExchangeProviderRegistry';
 import { isExchangeError } from '../errors';
@@ -87,11 +87,6 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 				summary.aborted = true;
 			}
 		});
-
-		const mailboxField = getMailboxField();
-		if (mailboxField && summary.mailboxes === 0 && summary.skipped > 0) {
-			logger.warn({ msg: 'No user has a usable mailbox in the configured custom field', mailboxField });
-		}
 
 		logger.info({ msg: 'Exchange sync run finished', ...summary, provider: provider.id });
 

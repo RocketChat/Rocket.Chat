@@ -2,36 +2,22 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 
-import { settings } from '../../../../../server/settings';
-
 const PAGE_SIZE = 500;
 
-type SyncCandidate = Pick<IUser, '_id' | 'emails' | 'customFields'>;
+type SyncCandidate = Pick<IUser, '_id' | 'emails'>;
 
 export type MailboxCandidate = { uid: IUser['_id']; mailbox?: string };
 
-export const getMailboxField = (): string => (settings.get<string>('Outlook_Calendar_Server_Sync_Mailbox_Field') || '').trim();
-
-const buildQuery = (mailboxField: string, lastId?: string): Filter<IUser> => ({
+const buildQuery = (lastId?: string): Filter<IUser> => ({
 	type: { $nin: ['app', 'bot'] },
 	federated: { $ne: true },
 	isRemote: { $ne: true },
 	roles: { $ne: 'guest' },
-	...(mailboxField
-		? { [`customFields.${mailboxField}`]: { $exists: true, $nin: ['', null] } }
-		: { emails: { $elemMatch: { verified: true } } }),
+	emails: { $elemMatch: { verified: true } },
 	...(lastId ? { _id: { $gt: lastId } } : {}),
 });
 
-export const resolveMailbox = (user: SyncCandidate, mailboxField: string): string | undefined => {
-	const raw = mailboxField ? user.customFields?.[mailboxField] : user.emails?.find((email) => email.verified)?.address;
-
-	if (typeof raw !== 'string') {
-		return undefined;
-	}
-
-	return raw.trim();
-};
+export const resolveMailbox = (user: SyncCandidate): string | undefined => user.emails?.find((email) => email.verified)?.address.trim();
 
 /**
  * Keyset pages rather than one long cursor: each candidate costs minutes of network I/O behind bounded
@@ -39,12 +25,11 @@ export const resolveMailbox = (user: SyncCandidate, mailboxField: string): strin
  * `_id` index instead of a deepening skip.
  */
 export async function* iterateMailboxCandidates(pageSize = PAGE_SIZE): AsyncGenerator<MailboxCandidate> {
-	const mailboxField = getMailboxField();
 	let lastId: string | undefined;
 
 	for (;;) {
-		const page = await Users.findActive<SyncCandidate>(buildQuery(mailboxField, lastId), {
-			projection: { emails: 1, customFields: 1 },
+		const page = await Users.findActive<SyncCandidate>(buildQuery(lastId), {
+			projection: { emails: 1 },
 			sort: { _id: 1 },
 			limit: pageSize,
 		}).toArray();
@@ -54,7 +39,7 @@ export async function* iterateMailboxCandidates(pageSize = PAGE_SIZE): AsyncGene
 		}
 
 		for (const user of page) {
-			yield { uid: user._id, mailbox: resolveMailbox(user, mailboxField) };
+			yield { uid: user._id, mailbox: resolveMailbox(user) };
 		}
 
 		if (page.length < pageSize) {

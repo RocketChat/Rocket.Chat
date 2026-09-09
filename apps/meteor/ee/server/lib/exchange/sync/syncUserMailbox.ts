@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { getMailboxField, resolveMailbox } from './resolveMailboxes';
+import { resolveMailbox } from './resolveMailboxes';
 import type { MailboxSyncOutcome } from './syncMailbox';
 import { syncMailbox } from './syncMailbox';
 import { getExchangeProvider, getSyncWindow } from '../ExchangeProviderRegistry';
@@ -23,17 +23,16 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 	try {
 		const provider = getExchangeProvider();
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails' | 'customFields'>>(uid, {
-			projection: { emails: 1, customFields: 1 },
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails'>>(uid, {
+			projection: { emails: 1 },
 		});
 
-		const mailboxField = getMailboxField();
-		const mailbox = user && resolveMailbox(user, mailboxField);
+		const mailbox = user && resolveMailbox(user);
 
 		if (!mailbox) {
-			// Without a custom field the mailbox is the verified address. The scheduled run never
-			// lands here: an unverified user is simply skipped and never asked about.
-			if (user && !mailboxField && !user.emails?.some(({ verified }) => verified)) {
+			// The scheduled run never lands here: its query already requires a verified email, so an
+			// unverified user is simply skipped and never asked about.
+			if (user) {
 				throw new ExchangeError('email-not-verified', 'The user has no verified email address to use as a mailbox');
 			}
 
