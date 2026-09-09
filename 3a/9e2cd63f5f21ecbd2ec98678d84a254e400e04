@@ -1,0 +1,55 @@
+apps/meteor/tests/end-to-end/api/users.ts
+  s_d2d9ee37d80481::t_762ee62a587dfd 1986-1990,1992-1993,1995-2002,2008-2010,2012-2015,2021-2023,2025-2028,2032-2034,2036-2039,2043-2044,2047,2060-2061,2077-2079
+  s_d2d9ee37d80481::t_ee07d17d4e5974 1991,2067,2073-2074,2076
+  s_d2d9ee37d80481::t_41590a6586651c 2003-2007,2045,2048-2050,2054-2056,2058-2059,2069-2072,2075
+  s_d2d9ee37d80481::t_8cef5a91f44237 2065-2066,2068
+  s_d2d9ee37d80481::t_23125463c5cf89 1994,2011,2016-2020,2024,2029-2031,2035,2040-2042,2046,2051-2053,2057,2062-2064
+.changeset/silly-clouds-hear.md
+  s_d2d9ee37d80481::t_6984329fe2a2e9 1-6
+apps/meteor/server/api/lib/parseCustomFieldsFilter.spec.ts
+  s_d2d9ee37d80481::t_592b961598fe8d 42-43
+  s_d2d9ee37d80481::t_2fc24ee77f6189 1,3,5-6,10-12,17-19,28-29,32-33,44-45
+  s_d2d9ee37d80481::t_c5294fd5a1fb04 2,4,7,13
+  s_d2d9ee37d80481::t_072fd5c216d2a6 15-16,21-22,24-27,30-31,34-38
+  s_d2d9ee37d80481::t_87826d5e2d28a2 20,23
+  s_d2d9ee37d80481::t_9f2bbc36ed5ea9 14,39-41
+  s_d2d9ee37d80481::t_9051faf406d25d 8-9
+apps/meteor/server/api/v1/users.ts
+  s_d2d9ee37d80481::t_77fe85b1618270 762-765
+  s_d2d9ee37d80481::t_27b4cf0b6dc631 680-683
+  s_d2d9ee37d80481::t_b7cc7cd38984e5 727-728
+  s_d2d9ee37d80481::t_ea1eabd85320ab 92
+apps/meteor/server/api/lib/parseCustomFieldsFilter.ts
+  s_d2d9ee37d80481::t_fe21fc0f0b2d4b 2,8-11,14-15,29
+  s_d2d9ee37d80481::t_e42dc51e80cbc7 1,4,16-22,24-28
+  s_d2d9ee37d80481::t_2d7bd680d49cf2 5,12
+  s_d2d9ee37d80481::t_05688a92fcf538 7,13
+  s_d2d9ee37d80481::t_592b961598fe8d 23
+  s_d2d9ee37d80481::t_01adeb68b5c1c8 6
+  s_d2d9ee37d80481::t_d4386e805b2a0a 3
+packages/rest-typings/src/v1/users/UsersListParamsGET.ts
+  s_d2d9ee37d80481::t_fc2a01a20e3393 8
+  s_d2d9ee37d80481::t_aa7cf8d1d266bb 21
+  s_d2d9ee37d80481::t_403aff94968332 9,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3a9e2cd63f5f21ecbd2ec98678d84a254e400e04",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d2d9ee37d80481": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4489598-8e02-4a87-8bbf-53585969c0ef",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
