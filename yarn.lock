@@ -19913,6 +19913,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-select@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "css-select@npm:6.0.0"
+  dependencies:
+    boolbase: "npm:^1.0.0"
+    css-what: "npm:^7.0.0"
+    domhandler: "npm:^5.0.3"
+    domutils: "npm:^3.2.2"
+    nth-check: "npm:^2.1.1"
+  checksum: 10/361b07f67bdf2a30771a58adf3a7b1e8d4ba52a9e2a020c9fd0cd846e9a6b9149dc9a043b6fc02a6c07e47d58a3a606b97051ecddabddeadafc06a9e88c96e70
+  languageName: node
+  linkType: hard
+
 "css-tree@npm:^3.0.0":
   version: 3.0.1
   resolution: "css-tree@npm:3.0.1"
@@ -19957,6 +19970,13 @@ __metadata:
   version: 6.1.0
   resolution: "css-what@npm:6.1.0"
   checksum: 10/c67a3a2d0d81843af87f8bf0a4d0845b0f952377714abbb2884e48942409d57a2110eabee003609d02ee487b054614bdfcfc59ee265728ff105bd5aa221c1d0e
+  languageName: node
+  linkType: hard
+
+"css-what@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "css-what@npm:7.0.0"
+  checksum: 10/253c3013f8aee74b60d7d5c60bc62f3151a32f59ec6a9cc74527bb514d3aa746466f81fc10d57d85c58ee777d6e82eced7c5733a2181a884458dfc134518afab
   languageName: node
   linkType: hard
 
@@ -29833,6 +29853,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nth-check@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "nth-check@npm:2.1.1"
+  dependencies:
+    boolbase: "npm:^1.0.0"
+  checksum: 10/5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
+  languageName: node
+  linkType: hard
+
 "numbered@npm:^1.1.0":
   version: 1.1.0
   resolution: "numbered@npm:1.1.0"
@@ -34080,17 +34109,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sax@npm:1.6.1":
+  version: 1.6.1
+  resolution: "sax@npm:1.6.1"
+  checksum: 10/bf7e7f8293903548bd663d71e9300b20ee04df178399b8f54029b6559225de422235c8fb0a63ba088fcb90c1dbaf9b475f57c7f32c901bfb78d0196dceb3cc7f
+  languageName: node
+  linkType: hard
+
 "sax@npm:>=0.6.0":
   version: 1.2.4
   resolution: "sax@npm:1.2.4"
   checksum: 10/09b79ff6dc09689a24323352117c94593c69db348997b2af0edbd82fa08aba47d778055bf9616b57285bb73d25d790900c044bf631a8f10c8252412e3f3fe5dd
-  languageName: node
-  linkType: hard
-
-"sax@npm:^1.5.0":
-  version: 1.6.0
-  resolution: "sax@npm:1.6.0"
-  checksum: 10/0909cedcd9f011ceeac80c0240a92d64ef712cf6c04e0f6ee236a8d812f86a59f61bee6bb5da28d75306db050b99e0593051ea77351795822253b984af6cf044
   languageName: node
   linkType: hard
 
@@ -35728,20 +35757,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svgo@npm:4.0.2":
-  version: 4.0.2
-  resolution: "svgo@npm:4.0.2"
+"svgo@npm:4.1.0":
+  version: 4.1.0
+  resolution: "svgo@npm:4.1.0"
   dependencies:
     commander: "npm:^11.1.0"
-    css-select: "npm:^5.1.0"
+    css-select: "npm:^6.0.0"
     css-tree: "npm:^3.0.1"
-    css-what: "npm:^6.1.0"
+    css-what: "npm:^7.0.0"
     csso: "npm:^5.0.5"
     picocolors: "npm:^1.1.1"
-    sax: "npm:^1.5.0"
+    sax: "npm:1.6.1"
   bin:
-    svgo: ./bin/svgo.js
-  checksum: 10/35e2015f98ff63ce72c3a1143d4aa4d8d1878639bad2c86063e1ada3b20354e4702f99854ee6b9211234a10134e551690e86ed6f26f4702a073741d4c871f5a6
+    svgo: bin/svgo.js
+  checksum: 10/72a501b49a9ceed175e1e1a66208516641a9f4a1c1908bb6bf4cf2e9678ce68e827af68a569a532dfdbbf7929abf044bbb8b47aa6a0fc9aedc127791ad1df650
   languageName: node
   linkType: hard
 
