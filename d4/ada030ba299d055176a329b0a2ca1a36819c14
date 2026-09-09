@@ -1,0 +1,22 @@
+apps/meteor/tests/e2e/utils/seedTranslatedMessage.ts
+  s_cb7cc33d4fdf19::t_1de5352c3d1dae 13-14
+  s_cb7cc33d4fdf19::t_1e3dd823743185 1-12,15-26
+apps/meteor/tests/e2e/auto-translate.spec.ts
+  s_cb7cc33d4fdf19::t_bcbb11ba382fcd 5,28-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d4ada030ba299d055176a329b0a2ca1a36819c14",
+  "prompts": {},
+  "sessions": {
+    "s_cb7cc33d4fdf19": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca6e4033-0e5f-4e40-82b9-0cc31d2e29a3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
