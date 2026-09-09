@@ -72,6 +72,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		supportsDelta: true,
 		supportsWebhooks: true,
 		supportsContacts: false,
+		cursorIsWindowScoped: true,
 	};
 
 	private readonly tokenClient: GraphTokenClient;
