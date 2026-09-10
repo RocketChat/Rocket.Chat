@@ -15,15 +15,22 @@ import {
 /**
  * What joining a call does *besides* recording the join, and for whom.
  *
- * The join-side lifecycle — leaving other calls, claiming busy, following the chat thread, ringing the callee —
- * exists for embedded providers, which have a leave, a heartbeat and a sweep to undo all of it. A non-embedded
- * provider has none of those, so its join must look exactly as it always has: the member is added, and nothing
- * else happens. This suite pins both sides of that line; `Presence` and `follow` are observable here because the
- * shared harness has no stubs for them.
+ * The join-side lifecycle — leaving other calls, claiming busy, ringing the callee — exists for embedded
+ * providers, which have a leave, a heartbeat and a sweep to undo all of it. A non-embedded provider has none of
+ * those, so its join must look as it always has: the member is added, and nothing is claimed on their behalf.
+ * This suite pins both sides of that line; `Presence` and `follow` are observable here because the shared
+ * harness has no stubs for them.
+ *
+ * Following the call's chat thread is the exception, and it is not on that line at all: the thread hangs off the
+ * call's message and is read in our own call window's chat panel, so it follows the window rather than the
+ * provider — an iframed Jitsi call in our window threads exactly like a call we run ourselves.
  */
 const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;
+
+/** Flipped per case: what the service reads through `settings.get`. */
+let settingsValues: Record<string, unknown> = {};
 
 const PresenceMock = {
 	setActiveState: sinon.stub().resolves(true),
@@ -69,20 +76,7 @@ const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server
 		},
 	},
 	'../../lib/messaging/threads/functions': { follow: followStub },
-	// Persistent chat fully on, in thread mode: what proves the *provider* gate below is the gate that held.
-	// Discussions have to be on for that, and the E2E keys stay off, since enforced encryption on private rooms
-	// switches persistent chat back off.
-	'../../settings': {
-		settings: {
-			get: (key: string) =>
-				(
-					({ VideoConf_Enable_Persistent_Chat: true, VideoConf_Persistent_Chat_Mode: 'thread', Discussion_enabled: true }) as Record<
-						string,
-						unknown
-					>
-				)[key],
-		},
-	},
+	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 });
 
 describe('VideoConfService.addUserToCall provider gating', () => {
@@ -91,6 +85,14 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 	beforeEach(() => {
 		service = new VideoConfService();
 		providerCapabilities.current = undefined;
+		// Persistent chat fully on and in thread mode, so a join has a thread to follow at all. Discussions have
+		// to be on for that, and the E2E keys stay off, since enforced encryption on private rooms switches
+		// persistent chat back off.
+		settingsValues = {
+			VideoConf_Enable_Persistent_Chat: true,
+			VideoConf_Persistent_Chat_Mode: 'thread',
+			Discussion_enabled: true,
+		};
 		resetAll(
 			PresenceMock.setActiveState,
 			PresenceMock.endActiveState,
@@ -108,8 +110,8 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 	});
 
 	// The invariant the gating exists for: a Jitsi/Meet/BBB join must have exactly the effects it had before the
-	// embedded lifecycle existed — the member is recorded, and nothing else fires.
-	it('only records the member for a non-embedded provider: no other-call sweep, no busy claim, no follow, no ring', async () => {
+	// embedded lifecycle existed — the member is recorded, and nothing is claimed that nothing would release.
+	it('only records the member for a non-embedded provider: no other-call sweep, no busy claim, no ring', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'host' })], { messages: { started: 'msg1' } });
 
 		await service.addUser('call1', 'joiner');
@@ -119,12 +121,11 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 
 		expect(VideoConferenceModelMock.find.called, 'queried for other calls to leave').to.be.false;
 		expect(PresenceMock.setActiveState.called, 'claimed busy').to.be.false;
-		expect(followStub.called, 'followed the call thread').to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 
 	// The other side of the line, so a regression can't pass by never firing the lifecycle for anyone.
-	it('runs the whole lifecycle for an embedded provider that supports persistent chat', async () => {
+	it('runs the whole lifecycle for an embedded provider', async () => {
 		providerCapabilities.current = { embedded: true, persistentChat: true };
 		fixture = buildGroupCall([buildMember({ _id: 'host' })], { messages: { started: 'msg1' } });
 
@@ -136,15 +137,27 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 		expect(followStub.calledWith({ tmid: 'msg1', uid: 'joiner' }), 'followed the call thread').to.be.true;
 	});
 
-	// Fix for thread auto-follow firing for providers that never declared persistent chat support: the setting
-	// being on is not enough — the provider has to be able to honor it, same as the discussion path.
-	it('does not follow the thread for an embedded provider without the persistentChat capability', async () => {
+	// The complaint behind this: thread mode was on, and the chat panel opened the room. The thread is ours —
+	// it hangs off the call's message and is read in our window — so a provider that declares no persistent chat
+	// of its own still gets it, and the people in the call are still subscribed to what is said there.
+	it('follows the thread for a provider that keeps no chat of its own', async () => {
 		providerCapabilities.current = { embedded: true };
 		fixture = buildGroupCall([buildMember({ _id: 'host' })], { messages: { started: 'msg1' } });
 
 		await service.addUser('call1', 'joiner');
 
-		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('call1', 'joiner')).to.be.true;
-		expect(followStub.called).to.be.false;
+		expect(followStub.calledWith({ tmid: 'msg1', uid: 'joiner' }), 'followed the call thread').to.be.true;
+	});
+
+	// Nor is it the provider's window: a call handed to a provider's own page, held in ours, threads too. This is
+	// the pair to the case above — together they say the follow does not ask about the provider at all.
+	it('follows the thread for a non-embedded provider', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'host' })], { messages: { started: 'msg1' } });
+
+		await service.addUser('call1', 'joiner');
+
+		expect(followStub.calledWith({ tmid: 'msg1', uid: 'joiner' }), 'followed the call thread').to.be.true;
+		// And still none of the embedded lifecycle, which the provider does decide.
+		expect(PresenceMock.setActiveState.called, 'claimed busy').to.be.false;
 	});
 });
