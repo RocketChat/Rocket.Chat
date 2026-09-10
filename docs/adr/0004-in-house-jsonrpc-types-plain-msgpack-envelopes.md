@@ -31,8 +31,9 @@
 3. **The wire format is a plain msgpack map** of the envelope's own properties.
 4. **The receiver categorizes with the type guards** at the dispatch site — a few field tests per
    branch, no copy of `params`. The guards check the envelope's own slots: the `jsonrpc` version,
-   the `method` or `error` payload, and the type of the `id`. They are mutually exclusive, so an
-   ambiguous map is rejected rather than routed. They do not look at `params` or `result`.
+   the `method` or `error` payload, the presence of `result`, and the type of the `id`. They are
+   mutually exclusive, so an ambiguous map is rejected rather than routed. They never read
+   `params`, and they test `result` by presence, never by value.
 
 ## Context
 
