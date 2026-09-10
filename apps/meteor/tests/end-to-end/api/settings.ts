@@ -307,6 +307,83 @@ describe('[Settings]', () => {
 		});
 	});
 
+	describe('[Room_Toolbox_Layout]', () => {
+		const validLayout = [
+			{ roomType: ['c', 'p'], maxVisibleNormal: 3, items: [{ id: 'members-list', featured: true, order: 1 }] },
+			{ roomType: ['d'], maxVisibleNormal: 1 },
+		];
+
+		const saveLayout = (value: string) => request.post(api('settings/Room_Toolbox_Layout')).set(credentials).send({ value });
+
+		after(() => updateSetting('Room_Toolbox_Layout', ''));
+
+		it('should reject a value that is not valid JSON', async () => {
+			await saveLayout('not json {')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry declaring an unsupported room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['l'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject entries claiming the same room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c', 'p'] }, { roomType: ['c'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry repeating a room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c', 'c'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry carrying an unknown key', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c'], somethingElse: true }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should accept a document matching the schema', async () => {
+			await saveLayout(JSON.stringify(validLayout))
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should accept an empty value, leaving the setting unconfigured', async () => {
+			await saveLayout('')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
+
 	describe('[/service.configurations]', () => {
 		it('should return service configurations', async () => {
 			const res = await request.get(api('service.configurations')).set(credentials).expect('Content-Type', 'application/json').expect(200);
