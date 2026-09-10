@@ -189,13 +189,10 @@ it('follows the chat to a discussion in thread mode too', async () => {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withSetting('VideoConf_Enable_Persistent_Chat', true)
+			.withSetting('VideoConf_Conference_Window_Enabled', true)
 			.withSetting('VideoConf_Persistent_Chat_Mode', 'thread')
 			.withStream('video-conference', streamRef)
-			.withEndpoint(
-				'GET',
-				'/v1/video-conference.info',
-				() => ({ ...buildInfo([]), capabilities: { persistentChat: true }, discussionRid }) as any,
-			)
+			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
 			.build(),
 	});
@@ -210,24 +207,31 @@ it('follows the chat to a discussion in thread mode too', async () => {
 	expect(result.current.room.tmid).toBeUndefined();
 });
 
-// Where the call's chat lives is the server's answer, and it takes three things to be a thread: persistent chat
-// on, the mode set to `thread`, and a provider that says it supports persistent chat (`autoFollowCallThread`
-// checks all three). The mode's registered default is `thread`, so reading it alone put every call's chat in a
-// thread nobody was subscribed to — the panel titled "Thread in <room>" over a conversation held in the room.
+// Where the call's chat lives is the server's answer, and it takes two things to be a thread: persistent chat on
+// and the mode set to `thread` — plus the call window itself, since the thread hangs off the call's message and
+// this panel is the only thing that reads it. Not the provider: an iframed call in our window has our chat
+// panel beside it. The mode's registered default is `thread`, so reading the mode alone put every call's chat
+// in a thread nobody was subscribed to — the panel titled "Thread in <room>" over a conversation held in the
+// room. These cases exist to keep this answer and the server's `chatLivesInAThread` saying the same thing.
 describe('where the chat lives', () => {
 	const renderWithChatSettings = ({
 		enabled,
+		windowEnabled = true,
 		mode,
 		providerSupport,
 	}: {
 		enabled: boolean;
+		/** The window is what a thread off the call message belongs to, so nothing threads without it. */
+		windowEnabled?: boolean;
 		mode: 'thread' | 'main_room';
+		/** Kept to prove it no longer decides: the chat panel is ours whoever runs the media. */
 		providerSupport: boolean;
 	}) =>
 		renderHook(() => useConferenceEmbedded(callId), {
 			wrapper: mockAppRoot()
 				.withJohnDoe()
 				.withSetting('VideoConf_Enable_Persistent_Chat', enabled)
+				.withSetting('VideoConf_Conference_Window_Enabled', windowEnabled)
 				.withSetting('VideoConf_Persistent_Chat_Mode', mode)
 				.withEndpoint(
 					'GET',
@@ -252,8 +256,20 @@ describe('where the chat lives', () => {
 		expect(result.current.room.tmid).toBeUndefined();
 	});
 
-	it('is the room for a provider that does not do persistent chat', async () => {
+	// The complaint this answers: thread mode was set, and the panel opened the room. The thread hangs off the
+	// call's message and is read in our own panel, so who runs the media has no say in it — an iframed Jitsi call
+	// in our window threads exactly like a call we run ourselves.
+	it('is the thread for a provider that runs the media itself', async () => {
 		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: false });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBe('some-msg-id');
+	});
+
+	// Without the window there is no panel to read a thread in, and the server refuses to open one — its
+	// `getPersistentChatMode` answers `main_room` whatever the mode setting says.
+	it('is the room while the call window is off', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, windowEnabled: false, mode: 'thread', providerSupport: true });
 
 		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
 		expect(result.current.room.tmid).toBeUndefined();
