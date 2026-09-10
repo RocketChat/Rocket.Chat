@@ -52,10 +52,10 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 				return;
 			}
 
+			serverValueRef.current = draft;
+
 			void saveDraft({ rid, draft, ...(tmid && { tmid }) })
 				.then(() => {
-					serverValueRef.current = draft;
-
 					if (draftRef.current === null) {
 						setLocalDraft();
 					}
