@@ -120,7 +120,7 @@ Fetches /transport.config → mounts <LiveKitRoom> in a portal
 
 Two interface bits make this work:
 
-- **`IVideoConfProvider.capabilities.embedded: boolean`** (`packages/core-typings/src/VideoConferenceCapabilities.ts`). The LK provider sets this to `true`; the embedded code path looks for it.
+- **`IVideoConfProvider.capabilities.embedded: boolean`** (`packages/core-typings/src/VideoConferenceCapabilities.ts`). The LK provider sets this to `true`; the embedded code path looks for it. What it declares in full lives in `apps/meteor/server/lib/videoConference/livekitCapabilities.ts` — `{ mic, cam, title, embedded, persistentChat }`, each with a note on what it unlocks, since every one of them is a gate that fails silently when absent.
 - **`VideoConfService.validateProvider`** was gated to skip the apps-engine validation pass when the provider declares `embedded: true` — built-in embedded providers don't go through the apps-engine handshake.
 
 The result: zero new UI surface in the room header. Users start LK calls the same way they start any other VC.
