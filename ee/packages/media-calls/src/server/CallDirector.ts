@@ -8,12 +8,12 @@ import type {
 	MediaCallSignedContact,
 	MediaCallNegotiationStream,
 } from '@rocket.chat/core-typings';
-import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import type { CallFeature, CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
-import { EXTERNAL_CALL_FEATURES, SIP_CALL_FEATURES } from '../constants';
+import { CTI_CALL_FEATURES, EXTERNAL_CALL_FEATURES, SIP_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import { CallRejectedError } from '../definition/common';
@@ -71,7 +71,16 @@ function getCallIdentity(params: CallIdentityParams) {
 	};
 }
 
-function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
+function getFeaturesSupportedByTransport(
+	service: CallService,
+	caller: MediaCallContact,
+	callee: MediaCallContact,
+	features: CallFeature[],
+): CallFeature[] {
+	if (service === 'cti') {
+		return features.filter((feature) => CTI_CALL_FEATURES.includes(feature));
+	}
+
 	if (caller.type !== 'sip' && callee.type !== 'sip') {
 		return features.filter((feature) => !EXTERNAL_CALL_FEATURES.includes(feature));
 	}
@@ -268,8 +277,9 @@ class MediaCallDirector {
 
 		const service = requestedService || 'webrtc';
 
-		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		// `webrtc` is handled by the client; `cti` is handled by an external device/gateway through an app.
+		// Any other service is unknown and the call can't be created.
+		if (service !== 'webrtc' && service !== 'cti') {
 			throw new Error('invalid-call-service');
 		}
 
@@ -306,7 +316,7 @@ class MediaCallDirector {
 			throw new CallRejectedError('prevented', hookResult.reason);
 		}
 
-		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
+		const requestedFeatures = getFeaturesSupportedByTransport(service, caller, callee, hookResult.features || features);
 
 		const forbiddenFeatures: CallFeature[] = [];
 		if (parentCallId) {
@@ -328,6 +338,7 @@ class MediaCallDirector {
 
 			features: allowedFeatures,
 			...(params.sipCallId && { sipCallId: params.sipCallId }),
+			...(params.device && { device: params.device }),
 		};
 
 		logger.debug({ msg: 'creating call', call });

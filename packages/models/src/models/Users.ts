@@ -9,6 +9,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	IUserMediaCallDevice,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -2839,6 +2840,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			options,
 		);
+	}
+
+	setMediaCallDeviceById(userId: IUser['_id'], device: IUserMediaCallDevice | null): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, device ? { $set: { mediaCallDevice: device } } : { $unset: { mediaCallDevice: 1 } });
 	}
 
 	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

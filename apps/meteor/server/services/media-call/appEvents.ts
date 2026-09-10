@@ -1,5 +1,11 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type { EventResultMeta, MediaCallEvent, PreMediaCallCreatedOutcome } from '@rocket.chat/apps';
+import type {
+	EventResultMeta,
+	MediaCallControlEvent,
+	MediaCallDeviceWithApp,
+	MediaCallEvent,
+	PreMediaCallCreatedOutcome,
+} from '@rocket.chat/apps';
 import type {
 	IAcceptedMediaCall as IAppsAcceptedMediaCall,
 	IActiveMediaCall as IAppsActiveMediaCall,
@@ -56,6 +62,28 @@ function isCallFeature(feature: string): feature is CallFeature {
 
 async function triggerMediaCallEvent(event: MediaCallEvent): Promise<unknown> {
 	return Apps.self?.triggerEvent(AppEvents.IMediaCallHandler, event);
+}
+
+/**
+ * Dispatches a `cti` call control command to the installed apps. The app that owns the call acts on
+ * it and reports progress back through the write accessor; other apps ignore calls they do not own.
+ */
+export async function dispatchMediaCallControl(event: MediaCallControlEvent): Promise<void> {
+	if (!Apps.self) {
+		return;
+	}
+
+	await triggerMediaCallEvent(event);
+}
+
+/** Lists the cti devices a user may place/receive calls on, aggregated across the installed apps. */
+export async function getMediaCallDevices(userId: string): Promise<MediaCallDeviceWithApp[]> {
+	if (!Apps.self) {
+		return [];
+	}
+
+	const result = await triggerMediaCallEvent({ method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES, context: { userId } });
+	return Array.isArray(result) ? (result as MediaCallDeviceWithApp[]) : [];
 }
 
 export async function notifyAppsOfMediaCallStarted(call: IMediaCall): Promise<void> {

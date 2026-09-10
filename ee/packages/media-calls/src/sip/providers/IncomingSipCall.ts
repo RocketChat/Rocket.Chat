@@ -11,6 +11,7 @@ import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
+import { getSelectedDevice } from '../../server/selectedDevice';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 import { parseDiversionHeader } from '../utils/parseDiversionHeader';
@@ -60,6 +61,12 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!(await getMediaCallServer().permissionCheck(callee.id, 'external'))) {
 			logger.debug({ msg: 'User with no permission received a sip call.', uid: callee.id });
+			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		}
+
+		// A user who takes calls on an external device is not listening to their Rocket.Chat client
+		if (await getSelectedDevice(callee.id)) {
+			logger.debug({ msg: 'User takes calls on an external device; refusing the sip call to their client.', uid: callee.id });
 			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 		}
 

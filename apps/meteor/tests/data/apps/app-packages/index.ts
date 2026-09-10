@@ -31,3 +31,5 @@ export const mediaCallReaderTest = path.resolve(__dirname, './media-call-reader-
 export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-events-test_0.0.1.zip');
 
 export const appAbacRoomCreationTest = path.resolve(__dirname, './abac-room-creation-test_0.0.1.zip');
+
+export const appMediaCallCtiTest = path.resolve(__dirname, './media-call-cti-test_0.0.1.zip');

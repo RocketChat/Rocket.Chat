@@ -32,7 +32,7 @@ import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { isEventResult, makeHostEventResult } from '../eventResult';
 import { isIUIKitActionButtonMediaCallWidgetIncomingInteraction } from '../experimental/MediaCallActionButtons';
-import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
+import type { MediaCallDeviceWithApp, MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
 import { getMediaCallCreatePatch } from '../mediaCalls';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
@@ -249,7 +249,7 @@ export interface IListenerExecutor {
 	// Media calls
 	[AppInterface.IMediaCallHandler]: {
 		args: [MediaCallEvent];
-		result: PreMediaCallCreatedOutcome | void;
+		result: PreMediaCallCreatedOutcome | MediaCallDeviceWithApp[] | void;
 	};
 }
 
@@ -1308,12 +1308,44 @@ export class AppListenerManager {
 	}
 
 	// Media calls
-	private async executeMediaCallEvent(event: MediaCallEvent): Promise<PreMediaCallCreatedOutcome | void> {
+	private async executeMediaCallEvent(event: MediaCallEvent): Promise<PreMediaCallCreatedOutcome | MediaCallDeviceWithApp[] | void> {
 		if (event.method === AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED) {
 			return this.executePreMediaCallCreated(event.context);
 		}
 
+		if (event.method === AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES) {
+			return this.executeGetMediaCallDevices(event);
+		}
+
 		void this.executePostMediaCallEvent(event);
+	}
+
+	private async executeGetMediaCallDevices(
+		event: Extract<MediaCallEvent, { method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES }>,
+	): Promise<MediaCallDeviceWithApp[]> {
+		const devices: MediaCallDeviceWithApp[] = [];
+
+		for (const appId of this.listeners.get(AppInterface.IMediaCallHandler)) {
+			const app = this.manager.getOneById(appId);
+
+			const result = await app.call(event.method, event.context).catch((error) => {
+				if (error?.code === JSONRPC_METHOD_NOT_FOUND) {
+					return undefined;
+				}
+
+				console.error(`App ${appId} failed to handle ${event.method}`, error);
+				return undefined;
+			});
+
+			if (Array.isArray(result)) {
+				for (const device of result) {
+					// Tag each device with its owning app so the host can route control back to it.
+					devices.push({ ...device, appId });
+				}
+			}
+		}
+
+		return devices;
 	}
 
 	private async executePreMediaCallCreated(data: IPreMediaCallCreatedContext): Promise<PreMediaCallCreatedOutcome> {
@@ -1361,7 +1393,10 @@ export class AppListenerManager {
 	}
 
 	private async executePostMediaCallEvent(
-		event: Exclude<MediaCallEvent, { method: AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED }>,
+		event: Exclude<
+			MediaCallEvent,
+			{ method: AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED } | { method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES }
+		>,
 	): Promise<void> {
 		const dispatched: Promise<void>[] = [];
 
