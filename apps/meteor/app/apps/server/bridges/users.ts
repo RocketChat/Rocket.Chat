@@ -1,12 +1,13 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UserBridge } from '@rocket.chat/apps/dist/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
-import { Presence } from '@rocket.chat/core-services';
+import { Presence, StatusVisibility } from '@rocket.chat/core-services';
 import type { PresenceSource, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { notifyOnUserChange, notifyOnUserChangeById } from '../../../../server/lib/notifyListener';
+import { redactStatus } from '../../../../server/lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../../../server/lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../../../server/lib/users/deleteUser';
 import { getUserCreatedByApp } from '../../../../server/lib/users/getUserCreatedByApp';
@@ -19,11 +20,15 @@ export class AppUserBridge extends UserBridge {
 		super();
 	}
 
+	private async redactPresence(user: IUser | undefined): Promise<IUser | undefined> {
+		return user && redactStatus(user, await StatusVisibility.isPresenceDisabledFor(user.id));
+	}
+
 	protected async getById(userId: string, appId: string): Promise<IUser> {
 		this.orch.debugLog(`The App ${appId} is getting the userId: "${userId}"`);
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promise: Promise<IUser | undefined> = this.orch.getConverters()?.get('users').convertById(userId);
-		return promise as Promise<IUser>;
+		return this.redactPresence(await promise) as Promise<IUser>;
 	}
 
 	protected async getByUsername(username: string, appId: string): Promise<IUser> {
@@ -31,7 +36,7 @@ export class AppUserBridge extends UserBridge {
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promise: Promise<IUser | undefined> = this.orch.getConverters()?.get('users').convertByUsername(username);
-		return promise as Promise<IUser>;
+		return this.redactPresence(await promise) as Promise<IUser>;
 	}
 
 	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
@@ -49,7 +54,7 @@ export class AppUserBridge extends UserBridge {
 	protected async getBySipExtension(extension: string, _appId: string): Promise<IUser | undefined> {
 		const user = await Users.findOneByFreeSwitchExtension(extension);
 
-		return this.orch.getConverters()?.get('users').convertToApp(user);
+		return this.redactPresence(await this.orch.getConverters()?.get('users').convertToApp(user));
 	}
 
 	/**

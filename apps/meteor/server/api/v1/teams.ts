@@ -33,8 +33,7 @@ import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
-import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { getUsersHiddenFrom, redactHiddenMembers } from '../../lib/statusVisibility/hiddenUsers';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -532,9 +531,7 @@ API.v1.get(
 		const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 
 		return API.v1.success({
-			members: hidden
-				? records.map((record) => (hidden.has(record.user._id) ? { ...record, user: redactStatus(record.user) } : record))
-				: records,
+			members: redactHiddenMembers(records, hidden),
 			total,
 			count: records.length,
 			offset,

@@ -32,6 +32,7 @@ import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -48,8 +49,9 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatus';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -721,14 +723,15 @@ API.v1.addRoute(
 
 			const hidden = await getUsersHiddenFrom(this.userId);
 
-			if (hidden && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
+			if (queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
 			}
 
 			const actualSort = sort || { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+				delete actualSort.status;
 			}
 
 			if (sort?.name) {
@@ -1742,8 +1745,8 @@ API.v1.get(
 
 		const hidden = await getUsersHiddenFrom(this.userId);
 
-		if (hidden && queryFiltersStatus(selector.conditions)) {
-			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		if (queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, excludingHiddenFilter(hidden)] };
 		}
 
 		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
@@ -1980,7 +1983,7 @@ API.v1
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
+				presence: (isHiddenFor(hidden, user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2118,7 +2121,7 @@ API.v1
 
 			const user = await getUserFromParams(this.queryParams);
 			const hidden = await getUsersHiddenFrom(this.userId);
-			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
+			const visible = redactHiddenUser(user, hidden);
 
 			return API.v1.success({
 				_id: visible._id,

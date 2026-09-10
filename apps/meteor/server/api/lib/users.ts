@@ -146,9 +146,10 @@ export async function findPaginatedUsersByStatus({
 	type,
 	inactiveReason,
 }: FindPaginatedUsersByStatusProps) {
-	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
+	const actualSort: Record<string, 1 | -1> = sort ? { ...sort } : { username: 1 };
 	if (sort?.status) {
 		actualSort.active = sort.status;
+		delete actualSort.status;
 	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {

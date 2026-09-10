@@ -4,8 +4,7 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
-import { getUsersHiddenFrom } from '../statusVisibility/hiddenUsers';
-import { redactStatus } from '../statusVisibility/redactStatus';
+import { getUsersHiddenFrom, redactHiddenUser } from '../statusVisibility/hiddenUsers';
 import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
 
 const logger = new Logger('getFullUserData');
@@ -34,6 +33,7 @@ export const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	presenceDisabledByAdmin: 1,
 	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
@@ -152,7 +152,8 @@ export async function getFullUserDataByUniqueSearchTerm(
 		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
 	}
 
+	// not gated by Accounts_StatusVisibility_Enabled: admins can disable a user's status regardless of that setting
 	const hidden = await getUsersHiddenFrom(userId);
 
-	return hidden?.has(user._id) ? redactStatus(user) : user;
+	return redactHiddenUser(user, hidden);
 }
