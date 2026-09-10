@@ -54,9 +54,6 @@ describe('/invite', () => {
 			'../../services/room/hooks/BeforeFederationActions': { FederationActions: { shouldPerformFederationAction: shouldFederate } },
 		});
 	});
-	function expectFeedback(key: string) {
-		sinon.assert.calledWith(broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', { msg: `translated:${key}` });
-	}
 	it('splits comma and whitespace separated usernames and invites each user with the actor', async () => {
 		toArray.resolves([bob, carol]);
 		await harness.run('invite', { params: ' @bob,\n @carol ' });
@@ -75,15 +72,18 @@ describe('/invite', () => {
 	});
 	it('reports a missing room before looking up invitees', async () => {
 		findRoom.resolves(null);
-		await harness.run('invite', { params: '@bob' });
-		expectFeedback('error-invalid-room');
+		await harness.run('invite', { params: '@bob', userId: 'other-actor', message: { _id: 'other-message', rid: 'other-room' } });
+		harness.expectFeedback('error-invalid-room');
+		sinon.assert.calledOnceWithExactly(broadcast, 'notify.ephemeralMessage', 'other-actor', 'other-room', {
+			msg: 'translated:error-invalid-room',
+		});
 		sinon.assert.notCalled(findUsers);
 		sinon.assert.notCalled(addUsers);
 	});
 	it('reports unknown invitees without changing membership', async () => {
 		toArray.resolves([]);
 		await harness.run('invite', { params: '@bob @carol' });
-		expectFeedback('User_doesnt_exist');
+		harness.expectFeedback('User_doesnt_exist');
 		expect(harness.translate.firstCall.args[1]).to.include({ username: 'bob @carol', lng: 'en' });
 		sinon.assert.notCalled(addUsers);
 	});
@@ -91,7 +91,7 @@ describe('/invite', () => {
 		toArray.resolves([bob, carol]);
 		subscription.withArgs('current-room', bob._id).resolves({ _id: 'subscription' });
 		await harness.run('invite', { params: '@bob @carol' });
-		expectFeedback('Username_is_already_in_here');
+		harness.expectFeedback('Username_is_already_in_here');
 		expect(harness.translate.firstCall.args[1]).to.include({ username: 'bob' });
 		sinon.assert.calledOnceWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
 	});
@@ -117,7 +117,7 @@ describe('/invite', () => {
 	it('excludes external users from non-federated rooms while still inviting local users', async () => {
 		shouldFederate.returns(false);
 		await harness.run('invite', { params: `${external.username} @bob` });
-		expectFeedback('You_cannot_add_external_users_to_non_federated_room');
+		harness.expectFeedback('You_cannot_add_external_users_to_non_federated_room');
 		sinon.assert.notCalled(ensureFederatedUsers);
 		sinon.assert.calledOnceWithExactly(findUsers, ['bob']);
 		sinon.assert.calledOnceWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['bob'] }, actor);
@@ -125,7 +125,7 @@ describe('/invite', () => {
 	it('stops when all invitees are external users in a non-federated room', async () => {
 		shouldFederate.returns(false);
 		await harness.run('invite', { params: external.username });
-		expectFeedback('You_cannot_add_external_users_to_non_federated_room');
+		harness.expectFeedback('You_cannot_add_external_users_to_non_federated_room');
 		sinon.assert.notCalled(findUsers);
 		sinon.assert.notCalled(addUsers);
 	});
@@ -151,7 +151,7 @@ describe('/invite', () => {
 			addUsers.onFirstCall().rejects(error);
 			harness.settings.get.withArgs('Language').returns('pt');
 			await harness.run('invite', { params: '@bob @carol' });
-			expectFeedback(key);
+			harness.expectFeedback(key);
 			sinon.assert.calledOnce(broadcast);
 			expect(harness.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
 			sinon.assert.calledTwice(addUsers);
