@@ -2270,7 +2270,7 @@
   "Start_of_conversation": "Begin van gesprek",
   "Start_video_call": "Begin video-oproep",
   "Start_video_conference": "Begin videokonferensie?",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Begin met <code class=\"inline\" >%s</code>vir gebruiker of <code class=\"inline\" >%s</code>vir kanaal. Byvoorbeeld: <code class=\"inline\" >%s</code>of <code class=\"inline\" >%s</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Begin met <code>@</code> vir gebruiker of <code>#</code> vir kanaal. Byvoorbeeld: <code>@john</code> of <code>#general</code>",
   "Started_a_video_call": "Het 'n video-oproep begin",
   "Started_At": "Begin by",
   "Statistics": "Statistiek",

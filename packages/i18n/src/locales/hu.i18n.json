@@ -4322,7 +4322,7 @@
   "Smileys_and_People": "Hangulatjelek és emberek",
   "SMS": "SMS",
   "SMS_Default_Omnichannel_Department": "Összcsatornás részleg (alapértelmezett)",
-  "SMS_Default_Omnichannel_Department_Description": "Ha be van állítva, akkor az integráció által kezdeményezett összes új bejövő csevegés ehhez a részleghez lesz irányítva.  \nEz a beállítás felülírható a részleg lekérdezési paraméterének a kérésben való elküldésével.  \nPéldául: https://<KISZOLGÁLÓ_URL>/api/v1/livechat/sms-incoming/twilio?department=<RÉSZLEG AZONOSÍTÓJA VAGY NEVE>.  \nMegjegyzés: ha részleg nevét használja, akkor URL-biztonságosnak kell lennie.",
+  "SMS_Default_Omnichannel_Department_Description": "Ha be van állítva, akkor az integráció által kezdeményezett összes új bejövő csevegés ehhez a részleghez lesz irányítva.  \nEz a beállítás felülírható a részleg lekérdezési paraméterének a kérésben való elküldésével.  \nPéldául: `https://\\{\\{KISZOLGÁLÓ_URL\\}\\}/api/v1/livechat/sms-incoming/twilio?department=\\{\\{RÉSZLEG AZONOSÍTÓJA VAGY NEVE\\}\\}`.  \nMegjegyzés: ha részleg nevét használja, akkor URL-biztonságosnak kell lennie.",
   "SMS_Description": "SMS-átjárók engedélyezése és beállítása a munkaterületén.",
   "SMS_Enabled": "SMS engedélyezve",
   "SMTP": "SMTP",
