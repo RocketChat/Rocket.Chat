@@ -215,9 +215,13 @@ function isEnvelope(message: unknown): message is JsonRpc {
  * The guards check the type rather than only the presence of the key, because the id
  * is what routes a response back to its pending request: an object or an array there
  * would resolve `result:[object Object]` and orphan the call it belongs to.
+ *
+ * A non-finite number is rejected too. msgpack carries `NaN` and `Infinity`, but JSON
+ * cannot: `JSON.stringify({ id: NaN })` yields `{"id":null}`. Such an id would change
+ * meaning at any JSON boundary it crosses, so it never becomes a routing key here.
  */
 function isValidId(value: unknown): value is ID {
-	return typeof value === 'string' || typeof value === 'number' || value === null;
+	return typeof value === 'string' || (typeof value === 'number' && Number.isFinite(value)) || value === null;
 }
 
 export function isRequestObject(message: unknown): message is RequestObject {
