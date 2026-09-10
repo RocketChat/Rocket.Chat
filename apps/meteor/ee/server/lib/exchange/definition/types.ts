@@ -38,12 +38,10 @@ export type ExchangeEventDeletion = {
 export type ExchangeEventUpsert = {
 	kind: 'upsert';
 	externalId: string;
-	iCalUId?: string;
 	subject: string;
 	description: string;
 	startTime: Date;
 	endTime?: Date;
-	isAllDay: boolean;
 	isCancelled: boolean;
 	busy: boolean;
 	meetingUrl?: string;
