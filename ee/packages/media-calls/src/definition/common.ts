@@ -17,6 +17,8 @@ export type InternalCallParams = {
 	requestedBy?: MediaCallSignedContact;
 	features: CallFeature[];
 	divertedBy?: MediaCallContact;
+	/** For `cti` calls: the external endpoint/device the caller chose to handle the call. */
+	device?: string;
 };
 
 export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;
