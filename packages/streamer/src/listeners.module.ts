@@ -164,6 +164,10 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
 		});
 
+		service.onEvent('user.media-call-devices', ({ userId }: { userId: string }) => {
+			notifications.notifyUserInThisInstance(userId, 'media-call-devices', {});
+		});
+
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
 			(notifications.notifyRoomInThisInstance as any)(rid, callId);

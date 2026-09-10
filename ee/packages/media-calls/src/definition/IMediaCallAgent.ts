@@ -20,6 +20,11 @@ export interface IMediaCallAgent {
 
 	onDTMF(callId: string, tone: string, duration: number): Promise<void>;
 
+	/* Called when the opposite actor requests its own leg muted/unmuted (only used by control-only services like cti) */
+	onMute(callId: string, muted: boolean): Promise<void>;
+	/* Called when the opposite actor requests its own leg held/resumed (only used by control-only services like cti) */
+	onHold(callId: string, held: boolean): Promise<void>;
+
 	onCallTransferred(callId: string): Promise<void>;
 	onCallUpdated(callId: string): Promise<void>;
 

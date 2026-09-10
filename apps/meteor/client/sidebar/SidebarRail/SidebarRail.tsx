@@ -12,7 +12,7 @@ import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
 import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
-import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
+import { NavBarItemAdministrationMenu, NavBarItemMediaCallDevice, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
 const SidebarRail = () => {
@@ -63,6 +63,7 @@ const SidebarRail = () => {
 			</Box>
 			<Box padding={8}>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>
+					{user && <NavBarItemMediaCallDevice />}
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <SidebarRailLoginPage />}
 				</NavBarGroup>

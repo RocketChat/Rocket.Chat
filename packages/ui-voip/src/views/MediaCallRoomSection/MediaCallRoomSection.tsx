@@ -74,6 +74,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const reconnecting = connectionState === 'RECONNECTING';
 
 	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
 	useRegisterView('room');
 
@@ -136,11 +138,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 							onToggle={isPopout ? onClosePopout : onOpenPopout}
 							danger={false}
 						/>
-						<DevicePicker secondary />
+						{devicePickerAvailable && <DevicePicker secondary />}
 					</ButtonGroup>
 				}
 			>
-				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				{muteAvailable && (
+					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				)}
 				{holdAvailable && (
 					<ToggleButton
 						label={t('Hold')}

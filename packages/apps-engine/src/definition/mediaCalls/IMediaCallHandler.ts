@@ -1,3 +1,14 @@
+import type {
+	IMediaCallAnswerContext,
+	IMediaCallDevicesContext,
+	IMediaCallDialContext,
+	IMediaCallDtmfContext,
+	IMediaCallHangupContext,
+	IMediaCallHoldContext,
+	IMediaCallMuteContext,
+	IMediaCallTransferContext,
+} from './IMediaCallControlContext';
+import type { IMediaCallDevice } from './IMediaCallDevice';
 import type { IMediaCallEndedContext } from './IMediaCallEndedContext';
 import type { IMediaCallParticipantJoinedContext } from './IMediaCallParticipantJoinedContext';
 import type { IMediaCallStartedContext } from './IMediaCallStartedContext';
@@ -56,6 +67,81 @@ export interface IMediaCallHandler {
 	/** Called once a call has ended, for any reason. */
 	[AppMethod.EXECUTE_POST_MEDIA_CALL_ENDED]?(
 		context: IMediaCallEndedContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	/**
+	 * `cti` call control (apps that handle calls on external devices/gateways).
+	 *
+	 * Implementing any of these opts the app into handling `cti` calls: Rocket.Chat lists the app's
+	 * devices in the call device picker and dispatches control to the app that owns each call. An app
+	 * reports call progress back through the media-call write accessor, it does not return it here.
+	 */
+
+	/** Lists the devices the given user can place/receive cti calls on. */
+	[AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES]?(
+		context: IMediaCallDevicesContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<IMediaCallDevice[]>;
+
+	/** Originate an outbound call on the chosen device. */
+	[AppMethod.EXECUTE_MEDIA_CALL_DIAL]?(
+		context: IMediaCallDialContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	/** Answer an inbound call on the device. */
+	[AppMethod.EXECUTE_MEDIA_CALL_ANSWER]?(
+		context: IMediaCallAnswerContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_HANGUP]?(
+		context: IMediaCallHangupContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_MUTE]?(
+		context: IMediaCallMuteContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_HOLD]?(
+		context: IMediaCallHoldContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_TRANSFER]?(
+		context: IMediaCallTransferContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_DTMF]?(
+		context: IMediaCallDtmfContext,
 		read: IRead,
 		http: IHttp,
 		persistence: IPersistence,

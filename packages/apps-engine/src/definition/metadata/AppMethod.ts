@@ -15,6 +15,15 @@ export enum AppMethod {
 	// Outbound communication provider methods
 	_OUTBOUND_GET_PROVIDER_METADATA = 'getProviderMetadata',
 	_OUTBOUND_SEND_MESSAGE = 'sendOutboundMessage',
+	// Media-call control methods (apps that handle `cti` calls on external devices)
+	EXECUTE_MEDIA_CALL_GET_DEVICES = 'executeGetMediaCallDevices',
+	EXECUTE_MEDIA_CALL_DIAL = 'executeMediaCallDial',
+	EXECUTE_MEDIA_CALL_ANSWER = 'executeMediaCallAnswer',
+	EXECUTE_MEDIA_CALL_HANGUP = 'executeMediaCallHangup',
+	EXECUTE_MEDIA_CALL_MUTE = 'executeMediaCallMute',
+	EXECUTE_MEDIA_CALL_HOLD = 'executeMediaCallHold',
+	EXECUTE_MEDIA_CALL_TRANSFER = 'executeMediaCallTransfer',
+	EXECUTE_MEDIA_CALL_DTMF = 'executeMediaCallDtmf',
 
 	INITIALIZE = 'initialize',
 	ONENABLE = 'onEnable',

@@ -63,4 +63,8 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public abstract onCallUpdated(callId: string): Promise<void>;
 
 	public abstract onDTMF(callId: string, dtmf: string, duration: number): Promise<void>;
+
+	public abstract onMute(callId: string, muted: boolean): Promise<void>;
+
+	public abstract onHold(callId: string, held: boolean): Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-signaling';
+import { callControlFeatureList, type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
@@ -49,7 +49,7 @@ export const defaultSessionState: SessionState = {
 	callId: undefined,
 	startedAt: undefined,
 	escalated: false,
-	supportedFeatures: ['audio', 'transfer', 'hold'],
+	supportedFeatures: ['audio', 'transfer', 'hold', ...callControlFeatureList],
 	confirmed: false,
 };
 

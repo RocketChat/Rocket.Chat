@@ -25,6 +25,10 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 		mobileRinging: false,
 		iceServers: [],
 
+		cti: {
+			enabled: false,
+		},
+
 		permissionCheck: async () => false,
 		isFeatureEnabled: () => false,
 	};
