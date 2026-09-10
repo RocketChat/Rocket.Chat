@@ -146,6 +146,17 @@ describe('jsonrpc', () => {
 			}
 		});
 
+		it('should reject an id that is a number but not finite', () => {
+			// These pass `typeof value === 'number'`, so the loop above cannot cover them.
+			// msgpack carries them; JSON cannot, and `JSON.stringify({ id: NaN })` yields
+			// `{"id":null}` — an id that changes meaning at a JSON boundary cannot route.
+			for (const id of [NaN, Infinity, -Infinity]) {
+				assertCategorizesAs('none', { jsonrpc: '2.0', id, method: 'app:getStatus' });
+				assertCategorizesAs('none', { jsonrpc: '2.0', id, result: { value: null } });
+				assertCategorizesAs('none', { jsonrpc: '2.0', id, error: { message: 'boom', code: jsonrpc.SERVER_ERROR } });
+			}
+		});
+
 		it('should reject a foreign object and a wrong version', () => {
 			assertCategorizesAs('none', { id: 'id-1', method: 'app:getStatus' });
 			assertCategorizesAs('none', { jsonrpc: '1.0', id: 'id-1', method: 'app:getStatus' });
