@@ -1047,6 +1047,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne<T, O>(query, options);
 	}
 
+	findOneVisibleByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = {
+			rid,
+			_id: messageId,
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		return this.findOne<T, O>(query, options);
+	}
+
 	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query: Filter<IMessage> = {
 			rid,
