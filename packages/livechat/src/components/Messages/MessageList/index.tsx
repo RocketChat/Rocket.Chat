@@ -1,5 +1,5 @@
-import { parseISO } from 'date-fns/parseISO';
 import { isSameDay } from 'date-fns/isSameDay';
+import { parseISO } from 'date-fns/parseISO';
 import i18next from 'i18next';
 import type { VNode } from 'preact';
 import type { CSSProperties } from 'preact/compat';
