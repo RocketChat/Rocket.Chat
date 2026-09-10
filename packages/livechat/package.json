@@ -21,6 +21,7 @@
 		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
 		"storybook": "storybook dev -p 9001 -c .storybook",
 		"stylelint": "stylelint 'src/**/*.scss'",
+		"testunit": "jest",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"browserslist": [
