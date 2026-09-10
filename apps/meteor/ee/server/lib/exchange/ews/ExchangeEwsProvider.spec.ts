@@ -184,10 +184,8 @@ describe('ExchangeEwsProvider', () => {
 						'<t:ItemId Id="ITEM-1"/>' +
 						'<t:Subject>Sprint review</t:Subject>' +
 						'<t:Body BodyType="Text">Agenda here</t:Body>' +
-						'<t:UID>040000008200E0</t:UID>' +
 						'<t:Start>2026-08-21T10:00:00Z</t:Start>' +
 						'<t:End>2026-08-21T11:00:00Z</t:End>' +
-						'<t:IsAllDayEvent>false</t:IsAllDayEvent>' +
 						'<t:IsCancelled>false</t:IsCancelled>' +
 						'<t:LegacyFreeBusyStatus>Busy</t:LegacyFreeBusyStatus>' +
 						'<t:ReminderMinutesBeforeStart>15</t:ReminderMinutesBeforeStart>' +
@@ -201,12 +199,10 @@ describe('ExchangeEwsProvider', () => {
 				{
 					kind: 'upsert',
 					externalId: 'ITEM-1',
-					iCalUId: '040000008200E0',
 					subject: 'Sprint review',
 					description: 'Agenda here',
 					startTime: new Date('2026-08-21T10:00:00Z'),
 					endTime: new Date('2026-08-21T11:00:00Z'),
-					isAllDay: false,
 					isCancelled: false,
 					busy: true,
 					reminderMinutesBeforeStart: 15,
