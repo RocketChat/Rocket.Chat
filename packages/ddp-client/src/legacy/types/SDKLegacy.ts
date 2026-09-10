@@ -1,6 +1,13 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
-import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import type { ChatUpdate, OperationResult } from '@rocket.chat/rest-typings';
 
+import type {
+	ChatSendMessageResponse,
+	ChatSyncMessagesResponse,
+	ChatUpdateResponse,
+	DmCreateResponse,
+	RoomsInfoResponse,
+} from './legacyChatRoutes';
 import type { StreamerCallbackArgs } from '../../types/streams';
 
 export interface APILegacy {
@@ -15,23 +22,23 @@ export interface APILegacy {
 	};
 
 	rooms: {
-		info(args: { roomName: string } | { roomId: string }): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>>;
+		info(args: { roomName: string } | { roomId: string }): Promise<Serialized<RoomsInfoResponse>>;
 		join(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>>;
-		load(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>>;
+		load(rid: string, lastUpdate: Date): Promise<Serialized<ChatSyncMessagesResponse>>;
 		leave(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
 	};
 
 	joinRoom(args: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>>;
-	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>>;
+	loadHistory(rid: string, lastUpdate: Date): Promise<Serialized<ChatSyncMessagesResponse>>;
 	leaveRoom(rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>>;
 
 	dm: {
-		create(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>>;
+		create(username: string): Promise<Serialized<DmCreateResponse>>;
 	};
 
-	createDirectMessage(username: string): Promise<Serialized<OperationResult<'POST', '/v1/im.create'>>>;
+	createDirectMessage(username: string): Promise<Serialized<DmCreateResponse>>;
 
-	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.sendMessage'>>>;
+	sendMessage(message: IMessage | string, rid: string): Promise<Serialized<ChatSendMessageResponse>>;
 
 	// getRoomIdByNameOrId(name: string): Promise<Serialized<OperationResult<'GET', '/v1/chat.getRoomIdByNameOrId'>>>;
 
@@ -41,9 +48,9 @@ export interface APILegacy {
 
 	// getRoomId(name: string): Promise<Serialized<OperationResult<'GET', '/v1/chat.find'>>>;
 
-	editMessage(args: OperationParams<'POST', '/v1/chat.update'>): Promise<Serialized<OperationResult<'POST', '/v1/chat.update'>>>;
+	editMessage(args: ChatUpdate): Promise<Serialized<ChatUpdateResponse>>;
 
-	setReaction(emoji: string, messageId: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.react'>>>;
+	setReaction(emoji: string, messageId: string): Promise<void>;
 
 	channelInfo(args: { roomName: string } | { roomId: string }): Promise<Serialized<OperationResult<'GET', '/v1/channels.info'>>>;
 

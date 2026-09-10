@@ -1,4 +1,4 @@
-import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
 import { ajv } from './Ajv';
@@ -77,29 +77,3 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 };
 
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
-
-export type InvitesEndpoints = {
-	'/v1/removeInvite/:_id': {
-		DELETE: () => boolean;
-	};
-	'/v1/useInviteToken': {
-		POST: (params: UseInviteTokenProps) => {
-			room: {
-				rid: IRoom['_id'];
-				prid: IRoom['prid'];
-				fname: IRoom['fname'];
-				name: IRoom['name'];
-				t: IRoom['t'];
-			};
-		};
-	};
-	'/v1/validateInviteToken': {
-		POST: (params: ValidateInviteTokenProps) => { valid: boolean };
-	};
-	'/v1/findOrCreateInvite': {
-		POST: (params: FindOrCreateInviteParams) => IInvite;
-	};
-	'/v1/sendInvitationEmail': {
-		POST: (params: SendInvitationEmailParams) => { success: boolean };
-	};
-};

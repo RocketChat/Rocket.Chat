@@ -1,6 +1,7 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
+import type { LivechatDepartmentTransferResponse } from './livechatRoutes';
 import type { StreamerCallbackArgs } from '../../types/streams';
 
 export type LivechatRoomEvents<T> =
@@ -54,9 +55,7 @@ export interface LivechatEndpoints {
 	// videoCall(args: OperationParams<'GET', '/v1/livechat/video.call/:token'>): Promise<void>;
 
 	// POST
-	transferChat(
-		args: OperationParams<'POST', '/v1/livechat/visitor/department.transfer'>,
-	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>>;
+	transferChat(args: { rid: string; token: string; department: string }): Promise<LivechatDepartmentTransferResponse>;
 	grantVisitor(
 		guest: OperationParams<'POST', '/v1/livechat/visitor'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>>;

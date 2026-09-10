@@ -96,7 +96,7 @@ const RoomMembersItem = ({
 			<OptionContent data-qa={`MemberItem-${username}`}>
 				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
 			</OptionContent>
-			{subscription?.status === 'INVITED' && (
+			{subscription?.status === 'INVITED' && subscription.ts && (
 				<OptionColumn>
 					<InvitationBadge marginBlockStart={2} size='x20' invitationDate={subscription.ts} />
 				</OptionColumn>

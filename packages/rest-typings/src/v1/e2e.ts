@@ -21,13 +21,3 @@ const E2eSetUserPublicAndPrivateKeysSchema = {
 };
 
 export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile<E2eSetUserPublicAndPrivateKeysProps>(E2eSetUserPublicAndPrivateKeysSchema);
-
-export type E2eEndpoints = {
-	'/v1/e2e.setUserPublicAndPrivateKeys': {
-		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
-	};
-
-	'/v1/e2e.requestSubscriptionKeys': {
-		POST: () => void;
-	};
-};
