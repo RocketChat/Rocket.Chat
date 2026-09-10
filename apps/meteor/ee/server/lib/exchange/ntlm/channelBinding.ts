@@ -9,9 +9,9 @@ import { createHash } from 'crypto';
  */
 
 /** MS-NLMP AV_PAIR identifier for `MsvAvChannelBindings`. */
-export const AV_ID_CHANNEL_BINDINGS = 0x000a;
+const AV_ID_CHANNEL_BINDINGS = 0x000a;
 /** MS-NLMP AV_PAIR identifier for `MsvAvEOL`, which terminates the list. */
-export const AV_ID_EOL = 0x0000;
+const AV_ID_EOL = 0x0000;
 
 const CHANNEL_BINDING_PREFIX = 'tls-server-end-point:';
 
@@ -69,7 +69,7 @@ const decodeOid = (bytes: Buffer): string => {
  * Falls back rather than throwing: a wrong guess is a diagnosable authentication failure, while throwing
  * would take down a sync over an unrecognised certificate.
  */
-export const certificateHashAlgorithm = (der: Buffer): string => {
+const certificateHashAlgorithm = (der: Buffer): string => {
 	try {
 		if (der[0] !== 0x30) {
 			return DEFAULT_HASH;
