@@ -1,7 +1,7 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { MediaCallViewContext, defaultMediaCallContextValue } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import CallDiagnosticsContext from './CallDiagnosticsContext';
@@ -144,70 +144,10 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 		};
 	}, [lkPortalTarget]);
 
-	const swm = (ctxValue as any).speakingWhileMuted === true;
-	const [showSwm, setShowSwm] = useState(false);
-	const swmTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-	const [swmRect, setSwmRect] = useState<{ left: number; bottom: number } | null>(null);
-
-	useEffect(() => {
-		if (swm) {
-			if (swmTimer.current) clearTimeout(swmTimer.current);
-			setShowSwm(true);
-		} else if (showSwm) {
-			swmTimer.current = setTimeout(() => setShowSwm(false), 3000);
-		}
-		return () => {
-			if (swmTimer.current) clearTimeout(swmTimer.current);
-		};
-	}, [swm, showSwm]);
-
-	useEffect(() => {
-		if (!showSwm) {
-			setSwmRect(null);
-			return undefined;
-		}
-		const locate = () => {
-			const btn = document.querySelector<HTMLElement>('[title="Unmute"], [title*="muted" i]');
-			if (btn) {
-				const r = btn.getBoundingClientRect();
-				setSwmRect({ left: r.left + r.width / 2, bottom: window.innerHeight - r.top + 8 });
-			}
-		};
-		locate();
-		const id = setInterval(locate, 1000);
-		return () => clearInterval(id);
-	}, [showSwm]);
-
 	return (
 		<CallDiagnosticsContext.Provider value={diagnosticsValue as any}>
 			<MediaCallViewContext.Provider value={ctxValue as any}>
 				{children}
-				{showSwm && swmRect && (
-					<button
-						type='button'
-						style={{
-							position: 'fixed',
-							bottom: swmRect.bottom,
-							left: swmRect.left,
-							transform: 'translateX(-50%)',
-							padding: '6px 12px',
-							borderRadius: 4,
-							border: 'none',
-							background: 'rgba(235, 50, 50, 0.95)',
-							color: '#fff',
-							fontSize: 12,
-							fontWeight: 500,
-							lineHeight: 1.3,
-							whiteSpace: 'nowrap' as const,
-							zIndex: 99999,
-							pointerEvents: 'auto' as const,
-							cursor: 'pointer',
-						}}
-						onClick={(ctxValue as any).onMute}
-					>
-						You are muted — click to unmute
-					</button>
-				)}
 				{lkActive && creds && callId && lkPortalTarget
 					? createPortal(
 							// No fallback: the room renders nothing of its own — it publishes tracks and pushes state up
