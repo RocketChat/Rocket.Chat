@@ -32,11 +32,20 @@ registered default is `thread` and reading it on its own puts the panel over a t
 | | thread | main room |
 | --- | --- | --- |
 | `VideoConf_Enable_Persistent_Chat` off | the room | the room |
-| provider without the `persistentChat` capability | the room | the room |
-| both, and the mode agrees | thread off the call message | the discussion, once it exists |
+| the call window off | the discussion, as before the window existed | the discussion, once it exists |
+| both on, and the mode agrees | thread off the call message | the discussion, once it exists |
 
-`autoFollowCallThread` and `maybeCreateDiscussion` are where the server applies exactly that;
-`useConferenceEmbedded` reads `capabilities.persistentChat` off the conference it already fetched.
+The window is the third answer because the thread hangs off the call's message and the window's chat panel is
+the only thing that reads it — `getPersistentChatMode` answers `main_room` without the window, whatever the
+setting was left at, so turning the window off puts a workspace back exactly where it was.
+
+The provider has no say in it. A thread off the call's message is *our* chat panel's, not the provider's
+feature, and an iframed provider renders inside our page — so a Jitsi call in our window threads exactly like a
+call we run ourselves. The provider's `persistentChat` capability decides only the discussion of main-room mode
+(see [Persistent chat](#persistent-chat)), which is what it decided before the window existed.
+
+`VideoConfService.chatLivesInAThread` is where the server applies exactly that, and `autoFollowCallThread` and
+the thread's title both ask it; `useConferenceEmbedded` mirrors it from the two public settings.
 
 ## The flows at a glance
 
@@ -743,7 +752,7 @@ made cheap — see [Improvement suggestions](#improvement-suggestions).
 
 ## Provider Requirements
 
-A provider must declare the **`persistentChat` capability** for `maybeCreateDiscussion` to create a discussion for its conferences.
+A provider must declare the **`persistentChat` capability** for `maybeCreateDiscussion` to create a discussion for its conferences. Only the discussion: thread mode does not ask (see the table above).
 
 Providers that don't declare it still work in the split view — the chat panel falls back to the conference's `rid`, showing the room the call was started in — but get no dedicated per-call discussion. The bundled **Jitsi app (v2.1.1) declares only `{ mic, cam, title }`**, so it falls into this case; adding `persistentChat` is an app-side change.
 

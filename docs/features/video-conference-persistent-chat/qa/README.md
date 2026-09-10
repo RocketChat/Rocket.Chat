@@ -115,13 +115,12 @@ will find them failing.
   Parks case **17** step 3, case **18** steps 2 and 4, and case **47** step 2 — anything asking one participant's
   window about another participant's move, which is most of what the People panel is for.
 - **With persistent chat off the chat panel is a thread, not the room.** Case **52** step 2 is what
-  `ee/server/settings/video-conference.ts` promises and what the server does — `autoFollowCallThread` and
-  `maybeCreateDiscussion` both refuse unless persistent chat is on *and* the provider declares `persistentChat`.
-  `useConferenceEmbedded` checks neither: it reads `VideoConf_Persistent_Chat_Mode` alone, whose stored default
-  is `thread` (its `enableQuery` greys the admin field without changing the value), and passes
-  `tmid = messages.started` to the panel. The panel comes up headed `Thread in <room>`, on a thread the server
-  subscribed nobody to, against a provider reporting `capabilities.persistentChat: false` in the very response
-  the window read.
+  `ee/server/settings/video-conference.ts` promises and what the server does — `autoFollowCallThread` refuses
+  unless persistent chat is on and the mode says thread. `useConferenceEmbedded` asked neither: it read
+  `VideoConf_Persistent_Chat_Mode` alone, whose stored default is `thread` (its `enableQuery` greys the admin
+  field without changing the value), and passed `tmid = messages.started` to the panel. The panel came up headed
+  `Thread in <room>`, on a thread the server subscribed nobody to. **Fixed**: the hook now mirrors the server's
+  `chatLivesInAThread` off the same two settings, and case **52** passes as written.
 
 ### Cases the code does not agree with
 
@@ -189,11 +188,12 @@ When the feature changes, the two things most likely to invalidate a case are th
   call whose provider is not embedded). The client-side half of "one call at a time" — `useJoinCall` posting an
   explicit leave before joining — does work with a URL provider, and is covered. The last Edge case documents
   what the missing sweep means in practice.
-- **Persistent chat needs a provider that declares the `persistentChat` capability.** The bundled Jitsi app
-  v2.1.1 declares only `{ mic, cam, title }`, so with it neither a thread nor a discussion is created in either
-  mode — the chat panel falls back to the room the call was started in. Two of the five *Persistent chat modes*
-  cases therefore state a provider app declaring `persistentChat` as a precondition; the fifth is the negative
-  case with stock Jitsi. Check `GET /v1/video-conference.capabilities` before running any of them.
+- **Only the discussion needs a provider that declares the `persistentChat` capability.** The bundled Jitsi app
+  v2.1.1 declares only `{ mic, cam, title }`, so with it main-room mode creates no discussion and the chat panel
+  falls back to the room the call was started in; the *main room* cases therefore state a provider app declaring
+  the capability as a precondition, and case **56** is the negative case with stock Jitsi. Thread mode does not
+  ask — the thread is our chat panel's, so stock Jitsi threads like anything else. Check
+  `GET /v1/video-conference.capabilities` before running the main-room cases.
 - **`VideoConf_Persistent_Chat_Mode` is only editable when both `VideoConf_Enable_Persistent_Chat` and
   `VideoConf_Conference_Window_Enabled` are on** (its `enableQuery`), and the server falls back to `main_room`
   whenever the window is off, whatever the mode was left at. Every case that depends on a setting names it in
