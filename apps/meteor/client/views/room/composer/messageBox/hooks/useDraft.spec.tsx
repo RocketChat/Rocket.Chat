@@ -484,6 +484,26 @@ describe('flushDraft', () => {
 		expect(readLocalDraft('rid')).toBe('typed message');
 	});
 
+	it('should retry a draft whose save failed instead of discarding the local copy', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		const endpointHandler = jest.fn(() => Promise.reject(new Error('save failed')) as unknown as null);
+		const { result } = renderUseDraft({ endpointHandler });
+
+		await act(async () => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft();
+		});
+
+		await act(async () => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft();
+		});
+
+		expect(warn).toHaveBeenCalledTimes(2);
+		expect(endpointHandler).toHaveBeenCalledTimes(2);
+		expect(readLocalDraft('rid')).toBe('typed message');
+	});
+
 	it('should not flush the persisted draft after it was superseded by an explicit flush', async () => {
 		const { result, endpointHandler } = renderUseDraft();
 

@@ -52,6 +52,7 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 				return;
 			}
 
+			const previousServerValue = serverValueRef.current;
 			serverValueRef.current = draft;
 
 			void saveDraft({ rid, draft, ...(tmid && { tmid }) })
@@ -61,6 +62,7 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 					}
 				})
 				.catch((error) => {
+					serverValueRef.current = previousServerValue;
 					console.warn(error);
 				});
 		},
