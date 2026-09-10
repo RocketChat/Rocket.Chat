@@ -54,14 +54,14 @@ const redactUrlParams = (parsedUrl: URL): void => {
  * ```
  */
 export function censorUrl(url: string | URL): string {
-	if (url instanceof URL) {
-		const parsedUrl = new URL(url.toString());
-		redactUrlParams(parsedUrl);
-		return parsedUrl.toString();
-	}
-
 	if (typeof url !== 'string') {
-		return String(url);
+		try {
+			const parsedUrl = new URL(String(url));
+			redactUrlParams(parsedUrl);
+			return parsedUrl.toString();
+		} catch {
+			return String(url);
+		}
 	}
 
 	// 1. Protocol-relative URL: //user:pass@host/path?token=secret
