@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
 import type { CallFeature, CallService } from '../../call';
-import { callFeatureList } from '../../call/IClientMediaCall';
+import { callFeatureList, callServiceList } from '../../call/IClientMediaCall';
 
 export type ClientMediaSignalRequestCall = {
 	/** the callId on this signal is temporary and is never propagated to other agents */
@@ -14,6 +14,14 @@ export type ClientMediaSignalRequestCall = {
 	};
 	supportedServices: CallService[];
 	supportedFeatures?: CallFeature[];
+	/**
+	 * Explicitly requested service for this call. When set, the server should honor it instead of
+	 * picking a service from `supportedServices`. Used to place a call on a non-webrtc endpoint
+	 * (e.g. a `cti` desk phone) that the browser itself can't service.
+	 */
+	requestedService?: CallService;
+	/** Identifies which of the user's endpoints/devices should handle the call (opaque to Rocket.Chat, resolved by the app). */
+	device?: string;
 };
 
 export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSignalRequestCall> = {
@@ -54,7 +62,7 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			type: 'array',
 			items: {
 				type: 'string',
-				enum: ['webrtc'],
+				enum: callServiceList,
 				nullable: false,
 			},
 			nullable: false,
@@ -66,6 +74,15 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 				enum: callFeatureList,
 				nullable: false,
 			},
+			nullable: true,
+		},
+		requestedService: {
+			type: 'string',
+			enum: callServiceList,
+			nullable: true,
+		},
+		device: {
+			type: 'string',
 			nullable: true,
 		},
 	},

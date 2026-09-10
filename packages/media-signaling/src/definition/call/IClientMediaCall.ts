@@ -8,7 +8,12 @@ import type {
 } from './IClientMediaCallParticipant';
 import type { CallActorType } from './common';
 
-export type CallService = 'webrtc';
+export const callServiceList = [
+	'webrtc', // media is handled by the client through a WebRTC connection
+	'cti', // the call is fully handled by an external device/gateway through a Rocket.Chat app; the client is only a remote control
+] as const;
+
+export type CallService = (typeof callServiceList)[number];
 
 export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'] as const;
 
