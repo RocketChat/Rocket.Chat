@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../server/lib/callbacks';
 import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
+import { LIVEKIT_CAPABILITIES } from '../../../server/lib/videoConference/livekitCapabilities';
 import { settings } from '../../../server/settings';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';
@@ -24,7 +25,7 @@ import { addSettings } from '../settings/video-conference';
  */
 const refreshLiveKitProviderRegistration = (): void => {
 	if (isLiveKitFullyConfigured()) {
-		videoConfProviders.registerProvider('livekit', { mic: true, cam: true, title: true, embedded: true }, CORE_PROVIDER_APP_ID);
+		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
 	}
