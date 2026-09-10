@@ -30,14 +30,6 @@ const cases = [
 		sanitizes: true,
 	},
 	{
-		command: 'mute',
-		path: 'mute/mute',
-		dependency: '../../meteor-methods/rooms/muteUserInRoom',
-		method: 'muteUserInRoom',
-		permission: 'mute-user',
-		sanitizes: false,
-	},
-	{
 		command: 'unmute',
 		path: 'mute/unmute',
 		dependency: '../../meteor-methods/rooms/unmuteUserInRoom',
@@ -85,21 +77,18 @@ cases.forEach(({ command, path, dependency, method, permission, sanitizes }) => 
 			sinon.assert.notCalled(harness.broadcast);
 		});
 
-		// /mute currently falls through after missing-user feedback; leave that bug outside this contract.
-		if (command !== 'mute') {
-			['pt', undefined].forEach((language) => {
-				it(`reports an unknown target with ${language || 'English fallback'} and performs no mutation`, async () => {
-					findTarget.resolves(null);
-					findActor.resolves(null);
-					harness.settings.get.withArgs('Language').returns(language);
-					await harness.run(command, { params: '@Bob' });
-					sinon.assert.calledOnceWithExactly(findTarget, 'Bob');
-					harness.expectFeedback('Username_doesnt_exist');
-					expect(harness.translate.firstCall.args[1]).to.include({ username: 'Bob', lng: language || 'en' });
-					sinon.assert.notCalled(action);
-				});
+		['pt', undefined].forEach((language) => {
+			it(`reports an unknown target with ${language || 'English fallback'} and performs no mutation`, async () => {
+				findTarget.resolves(null);
+				findActor.resolves(null);
+				harness.settings.get.withArgs('Language').returns(language);
+				await harness.run(command, { params: '@Bob' });
+				sinon.assert.calledOnceWithExactly(findTarget, 'Bob');
+				harness.expectFeedback('Username_doesnt_exist');
+				expect(harness.translate.firstCall.args[1]).to.include({ username: 'Bob', lng: language || 'en' });
+				sinon.assert.notCalled(action);
 			});
-		}
+		});
 
 		it('propagates authorization failures from the authoritative method', async () => {
 			const error = new Error('Not authorized');

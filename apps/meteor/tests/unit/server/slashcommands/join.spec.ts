@@ -11,16 +11,14 @@ describe('/join', () => {
 	let findSubscription: sinon.SinonStub;
 	let findUser: sinon.SinonStub;
 	let join: sinon.SinonStub;
-	let broadcast: sinon.SinonStub;
 	let harness: ReturnType<typeof loadCommand>;
 	beforeEach(() => {
 		findRoom = sinon.stub().resolves(room);
 		findSubscription = sinon.stub().resolves(null);
 		findUser = sinon.stub().resolves(user);
 		join = sinon.stub().resolves();
-		broadcast = sinon.stub().resolves();
 		harness = loadCommand('join/server', {
-			'@rocket.chat/core-services': { api: { broadcast }, Room: { join } },
+			'@rocket.chat/core-services': { Room: { join } },
 			'@rocket.chat/models': {
 				Rooms: { findOneByNameAndType: findRoom },
 				Subscriptions: { findOneByRoomIdAndUserId: findSubscription },
@@ -44,7 +42,7 @@ describe('/join', () => {
 	it('reports an unknown public channel', async () => {
 		findRoom.resolves(null);
 		await harness.run('join', { params: '#missing' });
-		sinon.assert.calledOnceWithExactly(broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
+		sinon.assert.calledOnceWithExactly(harness.broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
 			msg: 'translated:Channel_doesnt_exist',
 		});
 		expect(harness.translate.firstCall.args[1]).to.include({ channelName: 'missing', lng: 'en' });
