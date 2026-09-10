@@ -1980,6 +1980,25 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
+	 * Whether this call's chat is a thread hanging off the call's own message in the room.
+	 *
+	 * Persistent chat is on, and the mode says thread rather than discussion. Nothing else: the mode can only
+	 * answer `thread` where the call window exists to read one in — see `getPersistentChatMode`.
+	 *
+	 * The provider used to be asked as well, through `supportsPersistentChat`, and no provider an app registers
+	 * declares that capability — so thread mode did nothing for a Jitsi call and the chat panel quietly showed
+	 * the room instead. The wrong question: a thread off the call's message is *our* chat panel's, not the
+	 * provider's feature, and an iframed provider renders inside our own page, so our panel is beside it either
+	 * way. Whoever runs the media, the chat is ours.
+	 *
+	 * `maybeCreateDiscussion` still asks: a discussion per call is what persistent chat created before the
+	 * window existed, and which providers get one is not this change's business to widen.
+	 */
+	private chatLivesInAThread(): boolean {
+		return this.isPersistentChatEnabled() && this.getPersistentChatMode() === 'thread';
+	}
+
+	/**
 	 * Auto-follow the call's chat thread for a single user. Called when a
 	 * participant joins the call, so they receive thread notifications for
 	 * messages posted during the conference. Only applies when persistent
@@ -1987,13 +2006,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * exists. The underlying `follow` is idempotent ($addToSet).
 	 */
 	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
-		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
-			return;
-		}
-
-		// Same rule as `maybeCreateDiscussion`: persistent chat is only acted on for a provider that declares
-		// support for it — a Jitsi call must not start following threads because the setting is on.
-		if (!this.supportsPersistentChat(call.providerName)) {
+		if (!this.chatLivesInAThread()) {
 			return;
 		}
 
@@ -2011,12 +2024,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * joined before the message existed gets subscribed retroactively.
 	 */
 	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
-		if (!this.isPersistentChatEnabled() || this.getPersistentChatMode() !== 'thread') {
-			return;
-		}
-
-		// Same rule as `maybeCreateDiscussion`: only for a provider that declares persistent chat support.
-		if (!this.supportsPersistentChat(call.providerName)) {
+		if (!this.chatLivesInAThread()) {
 			return;
 		}
 
