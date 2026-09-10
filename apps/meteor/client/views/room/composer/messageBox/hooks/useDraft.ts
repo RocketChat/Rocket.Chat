@@ -48,12 +48,21 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 			}
 
 			if (draft === serverValueRef.current) {
+				setLocalDraft();
 				return;
 			}
 
-			serverValueRef.current = draft;
+			void saveDraft({ rid, draft, ...(tmid && { tmid }) })
+				.then(() => {
+					serverValueRef.current = draft;
 
-			void saveDraft({ rid, draft, ...(tmid && { tmid }) }).then(() => setLocalDraft());
+					if (draftRef.current === null) {
+						setLocalDraft();
+					}
+				})
+				.catch((error) => {
+					console.warn(error);
+				});
 		},
 		[saveDraft, rid, tmid, setLocalDraft],
 	);

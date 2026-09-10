@@ -427,6 +427,67 @@ describe('flushDraft', () => {
 		});
 
 		expect(endpointHandler).not.toHaveBeenCalled();
+		expect(readLocalDraft('rid')).toBe(null);
+	});
+
+	it('should remove the local copy when the flushed value already matches the server draft', () => {
+		const { result, endpointHandler } = renderUseDraft({ serverDraft: 'server draft' });
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft('server draft');
+		});
+
+		expect(endpointHandler).not.toHaveBeenCalled();
+		expect(readLocalDraft('rid')).toBe(null);
+	});
+
+	it('should keep a draft persisted while the previous save is still in flight', async () => {
+		let resolveSave: (() => void) | undefined;
+		const endpointHandler = jest.fn(
+			() =>
+				new Promise<null>((resolve) => {
+					resolveSave = () => resolve(null);
+				}),
+		);
+		const { result } = renderUseDraft({ serverDraft: 'server draft', endpointHandler });
+
+		act(() => {
+			result.current.flushDraft('');
+		});
+
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
+
+		act(() => {
+			result.current.persistLocal('typed while sending');
+		});
+
+		await act(async () => {
+			resolveSave?.();
+		});
+
+		expect(readLocalDraft('rid')).toBe('typed while sending');
+	});
+
+	it('should flush the same value again after a failed save', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		const endpointHandler = jest.fn(() => Promise.reject(new Error('save failed')) as unknown as null);
+		const { result } = renderUseDraft({ serverDraft: 'server draft', endpointHandler });
+
+		await act(async () => {
+			result.current.flushDraft('');
+		});
+
+		expect(endpointHandler).toHaveBeenCalledTimes(1);
+		expect(warn).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			result.current.flushDraft('');
+		});
+
+		expect(endpointHandler).toHaveBeenCalledTimes(2);
+
+		warn.mockRestore();
 	});
 
 	it('should not flush the persisted draft after it was superseded by an explicit flush', async () => {
