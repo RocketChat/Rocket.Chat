@@ -10,13 +10,24 @@ type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
 	inquiriesEnabled: boolean;
 	sidebarGroupByType: boolean;
+	mergeTeamsAndChannels: boolean;
+	groupUnlistedInConversations: boolean;
 	favoritesEnabled: boolean;
 	sidebarShowUnread: boolean;
 	isDiscussionEnabled: boolean;
 };
 
 const filterSystemCategories = (categories: readonly string[], options: FilterSystemCategoriesOptions) => {
-	const { showOmnichannel, inquiriesEnabled, sidebarGroupByType, favoritesEnabled, sidebarShowUnread, isDiscussionEnabled } = options;
+	const {
+		showOmnichannel,
+		inquiriesEnabled,
+		sidebarGroupByType,
+		mergeTeamsAndChannels,
+		groupUnlistedInConversations,
+		favoritesEnabled,
+		sidebarShowUnread,
+		isDiscussionEnabled,
+	} = options;
 	return categories.filter((key) => {
 		switch (key) {
 			case 'Incoming_Livechats':
@@ -28,10 +39,16 @@ const filterSystemCategories = (categories: readonly string[], options: FilterSy
 				return sidebarGroupByType && isDiscussionEnabled;
 			case 'Teams':
 			case 'Channels':
+				// When merging is on, Teams and Channels are replaced by the single "Teams_and_channels" group.
+				return sidebarGroupByType && !mergeTeamsAndChannels;
+			case 'Teams_and_channels':
+				return sidebarGroupByType && mergeTeamsAndChannels;
 			case 'Direct_Messages':
 				return sidebarGroupByType;
 			case 'Conversations':
-				return !sidebarGroupByType;
+				// Normally hidden when grouping by type, but kept as a catch-all when routing
+				// rooms of unlisted groups into it.
+				return !sidebarGroupByType || groupUnlistedInConversations;
 			case 'Unread':
 				return sidebarShowUnread;
 			case 'Favorites':
@@ -138,6 +155,10 @@ export const getRoomCategory = (
 		return 'Teams';
 	}
 
+	if (room.teamMain && groups.has('Teams_and_channels')) {
+		return 'Teams_and_channels';
+	}
+
 	if (room.prid && groups.has('Discussions')) {
 		return 'Discussions';
 	}
@@ -160,6 +181,10 @@ export const getRoomCategory = (
 		return 'Channels';
 	}
 
+	if ((room.t === 'c' || room.t === 'p') && groups.has('Teams_and_channels')) {
+		return 'Teams_and_channels';
+	}
+
 	if (room.t === 'd' && groups.has('Direct_Messages')) {
 		return 'Direct_Messages';
 	}
@@ -172,21 +197,44 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
 	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
+	const mergeTeamsAndChannels = useUserPreference<boolean>('sidebarGroupTeamsAndChannels') ?? false;
+	const groupUnlistedInConversations = useUserPreference<boolean>('sidebarGroupUnlistedInConversations') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false) ?? false;
+
+	const effectiveSectionsOrder = useMemo<readonly string[]>(() => {
+		const next = [...sidebarSectionsOrder];
+
+		// Users with a `sidebarSectionsOrder` saved before the merged group existed won't have the
+		// 'Teams_and_channels' key, so the group would never render. Inject it after 'Channels'.
+		if (!next.includes('Teams_and_channels')) {
+			const channelsIndex = next.indexOf('Channels');
+			next.splice(channelsIndex === -1 ? next.length : channelsIndex + 1, 0, 'Teams_and_channels');
+		}
+
+		// When routing unlisted rooms into "Conversations" under group-by-type, make sure the group is
+		// present in the order so it can actually receive them, even if the saved order dropped it.
+		if (sidebarGroupByType && groupUnlistedInConversations && !next.includes('Conversations')) {
+			next.push('Conversations');
+		}
+
+		return next;
+	}, [sidebarSectionsOrder, sidebarGroupByType, groupUnlistedInConversations]);
 
 	const categoryList = useMemo(() => {
 		if (hasLicenseModule) {
 			return filterSystemCategories(
 				mergeWithSectionsOrder(
 					sidebarCategories.map(({ _id }) => _id),
-					sidebarSectionsOrder,
+					effectiveSectionsOrder,
 				),
 				{
 					showOmnichannel,
 					inquiriesEnabled,
 					sidebarGroupByType,
+					mergeTeamsAndChannels,
+					groupUnlistedInConversations,
 					favoritesEnabled,
 					sidebarShowUnread,
 					isDiscussionEnabled,
@@ -194,21 +242,25 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 			);
 		}
 
-		return filterSystemCategories(sidebarSectionsOrder, {
+		return filterSystemCategories(effectiveSectionsOrder, {
 			showOmnichannel,
 			inquiriesEnabled,
 			sidebarGroupByType,
+			mergeTeamsAndChannels,
+			groupUnlistedInConversations,
 			favoritesEnabled,
 			sidebarShowUnread,
 			isDiscussionEnabled,
 		});
 	}, [
 		sidebarCategories,
-		sidebarSectionsOrder,
+		effectiveSectionsOrder,
 		hasLicenseModule,
 		showOmnichannel,
 		inquiriesEnabled,
 		sidebarGroupByType,
+		mergeTeamsAndChannels,
+		groupUnlistedInConversations,
 		favoritesEnabled,
 		sidebarShowUnread,
 		isDiscussionEnabled,

@@ -153,6 +153,13 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+	primary?: boolean;
+	verified?: boolean;
+}
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
@@ -177,6 +184,7 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Teams',
 	'Discussions',
 	'Channels',
+	'Teams_and_channels',
 	'Direct_Messages',
 	'Conversations',
 ] as const;
@@ -234,7 +242,11 @@ export interface IUser extends IRocketChatRecord {
 	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
+	/**
+	 * @deprecated Use `phones` instead.
+	 */
 	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;

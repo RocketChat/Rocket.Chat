@@ -76,6 +76,10 @@ export class OutgoingSipCall extends BaseSipCall {
 			return this.processTransferredCall(call);
 		}
 
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
+		}
+
 		if (call.state === 'hangup') {
 			return this.processEndedCall(call);
 		}
@@ -198,6 +202,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 			supportedFeatures: SIP_CALL_FEATURES,
+			sipCallId: this.sipDialog.sip?.callId,
+			negotiationId: negotiation._id,
 		});
 	}
 
@@ -240,6 +246,19 @@ export class OutgoingSipCall extends BaseSipCall {
 		const localNegotiation = await this.getPendingInboundNegotiation();
 		// If we don't have an sdp, we can't respond to it yet
 		if (!localNegotiation?.answer?.sdp) {
+			logger.debug({
+				msg: 'Skipping negotiation due to missing answer sdp',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
+			return;
+		}
+		if (localNegotiation.res.finalResponseSent) {
+			logger.debug({
+				msg: 'Final response has already been sent',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
 			return;
 		}
 

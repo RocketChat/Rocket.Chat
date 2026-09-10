@@ -474,6 +474,20 @@ exports[`renders ExternalContact without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full"
                       >
+                        Unknown
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Number
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
                         1234567890
                       </div>
                     </div>

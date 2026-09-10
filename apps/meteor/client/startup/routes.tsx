@@ -25,6 +25,7 @@ const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizat
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
 const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
 declare module '@rocket.chat/ui-contexts' {
@@ -210,7 +211,7 @@ router.defineRoutes([
 	{
 		path: '/conference/:id',
 		id: 'conference',
-		element: appLayout.wrap(<ConferenceRoute />),
+		element: appLayout.wrap(<ConferenceRoute />, { embedded: true }),
 	},
 	{
 		path: '/setup-wizard/:step?',
@@ -253,6 +254,7 @@ router.defineRoutes([
 		element: appLayout.wrap(
 			<MainLayout>
 				<CallHistoryPage />
+				<SidebarRailCallPanel />
 			</MainLayout>,
 		),
 	},

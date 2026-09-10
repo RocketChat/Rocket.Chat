@@ -1,4 +1,4 @@
-import type { IUserSettings } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, IUserSettings } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
@@ -20,6 +20,7 @@ export type UserCreateParamsPOST = {
 	customFields?: Record<string, any>;
 	settings?: IUserSettings;
 	freeSwitchExtension?: string;
+	phones?: IUserPhoneNumber[];
 	/* @deprecated */
 	fields: string;
 };
@@ -44,6 +45,21 @@ const userCreateParamsPostSchema = {
 		customFields: { type: 'object' },
 		fields: { type: 'string', nullable: true },
 		freeSwitchExtension: { type: 'string', nullable: true },
+		phones: {
+			type: 'array',
+			nullable: true,
+			items: {
+				type: 'object',
+				properties: {
+					number: { type: 'string', format: 'basic_phone_number' },
+					label: { type: 'string', nullable: true, maxLength: 50 },
+					primary: { type: 'boolean', nullable: true },
+					verified: { type: 'boolean', nullable: true },
+				},
+				required: ['number'],
+				additionalProperties: false,
+			},
+		},
 	},
 	additionalProperties: false,
 	required: ['email', 'name', 'password', 'username'],

@@ -24,6 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+	sipCallId?: string;
 };
 
 // expiration checks by call id
@@ -61,15 +62,17 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
+		data: {
+			calleeContractId: string;
+			webrtcAnswer?: RTCSessionDescriptionInit;
+			supportedFeatures: CallFeature[];
+			sipCallId?: string;
+			negotiationId?: string;
+		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
-		// To avoid race conditions, load the negotiation before changing the call state
-		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
-
-		const { webrtcAnswer, ...acceptData } = data;
+		const { webrtcAnswer, negotiationId, ...acceptData } = data;
 
 		const stateResult = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
@@ -89,12 +92,12 @@ class MediaCallDirector {
 		await calleeAgent.onCallAccepted(updatedCall);
 		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
-		if (data.webrtcAnswer && negotiation) {
-			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+		if (webrtcAnswer && negotiationId) {
+			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiationId, webrtcAnswer);
 			if (negotiationResult.modifiedCount) {
-				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId: negotiation._id });
+				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId });
 			}
-			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiationId);
 		}
 
 		return true;
@@ -208,7 +211,16 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const participants = [caller, callee];
+		const allowedFeatures = features.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureAvailableForParticipants(feature, participants),
+		);
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
 			_id: randomUUID(),
@@ -235,6 +247,7 @@ class MediaCallDirector {
 			...(divertedBy && { divertedBy }),
 
 			features: allowedFeatures,
+			...(params.sipCallId && { sipCallId: params.sipCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
