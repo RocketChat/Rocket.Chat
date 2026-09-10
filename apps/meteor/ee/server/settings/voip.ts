@@ -82,6 +82,15 @@ export function addSettings(): Promise<void> {
 					});
 				});
 
+				await this.section('VoIP_TeamCollab_CTI', async function () {
+					await this.add('VoIP_TeamCollab_CTI_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_CTI_Enabled_Description',
+					});
+				});
+
 				await this.section('VoIP_TeamCollab_ExternalCallHistory', async function () {
 					await this.add('VoIP_TeamCollab_ExternalCallHistory_Enabled', false, {
 						type: 'boolean',

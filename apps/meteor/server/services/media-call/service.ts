@@ -10,11 +10,20 @@ import type {
 	AtLeast,
 	IGroupVideoConference,
 	IRegisterUser,
+	MediaCallContact,
+	IUserMediaCallDevice,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall, ESCALATED_CALL_FEATURES } from '@rocket.chat/media-calls';
+import {
+	callServer,
+	type IMediaCallServerSettings,
+	getSignalsForExistingCall,
+	ESCALATED_CALL_FEATURES,
+	setMediaCallAppGateway,
+} from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
+	CallHangupReason,
 	ClientMediaSignal,
 	ServerMediaSignal,
 	ServerMediaCallSignal,
@@ -31,6 +40,7 @@ import {
 	notifyAppsOfMediaCallStarted,
 	runPreMediaCallCreatedAppHook,
 } from './appEvents';
+import { ctiGateway } from './ctiGateway';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { i18n } from '../../lib/i18n';
@@ -56,6 +66,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('callActivated', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallStarted));
 		callServer.emitter.on('callEnded', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallEnded));
 		callServer.setHooks({ onPreCallCreated: runPreMediaCallCreatedAppHook });
+
+		// Let cti (app-controlled device) calls dispatch control to the apps that handle them
+		setMediaCallAppGateway(ctiGateway);
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (
@@ -150,6 +163,59 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', err });
 		}
+	}
+
+	// cti (app-controlled device calls)
+
+	public async getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]> {
+		return callServer.getUserMediaDevices(uid);
+	}
+
+	public async selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null> {
+		return callServer.selectUserMediaDevice(uid, deviceId);
+	}
+
+	// app -> host intake, called from the apps-engine media-call bridge.
+
+	public async createIncomingCtiCall(params: {
+		userId: IUser['_id'];
+		from: MediaCallContact;
+		device?: string;
+		features?: string[];
+	}): Promise<void> {
+		await callServer.createIncomingCtiCall({
+			user: { type: 'user', id: params.userId },
+			from: { ...params.from, type: params.from.type },
+			...(params.device && { device: params.device }),
+			...(params.features && { features: params.features as CallFeature[] }),
+		});
+	}
+
+	public async reportCtiCallRinging(callId: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'ringing' });
+	}
+
+	public async reportCtiCallAnswered(callId: string, features?: string[]): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'answered', ...(features && { features: features as CallFeature[] }) });
+	}
+
+	public async reportCtiCallActive(callId: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'active' });
+	}
+
+	public async reportCtiCallEnded(callId: string, reason?: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'ended', ...(reason && { reason: reason as CallHangupReason }) });
+	}
+
+	public async reportCtiCallState(
+		callId: string,
+		state: { muted?: boolean; held?: boolean; remoteMuted?: boolean; remoteHeld?: boolean },
+	): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'state', ...state });
+	}
+
+	public async notifyUserMediaDevicesChanged(uid: IUser['_id']): Promise<void> {
+		void api.broadcast('user.media-call-devices', { userId: uid });
 	}
 
 	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
@@ -467,6 +533,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			mobileRinging,
+			cti: {
+				enabled: settings.get<boolean>('VoIP_TeamCollab_CTI_Enabled') ?? false,
+			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureEnabled: (feature) => this.isFeatureEnabled(feature),
 		};
