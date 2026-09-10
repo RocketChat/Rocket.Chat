@@ -23,7 +23,11 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	startRingingById(callId: string, expiresAt: Date): Promise<UpdateResult>;
-	acceptCallById(callId: string, data: { calleeContractId: string; supportedFeatures: string[] }, expiresAt: Date): Promise<UpdateResult>;
+	acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
+		expiresAt: Date,
+	): Promise<UpdateResult>;
 	activateCallById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
@@ -37,4 +41,8 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	): FindCursor<DocumentWithProjection<T, O>>;
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult>;
 }

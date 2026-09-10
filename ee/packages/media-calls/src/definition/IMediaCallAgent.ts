@@ -21,6 +21,7 @@ export interface IMediaCallAgent {
 	onDTMF(callId: string, tone: string, duration: number): Promise<void>;
 
 	onCallTransferred(callId: string): Promise<void>;
+	onCallUpdated(callId: string): Promise<void>;
 
 	getMyCallActor(call: IMediaCall): MediaCallContact;
 }

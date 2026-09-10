@@ -66,4 +66,5 @@ export interface IRocketChatDesktop {
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }
