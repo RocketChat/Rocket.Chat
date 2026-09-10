@@ -17,7 +17,7 @@ import { scrubForLog } from '../scrub';
 const MAX_RETRIES = 5;
 const DEFAULT_RETRY_AFTER_SECONDS = 60;
 const BACKOFF_BASE_MS = 1000;
-export const MAX_RETRY_AFTER_SECONDS = 300;
+const MAX_RETRY_AFTER_SECONDS = 300;
 
 const parseRetryAfterSeconds = (header: string | null): number => {
 	if (!header) {
