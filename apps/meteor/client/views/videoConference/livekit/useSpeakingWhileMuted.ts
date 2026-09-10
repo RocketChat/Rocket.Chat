@@ -3,10 +3,20 @@ import { useEffect, useRef, useState } from 'react';
 const SAMPLE_INTERVAL_MS = 100;
 const SPEAKING_THRESHOLD = 0.08;
 const SUSTAINED_MS = 400;
+/**
+ * How long the answer holds after the last sample above the threshold.
+ *
+ * Slow to fall, quick to rise. Speech dips below any threshold between words and even between syllables, so an
+ * answer that dropped on the first quiet sample made whatever it drove blink word by word — which is what the
+ * muted-while-talking notice did until this existed. `SUSTAINED_MS` still governs how long it takes to say that
+ * someone *is* talking; this governs only how long it keeps saying so once they pause.
+ */
+const RELEASE_MS = 3000;
 
 export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 	const [speaking, setSpeaking] = useState(false);
 	const aboveThresholdSince = useRef<number | null>(null);
+	const lastAboveThreshold = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (!muted) {
@@ -55,13 +65,19 @@ export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 
 				const now = Date.now();
 				if (level > SPEAKING_THRESHOLD) {
+					lastAboveThreshold.current = now;
 					if (aboveThresholdSince.current === null) {
 						aboveThresholdSince.current = now;
 					} else if (now - aboveThresholdSince.current >= SUSTAINED_MS) {
 						setSpeaking(true);
 					}
-				} else {
-					aboveThresholdSince.current = null;
+					return;
+				}
+
+				// A pause, which is not the same as having stopped: the run of loud samples resets, but the answer
+				// only turns over once the quiet has lasted `RELEASE_MS`.
+				aboveThresholdSince.current = null;
+				if (lastAboveThreshold.current === null || now - lastAboveThreshold.current >= RELEASE_MS) {
 					setSpeaking(false);
 				}
 			}, SAMPLE_INTERVAL_MS);
@@ -74,6 +90,7 @@ export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 			void ctx?.close().catch(() => undefined);
 			setSpeaking(false);
 			aboveThresholdSince.current = null;
+			lastAboveThreshold.current = null;
 		};
 	}, [muted]);
 
