@@ -11,14 +11,10 @@ const customStyle = css`
 
 		&.embedded {
 			min-height: 36px;
-			padding: 0;
+			padding: 4px;
 
-			& .users-typing {
-				display: none;
-			}
-
-			& .formatting-tips {
-				display: none;
+			& .rc-message-box__activity-wrapper {
+				display: none !important;
 			}
 		}
 	}

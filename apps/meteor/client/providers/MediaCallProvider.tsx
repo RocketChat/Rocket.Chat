@@ -1,4 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import { MediaCallProvider as MediaCallProviderBase } from '@rocket.chat/ui-voip';
 import { MediaCallAppActionsProvider } from '@rocket.chat/ui-voip/dist/experimental/AppActionButtons';
 import type { ReactNode } from 'react';
@@ -13,9 +13,13 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const canMakeExternalCall = usePermission('allow-external-voice-calls');
 	const { actions, handleInteraction } = useMediaCallWidgetAppsActionButtons();
 
+	const currentRoute = useCurrentRoutePath();
+
+	const isConferenceRoute = currentRoute?.includes('/conference');
+
 	const { data: hasModule = false } = useHasLicenseModule('teams-voip');
 
-	const enabled = hasModule && (canMakeInternalCall || canMakeExternalCall);
+	const enabled = hasModule && (canMakeInternalCall || canMakeExternalCall) && !isConferenceRoute;
 
 	return (
 		<MediaCallAppActionsProvider actions={actions} handleInteraction={handleInteraction}>
