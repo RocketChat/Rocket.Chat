@@ -85,9 +85,11 @@ cases.forEach(({ command, path, dependency, method, permission, sanitizes }) => 
 			sinon.assert.notCalled(harness.broadcast);
 		});
 
-		if (command !== 'mute') {
-			['pt', undefined].forEach((language) => {
-				it(`reports an unknown target with ${language || 'English fallback'} and performs no mutation`, async () => {
+		// TODO: Fix /mute to return after unknown-user feedback, then enable these tests.
+		['pt', undefined].forEach((language) => {
+			(command === 'mute' ? it.skip : it)(
+				`reports an unknown target with ${language || 'English fallback'} and performs no mutation`,
+				async () => {
 					findTarget.resolves(null);
 					findActor.resolves(null);
 					harness.settings.get.withArgs('Language').returns(language);
@@ -96,9 +98,9 @@ cases.forEach(({ command, path, dependency, method, permission, sanitizes }) => 
 					harness.expectFeedback('Username_doesnt_exist');
 					expect(harness.translate.firstCall.args[1]).to.include({ username: 'Bob', lng: language || 'en' });
 					sinon.assert.notCalled(action);
-				});
-			});
-		}
+				},
+			);
+		});
 
 		it('propagates authorization failures from the authoritative method', async () => {
 			const error = new Error('Not authorized');
