@@ -115,18 +115,14 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		const endTime = parseEwsDateTime(textOf(firstByTag(node, TYPES_NS, 'End')));
 		const reminder = textOf(firstByTag(node, TYPES_NS, 'ReminderMinutesBeforeStart'));
 		const reminderMinutes = reminder ? Number.parseInt(reminder, 10) : undefined;
-		// The iCalendar identifier, stable across mailboxes unlike ItemId.
-		const iCalUId = textOf(firstByTag(node, TYPES_NS, 'UID'));
 
 		return {
 			kind: 'upsert',
 			externalId,
-			...(iCalUId && { iCalUId }),
 			subject: textOf(firstByTag(node, TYPES_NS, 'Subject')) ?? '',
 			description: textOf(firstByTag(node, TYPES_NS, 'Body')) ?? '',
 			startTime,
 			...(endTime && { endTime }),
-			isAllDay: textOf(firstByTag(node, TYPES_NS, 'IsAllDayEvent')) === 'true',
 			isCancelled: textOf(firstByTag(node, TYPES_NS, 'IsCancelled')) === 'true',
 			busy: isBusyStatus(textOf(firstByTag(node, TYPES_NS, 'LegacyFreeBusyStatus'))),
 			...(reminderMinutes !== undefined && Number.isFinite(reminderMinutes) && { reminderMinutesBeforeStart: reminderMinutes }),

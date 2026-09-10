@@ -105,12 +105,10 @@ describe('MicrosoftGraphProvider', () => {
 					value: [
 						{
 							id: 'AAMkAD',
-							iCalUId: '040000008200E0',
 							subject: 'Sprint review',
 							body: { content: 'Agenda here' },
 							start: { dateTime: '2026-08-21T10:00:00.0000000', timeZone: 'UTC' },
 							end: { dateTime: '2026-08-21T11:00:00.0000000', timeZone: 'UTC' },
-							isAllDay: false,
 							isCancelled: false,
 							showAs: 'busy',
 							onlineMeeting: { joinUrl: 'https://teams.example/meet' },
@@ -126,12 +124,10 @@ describe('MicrosoftGraphProvider', () => {
 			expect(page.items[0]).toEqual({
 				kind: 'upsert',
 				externalId: 'AAMkAD',
-				iCalUId: '040000008200E0',
 				subject: 'Sprint review',
 				description: 'Agenda here',
 				startTime: new Date('2026-08-21T10:00:00Z'),
 				endTime: new Date('2026-08-21T11:00:00Z'),
-				isAllDay: false,
 				isCancelled: false,
 				busy: true,
 				meetingUrl: 'https://teams.example/meet',

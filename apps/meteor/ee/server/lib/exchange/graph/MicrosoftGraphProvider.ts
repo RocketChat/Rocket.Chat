@@ -24,13 +24,11 @@ type GraphDateTimeTimeZone = {
 
 type GraphEvent = {
 	'id'?: unknown;
-	'iCalUId'?: unknown;
 	'subject'?: unknown;
 	'bodyPreview'?: unknown;
 	'body'?: { content?: unknown };
 	'start'?: GraphDateTimeTimeZone;
 	'end'?: GraphDateTimeTimeZone;
-	'isAllDay'?: unknown;
 	'isCancelled'?: unknown;
 	'showAs'?: unknown;
 	'onlineMeeting'?: { joinUrl?: unknown } | null;
@@ -141,20 +139,20 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			return undefined;
 		}
 
+		const endTime = parseGraphDateTime(event.end);
 		const description = asString(event.body?.content) ?? asString(event.bodyPreview) ?? '';
+		const meetingUrl = asString(event.onlineMeeting?.joinUrl);
 
 		return {
 			kind: 'upsert',
 			externalId,
-			...(asString(event.iCalUId) && { iCalUId: asString(event.iCalUId) }),
 			subject: asString(event.subject) ?? '',
 			description,
 			startTime,
-			...(parseGraphDateTime(event.end) && { endTime: parseGraphDateTime(event.end) }),
-			isAllDay: event.isAllDay === true,
+			...(endTime && { endTime }),
 			isCancelled: event.isCancelled === true,
 			busy: isBusy(event.showAs),
-			...(asString(event.onlineMeeting?.joinUrl) && { meetingUrl: asString(event.onlineMeeting?.joinUrl) }),
+			...(meetingUrl && { meetingUrl }),
 			...(typeof event.reminderMinutesBeforeStart === 'number' && {
 				reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
 			}),
