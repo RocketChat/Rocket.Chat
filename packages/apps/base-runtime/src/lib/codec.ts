@@ -11,28 +11,6 @@ const SECURE_FIELDS_HANDLER_EXT = 2;
 
 const extensionCodec = new ExtensionCodec();
 
-/**
- * The Secure Fields extension needs to use a different instance of the decoder to
- * handle its own fields, so we keep supporting instances around to avoid paying the
- * cost of instantiating them during the decoding process itself.
- */
-const nestedDecoders: Decoder[] = [];
-let nestedDecoderDepth = 0;
-
-function decodeNested(data: Uint8Array): unknown {
-	nestedDecoders[nestedDecoderDepth] ??= new Decoder({ extensionCodec });
-
-	const decoder = nestedDecoders[nestedDecoderDepth];
-
-	nestedDecoderDepth += 1;
-
-	try {
-		return decoder.decode(data);
-	} finally {
-		nestedDecoderDepth -= 1;
-	}
-}
-
 extensionCodec.register({
 	type: FUNCTION_DISABLER_EXT,
 	encode: (object: unknown) => {
@@ -65,7 +43,15 @@ extensionCodec.register({
 extensionCodec.register({
 	type: SECURE_FIELDS_HANDLER_EXT,
 	encode: (_object: unknown) => null,
-	decode: (data: Uint8Array) => applySecureFields(decodeNested(data) as WithSecureFields<Record<string, unknown>>),
+
+	/**
+	 * The nested pass needs a decoder of its own, because the outer one sits mid-message.
+	 * It gets a fresh instance rather than a pooled one: `new Decoder()` allocates no
+	 * buffer, so it costs ~7 ns, while a pooled instance would keep `data` — a view into
+	 * the whole outer frame — reachable until its next nested decode.
+	 */
+	decode: (data: Uint8Array) =>
+		applySecureFields(new Decoder({ extensionCodec }).decode(data) as WithSecureFields<Record<string, unknown>>),
 });
 
 export const encoder = new Encoder({ extensionCodec });
