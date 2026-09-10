@@ -48,7 +48,7 @@ const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps
 			flexGrow={0}
 			{...props}
 			label={chevron ? 'Device options' : 'customize'}
-			icon={showActivity ? <VoiceActivity level={level} size={20} /> : restingIcon}
+			icon={showActivity ? <VoiceActivity level={level} size={props.large ? 24 : 20} /> : restingIcon}
 			ref={ref}
 		/>
 	);
@@ -68,6 +68,12 @@ export type DevicePickerProps = {
 	secondary?: boolean;
 	className?: string;
 	chevron?: boolean;
+	/**
+	 * Matches the larger variant of the control this picker is fused to. The two halves share a height either
+	 * way — the strip stretches them — but not a glyph size, so without this the chevron kept a 16px icon in a
+	 * 40px button and read as the smaller control it used to be beside.
+	 */
+	large?: boolean;
 	/**
 	 * Whether the device this selector belongs to is off. It takes the same colour as that toggle so the two
 	 * halves read as one control rather than a red button with a grey tail.
@@ -92,7 +98,7 @@ const NOISE_METHOD_NOTES: Record<string, string> = {
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const DevicePicker = ({ secondary = false, chevron = false, danger = false, className }: DevicePickerProps) => {
+const DevicePicker = ({ secondary = false, chevron = false, danger = false, large = false, className }: DevicePickerProps) => {
 	const { t } = useTranslation();
 
 	const { onDeviceChange, sessionState, streams, noiseSuppression } = useMediaCallView();
@@ -280,6 +286,7 @@ const DevicePicker = ({ secondary = false, chevron = false, danger = false, clas
 					secondary={secondary || chevron}
 					danger={danger}
 					chevron={chevron}
+					large={large}
 					tiny={!chevron && !secondary}
 					level={micLevel}
 					micMuted={Boolean(sessionState?.muted)}

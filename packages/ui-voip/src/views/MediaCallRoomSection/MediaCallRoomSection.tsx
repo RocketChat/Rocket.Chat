@@ -62,8 +62,10 @@ const reactionButtonStyles = css`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 36px;
-	height: 36px;
+	/* A touch target rather than a mouse target: the controls beside it are 40px, and an emoji is aimed at with
+	   a thumb. */
+	width: 44px;
+	height: 44px;
 	border-radius: 8px;
 	border: none;
 	background: transparent;
@@ -415,7 +417,7 @@ const MediaCallRoomSection = ({
 		<>
 			<Box className={deviceControlStyles}>
 				<Box>
-					<DevicePicker chevron danger={muted} />
+					<DevicePicker chevron danger={muted} large />
 				</Box>
 				<Box position='relative'>
 					<ToggleButton
@@ -424,6 +426,7 @@ const MediaCallRoomSection = ({
 						titles={speakingWhileMuted ? [t('You_are_muted'), t('You_are_muted')] : [t('Mute'), t('Unmute')]}
 						pressed={muted}
 						dangerWhenPressed
+						large
 						onToggle={onMute}
 					/>
 					{speakingWhileMuted && (
@@ -436,7 +439,7 @@ const MediaCallRoomSection = ({
 			{onToggleCamera && (
 				<Box className={deviceControlStyles}>
 					<Box>
-						<CameraPicker danger={!(localCamera?.active ?? false)} />
+						<CameraPicker danger={!(localCamera?.active ?? false)} large />
 					</Box>
 					<Box>
 						<ToggleButton
@@ -445,6 +448,7 @@ const MediaCallRoomSection = ({
 							titles={[t('Stop_camera'), t('Start_camera')]}
 							pressed={!(localCamera?.active ?? false)}
 							dangerWhenPressed
+							large
 							onToggle={onToggleCamera}
 						/>
 					</Box>
@@ -456,6 +460,7 @@ const MediaCallRoomSection = ({
 					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
 					titles={[t('Hold'), t('Resume')]}
 					pressed={held}
+					large
 					onToggle={onHold}
 				/>
 			)}
@@ -464,6 +469,7 @@ const MediaCallRoomSection = ({
 				icons={['desktop-arrow-up', 'desktop-cross']}
 				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 				pressed={localScreen?.active ?? false}
+				large
 				onToggle={onToggleScreenSharing}
 			/>
 			{onToggleHand && (
@@ -472,6 +478,7 @@ const MediaCallRoomSection = ({
 					icons={['hand-pointer', 'hand-pointer']}
 					titles={['Raise hand', 'Lower hand']}
 					pressed={Boolean(localHandRaised)}
+					large
 					onToggle={onToggleHand}
 				/>
 			)}
@@ -482,6 +489,7 @@ const MediaCallRoomSection = ({
 						icons={['emoji', 'emoji']}
 						titles={['Send reaction', 'Send reaction']}
 						pressed={reactionPickerOpen}
+						large
 						onToggle={() => setReactionPickerOpen((p) => !p)}
 					/>
 					{reactionPickerOpen && (
@@ -503,7 +511,7 @@ const MediaCallRoomSection = ({
 				</Box>
 			)}
 			{isOneOnOne && !isLiveKitCall && (
-				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' large onClick={onForward} />
 			)}
 			{(() => {
 				const layoutItems: GenericMenuItemProps[] = isLiveKitCall
@@ -530,11 +538,11 @@ const MediaCallRoomSection = ({
 						sections={sections}
 						placement='top-end'
 						selectionMode='multiple'
-						button={<ActionButton secondary label={t('More')} icon='kebab' />}
+						button={<ActionButton secondary label={t('More')} icon='kebab' large />}
 					/>
 				);
 			})()}
-			<ActionButton label={hangupLabel} icon='phone-off' danger onClick={onEndCall} />
+			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={onEndCall} />
 		</>
 	);
 

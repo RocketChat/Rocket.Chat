@@ -82,7 +82,18 @@ const BLUR_MODEL_LABELS: Record<string, string> = {
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const CameraPicker = ({ secondary = true, danger = false, className }: { secondary?: boolean; danger?: boolean; className?: string }) => {
+const CameraPicker = ({
+	secondary = true,
+	danger = false,
+	large = false,
+	className,
+}: {
+	secondary?: boolean;
+	danger?: boolean;
+	/** Matches the larger variant of the camera toggle this picker is fused to — see `DevicePicker`. */
+	large?: boolean;
+	className?: string;
+}) => {
 	const { t } = useTranslation();
 	const { onVideoInputChange, currentCameraDeviceId, backgroundBlur, videoQuality } = useMediaCallView();
 	const devices = useAvailableVideoInputs();
@@ -278,7 +289,7 @@ const CameraPicker = ({ secondary = true, danger = false, className }: { seconda
 					if (id === currentId) return;
 					onVideoInputChange?.(id);
 				}}
-				button={<CameraPickerButton secondary={secondary} danger={danger} />}
+				button={<CameraPickerButton secondary={secondary} danger={danger} large={large} />}
 			/>
 			<input
 				ref={backgroundImageInput}
