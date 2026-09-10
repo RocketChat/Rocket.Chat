@@ -86,7 +86,7 @@ describe('getHiddenSystemMessages', () => {
 		expect(result).to.deep.equal(cachedHiddenSystemMessage);
 	});
 
-	it('should return cached hidden system messages if room.sysMes array and hidden system message is available', async () => {
+	it('should prefer room.sysMes over cached hidden system messages when both are available', async () => {
 		const cachedHiddenSystemMessage: MessageTypesValues[] = ['room_changed_announcement', 'room-archived'];
 
 		const room: IRoom = {
