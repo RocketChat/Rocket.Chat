@@ -2273,7 +2273,7 @@
   "Start_of_conversation": "Začiatok konverzácie",
   "Start_video_call": "Spustite videohovor",
   "Start_video_conference": "Spustenie videokonferencie?",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Začnite s <code class=\"inline\" >%s</code>pre používateľa alebo <code class=\"inline\" >%s</code>pre kanál. Napríklad: <code class=\"inline\" >%s</code>alebo <code class=\"inline\" >%s</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Začnite s <code>@</code> pre používateľa alebo <code>#</code> pre kanál. Napríklad: <code>@john</code> alebo <code>#general</code>",
   "Started_a_video_call": "Začal videohovor",
   "Started_At": "Začal pri",
   "Statistics": "štatistika",

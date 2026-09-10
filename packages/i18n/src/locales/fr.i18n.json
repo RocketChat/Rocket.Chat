@@ -242,7 +242,7 @@
   "Accounts_UseDefaultBlockedDomainsList": "Utiliser la liste de domaines bloqués par défaut",
   "Accounts_UseDNSDomainCheck": "Utiliser la vérification de domaine DNS",
   "Accounts_UserAddedEmail_Default": "<h1>Bienvenue sur <strong>[Site_Name]</strong></h1><p> Allez sur <a href=\"[Site_URL]\">[Site_URL]</a> et essayez la meilleure solution de chat open source disponible aujourd'hui ! </p><p> Vous pouvez vous connecter en utilisant votre adresse e-mail : [email] et votre mot de passe : [password]. Vous pouvez être amené à le changer après votre première connexion.",
-  "Accounts_UserAddedEmail_Description": "Vous pouvez utiliser les variables suivantes :  \n  <ul><li>`[name]`, `[fname]`, `[lname]` pour le nom complet de l'utilisateur, le prénom ou le nom de famille de l'utilisateur, respectivement.  \n - `[email]` pour l'adresse e-mail de l'utilisateur.  \n - `[password]` pour le mot de passe de l'utilisateur.  \n -  [Site_Name] et `[Site_URL]` pour le nom et l'URL de l'application, respectivement. ",
+  "Accounts_UserAddedEmail_Description": "Vous pouvez utiliser les variables suivantes :  \n - `[name]`, `[fname]`, `[lname]` pour le nom complet de l'utilisateur, le prénom ou le nom de famille de l'utilisateur, respectivement.  \n - `[email]` pour l'adresse e-mail de l'utilisateur.  \n - `[password]` pour le mot de passe de l'utilisateur.  \n - `[Site_Name]` et `[Site_URL]` pour le nom et l'URL de l'application, respectivement. ",
   "Accounts_UserAddedEmailSubject_Default": "Vous avez été ajouté à [Site_Name]",
   "Action": "Action",
   "Action_required": "Action requise",
