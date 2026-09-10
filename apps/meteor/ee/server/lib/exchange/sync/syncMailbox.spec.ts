@@ -43,7 +43,6 @@ const upsert = (externalId: string, over: Partial<ExchangeEventUpsert> = {}): Ex
 	description: '',
 	startTime: new Date('2026-09-07T10:00:00Z'),
 	endTime: new Date('2026-09-07T11:00:00Z'),
-	isAllDay: false,
 	isCancelled: false,
 	busy: true,
 	...over,
