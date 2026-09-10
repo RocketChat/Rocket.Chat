@@ -23,16 +23,19 @@ export function loadCommand(path: string, dependencies: Dependencies = {}) {
 	const translate = sinon.stub().callsFake((key: string) => `translated:${key}`);
 	const settings = { get: sinon.stub() };
 	let invocation: SlashCommandCallbackParams<string> | undefined;
-	proxyquire.noCallThru().load(`../../../../server/slashcommands/${path}`, {
-		'meteor/meteor': { Meteor: { Error: MeteorError } },
-		'../../lib/i18n': { i18n: { t: translate } },
-		'../../settings': { settings },
-		...dependencies,
-		'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
-		'../../lib/utils/slashCommand': {
-			slashCommands: { add: (registration: Registration) => commands.set(registration.command, registration) },
-		},
-	});
+	proxyquire
+		.noCallThru()
+		.noPreserveCache()
+		.load(`../../../../server/slashcommands/${path}`, {
+			'meteor/meteor': { Meteor: { Error: MeteorError } },
+			'../../lib/i18n': { i18n: { t: translate } },
+			'../../settings': { settings },
+			...dependencies,
+			'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
+			'../../lib/utils/slashCommand': {
+				slashCommands: { add: (registration: Registration) => commands.set(registration.command, registration) },
+			},
+		});
 	return {
 		broadcast,
 		translate,
