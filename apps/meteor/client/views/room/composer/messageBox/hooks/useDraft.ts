@@ -62,7 +62,10 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 					}
 				})
 				.catch((error) => {
-					serverValueRef.current = previousServerValue;
+					if (serverValueRef.current === draft) {
+						serverValueRef.current = previousServerValue;
+					}
+
 					console.warn(error);
 				});
 		},
