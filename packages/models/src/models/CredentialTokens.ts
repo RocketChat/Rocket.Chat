@@ -37,7 +37,7 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 		const twoFAGrace = 2 * 60 * 1000; // 2 minutes
 		const now = new Date();
 
-		await this.updateOne({ _id }, { $set: { expireAt: new Date(now.getTime() + twoFAGrace) } });
+		await this.updateOne({ _id, expireAt: { $gt: now } }, { $set: { expireAt: new Date(now.getTime() + twoFAGrace) } });
 	}
 
 	removeNotExpiredById(_id: string): Promise<ICredentialToken | null> {
