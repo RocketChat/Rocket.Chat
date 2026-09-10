@@ -1,0 +1,30 @@
+packages/model-typings/src/models/IUsersModel.ts
+  s_453d8d6e1aa7b9::t_f8f393590a931d 462,467-468
+  s_453d8d6e1aa7b9::t_faa660fe5b49ca 463-466
+packages/rest-typings/src/v1/users/UsersUpdateParamsPOST.ts
+  s_453d8d6e1aa7b9::t_b3c970db338553 81-85
+  s_453d8d6e1aa7b9::t_54f90f5365449b 14
+packages/models/src/models/Users.ts
+  s_453d8d6e1aa7b9::t_957bf5059c83d1 2444-2446,2448-2449,2452-2453,2455,2465
+  s_453d8d6e1aa7b9::t_d3fbd1d8ea643f 2447,2454,2478-2483
+  s_453d8d6e1aa7b9::t_6c36fdb760fa2b 2471-2477,2484-2488
+  s_453d8d6e1aa7b9::t_4927a4c63aaad3 75-78
+packages/core-typings/src/IUser.ts
+  s_453d8d6e1aa7b9::t_5edb9d1c29b888 217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e97d771d2ccda0868e0228b5b690ed43a3f5258d",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
