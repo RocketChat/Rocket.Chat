@@ -35,7 +35,8 @@ export interface IMediaCallContact {
  */
 export interface IMediaCall {
 	id: string;
-	service: 'webrtc';
+	/** `webrtc`: handled by the Rocket.Chat client; `cti`: handled by an app on an external device/gateway. */
+	service: 'webrtc' | 'cti';
 	kind: 'direct';
 	state: MediaCallState;
 
