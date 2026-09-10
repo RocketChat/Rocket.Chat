@@ -70,7 +70,24 @@ export class UserActorSignalProcessor {
 		this.throwIfSkipped = false;
 	}
 
+	/**
+	 * Whether this call negotiates media with the client at all. A `cti` call happens on an external
+	 * device, so the client has no peer connection to offer and nothing to negotiate.
+	 */
+	private get usesWebRTC(): boolean {
+		return this.call.service === 'webrtc';
+	}
+
 	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
+		if (!this.usesWebRTC) {
+			logger.debug({
+				msg: 'Skipping webrtc offer request for a call that carries no media',
+				callId: this.callId,
+				service: this.call.service,
+			});
+			return;
+		}
+
 		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', params });
 
 		await this.sendSignal({
@@ -115,6 +132,10 @@ export class UserActorSignalProcessor {
 				return this.processCallTransfer(signal.to);
 			case 'dtmf':
 				return this.processDTMF(signal.dtmf, signal.duration);
+			case 'mute':
+				return this.processMute(signal.muted);
+			case 'hold':
+				return this.processHold(signal.held);
 		}
 	}
 
@@ -190,6 +211,11 @@ export class UserActorSignalProcessor {
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
 		// Unsigned clients may not request negotiations
 		if (!this.signed) {
+			return;
+		}
+
+		// A client with no media of its own has nothing to renegotiate
+		if (!this.usesWebRTC) {
 			return;
 		}
 
@@ -277,6 +303,24 @@ export class UserActorSignalProcessor {
 		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
 	}
 
+	private async processMute(muted: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processMute', muted });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onMute(this.call._id, muted);
+	}
+
+	private async processHold(held: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processHold', held });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onHold(this.call._id, held);
+	}
+
 	protected async clientIsReachable(): Promise<void> {
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
@@ -287,7 +331,7 @@ export class UserActorSignalProcessor {
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
-		if (this.role === 'caller' && this.signed) {
+		if (this.role === 'caller' && this.signed && this.usesWebRTC) {
 			// When the signed caller's client is reached, we immediatelly start the first negotiation
 			const negotiationId = await mediaCallDirector.startFirstNegotiation(this.call);
 			if (negotiationId) {
