@@ -214,7 +214,16 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const participants = [caller, callee];
+		const allowedFeatures = features.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureAvailableForParticipants(feature, participants),
+		);
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
 			_id: randomUUID(),

@@ -8,7 +8,7 @@ import type {
 	VideoConferenceWithDiscussion,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { AggregationCursor, FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions, WithId } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -32,7 +32,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		providerName,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'sipAlias' | 'discussionRid'>): Promise<string>;
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -73,14 +73,25 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
 
+	findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null>;
+
 	setSipAliasById(callId: string, sipAlias: string): Promise<void>;
 
 	unsetSipAliasById(callId: string): Promise<void>;
+
+	addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null>;
+
 	findOneByProviderNameAndSipAlias<T extends VideoConference>(
 		providerName: string,
 		sipAlias: string,
 		options?: FindOptions<T>,
 	): Promise<T | null>;
+
+	addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult>;
 
 	increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null>;
 
