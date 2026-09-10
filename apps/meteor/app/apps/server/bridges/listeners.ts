@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage, MediaCallEvent } from '@rocket.chat/apps';
 import type { IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
@@ -167,6 +167,10 @@ type HandleDefaultEvent =
 	| {
 			event: AppInterface.IPreEmailSent;
 			payload: [IPreEmailSentContext];
+	  }
+	| {
+			event: AppInterface.IMediaCallHandler;
+			payload: [MediaCallEvent];
 	  };
 
 type HandleFileUploadEvent = {

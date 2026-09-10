@@ -107,6 +107,11 @@ export enum AppMethod {
 	EXECUTE_POST_USER_LOGGED_IN = 'executePostUserLoggedIn',
 	EXECUTE_POST_USER_LOGGED_OUT = 'executePostUserLoggedOut',
 	EXECUTE_POST_USER_STATUS_CHANGED = 'executePostUserStatusChanged',
+	// Media calls
+	EXECUTE_PRE_MEDIA_CALL_CREATED = 'executePreMediaCallCreated',
+	EXECUTE_POST_MEDIA_CALL_STARTED = 'executePostMediaCallStarted',
+	EXECUTE_POST_MEDIA_CALL_PARTICIPANT_JOINED = 'executePostMediaCallParticipantJoined',
+	EXECUTE_POST_MEDIA_CALL_ENDED = 'executePostMediaCallEnded',
 	// Runtime specific methods
 	RUNTIME_RESTART = 'runtime:restart',
 	RUNTIME_UNCAUGHT_EXCEPTION = 'runtime:uncaughtException',

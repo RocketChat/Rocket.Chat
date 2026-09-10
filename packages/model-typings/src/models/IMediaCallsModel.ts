@@ -23,10 +23,14 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	startRingingById(callId: string, expiresAt: Date): Promise<UpdateResult>;
-	acceptCallById(callId: string, data: { calleeContractId: string; supportedFeatures: string[] }, expiresAt: Date): Promise<UpdateResult>;
-	activateCallById(callId: string, expiresAt: Date): Promise<UpdateResult>;
+	acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<IMediaCall | null>;
+	activateCallById(callId: string, expiresAt: Date): Promise<IMediaCall | null>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
-	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
+	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<IMediaCall | null>;
 	transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,

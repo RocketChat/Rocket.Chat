@@ -44,6 +44,7 @@ const MediaCallHistoryInternal = ({ data, onClose, openUserInfo, openRoomId, mes
 			duration: data.item.duration,
 			startedAt: new Date(data.item.ts),
 			state: data.item.state,
+			preventedBy: data.call.preventedBy,
 		};
 	}, [data]);
 

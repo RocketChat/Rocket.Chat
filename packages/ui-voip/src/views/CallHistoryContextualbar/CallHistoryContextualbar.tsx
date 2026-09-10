@@ -1,3 +1,4 @@
+import type { CallPreventionRecord } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Icon, MessageBlock } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import {
@@ -22,12 +23,20 @@ import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState
 import { isCallHistoryInternalContact, type CallHistoryContact } from '../../definitions';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
+/**
+ * The panel captions the card with "Prevented by app: {app name}", except when the card's own
+ * second line already reads that: a malformed record that carries neither a reason nor a key.
+ */
+export const shouldDisplayPreventedByBox = (preventedBy: CallPreventionRecord | undefined): preventedBy is CallPreventionRecord =>
+	typeof preventedBy !== 'undefined' && (Boolean(preventedBy.i18n) || Boolean(preventedBy.text));
+
 export type CallHistoryData = {
 	callId: string;
 	direction: 'inbound' | 'outbound';
 	duration: number;
 	startedAt: Date;
-	state: 'ended' | 'not-answered' | 'failed' | 'error' | 'transferred';
+	state: 'ended' | 'not-answered' | 'failed' | 'error' | 'transferred' | 'prevented';
+	preventedBy?: CallPreventionRecord;
 	messageId?: string;
 };
 
@@ -73,10 +82,18 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					<InfoPanelSection>
 						<MessageBlock fixedWidth>
 							<UiKitContext.Provider value={contextValue}>
-								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getHistoryMessagePayload(data.state, duration).blocks} />
+								<UiKitComponent
+									render={UiKitMessageSurfaceRender}
+									blocks={getHistoryMessagePayload({ state: data.state, duration, preventedBy: data.preventedBy }).blocks}
+								/>
 							</UiKitContext.Provider>
 						</MessageBlock>
-						<Box marginBlockStart={-8}>{date}</Box>
+						<Box marginBlockStart={-8}>
+							{shouldDisplayPreventedByBox(data.preventedBy) && (
+								<InfoPanelLabel>{t('Prevented_by_app', { appName: data.preventedBy.appName })}</InfoPanelLabel>
+							)}
+							<InfoPanelLabel>{date}</InfoPanelLabel>
+						</Box>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>

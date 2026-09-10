@@ -32,6 +32,25 @@ export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActor
 /* The list of call states that may actually be stored on the collection is smaller than the list of call states that may be computed by the client class */
 type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
+/**
+ * What app refused a call, and what it said about it.
+ *
+ * `appName` is the app's name as of the moment it acted; an uninstalled app cannot be asked
+ * for it.
+ *
+ * `text` always carries words a reader can read on its own.
+ *
+ * `i18n.ns` is always `app-<appId>` today and so derivable from `appId`. It is stored anyway
+ * because this record has to still read years after the app is gone: a stored namespace
+ * survives a change to that convention, a derived one does not.
+ */
+export type CallPreventionRecord = {
+	appId: string;
+	appName: string;
+	text: string;
+	i18n?: { key: string; ns: string; args?: Record<string, string | number> };
+};
+
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
@@ -66,6 +85,9 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	/** The party whose line was diverted at the SIP level (from the Diversion header) */
 	divertedBy?: MediaCallContact;
+
+	/** Set only on a call an app refused */
+	preventedBy?: CallPreventionRecord;
 
 	uids: IUser['_id'][];
 
