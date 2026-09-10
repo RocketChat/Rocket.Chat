@@ -1,3 +1,4 @@
+import { settings } from '../../settings/cached';
 import { getRememberDate } from '../2fa/code';
 import { EmailCheckForOAuth } from '../2fa/code/EmailCheckForOAuth';
 import type { TwoFactorUser } from '../2fa/code/ICodeCheck';
@@ -20,6 +21,10 @@ const getSecondFactorMethod = (user: TwoFactorUser) => {
 };
 
 export const doesUserRequire2FA = (user: TwoFactorUser) => {
+	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+		return false;
+	}
+
 	const rememberAfterRegistration = getRememberDate(user.createdAt);
 
 	if (rememberAfterRegistration && rememberAfterRegistration > new Date()) {
